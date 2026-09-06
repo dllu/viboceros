@@ -159,14 +159,10 @@ impl Command for JoinCommand {
         let mut result_ids = Vec::with_capacity(replacements.len());
         for (sources, curve, attributes) in replacements {
             let groups = document
-                .groups()
-                .filter(|group| {
-                    group
-                        .members()
-                        .any(|member| member == inputs[sources[0]].id)
-                })
-                .map(|group| group.id())
-                .collect::<Vec<_>>();
+                .object(inputs[sources[0]].id)
+                .expect("join seed object")
+                .group_ids()
+                .to_vec();
             let id = document.add_geometry_with_attributes(Geometry::from(curve), attributes)?;
             for group in groups {
                 document.add_group_members(group, [id])?;

@@ -246,6 +246,9 @@ pub(super) fn run(f: &PlaneArrayFixture, tolerance: Tolerance) -> Result<(Value,
     records.sort_by(|(a, _), (b, _)| a.partial_cmp(b).expect("finite sort coordinates"));
     let mut groups = document
         .groups()
+        // This older layout probe compares populated groups, as does its
+        // Rhino worker. group_memberships separately checks the complete table.
+        .filter(|group| group.members().len() > 0)
         .map(|g| {
             let mut members = g
                 .members()

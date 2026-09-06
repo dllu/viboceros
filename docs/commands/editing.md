@@ -72,7 +72,9 @@ NURBS segments in their composite parameter intervals, frees point-cloud
 members as points, duplicates polysurface faces as exact trimmed B-reps, and
 splits meshes at disconnected or unwelded edges. Parts are emitted in Rhino's
 reverse component order, inherit attributes, and replace their source in every
-existing group. `Length` measures
+existing group in its original membership order. Preselected outputs, including
+exploded point-cloud members, remain selected without selecting untouched group
+peers. `Length` measures
 analytic, polyline, polycurve, and NURBS curves with controlled accuracy; `Area` measures
 circles, ellipses, closed planar polylines, exact NURBS surfaces, B-reps, and
 meshes. Full-domain NURBS faces are integrated per knot-span rectangle, while

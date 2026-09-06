@@ -38,18 +38,15 @@ is deterministic natively, but is not established as a Rhino compatibility rule.
 - An explicit finite spacing, including zero or a negative value, keeps the
   first unit fixed and lays out every subsequent unit from it.
 
-Each object's newest containing group determines its rigid unit.
+Each object's last ordered group membership determines its rigid unit.
 Overlapping groups are not merged into connected components. Only selected
 members participate; unselected members remain unchanged. This top-group rule
 is checked against actual Rhino commands with nested, overlapping, duplicated,
-and partially selected groups created with their memberships. A remaining
-document-model limitation is that per-object membership insertion order is not
-stored: adding an object to an older group later, or importing differently
-ordered memberships, can choose a different top group from Rhino. The
-open-source [OpenNURBS implementation](../../third_party/opennurbs/opennurbs_3dm_attributes.cpp)
-of `ON_3dmObjectAttributes::TopGroup` uses the last membership
-entry, not the newest containing group. Those histories are not covered by the
-passing distribution fixtures.
+and partially selected groups, including adding an object to an older group
+after a newer one. The document stores each object's membership order;
+3DM import/export and undo/redo preserve it. Adding an existing membership is a
+no-op, not a reorder. See [groups](../groups.md) for the model, copied groups,
+and the separate ordered-membership oracle fixture.
 
 Objects move in place, retaining identity, attributes, layers, group membership,
 and selection. Every bound, displacement, and replacement geometry is staged

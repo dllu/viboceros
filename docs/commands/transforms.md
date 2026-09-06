@@ -10,6 +10,11 @@ to pick a base and destination point, `Scale`, `Scale1D`, `Scale2D`, or
 axis, or `ArrayLinear 4` to pick its two spacing references. `ScaleNU` accepts
 independent world x/y/z factors; all scale variants accept `Copy=Yes`.
 
+A completed `Copy` leaves its original preselection unchanged; new copies are
+unselected. With multiple sources, copied [group memberships](../groups.md)
+retain their per-object order in fresh, automatically named groups. A single
+source produces an ungrouped copy and corresponding empty group definitions.
+
 `Rotate3D` picks an axis start/end followed by angle reference/target points;
 `Rotate`, `Rotate3D`, and `Mirror` also accept `Copy=Yes`.
 
@@ -74,7 +79,8 @@ zero-spacing cells, tight curve/surface bounds, and remaining B-rep/compatibilit
 their vector is the spacing between successive items. It retains the originals
 as the selection and preserves object attributes in one bounded, atomic undo
 step. Array, ArrayLinear, and ArrayPolar omit copied groups for a single source
-object; multiple-source arrays recreate selected memberships per copy.
+object, while still allocating corresponding empty definitions; multiple-source
+arrays recreate selected memberships per copy.
 
 `ArrayCrv` places the selected sources at equal arc-length positions on a line,
 analytic curve, polyline, or NURBS rail. Name a unique rail with the single-token

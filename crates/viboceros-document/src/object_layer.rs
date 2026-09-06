@@ -1,7 +1,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use super::history::Edit;
-use super::{Document, DocumentError, Group, GroupId, LayerId, Object, ObjectId, ObjectIsolation};
+use super::{Document, DocumentError, LayerId, Object, ObjectId, ObjectIsolation};
 
 impl Document {
     /// Atomically moves the requested editable objects to an existing layer.
@@ -41,7 +41,10 @@ impl Document {
             self.objects[index] = after.clone();
             self.record_edit(
                 "Set object layer",
-                Edit::ObjectChanged { id, before, after },
+                Edit::ObjectChanged {
+                    id,
+                    states: Box::new([before, after]),
+                },
             );
         }
         self.prune_selection();
@@ -73,24 +76,6 @@ impl Document {
             return Ok(Vec::new());
         }
 
-        let originals = staged
-            .iter()
-            .map(|(_, object)| object.id)
-            .collect::<BTreeSet<_>>();
-        let copied_groups = self
-            .groups
-            .iter()
-            .filter_map(|group| {
-                let members = group
-                    .members
-                    .iter()
-                    .filter(|member| originals.contains(member))
-                    .copied()
-                    .collect::<Vec<_>>();
-                (!members.is_empty()).then_some(members)
-            })
-            .collect::<Vec<_>>();
-
         let owns_transaction = self.history.active.is_none();
         if owns_transaction {
             self.begin_transaction("Copy objects to layer")?;
@@ -107,6 +92,7 @@ impl Document {
                 geometry: original.geometry,
                 attributes,
                 isolation: ObjectIsolation::None,
+                group_ids: Vec::new(),
             });
             self.record_edit(
                 "Copy object to layer",
@@ -119,27 +105,7 @@ impl Document {
             copied_by_original.insert(original.id, id);
             copied_ids.push(id);
         }
-        for original_members in copied_groups {
-            let members = original_members
-                .into_iter()
-                .map(|member| copied_by_original[&member])
-                .collect();
-            let id = GroupId::new();
-            let index = self.groups.len();
-            self.groups.push(Group {
-                id,
-                name: Some(self.next_unused_group_name()),
-                members,
-            });
-            self.record_edit(
-                "Copy group to layer",
-                Edit::GroupInserted {
-                    index,
-                    id,
-                    stored: None,
-                },
-            );
-        }
+        self.copy_group_memberships(&copied_by_original, true)?;
         if owns_transaction {
             self.commit_transaction()?;
         }

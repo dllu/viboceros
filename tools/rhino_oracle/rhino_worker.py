@@ -7,6 +7,7 @@ syntax compatible with both Rhino 8 Python 3 and the legacy IronPython host.
 
 import json
 import math
+import re
 import os
 from contextlib import contextmanager
 from timeit import default_timer
@@ -3417,7 +3418,172 @@ def _distribute(operation, tolerance):
             for geometry in reversed(owned): geometry.Dispose()
 
 
+def _group_memberships(operation, tolerance):
+    definitions, groups, steps = operation["sources"], operation["groups"], operation["steps"]
+    if not 1 <= len(definitions) <= 32 or len(groups) > 16 or len(steps) > 64:
+        raise ValueError("invalid group membership fixture size")
+    def indices(values, count, unique=True):
+        if any(type(i) is not int or not 0 <= i < count for i in values) or (unique and len(set(values)) != len(values)):
+            raise ValueError("invalid membership indices")
+    scripts = {"Copy": "_Copy w0,0,0 w10,0,0 _Enter", "Ungroup": "_Ungroup", "UngroupAll": "_UngroupAll",
+               "Explode": "_Explode", "ConvertToBeziers": "_ConvertToBeziers _Yes",
+               "Distribute": "_-Distribute _Mode=_Gap _Spacing _Automatic _XAxis",
+               "Array": "_-Array _Mode=_UnitCell 2 1 1 10 _Enter",
+               "ArrayPolar": "_-ArrayPolar w0,0,0 2 _Rotate=_Yes _ZOffset 0 180 _Enter",
+               "ArrayLinear": "_ArrayLinear 2 w0,0,0 w10,0,0"}
+    for group in groups:
+        indices(group, len(definitions))
+    live_groups = set(range(len(groups)))
+    for step in steps:
+        kind = step["kind"]
+        if kind == "set":
+            indices([step["object"]], len(definitions))
+            indices(step["groups"], len(groups))
+            if any(i not in live_groups for i in step["groups"]): raise ValueError("deleted membership group")
+        elif kind == "add":
+            indices([step["group"]], len(groups))
+            indices(step["objects"], len(definitions), False)
+            if step["group"] not in live_groups: raise ValueError("deleted membership group")
+        elif kind == "delete_group":
+            indices([step["group"]], len(groups))
+            if step["group"] not in live_groups: raise ValueError("deleted membership group")
+            live_groups.remove(step["group"])
+        elif kind == "select": indices(step["objects"], len(definitions))
+        elif kind != "command" or step["name"] not in scripts:
+            raise ValueError("unsupported group command step")
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = settings.HiddenObjects = settings.LockedObjects = True
+    def objects(): return list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in objects())
+    selected_before = [obj.Id for obj in objects() if obj.IsSelected(False)]
+    groups_before = set(i for i in range(document.Groups.Count) if not document.Groups.IsDeleted(i))
+    requested_names = set("Group-%d" % i for i in range(len(groups)))
+    if any(document.Groups.GroupName(i) in requested_names for i in groups_before):
+        raise ValueError("group probe name collides with an existing definition")
+    owned, ids, group_ids = [], [], []
+    source_by_id = {}
+    def record():
+        # The private Rhino document reserves auto names after earlier cases.
+        # Preserve their format/relative numbering without comparing that counter.
+        automatic = sorted((int(document.Groups.GroupName(i)[5:]), i) for i in range(document.Groups.Count)
+                           if i not in groups_before and not document.Groups.IsDeleted(i)
+                           and re.match(r"^Group[0-9]+\Z", document.Groups.GroupName(i) or ""))
+        automatic = dict((index, "CopyGroup-%d" % rank) for rank, (_number, index) in enumerate(automatic))
+        def group_name(index): return automatic.get(index, document.Groups.GroupName(index))
+        records = []
+        for obj in objects():
+            if obj.Id in before: continue
+            source = source_by_id[obj.Id]
+            geometry = obj.Geometry
+            domain = None
+            if isinstance(geometry, Rhino.Geometry.Point): points = [_xyz(geometry.Location)]
+            elif isinstance(geometry, Rhino.Geometry.PointCloud): points = [_xyz(p) for p in geometry.GetPoints()]
+            elif isinstance(geometry, Rhino.Geometry.Mesh): points = [_xyz(p) for p in geometry.Vertices]
+            elif isinstance(geometry, Rhino.Geometry.Brep): domain, points = _plane_array_brep_record(geometry)
+            else: domain, points = _plane_array_geometry_record(geometry, isinstance(geometry, Rhino.Geometry.Surface))
+            records.append(dict(source=source, name=obj.Attributes.Name or None, domain=domain, points=points, selected=bool(obj.IsSelected(False)), retained=obj.Id == ids[source],
+                                groups=[group_name(i) for i in (obj.Attributes.GetGroupList() or [])]))
+        records.sort(key=lambda r:(r["source"],r["points"][0],r["groups"],r["selected"],r["retained"]))
+        table = []
+        for i in range(document.Groups.Count):
+            if i in groups_before or document.Groups.IsDeleted(i): continue
+            members = sorted(source_by_id[obj.Id] for obj in (document.Groups.GroupMembers(i) or []))
+            table.append(dict(name=group_name(i), members=members))
+        table.sort(key=lambda g:g["name"])
+        return dict(objects=records, groups=table)
+    with _independent_construction_planes() as viewport:
+        try:
+            viewport.SetConstructionPlane(Rhino.Geometry.Plane.WorldXY)
+            document.Objects.UnselectAll()
+            for i, definition in enumerate(definitions):
+                geometry = _object_source(definition, tolerance)
+                owned.append(geometry)
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                try:
+                    attributes.Name = str(i)
+                    attributes.LayerIndex = document.Layers.CurrentLayerIndex
+                    kind = definition["type"]
+                    if kind == "point": key = document.Objects.AddPoint(geometry.Location, attributes)
+                    elif kind == "point_cloud": key = document.Objects.AddPointCloud(geometry, attributes)
+                    elif kind == "mesh": key = document.Objects.AddMesh(geometry, attributes)
+                    elif kind == "surface": key = document.Objects.AddSurface(geometry, attributes)
+                    elif kind == "brep": key = document.Objects.AddBrep(geometry, attributes)
+                    else: key = document.Objects.AddCurve(geometry, attributes)
+                finally:
+                    attributes.Dispose()
+                if key == System.Guid.Empty: raise ValueError("group probe source insertion failed")
+                ids.append(key)
+                source_by_id[key] = i
+            for i, group in enumerate(groups):
+                index = document.Groups.Add("Group-%d" % i, [ids[j] for j in group])
+                if index < 0: raise ValueError("group probe definition insertion failed")
+                group_ids.append(index)
+            states = [record()]
+            for step in steps:
+                _record_progress("group step: " + repr(step))
+                kind = step["kind"]
+                if kind == "set":
+                    key = ids[step["object"]]
+                    obj = document.Objects.FindId(key)
+                    if obj is None: raise ValueError("group source no longer exists")
+                    attributes = obj.Attributes.Duplicate()
+                    try:
+                        attributes.RemoveFromAllGroups()
+                        for i in step["groups"]: attributes.AddToGroup(group_ids[i])
+                        if not document.Objects.ModifyAttributes(key, attributes, True): raise ValueError("group attribute replacement failed")
+                    finally:
+                        attributes.Dispose()
+                elif kind == "add":
+                    group = group_ids[step["group"]]
+                    keys = [ids[i] for i in step["objects"]]
+                    if any(document.Objects.FindId(key) is None for key in keys): raise ValueError("group source no longer exists")
+                    document.Groups.AddToGroup(group, keys)
+                    # Rhino reports false for a valid all-existing no-op.
+                    if any(group not in (document.Objects.FindId(key).Attributes.GetGroupList() or []) for key in keys):
+                        raise ValueError("group membership insertion failed")
+                elif kind == "delete_group":
+                    if not document.Groups.Delete(group_ids[step["group"]]): raise ValueError("group deletion failed")
+                elif kind == "select":
+                    if any(document.Objects.FindId(ids[i]) is None for i in step["objects"]): raise ValueError("group source no longer exists")
+                    document.Objects.UnselectAll()
+                    for i in step["objects"]: document.Objects.Select(ids[i])
+                else:
+                    selected = [obj for obj in objects() if obj.Id not in before and obj.IsSelected(False)]
+                    if not selected: raise ValueError("group command requires completed preselection")
+                    if step["name"] in ("Ungroup", "UngroupAll") and not any(obj.Attributes.GetGroupList() for obj in selected):
+                        raise ValueError("ungroup requires a preselected group")
+                    if step["name"] == "Distribute" and len(selected) < 3:
+                        raise ValueError("distribution requires three preselected objects")
+                    source_candidates = set(source_by_id[obj.Id] for obj in selected)
+                    _run_surface_script(scripts[step["name"]], True)
+                    for obj in objects():
+                        if obj.Id in before or obj.Id in source_by_id: continue
+                        name = obj.Attributes.Name
+                        if name is not None and str(name) in [str(i) for i in range(len(ids))]:
+                            source = int(name)
+                        elif len(source_candidates) == 1:
+                            # Single-input decomposition has unambiguous provenance,
+                            # even when Rhino intentionally discards its attributes.
+                            source = next(iter(source_candidates))
+                        else: raise ValueError("ambiguous group output source")
+                        source_by_id[obj.Id] = source
+                states.append(record())
+            return dict(states=states), 0
+        finally:
+            Rhino.RhinoApp.RunScript("!", False)
+            for obj in objects():
+                if obj.Id not in before: document.Objects.Delete(obj.Id, True)
+            for i in range(document.Groups.Count):
+                if i not in groups_before and not document.Groups.IsDeleted(i): document.Groups.Delete(i)
+            document.Objects.UnselectAll()
+            for key in selected_before: document.Objects.Select(key)
+            for geometry in reversed(owned): geometry.Dispose()
+
+
 def _execute(operation, iterations, tolerance):
+    if operation["op"] == "group_memberships":
+        return _group_memberships(operation, tolerance)
     if operation["op"] == "distribute":
         return _distribute(operation, tolerance)
     kind = operation["op"]
@@ -5423,10 +5589,11 @@ def _execute(operation, iterations, tolerance):
 
             document.Objects.UnselectAll()
             before_explode = all_object_ids()
+            # Match the native command's preselection. Postselection through
+            # SelID inside Explode has different output-selection behavior.
+            document.Objects.Select(cloud_id)
             value["explode_succeeded"] = bool(
-                Rhino.RhinoApp.RunScript(
-                    "_-Explode _SelID %s _Enter" % cloud_id, False
-                )
+                Rhino.RhinoApp.RunScript("_-Explode", False)
             )
             exploded_ids = list(all_object_ids() - before_explode)
             value["explode"] = describe(exploded_ids)

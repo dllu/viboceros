@@ -39,6 +39,7 @@ mod parameter_bounds;
 pub use parameter_bounds::ParameterCurveBoundsFixture;
 mod bounding_box;
 mod distribute;
+mod group_memberships;
 mod object_source;
 mod plane_arrays;
 mod trimmed_brep;
@@ -161,6 +162,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: distribute::DistributeFixture,
+    },
+    GroupMemberships {
+        id: String,
+        #[serde(flatten)]
+        fixture: group_memberships::GroupMembershipFixture,
     },
     ConstructionPlaneInput {
         id: String,
@@ -1494,6 +1500,7 @@ impl Operation {
             | Self::PlaneArray { id, .. }
             | Self::BoundingBoxCommand { id, .. }
             | Self::Distribute { id, .. }
+            | Self::GroupMemberships { id, .. }
             | Self::ConstructionPlaneInput { id, .. }
             | Self::ConstructionPlane { id, .. }
             | Self::InterfaceCommands { id, .. }
@@ -1837,6 +1844,7 @@ fn execute(
         Operation::PlaneArray { fixture, .. } => plane_arrays::run(fixture, tolerance)?,
         Operation::BoundingBoxCommand { fixture, .. } => bounding_box::run(fixture, tolerance)?,
         Operation::Distribute { fixture, .. } => distribute::run(fixture, tolerance)?,
+        Operation::GroupMemberships { fixture, .. } => group_memberships::run(fixture, tolerance)?,
         Operation::ConstructionPlaneInput { fixture, .. } => {
             construction_plane::run_input(fixture, tolerance)?
         }
@@ -6929,7 +6937,8 @@ fn describe_point_cloud_cycle_objects(
     ids: impl IntoIterator<Item = ObjectId>,
     default_layer: LayerId,
 ) -> Vec<Value> {
-    ids.into_iter()
+    let mut records = ids
+        .into_iter()
         .filter_map(|id| document.object(id))
         .map(|object| {
             let (geometry_type, points) = match object.geometry() {
@@ -6951,15 +6960,20 @@ fn describe_point_cloud_cycle_objects(
                     .layer(object.attributes().layer_id())
                     .map_or("Unexpected", |layer| layer.name())
             };
-            json!({
+            let value = json!({
                 "layer": layer,
                 "name": object.attributes().name(),
                 "points": points,
                 "selected": document.is_selected(object.id()),
                 "type": geometry_type,
-            })
+            });
+            ((layer, geometry_type, points), value)
         })
-        .collect()
+        .collect::<Vec<_>>();
+    // The worker enumerates an unordered ID set and canonicalizes this same key.
+    // Keep point order inside each cloud; only order the independent records.
+    records.sort_by(|a, b| a.0.partial_cmp(&b.0).expect("finite point-cloud geometry"));
+    records.into_iter().map(|(_, value)| value).collect()
 }
 
 fn point_cloud_source_selection(document: &Document, ids: PointCloudCycleIds) -> Vec<&'static str> {
@@ -9781,7 +9795,7 @@ mod tests {
                 .as_array()
                 .unwrap()
                 .iter()
-                .all(|point| point["selected"] == json!(false))
+                .all(|point| point["selected"] == json!(true))
         );
     }
 

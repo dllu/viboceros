@@ -3,7 +3,11 @@
 mod arrays;
 mod bounding_box;
 mod distribute;
+mod grouping;
 pub use distribute::{DistributionMode, DistributionSettings, distribution_unit_count};
+use grouping::{GroupCommand, UngroupAllCommand, UngroupCommand};
+#[cfg(test)]
+mod group_order_tests;
 mod object_bounds;
 use bounding_box::BoundingBoxCommand;
 pub mod construction_plane;
@@ -594,6 +598,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(UngroupCommand)
+            .expect("unique built-in command");
+        registry
+            .register(UngroupAllCommand)
             .expect("unique built-in command");
         registry
             .register(DeleteCommand)
@@ -10207,10 +10214,10 @@ impl Command for ConvertToSingleSpansCommand {
                 return Err(too_many_span_outputs("ConvertToSingleSpans"));
             }
             let group_ids = document
-                .groups()
-                .filter(|group| group.members().any(|member| member == id))
-                .map(|group| group.id())
-                .collect();
+                .object(id)
+                .expect("validated source object")
+                .group_ids()
+                .to_vec();
             source_surfaces.push((id, surface.clone(), object.attributes().clone(), group_ids));
         }
         if source_surfaces.is_empty() {
@@ -10239,7 +10246,7 @@ impl Command for ConvertToSingleSpansCommand {
         );
 
         let converted_count = inputs.len();
-        let mut group_additions = BTreeMap::<GroupId, Vec<ObjectId>>::new();
+
         let mut created_count = 0_usize;
         if options.delete_input {
             let mut replacements = Vec::with_capacity(inputs.len());
@@ -10266,14 +10273,10 @@ impl Command for ConvertToSingleSpansCommand {
                     )?;
                     output_ids.push(id);
                     created_count += 1;
-                    for group_id in &input.group_ids {
-                        group_additions.entry(*group_id).or_default().push(id);
-                    }
+                    document.set_object_group_memberships(id, input.group_ids.iter().copied())?;
                 }
             }
-            for (group_id, additions) in group_additions {
-                document.add_group_members(group_id, additions)?;
-            }
+
             replace_selection(document, output_ids)?;
         } else {
             for input in inputs {
@@ -10283,13 +10286,8 @@ impl Command for ConvertToSingleSpansCommand {
                         input.attributes.clone(),
                     )?;
                     created_count += 1;
-                    for group_id in &input.group_ids {
-                        group_additions.entry(*group_id).or_default().push(id);
-                    }
+                    document.set_object_group_memberships(id, input.group_ids.iter().copied())?;
                 }
-            }
-            for (group_id, additions) in group_additions {
-                document.add_group_members(group_id, additions)?;
             }
         }
 
@@ -10433,10 +10431,10 @@ impl Command for ConvertToBeziersCommand {
                 return Err(too_many_span_outputs("ConvertToBeziers"));
             }
             let group_ids = document
-                .groups()
-                .filter(|group| group.members().any(|member| member == id))
-                .map(|group| group.id())
-                .collect();
+                .object(id)
+                .expect("validated source object")
+                .group_ids()
+                .to_vec();
             sources.push((
                 id,
                 object.geometry().clone(),
@@ -10480,19 +10478,15 @@ impl Command for ConvertToBeziersCommand {
         output_ids
             .try_reserve_exact(total_piece_count)
             .map_err(|_| too_many_span_outputs("ConvertToBeziers"))?;
-        let mut group_additions = BTreeMap::<GroupId, Vec<ObjectId>>::new();
+
         for input in inputs {
             for piece in input.pieces {
                 let id = document.add_geometry_with_attributes(piece, input.attributes.clone())?;
                 output_ids.push(id);
-                for group_id in &input.group_ids {
-                    group_additions.entry(*group_id).or_default().push(id);
-                }
+                document.set_object_group_memberships(id, input.group_ids.iter().copied())?;
             }
         }
-        for (group_id, additions) in group_additions {
-            document.add_group_members(group_id, additions)?;
-        }
+
         if delete_input {
             for id in source_ids {
                 document.delete_object(id)?;
@@ -11193,10 +11187,10 @@ impl Command for ExtendSurfaceCommand {
                 .expect("selected surface extension source belongs to the document");
             let attributes = source.attributes().clone();
             let group_ids = document
-                .groups()
-                .filter(|group| group.members().any(|member| member == id))
-                .map(|group| group.id())
-                .collect::<Vec<_>>();
+                .object(id)
+                .expect("validated source object")
+                .group_ids()
+                .to_vec();
             let extension_id = document
                 .add_geometry_with_attributes(Geometry::NurbsSurface(extension), attributes)?;
             for group_id in group_ids {
@@ -11586,10 +11580,10 @@ fn replace_curve_split_pieces(
         .expect("selected split source belongs to the document");
     let attributes = source.attributes().clone();
     let group_ids = document
-        .groups()
-        .filter(|group| group.members().any(|member| member == id))
-        .map(|group| group.id())
-        .collect::<Vec<_>>();
+        .object(id)
+        .expect("validated source object")
+        .group_ids()
+        .to_vec();
     let mut output_ids = Vec::with_capacity(piece_count);
     let mut added_ids = Vec::with_capacity(match replacement {
         CurveSplitReplacement::RetainFirst => piece_count.saturating_sub(1),
@@ -11856,10 +11850,10 @@ fn split_surface_at_isocurve(
         .expect("the selected isocurve Split surface belongs to the document");
     let attributes = source.attributes().clone();
     let group_ids = document
-        .groups()
-        .filter(|group| group.members().any(|member| member == source_id))
-        .map(|group| group.id())
-        .collect::<Vec<_>>();
+        .object(source_id)
+        .expect("validated source object")
+        .group_ids()
+        .to_vec();
     let mut output_ids = Vec::with_capacity(pieces.len());
     for piece in pieces {
         output_ids.push(
@@ -13297,10 +13291,10 @@ fn replace_surface_split_source(
         .expect("the selected surface Split source belongs to the document");
     let attributes = source.attributes().clone();
     let group_ids = document
-        .groups()
-        .filter(|group| group.members().any(|member| member == source_id))
-        .map(|group| group.id())
-        .collect::<Vec<_>>();
+        .object(source_id)
+        .expect("validated source object")
+        .group_ids()
+        .to_vec();
     let mut output_ids = Vec::with_capacity(pieces.len());
     for piece in pieces {
         output_ids.push(
@@ -14440,10 +14434,10 @@ impl Command for SplitDisjointMeshCommand {
                     return Err(CommandError::UnsupportedSplitDisjointMeshGeometry);
                 };
                 let group_ids = document
-                    .groups()
-                    .filter(|group| group.members().any(|member| member == id))
-                    .map(|group| group.id())
-                    .collect();
+                    .object(id)
+                    .expect("validated source object")
+                    .group_ids()
+                    .to_vec();
                 Ok(SplitMeshInput {
                     id,
                     attributes: object.attributes().clone(),
@@ -14472,7 +14466,7 @@ impl Command for SplitDisjointMeshCommand {
         debug_assert_eq!(replaced, split_mesh_count);
 
         let mut output_ids = Vec::with_capacity(inputs.len() + piece_count - split_mesh_count);
-        let mut group_additions = BTreeMap::<GroupId, Vec<ObjectId>>::new();
+
         for input in inputs {
             output_ids.push(input.id);
             if input.pieces.len() <= 1 {
@@ -14484,14 +14478,10 @@ impl Command for SplitDisjointMeshCommand {
                     input.attributes.clone(),
                 )?;
                 output_ids.push(id);
-                for group_id in &input.group_ids {
-                    group_additions.entry(*group_id).or_default().push(id);
-                }
+                document.set_object_group_memberships(id, input.group_ids.iter().copied())?;
             }
         }
-        for (group_id, additions) in group_additions {
-            document.add_group_members(group_id, additions)?;
-        }
+
         replace_selection(document, output_ids)?;
         Ok(format!(
             "Split {split_mesh_count} mesh(es) into {piece_count} piece(s); {unchanged_mesh_count} mesh(es) unchanged"
@@ -14759,7 +14749,7 @@ impl Command for ExtractMeshFacesCommand {
         }
 
         let mut output_ids = Vec::with_capacity(source_count);
-        let mut group_additions = BTreeMap::<GroupId, Vec<ObjectId>>::new();
+
         for plan in plans {
             if !options.make_copy && plan.remainder.is_none() {
                 output_ids.push(plan.source);
@@ -14768,13 +14758,9 @@ impl Command for ExtractMeshFacesCommand {
             let output = document
                 .add_geometry_with_attributes(Geometry::Mesh(plan.extracted), plan.attributes)?;
             output_ids.push(output);
-            for group_id in plan.group_ids {
-                group_additions.entry(group_id).or_default().push(output);
-            }
+            document.set_object_group_memberships(output, plan.group_ids)?;
         }
-        for (group_id, additions) in group_additions {
-            document.add_group_members(group_id, additions)?;
-        }
+
         document.select_objects_direct(output_ids, SelectionMode::Replace)?;
         Ok(format!(
             "Extracted {extracted_face_count} mesh face(s) from {source_count} mesh(es); source faces {}",
@@ -14801,10 +14787,10 @@ fn selected_mesh_face_sources(
                 return Err(unsupported_geometry());
             };
             let group_ids = document
-                .groups()
-                .filter(|group| group.members().any(|member| member == id))
-                .map(|group| group.id())
-                .collect();
+                .object(id)
+                .expect("validated source object")
+                .group_ids()
+                .to_vec();
             Ok(MeshFaceSource {
                 id,
                 mesh: mesh.clone(),
@@ -15882,10 +15868,10 @@ fn stage_selected_mesh_face_extractions(
                 return Err(unsupported_geometry());
             };
             let group_ids = document
-                .groups()
-                .filter(|group| group.members().any(|member| member == id))
-                .map(|group| group.id())
-                .collect();
+                .object(id)
+                .expect("validated source object")
+                .group_ids()
+                .to_vec();
             Ok(MeshFaceExtractionInput {
                 id,
                 attributes: object.attributes().clone(),
@@ -15933,7 +15919,7 @@ fn apply_mesh_face_extractions(
     debug_assert_eq!(replaced, extracted_mesh_count);
 
     let mut output_ids = Vec::with_capacity(inputs.len() + extracted_mesh_count);
-    let mut group_additions = BTreeMap::<GroupId, Vec<ObjectId>>::new();
+
     for input in inputs {
         output_ids.push(input.id);
         let Some((remainder, extracted)) = input.extraction else {
@@ -15945,13 +15931,9 @@ fn apply_mesh_face_extractions(
         let id =
             document.add_geometry_with_attributes(Geometry::Mesh(extracted), input.attributes)?;
         output_ids.push(id);
-        for group_id in input.group_ids {
-            group_additions.entry(group_id).or_default().push(id);
-        }
+        document.set_object_group_memberships(id, input.group_ids)?;
     }
-    for (group_id, additions) in group_additions {
-        document.add_group_members(group_id, additions)?;
-    }
+
     replace_selection(document, output_ids)?;
     Ok(())
 }
@@ -16031,40 +16013,6 @@ impl Command for ExtractDuplicateMeshFacesCommand {
         Ok(format!(
             "Extracted {} duplicate face(s) from {} mesh(es); {} mesh(es) unchanged",
             counts.extracted_faces, counts.extracted_meshes, counts.unchanged_meshes
-        ))
-    }
-}
-
-struct GroupCommand;
-
-impl Command for GroupCommand {
-    fn name(&self) -> &'static str {
-        "Group"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let all = arguments
-            .first()
-            .is_some_and(|argument| argument.eq_ignore_ascii_case("all"));
-        let name_arguments = if all { &arguments[1..] } else { arguments };
-        let name = if name_arguments.is_empty() {
-            document.next_unused_group_name()
-        } else {
-            name_arguments.join(" ")
-        };
-        let members: Vec<_> = if all {
-            document
-                .objects()
-                .filter(|object| document.is_object_selectable(object.id()))
-                .map(|object| object.id())
-                .collect()
-        } else {
-            document.selected_object_ids().collect()
-        };
-        let member_count = members.len();
-        let id = document.add_group(Some(name.clone()), members)?;
-        Ok(format!(
-            "Created group '{name}' {id} with {member_count} object(s)"
         ))
     }
 }
@@ -16166,44 +16114,6 @@ impl Command for SetObjectColorCommand {
             ),
             None => format!("Set {changed} object color(s) to ByLayer"),
         })
-    }
-}
-
-struct UngroupCommand;
-
-impl Command for UngroupCommand {
-    fn name(&self) -> &'static str {
-        "Ungroup"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        if arguments.is_empty() {
-            let selected: BTreeSet<_> = document.selected_object_ids().collect();
-            let groups: Vec<_> = document
-                .groups()
-                .filter(|group| group.members().any(|member| selected.contains(&member)))
-                .map(|group| group.id())
-                .collect();
-            for group in &groups {
-                document.remove_group(*group)?;
-            }
-            return Ok(format!("Removed {} selected group(s)", groups.len()));
-        }
-        if arguments.len() == 1 && arguments[0].eq_ignore_ascii_case("all") {
-            let groups: Vec<_> = document.groups().map(|group| group.id()).collect();
-            for group in &groups {
-                document.remove_group(*group)?;
-            }
-            return Ok(format!("Removed {} group(s)", groups.len()));
-        }
-
-        let name = arguments.join(" ");
-        let id = document
-            .group_by_name(&name)
-            .map(|group| group.id())
-            .ok_or_else(|| CommandError::NamedGroupNotFound(name.clone()))?;
-        let members = document.remove_group(id)?;
-        Ok(format!("Removed group '{name}' ({members} object(s))"))
     }
 }
 
@@ -16409,10 +16319,6 @@ impl ExplodedParts {
         }
     }
 
-    const fn selects_outputs(&self) -> bool {
-        !matches!(self, Self::Points(_))
-    }
-
     fn into_geometries(self) -> Vec<Geometry> {
         match self {
             Self::Lines(parts) => parts.into_iter().map(Geometry::Line).collect(),
@@ -16590,37 +16496,34 @@ impl Command for ExplodeCommand {
             .iter()
             .map(|(source, _, _)| {
                 let groups = document
-                    .groups()
-                    .filter(|group| group.members().any(|member| member == *source))
-                    .map(|group| group.id())
-                    .collect::<Vec<_>>();
+                    .object(*source)
+                    .expect("validated source object")
+                    .group_ids()
+                    .to_vec();
                 (*source, groups)
             })
             .collect::<BTreeMap<_, _>>();
 
-        let selected_output_capacity = output_count - point_count;
-        let mut selected_result_ids = Vec::with_capacity(selected_output_capacity);
+        let mut selected_result_ids = Vec::with_capacity(output_count);
         for (source, parts, attributes) in exploded {
-            let select_outputs = parts.selects_outputs();
             let geometries = parts.into_geometries();
             let mut part_ids = Vec::with_capacity(geometries.len());
             for geometry in geometries {
                 let id = document.add_geometry_with_attributes(geometry, attributes.clone())?;
                 part_ids.push(id);
-                if select_outputs {
-                    selected_result_ids.push(id);
-                }
+                selected_result_ids.push(id);
             }
             for group in &source_groups[&source] {
                 document.add_group_members(*group, part_ids.iter().copied())?;
             }
             document.delete_object(source)?;
         }
-        replace_selection(
-            document,
+        // Command outputs do not expand selection to untouched group peers.
+        document.select_objects_direct(
             unchanged_ids
                 .into_iter()
                 .chain(selected_result_ids.iter().copied()),
+            SelectionMode::Replace,
         )?;
         let unchanged_count = selected.len() - exploded_ids.len();
         let mut summaries = Vec::new();
@@ -16704,8 +16607,18 @@ impl Command for CopyCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let selected = selected_ids(document)?;
         let offset = parse_translation(arguments, "Copy from to")?;
-        let copies = document
-            .copy_objects_transformed(selected, AffineTransform3::from_translation(offset))?;
+        let policy = if selected.len() == 1 {
+            viboceros_document::CopyGroupPolicy::DefinitionsOnly
+        } else {
+            viboceros_document::CopyGroupPolicy::Preserve
+        };
+        let copies = document.copy_objects_with_transforms_and_groups(
+            selected.iter().copied(),
+            &[AffineTransform3::from_translation(offset)],
+            policy,
+        )?;
+        // Rhino's completed Copy leaves the source preselection unchanged.
+        document.select_objects_direct(selected, SelectionMode::Replace)?;
         Ok(format!(
             "Copied {} object(s) by {}",
             copies.len(),
@@ -19067,20 +18980,18 @@ impl Command for ImportThreeDmCommand {
             imported_objects.push((id, object.group_indices));
         }
 
-        let mut imported_group_count = 0;
-        for (group_index, group) in model.groups.iter().enumerate() {
-            let members = imported_objects
-                .iter()
-                .filter_map(|(id, groups)| groups.contains(&group_index).then_some(*id))
-                .collect::<Vec<_>>();
+        let mut imported_groups = Vec::with_capacity(model.groups.len());
+        for group in &model.groups {
             let name = unique_import_group_name(document, &group.name);
-            if members.is_empty() {
-                document.add_empty_group(Some(name))?;
-            } else {
-                document.add_group(Some(name), members)?;
-            }
-            imported_group_count += 1;
+            imported_groups.push(document.add_empty_group(Some(name))?);
         }
+        for (id, memberships) in imported_objects {
+            document.set_object_group_memberships(
+                id,
+                memberships.iter().map(|index| imported_groups[*index]),
+            )?;
+        }
+        let imported_group_count = imported_groups.len();
 
         for (source, id) in model.layers.iter().zip(imported_layers) {
             document.set_layer_visibility(id, source.visible)?;
@@ -19159,15 +19070,11 @@ fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, CommandError>
             ),
         })
         .collect::<Vec<_>>();
-    let mut group_indices_by_object = BTreeMap::<ObjectId, Vec<usize>>::new();
-    for (group_index, group) in document_groups.iter().enumerate() {
-        for member in group.members() {
-            group_indices_by_object
-                .entry(member)
-                .or_default()
-                .push(group_index);
-        }
-    }
+    let group_indices = document_groups
+        .iter()
+        .enumerate()
+        .map(|(index, group)| (group.id(), index))
+        .collect::<BTreeMap<_, _>>();
     let objects = document
         .objects()
         .map(|object| {
@@ -19185,10 +19092,11 @@ fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, CommandError>
                     object.attributes().color_source(),
                 ),
                 wire_density: object.attributes().wire_density(),
-                group_indices: group_indices_by_object
-                    .get(&object.id())
-                    .cloned()
-                    .unwrap_or_default(),
+                group_indices: object
+                    .group_ids()
+                    .iter()
+                    .map(|id| group_indices[id])
+                    .collect(),
             })
         })
         .collect::<Result<_, CommandError>>()?;
@@ -20431,7 +20339,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curvature, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Distribute, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, EdgeSrf, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, Extend, ExtendSrf, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Intersect, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Loft, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, Split, SplitDisjointMesh, SplitMeshEdge, SrfControlPtGrid, SrfPt, SrfPtGrid, SrfSeam, SubCrv, SwapMeshEdge, Sweep1, ToNURBS, Torus, TriangulateMesh, Trim, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curvature, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Distribute, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, EdgeSrf, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, Extend, ExtendSrf, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Intersect, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Loft, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, Split, SplitDisjointMesh, SplitMeshEdge, SrfControlPtGrid, SrfPt, SrfPtGrid, SrfSeam, SubCrv, SwapMeshEdge, Sweep1, ToNURBS, Torus, TriangulateMesh, Trim, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UngroupAll, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -23966,7 +23874,7 @@ mod tests {
             registry.execute(&mut document, "Explode").unwrap(),
             "Exploded 1 point cloud(s) into 5 point(s); 0 object(s) unchanged"
         );
-        assert_eq!(document.selected_object_count(), 0);
+        assert_eq!(document.selected_object_count(), 5);
         assert_eq!(document.objects().len(), 7);
         assert!(document.objects().skip(2).all(|object| {
             matches!(object.geometry(), Geometry::Point(_))
@@ -40793,7 +40701,8 @@ mod tests {
         assert_eq!(document.selected_object_count(), 2);
 
         registry.execute(&mut document, "Ungroup").unwrap();
-        assert_eq!(document.groups().len(), 0);
+        assert_eq!(document.groups().len(), 1);
+        assert!(document.groups().all(|group| group.members().len() == 0));
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.groups().len(), 1);
 
@@ -41793,8 +41702,14 @@ mod tests {
         registry.execute(&mut document, "Copy 5,0,4 8,1,4").unwrap();
         assert_eq!(document.undo_label(), Some("Copy"));
         assert_eq!(document.objects().len(), 2);
-        assert!(!document.is_selected(original));
-        let copy = document.selected_object_ids().next().unwrap();
+        assert!(document.is_selected(original));
+        assert_eq!(document.selected_object_count(), 1);
+        let copy = document
+            .objects()
+            .find(|object| object.id() != original)
+            .unwrap()
+            .id();
+        assert!(!document.is_selected(copy));
         assert_ne!(copy, original);
         assert!(matches!(
             document.object(copy).unwrap().geometry(),

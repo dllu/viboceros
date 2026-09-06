@@ -241,11 +241,7 @@ impl Command for TrimCurveCommand {
             .object(*source_id)
             .expect("selected Trim source belongs to the document");
         let attributes = source_object.attributes().clone();
-        let group_ids = document
-            .groups()
-            .filter(|group| group.members().any(|member| member == *source_id))
-            .map(|group| group.id())
-            .collect::<Vec<_>>();
+        let group_ids = source_object.group_ids().to_vec();
 
         let output_ids = if let [piece] = kept.as_slice() {
             document.replace_object_geometries([(*source_id, Geometry::from(piece.clone()))])?;

@@ -422,10 +422,11 @@ fn copy_array_objects(
 ) -> Result<Vec<ObjectId>, DocumentError> {
     use viboceros_document::CopyGroupPolicy;
     // Rhino's single-object array path clears groups on the copies, even
-    // though the original remains grouped. Multi-object arrays copy the full
+    // though it allocates empty definitions and the original remains grouped.
+    // Multi-object arrays copy the full
     // selected group graph, including one-member groups.
     let policy = if selected.len() == 1 {
-        CopyGroupPolicy::Omit
+        CopyGroupPolicy::DefinitionsOnly
     } else {
         CopyGroupPolicy::Preserve
     };

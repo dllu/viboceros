@@ -43,8 +43,8 @@ pub(super) enum Edit {
     },
     ObjectChanged {
         id: ObjectId,
-        before: Object,
-        after: Object,
+        /// Keep large before/after snapshots out of every small history edit.
+        states: Box<[Object; 2]>,
     },
     LayerInserted {
         index: usize,
@@ -71,13 +71,10 @@ pub(super) enum Edit {
         id: GroupId,
         stored: Option<Group>,
     },
-    GroupMemberRemoved {
-        group_id: GroupId,
-        object_id: ObjectId,
-    },
-    GroupMemberInserted {
-        group_id: GroupId,
-        object_id: ObjectId,
+    ObjectGroupsChanged {
+        id: ObjectId,
+        before: Vec<GroupId>,
+        after: Vec<GroupId>,
     },
     CurrentLayerChanged {
         before: LayerId,
@@ -102,8 +99,8 @@ impl Edit {
                 ))?;
                 insert_at(&mut document.objects, *index, object)?;
             }
-            Self::ObjectChanged { id, before, after } => {
-                replace_object(document, *id, after, before)?;
+            Self::ObjectChanged { id, states } => {
+                replace_object(document, *id, &states[1], &states[0])?;
             }
             Self::LayerInserted { index, id, stored } => {
                 ensure_empty(stored, "inserted layer was already stored")?;
@@ -128,39 +125,8 @@ impl Edit {
                 ))?;
                 insert_at(&mut document.groups, *index, group)?;
             }
-            Self::GroupMemberRemoved {
-                group_id,
-                object_id,
-            } => {
-                let group = document
-                    .groups
-                    .iter_mut()
-                    .find(|group| group.id == *group_id)
-                    .ok_or(DocumentError::HistoryInvariant(
-                        "group for restored member was missing",
-                    ))?;
-                if !group.members.insert(*object_id) {
-                    return Err(DocumentError::HistoryInvariant(
-                        "restored group member already existed",
-                    ));
-                }
-            }
-            Self::GroupMemberInserted {
-                group_id,
-                object_id,
-            } => {
-                let group = document
-                    .groups
-                    .iter_mut()
-                    .find(|group| group.id == *group_id)
-                    .ok_or(DocumentError::HistoryInvariant(
-                        "group for removed inserted member was missing",
-                    ))?;
-                if !group.members.remove(object_id) {
-                    return Err(DocumentError::HistoryInvariant(
-                        "inserted group member was missing",
-                    ));
-                }
+            Self::ObjectGroupsChanged { id, before, after } => {
+                super::groups::apply_memberships(document, *id, after, before)?;
             }
             Self::CurrentLayerChanged { before, .. } => {
                 ensure_layer_exists(document, *before)?;
@@ -189,8 +155,8 @@ impl Edit {
                 ensure_empty(stored, "removed object was already stored")?;
                 *stored = Some(remove_object(document, *index, *id)?);
             }
-            Self::ObjectChanged { id, before, after } => {
-                replace_object(document, *id, before, after)?;
+            Self::ObjectChanged { id, states } => {
+                replace_object(document, *id, &states[0], &states[1])?;
             }
             Self::LayerInserted { index, stored, .. } => {
                 let layer = stored.take().ok_or(DocumentError::HistoryInvariant(
@@ -215,48 +181,8 @@ impl Edit {
                 ensure_empty(stored, "removed group was already stored")?;
                 *stored = Some(remove_group(document, *index, *id)?);
             }
-            Self::GroupMemberRemoved {
-                group_id,
-                object_id,
-            } => {
-                let group = document
-                    .groups
-                    .iter_mut()
-                    .find(|group| group.id == *group_id)
-                    .ok_or(DocumentError::HistoryInvariant(
-                        "group for removed member was missing",
-                    ))?;
-                if !group.members.remove(object_id) {
-                    return Err(DocumentError::HistoryInvariant(
-                        "removed group member was missing",
-                    ));
-                }
-            }
-            Self::GroupMemberInserted {
-                group_id,
-                object_id,
-            } => {
-                if document
-                    .objects
-                    .iter()
-                    .all(|object| object.id != *object_id)
-                {
-                    return Err(DocumentError::HistoryInvariant(
-                        "object for inserted group member was missing",
-                    ));
-                }
-                let group = document
-                    .groups
-                    .iter_mut()
-                    .find(|group| group.id == *group_id)
-                    .ok_or(DocumentError::HistoryInvariant(
-                        "group for inserted member was missing",
-                    ))?;
-                if !group.members.insert(*object_id) {
-                    return Err(DocumentError::HistoryInvariant(
-                        "inserted group member already existed",
-                    ));
-                }
+            Self::ObjectGroupsChanged { id, before, after } => {
+                super::groups::apply_memberships(document, *id, before, after)?;
             }
             Self::CurrentLayerChanged { after, .. } => {
                 ensure_layer_exists(document, *after)?;

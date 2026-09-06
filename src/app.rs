@@ -7533,12 +7533,34 @@ mod tests {
         app.accept_drafting_point(point(6.0, 4.0, 0.0));
         assert_eq!(app.document.undo_label(), Some("Copy"));
         assert_eq!(app.document.objects().len(), 2);
-        let copy = app.document.selected_object_ids().next().unwrap();
+        assert_eq!(
+            app.document.selected_object_ids().collect::<Vec<_>>(),
+            vec![original]
+        );
+        let copy = app
+            .document
+            .objects()
+            .find(|object| object.id() != original)
+            .unwrap()
+            .id();
+        assert!(!app.document.is_selected(copy));
         assert_ne!(copy, original);
         assert!(matches!(
             app.document.object(copy).unwrap().geometry(),
             Geometry::Point(position) if *position == point(6.0, 4.0, 0.0)
         ));
+        app.document.undo().unwrap();
+        assert_eq!(app.document.objects().len(), 1);
+        assert_eq!(
+            app.document.selected_object_ids().collect::<Vec<_>>(),
+            vec![original]
+        );
+        app.document.redo().unwrap();
+        assert!(app.document.object(copy).is_some());
+        assert_eq!(
+            app.document.selected_object_ids().collect::<Vec<_>>(),
+            vec![original]
+        );
     }
 
     #[test]

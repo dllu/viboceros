@@ -159,6 +159,7 @@ SetObjectName "Fastener Part" AppendCounter=Yes
 SetObjectColor 12,34,56
 SetObjectColor ByLayer
 Ungroup
+UngroupAll
 Ungroup Assembly
 Join
 Explode

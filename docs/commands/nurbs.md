@@ -111,6 +111,13 @@ parameters, attributes, and group membership. Inputs are retained by default;
 `DeleteInput=Yes` replaces them with fresh pieces in one undoable edit. A
 single-span input still produces a fresh Bezier object.
 
+This document policy is not yet Rhino-compatible: a real `ConvertToBeziers`
+curve probe with `DeleteInput=Yes` produces unnamed, ungrouped, unselected pieces
+with `[0,1]` domains in Rhino. The native command still retains source attributes,
+groups, and span domains and selects its replacement pieces. This difference is
+retained in `group_memberships_diagnostics.json`; no comparison fields or epsilon
+are relaxed to hide it. See [group verification](../groups.md).
+
 ## Seams and parameter domains
 
 `SrfSeam point Direction=U|V|Both` performs the corresponding exact edit on

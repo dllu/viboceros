@@ -43,11 +43,13 @@ extent to the spacing magnitude. Zero active Fill lengths are rejected.
 Equal lengths/extents give zero spacing. Every zero-displacement cell is
 omitted, but coincident copies at nonzero displacements are retained.
 
-An array of one selected object leaves copied objects ungrouped. An array of
-multiple objects recreates each selected group membership independently per
-copy, including single-member groups. This does not change ordinary `Copy` or
-morph-copy policies. Original groups are never removed. The document's explicit
-`CopyGroupPolicy` controls this behavior without allocating unused empty groups.
+An array of one selected object leaves copied objects ungrouped, but still
+allocates corresponding empty group definitions. An array of multiple objects
+recreates each selected group membership independently per copy, including
+single-member groups. Ordinary `Copy` has the same single-source distinction;
+morph-copy APIs retain their own policy. Original groups are never removed.
+The document's explicit `CopyGroupPolicy` distinguishes preserved memberships,
+definitions-only copies, and complete omission. See [ordered groups](groups.md).
 
 ## Bounds and remaining scope
 
@@ -72,6 +74,9 @@ closed rational curves, signed/small/zero-spacing Fill cases, both rotation
 policies, multi-turn sweeps, group memberships, selection, native domains,
 and 33 unrounded parameter samples per output curve. All 64 agree at absolute
 `1e-8`, relative `1e-12`; maximum observed coordinate error is `1.92e-9`.
+This older probe records only populated groups on both sides. The separate
+`group_memberships` probe compares the entire table, including automatic empty
+definitions, and retains per-object membership order rather than sorted subsets.
 Unit tests separately check failure atomicity, undo/redo, large plane origins,
 interactive plane changes, trimmed B-rep extents, and preservation of their
 underlying surfaces and UV loops.

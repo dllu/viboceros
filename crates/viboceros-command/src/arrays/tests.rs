@@ -200,7 +200,7 @@ fn rectangular_arrays_omit_zero_displacement_cells_without_deduplicating_other_c
 }
 
 #[test]
-fn arrays_drop_copied_groups_only_when_the_whole_source_set_is_one_object() {
+fn single_source_arrays_leave_copies_ungrouped_but_allocate_empty_definitions() {
     for command in [
         "Array 3 1 1 4 0 0",
         "ArrayLinear 3 0,0,0 4,5,6",
@@ -228,10 +228,18 @@ fn arrays_drop_copied_groups_only_when_the_whole_source_set_is_one_object() {
             CommandRegistry::with_builtins()
                 .execute(&mut document, command)
                 .unwrap();
-            assert_eq!(
-                document.groups().len(),
-                if count == 1 { before } else { before * 3 }
-            );
+            assert_eq!(document.groups().len(), before * 3);
+            for group in document.groups().skip(before) {
+                assert_eq!(group.members().len() == 0, count == 1);
+            }
+            if count == 1 {
+                assert!(
+                    document
+                        .objects()
+                        .skip(count)
+                        .all(|object| object.group_ids().is_empty())
+                );
+            }
             assert_eq!(document.objects().len(), count * 3);
             for id in &originals {
                 assert!(document.is_selected(*id));
@@ -240,10 +248,7 @@ fn arrays_drop_copied_groups_only_when_the_whole_source_set_is_one_object() {
             assert_eq!(document.groups().len(), before);
             assert_eq!(document.objects().len(), count);
             document.redo().unwrap();
-            assert_eq!(
-                document.groups().len(),
-                if count == 1 { before } else { before * 3 }
-            );
+            assert_eq!(document.groups().len(), before * 3);
         }
     }
     let mut document = Document::default();

@@ -66,6 +66,10 @@ indexing, face order, and winding must match.
 
 `SetObjectName ""` to clear names. Unnamed `Group` calls receive Rhino-style
 `Group01`, `Group02`, ... names; explicit group names are case-sensitive.
+`Ungroup` removes each selected object's last membership; `UngroupAll` removes
+every membership on those objects. Both retain empty definitions. See
+[ordered groups](../groups.md) for nested membership, copied groups, 3DM order,
+and the separate named/global definition-deletion extensions.
 
 `SetObjectColor r,g,b` assigns Rhino-style per-object display color to the
 selection; `SetObjectColor ByLayer` restores layer-driven display while

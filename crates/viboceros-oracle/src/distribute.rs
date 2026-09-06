@@ -141,7 +141,7 @@ pub(super) fn run(f: &DistributeFixture, tolerance: Tolerance) -> Result<(Value,
     ))
 }
 
-fn sample(geometry: &Geometry) -> Result<(Value, Vec<[f64; 3]>), GeometryError> {
+pub(super) fn sample(geometry: &Geometry) -> Result<(Value, Vec<[f64; 3]>), GeometryError> {
     let points = match geometry {
         Geometry::Point(p) => vec![p.to_array()],
         Geometry::PointCloud(c) => c.points().iter().map(|p| p.to_array()).collect(),

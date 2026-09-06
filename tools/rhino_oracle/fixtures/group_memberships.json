@@ -1,0 +1,3924 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "group_memberships",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            13,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            40,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "add",
+          "group": 0,
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Distribute"
+        }
+      ],
+      "id": "add-older-distribute"
+    },
+    {
+      "op": "group_memberships",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            13,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            40,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "add",
+          "group": 0,
+          "objects": [
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Distribute"
+        }
+      ],
+      "id": "duplicate-add"
+    },
+    {
+      "op": "group_memberships",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            13,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            40,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            1,
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Copy"
+        }
+      ],
+      "id": "reorder-copy"
+    },
+    {
+      "op": "group_memberships",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            13,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            40,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            1,
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "delete_group",
+          "group": 0
+        }
+      ],
+      "id": "delete-middle"
+    },
+    {
+      "op": "group_memberships",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            13,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            40,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Ungroup"
+        }
+      ],
+      "id": "nested-Ungroup"
+    },
+    {
+      "op": "group_memberships",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            13,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            40,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Ungroup"
+        }
+      ],
+      "id": "partial-Ungroup"
+    },
+    {
+      "op": "group_memberships",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            13,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            40,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Ungroup"
+        }
+      ],
+      "id": "overlap-Ungroup"
+    },
+    {
+      "op": "group_memberships",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            13,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            40,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "UngroupAll"
+        }
+      ],
+      "id": "nested-UngroupAll"
+    },
+    {
+      "op": "group_memberships",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            13,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            40,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "UngroupAll"
+        }
+      ],
+      "id": "partial-UngroupAll"
+    },
+    {
+      "op": "group_memberships",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            13,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            40,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "UngroupAll"
+        }
+      ],
+      "id": "overlap-UngroupAll"
+    },
+    {
+      "op": "group_memberships",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0
+            ],
+            [
+              3,
+              2,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            1,
+            0
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Explode"
+        }
+      ],
+      "id": "ordered-explode"
+    },
+    {
+      "op": "group_memberships",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            13,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            40,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            1,
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Copy"
+        }
+      ],
+      "id": "Copy-012"
+    },
+    {
+      "op": "group_memberships",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            13,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            40,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            1,
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2,
+            1,
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Copy"
+        }
+      ],
+      "id": "Copy-210"
+    },
+    {
+      "op": "group_memberships",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            13,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            40,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            1,
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1,
+            0,
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Copy"
+        }
+      ],
+      "id": "Copy-102"
+    },
+    {
+      "op": "group_memberships",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            13,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            40,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            1,
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "ArrayLinear"
+        }
+      ],
+      "id": "ArrayLinear-012"
+    },
+    {
+      "op": "group_memberships",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            13,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            40,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            1,
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2,
+            1,
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "ArrayLinear"
+        }
+      ],
+      "id": "ArrayLinear-210"
+    },
+    {
+      "op": "group_memberships",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            13,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            30,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            40,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            1,
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1,
+            0,
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "ArrayLinear"
+        }
+      ],
+      "id": "ArrayLinear-102"
+    },
+    {
+      "op": "group_memberships",
+      "id": "permutation-0-Copy",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            1,
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 2,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Copy"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "permutation-0-ArrayLinear",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            1,
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 2,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "ArrayLinear"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "permutation-1-Copy",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            0,
+            2,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            2,
+            1,
+            0
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 2,
+          "groups": [
+            1,
+            0,
+            2
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Copy"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "permutation-1-ArrayLinear",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            0,
+            2,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            2,
+            1,
+            0
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 2,
+          "groups": [
+            1,
+            0,
+            2
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "ArrayLinear"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "permutation-2-Copy",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            1,
+            0,
+            2
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            0,
+            2,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 2,
+          "groups": [
+            2,
+            1,
+            0
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Copy"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "permutation-2-ArrayLinear",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            1,
+            0,
+            2
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            0,
+            2,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 2,
+          "groups": [
+            2,
+            1,
+            0
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "ArrayLinear"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "permutation-3-Copy",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            1,
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 2,
+          "groups": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Copy"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "permutation-3-ArrayLinear",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            1,
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 2,
+          "groups": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "ArrayLinear"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "permutation-4-Copy",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 2,
+          "groups": [
+            1,
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Copy"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "permutation-4-ArrayLinear",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 2,
+          "groups": [
+            1,
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "ArrayLinear"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "permutation-5-Copy",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            1,
+            0
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            1,
+            0,
+            2
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 2,
+          "groups": [
+            0,
+            2,
+            1
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Copy"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "permutation-5-ArrayLinear",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            1,
+            0
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            1,
+            0,
+            2
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 2,
+          "groups": [
+            0,
+            2,
+            1
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "ArrayLinear"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "single-Copy",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Copy"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "single-ArrayLinear",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "ArrayLinear"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "copy-ungroup-copy",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Copy"
+        },
+        {
+          "kind": "command",
+          "name": "Ungroup"
+        },
+        {
+          "kind": "command",
+          "name": "Copy"
+        },
+        {
+          "kind": "command",
+          "name": "UngroupAll"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "remove-add-order",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0
+          ]
+        },
+        {
+          "kind": "add",
+          "group": 1,
+          "objects": [
+            0,
+            0
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 2,
+          "groups": []
+        },
+        {
+          "kind": "add",
+          "group": 3,
+          "objects": [
+            0,
+            2
+          ]
+        },
+        {
+          "kind": "delete_group",
+          "group": 0
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0,
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Ungroup"
+        },
+        {
+          "kind": "command",
+          "name": "UngroupAll"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "ordered-cloud",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              2,
+              3,
+              4
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Explode"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "ordered-mesh",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              5,
+              0,
+              0
+            ],
+            [
+              6,
+              0,
+              0
+            ],
+            [
+              5,
+              1,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Explode"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "ordered-polycurve",
+      "sources": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                0,
+                0
+              ],
+              "end": [
+                1,
+                2,
+                0
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                1,
+                2,
+                0
+              ],
+              "end": [
+                3,
+                2,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Explode"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "cloud-none",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              2,
+              3,
+              4
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Explode"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "single-none-Copy",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Copy"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "single-none-ArrayLinear",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "ArrayLinear"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "cloud-sole",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              2,
+              3,
+              4
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Explode"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "single-sole-Copy",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Copy"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "single-sole-ArrayLinear",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "ArrayLinear"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "cloud-peer",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              2,
+              3,
+              4
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Explode"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "single-peer-Copy",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Copy"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "single-peer-ArrayLinear",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "ArrayLinear"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "cloud-two",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              2,
+              3,
+              4
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Explode"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "single-two-Copy",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Copy"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "single-two-ArrayLinear",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "ArrayLinear"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "Array-1-source",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            3,
+            2,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            3,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            1,
+            0,
+            2
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Array"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "Array-2-source",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            3,
+            2,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            3,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            1,
+            0,
+            2
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1,
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Array"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "ArrayPolar-1-source",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            3,
+            2,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            3,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            1,
+            0,
+            2
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "ArrayPolar"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "ArrayPolar-2-source",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            3,
+            2,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            3,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            1,
+            0,
+            2
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1,
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "ArrayPolar"
+        }
+      ]
+    }
+  ]
+}

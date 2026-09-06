@@ -3,7 +3,7 @@ use crate::{
     Command, CommandContext, CommandError, option_name_eq, parse_finite_real, parse_point,
 };
 use std::collections::BTreeMap;
-use viboceros_document::{Document, ObjectId};
+use viboceros_document::{Document, GroupId, ObjectId};
 use viboceros_geometry::{AffineTransform3, Frame3, GeometryError, Point3, Tolerance, Vector3};
 #[cfg(test)]
 mod tests;
@@ -234,28 +234,31 @@ fn direction_frame(
     Frame3::try_from_directions(origin, direction, guide, tolerance)
 }
 
-/// The newest containing group supplies each object's rigid unit. This agrees
-/// with Rhino's top-group rule for groups created with their memberships; the
-/// document does not yet retain per-object membership insertion chronology.
-/// Partial selection never moves unseen members.
+/// Each object's last membership supplies its rigid unit. Partial selection
+/// never moves unseen members, even when that top group contains them.
 fn units(document: &Document, selected: &[ObjectId]) -> Vec<Vec<ObjectId>> {
+    #[derive(Clone, Copy, Eq, Ord, PartialEq, PartialOrd)]
+    enum Unit {
+        Object(ObjectId),
+        Group(GroupId),
+    }
+    // Join selection order to document order in one pass; avoid a linear
+    // document lookup for every selected object in large distributions.
     let indices = selected
         .iter()
         .enumerate()
         .map(|(i, id)| (*id, i))
         .collect::<BTreeMap<_, _>>();
     let mut memberships = vec![None; selected.len()];
-    for (group_index, group) in document.groups().enumerate() {
-        for id in group.members() {
-            if let Some(index) = indices.get(&id) {
-                memberships[*index] = Some(group_index);
-            }
+    for object in document.objects() {
+        if let Some(index) = indices.get(&object.id()) {
+            memberships[*index] = object.top_group();
         }
     }
     let mut slots = BTreeMap::new();
     let mut result = Vec::<Vec<ObjectId>>::new();
     for (i, id) in selected.iter().copied().enumerate() {
-        let key = memberships[i].map_or((false, i), |group| (true, group));
+        let key = memberships[i].map_or(Unit::Object(id), Unit::Group);
         let slot = *slots.entry(key).or_insert_with(|| {
             result.push(Vec::new());
             result.len() - 1

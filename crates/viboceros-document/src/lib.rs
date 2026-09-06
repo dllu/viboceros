@@ -2,6 +2,7 @@
 
 mod duplicate;
 mod geometry;
+mod groups;
 mod history;
 mod object_layer;
 
@@ -51,6 +52,8 @@ id_type!(GroupId);
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CopyGroupPolicy {
     Preserve,
+    /// Allocate corresponding definitions, but leave copied objects ungrouped.
+    DefinitionsOnly,
     Omit,
 }
 
@@ -261,6 +264,7 @@ pub struct Object {
     geometry: Geometry,
     attributes: ObjectAttributes,
     isolation: ObjectIsolation,
+    group_ids: Vec<GroupId>,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -271,6 +275,14 @@ enum ObjectIsolation {
 }
 
 impl Object {
+    /// Membership insertion order; the last entry is Rhino's top group.
+    pub fn group_ids(&self) -> &[GroupId] {
+        &self.group_ids
+    }
+
+    pub fn top_group(&self) -> Option<GroupId> {
+        self.group_ids.last().copied()
+    }
     pub const fn id(&self) -> ObjectId {
         self.id
     }
@@ -1230,7 +1242,10 @@ impl Document {
             self.objects[index] = after.clone();
             self.record_edit(
                 "Transform object",
-                Edit::ObjectChanged { id, before, after },
+                Edit::ObjectChanged {
+                    id,
+                    states: Box::new([before, after]),
+                },
             );
         }
         if owns_transaction {
@@ -1286,7 +1301,10 @@ impl Document {
             self.objects[index] = after.clone();
             self.record_edit(
                 "Replace object geometry",
-                Edit::ObjectChanged { id, before, after },
+                Edit::ObjectChanged {
+                    id,
+                    states: Box::new([before, after]),
+                },
             );
         }
         if owns_transaction {
@@ -1459,6 +1477,7 @@ impl Document {
                 geometry,
                 attributes,
                 isolation: ObjectIsolation::None,
+                group_ids: Vec::new(),
             });
             self.record_edit(
                 "Copy object geometry",
@@ -1472,24 +1491,8 @@ impl Document {
         }
 
         for (source_id, copy_id) in &copied {
-            for group_index in 0..self.groups.len() {
-                let group_id = {
-                    let group = &mut self.groups[group_index];
-                    if !group.members.contains(source_id) {
-                        continue;
-                    }
-                    let inserted = group.members.insert(*copy_id);
-                    debug_assert!(inserted, "a fresh copy cannot already be in a group");
-                    group.id
-                };
-                self.record_edit(
-                    "Copy object group membership",
-                    Edit::GroupMemberInserted {
-                        group_id,
-                        object_id: *copy_id,
-                    },
-                );
-            }
+            let memberships = self.object(*source_id).unwrap().group_ids.clone();
+            self.set_object_group_memberships(*copy_id, memberships)?;
         }
 
         if owns_transaction {
@@ -1537,24 +1540,18 @@ impl Document {
             .iter()
             .map(|index| self.objects[*index].id)
             .collect::<BTreeSet<_>>();
-        let copied_group_templates = self
+        let group_count = self
             .groups
             .iter()
-            .filter(|_| group_policy == CopyGroupPolicy::Preserve)
-            .filter_map(|group| {
-                let members: Vec<_> = group
-                    .members
-                    .iter()
-                    .filter(|member| originals.contains(member))
-                    .copied()
-                    .collect();
-                (!members.is_empty()).then(|| (group.name.clone(), members))
-            })
-            .collect::<Vec<_>>();
-        let group_copy_count = copied_group_templates
-            .len()
-            .checked_mul(instance_count)
-            .ok_or(DocumentError::TooManyObjectCopies)?;
+            .filter(|group| group.members.iter().any(|id| originals.contains(id)))
+            .count();
+        let group_copy_count = if group_policy != CopyGroupPolicy::Omit {
+            group_count
+                .checked_mul(instance_count)
+                .ok_or(DocumentError::TooManyObjectCopies)?
+        } else {
+            0
+        };
         self.objects
             .try_reserve_exact(copy_count)
             .map_err(|_| DocumentError::TooManyObjectCopies)?;
@@ -1584,6 +1581,7 @@ impl Document {
                     geometry,
                     attributes,
                     isolation: ObjectIsolation::None,
+                    group_ids: Vec::new(),
                 });
                 self.record_edit(
                     "Copy object",
@@ -1596,23 +1594,11 @@ impl Document {
                 copied_by_original.insert(original_id, id);
                 copied_ids.push(id);
             }
-            for (name, original_members) in &copied_group_templates {
-                let members = original_members
-                    .iter()
-                    .map(|member| copied_by_original[member])
-                    .collect();
-                let name = name.as_ref().map(|name| self.next_group_copy_name(name));
-                let id = GroupId::new();
-                let index = self.groups.len();
-                self.groups.push(Group { id, name, members });
-                self.record_edit(
-                    "Copy group",
-                    Edit::GroupInserted {
-                        index,
-                        id,
-                        stored: None,
-                    },
-                );
+            if group_policy != CopyGroupPolicy::Omit {
+                self.copy_group_memberships(
+                    &copied_by_original,
+                    group_policy == CopyGroupPolicy::Preserve,
+                )?;
             }
         }
         self.update_selection(copied_ids.iter().copied().collect());
@@ -1646,6 +1632,7 @@ impl Document {
             geometry,
             attributes,
             isolation: ObjectIsolation::None,
+            group_ids: Vec::new(),
         });
         self.record_edit(
             "Add object",
@@ -1686,31 +1673,11 @@ impl Document {
             .iter()
             .position(|object| object.id == id)
             .ok_or(DocumentError::ObjectNotFound(id))?;
-        for group_index in (0..self.groups.len()).rev() {
-            if !self.groups[group_index].members.contains(&id) {
-                continue;
-            }
-            if self.groups[group_index].members.len() == 1 {
-                let group = self.groups.remove(group_index);
-                let group_id = group.id;
-                self.record_edit(
-                    "Delete object",
-                    Edit::GroupRemoved {
-                        index: group_index,
-                        id: group_id,
-                        stored: Some(group),
-                    },
-                );
-            } else {
-                let group_id = self.groups[group_index].id;
-                self.groups[group_index].members.remove(&id);
-                self.record_edit(
-                    "Delete object",
-                    Edit::GroupMemberRemoved {
-                        group_id,
-                        object_id: id,
-                    },
-                );
+        let memberships = self.objects[index].group_ids.clone();
+        self.set_object_group_memberships(id, [])?;
+        for group in memberships {
+            if self.group(group).unwrap().members.is_empty() {
+                self.remove_group(group)?;
             }
         }
         let object = self.objects.remove(index);
@@ -1743,158 +1710,6 @@ impl Document {
             },
         );
         count
-    }
-
-    pub fn add_group(
-        &mut self,
-        name: Option<String>,
-        members: impl IntoIterator<Item = ObjectId>,
-    ) -> Result<GroupId, DocumentError> {
-        let members: BTreeSet<_> = members.into_iter().collect();
-        self.insert_group(name, members, false)
-    }
-
-    /// Adds an empty group definition, as needed when importing file tables.
-    pub fn add_empty_group(&mut self, name: Option<String>) -> Result<GroupId, DocumentError> {
-        self.insert_group(name, BTreeSet::new(), true)
-    }
-
-    fn insert_group(
-        &mut self,
-        name: Option<String>,
-        members: BTreeSet<ObjectId>,
-        allow_empty: bool,
-    ) -> Result<GroupId, DocumentError> {
-        let name = name
-            .map(|name| name.trim().to_owned())
-            .filter(|name| !name.is_empty());
-        if let Some(name) = &name
-            && self.groups.iter().any(|group| {
-                group
-                    .name
-                    .as_ref()
-                    .is_some_and(|candidate| candidate == name)
-            })
-        {
-            return Err(DocumentError::DuplicateGroupName(name.clone()));
-        }
-        if members.is_empty() && !allow_empty {
-            return Err(DocumentError::EmptyGroup);
-        }
-        if let Some(missing) = members.iter().find(|id| self.object(**id).is_none()) {
-            return Err(DocumentError::ObjectNotFound(*missing));
-        }
-
-        let id = GroupId::new();
-        let index = self.groups.len();
-        self.groups.push(Group { id, name, members });
-        self.record_edit(
-            "Add group",
-            Edit::GroupInserted {
-                index,
-                id,
-                stored: None,
-            },
-        );
-        Ok(id)
-    }
-
-    pub fn groups(&self) -> impl ExactSizeIterator<Item = &Group> {
-        self.groups.iter()
-    }
-
-    pub fn group(&self, id: GroupId) -> Option<&Group> {
-        self.groups.iter().find(|group| group.id == id)
-    }
-
-    pub fn group_by_name(&self, name: &str) -> Option<&Group> {
-        let name = name.trim();
-        self.groups.iter().find(|group| {
-            group
-                .name
-                .as_ref()
-                .is_some_and(|candidate| candidate == name)
-        })
-    }
-
-    /// Returns Rhino's next unused automatic group name (`Group01`,
-    /// `Group02`, ...). Group-name comparisons are case-sensitive.
-    pub fn next_unused_group_name(&self) -> String {
-        for number in 1_u64..=u64::MAX {
-            let candidate = format!("Group{number:02}");
-            if self.group_by_name(&candidate).is_none() {
-                return candidate;
-            }
-        }
-        loop {
-            let candidate = format!("Group{}", GroupId::new());
-            if self.group_by_name(&candidate).is_none() {
-                return candidate;
-            }
-        }
-    }
-
-    /// Adds existing objects to an existing group as one undoable edit.
-    pub fn add_group_members(
-        &mut self,
-        group_id: GroupId,
-        members: impl IntoIterator<Item = ObjectId>,
-    ) -> Result<usize, DocumentError> {
-        let group_index = self
-            .groups
-            .iter()
-            .position(|group| group.id == group_id)
-            .ok_or(DocumentError::GroupNotFound(group_id))?;
-        let members = members.into_iter().collect::<BTreeSet<_>>();
-        if let Some(missing) = members.iter().find(|id| self.object(**id).is_none()) {
-            return Err(DocumentError::ObjectNotFound(*missing));
-        }
-        let additions = members
-            .into_iter()
-            .filter(|member| !self.groups[group_index].members.contains(member))
-            .collect::<Vec<_>>();
-        if additions.is_empty() {
-            return Ok(0);
-        }
-
-        let owns_transaction = self.history.active.is_none();
-        if owns_transaction {
-            self.begin_transaction("Add group members")?;
-        }
-        for object_id in &additions {
-            let inserted = self.groups[group_index].members.insert(*object_id);
-            debug_assert!(inserted, "new group members were filtered in advance");
-            self.record_edit(
-                "Add group member",
-                Edit::GroupMemberInserted {
-                    group_id,
-                    object_id: *object_id,
-                },
-            );
-        }
-        if owns_transaction {
-            self.commit_transaction()?;
-        }
-        Ok(additions.len())
-    }
-
-    pub fn remove_group(&mut self, id: GroupId) -> Result<usize, DocumentError> {
-        let index = self
-            .groups
-            .iter()
-            .position(|group| group.id == id)
-            .ok_or(DocumentError::GroupNotFound(id))?;
-        let group = self.groups.remove(index);
-        let member_count = group.members.len();
-        self.record_edit(
-            "Remove group",
-            Edit::GroupRemoved {
-                index,
-                id,
-                stored: Some(group),
-            },
-        );
-        Ok(member_count)
     }
 
     pub fn bounds(&self) -> Option<BoundingBox3> {
@@ -2015,7 +1830,13 @@ impl Document {
         for (index, before, after) in staged {
             let id = before.id;
             self.objects[index] = after.clone();
-            self.record_edit(label, Edit::ObjectChanged { id, before, after });
+            self.record_edit(
+                label,
+                Edit::ObjectChanged {
+                    id,
+                    states: Box::new([before, after]),
+                },
+            );
         }
         self.prune_selection();
         if owns_transaction {
@@ -2071,7 +1892,13 @@ impl Document {
         for (index, before, after) in staged {
             let id = before.id;
             self.objects[index] = after.clone();
-            self.record_edit(label, Edit::ObjectChanged { id, before, after });
+            self.record_edit(
+                label,
+                Edit::ObjectChanged {
+                    id,
+                    states: Box::new([before, after]),
+                },
+            );
         }
         if owns_transaction {
             self.commit_transaction()?;
@@ -2132,25 +1959,6 @@ impl Document {
         Ok(staged)
     }
 
-    fn next_group_copy_name(&self, original: &str) -> String {
-        let root = format!("{original} copy");
-        if self.group_by_name(&root).is_none() {
-            return root;
-        }
-        for suffix in 2_u64..=u64::MAX {
-            let candidate = format!("{root} {suffix}");
-            if self.group_by_name(&candidate).is_none() {
-                return candidate;
-            }
-        }
-        loop {
-            let candidate = format!("{root} {}", GroupId::new());
-            if self.group_by_name(&candidate).is_none() {
-                return candidate;
-            }
-        }
-    }
-
     fn prune_selection(&mut self) {
         let selection = self
             .selection
@@ -2171,9 +1979,8 @@ impl Document {
         match edit {
             Edit::ObjectInserted { id, .. }
             | Edit::ObjectRemoved { id, .. }
-            | Edit::ObjectChanged { id, .. } => Some(*id),
-            Edit::GroupMemberRemoved { object_id, .. }
-            | Edit::GroupMemberInserted { object_id, .. } => Some(*object_id),
+            | Edit::ObjectChanged { id, .. }
+            | Edit::ObjectGroupsChanged { id, .. } => Some(*id),
             _ => None,
         }
     }
@@ -2197,8 +2004,7 @@ impl Document {
             | Edit::LayerInserted { .. }
             | Edit::LayerRemoved { .. }
             | Edit::LayerChanged { .. }
-            | Edit::GroupMemberRemoved { .. }
-            | Edit::GroupMemberInserted { .. }
+            | Edit::ObjectGroupsChanged { .. }
             | Edit::CurrentLayerChanged { .. } => BTreeSet::new(),
         }
     }
@@ -2306,6 +2112,9 @@ pub enum DocumentError {
 
     #[error("a group must contain at least one object")]
     EmptyGroup,
+
+    #[error("group {0} occurs more than once in an object's memberships")]
+    DuplicateGroupMembership(GroupId),
 
     #[error("a group named '{0}' already exists")]
     DuplicateGroupName(String),
@@ -4156,7 +3965,7 @@ mod tests {
         assert_eq!(document.objects().len(), 4);
         assert_eq!(document.groups().len(), 2);
         assert_eq!(
-            document.group_by_name("Pair copy").unwrap().members().len(),
+            document.group_by_name("Group01").unwrap().members().len(),
             2
         );
         assert!(copies.iter().all(|id| document.is_selected(*id)));

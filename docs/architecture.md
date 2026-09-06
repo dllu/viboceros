@@ -26,6 +26,9 @@ projection, and native parameter policy for six primitive commands.
 The separate [plane-transforms module](plane-transforms.md) handles reference
 interpretation and affine maps for five transforms, sharing document mutation
 and copy/group transactions with the other transform commands.
+The document's independent `groups` module owns ordered object memberships and
+their reverse member index. Lightweight membership history records preserve
+order without cloning geometry; see [group invariants](groups.md).
 The independent [arrays module](plane-arrays.md) owns rectangular, linear, and
 polar layout. Its geometry extents use tolerance-controlled
 [curve](curve-bounds.md), [surface](surface-bounds.md), and
