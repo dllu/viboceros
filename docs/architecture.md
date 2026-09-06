@@ -44,6 +44,10 @@ and mesh-to-B-rep construction. Its replacement order is handled by the document
 `object_order` module, with linear-time permutation replay and lightweight history
 containing only moved IDs and original indices. Geometry, memberships, and
 selection action order are independent of chronological object order.
+[`MeshToNURB`](commands/mesh-to-nurb.md) has a separate command module and option
+memory. Geometry connectivity and component extraction live in `mesh/components`;
+disjoint splitting and mesh explosion share a single reusable vertex-remap
+scratch array, avoiding per-component initialization of a source-sized array.
 The `bounds/bezier` module handles bounded tensor subdivision and rational hulls;
 curve/surface adapters select the complete native active spans.
 `bounds/bezier/compose` constructs homogeneous rational surface/UV-curve

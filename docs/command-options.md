@@ -5,6 +5,9 @@ remembers `Direction` and `DeleteInput`, including U/V toggles. Omitting an opti
 uses its last accepted choice. Updating only one option leaves the other alone.
 [`ToNURBS`](commands/to-nurbs.md) separately remembers `DeleteInputObjects` and
 `TrimTriangularFaces` after real conversions.
+[`MeshToNURB`](commands/mesh-to-nurb.md) independently remembers
+`TrimTriangularFaces` and `UseNgons`. Its native bootstrap choices are Yes/Yes;
+the current mesh model has no n-gon regions, so `UseNgons` has no geometric effect.
 
 Choices belong to typed command instances owned by `CommandRegistry`, not to
 the document or its undo history. Aliases share an instance. Reusing a registry
@@ -35,3 +38,8 @@ Six additional `nurbs_conversion_sessions.json` probes add 39 steps involving
 `ToNURBS`, including interleaving all three commands. Its initial deletion choice
 must be seeded by an actually convertible object; the first mesh must explicitly
 seed triangle trimming. No-ops cannot make an unknown prior profile deterministic.
+Three `mesh_nurbs_conversion_sessions.json` probes add 21 steps, seeding both mesh
+options explicitly. The Rhino worker uses a separate owned mesh to enter the
+option prompt, then measures the preselected command without normalizing its
+selection. Triangle-trimming memory and its independence from `ToNURBS` are
+verified; actual n-gon option effects remain unverified.

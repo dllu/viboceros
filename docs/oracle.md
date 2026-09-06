@@ -111,6 +111,15 @@ no-op. B-reps include topology and full underlying surface nets. Six
 conversion, `ToNURBS` no-ops do not accept new choices. See
 [ToNURBS](commands/to-nurbs.md) for parameters, chronological renewal, and limits.
 
+`mesh_nurbs_conversion.json` adds 50 actual preselected `MeshToNURB` comparisons,
+distinct from the older `mesh_to_nurb.json` geometry-API probes. Three
+`mesh_nurbs_conversion_sessions.json` sequences add 21 option-memory steps.
+Requested Rhino options are first seeded on a separate owned temporary mesh
+because preselection hides the command's option prompt. Results include full
+B-rep topology and surface nets, source/output metadata, selection, group tables,
+and creation order; no result selection is normalized. See
+[MeshToNURB](commands/mesh-to-nurb.md) for coverage and selection-path limits.
+
 With Rhino installed through the configured Wine/FEX launcher, run the core fixture:
 
 ```sh

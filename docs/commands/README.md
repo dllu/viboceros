@@ -12,6 +12,7 @@ Rhino's complete command set is still a work in progress.
 - [Surfaces and solids](surfaces.md)
 - [World/CPlane bounding boxes](bounding-box.md)
 - [Polygon meshes](meshes.md)
+- [Mesh conversion to NURBS](mesh-to-nurb.md)
 - [Transforms and arrays](transforms.md)
 - [Object and group distribution](distribute.md)
 - [Splitting curves and surfaces](split.md)

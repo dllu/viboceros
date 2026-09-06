@@ -84,14 +84,11 @@ row-major ordering. `Axis=x,y,z` orients typed commands; the three-pick toolbar
 workflow uses World Z and measures the tube radius from the major-radius point.
 One torus is bounded to one million faces and invalid radii fail atomically.
 
-`MeshToNURB` duplicates every selected mesh polygon as an exact degree-one
-NURBS face. Quads remain potentially warped bilinear surfaces; triangles are
-trimmed planar parallelograms by default, or untrimmed patches with a collapsed
-side when `TrimTriangularFaces=No`. Exact-location edges become shared B-rep
-topology and edge-disconnected pieces become separate, unselected objects.
-Sources and their selections are retained, derived attributes are copied, and
-source groups are not inherited. `UseNgons` is accepted for Rhino script
-compatibility; the current native mesh model contains triangles and quads only.
+[`MeshToNURB`](mesh-to-nurb.md) converts selected triangle/quad meshes to exact
+NURBS faces, splitting edge-disconnected components into separate unselected
+B-reps. Outputs retain source attributes but not group memberships. Other
+selected geometry is ignored, and triangle-trimming choices survive undo.
+See its reference for selection paths, option memory, budgets, and n-gon limits.
 
 ## Mesh extraction and editing
 

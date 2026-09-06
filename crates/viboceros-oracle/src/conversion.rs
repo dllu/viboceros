@@ -73,7 +73,10 @@ pub(super) fn run_command(
     for index in selected {
         document.select_objects_direct([ids[index]], SelectionMode::Add)?;
     }
-    let inspect_sources = command.split_whitespace().next() == Some("ToNURBS");
+    let inspect_sources = matches!(
+        command.split_whitespace().next(),
+        Some("ToNURBS" | "MeshToNURB")
+    );
     let before = record(
         &document,
         &ids,

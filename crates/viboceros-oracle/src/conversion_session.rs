@@ -2,6 +2,8 @@
 use super::*;
 
 #[cfg(test)]
+mod mesh_tests;
+#[cfg(test)]
 mod nurbs_tests;
 #[cfg(test)]
 mod tests;
@@ -14,6 +16,7 @@ pub enum ConversionCommand {
     ConvertToBeziers,
     ConvertToSingleSpans,
     ToNURBS,
+    MeshToNURB,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
@@ -31,6 +34,7 @@ pub struct ConversionOptions {
     #[serde(default)]
     pub toggles: u8,
     pub trim_triangular_faces: Option<bool>,
+    pub use_ngons: Option<bool>,
 }
 
 impl ConversionOptions {
@@ -95,15 +99,35 @@ fn execute(
         .direction
         .map(|d| format!(" Direction={d:?}"))
         .unwrap_or_default();
-    if f.trim_triangular_faces.is_some() && command != ConversionCommand::ToNURBS {
-        return Err(ProbeError::FixtureInvariant("mesh options require ToNURBS"));
+    if f.trim_triangular_faces.is_some()
+        && !matches!(
+            command,
+            ConversionCommand::ToNURBS | ConversionCommand::MeshToNURB
+        )
+    {
+        return Err(ProbeError::FixtureInvariant(
+            "mesh options require a mesh conversion command",
+        ));
+    }
+    if f.use_ngons.is_some() && command != ConversionCommand::MeshToNURB {
+        return Err(ProbeError::FixtureInvariant(
+            "n-gon options require MeshToNURB",
+        ));
+    }
+    if command == ConversionCommand::MeshToNURB && f.geometry.delete_input.is_some() {
+        return Err(ProbeError::FixtureInvariant(
+            "MeshToNURB has no deletion choice",
+        ));
     }
     let mesh = f
         .trim_triangular_faces
         .map(|t| format!(" TrimTriangularFaces={}", if t { "Yes" } else { "No" }))
         .unwrap_or_default();
     let script = format!(
-        "{command:?}{direction}{mesh}{}{}",
+        "{command:?}{direction}{mesh}{}{}{}",
+        f.use_ngons
+            .map(|n| format!(" UseNgons={}", if n { "Yes" } else { "No" }))
+            .unwrap_or_default(),
         delete_option(f.geometry.delete_input),
         " Toggle".repeat(usize::from(f.toggles))
     );
@@ -147,6 +171,22 @@ pub(super) fn run_nurbs(
     ))
 }
 
+pub(super) fn run_mesh(
+    f: &ConversionOptions,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    Ok((
+        execute(
+            f,
+            ConversionCommand::MeshToNURB,
+            false,
+            tolerance,
+            &CommandRegistry::with_builtins(),
+        )?,
+        0,
+    ))
+}
+
 pub(super) fn run(
     f: &ConversionSessionFixture,
     tolerance: Tolerance,
@@ -161,7 +201,11 @@ pub(super) fn run(
     let mut mesh_seeded = false;
     for step in &f.steps {
         if seeded.insert(step.command)
-            && (step.conversion.geometry.delete_input.is_none()
+            && ((step.command != ConversionCommand::MeshToNURB
+                && step.conversion.geometry.delete_input.is_none())
+                || (step.command == ConversionCommand::MeshToNURB
+                    && (step.conversion.trim_triangular_faces.is_none()
+                        || step.conversion.use_ngons.is_none()))
                 || (step.command == ConversionCommand::ConvertToSingleSpans
                     && step.conversion.direction.is_none())
                 || (step.command == ConversionCommand::ToNURBS

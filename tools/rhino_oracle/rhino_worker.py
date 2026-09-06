@@ -3584,21 +3584,26 @@ def _group_memberships(operation, tolerance):
 def _conversion_arguments(operation, command, direction):
     definitions = operation["sources"]
     selected = operation.get("selected", list(range(len(definitions))))
-    delete = operation["delete_input"]
+    delete = operation.get("delete_input")
     undo_after = operation.get("undo_after", False)
     if type(undo_after) is not bool: raise ValueError("invalid conversion undo flag")
     toggles = operation.get("toggles", 0)
     if type(toggles) is not int or not 0 <= toggles <= 3: raise ValueError("invalid conversion toggle count")
     trim = operation.get("trim_triangular_faces")
-    if trim is not None and (type(trim) is not bool or command != "ToNURBS"):
+    if trim is not None and (type(trim) is not bool or command not in ("ToNURBS", "MeshToNURB")):
         raise ValueError("invalid mesh conversion option")
+    ngons = operation.get("use_ngons")
+    if ngons is not None and (type(ngons) is not bool or command != "MeshToNURB"):
+        raise ValueError("invalid n-gon conversion option")
+    if command == "MeshToNURB" and delete is not None:
+        raise ValueError("MeshToNURB has no deletion choice")
     if not 1 <= len(definitions) <= 16 or (delete is not None and type(delete) is not bool):
         raise ValueError("invalid conversion fixture")
     if not selected or any(type(i) is not int or not 0 <= i < len(definitions) for i in selected) or len(set(selected)) != len(selected):
         raise ValueError("invalid conversion preselection")
     if trim is not None and not any(definitions[i]["type"] == "mesh" for i in selected):
         raise ValueError("mesh options require a selected mesh")
-    if command not in ("ConvertToBeziers", "ConvertToSingleSpans", "ToNURBS") or direction not in (None,"U","V","Both"):
+    if command not in ("ConvertToBeziers", "ConvertToSingleSpans", "ToNURBS", "MeshToNURB") or direction not in (None,"U","V","Both"):
         raise ValueError("invalid conversion command")
     if command != "ConvertToSingleSpans" and (direction is not None or toggles):
         raise ValueError("direction options require ConvertToSingleSpans")
@@ -3609,14 +3614,20 @@ def _conversion_arguments(operation, command, direction):
     # At least one known curve/surface avoids an interactive object prompt.
     if not any(definitions[i]["type"] in ("nurbs", "surface", "line", "polyline", "arc", "circle", "ellipse", "polycurve") or
                (definitions[i]["type"] == "brep" and definitions[i].get("cap_surface") is None) or
-               (command == "ToNURBS" and definitions[i]["type"] in ("mesh", "brep")) for i in selected):
+               (command in ("ToNURBS", "MeshToNURB") and definitions[i]["type"] in ("mesh", "brep")) for i in selected):
         raise ValueError("conversion requires an eligible object")
+    if command == "MeshToNURB" and not any(definitions[i]["type"] == "mesh" for i in selected):
+        raise ValueError("MeshToNURB requires a mesh")
     if command == "ConvertToBeziers":
         script="_ConvertToBeziers " + ("_Enter" if delete is None else "_Yes" if delete else "_No")
     elif command == "ToNURBS":
         script="_ToNURBS"+(" _DeleteInputObjects="+("Yes" if delete else "No") if delete is not None else "")
         if trim is not None: script+=" _MeshOptions _TrimTriangularFaces="+("Yes" if trim else "No")+" _Enter"
         script+=" _Enter"
+    elif command == "MeshToNURB":
+        script="_MeshToNURB"
+        if trim is not None: script+=" _TrimTriangularFaces="+("Yes" if trim else "No")
+        if ngons is not None: script+=" _UseNgons="+("Yes" if ngons else "No")
     else:
         script="_ConvertToSingleSpans"
         if direction is not None: script+=" _Direction _"+direction
@@ -3626,8 +3637,23 @@ def _conversion_arguments(operation, command, direction):
     return definitions, selected, undo_after, script
 
 
+def _seed_mesh_conversion_options(document, objects, mesh, script):
+    """Set options on owned temporary geometry before the measured preselection."""
+    before = set(obj.Id for obj in objects())
+    try:
+        seed = document.Objects.AddMesh(mesh)
+        if seed == System.Guid.Empty: raise ValueError("mesh option seed insertion failed")
+        _run_surface_script(script + " _SelID %s _Enter" % seed, True)
+    finally:
+        Rhino.RhinoApp.RunScript("!", False)
+        for obj in objects():
+            if obj.Id not in before: document.Objects.Delete(obj.Id, True)
+        document.Objects.UnselectAll()
+
+
 def _geometry_conversion(operation, tolerance, command="ConvertToBeziers", direction=None):
     definitions, selected, undo_after, script = _conversion_arguments(operation, command, direction)
+    inspect_sources = command in ("ToNURBS", "MeshToNURB")
     document = Rhino.RhinoDoc.ActiveDoc
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
     settings.NormalObjects = settings.HiddenObjects = settings.LockedObjects = True
@@ -3652,7 +3678,7 @@ def _geometry_conversion(operation, tolerance, command="ConvertToBeziers", direc
                 kind, points = "mesh", [_xyz(p) for p in geometry.Vertices]
             elif isinstance(geometry, Rhino.Geometry.PointCloud):
                 kind, points = "point_cloud", [_xyz(p) for p in geometry.GetPoints()]
-            elif command == "ToNURBS" and isinstance(geometry, Rhino.Geometry.Brep) and (original is None or definitions[original]["type"] != "surface"):
+            elif inspect_sources and isinstance(geometry, Rhino.Geometry.Brep) and (original is None or definitions[original]["type"] != "surface"):
                 kind = "brep"
                 domain, points = _plane_array_brep_record(geometry)
                 definition = dict(topology=_mesh_to_nurb_brep_value(geometry), surfaces=[_nurbs_surface_definition(face.UnderlyingSurface()) for face in geometry.Faces])
@@ -3666,11 +3692,11 @@ def _geometry_conversion(operation, tolerance, command="ConvertToBeziers", direc
                     geometry = geometry.Faces[0].UnderlyingSurface()
                 kind = "surface"
                 domain, points = _plane_array_geometry_record(geometry, True)
-                if original is None or command == "ToNURBS": definition = _nurbs_surface_definition(geometry)
+                if original is None or inspect_sources: definition = _nurbs_surface_definition(geometry)
             else:
                 kind = "curve"
                 domain, points = _plane_array_geometry_record(geometry, False)
-                if original is None or command == "ToNURBS": definition = _nurbs_curve_definition(geometry)
+                if original is None or inspect_sources: definition = _nurbs_curve_definition(geometry)
             attributes = obj.Attributes
             name = attributes.Name or None
             layer = "Source" if attributes.LayerIndex == layers[0] else "Current" if attributes.LayerIndex == layers[1] else "Unexpected"
@@ -3679,7 +3705,7 @@ def _geometry_conversion(operation, tolerance, command="ConvertToBeziers", direc
             value = dict(original=original, kind=kind, domain=domain, points=points, definition=definition,
                          name=name, layer=layer, color=[int(color.R),int(color.G),int(color.B)],
                          color_source=str(attributes.ColorSource), groups=memberships, selected=bool(obj.IsSelected(False)))
-            if command == "ToNURBS":
+            if inspect_sources:
                 value["representation"] = geometry.GetType().Name if isinstance(geometry, Rhino.Geometry.Curve) else kind
             key = (original is None, -1 if original is None else original, kind, tuple(round(x, 8) for p in points for x in p))
             records.append((key, obj.Id, obj.RuntimeSerialNumber, value))
@@ -3730,10 +3756,17 @@ def _geometry_conversion(operation, tolerance, command="ConvertToBeziers", direc
                 index = document.Groups.Add("Viboceros Bezier Group %d " % i + suffix, members)
                 if index < 0: raise ValueError("Bezier group insertion failed")
                 group_names[index] = "Group-%d" % i
+            if command == "MeshToNURB" and (operation.get("trim_triangular_faces") is not None or operation.get("use_ngons") is not None):
+                # Rhino hides options for preselected inputs. Seed only its
+                # choices using a separate owned mesh, then measure the actual
+                # preselection path without normalizing source selection.
+                i = next(i for i in selected if definitions[i]["type"] == "mesh")
+                _seed_mesh_conversion_options(document, objects, owned[i], script)
             for i in selected:
                 if not document.Objects.Select(ids[i]): raise ValueError("Bezier source preselection failed")
             if not all(document.Objects.FindId(ids[i]).IsSelected(False) for i in selected): raise ValueError("Bezier source preselection incomplete")
             initial = record()
+            if command == "MeshToNURB": script = "_MeshToNURB"
             _record_progress(command + ": command")
             _run_surface_script(script, True)
             _record_progress(command + ": record")
@@ -3763,10 +3796,13 @@ def _conversion_session(operation, tolerance):
     mesh_seeded = False
     for step in steps:
         name = step["command"]
-        if name not in ("ConvertToBeziers", "ConvertToSingleSpans", "ToNURBS"): raise ValueError("invalid conversion session command")
+        if name not in ("ConvertToBeziers", "ConvertToSingleSpans", "ToNURBS", "MeshToNURB"): raise ValueError("invalid conversion session command")
         _conversion_arguments(step, name, step.get("direction"))
         if name not in seeded:
-            if type(step.get("delete_input")) is not bool: raise ValueError("conversion session must seed deletion choice")
+            if name == "MeshToNURB":
+                if type(step.get("trim_triangular_faces")) is not bool or type(step.get("use_ngons")) is not bool:
+                    raise ValueError("conversion session must seed mesh conversion options")
+            elif type(step.get("delete_input")) is not bool: raise ValueError("conversion session must seed deletion choice")
             if name == "ToNURBS" and not any(source["type"] in ("line","arc","circle","polyline","polycurve","mesh") for i,source in enumerate(step["sources"]) if i in step.get("selected",range(len(step["sources"])))):
                 raise ValueError("ToNURBS no-op cannot seed conversion options")
             if name == "ConvertToSingleSpans" and step.get("direction") not in ("U","V","Both"):
@@ -3789,6 +3825,8 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
+    if operation["op"] == "mesh_nurbs_conversion":
+        return _geometry_conversion(operation, tolerance, "MeshToNURB")
     if operation["op"] == "nurbs_conversion":
         return _geometry_conversion(operation, tolerance, "ToNURBS")
     if operation["op"] == "conversion_session":
