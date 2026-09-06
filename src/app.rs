@@ -1035,7 +1035,7 @@ pub struct VibocerosApp {
     last_point: Option<Point3>,
     drafting_plane: Option<Frame3>,
     plane_prompt: Option<construction_plane::PlanePrompt>,
-    object_prompt: Option<viboceros_command::ObjectSelectionPrompt>,
+    object_prompt: Option<object_selection::PendingObjectCommand>,
     curve_points: Vec<Point3>,
     sidebar: DocumentSidebar,
 }
@@ -4752,7 +4752,7 @@ impl VibocerosApp {
                     let label = if self.plane_prompt.is_some() {
                         "CPlane"
                     } else if let Some(prompt) = &self.object_prompt {
-                        prompt.command
+                        prompt.label()
                     } else {
                         self.active_command
                             .map_or("Command", InteractiveCommand::name)
@@ -4770,8 +4770,8 @@ impl VibocerosApp {
                             .desired_width(f32::INFINITY)
                             .hint_text(if self.plane_prompt.is_some() {
                                 "Define the construction plane; Esc returns to the previous prompt"
-                            } else if self.object_prompt.is_some() {
-                                "Select meshes or type options; Enter finishes, Esc cancels"
+                            } else if let Some(prompt) = &self.object_prompt {
+                                prompt.hint()
                             } else if self.active_command.is_some() {
                                 if self
                                     .active_command
@@ -4937,7 +4937,9 @@ impl eframe::App for VibocerosApp {
         let object_filter = self
             .object_prompt
             .as_ref()
-            .map_or(viboceros_command::ObjectSelectionFilter::Any, |p| p.filter);
+            .map_or(Some(viboceros_command::ObjectSelectionFilter::Any), |p| {
+                p.selection_filter()
+            });
         let document = &self.document;
         let curve_points = self
             .plane_prompt
@@ -5051,6 +5053,7 @@ mod tests {
     mod construction_plane;
     mod distribute;
     mod interface;
+    mod nurbs_selection;
     mod object_selection;
     mod plane_arrays;
     mod point_input;

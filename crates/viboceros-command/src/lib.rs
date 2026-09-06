@@ -4,7 +4,10 @@ mod arrays;
 mod bezier;
 mod mesh_to_nurb;
 mod object_selection;
-pub use object_selection::{BooleanSelectionOption, ObjectSelectionFilter, ObjectSelectionPrompt};
+pub use object_selection::{
+    BooleanSelectionMenu, BooleanSelectionOption, ObjectSelectionFilter, ObjectSelectionPrompt,
+    ObjectSelectionWorkflow,
+};
 mod remembered;
 mod single_spans;
 mod to_nurbs;
@@ -121,6 +124,16 @@ pub trait Command: Send + Sync {
 
     fn aliases(&self) -> &'static [&'static str] {
         &[]
+    }
+
+    /// Optional confirmation phase after object picking or preselection. None
+    /// executes immediately, including commands whose selected inputs are no-ops.
+    fn object_selection_confirmation(
+        &self,
+        _document: &Document,
+        _arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        Ok(None)
     }
 
     /// Accepts choices entered at an object prompt, independently of model edits.

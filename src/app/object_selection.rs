@@ -1,63 +1,174 @@
-//! Object picking is a prompt phase, not point drafting or a model transaction.
+//! Object picking and confirmation are prompt phases, not model transactions.
 use super::*;
+use viboceros_command::{ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSelectionWorkflow};
 use viboceros_document::{ObjectId, SelectionMode};
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum ObjectPromptPhase {
+    Selecting,
+    Options,
+    Menu(usize),
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(super) struct PendingObjectCommand {
+    pub(super) description: ObjectSelectionPrompt,
+    pub(super) phase: ObjectPromptPhase,
+    pub(super) postselected: bool,
+}
+
+impl PendingObjectCommand {
+    pub(super) fn selection_filter(&self) -> Option<ObjectSelectionFilter> {
+        (self.phase == ObjectPromptPhase::Selecting).then_some(self.description.filter)
+    }
+
+    pub(super) fn label(&self) -> &'static str {
+        match self.phase {
+            ObjectPromptPhase::Menu(index) => self.description.menus[index].name,
+            _ => self.description.command,
+        }
+    }
+
+    pub(super) fn hint(&self) -> &'static str {
+        match self.phase {
+            ObjectPromptPhase::Selecting => match self.description.workflow {
+                ObjectSelectionWorkflow::OptionsDuringSelection => {
+                    "Select meshes or type options; Enter finishes, Esc cancels"
+                }
+                ObjectSelectionWorkflow::ConfirmAfterSelection => {
+                    "Select objects; Enter opens conversion options, Esc cancels"
+                }
+            },
+            ObjectPromptPhase::Options => "Set conversion options; Enter converts, Esc cancels",
+            ObjectPromptPhase::Menu(_) => {
+                "Set mesh options; Enter returns to conversion options, Esc cancels"
+            }
+        }
+    }
+}
 
 impl VibocerosApp {
     pub(super) fn try_start_object_prompt(&mut self, input: &str) -> bool {
-        let prompt = match self.commands.object_selection_prompt(input) {
+        let description = match self.commands.object_selection_prompt(input) {
             Ok(Some(prompt)) => prompt,
             Ok(None) => return false,
             Err(error) => {
                 self.push_log(format!("Error: {error}"));
+                self.command_input = input.into();
                 return true;
             }
         };
-        if self
+        let preselected = self
             .document
             .selected_objects()
-            .any(|o| prompt.filter.accepts(o.geometry()))
-        {
-            return false;
+            .any(|o| description.filter.accepts(o.geometry()));
+        if preselected {
+            if description.workflow == ObjectSelectionWorkflow::OptionsDuringSelection {
+                return false;
+            }
+            match self
+                .commands
+                .object_selection_confirmation(&self.document, &description)
+            {
+                Ok(Some(description)) => {
+                    self.cancel_interactive_command(false);
+                    self.object_prompt = Some(PendingObjectCommand {
+                        description,
+                        phase: ObjectPromptPhase::Options,
+                        postselected: false,
+                    });
+                }
+                Ok(None) => return false,
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    self.command_input = input.into();
+                    return true;
+                }
+            }
+        } else {
+            self.cancel_interactive_command(false);
+            if let Err(error) = self.commands.accept_object_selection_options(&description) {
+                self.push_log(format!("Error: {error}"));
+                return true;
+            }
+            self.document.clear_selection();
+            self.object_prompt = Some(PendingObjectCommand {
+                description,
+                phase: ObjectPromptPhase::Selecting,
+                postselected: true,
+            });
         }
-        self.cancel_interactive_command(false);
-        if let Err(error) = self.commands.accept_object_selection_options(&prompt) {
-            self.push_log(format!("Error: {error}"));
-            return true;
-        }
-        self.document.clear_selection();
         self.command_input.clear();
         self.push_log(format!("> {input}"));
-        self.push_log(format!(
-            "{}: select meshes; Enter finishes, Esc cancels. {}",
-            prompt.command,
-            prompt.command_line()
-        ));
-        self.object_prompt = Some(prompt);
+        self.log_object_prompt();
         true
     }
 
+    fn log_object_prompt(&mut self) {
+        if let Some(pending) = &self.object_prompt {
+            self.push_log(format!(
+                "{}. {}",
+                pending.hint(),
+                pending.description.command_line()
+            ));
+        }
+    }
+
     pub(super) fn try_continue_object_prompt(&mut self, input: &str) -> bool {
-        let Some(mut prompt) = self.object_prompt.clone() else {
+        let Some(mut pending) = self.object_prompt.clone() else {
             return false;
         };
         if input.is_empty() {
-            if !self
-                .document
-                .selected_objects()
-                .any(|o| prompt.filter.accepts(o.geometry()))
-            {
-                self.push_log("Select at least one mesh; Enter finishes, Esc cancels".into());
+            if matches!(pending.phase, ObjectPromptPhase::Menu(_)) {
+                pending.phase = ObjectPromptPhase::Options;
+                self.object_prompt = Some(pending);
+                self.log_object_prompt();
+                self.command_input.clear();
                 return true;
             }
-            let command = prompt.command_line();
+            if pending.phase == ObjectPromptPhase::Selecting {
+                if !self
+                    .document
+                    .selected_objects()
+                    .any(|o| pending.description.filter.accepts(o.geometry()))
+                {
+                    self.push_log("Select at least one eligible object; Esc cancels".into());
+                    return true;
+                }
+                if pending.description.workflow == ObjectSelectionWorkflow::ConfirmAfterSelection {
+                    match self
+                        .commands
+                        .object_selection_confirmation(&self.document, &pending.description)
+                    {
+                        Ok(Some(description)) => {
+                            pending.description = description;
+                            pending.phase = ObjectPromptPhase::Options;
+                            self.object_prompt = Some(pending);
+                            self.command_input.clear();
+                            self.log_object_prompt();
+                            return true;
+                        }
+                        Ok(None) => {} // No-op selection finishes without accepting choices.
+                        Err(error) => {
+                            self.push_log(format!("Error: {error}"));
+                            return true;
+                        }
+                    }
+                }
+            }
+            let command = pending.description.command_line();
             self.push_log(format!("> {command}"));
-            match self.commands.execute_postselected(
-                &mut self.document,
-                &command,
-                viboceros_command::CommandContext {
-                    construction_plane: self.viewports[self.active_viewport].construction_plane(),
-                },
-            ) {
+            let context = viboceros_command::CommandContext {
+                construction_plane: self.viewports[self.active_viewport].construction_plane(),
+            };
+            let result = if pending.postselected {
+                self.commands
+                    .execute_postselected(&mut self.document, &command, context)
+            } else {
+                self.commands
+                    .execute_in_context(&mut self.document, &command, context)
+            };
+            match result {
                 Ok(message) => {
                     self.object_prompt = None;
                     self.push_log(message);
@@ -68,22 +179,25 @@ impl VibocerosApp {
             return true;
         }
         let normalized = input.trim_start_matches(['_', '-']).to_ascii_lowercase();
-        if normalized == "selall" {
-            let ids = self
-                .document
-                .objects()
-                .filter(|o| {
-                    self.document.is_object_selectable(o.id())
-                        && prompt.filter.accepts(o.geometry())
-                })
-                .map(|o| o.id())
-                .collect::<Vec<_>>();
-            self.select_prompt_objects(ids, SelectionMode::Add);
-            self.command_input.clear();
-            return true;
-        }
-        if normalized == "selnone" {
-            self.document.clear_selection();
+        if normalized == "selall" || normalized == "selnone" {
+            if pending.phase != ObjectPromptPhase::Selecting {
+                self.push_log("Selection is fixed; finish or cancel the conversion".into());
+                return true;
+            }
+            if normalized == "selnone" {
+                self.document.clear_selection();
+            } else {
+                let ids = self
+                    .document
+                    .objects()
+                    .filter(|o| {
+                        self.document.is_object_selectable(o.id())
+                            && pending.description.filter.accepts(o.geometry())
+                    })
+                    .map(|o| o.id())
+                    .collect::<Vec<_>>();
+                self.select_prompt_objects(ids, SelectionMode::Add);
+            }
             self.command_input.clear();
             return true;
         }
@@ -95,14 +209,37 @@ impl VibocerosApp {
             self.cancel_object_prompt(true);
             return false;
         }
-        match prompt
-            .update_options(input)
-            .and_then(|()| self.commands.accept_object_selection_options(&prompt))
+        if pending.phase == ObjectPromptPhase::Selecting
+            && pending.description.workflow == ObjectSelectionWorkflow::ConfirmAfterSelection
         {
+            self.push_log("Select objects first; Enter opens conversion options".into());
+            return true;
+        }
+        if pending.phase == ObjectPromptPhase::Options
+            && let Some(index) = pending
+                .description
+                .menus
+                .iter()
+                .position(|menu| menu.name.eq_ignore_ascii_case(&normalized))
+        {
+            pending.phase = ObjectPromptPhase::Menu(index);
+            self.object_prompt = Some(pending);
+            self.command_input.clear();
+            self.log_object_prompt();
+            return true;
+        }
+        let update = match pending.phase {
+            ObjectPromptPhase::Menu(index) => pending.description.update_menu_options(index, input),
+            _ => pending.description.update_options(input),
+        };
+        match update.and_then(|()| {
+            self.commands
+                .accept_object_selection_options(&pending.description)
+        }) {
             Ok(()) => {
-                self.push_log(prompt.command_line());
-                self.object_prompt = Some(prompt);
+                self.object_prompt = Some(pending);
                 self.command_input.clear();
+                self.log_object_prompt();
             }
             Err(error) => self.push_log(format!("Error: {error}")),
         }
@@ -110,11 +247,13 @@ impl VibocerosApp {
     }
 
     pub(super) fn cancel_object_prompt(&mut self, announce: bool) {
-        if let Some(prompt) = self.object_prompt.take() {
-            self.document.clear_selection();
+        if let Some(pending) = self.object_prompt.take() {
+            if pending.postselected {
+                self.document.clear_selection();
+            }
             self.command_input.clear();
             if announce {
-                self.push_log(format!("Cancelled {}", prompt.command));
+                self.push_log(format!("Cancelled {}", pending.description.command));
             }
         }
     }
@@ -124,14 +263,18 @@ impl VibocerosApp {
         ids: impl IntoIterator<Item = ObjectId>,
         mode: SelectionMode,
     ) {
-        let Some(prompt) = &self.object_prompt else {
+        let Some(filter) = self
+            .object_prompt
+            .as_ref()
+            .and_then(PendingObjectCommand::selection_filter)
+        else {
             return;
         };
         let ids = ids
             .into_iter()
             .filter(|id| {
                 self.document.object(*id).is_some_and(|o| {
-                    self.document.is_object_selectable(*id) && prompt.filter.accepts(o.geometry())
+                    self.document.is_object_selectable(*id) && filter.accepts(o.geometry())
                 })
             })
             .collect::<Vec<_>>();
@@ -141,7 +284,7 @@ impl VibocerosApp {
             mode
         };
         match self.document.select_objects_direct(ids, mode) {
-            Ok(count) => self.push_log(format!("Selected {count} mesh(es); Enter finishes")),
+            Ok(count) => self.push_log(format!("Selected {count} object(s); Enter continues")),
             Err(error) => self.push_log(format!("Error: {error}")),
         }
     }

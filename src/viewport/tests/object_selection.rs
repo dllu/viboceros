@@ -1,6 +1,78 @@
 use super::*;
 
 #[test]
+fn confirmation_disables_real_selection_events_without_enabling_point_drafting() {
+    let mut document = Document::default();
+    document
+        .add_geometry(Geometry::Point(point(0., 0., 0.)))
+        .unwrap();
+    let line = document
+        .add_geometry(Geometry::Line(
+            LineSegment::try_new(point(-2., 0., 0.), point(2., 0., 0.), Tolerance::DEFAULT)
+                .unwrap(),
+        ))
+        .unwrap();
+    let context = egui::Context::default();
+    let mut viewport = Viewport::new(ViewKind::Top);
+    let mut frame = |events, object_filter| {
+        let mut output = ViewportOutput::default();
+        context
+            .run_ui(
+                egui::RawInput {
+                    screen_rect: Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.))),
+                    events,
+                    ..Default::default()
+                },
+                |ui| {
+                    output = viewport.show(
+                        ui,
+                        &document,
+                        ViewportInput {
+                            object_filter,
+                            ..Default::default()
+                        },
+                        &[],
+                        0,
+                        true,
+                    );
+                },
+            )
+            .drop_without_applying_deltas();
+        output
+    };
+    let pointer = Pos2::new(400., 300.);
+    let event = |pos, pressed| egui::Event::PointerButton {
+        pos,
+        pressed,
+        button: PointerButton::Primary,
+        modifiers: egui::Modifiers::NONE,
+    };
+    for filter in [
+        Some(ObjectSelectionFilter::ToNurbs),
+        None,
+        Some(ObjectSelectionFilter::ToNurbs),
+    ] {
+        frame(vec![], filter);
+        frame(
+            vec![egui::Event::PointerMoved(pointer), event(pointer, true)],
+            filter,
+        );
+        let output = frame(vec![event(pointer, false)], filter);
+        assert_eq!(
+            output.selection_click.map(|c| c.object_id),
+            filter.map(|_| Some(line))
+        );
+        assert!(output.picked_point.is_none());
+    }
+    let end = Pos2::new(500., 400.);
+    frame(vec![event(pointer, true)], None);
+    frame(vec![egui::Event::PointerMoved(end)], None);
+    let output = frame(vec![event(end, false)], None);
+    assert!(output.selection_window.is_none());
+    assert!(output.picked_point.is_none());
+}
+
+#[test]
 fn real_pointer_events_use_the_mesh_filter_for_clicks_and_windows() {
     let mut document = Document::default();
     let mesh = document
@@ -32,7 +104,7 @@ fn real_pointer_events_use_the_mesh_filter_for_clicks_and_windows() {
                         ui,
                         &document,
                         ViewportInput {
-                            object_filter: ObjectSelectionFilter::Mesh,
+                            object_filter: Some(ObjectSelectionFilter::Mesh),
                             ..Default::default()
                         },
                         &[],

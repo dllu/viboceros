@@ -31,7 +31,69 @@ impl Command for ToNurbsCommand {
         "ToNURBS"
     }
 
+    fn object_selection_prompt(
+        &self,
+        arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        let (options, mesh) = parse(arguments, self.options.get())?;
+        Ok(Some(prompt(options, mesh)))
+    }
+
+    fn object_selection_confirmation(
+        &self,
+        document: &Document,
+        arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        let (options, mesh_option) = parse(arguments, self.options.get())?;
+        let mesh = document
+            .selected_objects()
+            .any(|o| matches!(o.geometry(), Geometry::Mesh(_)));
+        if mesh_option && !mesh {
+            return Err(CommandError::Usage(USAGE));
+        }
+        let convertible = document.selected_objects().any(|o| {
+            matches!(
+                o.geometry(),
+                Geometry::Line(_)
+                    | Geometry::Circle(_)
+                    | Geometry::Arc(_)
+                    | Geometry::Polyline(_)
+                    | Geometry::PolyCurve(_)
+                    | Geometry::Mesh(_)
+            )
+        });
+        Ok(convertible.then(|| prompt(options, mesh)))
+    }
+
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        self.convert(document, arguments, false)
+    }
+
+    fn accept_object_selection_options(&self, arguments: &[&str]) -> Result<(), CommandError> {
+        // ToNURBS commits choices only after a real conversion, not on prompt
+        // edits or cancellation. Still validate the command-owned option syntax.
+        parse(arguments, self.options.get()).map(|_| ())
+    }
+
+    fn run_postselected(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        _context: CommandContext,
+    ) -> Result<String, CommandError> {
+        let message = self.convert(document, arguments, true)?;
+        document.clear_selection();
+        Ok(message)
+    }
+}
+
+impl ToNurbsCommand {
+    fn convert(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        postselected: bool,
+    ) -> Result<String, CommandError> {
         let (options, mesh_option) = parse(arguments, self.options.get())?;
         if document.selected_object_count() == 0 {
             return Err(CommandError::NoObjectsSelected);
@@ -82,10 +144,24 @@ impl Command for ToNurbsCommand {
             return Err(CommandError::UnsupportedToNurbsGeometry);
         }
         let converted = conversions.len();
+        if postselected {
+            let ranks = document
+                .selected_object_ids()
+                .enumerate()
+                .map(|(i, id)| (id, i))
+                .collect::<BTreeMap<_, _>>();
+            conversions.sort_unstable_by_key(|(id, _)| ranks[id]);
+        }
         if options.delete_input {
             let ids = conversions.iter().map(|(id, _)| *id).collect::<Vec<_>>();
             document.replace_object_geometries(conversions)?;
-            document.move_objects_to_end(ids)?;
+            if postselected {
+                document.move_objects_to_end_in_order(ids)?;
+            } else {
+                document.move_objects_to_end(ids)?;
+            }
+        } else if postselected {
+            document.copy_object_geometries_into_source_groups_in_order(conversions)?;
         } else {
             document.copy_object_geometries_into_source_groups(conversions)?;
         }
@@ -103,6 +179,31 @@ impl Command for ToNurbsCommand {
                 "; inputs retained"
             }
         ))
+    }
+}
+
+fn prompt(options: Options, mesh: bool) -> ObjectSelectionPrompt {
+    ObjectSelectionPrompt {
+        command: "ToNURBS",
+        filter: ObjectSelectionFilter::ToNurbs,
+        workflow: ObjectSelectionWorkflow::ConfirmAfterSelection,
+        options: vec![BooleanSelectionOption {
+            name: "DeleteInputObjects",
+            value: options.delete_input,
+            aliases: &["DeleteInput"],
+        }],
+        menus: if mesh {
+            vec![BooleanSelectionMenu {
+                name: "MeshOptions",
+                options: vec![BooleanSelectionOption {
+                    name: "TrimTriangularFaces",
+                    value: options.trim_triangles,
+                    aliases: &[],
+                }],
+            }]
+        } else {
+            vec![]
+        },
     }
 }
 

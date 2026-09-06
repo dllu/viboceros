@@ -27,6 +27,11 @@ Esc to clear the selection; press Delete to remove selected objects.
 During that prompt, clicks and selection windows add only selectable meshes;
 Ctrl/Command removes picks, Enter finishes, and Escape cancels. `SelAll` is filtered
 to meshes and `SelNone` clears picks. Accepted options survive cancellation.
+`ToNURBS` also supports command-first picking, but Enter finishes selection and
+opens a separate options phase. With preselection, options open immediately.
+`MeshOptions` opens its triangle-trimming submenu; Enter returns to confirmation,
+then another Enter converts. Escape from any phase cancels without remembering
+the staged choices. Picks are fixed while confirming options.
 
 Commands are case-insensitive. Typing while another non-text UI element or a
 viewport is active moves the text to the command line automatically. Matching

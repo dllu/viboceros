@@ -128,6 +128,16 @@ selection, pick-dependent creation order, and choices retained after cancellatio
 See
 [MeshToNURB](commands/mesh-to-nurb.md) for coverage and selection-path limits.
 
+`nurbs_postselection.json` adds 87 cases and three
+`nurbs_postselection_sessions.json` sequences add 31 steps. ToNURBS macros complete
+ordered object selection before entering the separate conversion options and nested
+MeshOptions prompt. `cancel` can cancel preselected or prompted confirmation;
+`cancel_at_selection` additionally requires prompted cancellation and permits an
+empty picked list. No-op input cannot reach confirmation, and cancelled commands
+cannot seed option memory. A separate script builder is tested for precise phase
+ordering. Native probes exercise explicit ordered copies/renewal and preserve
+complete source/output records without normalizing selection or creation order.
+
 With Rhino installed through the configured Wine/FEX launcher, run the core fixture:
 
 ```sh

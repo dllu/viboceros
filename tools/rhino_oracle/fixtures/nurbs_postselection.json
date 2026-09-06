@@ -1,0 +1,5990 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-line-false",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        }
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-line-true",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        }
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-polyline-false",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-polyline-true",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-circle-false",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "radius": 3,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-circle-true",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "radius": 3,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-polycurve-false",
+      "sources": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                0,
+                0
+              ],
+              "end": [
+                2,
+                1,
+                0
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                2,
+                1,
+                0
+              ],
+              "end": [
+                4,
+                0,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-polycurve-true",
+      "sources": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                0,
+                0
+              ],
+              "end": [
+                2,
+                1,
+                0
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                2,
+                1,
+                0
+              ],
+              "end": [
+                4,
+                0,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-quadratic-false",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -2,
+            -2,
+            -2,
+            1,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-quadratic-true",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -2,
+            -2,
+            -2,
+            1,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-surface-false",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 2,
+          "degree_v": 1,
+          "control_point_count_u": 4,
+          "control_point_count_v": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            -2,
+            -2,
+            -2,
+            1,
+            4,
+            4,
+            4
+          ],
+          "knots_v": [
+            10,
+            10,
+            13,
+            18,
+            18
+          ]
+        }
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-surface-true",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 2,
+          "degree_v": 1,
+          "control_point_count_u": 4,
+          "control_point_count_v": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            -2,
+            -2,
+            -2,
+            1,
+            4,
+            4,
+            4
+          ],
+          "knots_v": [
+            10,
+            10,
+            13,
+            18,
+            18
+          ]
+        }
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-unclamped-false",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                3,
+                0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                3,
+                3,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -2,
+            -1,
+            0,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-unclamped-true",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                3,
+                0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                3,
+                3,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -2,
+            -1,
+            0,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-periodic-false",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                3,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        }
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-periodic-true",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                3,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        }
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-rational-false",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3,
+                2,
+                0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -2,
+            -2,
+            -2,
+            1,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-rational-true",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3,
+                2,
+                0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -2,
+            -2,
+            -2,
+            1,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-mixed-polycurve-false",
+      "sources": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                -2,
+                0,
+                0
+              ],
+              "end": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "arc",
+              "points": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0.7071067811865476,
+                  0.2928932188134524,
+                  0
+                ],
+                [
+                  1,
+                  1,
+                  0
+                ]
+              ]
+            },
+            {
+              "type": "polyline",
+              "vertices": [
+                [
+                  1,
+                  1,
+                  0
+                ],
+                [
+                  2,
+                  1,
+                  0
+                ],
+                [
+                  2,
+                  3,
+                  0
+                ]
+              ]
+            },
+            {
+              "type": "nurbs",
+              "degree": 2,
+              "control_points": [
+                {
+                  "point": [
+                    2,
+                    3,
+                    0
+                  ],
+                  "weight": 1
+                },
+                {
+                  "point": [
+                    4,
+                    3,
+                    0
+                  ],
+                  "weight": 1
+                },
+                {
+                  "point": [
+                    4,
+                    5,
+                    0
+                  ],
+                  "weight": 1
+                }
+              ],
+              "knots": [
+                -4,
+                -4,
+                -4,
+                2,
+                2,
+                2
+              ]
+            }
+          ]
+        }
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tonurbs-mixed-polycurve-true",
+      "sources": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                -2,
+                0,
+                0
+              ],
+              "end": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "arc",
+              "points": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0.7071067811865476,
+                  0.2928932188134524,
+                  0
+                ],
+                [
+                  1,
+                  1,
+                  0
+                ]
+              ]
+            },
+            {
+              "type": "polyline",
+              "vertices": [
+                [
+                  1,
+                  1,
+                  0
+                ],
+                [
+                  2,
+                  1,
+                  0
+                ],
+                [
+                  2,
+                  3,
+                  0
+                ]
+              ]
+            },
+            {
+              "type": "nurbs",
+              "degree": 2,
+              "control_points": [
+                {
+                  "point": [
+                    2,
+                    3,
+                    0
+                  ],
+                  "weight": 1
+                },
+                {
+                  "point": [
+                    4,
+                    3,
+                    0
+                  ],
+                  "weight": 1
+                },
+                {
+                  "point": [
+                    4,
+                    5,
+                    0
+                  ],
+                  "weight": 1
+                }
+              ],
+              "knots": [
+                -4,
+                -4,
+                -4,
+                2,
+                2,
+                2
+              ]
+            }
+          ]
+        }
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-triangle-trim-true-delete-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-triangle-trim-true-delete-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "delete_input": true,
+      "trim_triangular_faces": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-triangle-trim-false-delete-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-triangle-trim-false-delete-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "delete_input": true,
+      "trim_triangular_faces": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-disjoint-trim-true-delete-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-disjoint-trim-true-delete-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "delete_input": true,
+      "trim_triangular_faces": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-disjoint-trim-false-delete-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-disjoint-trim-false-delete-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "delete_input": true,
+      "trim_triangular_faces": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-adjacent-trim-true-delete-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-adjacent-trim-true-delete-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "delete_input": true,
+      "trim_triangular_faces": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-adjacent-trim-false-delete-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-adjacent-trim-false-delete-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "delete_input": true,
+      "trim_triangular_faces": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-quad-trim-true-delete-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-quad-trim-true-delete-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "delete_input": true,
+      "trim_triangular_faces": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-quad-trim-false-delete-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-quad-trim-false-delete-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "delete_input": true,
+      "trim_triangular_faces": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tetra-trim-true-delete-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              4,
+              0
+            ],
+            [
+              0,
+              0,
+              4
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              2,
+              0,
+              3
+            ]
+          ]
+        }
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tetra-trim-true-delete-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              4,
+              0
+            ],
+            [
+              0,
+              0,
+              4
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              2,
+              0,
+              3
+            ]
+          ]
+        }
+      ],
+      "delete_input": true,
+      "trim_triangular_faces": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tetra-trim-false-delete-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              4,
+              0
+            ],
+            [
+              0,
+              0,
+              4
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              2,
+              0,
+              3
+            ]
+          ]
+        }
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-tetra-trim-false-delete-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              4,
+              0
+            ],
+            [
+              0,
+              0,
+              4
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              2,
+              0,
+              3
+            ]
+          ]
+        }
+      ],
+      "delete_input": true,
+      "trim_triangular_faces": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-ellipse-false",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ],
+          "radius_x": 4,
+          "radius_y": 1.5
+        }
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-ellipse-true",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ],
+          "radius_x": 4,
+          "radius_y": 1.5
+        }
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-arc-false",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              -3,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-arc-true",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              -3,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-unequal-polyline-false",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              2,
+              5,
+              1
+            ]
+          ]
+        }
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-unequal-polyline-true",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              2,
+              5,
+              1
+            ]
+          ]
+        }
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-already-brep-false",
+      "sources": [
+        {
+          "type": "brep",
+          "surface": {
+            "degree_u": 2,
+            "degree_v": 2,
+            "control_point_count_u": 3,
+            "control_point_count_v": 3,
+            "control_points": [
+              {
+                "point": [
+                  -1,
+                  -1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  -1,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  -1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  -1,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  0,
+                  -2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  -1,
+                  1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  1,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  1,
+                  2
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              -1,
+              -1,
+              -1,
+              1,
+              1,
+              1
+            ],
+            "knots_v": [
+              -1,
+              -1,
+              -1,
+              1,
+              1,
+              1
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.8,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            0,
+            0
+          ],
+          "cap_surface": null,
+          "reversed": true
+        }
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-already-brep-true",
+      "sources": [
+        {
+          "type": "brep",
+          "surface": {
+            "degree_u": 2,
+            "degree_v": 2,
+            "control_point_count_u": 3,
+            "control_point_count_v": 3,
+            "control_points": [
+              {
+                "point": [
+                  -1,
+                  -1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  -1,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  -1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  -1,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  0,
+                  -2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  -1,
+                  1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  1,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  1,
+                  2
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              -1,
+              -1,
+              -1,
+              1,
+              1,
+              1
+            ],
+            "knots_v": [
+              -1,
+              -1,
+              -1,
+              1,
+              1,
+              1
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.8,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            0,
+            0
+          ],
+          "cap_surface": null,
+          "reversed": true
+        }
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-already-multi-face-false",
+      "sources": [
+        {
+          "type": "brep",
+          "surface": {
+            "degree_u": 2,
+            "degree_v": 2,
+            "control_point_count_u": 3,
+            "control_point_count_v": 3,
+            "control_points": [
+              {
+                "point": [
+                  -1,
+                  -1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  -1,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  -1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  -1,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  0,
+                  -2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  -1,
+                  1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  1,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  1,
+                  2
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              -1,
+              -1,
+              -1,
+              1,
+              1,
+              1
+            ],
+            "knots_v": [
+              -1,
+              -1,
+              -1,
+              1,
+              1,
+              1
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.8,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            0,
+            0
+          ],
+          "cap_surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  -1,
+                  -1,
+                  0.6400000000000001
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  -1,
+                  0.6400000000000001
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  -1,
+                  1,
+                  0.6400000000000001
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  1,
+                  0.6400000000000001
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              -1,
+              -1,
+              1,
+              1
+            ],
+            "knots_v": [
+              -1,
+              -1,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        }
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-already-multi-face-true",
+      "sources": [
+        {
+          "type": "brep",
+          "surface": {
+            "degree_u": 2,
+            "degree_v": 2,
+            "control_point_count_u": 3,
+            "control_point_count_v": 3,
+            "control_points": [
+              {
+                "point": [
+                  -1,
+                  -1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  -1,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  -1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  -1,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  0,
+                  -2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  -1,
+                  1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  1,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  1,
+                  2
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              -1,
+              -1,
+              -1,
+              1,
+              1,
+              1
+            ],
+            "knots_v": [
+              -1,
+              -1,
+              -1,
+              1,
+              1,
+              1
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.8,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            0,
+            0
+          ],
+          "cap_surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  -1,
+                  -1,
+                  0.6400000000000001
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  -1,
+                  0.6400000000000001
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  -1,
+                  1,
+                  0.6400000000000001
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  1,
+                  0.6400000000000001
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              -1,
+              -1,
+              1,
+              1
+            ],
+            "knots_v": [
+              -1,
+              -1,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        }
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-mixed-surface-curve-false",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 2,
+          "degree_v": 1,
+          "control_point_count_u": 4,
+          "control_point_count_v": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            -2,
+            -2,
+            -2,
+            1,
+            4,
+            4,
+            4
+          ],
+          "knots_v": [
+            10,
+            10,
+            13,
+            18,
+            18
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        }
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-mixed-surface-curve-true",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 2,
+          "degree_v": 1,
+          "control_point_count_u": 4,
+          "control_point_count_v": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            -2,
+            -2,
+            -2,
+            1,
+            4,
+            4,
+            4
+          ],
+          "knots_v": [
+            10,
+            10,
+            13,
+            18,
+            18
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        }
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-duplicate-unused-true-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              9,
+              9,
+              9
+            ]
+          ],
+          "faces": [
+            [
+              2,
+              1,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-duplicate-unused-true-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              9,
+              9,
+              9
+            ]
+          ],
+          "faces": [
+            [
+              2,
+              1,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "delete_input": true,
+      "trim_triangular_faces": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-duplicate-unused-false-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              9,
+              9,
+              9
+            ]
+          ],
+          "faces": [
+            [
+              2,
+              1,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-duplicate-unused-false-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              9,
+              9,
+              9
+            ]
+          ],
+          "faces": [
+            [
+              2,
+              1,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "delete_input": true,
+      "trim_triangular_faces": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-unwelded-adjacent-true-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-unwelded-adjacent-true-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "delete_input": true,
+      "trim_triangular_faces": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-unwelded-adjacent-false-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-unwelded-adjacent-false-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "delete_input": true,
+      "trim_triangular_faces": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-mixed-faces-true-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              6,
+              1,
+              2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              2,
+              1,
+              4
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-mixed-faces-true-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              6,
+              1,
+              2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              2,
+              1,
+              4
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "delete_input": true,
+      "trim_triangular_faces": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-mixed-faces-false-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              6,
+              1,
+              2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              2,
+              1,
+              4
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-mixed-faces-false-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              6,
+              1,
+              2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              2,
+              1,
+              4
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "delete_input": true,
+      "trim_triangular_faces": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-mixed-mesh-curve-point-nurbs-true-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -2,
+            -2,
+            -2,
+            1,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "selected": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-mixed-mesh-curve-point-nurbs-true-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -2,
+            -2,
+            -2,
+            1,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "selected": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "delete_input": true,
+      "trim_triangular_faces": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-mixed-mesh-curve-point-nurbs-false-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -2,
+            -2,
+            -2,
+            1,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "selected": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-mixed-mesh-curve-point-nurbs-false-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -2,
+            -2,
+            -2,
+            1,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "selected": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "delete_input": true,
+      "trim_triangular_faces": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-reversed-source-order-false",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-reversed-source-order-true",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-point-ignored-false",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            0,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-point-ignored-true",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            0,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-closed-polyline-false",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-closed-polyline-true",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-only-nurbs-selected-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -2,
+            -2,
+            -2,
+            1,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "selected": [
+        2
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-only-nurbs-selected-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -2,
+            -2,
+            -2,
+            1,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "selected": [
+        2
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-identical-source-ties-false",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-identical-source-ties-true",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-line-false",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        }
+      ],
+      "delete_input": false,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-mesh-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "delete_input": false,
+      "postselect": true,
+      "trim_triangular_faces": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-mixed-false",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            2,
+            0
+          ]
+        }
+      ],
+      "delete_input": false,
+      "postselect": true,
+      "selected": [
+        1,
+        0,
+        2
+      ],
+      "initial_selection": [
+        2
+      ],
+      "trim_triangular_faces": false
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-line-true",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        }
+      ],
+      "delete_input": true,
+      "postselect": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-mesh-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "delete_input": true,
+      "postselect": true,
+      "trim_triangular_faces": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "post-mixed-true",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            2,
+            0
+          ]
+        }
+      ],
+      "delete_input": true,
+      "postselect": true,
+      "selected": [
+        1,
+        0,
+        2
+      ],
+      "initial_selection": [
+        2
+      ],
+      "trim_triangular_faces": false
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "preselected-cancel-line",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            0
+          ]
+        }
+      ],
+      "delete_input": false,
+      "cancel": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "preselected-cancel-mesh",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "delete_input": false,
+      "trim_triangular_faces": false,
+      "cancel": true
+    },
+    {
+      "op": "nurbs_conversion",
+      "id": "mouse-group",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10,
+            0,
+            0
+          ],
+          "end": [
+            14,
+            3,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            2,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "postselect": true,
+      "delete_input": false,
+      "trim_triangular_faces": true
+    }
+  ]
+}

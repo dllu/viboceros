@@ -1,0 +1,959 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "conversion_session",
+      "id": "tonurbs-cancel-stage-memory",
+      "steps": [
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                0,
+                0
+              ],
+              "end": [
+                3,
+                2,
+                0
+              ]
+            }
+          ],
+          "delete_input": true
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                0,
+                0
+              ],
+              "end": [
+                3,
+                2,
+                0
+              ]
+            }
+          ],
+          "cancel": true,
+          "delete_input": false
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                0,
+                0
+              ],
+              "end": [
+                3,
+                2,
+                0
+              ]
+            }
+          ],
+          "postselect": true,
+          "cancel": true,
+          "delete_input": false,
+          "cancel_at_selection": true
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                0,
+                0
+              ],
+              "end": [
+                3,
+                2,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                0,
+                0
+              ],
+              "end": [
+                3,
+                2,
+                0
+              ]
+            }
+          ],
+          "postselect": true,
+          "cancel": true,
+          "delete_input": false
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                0,
+                0
+              ],
+              "end": [
+                3,
+                2,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                0,
+                0
+              ],
+              "end": [
+                3,
+                2,
+                0
+              ]
+            }
+          ],
+          "postselect": true,
+          "cancel": true,
+          "selected": [],
+          "delete_input": true,
+          "cancel_at_selection": true
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                0,
+                0
+              ],
+              "end": [
+                3,
+                2,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "delete_input": true,
+          "trim_triangular_faces": true
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true,
+          "cancel": true,
+          "delete_input": false,
+          "trim_triangular_faces": false
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "cancel": true,
+          "delete_input": false,
+          "trim_triangular_faces": false
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true,
+          "delete_input": true,
+          "trim_triangular_faces": true
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conversion_session",
+      "id": "tonurbs-post-noop-and-undo-memory",
+      "steps": [
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true,
+          "delete_input": false,
+          "trim_triangular_faces": false,
+          "undo_after": true
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "nurbs",
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "weight": 1
+                },
+                {
+                  "point": [
+                    3,
+                    2,
+                    0
+                  ],
+                  "weight": 1
+                }
+              ],
+              "knots": [
+                0,
+                0,
+                1,
+                1
+              ]
+            }
+          ],
+          "postselect": true,
+          "delete_input": true
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true,
+          "delete_input": true,
+          "trim_triangular_faces": true,
+          "undo_after": true
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "nurbs",
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "weight": 1
+                },
+                {
+                  "point": [
+                    3,
+                    2,
+                    0
+                  ],
+                  "weight": 1
+                }
+              ],
+              "knots": [
+                0,
+                0,
+                1,
+                1
+              ]
+            }
+          ],
+          "postselect": true,
+          "delete_input": false
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                0,
+                0
+              ],
+              "end": [
+                3,
+                2,
+                0
+              ]
+            }
+          ],
+          "postselect": true
+        },
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true,
+          "trim_triangular_faces": false,
+          "use_ngons": true
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true
+        },
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true,
+          "trim_triangular_faces": true,
+          "cancel": true
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true
+        }
+      ]
+    },
+    {
+      "op": "conversion_session",
+      "id": "tonurbs-post-partial-option-memory",
+      "steps": [
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true,
+          "delete_input": false,
+          "trim_triangular_faces": true
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true,
+          "trim_triangular_faces": false
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true,
+          "delete_input": true
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true,
+          "delete_input": false
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true,
+          "trim_triangular_faces": true
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true
+        }
+      ]
+    }
+  ]
+}

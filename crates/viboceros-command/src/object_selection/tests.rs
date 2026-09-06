@@ -1,6 +1,81 @@
 use super::*;
 
 #[test]
+fn confirmation_menus_are_selection_dependent_atomic_and_readonly_until_conversion() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    let mesh = document
+        .add_geometry(Geometry::Mesh(
+            TriangleMesh::try_new(
+                vec![
+                    Point3::try_new(0., 0., 0.).unwrap(),
+                    Point3::try_new(4., 0., 0.).unwrap(),
+                    Point3::try_new(0., 3., 0.).unwrap(),
+                ],
+                vec![[0, 1, 2]],
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    document
+        .select_objects_direct([mesh], SelectionMode::Replace)
+        .unwrap();
+    let base = registry
+        .object_selection_prompt("ToNURBS")
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        base.workflow,
+        ObjectSelectionWorkflow::ConfirmAfterSelection
+    );
+    assert!(base.menus.is_empty());
+    let mut prompt = registry
+        .object_selection_confirmation(&document, &base)
+        .unwrap()
+        .unwrap();
+    assert_eq!(prompt.menus[0].name, "MeshOptions");
+    prompt
+        .update_options("DeleteInput Yes MeshOptions TrimTriangularFaces No")
+        .unwrap();
+    let staged = prompt.clone();
+    for input in [
+        "DeleteInput=No DeleteInputObjects=Yes",
+        "MeshOptions TrimTriangularFaces=Yes MeshOptions",
+        "TrimTriangularFaces=Yes Unknown=No",
+    ] {
+        assert!(prompt.update_options(input).is_err());
+        assert_eq!(prompt, staged);
+    }
+    assert!(
+        prompt
+            .update_menu_options(99, "TrimTriangularFaces=Yes")
+            .is_err()
+    );
+    assert!(
+        prompt
+            .update_menu_options(0, "DeleteInputObjects=No")
+            .is_err()
+    );
+    assert_eq!(prompt, staged);
+    registry.accept_object_selection_options(&prompt).unwrap();
+    assert_eq!(
+        registry
+            .object_selection_prompt("ToNURBS")
+            .unwrap()
+            .unwrap(),
+        base
+    );
+    prompt
+        .update_menu_options(0, "TrimTriangularFaces Yes")
+        .unwrap();
+    assert_eq!(
+        prompt.command_line(),
+        "ToNURBS DeleteInputObjects=Yes MeshOptions TrimTriangularFaces=Yes"
+    );
+}
+
+#[test]
 fn prompt_queries_and_staged_updates_are_readonly_until_explicit_acceptance() {
     let r = CommandRegistry::with_builtins();
     assert!(r.object_selection_prompt("Delete").unwrap().is_none());

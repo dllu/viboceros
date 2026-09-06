@@ -111,10 +111,19 @@ pub struct DraftingInput {
     pub reference: Option<Point3>,
 }
 
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug)]
 pub struct ViewportInput {
     pub drafting: DraftingInput,
-    pub object_filter: ObjectSelectionFilter,
+    pub object_filter: Option<ObjectSelectionFilter>,
+}
+
+impl Default for ViewportInput {
+    fn default() -> Self {
+        Self {
+            drafting: DraftingInput::default(),
+            object_filter: Some(ObjectSelectionFilter::Any),
+        }
+    }
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -392,33 +401,34 @@ impl Viewport {
             }
         }
 
-        if drafting.active {
+        let selecting = !drafting.active && input.object_filter.is_some();
+        let object_filter = input.object_filter.unwrap_or_default();
+        if !selecting {
             self.selection_drag_start = None;
         } else if response.drag_started_by(PointerButton::Primary) {
             self.selection_drag_start = ui.input(|input| input.pointer.press_origin());
         }
         let selection_pointer = response.interact_pointer_pos();
-        let selection_window =
-            if !drafting.active && response.drag_stopped_by(PointerButton::Primary) {
-                self.selection_drag_start.take().and_then(|start| {
-                    let end = selection_pointer?;
-                    let crossing = is_crossing_selection(start, end);
-                    let selection_rect = Rect::from_two_pos(start, end);
-                    Some(SelectionWindow {
-                        object_ids: self.objects_in_selection_matching(
-                            rect,
-                            selection_rect,
-                            crossing,
-                            document,
-                            input.object_filter,
-                        ),
-                        mode: selection_mode(modifiers),
+        let selection_window = if selecting && response.drag_stopped_by(PointerButton::Primary) {
+            self.selection_drag_start.take().and_then(|start| {
+                let end = selection_pointer?;
+                let crossing = is_crossing_selection(start, end);
+                let selection_rect = Rect::from_two_pos(start, end);
+                Some(SelectionWindow {
+                    object_ids: self.objects_in_selection_matching(
+                        rect,
+                        selection_rect,
                         crossing,
-                    })
+                        document,
+                        object_filter,
+                    ),
+                    mode: selection_mode(modifiers),
+                    crossing,
                 })
-            } else {
-                None
-            };
+            })
+        } else {
+            None
+        };
 
         let drafting_cursor = if drafting.active {
             response
@@ -430,10 +440,10 @@ impl Viewport {
         if drafting.active && response.hovered() {
             ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
         }
-        let selection_click = if !drafting.active && response.clicked_by(PointerButton::Primary) {
+        let selection_click = if selecting && response.clicked_by(PointerButton::Primary) {
             Some(SelectionClick {
                 object_id: response.interact_pointer_pos().and_then(|pointer| {
-                    self.pick_object_matching(pointer, rect, document, input.object_filter)
+                    self.pick_object_matching(pointer, rect, document, object_filter)
                 }),
                 mode: selection_mode(modifiers),
             })

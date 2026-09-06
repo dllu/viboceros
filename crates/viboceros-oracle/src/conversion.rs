@@ -15,6 +15,8 @@ pub struct ConversionFixture {
     #[serde(default)]
     pub cancel: bool,
     #[serde(default)]
+    pub cancel_at_selection: bool,
+    #[serde(default)]
     pub initial_selection: Vec<usize>,
 }
 
@@ -47,8 +49,15 @@ pub(super) fn run_command(
     if f.sources.is_empty() || f.sources.len() > 16 {
         return Err(invalid());
     }
-    if ((f.postselect || f.cancel) && command.split_whitespace().next() != Some("MeshToNURB"))
-        || (f.cancel && (!f.postselect || undo_after))
+    let name = command.split_whitespace().next();
+    let filter = if name == Some("ToNURBS") {
+        viboceros_command::ObjectSelectionFilter::ToNurbs
+    } else {
+        viboceros_command::ObjectSelectionFilter::Mesh
+    };
+    if ((f.postselect || f.cancel) && !matches!(name, Some("MeshToNURB" | "ToNURBS")))
+        || (f.cancel && ((!f.postselect && name != Some("ToNURBS")) || undo_after))
+        || (f.cancel_at_selection && (!f.cancel || !f.postselect || name != Some("ToNURBS")))
         || (!f.initial_selection.is_empty() && !f.postselect)
         || f.initial_selection.iter().any(|i| *i >= f.sources.len())
         || f.initial_selection.iter().collect::<BTreeSet<_>>().len() != f.initial_selection.len()
@@ -81,15 +90,28 @@ pub(super) fn run_command(
         );
     }
     if f.postselect {
-        let is_mesh = |index: usize| {
-            matches!(
-                document.object(ids[index]).unwrap().geometry(),
-                Geometry::Mesh(_)
-            )
-        };
-        if !(selected.iter().copied().any(is_mesh) || f.cancel && (0..ids.len()).any(is_mesh)) {
+        let eligible =
+            |index: usize| filter.accepts(document.object(ids[index]).unwrap().geometry());
+        if !(selected.iter().copied().any(eligible) || f.cancel && (0..ids.len()).any(eligible)) {
             return Err(invalid());
         }
+    }
+    if f.cancel
+        && name == Some("ToNURBS")
+        && !f.cancel_at_selection
+        && !selected.iter().any(|i| {
+            matches!(
+                document.object(ids[*i]).unwrap().geometry(),
+                Geometry::Line(_)
+                    | Geometry::Circle(_)
+                    | Geometry::Arc(_)
+                    | Geometry::Polyline(_)
+                    | Geometry::PolyCurve(_)
+                    | Geometry::Mesh(_)
+            )
+        })
+    {
+        return Err(invalid());
     }
     for (i, members) in [ids.clone(), vec![ids[0]], vec![]].into_iter().enumerate() {
         let group = document.add_empty_group(Some(format!("Group-{i}")))?;
@@ -100,12 +122,7 @@ pub(super) fn run_command(
     } else {
         &selected
     } {
-        if f.postselect
-            && matches!(
-                document.object(ids[*index]).unwrap().geometry(),
-                Geometry::Mesh(_)
-            )
-        {
+        if f.postselect && filter.accepts(document.object(ids[*index]).unwrap().geometry()) {
             return Err(invalid());
         }
         document.select_objects_direct([ids[*index]], SelectionMode::Add)?;
@@ -122,16 +139,10 @@ pub(super) fn run_command(
         inspect_sources,
     )?;
     if f.postselect {
-        let prompt = registry
-            .object_selection_prompt(command)?
-            .ok_or_else(invalid)?;
-        registry.accept_object_selection_options(&prompt)?;
+        registry.accept_object_selection_input(command)?;
         document.clear_selection();
         for index in selected {
-            if prompt
-                .filter
-                .accepts(document.object(ids[index]).unwrap().geometry())
-            {
+            if filter.accepts(document.object(ids[index]).unwrap().geometry()) {
                 document.select_objects_direct([ids[index]], SelectionMode::Add)?;
             }
         }
@@ -144,8 +155,10 @@ pub(super) fn run_command(
                 viboceros_command::CommandContext::default(),
             )?;
         }
-    } else {
+    } else if !f.cancel {
         registry.execute(&mut document, command)?;
+    } else {
+        registry.accept_object_selection_input(command)?;
     }
     let after = record(
         &document,

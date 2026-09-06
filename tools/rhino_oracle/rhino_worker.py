@@ -3595,10 +3595,13 @@ def _conversion_arguments(operation, command, direction):
     ngons = operation.get("use_ngons")
     postselect = operation.get("postselect", False)
     cancel = operation.get("cancel", False)
-    if type(postselect) is not bool or type(cancel) is not bool or ((postselect or cancel) and command != "MeshToNURB") or (cancel and (not postselect or undo_after)):
+    cancel_at_selection = operation.get("cancel_at_selection", False)
+    if type(postselect) is not bool or type(cancel) is not bool or ((postselect or cancel) and command not in ("MeshToNURB", "ToNURBS")) or (cancel and ((not postselect and command != "ToNURBS") or undo_after)):
         raise ValueError("invalid conversion selection/cancellation path")
+    if type(cancel_at_selection) is not bool or (cancel_at_selection and (not cancel or not postselect or command != "ToNURBS")):
+        raise ValueError("invalid conversion cancellation stage")
     initial_selection = operation.get("initial_selection", [])
-    if not isinstance(initial_selection, list) or any(type(i) is not int or not 0 <= i < len(definitions) or definitions[i]["type"] == "mesh" for i in initial_selection) or len(set(initial_selection)) != len(initial_selection) or (initial_selection and not postselect):
+    if not isinstance(initial_selection, list) or any(type(i) is not int or not 0 <= i < len(definitions) or (definitions[i]["type"] == "mesh" if command == "MeshToNURB" else definitions[i]["type"] not in ("point", "point_cloud")) for i in initial_selection) or len(set(initial_selection)) != len(initial_selection) or (initial_selection and not postselect):
         raise ValueError("invalid initial non-mesh selection")
     if ngons is not None and (type(ngons) is not bool or command != "MeshToNURB"):
         raise ValueError("invalid n-gon conversion option")
@@ -3625,6 +3628,10 @@ def _conversion_arguments(operation, command, direction):
         raise ValueError("conversion requires an eligible object")
     if command == "MeshToNURB" and not any(definitions[i]["type"] == "mesh" for i in selected) and not (cancel and any(d["type"] == "mesh" for d in definitions)):
         raise ValueError("MeshToNURB requires a mesh")
+    if command == "ToNURBS" and postselect and not any(definitions[i]["type"] not in ("point", "point_cloud") for i in selected) and not (cancel and any(d["type"] not in ("point", "point_cloud") for d in definitions)):
+        raise ValueError("ToNURBS selection prompt requires eligible fixture geometry")
+    if command == "ToNURBS" and cancel and not cancel_at_selection and not any(definitions[i]["type"] in ("line", "arc", "circle", "polyline", "polycurve", "mesh") for i in selected):
+        raise ValueError("ToNURBS options require a convertible pick")
     if command == "ConvertToBeziers":
         script="_ConvertToBeziers " + ("_Enter" if delete is None else "_Yes" if delete else "_No")
     elif command == "ToNURBS":
@@ -3642,6 +3649,26 @@ def _conversion_arguments(operation, command, direction):
         script+=" _Toggle"*toggles
         script+=" _Enter"
     return definitions, selected, undo_after, script
+
+
+def _conversion_selection_script(operation, command, script, ids, selected):
+    """Keep selection, confirmation, and nested mesh options in their real order."""
+    definitions = operation["sources"]
+    postselect = operation.get("postselect", False)
+    cancel = operation.get("cancel", False)
+    if command == "MeshToNURB":
+        if not postselect: return "_MeshToNURB"
+        picks = " ".join("_SelID %s" % ids[i] for i in selected if definitions[i]["type"] == "mesh")
+        return script + " " + picks + (" !" if cancel else " _Enter")
+    if command == "ToNURBS":
+        if postselect:
+            picks = " ".join("_SelID %s" % ids[i] for i in selected if definitions[i]["type"] not in ("point", "point_cloud"))
+            if operation.get("cancel_at_selection", False): return "_ToNURBS " + picks + " !"
+            options = script[len("_ToNURBS"):]
+            if cancel: options = options.rsplit(" _Enter", 1)[0] + " !"
+            return "_ToNURBS " + picks + " _Enter" + options
+        if cancel: return script.rsplit(" _Enter", 1)[0] + " !"
+    return script
 
 
 def _seed_mesh_conversion_options(document, objects, mesh, script):
@@ -3775,11 +3802,7 @@ def _geometry_conversion(operation, tolerance, command="ConvertToBeziers", direc
                 if not document.Objects.Select(ids[i]): raise ValueError("conversion source preselection failed")
             if not all(document.Objects.FindId(ids[i]).IsSelected(False) for i in preselected): raise ValueError("conversion source preselection incomplete")
             initial = record()
-            if command == "MeshToNURB":
-                if postselect:
-                    script += " " + " ".join("_SelID %s" % ids[i] for i in selected if definitions[i]["type"] == "mesh")
-                    script += " !" if operation.get("cancel", False) else " _Enter"
-                else: script = "_MeshToNURB"
+            script = _conversion_selection_script(operation, command, script, ids, selected)
             _record_progress(command + ": command")
             _run_surface_script(script, True)
             _record_progress(command + ": record")
@@ -3816,7 +3839,7 @@ def _conversion_session(operation, tolerance):
                 if type(step.get("trim_triangular_faces")) is not bool or type(step.get("use_ngons")) is not bool:
                     raise ValueError("conversion session must seed mesh conversion options")
             elif type(step.get("delete_input")) is not bool: raise ValueError("conversion session must seed deletion choice")
-            if name == "ToNURBS" and not any(source["type"] in ("line","arc","circle","polyline","polycurve","mesh") for i,source in enumerate(step["sources"]) if i in step.get("selected",range(len(step["sources"])))):
+            if name == "ToNURBS" and (step.get("cancel", False) or not any(source["type"] in ("line","arc","circle","polyline","polycurve","mesh") for i,source in enumerate(step["sources"]) if i in step.get("selected",range(len(step["sources"]))))):
                 raise ValueError("ToNURBS no-op cannot seed conversion options")
             if name == "ConvertToSingleSpans" and step.get("direction") not in ("U","V","Both"):
                 raise ValueError("conversion session must seed direction")

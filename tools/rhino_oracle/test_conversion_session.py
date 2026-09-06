@@ -8,6 +8,34 @@ from . import test_worker
 class ConversionSessionTests(unittest.TestCase):
     def setUp(self): test_worker.RhinoWorkerTests.setUp(self)
 
+    def test_nurbs_postselection_scripts_keep_selection_confirmation_and_mesh_options_ordered(self):
+        base=dict(sources=[dict(type="line"),dict(type="mesh"),dict(type="point")],selected=[1,2,0],
+                  delete_input=False,trim_triangular_faces=False)
+        for changes,expected in [
+            ({},"_ToNURBS _DeleteInputObjects=No _MeshOptions _TrimTriangularFaces=No _Enter _Enter"),
+            (dict(cancel=True),"_ToNURBS _DeleteInputObjects=No _MeshOptions _TrimTriangularFaces=No _Enter !"),
+            (dict(postselect=True),"_ToNURBS _SelID mesh _SelID line _Enter _DeleteInputObjects=No _MeshOptions _TrimTriangularFaces=No _Enter _Enter"),
+            (dict(postselect=True,cancel=True),"_ToNURBS _SelID mesh _SelID line _Enter _DeleteInputObjects=No _MeshOptions _TrimTriangularFaces=No _Enter !"),
+            (dict(postselect=True,cancel=True,cancel_at_selection=True),"_ToNURBS _SelID mesh _SelID line !"),
+        ]:
+            op=dict(base,**changes)
+            _,selected,_,script=self.worker._conversion_arguments(op,"ToNURBS",None)
+            self.assertEqual(self.worker._conversion_selection_script(op,"ToNURBS",script,["line","mesh","point"],selected),expected)
+
+    def test_nurbs_cancelled_or_noop_input_cannot_seed_memory_and_invalid_stages_fail_early(self):
+        first=dict(command="ToNURBS",sources=[dict(type="line")],delete_input=True)
+        for changes in [dict(cancel=True),dict(postselect=True,cancel=True),dict(sources=[dict(type="nurbs")])]:
+            with patch.object(self.worker,"_geometry_conversion") as run,self.assertRaises(ValueError):
+                self.worker._conversion_session(dict(steps=[dict(first,**changes)]),{})
+            run.assert_not_called()
+        for changes in [dict(cancel_at_selection=True),dict(cancel_at_selection=1),
+                        dict(cancel=True,cancel_at_selection=True),dict(cancel=True,selected=[]),
+                        dict(postselect=True,cancel=True,sources=[dict(type="nurbs")]),
+                        dict(postselect=True,cancel=True,cancel_at_selection=True,selected=[],sources=[dict(type="point")]),
+                        dict(postselect=True,initial_selection=[0])]:
+            with self.subTest(changes=changes),self.assertRaises(ValueError):
+                self.worker._geometry_conversion(dict(first,**changes),{},"ToNURBS")
+
     def test_mesh_postselection_and_cancel_preflight_before_document_access(self):
         valid=dict(sources=[dict(type="mesh"),dict(type="point")],selected=[0],
                    postselect=True,trim_triangular_faces=False,use_ngons=True)

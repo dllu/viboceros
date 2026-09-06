@@ -6,6 +6,8 @@ mod mesh_tests;
 #[cfg(test)]
 mod nurbs_tests;
 #[cfg(test)]
+mod postselection_tests;
+#[cfg(test)]
 mod tests;
 use crate::conversion::{ConversionFixture, delete_option, run_command};
 use crate::curve_join_close::CurveInput;
@@ -209,7 +211,8 @@ pub(super) fn run(
                 || (step.command == ConversionCommand::ConvertToSingleSpans
                     && step.conversion.direction.is_none())
                 || (step.command == ConversionCommand::ToNURBS
-                    && !step.conversion.selected_sources().any(converts_to_nurbs)))
+                    && (step.conversion.geometry.cancel
+                        || !step.conversion.selected_sources().any(converts_to_nurbs))))
         {
             return Err(invalid());
         }

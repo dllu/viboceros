@@ -28,6 +28,44 @@ impl Document {
                     .expect("missing requested object"),
             ));
         }
+        self.finish_order_change(moved)
+    }
+
+    /// Renews objects in the caller's explicit order, retaining the relative
+    /// order of all untouched objects. Duplicate IDs keep their first position.
+    /// Identity, geometry, memberships, and selection action order are unchanged.
+    pub fn move_objects_to_end_in_order(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+    ) -> Result<bool, DocumentError> {
+        let mut ranks = BTreeMap::new();
+        for id in ids {
+            let rank = ranks.len();
+            ranks.entry(id).or_insert(rank);
+        }
+        let mut moved = self
+            .objects
+            .iter()
+            .enumerate()
+            .filter(|(_, o)| ranks.contains_key(&o.id))
+            .map(|(i, o)| (i, o.id))
+            .collect::<Vec<_>>();
+        if moved.len() != ranks.len() {
+            return Err(DocumentError::ObjectNotFound(
+                *ranks
+                    .keys()
+                    .find(|id| self.object(**id).is_none())
+                    .expect("missing requested object"),
+            ));
+        }
+        moved.sort_unstable_by_key(|(_, id)| ranks[id]);
+        self.finish_order_change(moved)
+    }
+
+    fn finish_order_change(
+        &mut self,
+        moved: Vec<(usize, ObjectId)>,
+    ) -> Result<bool, DocumentError> {
         let count = self.objects.len();
         let tail = count - moved.len();
         if moved
@@ -49,7 +87,7 @@ impl Document {
     }
 }
 
-/// Applies the stable partition or its inverse in linear time with one index
+/// Applies an ordered tail move or its inverse in linear time with one index
 /// vector. History stores only the moved IDs and original indices, not geometry
 /// or a complete document permutation. Validate before the first object swap.
 pub(super) fn apply(
@@ -60,38 +98,45 @@ pub(super) fn apply(
 ) -> Result<(), DocumentError> {
     let invalid =
         || DocumentError::HistoryInvariant("object-order history does not match document");
-    if objects.len() != count || moved.len() > count || moved.windows(2).any(|p| p[0].0 >= p[1].0) {
+    if objects.len() != count || moved.len() > count {
         return Err(invalid());
     }
     let tail = count - moved.len();
+    let mut destinations = vec![usize::MAX; count];
     for (i, (index, id)) in moved.iter().enumerate() {
-        if *index >= count || objects[if forward { *index } else { tail + i }].id != *id {
+        if *index >= count
+            || destinations[*index] != usize::MAX
+            || objects[if forward { *index } else { tail + i }].id != *id
+        {
             return Err(invalid());
         }
+        destinations[*index] = tail + i;
     }
-    let mut destinations = vec![0; count];
-    let (mut picked, mut retained) = (0, 0);
-    for original in 0..count {
-        let destination = if moved.get(picked).is_some_and(|(i, _)| *i == original) {
-            let d = tail + picked;
-            picked += 1;
-            d
-        } else {
-            let d = retained;
+    let mut retained = 0;
+    for destination in &mut destinations {
+        if *destination == usize::MAX {
+            *destination = retained;
             retained += 1;
-            d
-        };
-        if forward {
-            destinations[original] = destination;
-        } else {
-            destinations[destination] = original;
         }
     }
     for i in 0..count {
-        while destinations[i] != i {
-            let j = destinations[i];
-            objects.swap(i, j);
-            destinations.swap(i, j);
+        if forward {
+            while destinations[i] != i {
+                let j = destinations[i];
+                objects.swap(i, j);
+                destinations.swap(i, j);
+            }
+        } else {
+            // Traverse each cycle with adjacent swaps instead of anchor swaps
+            // to apply its inverse without allocating another permutation.
+            let mut cursor = i;
+            while destinations[cursor] != i {
+                let next = destinations[cursor];
+                objects.swap(cursor, next);
+                destinations[cursor] = cursor;
+                cursor = next;
+            }
+            destinations[cursor] = cursor;
         }
     }
     Ok(())

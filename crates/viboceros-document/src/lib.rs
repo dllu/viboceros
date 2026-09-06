@@ -1433,14 +1433,35 @@ impl Document {
         &mut self,
         copies: impl IntoIterator<Item = (ObjectId, Geometry)>,
     ) -> Result<Vec<ObjectId>, DocumentError> {
-        let copies = copies.into_iter().collect::<BTreeMap<_, _>>();
+        self.copy_object_geometries_with_order(copies, false)
+    }
+
+    /// Copies in caller-specified order, retaining source attributes and group
+    /// memberships. Duplicate IDs use their last geometry and last position.
+    pub fn copy_object_geometries_into_source_groups_in_order(
+        &mut self,
+        copies: impl IntoIterator<Item = (ObjectId, Geometry)>,
+    ) -> Result<Vec<ObjectId>, DocumentError> {
+        self.copy_object_geometries_with_order(copies, true)
+    }
+
+    fn copy_object_geometries_with_order(
+        &mut self,
+        copies: impl IntoIterator<Item = (ObjectId, Geometry)>,
+        input_order: bool,
+    ) -> Result<Vec<ObjectId>, DocumentError> {
+        let copies = copies
+            .into_iter()
+            .enumerate()
+            .map(|(rank, (id, geometry))| (id, (rank, geometry)))
+            .collect::<BTreeMap<_, _>>();
         if let Some(missing) = copies.keys().find(|id| self.object(**id).is_none()) {
             return Err(DocumentError::ObjectNotFound(*missing));
         }
 
         let mut staged = Vec::with_capacity(copies.len());
         for (index, object) in self.objects.iter().enumerate() {
-            let Some(geometry) = copies.get(&object.id) else {
+            let Some((rank, geometry)) = copies.get(&object.id) else {
                 continue;
             };
             if object.attributes.locked {
@@ -1452,10 +1473,13 @@ impl Document {
             if layer.locked {
                 return Err(DocumentError::LayerLocked(layer.id));
             }
-            staged.push((index, geometry.clone()));
+            staged.push((index, *rank, geometry.clone()));
         }
         if staged.is_empty() {
             return Ok(Vec::new());
+        }
+        if input_order {
+            staged.sort_unstable_by_key(|(_, rank, _)| *rank);
         }
 
         self.objects
@@ -1467,7 +1491,7 @@ impl Document {
         }
 
         let mut copied = Vec::with_capacity(staged.len());
-        for (source_index, geometry) in staged {
+        for (source_index, _, geometry) in staged {
             let source = &self.objects[source_index];
             let source_id = source.id;
             let attributes = source.attributes.clone();

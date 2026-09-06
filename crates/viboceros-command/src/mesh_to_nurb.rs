@@ -40,14 +40,18 @@ impl Command for MeshToNurbCommand {
         Ok(Some(ObjectSelectionPrompt {
             command: self.name(),
             filter: ObjectSelectionFilter::Mesh,
+            workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
+            menus: vec![],
             options: vec![
                 BooleanSelectionOption {
                     name: "TrimTriangularFaces",
                     value: options.trim_triangular_faces,
+                    aliases: &[],
                 },
                 BooleanSelectionOption {
                     name: "UseNgons",
                     value: options.use_ngons,
+                    aliases: &[],
                 },
             ],
         }))

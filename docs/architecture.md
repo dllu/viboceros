@@ -53,7 +53,13 @@ options to the separate [app object-prompt adapter](object-selection.md).
 Viewport hit-testing applies the filter before hit priority; clicks/windows use
 the same selection adapter. Prompt choices live outside model history, while
 finishing uses the registry's normal transaction lifecycle with explicit
-postselection dispatch. This state is separate from point drafting and nested CPlane input.
+postselection dispatch. Typed workflows distinguish options during selection from
+ToNURBS's separate confirmation and MeshOptions submenu. The command determines
+selection-dependent menus; the app owns their phase and pre/postselection origin.
+Confirmation disables object picking without enabling point drafting. Nested CPlane
+input and display controls retain the current phase. Explicit ordered document
+renewal and ordered copies support pick-dependent creation order; inverse renewal
+uses adjacent cycle swaps with the same single scratch permutation as forward replay.
 The `bounds/bezier` module handles bounded tensor subdivision and rational hulls;
 curve/surface adapters select the complete native active spans.
 `bounds/bezier/compose` constructs homogeneous rational surface/UV-curve

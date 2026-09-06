@@ -233,6 +233,90 @@ fn replacement_renews_document_order_but_not_selection_action_order_or_identity(
 }
 
 #[test]
+fn postselected_conversion_uses_pick_order_and_clears_selection_for_both_deletion_choices() {
+    for delete in [false, true] {
+        let (mut document, curve) = selected(polyline());
+        let dot = document
+            .add_geometry(Geometry::Point(p(20., 0., 0.)))
+            .unwrap();
+        let mesh = document.add_geometry(mesh(false)).unwrap();
+        document
+            .add_group(Some("all".into()), [curve, dot, mesh])
+            .unwrap();
+        document
+            .select_objects_direct([], SelectionMode::Replace)
+            .unwrap();
+        for id in [mesh, dot, curve] {
+            document
+                .select_objects_direct([id], SelectionMode::Add)
+                .unwrap();
+        }
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let registry = CommandRegistry::with_builtins();
+        registry
+            .execute_postselected(
+                &mut document,
+                &format!(
+                    "ToNURBS DeleteInputObjects={}",
+                    if delete { "Yes" } else { "No" }
+                ),
+                CommandContext::default(),
+            )
+            .unwrap();
+        assert_eq!(document.selected_object_count(), 0);
+        let outputs = document
+            .objects()
+            .skip(if delete { 1 } else { 3 })
+            .collect::<Vec<_>>();
+        assert!(matches!(outputs[0].geometry(), Geometry::Brep(_)));
+        assert!(matches!(outputs[1].geometry(), Geometry::NurbsCurve(_)));
+        for (output, source) in outputs.iter().zip([mesh, curve]) {
+            let original = before.iter().find(|o| o.id() == source).unwrap();
+            assert_eq!(output.attributes(), original.attributes());
+            assert_eq!(output.group_ids(), original.group_ids());
+            assert_eq!(output.id() == source, delete);
+        }
+        let after = document.objects().cloned().collect::<Vec<_>>();
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
+    }
+}
+
+#[test]
+fn postselected_noop_clears_picks_but_does_not_accept_choices_or_discard_redo() {
+    let registry = CommandRegistry::with_builtins();
+    let (mut document, id) = selected(polyline());
+    registry
+        .execute(&mut document, "ToNURBS DeleteInputObjects=Yes")
+        .unwrap();
+    let converted = document.object(id).unwrap().geometry().clone();
+    registry.execute(&mut document, "Undo").unwrap();
+    let (mut noop, id) = selected(converted);
+    registry.execute(&mut noop, "Move 0,0,0 1,0,0").unwrap();
+    registry.execute(&mut noop, "Undo").unwrap();
+    let before = noop.object(id).unwrap().clone();
+    let history = noop.undo_label().map(str::to_owned);
+    registry
+        .execute_postselected(
+            &mut noop,
+            "ToNURBS DeleteInputObjects=No",
+            CommandContext::default(),
+        )
+        .unwrap();
+    assert_eq!(noop.selected_object_count(), 0);
+    assert_eq!(noop.object(id), Some(&before));
+    assert_eq!(noop.undo_label(), history.as_deref());
+    assert!(noop.can_redo());
+    registry
+        .accept_object_selection_input("ToNURBS DeleteInputObjects=No")
+        .unwrap();
+    registry.execute(&mut document, "ToNURBS").unwrap();
+    assert_eq!(document.objects().len(), 1);
+}
+
+#[test]
 fn later_resource_failure_leaves_sources_groups_selection_history_and_choices_unchanged() {
     let r = CommandRegistry::with_builtins();
     let (mut seed, _) = selected(polyline());

@@ -29,6 +29,11 @@ also retains already accepted choices. Invalid option input changes neither the
 pending options nor remembered values. Cancelling clears picks without editing
 geometry, adding undo history, or discarding redo.
 
+`ToNURBS` uses a separate confirmation phase and optional MeshOptions submenu.
+Their edited values are staged, not remembered: only a successful real conversion
+commits them. Escape from any phase discards those edits. No-op-only input skips
+confirmation, including when selected during the command.
+
 Native bootstrap choices are deletion No, Direction Both, and triangle trimming Yes. They are not
 serialized across application restarts. Rhino's factory defaults and restart
 persistence are not established by these tests. This is not a global preference
@@ -53,3 +58,6 @@ verified; actual n-gon option effects remain unverified.
 Three `mesh_nurbs_postselection_sessions.json` probes add 18 steps testing
 cancelled choices before/after picking, mixed pre/postselection, undo, and
 independence from `ToNURBS`. They exercise Rhino's actual selection prompt.
+Three `nurbs_postselection_sessions.json` probes add 31 steps checking staged
+ToNURBS choices, both cancellation paths, no-op inputs, undo, and interleaved
+MeshToNURB memory. A cancelled ToNURBS command cannot seed a deterministic session.
