@@ -2,6 +2,9 @@
 
 [Curve bounds](curve-bounds.md) · [Array layouts](plane-arrays.md) · [Oracle](oracle.md)
 
+Exact [trim-boundary image bounds](trim-boundary-bounds.md) are available
+separately; they do not yet supply trim-aware interior extrema for a whole face.
+
 `NurbsSurface::tight_bounds(Tolerance)` bounds the complete active untrimmed
 surface, including independent limits at fully multiple knots in either
 direction. It shares homogeneous span extraction and adaptive subdivision with

@@ -47,7 +47,7 @@ impl NurbsCurve {
             net.extract_axis(0, self.knots(), span, &mut budget)?;
             nodes.push(net);
         }
-        bezier::bounds(nodes, budget, tolerance)
+        bezier::bounds(nodes, &mut budget, tolerance)
     }
 }
 

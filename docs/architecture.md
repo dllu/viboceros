@@ -32,6 +32,9 @@ polar layout. Curve and standalone NURBS-surface extents use tolerance-controlle
 document/control-net bounds. The shared `bounds/bezier` module handles local
 homogeneous span extraction, bounded tensor subdivision, and rational hulls;
 curve/surface adapters select the complete native active spans.
+`bounds/bezier/compose` constructs homogeneous rational surface/UV-curve
+compositions. `bounds/parameter_curves` bounds their exact spatial images and
+[B-rep trim boundaries](trim-boundary-bounds.md), separately from face interiors.
 `viboceros-command::interface` owns [display/drafting controls](commands/interface.md).
 The application adapter applies those actions without entering the modeling
 command lifecycle; the compact toolbar and keyboard shortcuts share that path.

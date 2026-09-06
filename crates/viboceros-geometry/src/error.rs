@@ -5,6 +5,8 @@ use crate::{MAX_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRES, MIN_SURFACE_WIRE_DENSIT
 /// Failures produced while constructing or evaluating geometry.
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum GeometryError {
+    #[error("a parameter curve leaves the active surface domain")]
+    ParameterCurveOutsideSurfaceDomain,
     #[error("bounding box could not meet the requested accuracy within its subdivision budget")]
     BoundingBoxDidNotConverge,
     #[error("invalid one-rail sweep: {context}")]

@@ -155,6 +155,14 @@ fn tensor_subdivision_retains_exact_geometry_in_both_child_coordinate_maps() {
 #[test]
 fn resource_budgets_fail_before_unbounded_control_allocation_or_subdivision_work() {
     assert_eq!(
+        Budget {
+            visited: MAX_NODES,
+            ..Budget::default()
+        }
+        .visit(),
+        Err(GeometryError::BoundingBoxDidNotConverge)
+    );
+    assert_eq!(
         Budget::default().initial(MAX_INITIAL_CONTROLS + 1),
         Err(GeometryError::BoundingBoxDidNotConverge)
     );
@@ -162,4 +170,75 @@ fn resource_budgets_fail_before_unbounded_control_allocation_or_subdivision_work
         Budget::default().charge(MAX_WORK + 1),
         Err(GeometryError::BoundingBoxDidNotConverge)
     );
+}
+
+#[test]
+fn composition_degree_budget_rejects_before_polynomial_allocation() {
+    let control = WeightedPoint3::try_new(Point3::try_new(0.25, 0.25, 0.).unwrap(), 1.).unwrap();
+    let surface = Net::new([1, 1], &[control; 4]).unwrap();
+    let uv = Net::new([129, 0], &[control; 130]).unwrap();
+    assert!(matches!(
+        surface.compose(&uv, [[0., 1.], [0., 1.]], &mut Budget::default()),
+        Err(GeometryError::BoundingBoxDidNotConverge)
+    ));
+}
+
+#[test]
+fn homogeneous_composition_matches_direct_tensor_evaluation_for_rational_inputs() {
+    for p in 1..=5 {
+        for q in 1..=4 {
+            let surface = Net::new(
+                [p, q],
+                &(0..=q)
+                    .flat_map(|v| {
+                        (0..=p).map(move |u| {
+                            WeightedPoint3::try_new(
+                                point(u, v),
+                                if u == 1 && v == 1 {
+                                    -0.03
+                                } else {
+                                    1. + (u + v) as f64 / 10.
+                                },
+                            )
+                            .unwrap()
+                        })
+                    })
+                    .collect::<Vec<_>>(),
+            )
+            .unwrap();
+            for m in 1..=4 {
+                let uv = Net::new(
+                    [m, 0],
+                    &(0..=m)
+                        .map(|i| {
+                            WeightedPoint3::try_new(
+                                Point3::try_new(
+                                    0.1 + i as f64 / (m + 1) as f64 * 0.8,
+                                    0.5 + 0.4 * (i as f64).cos(),
+                                    0.,
+                                )
+                                .unwrap(),
+                                1. + i as f64 * 0.3,
+                            )
+                            .unwrap()
+                        })
+                        .collect::<Vec<_>>(),
+                )
+                .unwrap();
+                let composed = surface
+                    .compose(&uv, [[0., 1.], [0., 1.]], &mut Budget::default())
+                    .unwrap();
+                assert_eq!(composed.degrees, [m * (p + q), 0]);
+                for i in 0..=32 {
+                    let t = i as f64 / 32.;
+                    let parameter = at(&uv, t, 0.);
+                    let want = at(&surface, parameter.x(), parameter.y());
+                    assert!(
+                        at(&composed, t, 0.).distance_to(want).unwrap() < 2e-12,
+                        "degrees {p},{q},{m}, t={t}"
+                    );
+                }
+            }
+        }
+    }
 }

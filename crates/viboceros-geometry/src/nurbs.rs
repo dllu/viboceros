@@ -5161,17 +5161,21 @@ pub(crate) fn interval_fraction(
     Ok(alpha.clamp(0.0, 1.0))
 }
 
-fn interval_fraction_unbounded(
+pub(crate) fn interval_fraction_unbounded(
     value: Real,
     interval_start: Real,
     interval_end: Real,
 ) -> Result<Real, GeometryError> {
     let denominator = interval_end - interval_start;
-    let alpha = if denominator.is_finite() && denominator > 0.0 {
-        (value - interval_start) / denominator
-    } else if denominator.is_infinite() && interval_start < interval_end {
+    let numerator = value - interval_start;
+    let alpha = if denominator.is_finite() && denominator > 0.0 && numerator.is_finite() {
+        numerator / denominator
+    } else if (denominator.is_infinite() || numerator.is_infinite())
+        && interval_start < interval_end
+    {
         // Halving preserves the ratio when subtracting opposite, very large
-        // finite endpoints would overflow.
+        // finite coordinates would overflow, including off-interval controls
+        // with a finite interval width.
         let scaled_start = interval_start * 0.5;
         (value * 0.5 - scaled_start) / (interval_end * 0.5 - scaled_start)
     } else {

@@ -1,22 +1,32 @@
 //! Local homogeneous span extraction and tensor subdivision for tight boxes.
 //! Intermediate zero weights are valid projective controls, not curve poles.
 use crate::{BoundingBox3, GeometryError, Point3, Tolerance, WeightedPoint3};
+mod compose;
 #[cfg(test)]
 mod tests;
 
 pub(super) const MAX_NODES: usize = 131_072;
 const MAX_INITIAL_CONTROLS: usize = 1_048_576;
 const MAX_WORK: usize = 33_554_432;
-const MAX_DEPTH: u8 = 64;
+pub(super) const MAX_DEPTH: u8 = 64;
 type H = [f64; 4];
 
 #[derive(Default)]
 pub(super) struct Budget {
     work: usize,
     initial_controls: usize,
+    visited: usize,
 }
 
 impl Budget {
+    pub(super) fn visit(&mut self) -> Result<(), GeometryError> {
+        self.visited = self.visited.saturating_add(1);
+        if self.visited > MAX_NODES {
+            Err(GeometryError::BoundingBoxDidNotConverge)
+        } else {
+            Ok(())
+        }
+    }
     pub(super) fn initial(&mut self, count: usize) -> Result<(), GeometryError> {
         self.initial_controls = self.initial_controls.saturating_add(count);
         if self.initial_controls > MAX_INITIAL_CONTROLS {
@@ -25,7 +35,7 @@ impl Budget {
         self.charge(count)
     }
 
-    fn charge(&mut self, count: usize) -> Result<(), GeometryError> {
+    pub(super) fn charge(&mut self, count: usize) -> Result<(), GeometryError> {
         self.work = self.work.saturating_add(count);
         if self.work > MAX_WORK {
             Err(GeometryError::BoundingBoxDidNotConverge)
@@ -40,7 +50,7 @@ pub(super) struct Net {
     pub(super) degrees: [usize; 2],
     pub(super) origin: [f64; 3],
     pub(super) controls: Vec<H>,
-    depth: u8,
+    pub(super) depth: u8,
 }
 
 impl Net {
@@ -60,6 +70,14 @@ impl Net {
         } else {
             [0.; 3]
         };
+        Self::new_at_origin(degrees, controls, origin)
+    }
+
+    pub(super) fn new_at_origin(
+        degrees: [usize; 2],
+        controls: &[WeightedPoint3],
+        origin: [f64; 3],
+    ) -> Result<Self, GeometryError> {
         let scale = controls.iter().map(|c| c.weight().abs()).fold(0., f64::max);
         let controls = controls
             .iter()
@@ -144,7 +162,7 @@ impl Net {
         }
     }
 
-    fn project(&self, h: H) -> Result<Point3, GeometryError> {
+    pub(super) fn project(&self, h: H) -> Result<Point3, GeometryError> {
         if h[3] == 0. {
             return Err(GeometryError::ZeroWeightAtParameter);
         }
@@ -168,7 +186,7 @@ impl Net {
         BoundingBox3::from_points(points.into_iter().collect::<Result<Vec<_>, _>>()?)
     }
 
-    fn center(&self) -> Result<Point3, GeometryError> {
+    pub(super) fn center(&self) -> Result<Point3, GeometryError> {
         let width = self.degrees[0] + 1;
         let mut rows = self
             .controls
@@ -178,7 +196,7 @@ impl Net {
         self.project(midpoint_in_place(&mut rows))
     }
 
-    fn hull(&self) -> Option<BoundingBox3> {
+    pub(super) fn hull(&self) -> Option<BoundingBox3> {
         let first = self.controls[0][3];
         if first == 0.
             || self
@@ -233,7 +251,7 @@ impl Net {
         }
     }
 
-    fn split(self, axis: usize) -> (Self, Self) {
+    pub(super) fn split(self, axis: usize) -> (Self, Self) {
         let mut left = self.controls.clone();
         let mut right = self.controls.clone();
         let degree = self.degrees[axis];
@@ -290,7 +308,7 @@ fn midpoint_in_place(work: &mut [H]) -> H {
 
 pub(super) fn bounds(
     mut nodes: Vec<Net>,
-    mut budget: Budget,
+    budget: &mut Budget,
     tolerance: Tolerance,
 ) -> Result<BoundingBox3, GeometryError> {
     if nodes.len() > MAX_NODES {
@@ -301,12 +319,8 @@ pub(super) fn bounds(
         merge(&mut attained, node.corners()?)?;
     }
     let mut enclosure = None;
-    let mut visited = 0;
     while let Some(node) = nodes.pop() {
-        visited += 1;
-        if visited > MAX_NODES {
-            return Err(GeometryError::BoundingBoxDidNotConverge);
-        }
+        budget.visit()?;
         merge(&mut attained, node.corners()?)?;
         let hull = node.hull();
         if let Some(hull) = hull
@@ -340,7 +354,10 @@ pub(super) fn bounds(
     enclosure.ok_or(GeometryError::EmptyPointSet)
 }
 
-fn merge(bounds: &mut Option<BoundingBox3>, next: BoundingBox3) -> Result<(), GeometryError> {
+pub(super) fn merge(
+    bounds: &mut Option<BoundingBox3>,
+    next: BoundingBox3,
+) -> Result<(), GeometryError> {
     *bounds = Some(match *bounds {
         Some(b) => b.union(next)?,
         None => next,
@@ -348,7 +365,7 @@ fn merge(bounds: &mut Option<BoundingBox3>, next: BoundingBox3) -> Result<(), Ge
     Ok(())
 }
 
-fn resolved(hull: BoundingBox3, attained: BoundingBox3, tolerance: Tolerance) -> bool {
+pub(super) fn resolved(hull: BoundingBox3, attained: BoundingBox3, tolerance: Tolerance) -> bool {
     (0..3).all(|i| resolved_axis(hull, attained, tolerance, i))
 }
 

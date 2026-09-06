@@ -53,6 +53,12 @@ untimed 41×41 `sample_grid` witnesses recorded separately as `sample_bounds`.
 `surface_array_bounds.json` compares 32 actual surface/mixed-source arrays;
 24 pass and eight retain placement discrepancies at `1e-8`.
 See [surface bounds](surface-bounds.md) for coverage and limitations.
+`parameter_curve_bounds.json` compares 20 exact surface images against
+independently supplied spatial reference curves; a signed-rational Rhino box
+discrepancy remains in `parameter_curve_bounds_diagnostics.json`.
+`trim_boundary_bounds.json` adds six exact B-rep boundary comparisons.
+These untimed probes retain direct surface-image samples and do not imply
+complete trimmed-face bounds; see [trim-boundary bounds](trim-boundary-bounds.md).
 
 With Rhino installed through the configured Wine/FEX launcher, run the core fixture:
 

@@ -33,6 +33,52 @@ fn paraboloid() -> NurbsSurface {
     .unwrap()
 }
 
+#[test]
+fn exact_trim_boundary_boxes_include_holes_but_do_not_substitute_for_face_interior_bounds() {
+    let tolerance = Tolerance::try_new(1e-10, 1e-13, 1e-10).unwrap();
+    for radii in [&[0.8][..], &[0.8, 0.35][..]] {
+        let brep = round_trim(paraboloid(), radii, false);
+        let face = &brep.faces()[0];
+        let bounds = face.trim_boundary_bounds(tolerance).unwrap();
+        assert!((bounds.min().x() + 0.8).abs() < 1e-9);
+        assert!((bounds.max().x() - 0.8).abs() < 1e-9);
+        assert!((bounds.min().y() + 0.8).abs() < 1e-9);
+        assert!((bounds.max().y() - 0.8).abs() < 1e-9);
+        assert!((bounds.min().z() - radii.last().unwrap().powi(2)).abs() < 1e-9);
+        assert!((bounds.max().z() - 0.64).abs() < 1e-9);
+        if radii.len() == 1 {
+            assert!(face.contains_parameters(0., 0., tolerance).unwrap());
+            assert_eq!(face.surface().evaluate(0., 0.).unwrap().z(), 0.);
+            assert!(bounds.min().z() > 0.6);
+        }
+    }
+}
+
+#[test]
+fn trim_image_bounds_include_singular_poles_and_the_shared_spherical_seam() {
+    let tolerance = Tolerance::try_new(1e-10, 1e-13, 1e-10).unwrap();
+    let frame = crate::Frame3::try_from_normal(
+        point(0., 0., 0.),
+        Vector3::try_new(0., 0., 1.).unwrap(),
+        tolerance,
+    )
+    .unwrap();
+    let brep =
+        Brep::try_surface_face(NurbsSurface::try_sphere(frame, 2.).unwrap(), tolerance).unwrap();
+    let face = &brep.faces()[0];
+    let kinds = face
+        .loops()
+        .iter()
+        .flat_map(|l| l.trims())
+        .map(|t| t.trim_type())
+        .collect::<Vec<_>>();
+    assert!(kinds.contains(&BrepTrimType::Singular));
+    assert!(kinds.contains(&BrepTrimType::Seam));
+    let bounds = face.trim_boundary_bounds(tolerance).unwrap();
+    assert!(bounds.min().distance_to(point(0., 0., -2.)).unwrap() < 1e-9);
+    assert!(bounds.max().distance_to(point(2., 0., 2.)).unwrap() < 1e-9);
+}
+
 fn round_trim(surface: NurbsSurface, radii: &[Real], capped: bool) -> Brep {
     let mut vertices = Vec::new();
     let mut edges = Vec::new();

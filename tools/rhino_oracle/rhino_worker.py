@@ -3024,8 +3024,79 @@ def _plane_array(operation):
                 curve.Dispose()
 
 
+def _surface_parameter_curve_bounds(operation, tolerance):
+    owned = []
+    try:
+        if any(float(c["point"][2]) != 0.0 for c in operation["parameter_curve"]["control_points"]):
+            raise ValueError("parameter curves must have zero Z coordinates")
+        surface = _nurbs_surface_from_definition(operation["surface"])
+        owned.append(surface)
+        curve = _nurbs_curve_from_definition(operation["parameter_curve"], 2)
+        owned.append(curve)
+        reference = _nurbs_curve_from_definition(operation["reference_curve"])
+        owned.append(reference)
+        if curve.Domain.T0 != reference.Domain.T0 or curve.Domain.T1 != reference.Domain.T1:
+            raise ValueError("reference curve parameter domain differs")
+        samples = []
+        reference_samples = []
+        for i in range(65):
+            t = curve.Domain.ParameterAt(i/64.0)
+            uv = curve.PointAt(t)
+            point = surface.PointAt(uv.X, uv.Y)
+            expected = reference.PointAt(t)
+            scale = max([abs(x) for x in _xyz(point)+_xyz(expected)])
+            if point.DistanceTo(expected) > max(tolerance["absolute"],tolerance["relative"]*scale):
+                raise ValueError("parameter image samples differ from the independent spatial reference")
+            samples.append(_xyz(point))
+            reference_samples.append(_xyz(expected))
+        bounds = reference.GetBoundingBox(True)
+        if not bounds.IsValid:
+            raise ValueError("invalid reference curve bounds")
+        # This is an independently supplied exact curve, not a corresponding
+        # Rhino composition algorithm, so elapsed=0 is intentional.
+        return {"min":_xyz(bounds.Min),"max":_xyz(bounds.Max),"samples":samples,"reference_samples":reference_samples},0
+    finally:
+        for geometry in reversed(owned):
+            geometry.Dispose()
+
+
+def _trim_boundary_bounds(operation, tolerance):
+    brep = _trimmed_brep_from_definition(operation, tolerance)
+    try:
+        faces = []
+        for face in brep.Faces:
+            bounds = None
+            samples = []
+            for loop in face.Loops:
+                for trim in loop.Trims:
+                    if trim.Edge is None:
+                        raise ValueError("boundary reference fixture requires explicit spatial edges")
+                    edge_bounds = trim.Edge.GetBoundingBox(True)
+                    if not edge_bounds.IsValid:
+                        raise ValueError("invalid boundary reference bounds")
+                    if bounds is None:
+                        bounds = edge_bounds
+                    else:
+                        bounds.Union(edge_bounds)
+                    values = []
+                    for i in range(65):
+                        uv = trim.PointAt(trim.Domain.ParameterAt(i/64.0))
+                        values.append(_xyz(face.PointAt(uv.X,uv.Y)))
+                    samples.append(values)
+            if bounds is None:
+                raise ValueError("boundary reference fixture requires nonempty trims")
+            faces.append({"min":_xyz(bounds.Min),"max":_xyz(bounds.Max),"samples":samples})
+        return {"faces":faces},0
+    finally:
+        brep.Dispose()
+
+
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "surface_parameter_curve_bounds":
+        return _surface_parameter_curve_bounds(operation, tolerance)
+    if kind == "trim_boundary_bounds":
+        return _trim_boundary_bounds(operation, tolerance)
     if kind in ("curve_bounds", "surface_bounds"):
         geometry = _join_close_input(operation["curve"]) if kind == "curve_bounds" else _nurbs_surface_from_definition(operation["surface"])
         try:

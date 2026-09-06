@@ -35,6 +35,8 @@ use viboceros_io::{
 mod construction_plane;
 mod interface;
 mod mass_properties;
+mod parameter_bounds;
+pub use parameter_bounds::ParameterCurveBoundsFixture;
 mod plane_arrays;
 mod trimmed_brep;
 pub use trimmed_brep::{TrimBoundary, TrimmedBrepFixture};
@@ -117,6 +119,16 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    SurfaceParameterCurveBounds {
+        id: String,
+        #[serde(flatten)]
+        fixture: ParameterCurveBoundsFixture,
+    },
+    TrimBoundaryBounds {
+        id: String,
+        #[serde(flatten)]
+        fixture: TrimmedBrepFixture,
+    },
     SurfaceBounds {
         id: String,
         surface: NurbsSurfaceDefinition,
@@ -1458,6 +1470,8 @@ impl Operation {
             Self::PolycurveGeometry { id, .. }
             | Self::CurveBounds { id, .. }
             | Self::SurfaceBounds { id, .. }
+            | Self::SurfaceParameterCurveBounds { id, .. }
+            | Self::TrimBoundaryBounds { id, .. }
             | Self::PlaneArray { id, .. }
             | Self::ConstructionPlaneInput { id, .. }
             | Self::ConstructionPlane { id, .. }
@@ -1758,6 +1772,12 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::SurfaceParameterCurveBounds { fixture, .. } => {
+            parameter_bounds::run(fixture, tolerance)?
+        }
+        Operation::TrimBoundaryBounds { fixture, .. } => {
+            parameter_bounds::run_face(fixture, tolerance)?
+        }
         Operation::SurfaceBounds {
             surface,
             sample_grid,
