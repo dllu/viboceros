@@ -1,6 +1,20 @@
 use super::*;
 
 #[test]
+fn projected_anchor_capture_does_not_require_unrepresentable_axis_candidates() {
+    let plane = frame();
+    let anchor = point(f64::MAX, 0.0, 7.0);
+    let cursor = point(-f64::MAX, 0.0, 0.0);
+    let snap = orthogonal_track_projected(cursor, anchor, plane, [10.0, 20.0], 1.0, |candidate| {
+        (candidate == anchor).then_some([10.0, 20.0])
+    })
+    .unwrap()
+    .unwrap();
+    assert_eq!(snap.axis(), TrackAxis::Both);
+    assert_eq!(snap.point(), anchor);
+}
+
+#[test]
 fn fine_grid_spacing_does_not_overflow_a_finite_coordinate() {
     let plane = Frame3::try_from_directions(
         point(0.0, 0.0, 0.0),

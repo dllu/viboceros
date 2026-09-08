@@ -58,13 +58,23 @@ pub fn orthogonal_track_projected(
     project: impl Fn(Point3) -> Option<[f64; 2]>,
 ) -> Result<Option<OrthogonalTrack>, DraftingError> {
     validate_capture_radius(capture_radius)?;
+    // Anchor capture is independent of the cursor's plane coordinates. Do
+    // not construct possibly unrepresentable axis candidates before accepting it.
+    if let Some(screen) = project(anchor) {
+        let distance = (screen[0] - pointer[0]).hypot(screen[1] - pointer[1]);
+        if distance.is_finite() && distance <= capture_radius {
+            return Ok(Some(OrthogonalTrack {
+                point: anchor,
+                axis: TrackAxis::Both,
+            }));
+        }
+    }
     let frame = plane.with_origin(anchor);
     let [x, y, _] = frame.coordinates_of(cursor)?;
     let mut best = None;
     let mut best_distance = capture_radius;
-    // Capture the anchor first; otherwise the closer local axis wins (X on ties).
+    // Otherwise the closer local axis wins (X on ties).
     for (point, axis) in [
-        (anchor, TrackAxis::Both),
         (frame.point_at([x, 0., 0.])?, TrackAxis::Horizontal),
         (frame.point_at([0., y, 0.])?, TrackAxis::Vertical),
     ] {
@@ -76,9 +86,6 @@ pub fn orthogonal_track_projected(
             {
                 best = Some(OrthogonalTrack { point, axis });
                 best_distance = distance;
-                if axis == TrackAxis::Both {
-                    return Ok(best);
-                }
             }
         }
     }

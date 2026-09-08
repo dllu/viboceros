@@ -64,10 +64,8 @@ pub fn orthogonal_track(
     validate_capture_radius(capture_radius)?;
     let horizontal_distance = (cursor.y() - anchor.y()).abs();
     let vertical_distance = (cursor.x() - anchor.x()).abs();
-    if !horizontal_distance.is_finite() || !vertical_distance.is_finite() {
-        return Ok(None);
-    }
-
+    // An overflowing distance is outside the finite radius on that axis;
+    // it does not invalidate a capturable perpendicular axis.
     let horizontal = horizontal_distance <= capture_radius;
     let vertical = vertical_distance <= capture_radius;
     let (point, axis) = match (horizontal, vertical) {

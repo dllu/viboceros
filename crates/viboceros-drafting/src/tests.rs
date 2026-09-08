@@ -1,4 +1,32 @@
 use super::*;
+
+#[test]
+fn tracking_keeps_a_capturable_axis_when_the_other_distance_overflows() {
+    for sign in [-1.0, 1.0] {
+        let anchor = point(-sign * Real::MAX, -sign * Real::MAX, 7.0);
+        for (cursor, axis, expected) in [
+            (
+                point(sign * Real::MAX, anchor.y(), 0.0),
+                TrackAxis::Horizontal,
+                point(sign * Real::MAX, anchor.y(), 7.0),
+            ),
+            (
+                point(anchor.x(), sign * Real::MAX, 0.0),
+                TrackAxis::Vertical,
+                point(anchor.x(), sign * Real::MAX, 7.0),
+            ),
+        ] {
+            let track = orthogonal_track(cursor, anchor, 1.0).unwrap().unwrap();
+            assert_eq!(track.axis(), axis);
+            assert_eq!(track.point(), expected);
+        }
+        assert!(
+            orthogonal_track(point(sign * Real::MAX, sign * Real::MAX, 0.0), anchor, 1.0)
+                .unwrap()
+                .is_none()
+        );
+    }
+}
 use viboceros_document::{Document, Geometry};
 use viboceros_geometry::{
     Brep, Circle3, CircularArc3, Ellipse3, Frame3, LineSegment, NurbsCurve, NurbsSurface,

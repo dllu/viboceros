@@ -111,6 +111,10 @@ metrics, indexed point-cloud queries, and snap priority. The crate root re-expor
 the public snap API and retains shared errors and basic tracking; `plane` owns
 plane-local drafting, and `point_input` owns typed point interpretation. API
 regression tests live in a separate `tests.rs` module.
+Basic XY tracking treats an overflowing distance as out of range only on that
+axis, preserving valid perpendicular capture. Projected tracking accepts an
+in-range anchor before computing plane-local axis candidates; an unusable cursor
+offset cannot suppress an already valid anchor hit. Regression tests cover both.
 Clipping uses the line's dominant screen coordinate rather than a normalized
 segment parameter, so distant endpoints do not collapse a visible guide to a
 single point. Exact endpoint tests cover huge horizontal, vertical, and diagonal
