@@ -40,24 +40,10 @@ impl Vector3 {
 
     pub fn dot(self, other: Self) -> Result<Real, GeometryError> {
         // Common-scale normalization can erase a small component even when
-        // the large component is multiplied by zero. Prefer fused evaluation
-        // when the individual products and the result are representable.
-        let left_components = self.to_array();
-        let right_components = other.to_array();
-        let ordinary_products = left_components
-            .into_iter()
-            .zip(right_components)
-            .all(|(a, b)| {
-                let product = a * b;
-                product.is_finite() && (product != 0.0 || a == 0.0 || b == 0.0)
-            });
-        if ordinary_products {
-            let direct = self
-                .x()
-                .mul_add(other.x(), self.y().mul_add(other.y(), self.z() * other.z()));
-            if direct.is_finite() {
-                return Ok(direct);
-            }
+        // the large component is multiplied by zero. Prefer compensated direct
+        // evaluation when the products and running sum are representable.
+        if let Some(direct) = direct_dot(self.to_array(), other.to_array()) {
+            return Ok(direct);
         }
         let left_scale = self.x().abs().max(self.y().abs()).max(self.z().abs());
         let right_scale = other.x().abs().max(other.y().abs()).max(other.z().abs());
@@ -171,6 +157,34 @@ impl Vector3 {
     }
 }
 
+fn direct_dot(left: [Real; 3], right: [Real; 3]) -> Option<Real> {
+    let mut sum: Real = 0.0;
+    let mut correction = 0.0;
+    for (a, b) in left.into_iter().zip(right) {
+        let product = a * b;
+        if !product.is_finite() || (product == 0.0 && a != 0.0 && b != 0.0) {
+            return None;
+        }
+        let next = sum + product;
+        if !next.is_finite() {
+            return None;
+        }
+        // Recover the rounded product with FMA and the addition with a
+        // magnitude-ordered two-sum. Compensating only one of these operations
+        // can leave a residual for exactly cancelling products or erase a
+        // small term between large opposite terms.
+        let addition_error = if sum.abs() >= product.abs() {
+            (sum - next) + product
+        } else {
+            (product - next) + sum
+        };
+        correction += addition_error + a.mul_add(b, -product);
+        sum = next;
+    }
+    let result = sum + correction;
+    result.is_finite().then_some(result)
+}
+
 fn direct_determinant(left_a: Real, right_a: Real, left_b: Real, right_b: Real) -> Option<Real> {
     let second = left_b * right_b;
     if second.is_finite() {
@@ -275,6 +289,61 @@ impl TryFrom<[Real; 3]> for Vector3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn dot_product_compensates_product_and_sum_rounding() {
+        for magnitude in [0.1, 0.7, 1e100] {
+            let a = Vector3::try_new(magnitude, magnitude, 0.0).unwrap();
+            let b = Vector3::try_new(magnitude, -magnitude, 0.0).unwrap();
+            assert_eq!(a.dot(b).unwrap(), 0.0);
+            assert_eq!(b.dot(a).unwrap(), 0.0);
+        }
+        // Both products round to the same value, but their exact difference is one.
+        let n = (1_u64 << 27) as f64;
+        let a = Vector3::try_new(n, n - 1.0, 0.0).unwrap();
+        let b = Vector3::try_new(n, -(n + 1.0), 0.0).unwrap();
+        assert_eq!(a.dot(b).unwrap(), 1.0);
+        assert_eq!(b.dot(a).unwrap(), 1.0);
+
+        for axis in 0..3 {
+            let mut coordinates = [1e100, 1.0, -1e100];
+            coordinates.rotate_left(axis);
+            let a = Vector3::try_from(coordinates).unwrap();
+            let b = Vector3::try_new(1.0, 1.0, 1.0).unwrap();
+            assert_eq!(a.dot(b).unwrap(), 1.0);
+            assert_eq!(b.dot(a).unwrap(), 1.0);
+        }
+    }
+
+    #[test]
+    fn dot_product_matches_integer_oracle_across_axis_orders() {
+        let permutations = [
+            [0, 1, 2],
+            [0, 2, 1],
+            [1, 0, 2],
+            [1, 2, 0],
+            [2, 0, 1],
+            [2, 1, 0],
+        ];
+        for exponent in [26, 27, 40, 52] {
+            let n = 1_i128 << exponent;
+            for third in [-3, 0, 7] {
+                let left = [n, n - 1, third];
+                let right = [n, -(n + 1), 1];
+                let expected = left
+                    .into_iter()
+                    .zip(right)
+                    .map(|(a, b)| a * b)
+                    .sum::<i128>();
+                for order in permutations {
+                    let a = Vector3::try_from(order.map(|axis| left[axis] as f64)).unwrap();
+                    let b = Vector3::try_from(order.map(|axis| right[axis] as f64)).unwrap();
+                    assert_eq!(a.dot(b).unwrap(), expected as f64);
+                    assert_eq!(b.dot(a).unwrap(), expected as f64);
+                }
+            }
+        }
+    }
 
     #[test]
     fn scaled_integer_determinants_keep_exact_near_cancellation() {

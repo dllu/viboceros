@@ -13,6 +13,10 @@ cover cancellation, exact parallelism, disparate magnitudes, axis permutations,
 and genuine result overflow. The fallback uses power-of-two scaling to avoid
 rounding input significands before cancellation; exact integer determinants
 with binary-scaled coordinates exercise both ordinary and overflowing products.
+Direct vector dot products compensate both multiplication and summation
+rounding; tests cover exact orthogonality, near-cancelling integer products,
+and small terms between large opposite terms. Extreme-range dot products
+still use a separate scaled fallback, not an exact-arithmetic accumulator.
 
 | Module | Responsibility |
 | --- | --- |
