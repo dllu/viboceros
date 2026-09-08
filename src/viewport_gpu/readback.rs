@@ -1,19 +1,25 @@
 //! Opt-in integration-test support using the production pipelines without a window.
 
 use super::*;
+use std::sync::{Mutex, MutexGuard};
 use std::time::Duration;
 
 pub(crate) const SIZE: u32 = 256;
+static GPU_TEST_CONTEXT: Mutex<()> = Mutex::new(());
 
 pub(crate) struct OffscreenRenderer {
     device: wgpu::Device,
     queue: wgpu::Queue,
     renderer: ViewportRenderer,
     format: wgpu::TextureFormat,
+    // Drop this last, after all graphics resources. Concurrent context tests
+    // have triggered a native crash; keep this harness's lifetimes disjoint.
+    _serial: MutexGuard<'static, ()>,
 }
 
 impl OffscreenRenderer {
     pub(crate) fn new(format: wgpu::TextureFormat) -> Self {
+        let serial = GPU_TEST_CONTEXT.lock().expect("GPU test context lock");
         let instance =
             wgpu::Instance::new(wgpu::InstanceDescriptor::new_without_display_handle_from_env());
         let adapter = pollster::block_on(instance.request_adapter(&wgpu::RequestAdapterOptions {
@@ -30,6 +36,7 @@ impl OffscreenRenderer {
             queue,
             renderer,
             format,
+            _serial: serial,
         }
     }
 
