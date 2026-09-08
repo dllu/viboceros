@@ -43,6 +43,8 @@ candidate sequence avoids repeated scans when many unnamed groups are exported.
 ASCII-case-insensitive layer matching and case-sensitive group matching. A
 per-import name index and per-base suffix cursors avoid scanning the document
 for every collision candidate or restarting suffix allocation for repeated names.
+File-level regression tests cover repeated imports across undo/redo, including
+renamed layer assignments, ordered memberships, and hidden/locked layer state.
 Standalone circle and ellipse objects are exported without approximation as
 rational NURBS curves. Arc objects retain their analytic type and native domain.
 Polylines retain their native object type and every vertex parameter;

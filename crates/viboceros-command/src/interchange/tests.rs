@@ -4,6 +4,112 @@ use viboceros_document::SelectionMode;
 use viboceros_geometry::Point3;
 
 #[test]
+fn file_import_name_collisions_preserve_assignments_and_replay_exactly() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("named parts.3dm");
+    let mut source_object = ThreeDmObject::new(
+        ThreeDmGeometry::Point(Point3::try_new(1.0, 2.0, 3.0).unwrap()),
+        1,
+    );
+    source_object.group_indices = vec![1, 0];
+    source_object.name = Some("imported point".into());
+    source_object.object_color = [40, 50, 60];
+    source_object.color_source = ThreeDmColorSource::Object;
+    let source = ThreeDmModel::new(
+        vec![
+            ThreeDmLayer {
+                name: "PART".into(),
+                color: [1, 2, 3],
+                visible: true,
+                locked: false,
+            },
+            ThreeDmLayer {
+                name: "DETAIL".into(),
+                color: [4, 5, 6],
+                visible: false,
+                locked: true,
+            },
+        ],
+        vec![
+            ThreeDmGroup {
+                name: "Assembly".into(),
+            },
+            ThreeDmGroup {
+                name: "Fixture".into(),
+            },
+        ],
+        vec![source_object],
+    );
+    write_3dm_file(&path, &source).unwrap();
+    let mut document = Document::default();
+    for name in ["Part", "Part (Imported 1)", "detail"] {
+        document.add_layer(name, ColorRgb::new(10, 20, 30)).unwrap();
+    }
+    for name in ["Assembly", "Assembly (Imported 1)", "fixture"] {
+        document.add_empty_group(Some(name.into())).unwrap();
+    }
+    let original = document.add_geometry(triangle(0.0)).unwrap();
+    document
+        .select_object(original, SelectionMode::Replace)
+        .unwrap();
+    let before = document_3dm_model(&document).unwrap();
+    let registry = CommandRegistry::with_builtins();
+    registry
+        .execute(&mut document, &format!("Import3dm {}", path.display()))
+        .unwrap();
+    assert!(document.layer_by_name("PART (Imported 2)").is_some());
+    let layer = document.layer_by_name("DETAIL (Imported 1)").unwrap();
+    assert!(!layer.is_visible());
+    assert!(layer.is_locked());
+    assert_eq!(layer.color(), ColorRgb::new(4, 5, 6));
+    let object = document
+        .objects()
+        .find(|object| object.attributes().name() == Some("imported point"))
+        .unwrap();
+    let imported_id = object.id();
+    assert_eq!(object.attributes().layer_id(), layer.id());
+    assert_eq!(
+        object.attributes().object_color(),
+        ColorRgb::new(40, 50, 60)
+    );
+    assert_eq!(
+        object.attributes().color_source(),
+        ObjectColorSource::Object
+    );
+    assert_eq!(
+        object
+            .group_ids()
+            .iter()
+            .map(|id| document.group(*id).unwrap().name().unwrap())
+            .collect::<Vec<_>>(),
+        ["Fixture", "Assembly (Imported 2)"]
+    );
+    let after = document_3dm_model(&document).unwrap();
+    registry.execute(&mut document, "Undo").unwrap();
+    assert_eq!(document_3dm_model(&document).unwrap(), before);
+    assert!(document.object(imported_id).is_none());
+    assert!(document.is_selected(original));
+    registry.execute(&mut document, "Redo").unwrap();
+    assert_eq!(document_3dm_model(&document).unwrap(), after);
+    assert!(document.object(imported_id).is_some());
+    // A later import must initialize its index from the changed document,
+    // including names assigned by the first import and restored by redo.
+    registry
+        .execute(&mut document, &format!("Import3dm {}", path.display()))
+        .unwrap();
+    assert!(document.layer_by_name("PART (Imported 3)").is_some());
+    assert!(document.layer_by_name("DETAIL (Imported 2)").is_some());
+    assert!(document.group_by_name("Assembly (Imported 3)").is_some());
+    assert!(document.group_by_name("Fixture (Imported 1)").is_some());
+    let repeated = document_3dm_model(&document).unwrap();
+    assert_eq!(repeated.objects.len(), 3);
+    registry.execute(&mut document, "Undo").unwrap();
+    assert_eq!(document_3dm_model(&document).unwrap(), after);
+    registry.execute(&mut document, "Redo").unwrap();
+    assert_eq!(document_3dm_model(&document).unwrap(), repeated);
+}
+
+#[test]
 fn generated_group_names_scan_each_candidate_only_once() {
     let used = (1..=1000)
         .map(|i| format!("Group{i:02}"))
