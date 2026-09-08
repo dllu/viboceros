@@ -48,3 +48,9 @@ objects before subsequent setup can fail, and attempts all registered cleanup
 even if deselection or output discovery fails. A failed baseline scan never
 authorizes cleanup of enumerated objects. Atomic error responses discard partial
 results; fault-injection tests cover these contracts and repeated finalization.
+
+The document rollback test also runs 256 deterministic mixed-edit sequences over
+16 operation types, starting with overlapping groups, a locked group peer,
+selection memory, and a redo branch. After rejected or deliberately aborted
+transactions it compares the complete document/history state with its original
+snapshot. This checks rollback invariants, independently of Rhino command parity.

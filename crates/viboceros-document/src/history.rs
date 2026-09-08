@@ -2,6 +2,9 @@ use std::collections::BTreeSet;
 
 use super::{Document, DocumentError, Group, GroupId, Layer, LayerId, Object, ObjectId};
 
+#[cfg(test)]
+mod tests;
+
 pub(super) const HISTORY_LIMIT: usize = 100;
 
 #[derive(Clone, Debug)]
