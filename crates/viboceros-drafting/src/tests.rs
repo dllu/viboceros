@@ -1,6 +1,72 @@
 use super::*;
 
 #[test]
+fn invalid_projected_cursors_are_rejected_before_projection_callbacks() {
+    let plane = Frame3::try_from_directions(
+        point(0.0, 0.0, 0.0),
+        Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+        Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    for populated in [false, true] {
+        let mut document = Document::default();
+        if populated {
+            document
+                .add_geometry(Geometry::Point(point(0.0, 0.0, 0.0)))
+                .unwrap();
+        }
+        for invalid in [Real::NAN, Real::INFINITY, Real::NEG_INFINITY] {
+            for cursor in [[invalid, 0.0], [0.0, invalid]] {
+                let calls = std::cell::Cell::new(0);
+                let project = |_| {
+                    calls.set(calls.get() + 1);
+                    Some([0.0, 0.0])
+                };
+                assert_eq!(
+                    nearest_object_snap_projected(&document, cursor, 1.0, project),
+                    Err(DraftingError::InvalidCursorCoordinates)
+                );
+                assert_eq!(
+                    nearest_object_snap_relative(&document, point(0.0, 0.0, 0.0), cursor, 1.0),
+                    Err(DraftingError::InvalidCursorCoordinates)
+                );
+                assert_eq!(calls.get(), 0);
+                assert_eq!(
+                    plane::orthogonal_track_projected(
+                        point(1.0, 1.0, 0.0),
+                        point(0.0, 0.0, 0.0),
+                        plane,
+                        cursor,
+                        1.0,
+                        project
+                    ),
+                    Err(DraftingError::InvalidCursorCoordinates)
+                );
+                assert_eq!(calls.get(), 0);
+            }
+        }
+        for projection in [None, Some([Real::NAN, 0.0]), Some([0.0, Real::INFINITY])] {
+            assert_eq!(
+                nearest_object_snap_projected(&document, [0.0; 2], 1.0, |_| projection),
+                Ok(None)
+            );
+            assert_eq!(
+                plane::orthogonal_track_projected(
+                    point(1.0, 1.0, 0.0),
+                    point(0.0, 0.0, 0.0),
+                    plane,
+                    [0.0; 2],
+                    1.0,
+                    |_| projection
+                ),
+                Ok(None)
+            );
+        }
+    }
+}
+
+#[test]
 fn tracking_keeps_a_capturable_axis_when_the_other_distance_overflows() {
     for sign in [-1.0, 1.0] {
         let anchor = point(-sign * Real::MAX, -sign * Real::MAX, 7.0);

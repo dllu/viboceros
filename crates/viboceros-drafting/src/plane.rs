@@ -1,5 +1,7 @@
 //! Plane-local precision drafting with screen-space capture distances.
-use super::{DraftingError, OrthogonalTrack, TrackAxis, validate_capture_radius};
+use super::{
+    DraftingError, OrthogonalTrack, TrackAxis, validate_capture_radius, validate_cursor_coordinates,
+};
 use viboceros_geometry::{Frame3, GeometryError, Point3, Vector3};
 
 /// Intersect a camera line/ray with an arbitrary drafting plane. Edge-on planes
@@ -58,6 +60,7 @@ pub fn orthogonal_track_projected(
     project: impl Fn(Point3) -> Option<[f64; 2]>,
 ) -> Result<Option<OrthogonalTrack>, DraftingError> {
     validate_capture_radius(capture_radius)?;
+    validate_cursor_coordinates(pointer)?;
     // Anchor capture is independent of the cursor's plane coordinates. Do
     // not construct possibly unrepresentable axis candidates before accepting it.
     if let Some(screen) = project(anchor) {

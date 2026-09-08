@@ -115,6 +115,10 @@ Basic XY tracking treats an overflowing distance as out of range only on that
 axis, preserving valid perpendicular capture. Projected tracking accepts an
 in-range anchor before computing plane-local axis candidates; an unusable cursor
 offset cannot suppress an already valid anchor hit. Regression tests cover both.
+Relative/projected snap queries and projected tracking reject non-finite cursor
+coordinates with a shared drafting input error before evaluating geometry or
+calling projection callbacks, including for empty documents. Unavailable or
+non-finite candidate projections remain uncapturable rather than input errors.
 Clipping uses the line's dominant screen coordinate rather than a normalized
 segment parameter, so distant endpoints do not collapse a visible guide to a
 single point. Exact endpoint tests cover huge horizontal, vertical, and diagonal

@@ -47,6 +47,9 @@ impl OrthogonalTrack {
 
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum DraftingError {
+    #[error("drafting cursor coordinates must be finite")]
+    InvalidCursorCoordinates,
+
     #[error("drafting capture radius must be finite and strictly positive")]
     InvalidCaptureRadius,
 
@@ -88,6 +91,14 @@ fn validate_capture_radius(capture_radius: Real) -> Result<(), DraftingError> {
         Ok(())
     } else {
         Err(DraftingError::InvalidCaptureRadius)
+    }
+}
+
+fn validate_cursor_coordinates(cursor: [Real; 2]) -> Result<(), DraftingError> {
+    if cursor.into_iter().all(Real::is_finite) {
+        Ok(())
+    } else {
+        Err(DraftingError::InvalidCursorCoordinates)
     }
 }
 

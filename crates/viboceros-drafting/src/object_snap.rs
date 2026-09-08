@@ -1,6 +1,6 @@
 //! Visible-feature snap enumeration, projection metrics, and priority ordering.
 
-use super::{DraftingError, validate_capture_radius};
+use super::{DraftingError, validate_capture_radius, validate_cursor_coordinates};
 use viboceros_document::{Document, Geometry, ObjectId};
 use viboceros_geometry::{GeometryError, Point3, PointCloud3, Real};
 
@@ -84,12 +84,7 @@ pub fn nearest_object_snap_relative(
     capture_radius: Real,
 ) -> Result<Option<ObjectSnap>, DraftingError> {
     validate_capture_radius(capture_radius)?;
-    if cursor_offset.iter().any(|value| !value.is_finite()) {
-        return Err(GeometryError::NonFinite {
-            context: "object snap cursor offset",
-        }
-        .into());
-    }
+    validate_cursor_coordinates(cursor_offset)?;
     nearest_object_snap_with_metric(
         document,
         &XySnapMetric {
@@ -110,6 +105,7 @@ pub fn nearest_object_snap_projected(
     project: impl Fn(Point3) -> Option<[Real; 2]>,
 ) -> Result<Option<ObjectSnap>, DraftingError> {
     validate_capture_radius(capture_radius)?;
+    validate_cursor_coordinates(cursor)?;
     nearest_object_snap_with_metric(
         document,
         &ProjectedSnapMetric {
