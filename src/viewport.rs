@@ -2455,6 +2455,17 @@ mod tests {
         document: &Document,
         events: Vec<egui::Event>,
     ) -> ViewportOutput {
+        viewport_frame_with_modifiers(egui::Modifiers::NONE, context, viewport, document, events)
+    }
+
+    fn viewport_frame_with_modifiers(
+        modifiers: egui::Modifiers,
+        context: &egui::Context,
+        viewport: &mut Viewport,
+        document: &Document,
+        mut events: Vec<egui::Event>,
+    ) -> ViewportOutput {
+        events.insert(0, egui::Event::ModifiersChanged(modifiers));
         let mut output = ViewportOutput::default();
         context
             .run_ui(
@@ -2560,6 +2571,109 @@ mod tests {
         let near_distance = (viewport.project(near, rect).unwrap() - center).length();
         let far_distance = (viewport.project(far, rect).unwrap() - center).length();
         assert!(near_distance > far_distance);
+    }
+
+    #[test]
+    fn navigation_drag_accumulates_frame_deltas_once_and_stops_on_release() {
+        let document = Document::default();
+        let start = Pos2::new(200.0, 150.0);
+        let finish = Pos2::new(240.0, 180.0);
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            for (button, modifiers) in [
+                (PointerButton::Middle, egui::Modifiers::NONE),
+                (PointerButton::Secondary, egui::Modifiers::NONE),
+                (PointerButton::Secondary, egui::Modifiers::SHIFT),
+            ] {
+                let context = egui::Context::default();
+                let mut viewport = Viewport::new(kind);
+                viewport.target = NaVector3::new(100.0, 200.0, 300.0);
+                let target = viewport.target;
+                let plane = viewport.construction_plane();
+                let angles = (viewport.orbit_yaw, viewport.orbit_pitch);
+                let button_event = |position, pressed| egui::Event::PointerButton {
+                    pos: position,
+                    button,
+                    pressed,
+                    modifiers,
+                };
+                viewport_frame_with_modifiers(
+                    modifiers,
+                    &context,
+                    &mut viewport,
+                    &document,
+                    vec![],
+                );
+                viewport_frame_with_modifiers(
+                    modifiers,
+                    &context,
+                    &mut viewport,
+                    &document,
+                    vec![egui::Event::PointerMoved(start), button_event(start, true)],
+                );
+                for position in [
+                    Pos2::new(220.0, 160.0),
+                    Pos2::new(230.0, 175.0),
+                    Pos2::new(230.0, 175.0),
+                    finish,
+                ] {
+                    let output = viewport_frame_with_modifiers(
+                        modifiers,
+                        &context,
+                        &mut viewport,
+                        &document,
+                        vec![egui::Event::PointerMoved(position)],
+                    );
+                    assert!(!output.enter_pressed);
+                    assert!(output.selection_click.is_none() && output.selection_window.is_none());
+                    let delta = position - start;
+                    if kind == ViewKind::Perspective
+                        && button == PointerButton::Secondary
+                        && !modifiers.shift
+                    {
+                        assert_eq!(viewport.pan, Vec2::ZERO);
+                        assert!(
+                            (viewport.orbit_yaw - (angles.0 - Real::from(delta.x) * 0.01)).abs()
+                                < 1e-14
+                        );
+                        assert!(
+                            (viewport.orbit_pitch - (angles.1 + Real::from(delta.y) * 0.01)).abs()
+                                < 1e-14
+                        );
+                    } else {
+                        assert_eq!(viewport.pan, delta);
+                        assert_eq!((viewport.orbit_yaw, viewport.orbit_pitch), angles);
+                    }
+                }
+                let final_state = (viewport.pan, viewport.orbit_yaw, viewport.orbit_pitch);
+                let output = viewport_frame_with_modifiers(
+                    modifiers,
+                    &context,
+                    &mut viewport,
+                    &document,
+                    vec![button_event(finish, false)],
+                );
+                assert!(!output.enter_pressed);
+                assert!(output.selection_click.is_none() && output.selection_window.is_none());
+                viewport_frame_with_modifiers(
+                    modifiers,
+                    &context,
+                    &mut viewport,
+                    &document,
+                    vec![egui::Event::PointerMoved(finish + Vec2::new(20.0, 10.0))],
+                );
+                assert_eq!(
+                    (viewport.pan, viewport.orbit_yaw, viewport.orbit_pitch),
+                    final_state
+                );
+                assert_eq!(viewport.target, target);
+                assert_eq!(viewport.construction_plane(), plane);
+            }
+        }
     }
 
     #[test]

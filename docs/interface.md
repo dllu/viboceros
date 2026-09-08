@@ -36,7 +36,12 @@ Navigation ignores non-finite drag deltas, invalid zoom factors/pointers, and
 non-finite or empty zoom rectangles. Pan updates that overflow screen coordinates
 are rejected without partially changing zoom state. Regression tests cover all
 four view kinds alongside normal pointer-pinned zoom and perspective dolly
-behavior. `Zoom Extents` (or `ZE`) fits visible objects in the active viewport;
+behavior. Multi-frame egui event tests verify middle-drag, right-drag, and
+Shift-right-drag across all four views: movement accumulates once per frame,
+stationary frames do not move the camera, release does not emit Enter or select
+geometry, and later pointer movement does not continue navigation. Camera
+targets and construction planes stay unchanged during these drags.
+`Zoom Extents` (or `ZE`) fits visible objects in the active viewport;
 `Zoom Selected` (or `ZS`) fits only the visible selection. Add `All` before the
 option, or use `ZEA`/`ZSA`, to fit all four viewports together. See
 [zoom behavior and limits](commands/zoom.md).
