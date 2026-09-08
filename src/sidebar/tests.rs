@@ -1,5 +1,99 @@
 use super::*;
 
+#[test]
+fn long_names_leave_layer_and_group_actions_visible() {
+    let mut document = Document::default();
+    let layer = document
+        .add_layer("LongLayerName".repeat(40), ColorRgb::BLACK)
+        .unwrap();
+    document
+        .add_empty_group(Some("LongGroupName".repeat(40)))
+        .unwrap();
+    let context = egui::Context::default();
+    let mut sidebar = DocumentSidebar::default();
+    let mut edit_position = None;
+    for _ in 0..2 {
+        let output = context.run_ui(
+            egui::RawInput {
+                screen_rect: Some(egui::Rect::from_min_size(
+                    egui::Pos2::ZERO,
+                    egui::vec2(600.0, 400.0),
+                )),
+                ..Default::default()
+            },
+            |ui| {
+                assert!(sidebar.show(ui, &document).is_empty());
+            },
+        );
+        let count = |needle| {
+            output
+                .shapes
+                .iter()
+                .filter(|clipped| {
+                    let egui::epaint::Shape::Text(text) = &clipped.shape else {
+                        return false;
+                    };
+                    text.galley.text() == needle
+                        && clipped
+                            .clip_rect
+                            .contains_rect(text.galley.rect.translate(text.pos.to_vec2()))
+                })
+                .count()
+        };
+        let edits = count("Edit");
+        let removals = count("×");
+        edit_position = output
+            .shapes
+            .iter()
+            .filter_map(|clipped| {
+                let egui::epaint::Shape::Text(text) = &clipped.shape else {
+                    return None;
+                };
+                (text.galley.text() == "Edit")
+                    .then_some(text.galley.rect.translate(text.pos.to_vec2()).center())
+            })
+            .nth(1);
+        output.drop_without_applying_deltas();
+        assert_eq!(edits, 2, "both layer editors must remain reachable");
+        assert_eq!(
+            removals, 3,
+            "layer and group controls must remain reachable"
+        );
+    }
+    let position = edit_position.unwrap();
+    for pressed in [true, false] {
+        context
+            .run_ui(
+                egui::RawInput {
+                    screen_rect: Some(egui::Rect::from_min_size(
+                        egui::Pos2::ZERO,
+                        egui::vec2(600.0, 400.0),
+                    )),
+                    events: vec![
+                        egui::Event::PointerMoved(position),
+                        egui::Event::PointerButton {
+                            pos: position,
+                            button: egui::PointerButton::Primary,
+                            pressed,
+                            modifiers: Default::default(),
+                        },
+                    ],
+                    ..Default::default()
+                },
+                |ui| {
+                    assert!(sidebar.show(ui, &document).is_empty());
+                },
+            )
+            .drop_without_applying_deltas();
+    }
+    let editor = sidebar
+        .layer_editor
+        .as_ref()
+        .expect("long-name layer editor opens");
+    assert_eq!(editor.id, layer);
+    assert_eq!(editor.name, "LongLayerName".repeat(40));
+}
+
 fn visible_text(output: &egui::FullOutput, needle: &str) -> bool {
     output.shapes.iter().any(|clipped| {
         if let egui::epaint::Shape::Text(text) = &clipped.shape {

@@ -86,6 +86,9 @@ impl DocumentSidebar {
             .show(root, |ui| {
                 ui.heading("Layers");
                 ui.separator();
+                // Reserve scrollbar space so right-aligned actions cannot sit
+                // underneath the floating scrollbar's pointer hit area.
+                ui.spacing_mut().scroll.floating = false;
                 egui::ScrollArea::vertical()
                     .id_salt("document_sidebar_contents")
                     .auto_shrink([false, false])
@@ -156,42 +159,52 @@ impl DocumentSidebar {
                                         "RGB {}, {}, {}",
                                         color.red, color.green, color.blue
                                     ));
-                                let select = ui
-                                    .add_enabled_ui(visible && !locked, |ui| {
-                                        ui.selectable_label(id == current, name)
-                                    })
-                                    .inner;
-                                if select.clicked() {
-                                    actions.push(SidebarAction::SetCurrent {
-                                        id,
-                                        name: name.to_owned(),
-                                    });
-                                }
-                                ui.small(format!("{object_count}")).on_hover_text(format!(
-                                    "{object_count} object(s) on this layer"
-                                ));
-                                if ui.small_button("Edit").clicked() {
-                                    self.layer_editor =
-                                        Some(LayerEditor::new(id, name.to_owned(), color));
-                                }
-                                let can_delete = id != current && object_count == 0;
-                                let delete_help = if id == current {
-                                    "The current layer cannot be deleted"
-                                } else if object_count != 0 {
-                                    "Move or delete this layer's objects before deleting it"
-                                } else {
-                                    "Delete this empty layer"
-                                };
-                                if ui
-                                    .add_enabled(can_delete, egui::Button::new("×").small())
-                                    .on_hover_text(delete_help)
-                                    .clicked()
-                                {
-                                    actions.push(SidebarAction::DeleteLayer {
-                                        id,
-                                        name: name.to_owned(),
-                                    });
-                                }
+                                // Reserve fixed controls from the right before giving
+                                // the name its remaining width.
+                                ui.with_layout(
+                                    egui::Layout::right_to_left(egui::Align::Center),
+                                    |ui| {
+                                        let can_delete = id != current && object_count == 0;
+                                        let delete_help = if id == current {
+                                            "The current layer cannot be deleted"
+                                        } else if object_count != 0 {
+                                            "Move or delete this layer's objects before deleting it"
+                                        } else {
+                                            "Delete this empty layer"
+                                        };
+                                        if ui
+                                            .add_enabled(can_delete, egui::Button::new("×").small())
+                                            .on_hover_text(delete_help)
+                                            .clicked()
+                                        {
+                                            actions.push(SidebarAction::DeleteLayer {
+                                                id,
+                                                name: name.to_owned(),
+                                            });
+                                        }
+                                        if ui.small_button("Edit").clicked() {
+                                            self.layer_editor =
+                                                Some(LayerEditor::new(id, name.to_owned(), color));
+                                        }
+                                        ui.small(format!("{object_count}")).on_hover_text(format!(
+                                            "{object_count} object(s) on this layer"
+                                        ));
+                                        if ui
+                                            .add_enabled(
+                                                visible && !locked,
+                                                egui::Button::selectable(id == current, name)
+                                                    .truncate(),
+                                            )
+                                            .on_hover_text(name)
+                                            .clicked()
+                                        {
+                                            actions.push(SidebarAction::SetCurrent {
+                                                id,
+                                                name: name.to_owned(),
+                                            });
+                                        }
+                                    },
+                                );
                             });
 
                             if self
@@ -278,14 +291,25 @@ impl DocumentSidebar {
                                 .unwrap_or_else(|| format!("Group {}", index + 1));
                             let members = group.members().len();
                             ui.horizontal(|ui| {
-                                ui.label(format!("{name} · {members}"))
-                                    .on_hover_text(format!("Group {id} with {members} object(s)"));
-                                if ui.small_button("×").on_hover_text("Ungroup").clicked() {
-                                    actions.push(SidebarAction::RemoveGroup {
-                                        id,
-                                        name: name.clone(),
-                                    });
-                                }
+                                ui.with_layout(
+                                    egui::Layout::right_to_left(egui::Align::Center),
+                                    |ui| {
+                                        if ui.small_button("×").on_hover_text("Ungroup").clicked()
+                                        {
+                                            actions.push(SidebarAction::RemoveGroup {
+                                                id,
+                                                name: name.clone(),
+                                            });
+                                        }
+                                        ui.add(
+                                            egui::Label::new(format!("{name} · {members}"))
+                                                .truncate(),
+                                        )
+                                        .on_hover_text(
+                                            format!("{name}\nGroup {id} with {members} object(s)"),
+                                        );
+                                    },
+                                );
                             });
                         }
                         ui.add_space(8.0);
