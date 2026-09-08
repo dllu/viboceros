@@ -47,6 +47,7 @@ struct LayerEditor {
     original_color: [u8; 3],
     name: String,
     color: [u8; 3],
+    conflicted: bool,
 }
 
 impl LayerEditor {
@@ -58,12 +59,39 @@ impl LayerEditor {
             original_color: color,
             name,
             color,
+            conflicted: false,
         }
     }
 
     fn has_valid_changes(&self) -> bool {
         let name = self.name.trim();
-        !name.is_empty() && (name != self.original_name || self.color != self.original_color)
+        !self.conflicted
+            && !name.is_empty()
+            && (name != self.original_name || self.color != self.original_color)
+    }
+
+    fn refresh(&mut self, name: &str, color: ColorRgb) {
+        self.conflicted = false;
+        if name != self.original_name {
+            if self.name.trim() == self.original_name {
+                self.name = name.to_owned();
+            } else if self.name.trim() != name {
+                self.conflicted = true;
+            }
+            if !self.conflicted {
+                self.original_name = name.to_owned();
+            }
+        }
+        let color = [color.red, color.green, color.blue];
+        if color != self.original_color {
+            if self.color == self.original_color {
+                self.color = color;
+            } else if self.color != color {
+                self.conflicted = true;
+                return;
+            }
+            self.original_color = color;
+        }
     }
 
     fn resolved_color(&self) -> ColorRgb {
@@ -79,6 +107,13 @@ pub(crate) struct DocumentSidebar {
 
 impl DocumentSidebar {
     pub(crate) fn show(&mut self, root: &mut egui::Ui, document: &Document) -> Vec<SidebarAction> {
+        if let Some(editor) = self.layer_editor.as_mut() {
+            if let Some(layer) = document.layer(editor.id) {
+                editor.refresh(layer.name(), layer.color());
+            } else {
+                self.layer_editor = None;
+            }
+        }
         let mut actions = Vec::new();
         let mut cancel_editor = None;
         egui::Panel::right("layers")
@@ -223,7 +258,11 @@ impl DocumentSidebar {
                                             .as_mut()
                                             .expect("the layer editor id was checked");
                                         ui.indent(("layer_editor", id), |ui| {
-                                            ui.group(|ui| {
+                                    ui.group(|ui| {
+                                        if editor.conflicted {
+                                            ui.colored_label(ui.visuals().warn_fg_color,
+                                                "This layer changed outside the editor. Reopen Edit to review current values.");
+                                        }
                                                 ui.horizontal(|ui| {
                                                     ui.label("Name");
                                                     ui.add(

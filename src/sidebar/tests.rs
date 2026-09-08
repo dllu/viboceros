@@ -1,6 +1,97 @@
 use super::*;
 
 #[test]
+fn editor_conflicts_preserve_drafts_and_clear_when_resolved_or_undone() {
+    let id = Document::default().current_layer_id();
+    let mut editor = LayerEditor::new(id, "Original".into(), ColorRgb::BLACK);
+    editor.name = "My name".into();
+    editor.color = [1, 2, 3];
+    for _ in 0..2 {
+        editor.refresh("Their name", ColorRgb::new(4, 5, 6));
+        assert!(editor.conflicted);
+        assert!(!editor.has_valid_changes());
+        assert_eq!(editor.name, "My name");
+        assert_eq!(editor.color, [1, 2, 3]);
+    }
+    editor.refresh("Original", ColorRgb::BLACK);
+    assert!(
+        !editor.conflicted,
+        "undoing outside changes removes the conflict"
+    );
+    assert!(editor.has_valid_changes());
+    editor.refresh("Their name", ColorRgb::new(4, 5, 6));
+    editor.name = "Their name".into();
+    editor.refresh("Their name", ColorRgb::new(4, 5, 6));
+    assert!(
+        editor.conflicted,
+        "the unresolved color conflict still blocks Apply"
+    );
+    editor.color = [4, 5, 6];
+    editor.refresh("Their name", ColorRgb::new(4, 5, 6));
+    assert!(!editor.conflicted);
+    assert!(
+        !editor.has_valid_changes(),
+        "identical external and draft values are a no-op"
+    );
+}
+
+#[test]
+fn editor_refresh_adopts_only_untouched_fields() {
+    let id = Document::default().current_layer_id();
+    let mut editor = LayerEditor::new(id, "Original".into(), ColorRgb::BLACK);
+    editor.name = "My name".into();
+    editor.refresh("Original", ColorRgb::new(4, 5, 6));
+    assert_eq!(editor.name, "My name");
+    assert_eq!(editor.color, [4, 5, 6]);
+    assert_eq!(editor.original_color, [4, 5, 6]);
+    assert!(editor.has_valid_changes());
+    assert!(!editor.conflicted);
+}
+
+#[test]
+fn deleting_an_edited_layer_closes_its_draft_even_if_undo_restores_the_id() {
+    let mut document = Document::default();
+    let id = document.add_layer("Temporary", ColorRgb::BLACK).unwrap();
+    let mut sidebar = DocumentSidebar {
+        layer_editor: Some(LayerEditor::new(id, "Temporary".into(), ColorRgb::BLACK)),
+        ..Default::default()
+    };
+    sidebar.layer_editor.as_mut().unwrap().name = "Old draft".into();
+    document.delete_layer(id).unwrap();
+    for restore in [false, true] {
+        if restore {
+            document.undo().unwrap();
+        }
+        egui::Context::default()
+            .run_ui(Default::default(), |ui| {
+                assert!(sidebar.show(ui, &document).is_empty());
+            })
+            .drop_without_applying_deltas();
+        assert!(sidebar.layer_editor.is_none());
+    }
+}
+
+#[test]
+fn open_editor_merges_external_changes_without_losing_its_draft() {
+    let mut document = Document::default();
+    let id = document.add_layer("Original", ColorRgb::BLACK).unwrap();
+    let mut sidebar = DocumentSidebar::default();
+    let mut editor = LayerEditor::new(id, "Original".into(), ColorRgb::BLACK);
+    editor.color = [1, 2, 3];
+    sidebar.layer_editor = Some(editor);
+    document.rename_layer(id, "Renamed externally").unwrap();
+    egui::Context::default()
+        .run_ui(Default::default(), |ui| {
+            assert!(sidebar.show(ui, &document).is_empty());
+        })
+        .drop_without_applying_deltas();
+    let editor = sidebar.layer_editor.as_ref().unwrap();
+    assert_eq!(editor.name, "Renamed externally");
+    assert_eq!(editor.color, [1, 2, 3]);
+    assert!(editor.has_valid_changes());
+}
+
+#[test]
 fn new_layer_text_focus_survives_a_layer_insert() {
     let mut document = Document::default();
     let context = egui::Context::default();

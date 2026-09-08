@@ -16,6 +16,9 @@ Long layer and group names are truncated in rows, with full names on hover;
 action buttons and the scrollbar have reserved space so neither obscures the other.
 Rows use stable layer/group identities: removing a pressed row cannot redirect
 the click to its replacement, and adding a layer preserves new-layer text focus.
+Open layer editors adopt external changes to untouched fields while preserving
+local drafts. Conflicting name/color edits block Apply with a warning; reopen
+Edit to review current values. Deleting a layer closes its editor.
 
 Osnap captures visible Point, End, Mid, Center, and Quad features, including
 indexed members of point clouds and features on locked objects and layers;
