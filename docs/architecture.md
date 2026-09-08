@@ -101,6 +101,12 @@ exact planar-face boundary integrator; temporary topology stays outside the docu
 The app's `viewport/picking` module owns face hit metrics, perspective-correct
 depth interpolation, and mesh/NURBS/B-rep hit evaluation. Screen capture and
 feature priority remain separate from depth ordering among overlapping face hits.
+Constant-depth faces retain their exact depth rather than accumulating rounded
+barycentric products. Parallel interpolated depths are bounded by vertex depths;
+a scaled, renormalized fallback handles overflowing products at captured edges.
+Grid tests exercise positive/negative f64-limit depths, subnormal constants, and
+nearby finite vertex depths; document picking checks nearer-face choice in both
+insertion orders.
 The `viewport/scene` module owns visible-object display dispatch, sampled curve
 and tessellated surface submission, per-primitive f64 depth staging, transparent
 triangle sorting, and final GPU buffer assembly. The interaction module invokes

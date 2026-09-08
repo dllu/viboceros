@@ -45,22 +45,54 @@ fn triangle_depth(
     if !area.is_finite() || area.abs() <= Real::EPSILON {
         return None;
     }
+    if !pointer.is_finite()
+        || depths
+            .iter()
+            .any(|d| !d.is_finite() || (perspective && *d <= 0.0))
+    {
+        return None;
+    }
+    if depths[0] == depths[1] && depths[1] == depths[2] {
+        return Some(depths[0]);
+    }
     let weights = [
         signed_area(screen[1], screen[2], pointer) / area,
         signed_area(screen[2], screen[0], pointer) / area,
         signed_area(screen[0], screen[1], pointer) / area,
     ];
     let depth = if perspective {
-        if depths.iter().any(|depth| *depth <= 0.0) {
-            return None;
-        }
         1.0 / weights
             .into_iter()
             .zip(depths)
             .map(|(w, d)| w / d)
             .sum::<Real>()
     } else {
-        weights.into_iter().zip(depths).map(|(w, d)| w * d).sum()
+        let minimum = depths.into_iter().fold(Real::INFINITY, Real::min);
+        let maximum = depths.into_iter().fold(Real::NEG_INFINITY, Real::max);
+        let ordinary = weights
+            .into_iter()
+            .zip(depths)
+            .map(|(w, d)| w * d)
+            .sum::<Real>();
+        if ordinary.is_finite() {
+            // A covered triangle's depth is a convex combination. Screen-area
+            // rounding (including the capture tolerance at edges) can overshoot.
+            ordinary.clamp(minimum, maximum)
+        } else {
+            let scale = minimum.abs().max(maximum.abs());
+            let weights = weights.map(|w| w.max(0.0));
+            let sum = weights.into_iter().sum::<Real>();
+            if !sum.is_finite() || sum <= 0.0 {
+                return None;
+            }
+            let normalized = weights
+                .into_iter()
+                .zip(depths)
+                .map(|(w, d)| w * (d / scale))
+                .sum::<Real>()
+                / sum;
+            (normalized.clamp(minimum / scale, maximum / scale) * scale).clamp(minimum, maximum)
+        }
     };
     (depth.is_finite() && (!perspective || depth > 0.0)).then_some(depth)
 }
@@ -184,6 +216,123 @@ impl Viewport {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn captured_edge_depth_survives_an_overflowing_weighted_product() {
+        let screen = [Pos2::ZERO, Pos2::new(1.0, 0.0), Pos2::new(0.0, 1.0)];
+        let pointer = Pos2::new(-5e-13, 0.0);
+        assert!(point_in_triangle(pointer, screen[0], screen[1], screen[2]));
+        let first_weight = signed_area(screen[1], screen[2], pointer);
+        assert!((first_weight * Real::MAX).is_infinite());
+        for sign in [-1.0, 1.0] {
+            let depths = [
+                Real::MAX,
+                Real::MAX.next_down(),
+                Real::MAX.next_down().next_down(),
+            ]
+            .map(|d| sign * d);
+            assert_eq!(
+                triangle_depth(pointer, screen, depths, false),
+                Some(sign * Real::MAX)
+            );
+        }
+        assert!(triangle_depth(Pos2::new(f32::NAN, 0.0), screen, [1.0; 3], false).is_none());
+        assert!(triangle_depth(Pos2::ZERO, screen, [Real::NAN; 3], false).is_none());
+    }
+
+    #[test]
+    fn overlapping_constant_depth_faces_choose_the_nearer_f64_plane() {
+        let mut viewport = Viewport::new(ViewKind::Top);
+        viewport.display_mode = DisplayMode::Shaded;
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let pointer = viewport
+            .project(Point3::try_new(1.0, 1.0, 0.0).unwrap(), rect)
+            .unwrap();
+        for order in [[0, 1], [1, 0]] {
+            let mut document = Document::default();
+            let ids = order.map(|index| {
+                let (depth, size) = if index == 0 {
+                    (Real::MAX, 3.0)
+                } else {
+                    (Real::MAX.next_down(), 17.0)
+                };
+                let vertices = [(0.0, 0.0), (size, 0.0), (0.0, size)]
+                    .map(|(x, y)| Point3::try_new(x, y, -depth).unwrap());
+                document
+                    .add_geometry(Geometry::Mesh(
+                        TriangleMesh::try_new(
+                            vertices.to_vec(),
+                            vec![[0, 1, 2]],
+                            Tolerance::DEFAULT,
+                        )
+                        .unwrap(),
+                    ))
+                    .unwrap()
+            });
+            assert_eq!(
+                viewport.pick_object(pointer, rect, &document),
+                Some(ids[usize::from(order[0] == 0)])
+            );
+        }
+    }
+
+    #[test]
+    fn constant_parallel_face_depth_is_exact_throughout_the_triangle() {
+        for size in 3..=24 {
+            let screen = [
+                Pos2::ZERO,
+                Pos2::new(size as f32, 0.0),
+                Pos2::new(0.0, size as f32),
+            ];
+            for x in 0..=size {
+                for y in 0..=size - x {
+                    for depth in [Real::MAX, -Real::MAX, 1e200, Real::from_bits(1)] {
+                        assert_eq!(
+                            triangle_depth(
+                                Pos2::new(x as f32, y as f32),
+                                screen,
+                                [depth; 3],
+                                false
+                            ),
+                            Some(depth),
+                            "size={size}, ({x},{y}), depth={depth}"
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn varying_parallel_face_depth_stays_inside_finite_vertex_bounds() {
+        for size in 3..=24 {
+            let screen = [
+                Pos2::ZERO,
+                Pos2::new(size as f32, 0.0),
+                Pos2::new(0.0, size as f32),
+            ];
+            for sign in [-1.0, 1.0] {
+                let depths = [
+                    Real::MAX,
+                    Real::MAX.next_down(),
+                    Real::MAX.next_down().next_down(),
+                ]
+                .map(|d| d * sign);
+                let minimum = depths.into_iter().fold(Real::INFINITY, Real::min);
+                let maximum = depths.into_iter().fold(Real::NEG_INFINITY, Real::max);
+                for x in 0..=size {
+                    for y in 0..=size - x {
+                        let actual =
+                            triangle_depth(Pos2::new(x as f32, y as f32), screen, depths, false);
+                        assert!(
+                            actual.is_some_and(|d| (minimum..=maximum).contains(&d)),
+                            "size={size}, ({x},{y}), sign={sign}, depth={actual:?}"
+                        );
+                    }
+                }
+            }
+        }
+    }
 
     #[test]
     fn mesh_face_hit_uses_nearest_triangle_even_when_it_is_last() {
