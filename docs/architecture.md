@@ -6,13 +6,14 @@ The dependency direction runs from mathematical primitives through document
 state and commands to the user interface. Geometry does not depend on the UI,
 file formats, or command parsing.
 
-Vector cross products use compensated two-product determinants. Overflow
-recovery is component-local: already-representable components are retained
-instead of being recomputed from globally normalized vectors. Regression tests
+Vector cross products use compensated two-product determinants. Extreme-range
+recovery is component-local: ordinary components are retained instead of being
+recomputed from globally normalized vectors. Regression tests
 cover cancellation, exact parallelism, disparate magnitudes, axis permutations,
-and genuine result overflow. The fallback uses power-of-two scaling to avoid
-rounding input significands before cancellation; exact integer determinants
-with binary-scaled coordinates exercise both ordinary and overflowing products.
+and genuine result overflow. Each determinant falls back to the exact dot-product
+accumulator for overflow recovery or when product bits could be lost below the
+subnormal range. Binary-scaled integer determinants check representable
+differences of both overflowing and near-underflow normal products.
 Direct vector dot products compensate both multiplication and summation
 rounding; tests cover exact orthogonality, near-cancelling integer products,
 and small terms between large opposite terms. Dot products whose individual

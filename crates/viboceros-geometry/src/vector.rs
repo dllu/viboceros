@@ -53,47 +53,14 @@ impl Vector3 {
     }
 
     pub fn cross(self, other: Self) -> Result<Self, GeometryError> {
-        let left_scale = self.x().abs().max(self.y().abs()).max(self.z().abs());
-        let right_scale = other.x().abs().max(other.y().abs()).max(other.z().abs());
-        if left_scale == 0.0 || right_scale == 0.0 {
-            return Self::try_new(0.0, 0.0, 0.0);
-        }
-
-        let direct = [
-            direct_determinant(self.y(), other.z(), self.z(), other.y()),
-            direct_determinant(self.z(), other.x(), self.x(), other.z()),
-            direct_determinant(self.x(), other.y(), self.y(), other.x()),
+        // Each determinant chooses its own fast or exact path. No normalization
+        // of unrelated coordinates can erase a component's small remainder.
+        let result = [
+            determinant(self.y(), other.z(), self.z(), other.y()),
+            determinant(self.z(), other.x(), self.x(), other.z()),
+            determinant(self.x(), other.y(), self.y(), other.x()),
         ];
-        if direct.iter().all(Option::is_some) {
-            return Self::try_new(direct[0].unwrap(), direct[1].unwrap(), direct[2].unwrap());
-        }
-
-        // Binary scaling preserves significands before near-cancelling products
-        // are subtracted. Dividing by arbitrary maxima would round the inputs
-        // first, losing accuracy even with a compensated determinant.
-        let left_scale =
-            Real::from_bits(left_scale.to_bits() & 0x7ff0_0000_0000_0000).max(Real::MIN_POSITIVE);
-        let right_scale =
-            Real::from_bits(right_scale.to_bits() & 0x7ff0_0000_0000_0000).max(Real::MIN_POSITIVE);
-        let left = self.to_array().map(|value| value / left_scale);
-        let right = other.to_array().map(|value| value / right_scale);
-        let normalized = [
-            direct_determinant(left[1], right[2], left[2], right[1]).unwrap(),
-            direct_determinant(left[2], right[0], left[0], right[2]).unwrap(),
-            direct_determinant(left[0], right[1], left[1], right[0]).unwrap(),
-        ];
-        let mut result = [0.0; 3];
-        for (index, component) in normalized.into_iter().enumerate() {
-            // Normalizing the complete vectors may underflow a small coordinate
-            // even when its product with another large coordinate is representable.
-            // Only replace determinants that actually needed overflow recovery.
-            result[index] = if let Some(value) = direct[index] {
-                value
-            } else {
-                component.signum()
-                    * product_three(component.abs(), left_scale, right_scale, "cross product")?
-            };
-        }
+        require_finite(result, "cross product")?;
         Self::try_from(result)
     }
 
@@ -177,8 +144,24 @@ fn direct_dot(left: [Real; 3], right: [Real; 3]) -> Option<Real> {
     result.is_finite().then_some(result)
 }
 
+fn determinant(left_a: Real, right_a: Real, left_b: Real, right_b: Real) -> Real {
+    direct_determinant(left_a, right_a, left_b, right_b)
+        .unwrap_or_else(|| exact_dot::dot([left_a, -left_b, 0.0], [right_a, right_b, 0.0]))
+}
+
 fn direct_determinant(left_a: Real, right_a: Real, left_b: Real, right_b: Real) -> Option<Real> {
+    let first = left_a * right_a;
     let second = left_b * right_b;
+    // A product has up to 106 significant bits. Below 2^-969 its exact
+    // low-order bits may lie below 2^-1074, where FMA cannot recover them.
+    // Include normal products near underflow, not just subnormal products.
+    // Include equality because the product may round up to the boundary.
+    const MIN_COMPENSATED_PRODUCT: Real = 2.0 * Real::MIN_POSITIVE / Real::EPSILON;
+    for (product, a, b) in [(first, left_a, right_a), (second, left_b, right_b)] {
+        if product.abs() <= MIN_COMPENSATED_PRODUCT && a != 0.0 && b != 0.0 {
+            return None;
+        }
+    }
     if second.is_finite() {
         // Compensate the rounded product too. FMA(a,b,-c*d) alone
         // leaves a nonzero product-rounding residual even when a*b == c*d.
@@ -188,7 +171,6 @@ fn direct_determinant(left_a: Real, right_a: Real, left_b: Real, right_b: Real) 
             return Some(value);
         }
     }
-    let first = left_a * right_a;
     if first.is_finite() {
         let error = left_a.mul_add(right_a, -first);
         let value = (-left_b).mul_add(right_b, first) + error;
@@ -281,6 +263,38 @@ impl TryFrom<[Real; 3]> for Vector3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn cross_product_combines_subnormal_products_before_rounding() {
+        let tiny = Real::from_bits(1);
+        for axis in 0..3 {
+            let mut left = [tiny, tiny, 0.0];
+            let mut right = [0.5, -0.5, 0.0];
+            let mut expected = [0.0, 0.0, -tiny];
+            left.rotate_left(axis);
+            right.rotate_left(axis);
+            expected.rotate_left(axis);
+            let a = Vector3::try_from(left).unwrap();
+            let b = Vector3::try_from(right).unwrap();
+            assert_eq!(a.cross(b).unwrap().to_array(), expected);
+            assert_eq!(b.cross(a).unwrap().to_array(), expected.map(|v| -v));
+        }
+    }
+
+    #[test]
+    fn cross_product_keeps_subnormal_difference_of_normal_products() {
+        let scale = 2.0_f64.powi(-537);
+        for exponent in [27, 40, 52] {
+            let n = (1_u64 << exponent) as f64;
+            let a = Vector3::try_new(n * scale, (n - 1.0) * scale, 0.0).unwrap();
+            let b = Vector3::try_new((n + 1.0) * scale, n * scale, 0.0).unwrap();
+            assert!((a.x() * b.y()).is_normal());
+            assert!((a.y() * b.x()).is_normal());
+            // n*n - (n-1)*(n+1) = 1, scaled by 2^-1074.
+            assert_eq!(a.cross(b).unwrap().z(), Real::from_bits(1));
+            assert_eq!(b.cross(a).unwrap().z(), -Real::from_bits(1));
+        }
+    }
 
     #[test]
     fn dot_product_preserves_small_remainder_after_overflowing_cancellation() {
