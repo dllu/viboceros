@@ -528,10 +528,16 @@ impl Viewport {
         modifiers: egui::Modifiers,
         delta: Vec2,
     ) {
+        if !delta.is_finite() {
+            return;
+        }
         if button == PointerButton::Middle
             || (button == PointerButton::Secondary && (self.kind.is_parallel() || modifiers.shift))
         {
-            self.pan += delta;
+            let pan = self.pan + delta;
+            if pan.is_finite() {
+                self.pan = pan;
+            }
         } else if button == PointerButton::Secondary {
             self.orbit_yaw -= Real::from(delta.x) * 0.01;
             self.orbit_pitch = (self.orbit_pitch + Real::from(delta.y) * 0.01)
@@ -656,7 +662,12 @@ impl Viewport {
     }
 
     fn zoom_by(&mut self, factor: f32, pointer: Option<Pos2>, rect: Rect) {
-        if !factor.is_finite() || factor <= 0.0 {
+        if !factor.is_finite()
+            || factor <= 0.0
+            || !rect.is_finite()
+            || !rect.is_positive()
+            || pointer.is_some_and(|pointer| !pointer.is_finite())
+        {
             return;
         }
         if self.kind == ViewKind::Perspective {
@@ -673,7 +684,12 @@ impl Viewport {
             if let (Some(pointer), Some(anchor)) = (pointer, anchor)
                 && let Some(projected) = self.project(anchor, rect)
             {
-                self.pan += pointer - projected;
+                let pan = self.pan + (pointer - projected);
+                if !pan.is_finite() {
+                    self.perspective_camera_distance = old_distance;
+                    return;
+                }
+                self.pan = pan;
             }
             return;
         }
@@ -686,7 +702,11 @@ impl Viewport {
             let old_origin = self.world_origin(rect);
             let ratio = new_scale / old_scale;
             let new_origin = pointer - (pointer - old_origin) * ratio;
-            self.pan = new_origin - rect.center();
+            let pan = new_origin - rect.center();
+            if !pan.is_finite() {
+                return;
+            }
+            self.pan = pan;
         }
         self.pixels_per_unit = new_scale;
     }
@@ -2753,6 +2773,61 @@ mod tests {
                 resolved_display_color(&base.clone().with_color_source(source), layer),
                 Color32::from_rgb(78, 90, 123)
             );
+        }
+    }
+
+    #[test]
+    fn invalid_navigation_preserves_camera_state() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let mut viewport = Viewport::new(kind);
+            let state = |view: &Viewport| {
+                (
+                    view.pan,
+                    view.pixels_per_unit,
+                    view.perspective_camera_distance,
+                    view.orbit_yaw,
+                    view.orbit_pitch,
+                )
+            };
+            let original = state(&viewport);
+            for delta in [Vec2::new(f32::NAN, 1.0), Vec2::new(1.0, f32::INFINITY)] {
+                for button in [PointerButton::Middle, PointerButton::Secondary] {
+                    viewport.apply_navigation_drag(button, egui::Modifiers::default(), delta);
+                    assert_eq!(state(&viewport), original);
+                }
+            }
+            for factor in [f32::NAN, f32::INFINITY, 0.0, -1.0] {
+                viewport.zoom_by(factor, None, rect);
+                assert_eq!(state(&viewport), original);
+            }
+            viewport.zoom_by(2.0, Some(Pos2::new(f32::NAN, 1.0)), rect);
+            assert_eq!(state(&viewport), original);
+            for invalid in [
+                Rect::NOTHING,
+                Rect::EVERYTHING,
+                Rect::from_min_size(Pos2::ZERO, Vec2::ZERO),
+            ] {
+                viewport.zoom_by(2.0, None, invalid);
+                assert_eq!(state(&viewport), original);
+            }
+            viewport.pan = Vec2::splat(f32::MAX);
+            let large = state(&viewport);
+            viewport.apply_navigation_drag(
+                PointerButton::Middle,
+                egui::Modifiers::default(),
+                Vec2::splat(f32::MAX),
+            );
+            assert_eq!(state(&viewport), large);
+            if kind.is_parallel() {
+                viewport.zoom_by(2.0, Some(Pos2::ZERO), rect);
+                assert_eq!(state(&viewport), large);
+            }
         }
     }
 

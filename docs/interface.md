@@ -32,6 +32,12 @@ selection. Click geometry to replace the selection, Shift-click/drag to add,
 and Ctrl-click/drag or Command-click/drag to remove. Click empty space or press
 Esc to clear the selection; press Delete to remove selected objects.
 
+Navigation ignores non-finite drag deltas, invalid zoom factors/pointers, and
+non-finite or empty zoom rectangles. Pan updates that overflow screen coordinates
+are rejected without partially changing zoom state. Regression tests cover all
+four view kinds alongside normal pointer-pinned zoom and perspective dolly
+behavior. Zoom-to-extents is not implemented yet.
+
 `MeshToNURB` also supports [command-first object picking](object-selection.md).
 During that prompt, clicks and selection windows add only selectable meshes;
 Ctrl/Command removes picks, Enter finishes, and Escape cancels. `SelAll` is filtered
