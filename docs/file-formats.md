@@ -93,7 +93,11 @@ rotated parent, with expected corner coordinates checked independently of
 the importer's matrix arithmetic. These are generated STEP fixtures, not
 Rhino parity measurements. `ImportStep` resolves SI prefixes and
 conversion-based length units (including nested conversion factors), then
-converts coordinates and validation tolerances into document units. This
+converts coordinates into document units. Tessellation accuracy uses the
+modelling tolerance in source coordinates, while resulting triangles and unit
+transformations use numerical validity checks. Small finite faces are retained;
+genuine collapse remains an error. Export likewise preserves valid small meshes
+while converting the declared file accuracy separately. This
 currently requires a single data section with uniform length units across
 contexts. Missing, mixed, cyclic, or unsupported unit definitions and
 non-radian angular contexts are rejected before document edits. Mixed-unit

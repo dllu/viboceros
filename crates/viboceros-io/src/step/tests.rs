@@ -247,6 +247,83 @@ fn imports_si_length_units_into_target_coordinates() {
 }
 
 #[test]
+fn step_unit_conversion_retains_meshes_smaller_than_model_tolerance() {
+    let tolerance = Tolerance::try_new(0.001, 1e-12, 1e-10).unwrap();
+    let imported = read_step_in_units(
+        Cursor::new(cube_step()),
+        &LengthUnitSystem::Kilometers,
+        tolerance,
+    )
+    .unwrap();
+    assert_eq!(imported.objects.len(), 1);
+    let mesh = &imported.objects[0].mesh;
+    let check = Tolerance::try_new(1e-18, 1e-12, 1e-10).unwrap();
+    assert!(
+        mesh.bounds()
+            .min()
+            .is_near(Point3::try_new(-1e-6, -2e-6, -3e-6).unwrap(), check)
+    );
+    assert!(
+        mesh.bounds()
+            .max()
+            .is_near(Point3::try_new(4e-6, 5e-6, 6e-6).unwrap(), check)
+    );
+    assert_eq!(mesh.topology().boundary_edge_count(), 0);
+    let mut exported = Vec::new();
+    write_step_in_units(
+        &mut exported,
+        std::slice::from_ref(mesh),
+        &LengthUnitSystem::Kilometers,
+        tolerance,
+    )
+    .unwrap();
+    let restored = read_step(Cursor::new(exported), Tolerance::DEFAULT).unwrap();
+    assert_eq!(restored.objects.len(), 1);
+    let mesh = &restored.objects[0].mesh;
+    assert!(mesh.bounds().min().is_near(
+        Point3::try_new(-1.0, -2.0, -3.0).unwrap(),
+        Tolerance::DEFAULT
+    ));
+    assert!(
+        mesh.bounds()
+            .max()
+            .is_near(Point3::try_new(4.0, 5.0, 6.0).unwrap(), Tolerance::DEFAULT)
+    );
+    assert_eq!(mesh.topology().boundary_edge_count(), 0);
+}
+
+#[test]
+fn step_unit_conversion_rejects_collapsed_triangles_before_writing() {
+    let mesh = TriangleMesh::try_new(
+        vec![
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(1e-100, 0.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 1e-100, 0.0).unwrap(),
+        ],
+        vec![[0, 1, 2]],
+        Tolerance::NUMERICAL_VALIDATION,
+    )
+    .unwrap();
+    let mut stream = b"existing".to_vec();
+    let result = write_step_in_units(
+        &mut stream,
+        &[mesh],
+        &LengthUnitSystem::Custom {
+            name: "tiny".into(),
+            meters_per_unit: 1e-250,
+        },
+        Tolerance::DEFAULT,
+    );
+    assert!(matches!(
+        result,
+        Err(StepError::Geometry(
+            GeometryError::DegenerateTriangle { .. }
+        ))
+    ));
+    assert_eq!(stream, b"existing");
+}
+
+#[test]
 fn imports_conversion_based_length_units_by_factor_not_name() {
     let text = cube_step().replace(
         "#12 = ( LENGTH_UNIT() NAMED_UNIT(*) SI_UNIT(.MILLI.,.METRE.) );",

@@ -175,7 +175,9 @@ pub fn read_step_in_units<R: Read>(
         let transform =
             AffineTransform3::try_uniform_scale(Point3::try_new(0.0, 0.0, 0.0)?, scale)?;
         for object in &mut imported.objects {
-            object.mesh = object.mesh.transformed(transform, tolerance)?;
+            object.mesh = object
+                .mesh
+                .transformed(transform, Tolerance::NUMERICAL_VALIDATION)?;
         }
     }
     Ok(imported)
@@ -253,7 +255,7 @@ pub fn write_step_in_units<W: Write>(
     let transform = AffineTransform3::try_uniform_scale(Point3::try_new(0.0, 0.0, 0.0)?, scale)?;
     let converted = meshes
         .iter()
-        .map(|mesh| mesh.transformed(transform, target_tolerance))
+        .map(|mesh| mesh.transformed(transform, Tolerance::NUMERICAL_VALIDATION))
         .collect::<Result<Vec<_>, _>>()?;
     write_step_with_accuracy(writer, &converted, target_tolerance.absolute())
 }
@@ -477,7 +479,7 @@ fn import_shape(
     };
     polygon
         .as_ref()
-        .map(|polygon| polygon_to_mesh(shape_id, polygon, transform, tolerance))
+        .map(|polygon| polygon_to_mesh(shape_id, polygon, transform))
         .transpose()
 }
 
@@ -702,7 +704,6 @@ fn polygon_to_mesh(
     shape: u64,
     polygon: &PolygonMesh,
     transform: Matrix4,
-    tolerance: Tolerance,
 ) -> Result<TriangleMesh, StepError> {
     let vertices = polygon
         .positions()
@@ -726,7 +727,13 @@ fn polygon_to_mesh(
     if triangles.is_empty() {
         return Err(StepError::EmptyTessellation { shape });
     }
-    Ok(TriangleMesh::try_new(vertices, triangles, tolerance)?)
+    // Tessellation accuracy and a mesh's numerical validity are different
+    // policies. A coarse document tolerance must not reject finite small faces.
+    Ok(TriangleMesh::try_new(
+        vertices,
+        triangles,
+        Tolerance::NUMERICAL_VALIDATION,
+    )?)
 }
 
 fn record_topology_report(report: &mut StepImportReport, shell_report: &ShellLoadReport) {
