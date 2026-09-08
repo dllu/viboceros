@@ -2,8 +2,8 @@
 
 use super::*;
 use viboceros_drafting::{
-    ObjectSnap, OrthogonalTrack, TrackAxis, nearest_object_snap_projected,
-    nearest_object_snap_relative,
+    ObjectSnap, OrthogonalTrack, TrackAxis, nearest_object_snap_axis_aligned,
+    nearest_object_snap_projected,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -27,14 +27,15 @@ impl Viewport {
         // Object snaps are a camera-space query. They remain available even
         // when the construction plane is edge-on or behind the camera.
         let object_snap = if input.osnap {
-            if self.kind == ViewKind::Top {
+            if let Some(projection) = self.point_cloud_projection() {
                 let origin = self.world_origin(rect);
                 let scale = Real::from(self.pixels_per_unit);
-                Point3::try_new(self.target.x, self.target.y, 0.0)
+                Point3::try_new(self.target.x, self.target.y, self.target.z)
                     .ok()
                     .and_then(|target| {
-                        nearest_object_snap_relative(
+                        nearest_object_snap_axis_aligned(
                             document,
+                            projection,
                             target,
                             [
                                 (Real::from(pointer.x) - Real::from(origin.x)) / scale,

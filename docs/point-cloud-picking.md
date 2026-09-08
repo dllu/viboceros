@@ -2,7 +2,7 @@
 
 [Architecture](architecture.md) · [Viewport implementation](viewport-implementation.md)
 
-Top, Front, and Right click selection use axis-aligned k-d trees instead of
+Top, Front, and Right click selection and Osnap use axis-aligned k-d trees instead of
 scanning every cloud point. `PointCloud3` builds its XY index at construction;
 XZ and YZ indexes are initialized on first valid use through `OnceLock` and
 reused. Each additional index stores node metadata, not another copy of the
@@ -18,9 +18,12 @@ and offset validation happens before initializing an index. Existing XY APIs
 delegate to the same implementation. Cloud equality depends on ordered points,
 not cache state; transformed clouds rebuild their indexes from transformed data.
 
-Perspective click selection still scans projected points. Front/Right Osnap uses
-the arbitrary-projection drafting API and also still scans; this optimization
-is for point-cloud object picking, not all snapping or all viewport work.
+The drafting API's `nearest_object_snap_axis_aligned` uses the same cached indexes
+for clouds while retaining ordinary feature enumeration and priority rules for
+other geometry. The camera's projection choice is shared by picking and Osnap.
+Perspective selection and Osnap still scan projected cloud points, as do callers
+of the generic arbitrary-projection snapping API. This is not an acceleration
+of all geometry types, all snapping, or all viewport work.
 
 ## Validation and timing
 
@@ -28,6 +31,10 @@ Tests compare each projection with exhaustive searches at zero and large signed
 translations, including zero-radius queries and ties. Other tests check lazy
 initialization, reuse of an initialized index, cloud equality after cloning,
 and translated pixel-capture boundaries in all three parallel views.
+Drafting tests compare axis-aligned snaps with the generic projected search over
+mixed point/cloud/line scenes in all planes, including large signed translations,
+locked targets, capture radii, and ties. Viewport tests check both points and
+clouds at the Osnap pixel boundary in each parallel view.
 
 Run the opt-in benchmark in release mode:
 

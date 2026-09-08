@@ -2270,36 +2270,38 @@ mod tests {
     }
 
     #[test]
-    fn translated_top_osnap_respects_pixel_capture_radius() {
-        let mut view = Viewport::new(ViewKind::Top);
-        view.target.x = 2.0_f64.powi(54);
-        let target = point(view.target.x, 0.0, 0.0);
-        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
-        for geometry in [
-            Geometry::Point(target),
-            Geometry::PointCloud(PointCloud3::try_new(vec![target]).unwrap()),
-        ] {
-            let mut document = Document::default();
-            document.add_geometry(geometry).unwrap();
-            let projected = view.project(target, rect).unwrap();
-            for offset in [0.0, 11.0, 12.0, 13.0, 20.0] {
-                let cursor = view
-                    .drafting_cursor(
-                        projected + Vec2::new(offset, 0.0),
-                        rect,
-                        &document,
-                        DraftingInput {
-                            active: true,
-                            osnap: true,
-                            ..Default::default()
-                        },
-                    )
-                    .unwrap();
-                assert_eq!(
-                    cursor.object_snap.is_some(),
-                    offset <= OSNAP_CAPTURE_PIXELS,
-                    "offset={offset}"
-                );
+    fn translated_parallel_osnap_respects_pixel_capture_radius() {
+        for kind in [ViewKind::Top, ViewKind::Front, ViewKind::Right] {
+            let mut view = Viewport::new(kind);
+            view.target = NaVector3::repeat(2.0_f64.powi(54));
+            let target = point(view.target.x, view.target.y, view.target.z);
+            let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+            for geometry in [
+                Geometry::Point(target),
+                Geometry::PointCloud(PointCloud3::try_new(vec![target]).unwrap()),
+            ] {
+                let mut document = Document::default();
+                document.add_geometry(geometry).unwrap();
+                let projected = view.project(target, rect).unwrap();
+                for offset in [0.0, 11.0, 12.0, 13.0, 20.0] {
+                    let cursor = view
+                        .drafting_cursor(
+                            projected + Vec2::new(offset, 0.0),
+                            rect,
+                            &document,
+                            DraftingInput {
+                                active: true,
+                                osnap: true,
+                                ..Default::default()
+                            },
+                        )
+                        .unwrap();
+                    assert_eq!(
+                        cursor.object_snap.is_some(),
+                        offset <= OSNAP_CAPTURE_PIXELS,
+                        "offset={offset}"
+                    );
+                }
             }
         }
     }

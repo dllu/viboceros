@@ -3,8 +3,8 @@
 mod object_snap;
 pub mod plane;
 pub use object_snap::{
-    ObjectSnap, ObjectSnapKind, nearest_object_snap, nearest_object_snap_projected,
-    nearest_object_snap_relative,
+    ObjectSnap, ObjectSnapKind, nearest_object_snap, nearest_object_snap_axis_aligned,
+    nearest_object_snap_projected, nearest_object_snap_relative,
 };
 mod point_input;
 pub use point_input::{PointInput, PointInputError};

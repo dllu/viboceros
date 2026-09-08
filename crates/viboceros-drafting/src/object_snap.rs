@@ -2,7 +2,7 @@
 
 use super::{DraftingError, validate_capture_radius, validate_cursor_coordinates};
 use viboceros_document::{Document, Geometry, ObjectId};
-use viboceros_geometry::{GeometryError, Point3, PointCloud3, Real};
+use viboceros_geometry::{GeometryError, Point3, PointCloud3, PointCloudProjection, Real};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ObjectSnapKind {
@@ -83,11 +83,30 @@ pub fn nearest_object_snap_relative(
     cursor_offset: [Real; 2],
     capture_radius: Real,
 ) -> Result<Option<ObjectSnap>, DraftingError> {
+    nearest_object_snap_axis_aligned(
+        document,
+        PointCloudProjection::Xy,
+        origin,
+        cursor_offset,
+        capture_radius,
+    )
+}
+
+/// Finds axis-aligned feature snaps in model units, retaining local cursor
+/// precision and indexed point-cloud queries in XY, XZ, or YZ.
+pub fn nearest_object_snap_axis_aligned(
+    document: &Document,
+    projection: PointCloudProjection,
+    origin: Point3,
+    cursor_offset: [Real; 2],
+    capture_radius: Real,
+) -> Result<Option<ObjectSnap>, DraftingError> {
     validate_capture_radius(capture_radius)?;
     validate_cursor_coordinates(cursor_offset)?;
     nearest_object_snap_with_metric(
         document,
-        &XySnapMetric {
+        &AxisAlignedSnapMetric {
+            projection,
             origin,
             cursor_offset,
             capture_radius,
@@ -122,26 +141,39 @@ trait SnapMetric {
     fn nearest_point_cloud(&self, cloud: &PointCloud3) -> Result<Option<Point3>, GeometryError>;
 }
 
-struct XySnapMetric {
+struct AxisAlignedSnapMetric {
+    projection: PointCloudProjection,
     origin: Point3,
     cursor_offset: [Real; 2],
     capture_radius: Real,
 }
 
-impl SnapMetric for XySnapMetric {
+impl SnapMetric for AxisAlignedSnapMetric {
     fn capture_radius(&self) -> Real {
         self.capture_radius
     }
 
     fn distance(&self, point: Point3) -> Option<Real> {
-        let distance = ((point.x() - self.origin.x()) - self.cursor_offset[0])
-            .hypot((point.y() - self.origin.y()) - self.cursor_offset[1]);
+        let project = |p: Point3| match self.projection {
+            PointCloudProjection::Xy => [p.x(), p.y()],
+            PointCloudProjection::Xz => [p.x(), p.z()],
+            PointCloudProjection::Yz => [p.y(), p.z()],
+        };
+        let p = project(point);
+        let origin = project(self.origin);
+        let distance = ((p[0] - origin[0]) - self.cursor_offset[0])
+            .hypot((p[1] - origin[1]) - self.cursor_offset[1]);
         distance.is_finite().then_some(distance)
     }
 
     fn nearest_point_cloud(&self, cloud: &PointCloud3) -> Result<Option<Point3>, GeometryError> {
         Ok(cloud
-            .nearest_xy_relative(self.origin, self.cursor_offset, self.capture_radius)?
+            .nearest_projected_relative(
+                self.projection,
+                self.origin,
+                self.cursor_offset,
+                self.capture_radius,
+            )?
             .map(|(_, point, _)| point))
     }
 }

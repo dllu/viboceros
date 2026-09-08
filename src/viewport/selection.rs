@@ -88,14 +88,7 @@ impl Viewport {
                     PickHit::screen(0, distance)
                 }
                 Geometry::PointCloud(cloud) => {
-                    let distance = if self.kind.is_parallel() {
-                        use viboceros_geometry::PointCloudProjection;
-                        let projection = match self.kind {
-                            ViewKind::Top => PointCloudProjection::Xy,
-                            ViewKind::Front => PointCloudProjection::Xz,
-                            ViewKind::Right => PointCloudProjection::Yz,
-                            ViewKind::Perspective => unreachable!(),
-                        };
+                    let distance = if let Some(projection) = self.point_cloud_projection() {
                         let origin = self.world_origin(rect);
                         let scale = Real::from(self.pixels_per_unit);
                         Point3::try_new(self.target.x, self.target.y, self.target.z)

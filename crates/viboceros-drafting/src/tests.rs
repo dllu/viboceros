@@ -1,6 +1,68 @@
 use super::*;
 
 #[test]
+fn axis_aligned_snaps_match_projected_search_in_all_coordinate_planes() {
+    use viboceros_geometry::PointCloudProjection;
+    for translation in [0.0, 2.0_f64.powi(52), -2.0_f64.powi(52)] {
+        let p = |x, y, z| point(translation + x, translation + y, translation + z);
+        let origin = p(0.0, 0.0, 0.0);
+        let mut document = Document::default();
+        document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(p(-2.0, 0.0, 1.0), p(2.0, 0.0, -1.0), Tolerance::DEFAULT)
+                    .unwrap(),
+            ))
+            .unwrap();
+        document
+            .add_geometry(Geometry::PointCloud(
+                PointCloud3::try_new(vec![p(1.0, 3.0, 0.0), p(0.0, 2.0, 1.0), p(2.0, 0.0, 3.0)])
+                    .unwrap(),
+            ))
+            .unwrap();
+        let locked = document
+            .add_geometry(Geometry::Point(p(-1.0, 0.0, 2.0)))
+            .unwrap();
+        document.set_objects_locked([locked], true).unwrap();
+        for (projection, axes) in [
+            (PointCloudProjection::Xy, [0, 1]),
+            (PointCloudProjection::Xz, [0, 2]),
+            (PointCloudProjection::Yz, [1, 2]),
+        ] {
+            for x in -12..=12 {
+                for y in -12..=12 {
+                    let cursor = [Real::from(x) / 4.0, Real::from(y) / 4.0];
+                    for radius in [0.25, 0.5, 1.0] {
+                        let expected =
+                            nearest_object_snap_projected(&document, cursor, radius, |p| {
+                                let a = p.to_array();
+                                Some([a[axes[0]] - translation, a[axes[1]] - translation])
+                            })
+                            .unwrap();
+                        assert_eq!(
+                            nearest_object_snap_axis_aligned(
+                                &document, projection, origin, cursor, radius
+                            )
+                            .unwrap(),
+                            expected
+                        );
+                    }
+                }
+            }
+            assert_eq!(
+                nearest_object_snap_axis_aligned(
+                    &document,
+                    projection,
+                    origin,
+                    [Real::NAN, 0.0],
+                    1.0
+                ),
+                Err(DraftingError::InvalidCursorCoordinates)
+            );
+        }
+    }
+}
+
+#[test]
 fn invalid_projected_cursors_are_rejected_before_projection_callbacks() {
     let plane = Frame3::try_from_directions(
         point(0.0, 0.0, 0.0),

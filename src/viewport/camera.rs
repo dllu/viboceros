@@ -8,6 +8,18 @@ fn real_to_gpu(value: Real) -> Option<f32> {
 }
 
 impl Viewport {
+    pub(super) fn point_cloud_projection(
+        &self,
+    ) -> Option<viboceros_geometry::PointCloudProjection> {
+        use viboceros_geometry::PointCloudProjection;
+        match self.kind {
+            ViewKind::Top => Some(PointCloudProjection::Xy),
+            ViewKind::Front => Some(PointCloudProjection::Xz),
+            ViewKind::Right => Some(PointCloudProjection::Yz),
+            ViewKind::Perspective => None,
+        }
+    }
+
     /// Preserve local features before the f64-to-f32 GPU boundary. Parallel
     /// views also apply their uniform model-to-pixel scale here so GPU matrix
     /// coefficients do not become subnormal merely because the model is large.
