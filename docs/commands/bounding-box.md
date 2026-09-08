@@ -33,6 +33,14 @@ new objects are unselected on the current layer.
 
 ## Geometry and failure policy
 
+The kernel's axis-aligned box center uses Rust's
+[`f64::midpoint`](https://doc.rust-lang.org/std/primitive.f64.html#method.midpoint)
+instead of separately halving endpoints or differences. Regressions cover
+4,225 pairs of small signed subnormal coordinates against exact integer-unit
+rounding, plus degenerate boxes, maximum finite coordinates, and adjacent
+normal values on all three axes. These are kernel numerical tests, not Rhino
+oracle comparisons.
+
 `viboceros-command::bounding_box` owns parsing, coordinate transforms, reports,
 and staged construction. It queries `Geometry::tight_bounds`, including analytic
 curve extrema, rational NURBS extrema, and retained trimmed-face interiors;
