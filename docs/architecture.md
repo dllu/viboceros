@@ -104,7 +104,13 @@ feature priority remain separate from depth ordering among overlapping face hits
 The app's `viewport/camera` module owns CPU projection/unprojection, drafting
 rays, navigation updates, view depth, and GPU camera matrices. It rebases GPU
 positions around the model-space camera target in f64 before f32 conversion;
-the GPU matrix and depth bounds use that same local frame. Viewport drawing
+the GPU matrix and depth bounds use that same local frame. Cursor unprojection
+shares this origin convention: perspective screen rays
+and drafting-plane intersections are evaluated locally, adding the target only
+when constructing the final model point. This avoids rounding an absolute camera
+position before intersection. Tests cover translated and tilted drafting planes,
+anchor overrides, a trillion-unit unprojection regression, and unchanged rejection
+of edge-on or behind-camera planes. Viewport drawing
 and hit-testing consume these shared methods; camera math remains independent
 of the painter and document mutation. Its extraction retains the projection,
 target-plane zoom, and multi-frame navigation regressions.

@@ -129,30 +129,61 @@ impl Viewport {
         anchor: Option<Point3>,
     ) -> Option<Point3> {
         let plane = self.construction_plane();
-        let plane = plane.with_origin(anchor.unwrap_or(plane.origin()));
+        let local_origin =
+            NaVector3::from(anchor.unwrap_or(plane.origin()).to_array()) - self.target;
+        let plane = plane
+            .with_origin(Point3::try_from([local_origin.x, local_origin.y, local_origin.z]).ok()?);
         let (origin, direction, forward_only) = if self.kind == ViewKind::Perspective {
-            let (right, up, forward) = self.perspective_basis();
-            let camera = self.target - forward * self.perspective_camera_distance;
-            let origin = self.world_origin(rect);
-            let focal = self.perspective_focal_length_pixels(rect);
-            let ray = forward
-                + right * ((Real::from(pointer.x) - Real::from(origin.x)) / focal)
-                + up * ((Real::from(origin.y) - Real::from(pointer.y)) / focal);
+            let (camera, ray) = self.perspective_local_ray(pointer, rect);
             (
                 Point3::try_new(camera.x, camera.y, camera.z).ok()?,
                 Vector3::try_new(ray.x, ray.y, ray.z).ok()?,
                 true,
             )
         } else {
+            let screen_origin = self.world_origin(rect);
+            let scale = Real::from(self.pixels_per_unit);
+            let horizontal = (Real::from(pointer.x) - Real::from(screen_origin.x)) / scale;
+            let vertical = (Real::from(screen_origin.y) - Real::from(pointer.y)) / scale;
+            let origin = match self.kind {
+                ViewKind::Top => [horizontal, vertical, 0.0],
+                ViewKind::Front => [horizontal, 0.0, vertical],
+                ViewKind::Right => [0.0, horizontal, vertical],
+                ViewKind::Perspective => unreachable!(),
+            };
             (
-                self.unproject(pointer, rect, 0.0)?,
+                Point3::try_from(origin).ok()?,
                 self.apparent_intersection_normal(),
                 false,
             )
         };
-        viboceros_drafting::plane::intersect_view_line(origin, direction, plane, forward_only)
-            .ok()
-            .flatten()
+        let local =
+            viboceros_drafting::plane::intersect_view_line(origin, direction, plane, forward_only)
+                .ok()
+                .flatten()?;
+        Point3::try_new(
+            local.x() + self.target.x,
+            local.y() + self.target.y,
+            local.z() + self.target.z,
+        )
+        .ok()
+    }
+
+    /// Camera origin and ray direction in the target-relative model frame.
+    fn perspective_local_ray(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+    ) -> (NaVector3<Real>, NaVector3<Real>) {
+        let (right, up, forward) = self.perspective_basis();
+        let origin = self.world_origin(rect);
+        let focal = self.perspective_focal_length_pixels(rect);
+        let horizontal = (Real::from(pointer.x) - Real::from(origin.x)) / focal;
+        let vertical = (Real::from(origin.y) - Real::from(pointer.y)) / focal;
+        (
+            -forward * self.perspective_camera_distance,
+            forward + right * horizontal + up * vertical,
+        )
     }
 
     pub(super) fn apply_navigation_drag(
@@ -253,21 +284,16 @@ impl Viewport {
                 }
             }
             ViewKind::Perspective => {
-                let (right, up, forward) = self.perspective_basis();
-                let camera = self.target - forward * self.perspective_camera_distance;
-                let focal_length = self.perspective_focal_length_pixels(rect);
-                let horizontal = (Real::from(position.x) - Real::from(origin.x)) / focal_length;
-                let vertical = (Real::from(origin.y) - Real::from(position.y)) / focal_length;
-                let ray = forward + right * horizontal + up * vertical;
+                let (camera, ray) = self.perspective_local_ray(position, rect);
                 if !ray.z.is_finite() || ray.z.abs() <= 1.0e-12 {
                     return None;
                 }
-                let parameter = (elevation - camera.z) / ray.z;
+                let parameter = ((elevation - self.target.z) - camera.z) / ray.z;
                 if !parameter.is_finite() || parameter < 0.0 {
                     return None;
                 }
                 let point = camera + ray * parameter;
-                Point3::try_new(point.x, point.y, point.z).ok()
+                Point3::try_new(point.x + self.target.x, point.y + self.target.y, elevation).ok()
             }
         }
     }
@@ -498,6 +524,111 @@ fn matrix_to_gpu(matrix: NaMatrix4<Real>) -> [[f32; 4]; 4] {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn perspective_unprojection_rounds_world_translation_only_at_the_end() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let view = Viewport::new(ViewKind::Perspective);
+        for pointer in [
+            rect.center(),
+            Pos2::new(437.0, 279.0),
+            Pos2::new(211.0, 367.0),
+        ] {
+            let local = view.unproject(pointer, rect, 0.0).unwrap();
+            for offset in [1e9, 1e12, 281474976710656.0] {
+                let target = NaVector3::new(offset, -2.0 * offset, 3.0 * offset);
+                let translated = Viewport {
+                    target,
+                    ..Viewport::new(ViewKind::Perspective)
+                };
+                let expected =
+                    Point3::try_new(local.x() + target.x, local.y() + target.y, target.z).unwrap();
+                assert_eq!(
+                    translated.unproject(pointer, rect, target.z),
+                    Some(expected),
+                    "offset={offset}, pointer={pointer:?}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn drafting_plane_unprojection_is_translation_covariant() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let pointer = Pos2::new(437.0, 279.0);
+        let target = NaVector3::new(1e12, -2e12, 3e12);
+        let translate = |p: Point3| {
+            Point3::try_new(p.x() + target.x, p.y() + target.y, p.z() + target.z).unwrap()
+        };
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let mut view = Viewport::new(kind);
+            let default_frame = view
+                .construction_plane()
+                .with_origin(Point3::try_new(4.0, 5.0, 6.0).unwrap());
+            let tilted_frame = viboceros_geometry::Frame3::try_from_normal(
+                default_frame.origin(),
+                Vector3::try_new(1.0, 2.0, 3.0).unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            for frame in [default_frame, tilted_frame] {
+                view.plane.set(frame);
+                let mut translated = Viewport {
+                    target,
+                    ..Viewport::new(kind)
+                };
+                translated
+                    .plane
+                    .set(frame.with_origin(translate(frame.origin())));
+                for anchor in [None, Some(Point3::try_new(1.0, 2.0, 3.0).unwrap())] {
+                    let expected = view
+                        .unproject_drafting_plane(pointer, rect, anchor)
+                        .map(translate);
+                    assert!(expected.is_some());
+                    assert_eq!(
+                        translated.unproject_drafting_plane(pointer, rect, anchor.map(translate)),
+                        expected,
+                        "{kind:?} anchor={anchor:?}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn local_drafting_rays_still_reject_edge_on_and_behind_camera_planes() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        for offset in [0.0, 1e12] {
+            let mut view = Viewport {
+                target: NaVector3::repeat(offset),
+                orbit_yaw: 0.0,
+                orbit_pitch: 0.0,
+                ..Viewport::new(ViewKind::Perspective)
+            };
+            for (origin, normal) in [
+                ([offset, offset, offset], [0.0, 1.0, 0.0]),
+                ([offset + 60.0, offset, offset], [1.0, 0.0, 0.0]),
+            ] {
+                view.plane.set(
+                    viboceros_geometry::Frame3::try_from_normal(
+                        Point3::try_from(origin).unwrap(),
+                        Vector3::try_new(normal[0], normal[1], normal[2]).unwrap(),
+                        Tolerance::DEFAULT,
+                    )
+                    .unwrap(),
+                );
+                assert!(
+                    view.unproject_drafting_plane(rect.center(), rect, None)
+                        .is_none()
+                );
+            }
+        }
+    }
 
     #[test]
     fn unprojection_subtracts_finite_screen_coordinates_without_f32_overflow() {
