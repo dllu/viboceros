@@ -41,6 +41,22 @@ The checks never increase a component tolerance to conceal a measured mismatch.
 Edge uses are indexed once by shared-edge index, replacing repeated scans of the
 entire trim table during topology validation.
 
+## Incidence queries
+
+`brep/incidence` implements `is_manifold`, `is_closed`, and `is_solid` with one
+trim traversal and an edge-count table. Each call costs O(trims + edges), rather
+than rescanning all trims for each edge. Two bytes per edge hold oriented counts
+saturated at three; exact counts above two are unnecessary for these predicates.
+Singular trims without an edge are ignored, and face reversal participates in
+the orientation test. Solidity retains the existing rule of exactly one use in
+each direction, not an additional geometric self-intersection proof.
+
+`edge_use_count` still returns an exact count for a requested edge, using an
+allocation-free traversal. It returns `None` for an invalid edge index.
+Regression tests compare all queries with explicit use enumeration across open,
+closed, non-manifold, reversed, singular-trim, and high-valence cases. This is an
+algorithmic complexity improvement; no Rhino performance ratio is claimed.
+
 ## Evidence and limits
 
 Three regressions first demonstrated that the old constructor accepted bowed

@@ -13,6 +13,7 @@ use crate::{
     WeightedPoint2, WeightedPoint3, require_finite,
 };
 
+mod incidence;
 mod loft;
 mod mass_properties;
 mod morph;
@@ -3463,23 +3464,6 @@ impl Brep {
             })
     }
 
-    pub fn edge_use_count(&self, edge_index: usize) -> Option<usize> {
-        (edge_index < self.edges.len()).then(|| {
-            self.trim_uses()
-                .into_iter()
-                .filter(|trim_use| trim_use.trim.edge == Some(edge_index))
-                .count()
-        })
-    }
-
-    pub fn is_manifold(&self) -> bool {
-        (0..self.edges.len()).all(|edge| self.edge_use_count(edge).is_some_and(|count| count <= 2))
-    }
-
-    pub fn is_closed(&self) -> bool {
-        (0..self.edges.len()).all(|edge| self.edge_use_count(edge) == Some(2))
-    }
-
     /// Reverses every face normal without changing surfaces, trims, or shared
     /// topology. Global orientation reversal preserves all incidence invariants.
     pub fn reversed(&self) -> Self {
@@ -3488,22 +3472,6 @@ impl Brep {
             face.reversed = !face.reversed;
         }
         result
-    }
-
-    pub fn is_solid(&self) -> bool {
-        if !self.is_manifold() || !self.is_closed() {
-            return false;
-        }
-        let uses = self.trim_uses();
-        (0..self.edges.len()).all(|edge_index| {
-            let edge_uses = uses
-                .iter()
-                .filter(|trim_use| trim_use.trim.edge == Some(edge_index))
-                .collect::<Vec<_>>();
-            edge_uses.len() == 2
-                && (edge_uses[0].trim.reversed_3d ^ self.faces[edge_uses[0].face].reversed)
-                    != (edge_uses[1].trim.reversed_3d ^ self.faces[edge_uses[1].face].reversed)
-        })
     }
 
     /// Conservative control-geometry bounds. Exact curved-edge bounds can be
