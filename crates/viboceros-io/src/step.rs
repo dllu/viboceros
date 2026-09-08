@@ -32,7 +32,9 @@ pub struct StepObject {
 pub struct StepImportReport {
     /// Entity records the parser recognized but could not retain.
     pub swallowed_entity_count: usize,
-    /// Topological items omitted while resolving shells and solids.
+    /// Topological items omitted while resolving shells, solids, and shape
+    /// relationships. Shell-conversion losses count once per source shape,
+    /// independent of its assembly instance count.
     pub lost_topology_item_count: usize,
     /// Non-solid/non-shell items in shape representations, such as placement
     /// records or unsupported wireframe geometry.
@@ -212,7 +214,7 @@ fn import_table(table: &Table, tolerance: Tolerance) -> Result<StepImport, StepE
         swallowed_entity_count: table.entity_report.total(),
         ..Default::default()
     };
-    let mut objects = Vec::new();
+    let mut instances = Vec::new();
     let mut placed_shapes = BTreeSet::new();
 
     match table.step_assy() {
@@ -247,14 +249,11 @@ fn import_table(table: &Table, tolerance: Tolerance) -> Result<StepImport, StepE
                         .and_then(|edge| nonempty_name(&edge.attributes().name))
                         .or_else(|| nonempty_name(&node.attributes().name));
                     for shape_id in shape_ids {
-                        if let Some(mesh) =
-                            import_shape(table, shape_id, transform, tolerance, &mut report)?
+                        if table.manifold_solid_brep.contains_key(&shape_id)
+                            || table.shell_based_surface_model.contains_key(&shape_id)
                         {
                             placed_shapes.insert(shape_id);
-                            objects.push(StepObject {
-                                mesh,
-                                name: name.clone(),
-                            });
+                            instances.push((shape_id, transform, name.clone()));
                         } else if !is_placement_item(table, shape_id) {
                             report.skipped_representation_item_count += 1;
                         }
@@ -279,11 +278,35 @@ fn import_table(table: &Table, tolerance: Tolerance) -> Result<StepImport, StepE
         if placed_shapes.contains(&shape_id) {
             continue;
         }
-        if let Some(mesh) =
-            import_shape(table, shape_id, Matrix4::identity(), tolerance, &mut report)?
-        {
-            report.unplaced_shape_count += 1;
-            objects.push(StepObject { mesh, name: None });
+        report.unplaced_shape_count += 1;
+        instances.push((shape_id, Matrix4::identity(), None));
+    }
+
+    // Retain source polygons only until their final placement, rather than
+    // keeping a second copy of every unique shape throughout the import.
+    let mut remaining = BTreeMap::<u64, usize>::new();
+    for (shape, _, _) in &instances {
+        *remaining.entry(*shape).or_default() += 1;
+    }
+    let mut tessellations = BTreeMap::new();
+    let mut objects = Vec::with_capacity(instances.len());
+    for (shape_id, transform, name) in instances {
+        if let Some(mesh) = import_shape(
+            table,
+            shape_id,
+            transform,
+            tolerance,
+            &mut report,
+            &mut tessellations,
+        )? {
+            objects.push(StepObject { mesh, name });
+        }
+        let count = remaining
+            .get_mut(&shape_id)
+            .expect("counted shape instance");
+        *count -= 1;
+        if *count == 0 {
+            tessellations.remove(&shape_id);
         }
     }
 
@@ -300,7 +323,28 @@ fn import_shape(
     transform: Matrix4,
     tolerance: Tolerance,
     report: &mut StepImportReport,
+    tessellations: &mut BTreeMap<u64, Option<PolygonMesh>>,
 ) -> Result<Option<TriangleMesh>, StepError> {
+    // Cache source-space tessellation, not a validated native mesh: each
+    // instance must still be transformed and validated in document space.
+    let polygon = match tessellations.entry(shape_id) {
+        std::collections::btree_map::Entry::Occupied(entry) => entry.into_mut(),
+        std::collections::btree_map::Entry::Vacant(entry) => {
+            entry.insert(tessellate_shape(table, shape_id, tolerance, report)?)
+        }
+    };
+    polygon
+        .as_ref()
+        .map(|polygon| polygon_to_mesh(shape_id, polygon, transform, tolerance))
+        .transpose()
+}
+
+fn tessellate_shape(
+    table: &Table,
+    shape_id: u64,
+    tolerance: Tolerance,
+    report: &mut StepImportReport,
+) -> Result<Option<PolygonMesh>, StepError> {
     if let Some(solid) = table.manifold_solid_brep.get(&shape_id) {
         let outer_id = referenced_entity(&solid.outer, "failed to reference `solid.outer`")?;
         let (outer, outer_report) = reported_trimmed_shell(table, outer_id)?;
@@ -323,8 +367,7 @@ fn import_shape(
                 .iter()
                 .flat_map(|shell| shell.faces.iter().map(|face| face.surface.is_some())),
         )?;
-        return polygon_to_mesh(shape_id, tessellation.to_polygon(), transform, tolerance)
-            .map(Some);
+        return Ok(Some(tessellation.to_polygon()));
     }
 
     if let Some(surface_model) = table.shell_based_surface_model.get(&shape_id) {
@@ -357,7 +400,7 @@ fn import_shape(
             face_offset += tessellation.faces.len();
             polygon.merge(tessellation.to_polygon());
         }
-        return polygon_to_mesh(shape_id, polygon, transform, tolerance).map(Some);
+        return Ok(Some(polygon));
     }
 
     Ok(None)
@@ -515,7 +558,7 @@ fn reject_dropped_faces(shape: u64, faces: impl Iterator<Item = bool>) -> Result
 
 fn polygon_to_mesh(
     shape: u64,
-    polygon: PolygonMesh,
+    polygon: &PolygonMesh,
     transform: Matrix4,
     tolerance: Tolerance,
 ) -> Result<TriangleMesh, StepError> {
@@ -609,6 +652,178 @@ mod tests {
         );
         assert_eq!(model.report.swallowed_entity_count, 0);
         assert_eq!(model.report.lost_topology_item_count, 0);
+    }
+
+    #[test]
+    fn repeated_assembly_instances_preserve_names_and_transforms() {
+        use monstertruck::assembly::assy::{Assembly, EdgeEntity, NodeEntity};
+        use monstertruck::modeling::Vector3;
+        use monstertruck::step::{common::PartAttributes, save::StepDesign};
+
+        // Adapt the standalone writer's data section into an indexed shape.
+        // The assembly emitter requires the solid entity at its first index.
+        struct IndexedSolid {
+            data: String,
+            solid: usize,
+            length: usize,
+        }
+        impl monstertruck::step::save::StepLength for IndexedSolid {
+            fn step_length(&self) -> usize {
+                self.length
+            }
+        }
+        impl monstertruck::step::save::StepFormat for IndexedSolid {
+            fn fmt(&self, idx: usize, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                let mut pieces = self.data.split('#');
+                write!(f, "{}", pieces.next().unwrap())?;
+                for piece in pieces {
+                    let digits = piece.bytes().take_while(u8::is_ascii_digit).count();
+                    let original: usize = piece[..digits].parse().unwrap();
+                    let mapped = if original == self.solid { 0 } else { original };
+                    write!(f, "#{}{}", idx + mapped, &piece[digits..])?;
+                }
+                Ok(())
+            }
+        }
+        let cube = cube_step();
+        let table = Table::from_step(&cube).unwrap();
+        let solid = *table.manifold_solid_brep.keys().next().unwrap() as usize;
+        let data = cube
+            .split("DATA;")
+            .nth(1)
+            .unwrap()
+            .split("ENDSEC;")
+            .next()
+            .unwrap()
+            .to_owned();
+        // Discard the standalone product/context: only the geometry belongs
+        // in the new assembly, otherwise it creates an extra root instance.
+        let data = data[data.find(&format!("#{solid} =")).unwrap()..].to_owned();
+        let length = data
+            .split('#')
+            .skip(1)
+            .map(|piece| {
+                let digits = piece.bytes().take_while(u8::is_ascii_digit).count();
+                piece[..digits].parse::<usize>().unwrap()
+            })
+            .max()
+            .unwrap()
+            + 1;
+        let mut assembly = Assembly::new();
+        let root = assembly.create_node(NodeEntity {
+            shape: None,
+            attrs: PartAttributes::default(),
+        });
+        let part = assembly.create_node(NodeEntity {
+            shape: Some(IndexedSolid {
+                data,
+                solid,
+                length,
+            }),
+            attrs: PartAttributes::default(),
+        });
+        for index in 0..3 {
+            assembly.create_edge(
+                root,
+                part,
+                EdgeEntity {
+                    matrix: Matrix4::from_translation(Vector3::new(10.0 * index as f64, 0.0, 0.0)),
+                    attrs: PartAttributes {
+                        name: format!("instance {index}"),
+                        ..Default::default()
+                    },
+                },
+            );
+        }
+        let text =
+            CompleteStepDisplay::new(StepDesign::new(assembly), StepHeaderDescriptor::default())
+                .to_string();
+        let table = Table::from_step(&text).unwrap();
+        assert_eq!(table.manifold_solid_brep.len(), 1);
+        let imported = read_step(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+        assert_eq!(imported.objects.len(), 3);
+        assert_eq!(imported.report.unplaced_shape_count, 0);
+        assert!(imported.report.assembly_warning.is_none());
+        assert_eq!(imported.report.swallowed_entity_count, 0);
+        assert_eq!(imported.report.lost_topology_item_count, 0);
+        for index in 0..3 {
+            let name = format!("instance {index}");
+            let mesh = &imported
+                .objects
+                .iter()
+                .find(|object| object.name.as_deref() == Some(&name))
+                .unwrap()
+                .mesh;
+            assert_eq!(mesh.triangles().len(), 12);
+            assert!(mesh.bounds().min().is_near(
+                Point3::try_new(-1.0 + 10.0 * index as f64, -2.0, -3.0).unwrap(),
+                Tolerance::DEFAULT
+            ));
+            assert!(mesh.bounds().max().is_near(
+                Point3::try_new(4.0 + 10.0 * index as f64, 5.0, 6.0).unwrap(),
+                Tolerance::DEFAULT
+            ));
+        }
+    }
+
+    #[test]
+    fn cached_source_is_reused_but_each_instance_is_validated() {
+        let mut table = Table::from_step(&cube_step()).unwrap();
+        let shape = *table.manifold_solid_brep.keys().next().unwrap();
+        let mut report = StepImportReport::default();
+        let mut cache = BTreeMap::new();
+        let original = import_shape(
+            &table,
+            shape,
+            Matrix4::identity(),
+            Tolerance::DEFAULT,
+            &mut report,
+            &mut cache,
+        )
+        .unwrap()
+        .unwrap();
+        // Removing the source makes any accidental second tessellation observable.
+        table.manifold_solid_brep.remove(&shape);
+        let enlarged = import_shape(
+            &table,
+            shape,
+            Matrix4::from_scale(2.0),
+            Tolerance::DEFAULT,
+            &mut report,
+            &mut cache,
+        )
+        .unwrap()
+        .unwrap();
+        assert_eq!(enlarged.triangles(), original.triangles());
+        for (actual, source) in enlarged.vertices().iter().zip(original.vertices()) {
+            assert_eq!(
+                *actual,
+                Point3::try_new(2.0 * source.x(), 2.0 * source.y(), 2.0 * source.z()).unwrap()
+            );
+        }
+        assert!(
+            import_shape(
+                &table,
+                shape,
+                Matrix4::from_scale(0.0),
+                Tolerance::DEFAULT,
+                &mut report,
+                &mut cache
+            )
+            .is_err()
+        );
+        assert!(
+            import_shape(
+                &table,
+                shape,
+                Matrix4::identity(),
+                Tolerance::DEFAULT,
+                &mut report,
+                &mut cache
+            )
+            .unwrap()
+            .is_some()
+        );
     }
 
     #[test]

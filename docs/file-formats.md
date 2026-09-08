@@ -44,7 +44,11 @@ alongside it. Tests check the analytic locus and subsequent round trip.
 
 Initial STEP interchange uses the Apache-2.0 Monstertruck kernel to read
 solid/shell B-reps and assemblies, apply instance transforms, and robustly
-tessellate exact trimmed surfaces into validated display meshes. Parser,
+tessellate exact trimmed surfaces into validated display meshes. Repeated
+assembly instances share source-space tessellation during each import, but
+each transformed mesh is validated independently. Cached tessellations are
+released after their last instance; shell-conversion losses are reported
+once per source shape, not once per instance. Parser,
 topology, and unsupported-representation losses are reported instead of being
 silent. STL and STEP export tessellate visible NURBS surfaces and B-rep faces;
 exact outer and inner p-curves are sampled into a constrained UV triangulation
