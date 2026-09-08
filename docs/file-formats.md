@@ -101,6 +101,10 @@ use numerical validation rather than a document-dependent minimum feature size,
 both during decoding and conversion; short lines are not reported as unsupported
 merely because they are below the modelling tolerance. Source-space B-rep
 topology-matching tolerance is converted to the source units.
+That conversion is deferred until a B-rep is decoded: a point-only file is
+not rejected because an unused matching tolerance would over/underflow.
+If a B-rep needs an unrepresentable source tolerance, the import fails with
+an explicit error rather than silently skipping the B-rep.
 Unitless files retain coordinates; unset units and unrepresentable conversion
 factors or transformed coordinates are errors. The low-level
 `read_3dm_file` still reads raw file coordinates, while

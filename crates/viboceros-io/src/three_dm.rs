@@ -124,6 +124,11 @@ impl ThreeDmModel {
 
 #[derive(Debug, Error)]
 pub enum ThreeDmError {
+    #[error(
+        "the source-space B-rep matching tolerance is not representable for this unit conversion"
+    )]
+    UnrepresentableSourceTolerance,
+
     #[error(transparent)]
     Units(#[from] viboceros_geometry::UnitError),
     #[error(transparent)]
@@ -154,7 +159,7 @@ pub fn read_3dm_file(
 ) -> Result<ThreeDmModel, ThreeDmError> {
     let handle = read_handle(path.as_ref())?;
     let units = decode_units(&handle)?;
-    decode_model(&handle, tolerance, units)
+    decode_model(&handle, tolerance, units, 1.0)
 }
 
 /// Reads coordinates into target units. The supplied tolerance is expressed
@@ -170,12 +175,7 @@ pub fn read_3dm_file_in_units(
     let handle = read_handle(path.as_ref())?;
     let source_units = decode_units(&handle)?;
     let scale = source_units.scale_to(target_units)?;
-    let source_tolerance = Tolerance::try_new(
-        tolerance.absolute() / scale,
-        tolerance.relative(),
-        tolerance.angular(),
-    )?;
-    let mut model = decode_model(&handle, source_tolerance, source_units)?;
+    let mut model = decode_model(&handle, tolerance, source_units, scale)?;
     if scale != 1.0 {
         let transform = viboceros_geometry::AffineTransform3::try_uniform_scale(
             Point3::try_new(0.0, 0.0, 0.0)?,
@@ -378,6 +378,7 @@ fn decode_model(
     handle: &ModelHandle,
     tolerance: Tolerance,
     units: LengthUnitSystem,
+    coordinate_scale: f64,
 ) -> Result<ThreeDmModel, ThreeDmError> {
     // SAFETY: the handle owns a live bridge model.
     let layer_count = unsafe { ffi::vibo_3dm_layer_count(handle.0.as_ptr()) };
@@ -451,7 +452,14 @@ fn decode_model(
     // SAFETY: the handle owns a live bridge model.
     let mut unsupported = unsafe { ffi::vibo_3dm_unsupported_object_count(handle.0.as_ptr()) };
     for index in 0..object_count {
-        match decode_object(handle, index, &layer_positions, &group_positions, tolerance) {
+        match decode_object(
+            handle,
+            index,
+            &layer_positions,
+            &group_positions,
+            tolerance,
+            coordinate_scale,
+        ) {
             Ok(object) => objects.push(object),
             Err(ThreeDmError::Geometry(_)) => unsupported += 1,
             Err(error) => return Err(error),
@@ -472,6 +480,7 @@ fn decode_object(
     layer_positions: &BTreeMap<i32, usize>,
     group_positions: &BTreeMap<i32, usize>,
     tolerance: Tolerance,
+    coordinate_scale: f64,
 ) -> Result<ThreeDmObject, ThreeDmError> {
     let mut info = ffi::ViboObjectInfo::default();
     let mut coordinates = std::ptr::null();
@@ -712,7 +721,17 @@ fn decode_object(
                 && !geometry_data.is_empty() =>
         {
             let decoded = if info.object_type == OBJECT_BREP {
-                three_dm_geometry::decode_brep(geometry_data, tolerance).map(ThreeDmGeometry::Brep)
+                // Only B-rep topology matching uses model tolerance. Computing
+                // this before inspecting the object can reject exact primitives
+                // because an entirely unused source tolerance over/underflows.
+                let source_tolerance = Tolerance::try_new(
+                    tolerance.absolute() / coordinate_scale,
+                    tolerance.relative(),
+                    tolerance.angular(),
+                )
+                .map_err(|_| ThreeDmError::UnrepresentableSourceTolerance)?;
+                three_dm_geometry::decode_brep(geometry_data, source_tolerance)
+                    .map(ThreeDmGeometry::Brep)
             } else if info.object_type == OBJECT_ARC {
                 three_dm_geometry::decode_arc(geometry_data).map(ThreeDmGeometry::Arc)
             } else {
@@ -1816,6 +1835,70 @@ mod tests {
                     .unwrap()
                     < 1e-14
             );
+        }
+    }
+
+    #[test]
+    fn point_import_does_not_require_a_representable_brep_matching_tolerance() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("extreme point units.3dm");
+        for (meters_per_unit, coordinate, absolute) in
+            [(1e-320, 1.0, 1e-9), (1e300, 1e-300, 1e-100)]
+        {
+            let mut source = sample_model();
+            source.objects.truncate(1);
+            source.units = LengthUnitSystem::Custom {
+                name: "extreme".into(),
+                meters_per_unit,
+            };
+            source.objects[0].geometry =
+                ThreeDmGeometry::Point(Point3::try_new(coordinate, 0.0, 0.0).unwrap());
+            write_3dm_file(&path, &source).unwrap();
+            let tolerance = Tolerance::try_new(absolute, 1e-12, 1e-10).unwrap();
+            assert!(Tolerance::try_new(absolute / meters_per_unit, 1e-12, 1e-10).is_err());
+            let converted =
+                read_3dm_file_in_units(&path, &LengthUnitSystem::Meters, tolerance).unwrap();
+            assert_eq!(converted.units, LengthUnitSystem::Meters);
+            assert_eq!(converted.unsupported_object_count(), 0);
+            assert_eq!(converted.layers, source.layers);
+            assert_eq!(converted.groups, source.groups);
+            let mut expected = source.objects[0].clone();
+            expected.geometry = ThreeDmGeometry::Point(
+                Point3::try_new(coordinate * meters_per_unit, 0.0, 0.0).unwrap(),
+            );
+            assert_eq!(converted.objects, vec![expected]);
+        }
+    }
+
+    #[test]
+    fn brep_import_rejects_unrepresentable_matching_tolerance_without_silent_skipping() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("extreme brep units.3dm");
+        let mut source = sample_model();
+        let brep = source
+            .objects
+            .iter()
+            .find(|object| matches!(object.geometry, ThreeDmGeometry::Brep(_)))
+            .unwrap()
+            .clone();
+        source.objects.truncate(1);
+        source.objects.push(brep);
+        for (meters_per_unit, absolute) in [(1e-320, 1e-9), (1e300, 1e-100)] {
+            source.units = LengthUnitSystem::Custom {
+                name: "extreme".into(),
+                meters_per_unit,
+            };
+            write_3dm_file(&path, &source).unwrap();
+            let original_bytes = fs::read(&path).unwrap();
+            assert!(matches!(
+                read_3dm_file_in_units(
+                    &path,
+                    &LengthUnitSystem::Meters,
+                    Tolerance::try_new(absolute, 1e-12, 1e-10).unwrap()
+                ),
+                Err(ThreeDmError::UnrepresentableSourceTolerance)
+            ));
+            assert_eq!(fs::read(&path).unwrap(), original_bytes);
         }
     }
 
