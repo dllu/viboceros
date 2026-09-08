@@ -36,6 +36,9 @@ pub(super) struct History {
 
 #[derive(Clone, Debug)]
 pub(super) enum Edit {
+    ToleranceChanged {
+        tolerance: viboceros_geometry::Tolerance,
+    },
     UnitsChanged {
         units: viboceros_geometry::LengthUnitSystem,
         tolerance: viboceros_geometry::Tolerance,
@@ -106,6 +109,9 @@ pub(super) enum Edit {
 impl Edit {
     pub fn undo(&mut self, document: &mut Document) -> Result<(), DocumentError> {
         match self {
+            Self::ToleranceChanged { tolerance } => {
+                std::mem::swap(&mut document.tolerance, tolerance);
+            }
             Self::UnitsChanged {
                 units,
                 tolerance,
@@ -192,6 +198,9 @@ impl Edit {
 
     pub fn redo(&mut self, document: &mut Document) -> Result<(), DocumentError> {
         match self {
+            Self::ToleranceChanged { tolerance } => {
+                std::mem::swap(&mut document.tolerance, tolerance);
+            }
             Self::UnitsChanged {
                 units,
                 tolerance,

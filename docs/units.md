@@ -1,5 +1,7 @@
 # Document units
 
+[Tolerance settings](tolerances.md)
+
 New documents use millimetres. `Document::with_units` creates an empty document
 with explicit `LengthUnitSystem` metadata. Custom scales must be finite and
 positive and custom names cannot contain NUL bytes.

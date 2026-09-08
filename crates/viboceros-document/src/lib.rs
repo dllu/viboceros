@@ -7,6 +7,7 @@ mod history;
 mod object_layer;
 mod object_order;
 mod selection;
+mod settings;
 mod units;
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -1979,7 +1980,8 @@ impl Document {
             | Edit::LayerChanged { .. }
             | Edit::ObjectGroupsChanged { .. }
             | Edit::CurrentLayerChanged { .. }
-            | Edit::UnitsChanged { .. } => BTreeSet::new(),
+            | Edit::UnitsChanged { .. }
+            | Edit::ToleranceChanged { .. } => BTreeSet::new(),
         }
     }
 
