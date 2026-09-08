@@ -380,6 +380,9 @@ impl<'a> ArcLengthSampler<'a> {
         fractional_tolerance: Option<Real>,
     ) -> Result<Point3, GeometryError> {
         let parameter = self.parameter_at_distance_impl(distance, fractional_tolerance)?;
+        if let Some((line, fraction)) = self.polyline_distance_location(distance) {
+            return line.point_at(fraction);
+        }
         if distance == self.total_length {
             self.source.end_point()
         } else {
@@ -439,12 +442,39 @@ impl<'a> ArcLengthSampler<'a> {
 
     pub(crate) fn sample_at_distance(&self, distance: Real) -> Result<CurveSample, GeometryError> {
         let parameter = self.parameter_at_distance_impl(distance, None)?;
-        let mut sample = self.curve().evaluate_with_tangent(parameter)?;
+        let mut sample = if let Some((line, fraction)) = self.polyline_distance_location(distance) {
+            CurveRef::Line(&line).evaluate_with_tangent(fraction)?
+        } else {
+            self.curve().evaluate_with_tangent(parameter)?
+        };
         sample.parameter = self.source_parameter(parameter)?;
         if distance == self.total_length {
             sample.point = self.source.end_point()?;
         }
         Ok(sample)
+    }
+
+    // Distance has already been validated. Sample linear geometry from its
+    // local distance fraction, never from a rounded native parameter. At an
+    // exact junction use the outgoing segment, matching right-sided tangents.
+    fn polyline_distance_location(&self, distance: Real) -> Option<(crate::LineSegment, Real)> {
+        let CurveRef::Polyline(curve) = self.curve() else {
+            return None;
+        };
+        let index = self
+            .spans
+            .partition_point(|span| span.cumulative_end <= distance)
+            .min(self.spans.len() - 1);
+        let span = self.spans[index];
+        let fraction = ((distance - span.cumulative_start) / span.length).clamp(0.0, 1.0);
+        Some((
+            crate::LineSegment::from_validated(
+                curve.vertices()[index],
+                curve.vertices()[index + 1],
+                [0.0, 1.0],
+            ),
+            fraction,
+        ))
     }
 
     fn parameter_at_span_distance(
@@ -854,6 +884,40 @@ mod tests {
             assert!(sampler.distance_at_parameter(invalid).is_err());
             assert!(sampler.sample_at_distance(invalid).is_err());
         }
+    }
+
+    #[test]
+    fn polyline_distance_samples_do_not_round_through_tiny_native_spans() {
+        let curve = crate::Polyline3::try_with_parameters(
+            [[0., 0., 0.], [1., 0., 0.], [1., 1., 0.]]
+                .map(|p| Point3::try_from(p).unwrap())
+                .to_vec(),
+            vec![0., f64::from_bits(1), 1.],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let sampler =
+            ArcLengthSampler::try_new(CurveRef::Polyline(&curve), Tolerance::DEFAULT).unwrap();
+        for distance in [0.25, 0.5, 0.75] {
+            let expected = Point3::try_new(distance, 0., 0.).unwrap();
+            assert_eq!(sampler.point_at_distance(distance).unwrap(), expected);
+            let sample = sampler.sample_at_distance(distance).unwrap();
+            assert_eq!(sample.point(), expected);
+            assert_eq!(sample.tangent().as_vector().to_array(), [1., 0., 0.]);
+            assert_eq!(
+                sample.parameter(),
+                sampler.parameter_at_distance(distance).unwrap()
+            );
+        }
+        assert_eq!(
+            sampler
+                .sample_at_distance(1.)
+                .unwrap()
+                .tangent()
+                .as_vector()
+                .to_array(),
+            [0., 1., 0.]
+        );
     }
 
     #[test]
