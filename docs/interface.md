@@ -17,8 +17,10 @@ keeps the original vertices for hardware clipping and smooth-normal interpolatio
 Only the clipped face contributes to camera depth bounds. Tests cover all vertex
 permutations with zero, one, two, or three hidden corners, winding preservation,
 face picking, crossing selection, and CPU/GPU projection agreement. These are
-submission and projection tests, not raster-image or live Rhino comparisons;
-full visibility parity and large-coordinate GPU precision remain unverified.
+submission and projection tests. Separate [offscreen GPU tests](gpu-tests.md)
+check actual face and wire pixel coverage on the production renderer. Full
+visibility parity, live Rhino comparisons, and large-coordinate GPU precision
+remain unverified.
 The compact toolbar contains Undo/Redo, active-viewport view/display selectors,
 Grid Snap, Osnap, and SmartTrack. Modeling commands remain in the command line;
 the toolbar wraps at narrow window widths. Undo/Redo buttons are disabled while

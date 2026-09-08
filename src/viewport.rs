@@ -26,6 +26,8 @@ const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
 mod camera;
 mod extents;
 #[cfg(test)]
+mod raster_tests;
+#[cfg(test)]
 use camera::zoom_pan;
 
 /// Borrow native span evaluators without allocating a NURBS copy each frame.

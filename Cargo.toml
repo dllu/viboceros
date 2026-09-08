@@ -54,6 +54,7 @@ viboceros-drafting.workspace = true
 viboceros-geometry.workspace = true
 
 [dev-dependencies]
+pollster = "1.0.1"
 serde_json = { workspace = true, features = ["float_roundtrip"] }
 
 [profile.release]

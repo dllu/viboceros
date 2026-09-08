@@ -3,6 +3,9 @@ use std::sync::Arc;
 use bytemuck::{Pod, Zeroable};
 use eframe::{egui, egui_wgpu, wgpu};
 
+#[cfg(test)]
+pub(crate) mod readback;
+
 const VIEWPORT_COUNT: usize = 4;
 const DEPTH_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Depth32Float;
 const INITIAL_BUFFER_SIZE: wgpu::BufferAddress = 4;
