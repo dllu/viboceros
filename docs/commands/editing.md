@@ -74,23 +74,12 @@ splits meshes at disconnected or unwelded edges. Parts are emitted in Rhino's
 reverse component order, inherit attributes, and replace their source in every
 existing group in its original membership order. Preselected outputs, including
 exploded point-cloud members, remain selected without selecting untouched group
-peers. `Length` measures
-analytic, polyline, polycurve, and NURBS curves with controlled accuracy; `Area` measures
-circles, ellipses, closed planar polylines, exact NURBS surfaces, B-reps, and
-meshes. Full-domain NURBS faces are integrated per knot-span rectangle, while
-planar trimmed B-rep faces use their exact boundary integrals, including inner
-holes. Nonplanar trimmed faces use nested adaptive integration over their exact
-UV boundaries, independently of display meshes.
+peers.
 
-`Volume` reports the accumulated signed volume of selected closed triangle
-meshes and exact B-rep solids; outward orientation is positive and reversed
-orientation is negative. Meshes use translation-stable tetrahedral
-accumulation. Full-domain NURBS B-rep faces are integrated directly over each
-knot-span rectangle with adaptive quadrature, without measuring a display
-tessellation. Planar trimmed caps use an exact-edge boundary-area integral;
-nonplanar trims integrate the same oriented volume density over their retained
-UV region, including holes. Measurement does not alter history. See
-[mass properties](../mass-properties.md) for numerical policy and validation.
+See [Length, Area, and Volume](measurements.md) for read-only measurement
+commands, supported geometry, and signed-volume behavior. The separate
+[mass-properties documentation](../mass-properties.md) describes trimmed-boundary
+integration, translation-stable accumulation, and numerical validation.
 
 ## Curvature
 
