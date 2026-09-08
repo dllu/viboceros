@@ -36,7 +36,8 @@ Navigation ignores non-finite drag deltas, invalid zoom factors/pointers, and
 non-finite or empty zoom rectangles. Pan updates that overflow screen coordinates
 are rejected without partially changing zoom state. Regression tests cover all
 four view kinds alongside normal pointer-pinned zoom and perspective dolly
-behavior. Zoom-to-extents is not implemented yet.
+behavior. `Zoom Extents` (or `ZE`) fits visible objects in the active viewport;
+see [zoom-to-extents behavior and limits](commands/zoom.md).
 
 `MeshToNURB` also supports [command-first object picking](object-selection.md).
 During that prompt, clicks and selection windows add only selectable meshes;

@@ -20,6 +20,15 @@ impl VibocerosApp {
         let mut state = self.interface_state();
         match state.apply(command) {
             Ok(message) => {
+                if command == InterfaceCommand::ZoomExtents {
+                    let result = self.viewports[self.active_viewport].zoom_extents(&self.document);
+                    self.push_log(match result {
+                        Ok(true) => "Zoomed to visible extents (active viewport)".into(),
+                        Ok(false) => "No visible objects to zoom to".into(),
+                        Err(error) => format!("Error: {error}"),
+                    });
+                    return;
+                }
                 self.grid_snap = state.grid_snap;
                 self.osnap = state.osnap;
                 self.smart_track = state.smart_track;

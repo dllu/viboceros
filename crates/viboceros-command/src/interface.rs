@@ -65,6 +65,7 @@ pub enum ViewportTarget {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum InterfaceCommand {
+    ZoomExtents,
     SetSnap(SwitchAction),
     SetOsnap(SwitchAction),
     SmartTrack(SwitchAction),
@@ -74,7 +75,9 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 5] = [
+pub const COMMAND_NAMES: [&str; 7] = [
+    "Zoom",
+    "ZE",
     "DisableOsnap",
     "SetDisplayMode",
     "SetSnap",
@@ -82,7 +85,7 @@ pub const COMMAND_NAMES: [&str; 5] = [
     "Snap",
 ];
 
-pub const HELP: &str = "Interface: Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom Extents (ZE); Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -106,32 +109,44 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
         [value] => SwitchAction::parse(value).ok_or(InterfaceError::Usage(usage)),
         _ => Err(InterfaceError::Usage(usage)),
     };
-    Some(if name.eq_ignore_ascii_case("Snap") {
-        if args.is_empty() {
-            Ok(InterfaceCommand::SetSnap(SwitchAction::Toggle))
+    Some(
+        if name.eq_ignore_ascii_case("Zoom") || name.eq_ignore_ascii_case("ZE") {
+            match args.as_slice() {
+                [] if name.eq_ignore_ascii_case("ZE") => Ok(InterfaceCommand::ZoomExtents),
+                [option] if name.eq_ignore_ascii_case("Zoom") && keyword(option, "Extents") => {
+                    Ok(InterfaceCommand::ZoomExtents)
+                }
+                _ => Err(InterfaceError::Usage("Zoom Extents | ZE")),
+            }
+        } else if name.eq_ignore_ascii_case("Snap") {
+            if args.is_empty() {
+                Ok(InterfaceCommand::SetSnap(SwitchAction::Toggle))
+            } else {
+                Err(InterfaceError::Usage("Snap"))
+            }
+        } else if name.eq_ignore_ascii_case("SetSnap") {
+            switch("SetSnap On|Off|Toggle").map(InterfaceCommand::SetSnap)
+        } else if name.eq_ignore_ascii_case("DisableOsnap") {
+            match args.as_slice() {
+                [value] if keyword(value, "Enable") => {
+                    Ok(InterfaceCommand::SetOsnap(SwitchAction::On))
+                }
+                [value] if keyword(value, "Disable") => {
+                    Ok(InterfaceCommand::SetOsnap(SwitchAction::Off))
+                }
+                [value] if keyword(value, "Toggle") => {
+                    Ok(InterfaceCommand::SetOsnap(SwitchAction::Toggle))
+                }
+                _ => Err(InterfaceError::Usage("DisableOsnap Enable|Disable|Toggle")),
+            }
+        } else if name.eq_ignore_ascii_case("SmartTrack") {
+            switch("SmartTrack On|Off|Toggle").map(InterfaceCommand::SmartTrack)
+        } else if name.eq_ignore_ascii_case("SetDisplayMode") {
+            parse_display_mode(&args)
         } else {
-            Err(InterfaceError::Usage("Snap"))
-        }
-    } else if name.eq_ignore_ascii_case("SetSnap") {
-        switch("SetSnap On|Off|Toggle").map(InterfaceCommand::SetSnap)
-    } else if name.eq_ignore_ascii_case("DisableOsnap") {
-        match args.as_slice() {
-            [value] if keyword(value, "Enable") => Ok(InterfaceCommand::SetOsnap(SwitchAction::On)),
-            [value] if keyword(value, "Disable") => {
-                Ok(InterfaceCommand::SetOsnap(SwitchAction::Off))
-            }
-            [value] if keyword(value, "Toggle") => {
-                Ok(InterfaceCommand::SetOsnap(SwitchAction::Toggle))
-            }
-            _ => Err(InterfaceError::Usage("DisableOsnap Enable|Disable|Toggle")),
-        }
-    } else if name.eq_ignore_ascii_case("SmartTrack") {
-        switch("SmartTrack On|Off|Toggle").map(InterfaceCommand::SmartTrack)
-    } else if name.eq_ignore_ascii_case("SetDisplayMode") {
-        parse_display_mode(&args)
-    } else {
-        return None;
-    })
+            return None;
+        },
+    )
 }
 
 fn parse_display_mode(args: &[&str]) -> Result<InterfaceCommand, InterfaceError> {
@@ -185,6 +200,7 @@ impl InterfaceState {
         }
         let on_off = |value| if value { "On" } else { "Off" };
         Ok(match command {
+            InterfaceCommand::ZoomExtents => "Zoom extents requested (active viewport)".into(),
             InterfaceCommand::SetSnap(action) => {
                 self.grid_snap = action.apply(self.grid_snap);
                 format!("Grid snap: {}", on_off(self.grid_snap))

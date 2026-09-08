@@ -10,6 +10,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 
 | Command | Behavior |
 | --- | --- |
+| `Zoom Extents` / `ZE` | Fit visible geometry in the active viewport; [details and limits](zoom.md). |
 | `Snap` | Toggle the one-unit grid snap. |
 | `SetSnap On\|Off\|Toggle` | Set or toggle grid snapping. |
 | `DisableOsnap Enable\|Disable\|Toggle` | Enable, suspend, or toggle object snaps. |

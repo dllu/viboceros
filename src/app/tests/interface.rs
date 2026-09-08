@@ -7,6 +7,50 @@ fn enter(app: &mut VibocerosApp, command: &str) {
 }
 
 #[test]
+fn zoom_extents_routes_to_the_active_view_without_cancelling_modeling_or_redo() {
+    let mut app = test_app();
+    for command in ["Point 100,200,300", "Point 110,210,310", "Undo"] {
+        enter(&mut app, command);
+    }
+    app.active_viewport = 1;
+    let context = egui::Context::default();
+    context
+        .run_ui(
+            egui::RawInput {
+                screen_rect: Some(egui::Rect::from_min_size(
+                    egui::Pos2::ZERO,
+                    egui::vec2(800.0, 600.0),
+                )),
+                ..Default::default()
+            },
+            |ui| {
+                app.viewports[1].show(ui, &app.document, ViewportInput::default(), &[], 1, true);
+            },
+        )
+        .drop_without_applying_deltas();
+    enter(&mut app, "Line");
+    enter(&mut app, "0");
+    let pending = app.active_command;
+    let plane = app.drafting_plane;
+    let objects = app.document.objects().cloned().collect::<Vec<_>>();
+    let undo = app.document.undo_label().map(str::to_owned);
+    let redo = app.document.redo_label().map(str::to_owned);
+    assert!(redo.is_some());
+    enter(&mut app, "ZE");
+    assert!(
+        app.command_log
+            .back()
+            .unwrap()
+            .starts_with("Zoomed to visible extents")
+    );
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.drafting_plane, plane);
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
+    assert_eq!(app.document.undo_label(), undo.as_deref());
+    assert_eq!(app.document.redo_label(), redo.as_deref());
+}
+
+#[test]
 fn tolerance_command_updates_settings_through_application_history() {
     let mut app = test_app();
     let initial = app.document.tolerance();

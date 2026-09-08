@@ -22,6 +22,7 @@ Rhino's complete command set is still a work in progress.
 - [Model units](units.md)
 - [Model tolerances](../tolerances.md)
 - [Display modes and drafting controls](interface.md)
+- [Zoom to extents](zoom.md)
 - [Construction-plane editing](../cplane.md)
 
 See [viewport controls](../interface.md) for picking and interactive input, and

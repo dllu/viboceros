@@ -98,6 +98,11 @@ Length, Area, and Volume, with shared streaming exact finite-value aggregation a
 separate nonnegative/signed policies. Its tests live beside the implementation.
 `curve/area` dispatches enclosed curve area to analytic formulas or the existing
 exact planar-face boundary integrator; temporary topology stays outside the document.
+The app's `viewport/extents` module stages visible-bounds camera fitting for
+[`Zoom Extents`](commands/zoom.md). The model-space camera target is shared by
+CPU/GPU projection and drafting rays; fitting does not edit construction planes
+or model history. The interface parser emits a host action rather than putting
+viewport navigation into document transactions.
 Viewport hit-testing applies the filter before hit priority; clicks/windows use
 the same selection adapter. Prompt choices live outside model history, while
 finishing uses the registry's normal transaction lifecycle with explicit

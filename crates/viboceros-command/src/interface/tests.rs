@@ -1,5 +1,19 @@
 use super::*;
 
+#[test]
+fn zoom_extents_is_a_validated_host_action() {
+    for input in ["Zoom Extents", "'_Zoom _Extents", "ZE", "ze"] {
+        assert_eq!(parse(input), Some(Ok(InterfaceCommand::ZoomExtents)));
+        let mut current = state();
+        let original = current.clone();
+        current.apply(InterfaceCommand::ZoomExtents).unwrap();
+        assert_eq!(current, original);
+    }
+    for input in ["Zoom", "Zoom Extents extra", "ZE extra", "Zoom Selected"] {
+        assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
+    }
+}
+
 fn state() -> InterfaceState {
     InterfaceState {
         grid_snap: true,

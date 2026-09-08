@@ -23,6 +23,7 @@ use crate::viewport_gpu::{
 };
 
 const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
+mod extents;
 
 /// Borrow native span evaluators without allocating a NURBS copy each frame.
 trait ViewportCurve {
@@ -280,6 +281,8 @@ pub struct Viewport {
     orbit_yaw: Real,
     orbit_pitch: Real,
     perspective_camera_distance: Real,
+    target: NaVector3<Real>,
+    last_rect: Option<Rect>,
     selection_drag_start: Option<Pos2>,
 }
 
@@ -300,6 +303,8 @@ impl Viewport {
             orbit_yaw: -std::f64::consts::FRAC_PI_4,
             orbit_pitch: std::f64::consts::FRAC_PI_6,
             perspective_camera_distance: DEFAULT_PERSPECTIVE_CAMERA_DISTANCE,
+            target: NaVector3::zeros(),
+            last_rect: None,
             selection_drag_start: None,
         }
     }
@@ -351,7 +356,7 @@ impl Viewport {
         let plane = plane.with_origin(anchor.unwrap_or(plane.origin()));
         let (origin, direction, forward_only) = if self.kind == ViewKind::Perspective {
             let (right, up, forward) = self.perspective_basis();
-            let camera = -forward * self.perspective_camera_distance;
+            let camera = self.target - forward * self.perspective_camera_distance;
             let origin = self.world_origin(rect);
             let focal = self.perspective_focal_length_pixels(rect);
             let ray = forward
@@ -387,6 +392,7 @@ impl Viewport {
         let desired_size = ui.available_size().max(Vec2::splat(1.0));
         let (response, painter) = ui.allocate_painter(desired_size, Sense::click_and_drag());
         let rect = response.rect;
+        self.last_rect = Some(rect);
 
         let modifiers = ui.input(|input| input.modifiers);
         if response.dragged_by(PointerButton::Middle) {
@@ -559,22 +565,23 @@ impl Viewport {
 
     fn project(&self, point: Point3, rect: Rect) -> Option<Pos2> {
         let origin = self.world_origin(rect);
+        let local = NaVector3::new(point.x(), point.y(), point.z()) - self.target;
         let (horizontal_pixels, vertical_pixels) = match self.kind {
             ViewKind::Top => (
-                point.x() * f64::from(self.pixels_per_unit),
-                point.y() * f64::from(self.pixels_per_unit),
+                local.x * f64::from(self.pixels_per_unit),
+                local.y * f64::from(self.pixels_per_unit),
             ),
             ViewKind::Front => (
-                point.x() * f64::from(self.pixels_per_unit),
-                point.z() * f64::from(self.pixels_per_unit),
+                local.x * f64::from(self.pixels_per_unit),
+                local.z * f64::from(self.pixels_per_unit),
             ),
             ViewKind::Right => (
-                point.y() * f64::from(self.pixels_per_unit),
-                point.z() * f64::from(self.pixels_per_unit),
+                local.y * f64::from(self.pixels_per_unit),
+                local.z * f64::from(self.pixels_per_unit),
             ),
             ViewKind::Perspective => {
                 let (right, up, forward) = self.perspective_basis();
-                let camera = -forward * self.perspective_camera_distance;
+                let camera = self.target - forward * self.perspective_camera_distance;
                 let relative = NaVector3::new(point.x(), point.y(), point.z()) - camera;
                 let depth = relative.dot(&forward);
                 if !depth.is_finite() || depth <= 1.0e-6 {
@@ -607,15 +614,30 @@ impl Viewport {
                 let horizontal = Real::from(position.x - origin.x) / scale;
                 let vertical = Real::from(origin.y - position.y) / scale;
                 match self.kind {
-                    ViewKind::Top => Point3::try_new(horizontal, vertical, elevation).ok(),
-                    ViewKind::Front => Point3::try_new(horizontal, elevation, vertical).ok(),
-                    ViewKind::Right => Point3::try_new(elevation, horizontal, vertical).ok(),
+                    ViewKind::Top => Point3::try_new(
+                        horizontal + self.target.x,
+                        vertical + self.target.y,
+                        elevation,
+                    )
+                    .ok(),
+                    ViewKind::Front => Point3::try_new(
+                        horizontal + self.target.x,
+                        elevation,
+                        vertical + self.target.z,
+                    )
+                    .ok(),
+                    ViewKind::Right => Point3::try_new(
+                        elevation,
+                        horizontal + self.target.y,
+                        vertical + self.target.z,
+                    )
+                    .ok(),
                     ViewKind::Perspective => unreachable!(),
                 }
             }
             ViewKind::Perspective => {
                 let (right, up, forward) = self.perspective_basis();
-                let camera = -forward * self.perspective_camera_distance;
+                let camera = self.target - forward * self.perspective_camera_distance;
                 let focal_length = self.perspective_focal_length_pixels(rect);
                 let horizontal = Real::from(position.x - origin.x) / focal_length;
                 let vertical = Real::from(origin.y - position.y) / focal_length;
@@ -694,7 +716,7 @@ impl Viewport {
             return;
         }
         let old_scale = self.pixels_per_unit;
-        let new_scale = (old_scale * factor).clamp(2.0, 2_000.0);
+        let new_scale = (old_scale * factor).clamp(f32::MIN_POSITIVE, 2_000.0);
         if new_scale == old_scale {
             return;
         }
@@ -727,7 +749,7 @@ impl Viewport {
                     nearest_object_snap(
                         document,
                         query,
-                        Real::from(OSNAP_CAPTURE_PIXELS / self.pixels_per_unit),
+                        Real::from(OSNAP_CAPTURE_PIXELS) / Real::from(self.pixels_per_unit),
                     )
                     .ok()
                     .flatten()
@@ -823,13 +845,14 @@ impl Viewport {
                                 cloud
                                     .nearest_xy(
                                         query,
-                                        Real::from(PICK_CAPTURE_PIXELS / self.pixels_per_unit),
+                                        Real::from(PICK_CAPTURE_PIXELS)
+                                            / Real::from(self.pixels_per_unit),
                                     )
                                     .ok()
                                     .flatten()
                             })
                             .map_or(f32::INFINITY, |(_, _, distance)| {
-                                distance as f32 * self.pixels_per_unit
+                                (distance * Real::from(self.pixels_per_unit)) as f32
                             })
                     } else {
                         cloud
@@ -1754,7 +1777,7 @@ impl Viewport {
         let view_projection = match self.kind {
             ViewKind::Perspective => {
                 let (right, up, forward) = self.perspective_basis();
-                let camera = -forward * self.perspective_camera_distance;
+                let camera = self.target - forward * self.perspective_camera_distance;
                 let view = NaMatrix4::new(
                     right.x,
                     right.y,
@@ -1834,11 +1857,11 @@ impl Viewport {
                     horizontal_scale * right.x,
                     horizontal_scale * right.y,
                     horizontal_scale * right.z,
-                    offset_x,
+                    offset_x - horizontal_scale * right.dot(&self.target),
                     vertical_scale * up.x,
                     vertical_scale * up.y,
                     vertical_scale * up.z,
-                    offset_y,
+                    offset_y - vertical_scale * up.dot(&self.target),
                     forward.x / depth_span,
                     forward.y / depth_span,
                     forward.z / depth_span,
@@ -1865,7 +1888,7 @@ impl Viewport {
             ViewKind::Right => -point.x(),
             ViewKind::Perspective => {
                 let (_, _, forward) = self.perspective_basis();
-                let camera = -forward * self.perspective_camera_distance;
+                let camera = self.target - forward * self.perspective_camera_distance;
                 (NaVector3::new(point.x(), point.y(), point.z()) - camera).dot(&forward)
             }
         }
@@ -2773,6 +2796,143 @@ mod tests {
                 resolved_display_color(&base.clone().with_color_source(source), layer),
                 Color32::from_rgb(78, 90, 123)
             );
+        }
+    }
+
+    #[test]
+    fn zoom_extents_fits_translated_geometry_and_keeps_gpu_and_picking_aligned() {
+        let rect = Rect::from_min_size(Pos2::new(10.0, 20.0), Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let mut points = Vec::new();
+        for index in 0..8 {
+            let p = point(
+                100.0 + if index & 1 == 0 { -8.0 } else { 8.0 },
+                200.0 + if index & 2 == 0 { -4.0 } else { 4.0 },
+                300.0 + if index & 4 == 0 { -2.0 } else { 2.0 },
+            );
+            document.add_geometry(Geometry::Point(p)).unwrap();
+            points.push(p);
+        }
+        document
+            .add_geometry_with_attributes(
+                Geometry::Point(point(1e9, 1e9, 1e9)),
+                ObjectAttributes::on_layer(document.current_layer_id()).with_visibility(false),
+            )
+            .unwrap();
+        let objects = document.objects().cloned().collect::<Vec<_>>();
+        let undo = document.undo_label().map(str::to_owned);
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let mut view = Viewport::new(kind);
+            view.last_rect = Some(rect);
+            view.pan = Vec2::new(300.0, -200.0);
+            let plane = view.construction_plane();
+            let lens = view.perspective_focal_length_pixels(rect);
+            assert_eq!(view.zoom_extents(&document), Ok(true));
+            assert_eq!(view.target, NaVector3::new(100.0, 200.0, 300.0));
+            assert_eq!(view.pan, Vec2::ZERO);
+            assert_eq!(view.construction_plane(), plane);
+            assert_eq!(view.perspective_focal_length_pixels(rect), lens);
+            let depths = points
+                .iter()
+                .map(|p| view.view_depth(*p))
+                .collect::<Vec<_>>();
+            let depth_range = (
+                depths.iter().copied().fold(Real::INFINITY, Real::min),
+                depths.iter().copied().fold(Real::NEG_INFINITY, Real::max),
+            );
+            for p in &points {
+                let screen = view.project(*p, rect).unwrap();
+                assert!(rect.shrink(20.0).contains(screen), "{kind:?}: {screen:?}");
+                let (gpu, depth) = gpu_project(&view, rect, *p, depth_range);
+                assert!(
+                    (screen - gpu).length() < 0.02,
+                    "{kind:?}: {screen:?}, {gpu:?}"
+                );
+                assert!((0.0..=1.0).contains(&depth));
+                let elevation = match kind {
+                    ViewKind::Front => p.y(),
+                    ViewKind::Right => p.x(),
+                    _ => p.z(),
+                };
+                let restored = view.unproject(screen, rect, elevation).unwrap();
+                assert!(restored.distance_to(*p).unwrap() < 1e-4);
+                assert!(view.pick_object(screen, rect, &document).is_some());
+            }
+        }
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), objects);
+        assert_eq!(document.undo_label(), undo.as_deref());
+    }
+
+    #[test]
+    fn zoom_extents_handles_point_scenes_and_large_parallel_extents() {
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(200.0, 1_000.0));
+            let mut document = Document::default();
+            let center = point(100.0, 200.0, 300.0);
+            document.add_geometry(Geometry::Point(center)).unwrap();
+            let mut view = Viewport::new(kind);
+            view.last_rect = Some(rect);
+            assert_eq!(view.zoom_extents(&document), Ok(true));
+            let projected = view.project(center, rect).unwrap();
+            assert!((projected - rect.center()).length() < 0.001);
+            let depth = view.view_depth(center);
+            assert!(
+                (gpu_project(&view, rect, center, (depth, depth)).0 - projected).length() < 0.02
+            );
+            for p in [
+                point(-10_000.0, -10_000.0, -10_000.0),
+                point(10_000.0, 10_000.0, 10_000.0),
+            ] {
+                document.add_geometry(Geometry::Point(p)).unwrap();
+            }
+            assert_eq!(view.zoom_extents(&document), Ok(true));
+            for object in document.objects() {
+                let Geometry::Point(p) = object.geometry() else {
+                    unreachable!()
+                };
+                assert!(rect.shrink(5.0).contains(view.project(*p, rect).unwrap()));
+            }
+            if kind.is_parallel() {
+                assert!(view.pixels_per_unit < 2.0);
+                let scale = view.pixels_per_unit;
+                view.zoom_by(2.0, None, rect);
+                assert_eq!(view.pixels_per_unit, scale * 2.0);
+            }
+        }
+    }
+
+    #[test]
+    fn zoom_extents_empty_and_unrepresentable_scenes_do_not_change_the_view() {
+        for kind in [ViewKind::Top, ViewKind::Perspective] {
+            let mut view = Viewport::new(kind);
+            view.last_rect = Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0)));
+            let state = |v: &Viewport| {
+                (
+                    v.target,
+                    v.pan,
+                    v.pixels_per_unit,
+                    v.perspective_camera_distance,
+                )
+            };
+            let original = state(&view);
+            let mut document = Document::default();
+            assert_eq!(view.zoom_extents(&document), Ok(false));
+            assert_eq!(state(&view), original);
+            document
+                .add_geometry(Geometry::Point(point(Real::MAX, 0.0, 0.0)))
+                .unwrap();
+            assert!(view.zoom_extents(&document).is_err());
+            assert_eq!(state(&view), original);
         }
     }
 
