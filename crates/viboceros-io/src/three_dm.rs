@@ -1753,6 +1753,83 @@ mod tests {
     }
 
     #[test]
+    fn exports_small_lines_as_exact_parameterized_nurbs_when_native_lines_are_invalid() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("small-lines.3dm");
+        let line = LineSegment::try_new(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(1e-12, -2e-12, 3e-12).unwrap(),
+            Tolerance::NUMERICAL_VALIDATION,
+        )
+        .unwrap()
+        .try_reparameterized(-7.0..=11.0)
+        .unwrap();
+        let mut model = sample_model();
+        model.objects = vec![ThreeDmObject::new(ThreeDmGeometry::Line(line), 0)];
+        write_3dm_file(&path, &model).unwrap();
+        let read = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(read.unsupported_object_count(), 0);
+        assert_eq!(read.objects.len(), 1);
+        let ThreeDmGeometry::NurbsCurve(curve) = &read.objects[0].geometry else {
+            panic!("expected exact NURBS fallback")
+        };
+        assert_eq!(curve.degree(), 1);
+        assert_eq!(curve.domain(), line.domain());
+        assert_eq!(curve.evaluate(-7.0).unwrap(), line.start());
+        assert_eq!(curve.evaluate(11.0).unwrap(), line.end());
+        for t in [-3.0, 0.0, 4.0, 9.0] {
+            assert!(
+                curve
+                    .evaluate(t)
+                    .unwrap()
+                    .distance_to(line.evaluate(t).unwrap())
+                    .unwrap()
+                    < 1e-26
+            );
+        }
+        let second = LineSegment::try_new(
+            line.end(),
+            Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Tolerance::NUMERICAL_VALIDATION,
+        )
+        .unwrap();
+        let polycurve = PolyCurve3::try_new(vec![line, second]).unwrap();
+        model.objects = vec![ThreeDmObject::new(
+            ThreeDmGeometry::PolyCurve(polycurve.clone()),
+            0,
+        )];
+        write_3dm_file(&path, &model).unwrap();
+        let read = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(read.unsupported_object_count(), 0);
+        assert_eq!(read.objects.len(), 1);
+        let ThreeDmGeometry::PolyCurve(result) = &read.objects[0].geometry else {
+            panic!("lost polycurve")
+        };
+        assert_eq!(result.domain(), polycurve.domain());
+        assert_eq!(result.segments().len(), 2);
+        assert!(matches!(
+            result.segments()[0],
+            viboceros_geometry::CurveSegment3::NurbsCurve(_)
+        ));
+        assert!(matches!(
+            result.segments()[1],
+            viboceros_geometry::CurveSegment3::Line(_)
+        ));
+        for fraction in [0.0, 0.125, 0.5, 0.875, 1.0] {
+            let domain = polycurve.domain();
+            let parameter = domain.start() + fraction * (domain.end() - domain.start());
+            assert!(
+                result
+                    .evaluate(parameter)
+                    .unwrap()
+                    .distance_to(polycurve.evaluate(parameter).unwrap())
+                    .unwrap()
+                    < 1e-14
+            );
+        }
+    }
+
+    #[test]
     fn import_units_scale_coordinates_and_preserve_attributes() {
         let directory = tempfile::tempdir().unwrap();
         let path = directory.path().join("units.3dm");

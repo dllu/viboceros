@@ -42,6 +42,12 @@ An independently generated Rhino 8 nested line/arc reference is retained in
 `crates/viboceros-io/tests/fixtures/`, with its generator and provenance documented
 alongside it. Tests check the analytic locus and subsequent round trip.
 
+When a distinct, finite line is below OpenNURBS's `LineCurve` coincidence
+threshold, 3DM export uses an exact degree-one NURBS instead. Endpoints and the
+native parameter interval are preserved, but the imported representation is a
+NURBS curve. The same fallback applies to individual line segments in polycurves;
+ordinary line segments retain their analytic representation.
+
 The low-level 3DM I/O model preserves standard, unitless, unset, and custom
 length-unit metadata (`ThreeDmModel::units`). Custom names and finite,
 positive metres-per-unit scales round-trip without rescaling coordinates;

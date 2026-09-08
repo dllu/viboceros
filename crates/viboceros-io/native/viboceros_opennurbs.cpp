@@ -1001,6 +1001,21 @@ ON_Brep* brep_for(const uint8_t* bytes, size_t count, std::string& error) {
   return brep.release();
 }
 
+// OpenNURBS LineCurve validity applies a coincidence threshold, while an exact
+// degree-one NURBS can retain distinct finite endpoints below that threshold.
+// Never bypass validity: the replacement must itself be a valid native curve.
+std::unique_ptr<ON_Curve> valid_curve_or_exact_line(std::unique_ptr<ON_Curve> curve) {
+  const auto* line = ON_LineCurve::Cast(curve.get());
+  if (line && (!line->Domain().IsIncreasing() ||
+      !line->m_line.from.IsValid() || !line->m_line.to.IsValid() ||
+      line->m_line.from == line->m_line.to)) return nullptr;
+  if (curve->IsValid()) return curve;
+  if (!line) return nullptr;
+  auto nurbs = std::make_unique<ON_NurbsCurve>();
+  if (line->GetNurbForm(*nurbs) <= 0 || !nurbs->IsValid()) return nullptr;
+  return nurbs;
+}
+
 std::unique_ptr<ON_Curve> read_curve_segment(ByteReader& reader, std::string& error) {
   uint8_t kind = 0;
   if (!reader.U8(kind)) { error = "missing curve segment type"; return nullptr; }
@@ -1046,9 +1061,11 @@ std::unique_ptr<ON_Curve> read_curve_segment(ByteReader& reader, std::string& er
     return polyline;
   } else { error = "unknown curve segment type"; return nullptr; }
   double start = 0, end = 0;
-  if (!reader.Double(start) || !reader.Double(end) || !curve->SetDomain(start, end) || !curve->IsValid()) {
+  if (!reader.Double(start) || !reader.Double(end) || !curve->SetDomain(start, end)) {
     error = "invalid curve segment domain"; return nullptr;
   }
+  curve = valid_curve_or_exact_line(std::move(curve));
+  if (!curve) error = "invalid curve segment";
   return curve;
 }
 
@@ -1124,13 +1141,17 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
                             source.coordinates[2]);
       const ON_3dPoint end(source.coordinates[3], source.coordinates[4],
                           source.coordinates[5]);
-      auto* line = new ON_LineCurve(start, end);
-      if ((source.knot_u_count == 2 && !line->SetDomain(source.knots_u[0], source.knots_u[1])) || !line->IsValid()) {
-        delete line;
+      auto line = std::make_unique<ON_LineCurve>(start, end);
+      if (source.knot_u_count == 2 && !line->SetDomain(source.knots_u[0], source.knots_u[1])) {
+        error = "line parameter domain is invalid";
+        return nullptr;
+      }
+      auto curve = valid_curve_or_exact_line(std::move(line));
+      if (!curve) {
         error = "line endpoints are degenerate";
         return nullptr;
       }
-      return line;
+      return curve.release();
     }
     case VIBO_OBJECT_POINT_CLOUD: {
       if (source.coordinate_count == 0 || source.coordinate_count % 3 != 0 ||
