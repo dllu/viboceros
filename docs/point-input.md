@@ -156,9 +156,17 @@ repeated seam point within that same limit. This is a Viboceros implementation
 limit, not a measured Rhino restriction.
 Open cubic interpolation uses a linear-memory tridiagonal solve, with a pivoted
 dense fallback for ordinary-size systems that the fast path cannot solve.
-Both paths solve offsets from a local origin before restoring world coordinates,
-reducing cancellation for clustered points far from the origin. Fixed endpoint
-and tangent-handle coordinates are retained exactly.
+Both open-curve paths solve offsets from a local origin before restoring world
+coordinates, reducing cancellation for clustered points far from the origin.
+Fixed endpoint and tangent-handle coordinates are retained exactly.
+Periodic cubic interpolation also centers its right-hand side before the
+pivoted solve. This preserves constant coordinate planes instead of introducing
+translation-dependent control noise; regressions cover three knot spacings and
+ordinates from `±1e6` through `±f64::MAX`, including 33 evaluated stations per
+curve. If translating to the first input would overflow a coordinate difference,
+the solver retains world coordinates; a wide uniform periodic curve checks this
+fallback. These are native numerical invariants, not Rhino measurements at
+extreme coordinates or a guarantee about GPU rendering at those scales.
 Two-point uniform cubics do not require a representable chord length: their
 domain is `[0,1]` and control points use overflow-safe convex interpolation.
 Chord-based two-point domains still require a finite endpoint distance.

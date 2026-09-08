@@ -654,7 +654,26 @@ fn interpolate_periodic_cubic(
         }
         rows.push(folded);
     }
-    let unique_controls = solve_control_points(&rows, points)?;
+    // Remove the common world offset from the right-hand side. In particular,
+    // a constant coordinate plane must not acquire solver noise (or overflow
+    // near MAX) merely because the entire curve was translated.
+    let candidate_origin = points[0];
+    let origin = if points
+        .iter()
+        .all(|point| candidate_origin.vector_to(*point).is_ok())
+    {
+        candidate_origin
+    } else {
+        Point3::try_new(0., 0., 0.)?
+    };
+    let local_points = points
+        .iter()
+        .map(|point| Point3::try_from(origin.vector_to(*point)?.to_array()))
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    let unique_controls = solve_control_points(&rows, &local_points)?
+        .into_iter()
+        .map(|point| origin.translated(Vector3::try_from(point.to_array())?))
+        .collect::<Result<Vec<_>, GeometryError>>()?;
     let controls = (0..control_count)
         .map(|index| unique_controls[index % unique_control_count])
         .collect();
@@ -918,6 +937,86 @@ mod tests {
             ],
         );
         assert_short_knots_near(&curve, &[0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0, 4.0]);
+    }
+
+    #[test]
+    fn periodic_interpolation_preserves_translated_coordinate_planes() {
+        for spacing in [
+            CurveKnotSpacing::Uniform,
+            CurveKnotSpacing::Chord,
+            CurveKnotSpacing::SquareRootChord,
+        ] {
+            for ordinate in [1e6, -1e6, 1e150, -1e150, f64::MAX, -f64::MAX] {
+                let points = [
+                    point(0., ordinate, 0.),
+                    point(1., ordinate, 2.),
+                    point(3., ordinate, -1.),
+                    point(7., ordinate, 1.),
+                ];
+                let options =
+                    CurveInterpolationOptions::new(3, spacing, InterpolatedCurveClosure::Smooth);
+                let curve =
+                    NurbsCurve::try_interpolate_for_command(&points, options, Tolerance::DEFAULT)
+                        .unwrap();
+                assert!(curve.is_periodic());
+                for control in curve.control_points() {
+                    assert_eq!(control.point().y(), ordinate, "{spacing:?}, {ordinate}");
+                }
+                let reference_points = points.map(|p| point(p.x(), 0., p.z()));
+                let reference = NurbsCurve::try_interpolate_for_command(
+                    &reference_points,
+                    options,
+                    Tolerance::DEFAULT,
+                )
+                .unwrap();
+                for (actual, expected) in curve
+                    .control_points()
+                    .iter()
+                    .zip(reference.control_points())
+                {
+                    assert_eq!(actual.point().x(), expected.point().x());
+                    assert_eq!(actual.point().z(), expected.point().z());
+                }
+                let domain = curve.domain();
+                for index in 0..=32 {
+                    let parameter =
+                        *domain.start() + (*domain.end() - *domain.start()) * (index as f64 / 32.);
+                    let actual = curve.evaluate(parameter).unwrap();
+                    assert!((actual.y() / ordinate - 1.).abs() <= 16. * f64::EPSILON);
+                    let expected = reference.evaluate(parameter).unwrap();
+                    assert!((actual.x() - expected.x()).abs() <= 1e-12);
+                    assert!((actual.z() - expected.z()).abs() <= 1e-12);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn periodic_centering_does_not_require_representable_nonadjacent_differences() {
+        let points = [
+            point(-1e308, 0., 0.),
+            point(0., 1e308, 0.),
+            point(1e308, 0., 0.),
+            point(0., -1e308, 0.),
+        ];
+        assert!(points[0].vector_to(points[2]).is_err());
+        let curve = NurbsCurve::try_interpolate_for_command(
+            &points,
+            CurveInterpolationOptions::new(
+                3,
+                CurveKnotSpacing::Uniform,
+                InterpolatedCurveClosure::Smooth,
+            ),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(curve.is_periodic());
+        for (index, expected) in points.iter().enumerate() {
+            let actual = curve.evaluate(index as f64).unwrap();
+            for (a, b) in actual.to_array().into_iter().zip(expected.to_array()) {
+                assert!((a / 1e308 - b / 1e308).abs() <= 16. * f64::EPSILON);
+            }
+        }
     }
 
     #[test]
