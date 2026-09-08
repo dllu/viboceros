@@ -77,8 +77,12 @@ These options can also be entered during an active InterpCrv prompt, alone or
 together (for example `Degree=1 Knots=Uniform`). Unspecified settings and points
 are retained. The entire update is rejected if an option is invalid, duplicated,
 or incompatible with another setting; document history is untouched. Enter
-finishes with the updated settings. Tangent vectors can be replaced but not yet
-cleared in-prompt.
+finishes with the updated settings. `StartTangent=None` and `EndTangent=None`
+restore automatic endpoint directions; these explicit reset values are Viboceros
+syntax, not a claim of Rhino macro compatibility. For example,
+`StartTangent=None EndTangent=None Close=Smooth` clears both constraints and
+changes closure in one atomic update. The same reset values work in one-line
+commands and at draft startup.
 Model-space preview geometry is cached by points, construction mode, settings,
 and interpolation tolerance, including
 failed constructions. Camera movement reprojects it without rebuilding the curve;

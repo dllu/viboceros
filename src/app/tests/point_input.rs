@@ -6,6 +6,78 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn interpolation_tangent_resets_allow_atomic_transition_to_closed_drafts() {
+    let mut app = test_app();
+    for input in [
+        "Point 9,9,9",
+        "Undo",
+        "InterpCrv StartTangent=1,2,0 EndTangent=-1,1,0",
+        "0",
+        "3,0,0",
+        "4,2,1",
+        "0,4,0",
+    ] {
+        enter(&mut app, input);
+    }
+    let document = format!("{:?}", app.document);
+    let active = app.active_command;
+    let points = app.curve_points.clone();
+    // Clearing only one constraint cannot close the draft, and must not
+    // partially remove that constraint when validation fails.
+    enter(&mut app, "StartTangent=None Close=Smooth");
+    assert_eq!(app.active_command, active);
+    assert_eq!(app.command_input, "StartTangent=None Close=Smooth");
+    enter(
+        &mut app,
+        "_StartTangent=_nOnE _EndTangent=_None Close=Smooth",
+    );
+    let Some(InteractiveCommand::InterpCrv { options }) = app.active_command else {
+        panic!("draft");
+    };
+    assert!(options.start_tangent().is_none());
+    assert!(options.end_tangent().is_none());
+    assert_eq!(
+        options.closure(),
+        viboceros_geometry::InterpolatedCurveClosure::Smooth
+    );
+    assert_eq!(app.curve_points, points);
+    assert_eq!(format!("{:?}", app.document), document);
+    let preview = app.curve_draft_preview().unwrap();
+    enter(&mut app, "");
+    assert_eq!(
+        app.document.objects().next().unwrap().geometry(),
+        &Geometry::NurbsCurve((*preview).clone())
+    );
+    let mut reference = test_app();
+    enter(
+        &mut reference,
+        "InterpCrv 0,0,0 3,0,0 4,2,1 0,4,0 StartTangent=None EndTangent=None Close=Smooth",
+    );
+    assert_eq!(
+        app.document.objects().next().unwrap().geometry(),
+        reference.document.objects().next().unwrap().geometry()
+    );
+}
+
+#[test]
+fn interpolation_single_tangent_reset_preserves_the_other_direction() {
+    let mut app = test_app();
+    enter(&mut app, "InterpCrv StartTangent=1,2,0 EndTangent=-1,1,0");
+    enter(&mut app, "StartTangent=None");
+    let Some(InteractiveCommand::InterpCrv { options }) = app.active_command else {
+        panic!("draft");
+    };
+    assert!(options.start_tangent().is_none());
+    assert_eq!(options.end_tangent().unwrap().to_array(), [-1., 1., 0.]);
+    enter(&mut app, "StartTangent=2,1,0 EndTangent=None");
+    let Some(InteractiveCommand::InterpCrv { options }) = app.active_command else {
+        panic!("draft");
+    };
+    assert_eq!(options.start_tangent().unwrap().to_array(), [2., 1., 0.]);
+    assert!(options.end_tangent().is_none());
+}
+
+#[test]
 fn interpolation_draft_settings_update_atomically_and_drive_preview_and_completion() {
     let mut app = test_app();
     for input in [

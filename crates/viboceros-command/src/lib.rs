@@ -1196,7 +1196,7 @@ impl Command for ControlPointCurveCommand {
     }
 }
 
-const INTERP_CRV_USAGE: &str = "InterpCrv point1 point2 ... [Degree=1|3] [Knots=Uniform|Chord|SqrtChrd] [Close=Open|Smooth|Sharp] [StartTangent=x,y,z] [EndTangent=x,y,z]";
+const INTERP_CRV_USAGE: &str = "InterpCrv point1 point2 ... [Degree=1|3] [Knots=Uniform|Chord|SqrtChrd] [Close=Open|Smooth|Sharp] [StartTangent=x,y,z|None] [EndTangent=x,y,z|None]";
 const CURVE_THROUGH_POINT_USAGE: &str = "CurveThroughPt [Degree=1..11] [CurveType=ControlPoint|Interpolated] [Knots=Uniform|Chord|SqrtChord] [Closed=Yes|No]";
 const CURVE_THROUGH_POLYLINE_USAGE: &str = "CurveThroughPolyline [Degree=1..11] [CurveType=ControlPoint|Interpolated] [Knots=Uniform|Chord|SqrtChord] [DeleteInput=Yes|No]";
 
@@ -1330,10 +1330,10 @@ fn parse_interp_curve_arguments_from(
                 };
                 close_seen = true;
             } else if option_name_eq(name, "StartTangent") && !start_tangent_seen {
-                start_tangent = Some(parse_interp_curve_tangent(value)?);
+                start_tangent = parse_interp_curve_tangent(value)?;
                 start_tangent_seen = true;
             } else if option_name_eq(name, "EndTangent") && !end_tangent_seen {
-                end_tangent = Some(parse_interp_curve_tangent(value)?);
+                end_tangent = parse_interp_curve_tangent(value)?;
                 end_tangent_seen = true;
             } else {
                 return Err(CommandError::Usage(INTERP_CRV_USAGE));
@@ -1356,13 +1356,16 @@ fn parse_interp_curve_arguments_from(
     Ok((points, options))
 }
 
-fn parse_interp_curve_tangent(value: &str) -> Result<Vector3, CommandError> {
+fn parse_interp_curve_tangent(value: &str) -> Result<Option<Vector3>, CommandError> {
+    if value.eq_ignore_ascii_case("None") {
+        return Ok(None);
+    }
     if !value.contains(',') {
         return Err(CommandError::Usage(INTERP_CRV_USAGE));
     }
     let (point, consumed) = parse_point(&[value])?;
     debug_assert_eq!(consumed, 1);
-    Ok(Vector3::try_from(point.to_array())?)
+    Ok(Some(Vector3::try_from(point.to_array())?))
 }
 
 fn parse_curve_through_options(
