@@ -58,6 +58,15 @@ are evaluated in that internal frame; parameters are returned in the original
 native domain. Input native parameters are converted before querying distance.
 Already unit-domain NURBS do not allocate a normalization copy.
 
+Repeated-query tables can integrate to a slightly different total than the
+original span estimate. Both query directions use the original span's distance
+scale: a prefix integral is multiplied by `span_length / table_length`, while
+inversion maps its target and tolerance in the opposite direction. This keeps
+cached distance queries and inversion consistent without changing the reported
+total length. Regressions cover all prefix nodes and the analytic midpoint of a
+symmetric arch at tiny, unit, and huge geometry scales, using a loose tolerance
+that exposes the independently rounded integration totals.
+
 An interval with only two representable floats cannot encode an interior native
 parameter. In such domains sampled geometry remains accurate, but the returned
 parameter rounds to a source-domain value and re-evaluating it can produce a

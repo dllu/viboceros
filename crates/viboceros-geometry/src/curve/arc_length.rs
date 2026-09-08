@@ -3,7 +3,7 @@
 use super::{CurveRef, CurveSample};
 use crate::{
     GeometryError, NurbsCurve, ParameterSide, Point3, Real, Tolerance, UnitVector3,
-    integration::integrate_adaptive, require_finite,
+    integration::integrate_adaptive, parameter::scaled_ratio, require_finite,
 };
 use std::f64::consts::FRAC_PI_2;
 
@@ -161,6 +161,12 @@ impl<'a> ArcLengthSampler<'a> {
         }
         let partial = if span.variable_speed {
             let table = &self.lookup_tables[index];
+            let table_length = table.last().map_or(span.length, |node| node.length);
+            let integration_tolerance = scaled_ratio(
+                numerical_distance_tolerance(span.length, self.tolerance),
+                table_length,
+                span.length,
+            )?;
             let node = table
                 .get(
                     table
@@ -172,16 +178,15 @@ impl<'a> ArcLengthSampler<'a> {
                     parameter: span.start,
                     length: 0.0,
                 });
-            node.length
+            let partial = node.length
                 + if node.parameter == parameter {
                     0.0
                 } else {
-                    self.partial_parameter_length(
-                        node.parameter,
-                        parameter,
-                        numerical_distance_tolerance(span.length, self.tolerance),
-                    )?
-                }
+                    self.partial_parameter_length(node.parameter, parameter, integration_tolerance)?
+                };
+            // Prefix integration and full-span integration need not round to
+            // the same total. Use the inverse query's canonical span scale.
+            scaled_ratio(partial, span.length, table_length)?.clamp(0.0, span.length)
         } else {
             span.length * ((parameter - span.start) / (span.end - span.start))
         };
@@ -195,7 +200,7 @@ impl<'a> ArcLengthSampler<'a> {
             .map(|span| span.cumulative_end)
     }
 
-    /// Precomputes exact-integration prefix brackets that make repeated
+    /// Precomputes adaptive-integration prefix brackets that make repeated
     /// arc-length inversions substantially cheaper. Ordinary one-shot curve
     /// queries avoid this setup cost; adaptive algorithms opt in explicitly.
     pub(crate) fn prepare_repeated_sampling(
@@ -392,11 +397,14 @@ impl<'a> ArcLengthSampler<'a> {
         distance_tolerance: Real,
     ) -> Result<Real, GeometryError> {
         let table = &self.lookup_tables[span_index];
-        let inversion_target = if table.is_empty() {
-            target
+        let (inversion_target, distance_tolerance) = if table.is_empty() {
+            (target, distance_tolerance)
         } else {
             let table_length = table.last().expect("a lookup table has an end").length;
-            target * (table_length / span.length)
+            (
+                scaled_ratio(target, table_length, span.length)?,
+                scaled_ratio(distance_tolerance, table_length, span.length)?,
+            )
         };
         let (prefix_parameter, prefix_length, mut lower, mut upper, mut parameter) =
             if table.is_empty() {
@@ -621,6 +629,52 @@ fn neumaier_add(sum: &mut Real, correction: &mut Real, value: Real) {
 mod tests {
     use super::*;
     use crate::Vector3;
+
+    #[test]
+    fn lookup_distance_and_inverse_share_the_same_length_scale() {
+        for scale in [1e-150, 1., 1e150] {
+            let curve = NurbsCurve::try_new(
+                2,
+                vec![
+                    Point3::try_new(0., 0., 0.).unwrap(),
+                    Point3::try_new(0.5 * scale, scale, 0.).unwrap(),
+                    Point3::try_new(scale, 0., 0.).unwrap(),
+                ],
+                vec![0., 0., 0., 1., 1., 1.],
+            )
+            .unwrap();
+            let tolerance = Tolerance::try_new(0.01 * scale, 0.01, 1e-10).unwrap();
+            let mut sampler =
+                ArcLengthSampler::try_new(CurveRef::NurbsCurve(&curve), tolerance).unwrap();
+            sampler.prepare_repeated_sampling(16).unwrap();
+            let half_length = sampler.total_length() * 0.5;
+            // Symmetry gives an exact station even with loose length tolerance.
+            assert!((sampler.parameter_at_distance(half_length).unwrap() - 0.5).abs() < 1e-12);
+            assert!(
+                (sampler.distance_at_parameter(0.5).unwrap() / scale - half_length / scale).abs()
+                    < 1e-12
+            );
+            // Every exact prefix node must use the same public distance unit in
+            // both directions, not only the symmetric midpoint.
+            let table = &sampler.lookup_tables[0];
+            let table_length = table.last().unwrap().length;
+            for node in table {
+                let expected = (node.length / table_length) * sampler.total_length();
+                let actual = sampler.distance_at_parameter(node.parameter).unwrap();
+                assert!((actual / scale - expected / scale).abs() < 1e-12);
+                assert!(
+                    (sampler.parameter_at_distance(actual).unwrap() - node.parameter).abs() < 1e-12
+                );
+            }
+            for parameter in [0.013, 0.137, 0.371, 0.499] {
+                let left = sampler.distance_at_parameter(parameter).unwrap();
+                let right = sampler.distance_at_parameter(1. - parameter).unwrap();
+                assert!(
+                    (left / scale + right / scale - sampler.total_length() / scale).abs() < 1e-12
+                );
+            }
+        }
+    }
 
     #[test]
     fn normalized_sampler_preserves_multispan_kinks_and_native_parameters() {
