@@ -31,7 +31,7 @@ fn curve_preview_tracks_settings_and_matches_committed_geometry_without_edits() 
     enter(&mut app, "");
     assert_eq!(
         app.document.objects().next().unwrap().geometry(),
-        &Geometry::NurbsCurve(closed)
+        &Geometry::NurbsCurve((*closed).clone())
     );
     assert!(app.curve_draft_preview().is_none());
 }

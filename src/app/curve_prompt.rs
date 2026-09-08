@@ -3,19 +3,14 @@
 use super::*;
 
 impl VibocerosApp {
-    pub(super) fn curve_draft_preview(&self) -> Option<viboceros_geometry::NurbsCurve> {
-        if self.plane_prompt.is_some() {
-            return None;
-        }
-        let InteractiveCommand::Curve { degree, closure } = self.active_command? else {
-            return None;
+    pub(super) fn curve_draft_preview(
+        &mut self,
+    ) -> Option<std::sync::Arc<viboceros_geometry::NurbsCurve>> {
+        let settings = match (self.plane_prompt.is_some(), self.active_command) {
+            (false, Some(InteractiveCommand::Curve { degree, closure })) => Some((degree, closure)),
+            _ => None,
         };
-        viboceros_geometry::NurbsCurve::try_control_point_curve_with_closure(
-            degree,
-            self.curve_points.clone(),
-            closure,
-        )
-        .ok()
+        self.curve_preview.get(settings, &self.curve_points)
     }
 
     pub(super) fn try_continue_curve_option(&mut self, input: &str) -> bool {

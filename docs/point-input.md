@@ -49,6 +49,9 @@ The preview uses the completion constructor, including degree reduction and
 closure. Invalid or insufficient controls produce no curve preview. The cursor's
 unaccepted point is still a straight tracking guide, not a prospective control
 point; `InterpCrv` does not yet have this curve preview.
+Model-space preview geometry is cached by controls, degree, and closure, including
+failed constructions. Camera movement reprojects it without rebuilding the curve;
+completion or cancellation clears the cache on the next preview update.
 
 The supported forms follow [Rhino's coordinate-entry documentation](https://docs.mcneel.com/rhino/8mac/help/en-us/user_interface/accurate_modeling.htm):
 

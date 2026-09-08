@@ -27,6 +27,7 @@ use crate::viewport::{
 const MAX_LOG_ENTRIES: usize = 100;
 
 mod construction_plane;
+mod curve_preview;
 mod curve_prompt;
 mod interface;
 mod object_selection;
@@ -1041,6 +1042,7 @@ pub struct VibocerosApp {
     plane_prompt: Option<construction_plane::PlanePrompt>,
     object_prompt: Option<object_selection::PendingObjectCommand>,
     curve_points: Vec<Point3>,
+    curve_preview: curve_preview::CurvePreviewCache,
     sidebar: DocumentSidebar,
 }
 
@@ -1076,6 +1078,7 @@ impl VibocerosApp {
             plane_prompt: None,
             object_prompt: None,
             curve_points: Vec::new(),
+            curve_preview: curve_preview::CurvePreviewCache::default(),
             sidebar: DocumentSidebar::default(),
         }
     }
@@ -5006,7 +5009,7 @@ impl eframe::App for VibocerosApp {
                                     ViewportInput {
                                         drafting,
                                         object_filter,
-                                        preview_curve: preview_curve.as_ref(),
+                                        preview_curve: preview_curve.as_deref(),
                                     },
                                     curve_points,
                                     index,
@@ -5125,6 +5128,7 @@ mod tests {
             plane_prompt: None,
             object_prompt: None,
             curve_points: Vec::new(),
+            curve_preview: curve_preview::CurvePreviewCache::default(),
             sidebar: DocumentSidebar::default(),
         }
     }
