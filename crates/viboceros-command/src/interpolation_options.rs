@@ -13,6 +13,37 @@ pub fn parse_interp_curve_options(
     update_interp_curve_options(CurveInterpolationOptions::default(), arguments)
 }
 
+/// Canonical, lossless command options. Absent tangents are explicit so this
+/// output replaces all settings even when applied to an existing draft.
+pub fn format_interp_curve_options(options: CurveInterpolationOptions) -> String {
+    let knots = match options.knot_spacing() {
+        CurveKnotSpacing::Uniform => "Uniform",
+        CurveKnotSpacing::Chord => "Chord",
+        CurveKnotSpacing::SquareRootChord => "SqrtChrd",
+    };
+    let closure = match options.closure() {
+        InterpolatedCurveClosure::Open => "Open",
+        InterpolatedCurveClosure::Smooth => "Smooth",
+        InterpolatedCurveClosure::Sharp => "Sharp",
+    };
+    let mut text = format!("Degree={} Knots={knots} Close={closure}", options.degree());
+    for (name, tangent) in [
+        ("StartTangent", options.start_tangent()),
+        ("EndTangent", options.end_tangent()),
+    ] {
+        match tangent {
+            Some(tangent) => text.push_str(&format!(
+                " {name}={},{},{}",
+                tangent.x(),
+                tangent.y(),
+                tangent.z()
+            )),
+            None => text.push_str(&format!(" {name}=None")),
+        }
+    }
+    text
+}
+
 /// Applies an options-only update atomically, retaining unspecified settings.
 pub fn update_interp_curve_options(
     current: CurveInterpolationOptions,
@@ -150,6 +181,60 @@ fn parse_interp_curve_tangent(value: &str) -> Result<Option<Vector3>, CommandErr
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn canonical_options_roundtrip_every_topology_and_clear_previous_constraints() {
+        let constrained = CurveInterpolationOptions::default()
+            .with_start_tangent(Vector3::try_new(1., 2., 3.).unwrap())
+            .with_end_tangent(Vector3::try_new(3., 2., 1.).unwrap());
+        for degree in [1, 3] {
+            for knots in [
+                CurveKnotSpacing::Uniform,
+                CurveKnotSpacing::Chord,
+                CurveKnotSpacing::SquareRootChord,
+            ] {
+                for closure in [
+                    InterpolatedCurveClosure::Open,
+                    InterpolatedCurveClosure::Smooth,
+                    InterpolatedCurveClosure::Sharp,
+                ] {
+                    let expected = CurveInterpolationOptions::new(degree, knots, closure);
+                    let text = format_interp_curve_options(expected);
+                    let arguments = text.split_whitespace().collect::<Vec<_>>();
+                    assert_eq!(parse_interp_curve_options(&arguments).unwrap(), expected);
+                    assert_eq!(
+                        update_interp_curve_options(constrained, &arguments).unwrap(),
+                        expected
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn tangent_serialization_preserves_binary64_components_including_signed_zero() {
+        for components in [
+            [f64::from_bits(1), -0., f64::MAX],
+            [1.1234567890123457, -2.123456789012345, 1e-300],
+        ] {
+            let tangent = Vector3::try_from(components).unwrap();
+            let expected = CurveInterpolationOptions::default()
+                .with_start_tangent(tangent)
+                .with_end_tangent(tangent);
+            let text = format_interp_curve_options(expected);
+            let actual =
+                parse_interp_curve_options(&text.split_whitespace().collect::<Vec<_>>()).unwrap();
+            for direction in [
+                actual.start_tangent().unwrap(),
+                actual.end_tangent().unwrap(),
+            ] {
+                assert_eq!(
+                    direction.to_array().map(f64::to_bits),
+                    components.map(f64::to_bits)
+                );
+            }
+        }
+    }
 
     #[test]
     fn updates_validate_retained_options_and_allow_explicit_repairs() {

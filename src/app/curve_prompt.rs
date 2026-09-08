@@ -37,7 +37,10 @@ impl VibocerosApp {
                 Ok(options) => {
                     self.active_command = Some(InteractiveCommand::InterpCrv { options });
                     self.command_input.clear();
-                    self.push_log(format!("InterpCrv settings: {options:?}"));
+                    self.push_log(format!(
+                        "InterpCrv settings: {}",
+                        format_interp_curve_options(options)
+                    ));
                 }
                 Err(error) => self.push_log(format!("Error: {error}")),
             }

@@ -143,6 +143,8 @@ for one-line execution, draft startup, and in-prompt setting changes.
 `viboceros-command/interpolation_options` provides the corresponding InterpCrv
 parser and atomic updates, validating retained directions even for Rust callers
 that constructed options without parsing text.
+Its canonical formatter is shared by draft completion and settings feedback;
+it preserves tangent components and explicitly writes absent constraints as `None`.
 Angle reduction preserves tiny negative angles and exact quadrants. Tests cover
 large magnitudes, full floating-point precision, invalid input, relative origins,
 construction planes, command replacement, cancellation, and undo.

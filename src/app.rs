@@ -7,8 +7,9 @@ use viboceros_command::{
     DEFAULT_MESH_PLANE_FACE_COUNT, DEFAULT_MESH_SPHERE_FACE_COUNT,
     DEFAULT_MESH_SPHERE_SUBDIVISIONS, DEFAULT_MESH_TORUS_FACE_COUNT,
     DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT, DistributionSettings,
-    MAX_MESH_SPHERE_QUAD_SUBDIVISIONS, MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS, parse_curve_closure,
-    parse_curve_degree, parse_interp_curve_options, update_interp_curve_options,
+    MAX_MESH_SPHERE_QUAD_SUBDIVISIONS, MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS,
+    format_interp_curve_options, parse_curve_closure, parse_curve_degree,
+    parse_interp_curve_options, update_interp_curve_options,
 };
 use viboceros_document::{Document, DocumentError, suggested_layer_color};
 use viboceros_geometry::{
@@ -4594,34 +4595,10 @@ impl VibocerosApp {
                 format!("Curve {arguments} Degree={degree} Close={closure}")
             }
             InteractiveCommand::InterpCrv { options } => {
-                let knots = match options.knot_spacing() {
-                    viboceros_geometry::CurveKnotSpacing::Uniform => "Uniform",
-                    viboceros_geometry::CurveKnotSpacing::Chord => "Chord",
-                    viboceros_geometry::CurveKnotSpacing::SquareRootChord => "SqrtChrd",
-                };
-                let closure = match options.closure() {
-                    viboceros_geometry::InterpolatedCurveClosure::Open => "Open",
-                    viboceros_geometry::InterpolatedCurveClosure::Smooth => "Smooth",
-                    viboceros_geometry::InterpolatedCurveClosure::Sharp => "Sharp",
-                };
-                let mut input = format!(
-                    "InterpCrv {arguments} Degree={} Knots={knots} Close={closure}",
-                    options.degree()
-                );
-                for (name, tangent) in [
-                    ("StartTangent", options.start_tangent()),
-                    ("EndTangent", options.end_tangent()),
-                ] {
-                    if let Some(tangent) = tangent {
-                        input.push_str(&format!(
-                            " {name}={},{},{}",
-                            tangent.x(),
-                            tangent.y(),
-                            tangent.z()
-                        ));
-                    }
-                }
-                input
+                format!(
+                    "InterpCrv {arguments} {}",
+                    format_interp_curve_options(options)
+                )
             }
             _ => format!("{} {arguments}", command.name()),
         };
