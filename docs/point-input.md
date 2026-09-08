@@ -43,13 +43,14 @@ both the draft and typed text intact. These single-entry settings use Viboceros'
 one-line syntax, not Rhino's multi-step option prompts. Draft `Undo` still removes
 points, not setting changes.
 
-`Curve` displays the curve through its accepted control-point configuration in
+`Curve` and `InterpCrv` display the curve from their accepted points in
 all four viewports, alongside the control polygon in the hovered viewport.
 The preview uses the completion constructor, including degree reduction and
 closure. Invalid or insufficient controls produce no curve preview. The cursor's
 unaccepted point is still a straight tracking guide, not a prospective control
-point; `InterpCrv` does not yet have this curve preview.
-Model-space preview geometry is cached by controls, degree, and closure, including
+point. `InterpCrv` uses the command's default open cubic chord-spaced interpolation.
+Model-space preview geometry is cached by points, construction mode, settings,
+and interpolation tolerance, including
 failed constructions. Camera movement reprojects it without rebuilding the curve;
 completion or cancellation clears the cache on the next preview update.
 

@@ -1,21 +1,30 @@
 //! Cache model-space preview geometry independently of viewport navigation.
 
 use std::sync::Arc;
-use viboceros_geometry::{ControlPointCurveClosure, NurbsCurve, Point3};
+use viboceros_geometry::{
+    ControlPointCurveClosure, CurveInterpolationOptions, CurveKnotSpacing,
+    InterpolatedCurveClosure, NurbsCurve, Point3, Tolerance,
+};
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub(super) enum CurvePreviewSettings {
+    Control(usize, ControlPointCurveClosure),
+    Interpolated(Tolerance),
+}
 
 #[derive(Default)]
 pub(super) struct CurvePreviewCache {
-    key: Option<(usize, ControlPointCurveClosure, Vec<Point3>)>,
+    key: Option<(CurvePreviewSettings, Vec<Point3>)>,
     curve: Option<Arc<NurbsCurve>>,
 }
 
 impl CurvePreviewCache {
     pub(super) fn get(
         &mut self,
-        settings: Option<(usize, ControlPointCurveClosure)>,
+        settings: Option<CurvePreviewSettings>,
         points: &[Point3],
     ) -> Option<Arc<NurbsCurve>> {
-        let Some((degree, closure)) = settings else {
+        let Some(settings) = settings else {
             self.key = None;
             self.curve = None;
             return None;
@@ -23,16 +32,34 @@ impl CurvePreviewCache {
         if self
             .key
             .as_ref()
-            .is_none_or(|(cached_degree, cached_closure, cached_points)| {
-                *cached_degree != degree || *cached_closure != closure || cached_points != points
+            .is_none_or(|(cached_settings, cached_points)| {
+                *cached_settings != settings || cached_points != points
             })
         {
-            self.curve =
-                NurbsCurve::try_control_point_curve_with_closure(degree, points.to_vec(), closure)
-                    .ok()
-                    .map(Arc::new);
+            self.curve = match settings {
+                CurvePreviewSettings::Control(degree, closure) => {
+                    NurbsCurve::try_control_point_curve_with_closure(
+                        degree,
+                        points.to_vec(),
+                        closure,
+                    )
+                }
+                CurvePreviewSettings::Interpolated(tolerance) => {
+                    NurbsCurve::try_interpolate_for_command(
+                        points,
+                        CurveInterpolationOptions::new(
+                            3,
+                            CurveKnotSpacing::Chord,
+                            InterpolatedCurveClosure::Open,
+                        ),
+                        tolerance,
+                    )
+                }
+            }
+            .ok()
+            .map(Arc::new);
             // Failed constructions are cached too, until their inputs change.
-            self.key = Some((degree, closure, points.to_vec()));
+            self.key = Some((settings, points.to_vec()));
         }
         self.curve.clone()
     }
@@ -50,7 +77,10 @@ mod tests {
             Point3::try_new(1., 0., 0.).unwrap(),
             Point3::try_new(0., 1., 0.).unwrap(),
         ];
-        let open = Some((2, ControlPointCurveClosure::Open));
+        let open = Some(CurvePreviewSettings::Control(
+            2,
+            ControlPointCurveClosure::Open,
+        ));
         let first = cache.get(open, &points).unwrap();
         for _ in 0..100 {
             assert!(Arc::ptr_eq(&first, &cache.get(open, &points).unwrap()));
@@ -59,11 +89,23 @@ mod tests {
         let moved = cache.get(open, &points).unwrap();
         assert!(!Arc::ptr_eq(&first, &moved));
         let degree = cache
-            .get(Some((1, ControlPointCurveClosure::Open)), &points)
+            .get(
+                Some(CurvePreviewSettings::Control(
+                    1,
+                    ControlPointCurveClosure::Open,
+                )),
+                &points,
+            )
             .unwrap();
         assert!(!Arc::ptr_eq(&moved, &degree));
         let closed = cache
-            .get(Some((1, ControlPointCurveClosure::Sharp)), &points)
+            .get(
+                Some(CurvePreviewSettings::Control(
+                    1,
+                    ControlPointCurveClosure::Sharp,
+                )),
+                &points,
+            )
             .unwrap();
         assert!(!Arc::ptr_eq(&degree, &closed));
         assert!(closed.is_closed().unwrap());
@@ -76,14 +118,17 @@ mod tests {
     #[test]
     fn invalid_drafts_replace_cached_geometry_and_recover_when_corrected() {
         let mut cache = CurvePreviewCache::default();
-        let settings = Some((3, ControlPointCurveClosure::Open));
+        let settings = Some(CurvePreviewSettings::Control(
+            3,
+            ControlPointCurveClosure::Open,
+        ));
         let points = [
             Point3::try_new(0., 0., 0.).unwrap(),
             Point3::try_new(1., 0., 0.).unwrap(),
         ];
         assert!(cache.get(settings, &points).is_some());
         assert!(cache.get(settings, &points[..1]).is_none());
-        assert_eq!(cache.key.as_ref().unwrap().2, points[..1]);
+        assert_eq!(cache.key.as_ref().unwrap().1, points[..1]);
         assert!(cache.get(settings, &points[..1]).is_none());
         assert!(cache.get(settings, &points).is_some());
     }

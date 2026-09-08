@@ -6,6 +6,54 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn interpolated_preview_matches_completion_and_reuses_unchanged_geometry() {
+    let mut app = test_app();
+    for input in ["Point 9,9,9", "Undo", "InterpCrv", "0"] {
+        enter(&mut app, input);
+    }
+    assert!(app.curve_draft_preview().is_none());
+    for input in ["3,0,0", "4,2,1", "0,4,0"] {
+        enter(&mut app, input);
+    }
+    let document = format!("{:?}", app.document);
+    let preview = app.curve_draft_preview().unwrap();
+    assert_eq!(preview.degree(), 3);
+    assert!(std::sync::Arc::ptr_eq(
+        &preview,
+        &app.curve_draft_preview().unwrap()
+    ));
+    assert_eq!(format!("{:?}", app.document), document);
+    enter(&mut app, "");
+    assert_eq!(
+        app.document.objects().next().unwrap().geometry(),
+        &Geometry::NurbsCurve((*preview).clone())
+    );
+    assert!(app.curve_draft_preview().is_none());
+}
+
+#[test]
+fn interpolated_preview_invalidates_on_point_undo_and_tolerance_change() {
+    let mut app = test_app();
+    for input in ["InterpCrv", "0", "1,0,0", "0,1,0"] {
+        enter(&mut app, input);
+    }
+    let original = app.curve_draft_preview().unwrap();
+    let tolerance = Tolerance::try_new(0.01, 1e-12, 1e-10).unwrap();
+    app.document.set_tolerance(tolerance);
+    let updated = app.curve_draft_preview().unwrap();
+    assert!(!std::sync::Arc::ptr_eq(&original, &updated));
+    enter(&mut app, "Undo");
+    let two_points = app.curve_draft_preview().unwrap();
+    assert!(!std::sync::Arc::ptr_eq(&updated, &two_points));
+    enter(&mut app, "Undo");
+    assert!(app.curve_draft_preview().is_none());
+    enter(&mut app, "rw2,0,0");
+    assert!(app.curve_draft_preview().is_some());
+    assert_eq!(app.document.objects().len(), 0);
+    assert_eq!(app.document.tolerance(), tolerance);
+}
+
+#[test]
 fn curve_preview_tracks_settings_and_matches_committed_geometry_without_edits() {
     let mut app = test_app();
     assert!(app.curve_draft_preview().is_none());

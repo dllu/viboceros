@@ -7,7 +7,12 @@ impl VibocerosApp {
         &mut self,
     ) -> Option<std::sync::Arc<viboceros_geometry::NurbsCurve>> {
         let settings = match (self.plane_prompt.is_some(), self.active_command) {
-            (false, Some(InteractiveCommand::Curve { degree, closure })) => Some((degree, closure)),
+            (false, Some(InteractiveCommand::Curve { degree, closure })) => Some(
+                curve_preview::CurvePreviewSettings::Control(degree, closure),
+            ),
+            (false, Some(InteractiveCommand::InterpCrv)) => Some(
+                curve_preview::CurvePreviewSettings::Interpolated(self.document.tolerance()),
+            ),
             _ => None,
         };
         self.curve_preview.get(settings, &self.curve_points)
