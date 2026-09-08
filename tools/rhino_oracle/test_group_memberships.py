@@ -13,6 +13,7 @@ class GroupMembershipWorkerTests(unittest.TestCase):
     def test_invalid_indices_commands_and_deleted_groups_fail_before_document_access(self):
         operation = dict(sources=[dict(type="point")], groups=[[0]], steps=[])
         invalid = [dict(sources=[]), dict(sources=[{}] * 33), dict(groups=[[]] * 17),
+                   dict(steps=[dict(kind="recall_previous", deselect_others="Yes")]),
                    dict(groups=[[0, 0]]), dict(groups=[[True]]), dict(groups=[[1]]),
                    dict(steps=[dict(kind="select", objects=[0, 0])]),
                    dict(steps=[dict(kind="set", object=0, groups=[0, 0])]),

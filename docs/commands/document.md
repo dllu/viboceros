@@ -36,10 +36,13 @@ location-welded polygon-edge topology, so quad meshes, indexed triangle meshes,
 and STL-style triangle soup classify consistently; quad diagonals are used only
 when an operation explicitly needs triangles.
 
-`SelLast` selects every object changed by the latest object-editing transaction,
-including multi-object imports and command outputs. `SelPrev` swaps the current
-and previous selection sets. Both replace by default, matching Rhino; set
-`DeselectOthersBeforeSelect=No` to add instead.
+`SelLast` currently selects objects changed by the latest native object-editing
+transaction, including multi-object imports and command outputs. Its precise
+Rhino transaction-boundary behavior needs a separately isolated comparison.
+`SelPrev` recalls recorded selectable objects without group expansion. Replacement
+swaps with a nonempty current set; additive recall leaves previous memory intact.
+It remembers `DeselectOthersBeforeSelect=Yes|No` per registry. See
+[selection recall](../selection-recall.md) for verified behavior and limitations.
 
 `SelName` and `SelLayer` add case-insensitive `*`/`?` wildcard matches without
 expanding overlapping groups; `SelName ""` selects unnamed objects. `SelGroup`

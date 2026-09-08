@@ -1,0 +1,867 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "group_picking",
+      "id": "recall-chain-False-0",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "reverse_bridge": false,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-chain-False-1",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "reverse_bridge": false,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-chain-False-2",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "reverse_bridge": false,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-chain-True-0",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "reverse_bridge": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-chain-True-1",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "reverse_bridge": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-chain-True-2",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "reverse_bridge": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-locked-0",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "locked": [
+        1
+      ],
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-locked-2",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "locked": [
+        1
+      ],
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-hidden-0",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "hidden": [
+        1
+      ],
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-hidden-2",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "hidden": [
+        1
+      ],
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-layer-locked-0",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "layer_mode": "locked",
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-layer-locked-1",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "layer_mode": "locked",
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-layer-locked-2",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "layer_mode": "locked",
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-locked-seed",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "locked": [
+        1
+      ],
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-layer-hidden-0",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "layer_mode": "hidden",
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-layer-hidden-1",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "layer_mode": "hidden",
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-layer-hidden-2",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "layer_mode": "hidden",
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-hidden-seed",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "hidden": [
+        1
+      ],
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-chain-False-0-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "reverse_bridge": false,
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-chain-False-1-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "reverse_bridge": false,
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-chain-False-2-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "reverse_bridge": false,
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-chain-True-0-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "reverse_bridge": true,
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-chain-True-1-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "reverse_bridge": true,
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-chain-True-2-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "reverse_bridge": true,
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-locked-0-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "locked": [
+        1
+      ],
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-locked-2-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "locked": [
+        1
+      ],
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-hidden-0-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "hidden": [
+        1
+      ],
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-hidden-2-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "hidden": [
+        1
+      ],
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-layer-locked-0-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "layer_mode": "locked",
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-layer-locked-1-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "layer_mode": "locked",
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-layer-locked-2-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "layer_mode": "locked",
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-locked-seed-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "locked": [
+        1
+      ],
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-layer-hidden-0-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "layer_mode": "hidden",
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-layer-hidden-1-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "layer_mode": "hidden",
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-layer-hidden-2-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "layer_mode": "hidden",
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-hidden-seed-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "hidden": [
+        1
+      ],
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-ungrouped-0",
+      "groups": [],
+      "seed": 0,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-ungrouped-1",
+      "groups": [],
+      "seed": 1,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-ungrouped-2",
+      "groups": [],
+      "seed": 2,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-empty-0",
+      "groups": [
+        []
+      ],
+      "seed": 0,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-empty-1",
+      "groups": [
+        []
+      ],
+      "seed": 1,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-empty-2",
+      "groups": [
+        []
+      ],
+      "seed": 2,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-nested-0",
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-nested-1",
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-nested-2",
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-reverse-table-0",
+      "groups": [
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 0,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-reverse-table-1",
+      "groups": [
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 1,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-reverse-table-2",
+      "groups": [
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 2,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-reverse-ungrouped",
+      "groups": [],
+      "seed": 0,
+      "reverse_bridge": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-reverse-empty",
+      "groups": [
+        []
+      ],
+      "seed": 1,
+      "reverse_bridge": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-object-locked-layer-hidden-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "locked": [
+        1
+      ],
+      "layer_mode": "hidden",
+      "move": true,
+      "recall_previous": true
+    },
+    {
+      "op": "group_picking",
+      "id": "recall-object-hidden-layer-locked-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "hidden": [
+        1
+      ],
+      "layer_mode": "locked",
+      "move": true,
+      "recall_previous": true
+    }
+  ]
+}

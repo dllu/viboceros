@@ -1,0 +1,6000 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "group_memberships",
+      "id": "plain-0-empty",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "plain-0-replace",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "plain-0-add",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "plain-1-empty",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "plain-1-replace",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "plain-1-add",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "plain-2-empty",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "plain-2-replace",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "plain-2-add",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "pair-0-empty",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "pair-0-replace",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "pair-0-add",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "pair-1-empty",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "pair-1-replace",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "pair-1-add",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "pair-2-empty",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "pair-2-replace",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "pair-2-add",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "chain-0-empty",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "chain-0-replace",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "chain-0-add",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "chain-1-empty",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "chain-1-replace",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "chain-1-add",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "chain-2-empty",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "chain-2-replace",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "chain-2-add",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "nested-0-empty",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "nested-0-replace",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "nested-0-add",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "nested-1-empty",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "nested-1-replace",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "nested-1-add",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "nested-2-empty",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "nested-2-replace",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "nested-2-add",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "plain-0-empty-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "plain-0-replace-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "plain-0-add-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "plain-1-empty-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "plain-1-replace-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "plain-1-add-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "plain-2-empty-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "plain-2-replace-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "plain-2-add-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "pair-0-empty-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "pair-0-replace-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "pair-0-add-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "pair-1-empty-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "pair-1-replace-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "pair-1-add-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "pair-2-empty-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "pair-2-replace-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "pair-2-add-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "chain-0-empty-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "chain-0-replace-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "chain-0-add-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "chain-1-empty-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "chain-1-replace-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "chain-1-add-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "chain-2-empty-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "chain-2-replace-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "chain-2-add-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "nested-0-empty-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "nested-0-replace-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "nested-0-add-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "nested-1-empty-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "nested-1-replace-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "nested-1-add-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "nested-2-empty-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "nested-2-replace-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "nested-2-add-remembered",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": false
+        },
+        {
+          "kind": "recall_previous"
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "membership-add-0",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "add",
+          "group": 0,
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "membership-set-0",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            1,
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "membership-delete_group-0",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "delete_group",
+          "group": 0
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "deleted-0",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Delete"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "membership-add-1",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "add",
+          "group": 0,
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "membership-set-1",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "set",
+          "object": 1,
+          "groups": [
+            1,
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "membership-delete_group-1",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "delete_group",
+          "group": 0
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "deleted-1",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Delete"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "membership-add-2",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "add",
+          "group": 0,
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "membership-set-2",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "set",
+          "object": 2,
+          "groups": [
+            1,
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "membership-delete_group-2",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "delete_group",
+          "group": 0
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "deleted-2",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Move"
+        },
+        {
+          "kind": "command",
+          "name": "SelNone"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Delete"
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        },
+        {
+          "kind": "recall_previous",
+          "deselect_others": true
+        }
+      ]
+    }
+  ]
+}

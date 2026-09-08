@@ -25,6 +25,12 @@ errors, and leaves process termination to the owned-window client fallback if
 Rhino cannot exit. Fault-injection tests cover callback detachment, setup,
 disposable attributes/layers, cleanup, logging, and exit failures.
 
+`selection_recall.json` checks 84 SelPrev sequences with explicit/remembered
+options, changed groups, and deleted objects. `selection_recall_picking.json`
+uses the dedicated idle worker for 52 recalls after real group picking. These
+136 exact comparisons distinguish recall from ordinary group expansion and
+verify visibility/lock filtering. See [selection recall](selection-recall.md).
+
 `point_input.json` compares 19 [typed-coordinate sequences](point-input.md)
 against Rhino's actual Polyline prompt in world, Front, Right, shifted, and
 oblique construction planes. It checks unrounded resulting vertices, not a

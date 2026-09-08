@@ -19,6 +19,7 @@ pub enum Step {
     Add { group: usize, objects: Vec<usize> },
     DeleteGroup { group: usize },
     Select { objects: Vec<usize> },
+    RecallPrevious { deselect_others: Option<bool> },
     Command { name: ObjectCommand },
 }
 
@@ -34,6 +35,8 @@ pub enum ObjectCommand {
     ConvertToBeziers,
     Delete,
     Distribute,
+    SelNone,
+    Move,
 }
 
 pub(super) fn run(
@@ -106,12 +109,24 @@ pub(super) fn run(
                     document.select_objects_direct([id], SelectionMode::Add)?;
                 }
             }
+            Step::RecallPrevious { deselect_others } => {
+                let command = deselect_others
+                    .map(|value| {
+                        format!(
+                            "SelPrev DeselectOthersBeforeSelect={}",
+                            if value { "Yes" } else { "No" }
+                        )
+                    })
+                    .unwrap_or_else(|| "SelPrev".into());
+                registry.execute(&mut document, &command)?;
+            }
             Step::Command { name } => {
                 let candidates = document
                     .selected_object_ids()
                     .map(|id| sources[&id])
                     .collect::<BTreeSet<_>>();
                 let command = match name {
+                    ObjectCommand::Move => "Move 0,0,0 0,1,0".into(),
                     ObjectCommand::Copy => "Copy 0,0,0 10,0,0".into(),
                     ObjectCommand::Array => "Array 2 1 1 10 0 0".into(),
                     ObjectCommand::ArrayLinear => "ArrayLinear 2 0,0,0 10,0,0".into(),
@@ -186,7 +201,7 @@ fn validate(f: &GroupMembershipFixture) -> Result<(), ProbeError> {
                 }
             }
             Step::Select { objects } => indices(objects, f.sources.len(), true)?,
-            Step::Command { .. } => {}
+            Step::Command { .. } | Step::RecallPrevious { .. } => {}
         }
     }
     Ok(())

@@ -3430,7 +3430,8 @@ def _group_memberships(operation, tolerance):
                "Distribute": "_-Distribute _Mode=_Gap _Spacing _Automatic _XAxis",
                "Array": "_-Array _Mode=_UnitCell 2 1 1 10 _Enter",
                "ArrayPolar": "_-ArrayPolar w0,0,0 2 _Rotate=_Yes _ZOffset 0 180 _Enter",
-               "ArrayLinear": "_ArrayLinear 2 w0,0,0 w10,0,0"}
+               "ArrayLinear": "_ArrayLinear 2 w0,0,0 w10,0,0",
+               "SelNone": "_SelNone", "Move": "_Move w0,0,0 w0,1,0"}
     for group in groups:
         indices(group, len(definitions))
     live_groups = set(range(len(groups)))
@@ -3449,6 +3450,9 @@ def _group_memberships(operation, tolerance):
             if step["group"] not in live_groups: raise ValueError("deleted membership group")
             live_groups.remove(step["group"])
         elif kind == "select": indices(step["objects"], len(definitions))
+        elif kind == "recall_previous":
+            if step.get("deselect_others") is not None and type(step["deselect_others"]) is not bool:
+                raise ValueError("invalid selection recall flags")
         elif kind != "command" or step["name"] not in scripts:
             raise ValueError("unsupported group command step")
     document = Rhino.RhinoDoc.ActiveDoc
@@ -3548,9 +3552,12 @@ def _group_memberships(operation, tolerance):
                     if any(document.Objects.FindId(ids[i]) is None for i in step["objects"]): raise ValueError("group source no longer exists")
                     document.Objects.UnselectAll()
                     for i in step["objects"]: document.Objects.Select(ids[i])
+                elif kind == "recall_previous":
+                    script = "_SelPrev" if step.get("deselect_others") is None else "_-SelPrev _DeselectOthersBeforeSelect=_%s _Enter" % ("Yes" if step["deselect_others"] else "No")
+                    _run_surface_script(script, True)
                 else:
                     selected = [obj for obj in objects() if obj.Id not in before and obj.IsSelected(False)]
-                    if not selected: raise ValueError("group command requires completed preselection")
+                    if not selected and step["name"] != "SelNone": raise ValueError("group command requires completed preselection")
                     if step["name"] in ("Ungroup", "UngroupAll") and not any(obj.Attributes.GetGroupList() for obj in selected):
                         raise ValueError("ungroup requires a preselected group")
                     if step["name"] == "Distribute" and len(selected) < 3:

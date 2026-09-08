@@ -18,6 +18,7 @@ class GroupPickingTests(unittest.TestCase):
                         dict(groups=[[False]]), dict(groups=[[3]]), dict(locked=[1, 1]),
                         dict(hidden=[-1]), dict(locked=[1], hidden=[1]),
                         dict(layer_mode="other"), dict(reverse_bridge=1), dict(move="Yes"),
+                        dict(recall_previous="Yes"),
                         dict(id="bad\nPICK injected 0 0"), dict(op="group_memberships")]:
             invalid = copy.deepcopy(request)
             invalid["operations"][0].update(changes)

@@ -977,21 +977,19 @@ impl Document {
         )
     }
 
-    /// Re-selects the previous selection and makes the current selection the
-    /// next previous set, so repeated replacement calls toggle between them.
+    /// Restores recorded objects without expanding their current groups.
+    /// Replacement remembers a nonempty current set; additive recall leaves
+    /// the remembered set unchanged.
     pub fn select_previous(&mut self, deselect_others: bool) -> usize {
-        let targets = self.selectable_clusters(self.previous_selection.iter().copied());
+        let targets = self.previous_selection_targets();
         let current = self.selection.clone();
         let current_order = self.selection_order.clone();
-        let target_order =
-            self.previous_selection_order
-                .iter()
-                .copied()
-                .filter(|id| targets.contains(id))
-                .chain(self.objects.iter().map(|object| object.id).filter(|id| {
-                    targets.contains(id) && !self.previous_selection_order.contains(id)
-                }))
-                .collect::<Vec<_>>();
+        let target_order = self
+            .previous_selection_order
+            .iter()
+            .copied()
+            .filter(|id| targets.contains(id))
+            .collect::<Vec<_>>();
         let next = if deselect_others {
             targets
         } else {
@@ -1009,8 +1007,10 @@ impl Document {
                 .collect()
         };
         self.selection = next;
-        self.previous_selection = current;
-        self.previous_selection_order = current_order;
+        if deselect_others && !current.is_empty() {
+            self.previous_selection = current;
+            self.previous_selection_order = current_order;
+        }
         self.selection.len()
     }
 
@@ -1020,8 +1020,7 @@ impl Document {
     }
 
     pub fn selectable_previous_object_count(&self) -> usize {
-        self.selectable_clusters(self.previous_selection.iter().copied())
-            .len()
+        self.previous_selection_targets().len()
     }
 
     fn apply_selection_mode(&mut self, cluster: BTreeSet<ObjectId>, mode: SelectionMode) -> usize {
@@ -3193,8 +3192,8 @@ mod tests {
         document.select_object(third, SelectionMode::Add).unwrap();
         assert_eq!(document.select_previous(false), 3);
         assert_eq!(selected(&document), BTreeSet::from([first, second, third]));
-        assert_eq!(document.select_previous(true), 1);
-        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [third]);
+        assert_eq!(document.select_previous(true), 2);
+        assert_eq!(selected(&document), BTreeSet::from([first, second]));
 
         document.clear_selection();
         document.begin_transaction("Add pair").unwrap();

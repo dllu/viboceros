@@ -37,6 +37,8 @@ def validate_request(request):
             raise OracleProtocolError("invalid group picking mode")
         if type(operation.get("move", False)) is not bool:
             raise OracleProtocolError("invalid group picking move flag")
+        if type(operation.get("recall_previous", False)) is not bool:
+            raise OracleProtocolError("invalid group picking recall flag")
 
 
 class IdlePicker:

@@ -14,6 +14,8 @@ pub struct GroupPickingFixture {
     layer_mode: Option<String>,
     #[serde(default, rename = "move")]
     move_objects: bool,
+    #[serde(default)]
+    recall_previous: bool,
 }
 
 pub(super) fn run(
@@ -104,12 +106,43 @@ pub(super) fn run(
                 .collect::<Vec<_>>()
         );
     }
+    if f.recall_previous {
+        document.clear_selection();
+        document.select_previous(true);
+        value["selected"] = json!(
+            ids.iter()
+                .enumerate()
+                .filter(|(_, id)| document.is_selected(**id))
+                .map(|(i, _)| i)
+                .collect::<Vec<_>>()
+        );
+    }
     Ok((value, 0))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn recall_after_real_group_picking_matches_recorded_rhino() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/selection_recall_picking.json"
+        ))
+        .unwrap();
+        let observed: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/selection_recall_picking.json"
+        ))
+        .unwrap();
+        let response = run_request(&request).unwrap();
+        let rows = observed["results"].as_array().unwrap();
+        assert_eq!(rows.len(), 52);
+        assert_eq!(response.results.len(), rows.len());
+        for (actual, expected) in response.results.iter().zip(rows) {
+            assert_eq!(actual.id, expected["id"].as_str().unwrap());
+            assert_eq!(actual.value, expected["value"], "{}", actual.id);
+        }
+    }
 
     #[test]
     fn recorded_rhino_idle_clicks_and_preselected_move_match_exactly() {

@@ -143,6 +143,10 @@ def on_idle(sender, event):
                 # Read actual post-command states; do not assume Move retained them.
                 value['modes'] = [str(document.Objects.FindId(key).Attributes.Mode) for key in ids]
                 value['layers'] = [dict(visible=document.Layers[document.Objects.FindId(key).Attributes.LayerIndex].IsVisible, locked=document.Layers[document.Objects.FindId(key).Attributes.LayerIndex].IsLocked) for key in ids]
+            if operation.get('recall_previous'):
+                Rhino.RhinoApp.RunScript('_SelNone', False)
+                Rhino.RhinoApp.RunScript('_-SelPrev _DeselectOthersBeforeSelect=_Yes _Enter', False)
+                value['selected'] = [i for i,key in enumerate(ids) if document.Objects.FindId(key).IsSelected(False)]
             state['results'].append(dict(id=operation['id'], value=value, elapsed_ns=0))
             errors = cleanup()
             if errors: raise RuntimeError('; '.join(errors))

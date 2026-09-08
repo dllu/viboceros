@@ -418,7 +418,7 @@ impl CommandRegistry {
             .register(SelLastCommand)
             .expect("unique built-in command");
         registry
-            .register(SelPrevCommand)
+            .register(SelPrevCommand::default())
             .expect("unique built-in command");
         registry
             .register(SelNameCommand)
@@ -7437,7 +7437,10 @@ impl Command for SelLastCommand {
     }
 }
 
-struct SelPrevCommand;
+#[derive(Default)]
+struct SelPrevCommand {
+    deselect_others: remembered::Remembered<Option<bool>>,
+}
 
 impl Command for SelPrevCommand {
     fn name(&self) -> &'static str {
@@ -7449,10 +7452,16 @@ impl Command for SelPrevCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let deselect_others = parse_action_selection_arguments(
-            arguments,
-            "SelPrev [DeselectOthersBeforeSelect=Yes|No]",
-        )?;
+        let deselect_others = if arguments.is_empty() {
+            self.deselect_others.get().unwrap_or(true)
+        } else {
+            let value = parse_action_selection_arguments(
+                arguments,
+                "SelPrev [DeselectOthersBeforeSelect=Yes|No]",
+            )?;
+            self.deselect_others.set(Some(value));
+            value
+        };
         let count = document.select_previous(deselect_others);
         Ok(format!("Selection contains {count} object(s)"))
     }
@@ -39607,6 +39616,50 @@ mod tests {
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().len(), 2);
         assert_eq!(document.groups().len(), 1);
+    }
+
+    #[test]
+    fn sel_prev_remembers_only_valid_options_and_isolates_registries() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let ids = (0..3)
+            .map(|i| {
+                document
+                    .add_geometry(Geometry::Point(
+                        Point3::try_new(i as f64, 0.0, 0.0).unwrap(),
+                    ))
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        document
+            .select_object(ids[0], SelectionMode::Replace)
+            .unwrap();
+        document.clear_selection();
+        document.select_object(ids[1], SelectionMode::Add).unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        registry
+            .execute(&mut document, "SelPrev DeselectOthersBeforeSelect=No")
+            .unwrap();
+        assert!(
+            registry
+                .execute(&mut document, "SelPrev DeselectOthersBeforeSelect=Maybe")
+                .is_err()
+        );
+        document.clear_selection();
+        document.select_object(ids[2], SelectionMode::Add).unwrap();
+        registry.execute(&mut document, "SelPrev").unwrap();
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            [ids[2], ids[1], ids[0]]
+        );
+        CommandRegistry::with_builtins()
+            .execute(&mut document, "SelPrev")
+            .unwrap();
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            [ids[1], ids[0]]
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]

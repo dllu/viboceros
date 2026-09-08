@@ -2,6 +2,28 @@
 use super::*;
 
 impl Document {
+    pub(super) fn previous_selection_targets(&self) -> BTreeSet<ObjectId> {
+        if self.previous_selection.is_empty() {
+            return BTreeSet::new();
+        }
+        let layers = self
+            .layers
+            .iter()
+            .filter(|layer| layer.visible && !layer.locked)
+            .map(|layer| layer.id)
+            .collect::<BTreeSet<_>>();
+        self.objects
+            .iter()
+            .filter(|object| {
+                self.previous_selection.contains(&object.id)
+                    && object.attributes.visible
+                    && !object.attributes.locked
+                    && layers.contains(&object.attributes.layer_id)
+            })
+            .map(|object| object.id)
+            .collect()
+    }
+
     /// Hidden/locked members can enter the selection through a selectable
     /// group peer. Rhino allows editing that selected set without unlocking it.
     pub(super) fn ensure_object_editable(&self, object: &Object) -> Result<(), DocumentError> {
@@ -91,6 +113,46 @@ mod tests {
                     .unwrap()
             })
             .collect()
+    }
+
+    #[test]
+    fn recall_keeps_exact_recorded_ids_order_and_nonempty_memory() {
+        let mut document = Document::default();
+        let ids = points(&mut document, 3);
+        document.add_group(None, [ids[0], ids[1]]).unwrap();
+        let second = document.add_group(None, [ids[1], ids[2]]).unwrap();
+        document
+            .select_objects_direct([ids[0]], SelectionMode::Replace)
+            .unwrap();
+        document.clear_selection();
+        document.add_group_members(second, [ids[0]]).unwrap();
+        assert_eq!(document.selectable_previous_object_count(), 1);
+        for _ in 0..3 {
+            assert_eq!(document.select_previous(true), 1);
+            assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [ids[0]]);
+        }
+        document.clear_selection();
+        document
+            .select_objects_direct([ids[2]], SelectionMode::Add)
+            .unwrap();
+        document
+            .select_objects_direct([ids[1]], SelectionMode::Add)
+            .unwrap();
+        for _ in 0..3 {
+            assert_eq!(document.select_previous(false), 3);
+            assert_eq!(
+                document.selected_object_ids().collect::<Vec<_>>(),
+                [ids[2], ids[1], ids[0]]
+            );
+            assert_eq!(document.selectable_previous_object_count(), 1);
+        }
+        document.select_previous(true);
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [ids[0]]);
+        document.select_previous(true);
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            [ids[2], ids[1], ids[0]]
+        );
     }
 
     #[test]

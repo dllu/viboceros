@@ -4,6 +4,40 @@ const FIXTURE: &str =
     include_str!("../../../../tools/rhino_oracle/fixtures/group_memberships.json");
 
 #[test]
+fn previous_selection_sequences_match_recorded_rhino_sets() {
+    let request: ProbeRequest = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/selection_recall.json"
+    ))
+    .unwrap();
+    let observed: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/selection_recall.json"
+    ))
+    .unwrap();
+    let response = run_request(&request).unwrap();
+    let rows = observed["results"].as_array().unwrap();
+    assert_eq!(rows.len(), 84);
+    assert_eq!(response.results.len(), rows.len());
+    for (actual, expected) in response.results.iter().zip(rows) {
+        assert_eq!(actual.id, expected["id"].as_str().unwrap());
+        let selected = actual.value["states"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|state| {
+                state["objects"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .filter(|object| object["selected"] == true)
+                    .map(|object| object["source"].clone())
+                    .collect::<Vec<_>>()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(json!(selected), expected["selected"], "{}", actual.id);
+    }
+}
+
+#[test]
 fn permanent_group_steps_keep_order_and_exact_reverse_membership_records() {
     let request: ProbeRequest = serde_json::from_str(FIXTURE).unwrap();
     let response = run_request(&request).unwrap();
