@@ -693,7 +693,6 @@ impl Viewport {
             return;
         }
         if self.kind == ViewKind::Perspective {
-            let anchor = pointer.and_then(|pointer| self.unproject(pointer, rect, 0.0));
             let old_distance = self.perspective_camera_distance;
             let new_distance = (old_distance / Real::from(factor)).clamp(
                 MIN_PERSPECTIVE_CAMERA_DISTANCE,
@@ -702,17 +701,16 @@ impl Viewport {
             if new_distance == old_distance {
                 return;
             }
-            self.perspective_camera_distance = new_distance;
-            if let (Some(pointer), Some(anchor)) = (pointer, anchor)
-                && let Some(projected) = self.project(anchor, rect)
-            {
-                let pan = self.pan + (pointer - projected);
-                if !pan.is_finite() {
-                    self.perspective_camera_distance = old_distance;
+            // At the target plane, screen offsets scale by old/new distance.
+            // This needs no world-plane intersection or large model subtraction.
+            if let Some(pointer) = pointer {
+                let Some(pan) = zoom_pan(self.pan, pointer, rect, old_distance / new_distance)
+                else {
                     return;
-                }
+                };
                 self.pan = pan;
             }
+            self.perspective_camera_distance = new_distance;
             return;
         }
         let old_scale = self.pixels_per_unit;
@@ -721,13 +719,14 @@ impl Viewport {
             return;
         }
         if let Some(pointer) = pointer {
-            let old_origin = self.world_origin(rect);
-            let ratio = new_scale / old_scale;
-            let new_origin = pointer - (pointer - old_origin) * ratio;
-            let pan = new_origin - rect.center();
-            if !pan.is_finite() {
+            let Some(pan) = zoom_pan(
+                self.pan,
+                pointer,
+                rect,
+                Real::from(new_scale) / Real::from(old_scale),
+            ) else {
                 return;
-            }
+            };
             self.pan = pan;
         }
         self.pixels_per_unit = new_scale;
@@ -2027,6 +2026,21 @@ impl Viewport {
     }
 }
 
+// Compute in f64 before converting the final pan: f32 screen deltas and
+// scale ratios can overflow even when their final combination is representable.
+fn zoom_pan(pan: Vec2, pointer: Pos2, rect: Rect, ratio: Real) -> Option<Vec2> {
+    let center = rect.center();
+    let component = |pan: f32, pointer: f32, center: f32| {
+        let origin = Real::from(center) + Real::from(pan);
+        (Real::from(pointer) - (Real::from(pointer) - origin) * ratio - Real::from(center)) as f32
+    };
+    let result = Vec2::new(
+        component(pan.x, pointer.x, center.x),
+        component(pan.y, pointer.y, center.y),
+    );
+    result.is_finite().then_some(result)
+}
+
 fn circular_arc_samples(arc: CircularArc3) -> usize {
     ((arc.sweep_radians() / std::f64::consts::TAU * CIRCLE_SAMPLES as Real).ceil() as usize).max(2)
 }
@@ -3133,6 +3147,61 @@ mod tests {
         viewport.zoom_by(2.0, Some(screen), rect);
         let after_zoom = viewport.project(model, rect).unwrap();
         assert!((after_zoom - screen).length() <= f32::EPSILON);
+    }
+
+    #[test]
+    fn zoom_pan_handles_large_intermediates_and_rejects_unrepresentable_results() {
+        let rect = Rect::from_center_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        assert_eq!(
+            zoom_pan(
+                Vec2::splat(f32::MAX),
+                Pos2::new(-f32::MAX, -f32::MAX),
+                rect,
+                0.5
+            ),
+            Some(Vec2::ZERO)
+        );
+        assert_eq!(zoom_pan(Vec2::splat(f32::MAX), Pos2::ZERO, rect, 2.0), None);
+        let mut viewport = Viewport {
+            pixels_per_unit: f32::MIN_POSITIVE,
+            ..Default::default()
+        };
+        viewport.zoom_by(f32::MAX, Some(rect.center()), rect);
+        assert!(viewport.pixels_per_unit > f32::MIN_POSITIVE);
+        assert_eq!(viewport.pan, Vec2::ZERO);
+        // A ratio exceeding f32's range still pins the center exactly.
+        assert_eq!(
+            zoom_pan(Vec2::ZERO, rect.center(), rect, 1e41),
+            Some(Vec2::ZERO)
+        );
+    }
+
+    #[test]
+    fn perspective_zoom_pins_the_camera_target_plane_after_retargeting() {
+        let rect = Rect::from_min_size(Pos2::new(10.0, 20.0), Vec2::new(800.0, 600.0));
+        for pitch in [0.0, 0.5, -0.5] {
+            for factor in [0.5, 2.0] {
+                let mut view = Viewport::new(ViewKind::Perspective);
+                view.target = NaVector3::new(100.0, 200.0, 300.0);
+                view.orbit_pitch = pitch;
+                view.pan = Vec2::new(17.0, -23.0);
+                let (right, up, _) = view.perspective_basis();
+                let world = view.target + right * 2.0 + up * 3.0;
+                let model = point(world.x, world.y, world.z);
+                let pointer = view.project(model, rect).unwrap();
+                let target = view.target;
+                let plane = view.construction_plane();
+                let lens = view.perspective_focal_length_pixels(rect);
+                view.zoom_by(factor, Some(pointer), rect);
+                assert!(
+                    (view.project(model, rect).unwrap() - pointer).length() < 0.001,
+                    "pitch {pitch}, factor {factor}"
+                );
+                assert_eq!(view.target, target);
+                assert_eq!(view.construction_plane(), plane);
+                assert_eq!(view.perspective_focal_length_pixels(rect), lens);
+            }
+        }
     }
 
     #[test]

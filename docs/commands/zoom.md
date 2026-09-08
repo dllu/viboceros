@@ -25,6 +25,15 @@ unfinished modeling prompts intact. Held-key repeats and matching key releases
 are consumed without repeating the action; extra modifiers do not trigger either
 shortcut. Tests exercise both Ctrl and macOS Command modifier representations.
 
+Perspective wheel zoom pins the point under the pointer on the camera-target
+plane (through the target, perpendicular to the viewing direction), rather than
+intersecting world Z=0. This remains defined after retargeting and when the world
+XY plane is edge-on. The lens, target, and construction plane are unchanged.
+Parallel and perspective zoom share an f64 screen-space pan calculation and
+reject an unrepresentable final pan before committing scale or camera distance.
+Tests cover translated targets, positive/negative/zero camera pitch, zoom in/out,
+and large intermediate screen-coordinate differences.
+
 The camera target moves to the center of the combined visible-object bounds,
 pan resets, and the existing view orientation is retained. Parallel views change
 scale; Perspective changes camera distance without changing its lens. All eight
