@@ -3,6 +3,10 @@
 use super::*;
 use nalgebra::Matrix4 as NaMatrix4;
 
+fn real_to_gpu(value: Real) -> Option<f32> {
+    (value.is_finite() && value.abs() <= Real::from(f32::MAX)).then_some(value as f32)
+}
+
 impl Viewport {
     /// Preserve local features before the f64-to-f32 GPU boundary. Parallel
     /// views also apply their uniform model-to-pixel scale here so GPU matrix

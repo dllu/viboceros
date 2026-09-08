@@ -1,6 +1,85 @@
 //! Per-frame GPU scene staging, object display dispatch, and depth encoding.
 
 use super::*;
+use std::collections::HashMap;
+use viboceros_document::ColorRgb;
+
+const SMOOTH_SHADING_COSINE: Real = std::f64::consts::FRAC_1_SQRT_2;
+
+fn vector_to_gpu(vector: NaVector3<Real>) -> [f32; 3] {
+    [vector.x as f32, vector.y as f32, vector.z as f32]
+}
+
+fn color_to_gpu(color: Color32) -> [f32; 4] {
+    color
+        .to_srgba_unmultiplied()
+        .map(|component| f32::from(component) / 255.0)
+}
+
+fn color_with_alpha(color: Color32, alpha: u8) -> Color32 {
+    let [red, green, blue, _] = color.to_srgba_unmultiplied();
+    Color32::from_rgba_unmultiplied(red, green, blue, alpha)
+}
+
+fn resolved_display_color(attributes: &ObjectAttributes, layer_color: ColorRgb) -> Color32 {
+    let color = attributes.display_color(layer_color);
+    Color32::from_rgb(color.red, color.green, color.blue)
+}
+
+fn smooth_corner_normals(mesh: &TriangleMesh) -> Vec<[NaVector3<Real>; 3]> {
+    let fallback = NaVector3::new(0.0, 0.0, 1.0);
+    let face_normals = (0..mesh.triangles().len())
+        .map(|index| {
+            mesh.face_normal(index)
+                .map(|normal| NaVector3::new(normal.x(), normal.y(), normal.z()))
+                .unwrap_or(fallback)
+        })
+        .collect::<Vec<_>>();
+
+    // Surface tessellation intentionally duplicates vertices at knot-span
+    // boundaries. Group exact coincident samples so continuous spans shade as
+    // one surface, then use the crease angle below to keep analytic caps and
+    // other genuinely sharp joins hard.
+    let mut incident_faces: HashMap<[u64; 3], Vec<usize>> = HashMap::new();
+    for (face_index, triangle) in mesh.triangles().iter().enumerate() {
+        for &vertex_index in triangle {
+            let point = mesh.vertices()[vertex_index as usize];
+            incident_faces
+                .entry(point_position_key(point))
+                .or_default()
+                .push(face_index);
+        }
+    }
+
+    mesh.triangles()
+        .iter()
+        .enumerate()
+        .map(|(face_index, triangle)| {
+            let reference = face_normals[face_index];
+            triangle.map(|vertex_index| {
+                let point = mesh.vertices()[vertex_index as usize];
+                let mut sum = NaVector3::zeros();
+                for &incident in &incident_faces[&point_position_key(point)] {
+                    let candidate = face_normals[incident];
+                    if reference.dot(&candidate) >= SMOOTH_SHADING_COSINE {
+                        sum += candidate;
+                    }
+                }
+                sum.try_normalize(Real::EPSILON).unwrap_or(reference)
+            })
+        })
+        .collect()
+}
+
+fn point_position_key(point: Point3) -> [u64; 3] {
+    [point.x(), point.y(), point.z()].map(|value| {
+        if value == 0.0 {
+            0.0_f64.to_bits()
+        } else {
+            value.to_bits()
+        }
+    })
+}
 
 #[derive(Clone, Copy, Debug)]
 struct SurfaceDisplayStyle {
@@ -501,6 +580,58 @@ impl Viewport {
                     },
                 ],
             });
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn point(x: Real, y: Real, z: Real) -> Point3 {
+        Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn smooth_shading_keeps_ninety_degree_mesh_edges_hard() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(0.0, 0.0, 1.0),
+            ],
+            vec![[0, 1, 2], [0, 1, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let normals = smooth_corner_normals(&mesh);
+        assert!(Tolerance::DEFAULT.approx_eq(normals[0][0].z, 1.0));
+        assert!(Tolerance::DEFAULT.approx_eq(normals[0][0].y, 0.0));
+        assert!(Tolerance::DEFAULT.approx_eq(normals[1][0].y, -1.0));
+        assert!(Tolerance::DEFAULT.approx_eq(normals[1][0].z, 0.0));
+    }
+
+    #[test]
+    fn object_color_overrides_layer_color_only_for_object_source() {
+        let object = ColorRgb::new(12, 34, 56);
+        let layer = ColorRgb::new(78, 90, 123);
+        let document = Document::default();
+        let base =
+            ObjectAttributes::on_layer(document.current_layer_id()).with_object_color(object);
+        assert_eq!(
+            resolved_display_color(&base, layer),
+            Color32::from_rgb(12, 34, 56)
+        );
+        for source in [
+            viboceros_document::ObjectColorSource::Layer,
+            viboceros_document::ObjectColorSource::Material,
+            viboceros_document::ObjectColorSource::Parent,
+        ] {
+            assert_eq!(
+                resolved_display_color(&base.clone().with_color_source(source), layer),
+                Color32::from_rgb(78, 90, 123)
+            );
         }
     }
 }

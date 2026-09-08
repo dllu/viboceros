@@ -142,8 +142,11 @@ zero-weight vertices do not influence the scale. Tests check exact vertex hits,
 finite depth bounds, and an analytic harmonic mean across binary scales.
 The `viewport/scene` module owns visible-object display dispatch, sampled curve
 and tessellated surface submission, per-primitive f64 depth staging, transparent
-triangle sorting, and final GPU buffer assembly. The interaction module invokes
-this builder without owning its internal staging types. This extraction changes
+triangle sorting, and final GPU buffer assembly. Crease-aware corner normals,
+coincident-vertex grouping, display-color resolution, GPU normal/color conversion,
+and their unit tests also live with scene staging. Checked scalar coordinate
+conversion lives with the camera. The interaction module invokes the scene
+builder without owning its internal staging types. This extraction changes
 module ownership, not rendering algorithms; application and offscreen pixel tests
 cover the same production path.
 The app's `viewport/camera` module owns CPU projection/unprojection, drafting

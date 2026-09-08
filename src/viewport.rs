@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 pub use viboceros_command::interface::DisplayMode;
 
 use eframe::egui::{
@@ -7,7 +6,7 @@ use eframe::egui::{
 use nalgebra::Vector3 as NaVector3;
 use viboceros_command::ObjectSelectionFilter;
 use viboceros_command::construction_plane::{ConstructionPlaneState, WorldPlane};
-use viboceros_document::{ColorRgb, Document, Geometry, ObjectAttributes, ObjectId, SelectionMode};
+use viboceros_document::{Document, Geometry, ObjectAttributes, ObjectId, SelectionMode};
 use viboceros_geometry::{
     Brep, Circle3, CircularArc3, CurveSegment3, Ellipse3, GeometryError, NurbsCurve, NurbsSurface,
     Point3, Polyline3, Real, Tolerance, TriangleMesh, Vector3,
@@ -90,7 +89,6 @@ const DEFAULT_PERSPECTIVE_CAMERA_DISTANCE: Real = 50.0;
 const MIN_PERSPECTIVE_CAMERA_DISTANCE: Real = 0.01;
 const MAX_PERSPECTIVE_CAMERA_DISTANCE: Real = 1.0e9;
 const PERSPECTIVE_VERTICAL_FOV_RADIANS: Real = 35.0 * std::f64::consts::PI / 180.0;
-const SMOOTH_SHADING_COSINE: Real = std::f64::consts::FRAC_1_SQRT_2;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ViewKind {
@@ -398,85 +396,6 @@ impl Viewport {
 
 fn circular_arc_samples(arc: CircularArc3) -> usize {
     ((arc.sweep_radians() / std::f64::consts::TAU * CIRCLE_SAMPLES as Real).ceil() as usize).max(2)
-}
-
-fn vector_to_gpu(vector: NaVector3<Real>) -> [f32; 3] {
-    [vector.x as f32, vector.y as f32, vector.z as f32]
-}
-
-fn real_to_gpu(value: Real) -> Option<f32> {
-    (value.is_finite() && value.abs() <= Real::from(f32::MAX)).then_some(value as f32)
-}
-
-fn color_to_gpu(color: Color32) -> [f32; 4] {
-    color
-        .to_srgba_unmultiplied()
-        .map(|component| f32::from(component) / 255.0)
-}
-
-fn color_with_alpha(color: Color32, alpha: u8) -> Color32 {
-    let [red, green, blue, _] = color.to_srgba_unmultiplied();
-    Color32::from_rgba_unmultiplied(red, green, blue, alpha)
-}
-
-fn resolved_display_color(attributes: &ObjectAttributes, layer_color: ColorRgb) -> Color32 {
-    let color = attributes.display_color(layer_color);
-    Color32::from_rgb(color.red, color.green, color.blue)
-}
-
-fn smooth_corner_normals(mesh: &TriangleMesh) -> Vec<[NaVector3<Real>; 3]> {
-    let fallback = NaVector3::new(0.0, 0.0, 1.0);
-    let face_normals = (0..mesh.triangles().len())
-        .map(|index| {
-            mesh.face_normal(index)
-                .map(|normal| NaVector3::new(normal.x(), normal.y(), normal.z()))
-                .unwrap_or(fallback)
-        })
-        .collect::<Vec<_>>();
-
-    // Surface tessellation intentionally duplicates vertices at knot-span
-    // boundaries. Group exact coincident samples so continuous spans shade as
-    // one surface, then use the crease angle below to keep analytic caps and
-    // other genuinely sharp joins hard.
-    let mut incident_faces: HashMap<[u64; 3], Vec<usize>> = HashMap::new();
-    for (face_index, triangle) in mesh.triangles().iter().enumerate() {
-        for &vertex_index in triangle {
-            let point = mesh.vertices()[vertex_index as usize];
-            incident_faces
-                .entry(point_position_key(point))
-                .or_default()
-                .push(face_index);
-        }
-    }
-
-    mesh.triangles()
-        .iter()
-        .enumerate()
-        .map(|(face_index, triangle)| {
-            let reference = face_normals[face_index];
-            triangle.map(|vertex_index| {
-                let point = mesh.vertices()[vertex_index as usize];
-                let mut sum = NaVector3::zeros();
-                for &incident in &incident_faces[&point_position_key(point)] {
-                    let candidate = face_normals[incident];
-                    if reference.dot(&candidate) >= SMOOTH_SHADING_COSINE {
-                        sum += candidate;
-                    }
-                }
-                sum.try_normalize(Real::EPSILON).unwrap_or(reference)
-            })
-        })
-        .collect()
-}
-
-fn point_position_key(point: Point3) -> [u64; 3] {
-    [point.x(), point.y(), point.z()].map(|value| {
-        if value == 0.0 {
-            0.0_f64.to_bits()
-        } else {
-            value.to_bits()
-        }
-    })
 }
 
 #[cfg(test)]
@@ -1355,49 +1274,6 @@ mod tests {
             }),
             SelectionMode::Remove
         );
-    }
-
-    #[test]
-    fn smooth_shading_keeps_ninety_degree_mesh_edges_hard() {
-        let mesh = TriangleMesh::try_new(
-            vec![
-                point(0.0, 0.0, 0.0),
-                point(1.0, 0.0, 0.0),
-                point(0.0, 1.0, 0.0),
-                point(0.0, 0.0, 1.0),
-            ],
-            vec![[0, 1, 2], [0, 1, 3]],
-            Tolerance::DEFAULT,
-        )
-        .unwrap();
-        let normals = smooth_corner_normals(&mesh);
-        assert!(Tolerance::DEFAULT.approx_eq(normals[0][0].z, 1.0));
-        assert!(Tolerance::DEFAULT.approx_eq(normals[0][0].y, 0.0));
-        assert!(Tolerance::DEFAULT.approx_eq(normals[1][0].y, -1.0));
-        assert!(Tolerance::DEFAULT.approx_eq(normals[1][0].z, 0.0));
-    }
-
-    #[test]
-    fn object_color_overrides_layer_color_only_for_object_source() {
-        let object = ColorRgb::new(12, 34, 56);
-        let layer = ColorRgb::new(78, 90, 123);
-        let document = Document::default();
-        let base =
-            ObjectAttributes::on_layer(document.current_layer_id()).with_object_color(object);
-        assert_eq!(
-            resolved_display_color(&base, layer),
-            Color32::from_rgb(12, 34, 56)
-        );
-        for source in [
-            viboceros_document::ObjectColorSource::Layer,
-            viboceros_document::ObjectColorSource::Material,
-            viboceros_document::ObjectColorSource::Parent,
-        ] {
-            assert_eq!(
-                resolved_display_color(&base.clone().with_color_source(source), layer),
-                Color32::from_rgb(78, 90, 123)
-            );
-        }
     }
 
     #[test]
