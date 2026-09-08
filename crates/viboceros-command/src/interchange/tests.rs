@@ -4,6 +4,69 @@ use viboceros_document::SelectionMode;
 use viboceros_geometry::Point3;
 
 #[test]
+fn file_commands_preserve_repeated_spaces_in_quoted_and_unquoted_paths() {
+    let directory = tempfile::tempdir().unwrap();
+    let registry = CommandRegistry::with_builtins();
+    let mut source = Document::default();
+    source.add_geometry(triangle(0.0)).unwrap();
+    let before = format!("{source:?}");
+    for (export, import, extension) in [
+        ("ExportStl Ascii", "ImportStl", "stl"),
+        ("ExportStl Binary", "ImportStl", "stl"),
+        ("ExportStep", "ImportStep", "step"),
+        ("Export3dm", "Import3dm", "3dm"),
+    ] {
+        for quoted in [false, true] {
+            let path = directory
+                .path()
+                .join(format!("two  spaces {quoted}.{extension}"));
+            let argument = if quoted {
+                format!("\"{}\"", path.display())
+            } else {
+                path.display().to_string()
+            };
+            registry
+                .execute(&mut source, &format!("{export} {argument}"))
+                .unwrap();
+            assert!(path.is_file(), "export changed the filename");
+            assert_eq!(format!("{source:?}"), before);
+            let mut target = Document::default();
+            registry
+                .execute(&mut target, &format!("{import} {argument}"))
+                .unwrap();
+            assert_eq!(target.objects().len(), 1);
+            let bounds = target.objects().next().unwrap().geometry().bounds();
+            assert_eq!(bounds.max(), Point3::try_new(0.5, 0.5, 0.0).unwrap());
+        }
+    }
+}
+
+#[test]
+fn malformed_filename_quotes_fail_before_document_history_changes() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    document.add_geometry(triangle(0.0)).unwrap();
+    document.undo().unwrap();
+    let before = format!("{document:?}");
+    for command in [
+        "ImportStl",
+        "ExportStl",
+        "ImportStep",
+        "ExportStep",
+        "Import3dm",
+        "Export3dm",
+    ] {
+        for argument in ["\"unfinished", "\"\"", "\"file\" trailing"] {
+            assert!(matches!(
+                registry.execute(&mut document, &format!("{command} {argument}")),
+                Err(CommandError::Usage(_))
+            ));
+            assert_eq!(format!("{document:?}"), before);
+        }
+    }
+}
+
+#[test]
 fn file_import_name_collisions_preserve_assignments_and_replay_exactly() {
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("named parts.3dm");

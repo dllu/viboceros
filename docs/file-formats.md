@@ -2,6 +2,12 @@
 
 [Project overview](../README.md) · [Command reference](commands/README.md)
 
+File commands preserve internal filename whitespace. Use double quotes around
+a filename to preserve leading/trailing whitespace or make the path explicit,
+for example `ExportStl Binary "parts/two  spaces.stl"`. Backslashes are literal,
+not escape sequences. An unterminated quote or text after the closing quote is
+an error before document edits; quotes are not a general modelling-command syntax.
+
 Path-based STL, STEP, and 3DM exports write to a temporary file beside the
 destination, flush/synchronize the completed contents, then replace the destination.
 Validation, writing, or commit failures leave the existing destination intact

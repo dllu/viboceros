@@ -130,6 +130,12 @@ pub const MAX_CURVE_COMMAND_DEGREE: usize = 11;
 pub trait Command: Send + Sync {
     fn name(&self) -> &'static str;
 
+    /// Parses the untouched argument tail before a document transaction starts.
+    /// Commands with path arguments can preserve internal whitespace.
+    fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
+        Ok(input.split_whitespace().collect())
+    }
+
     fn object_selection_prompt(
         &self,
         _arguments: &[&str],
@@ -839,8 +845,11 @@ impl CommandRegistry {
         context: CommandContext,
         postselected: bool,
     ) -> Result<String, CommandError> {
-        let mut tokens = input.split_whitespace();
-        let name = tokens.next().ok_or(CommandError::EmptyInput)?;
+        let mut tokens = input.trim_start().splitn(2, char::is_whitespace);
+        let name = tokens
+            .next()
+            .filter(|name| !name.is_empty())
+            .ok_or(CommandError::EmptyInput)?;
         let name = normalize_command_name(name);
 
         if name == "help" || name == "?" {
@@ -852,8 +861,8 @@ impl CommandRegistry {
             .get(&name)
             .copied()
             .ok_or_else(|| CommandError::UnknownCommand(name.clone()))?;
-        let arguments: Vec<_> = tokens.collect();
         let command = &self.commands[index];
+        let arguments = command.parse_arguments(tokens.next().unwrap_or(""))?;
         let run = |document: &mut Document| {
             if postselected {
                 command.run_postselected(document, &arguments, context)

@@ -1,6 +1,7 @@
 //! File import/export commands and document-to-format adapters.
 use super::{Command, CommandError};
 mod names;
+mod paths;
 use names::ImportNames;
 #[cfg(test)]
 mod tests;
@@ -17,6 +18,10 @@ pub(super) const SURFACE_EXPORT_SAMPLES_PER_SPAN: usize = 16;
 pub(super) struct ImportStlCommand;
 
 impl Command for ImportStlCommand {
+    fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
+        paths::parse(input, false)
+    }
+
     fn name(&self) -> &'static str {
         "ImportStl"
     }
@@ -38,6 +43,10 @@ impl Command for ImportStlCommand {
 pub(super) struct ExportStlCommand;
 
 impl Command for ExportStlCommand {
+    fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
+        paths::parse(input, true)
+    }
+
     fn name(&self) -> &'static str {
         "ExportStl"
     }
@@ -75,6 +84,10 @@ pub(super) struct ImportThreeDmCommand;
 pub(super) struct ImportStepCommand;
 
 impl Command for ImportStepCommand {
+    fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
+        paths::parse(input, false)
+    }
+
     fn name(&self) -> &'static str {
         "ImportStep"
     }
@@ -114,6 +127,10 @@ impl Command for ImportStepCommand {
 pub(super) struct ExportStepCommand;
 
 impl Command for ExportStepCommand {
+    fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
+        paths::parse(input, false)
+    }
+
     fn name(&self) -> &'static str {
         "ExportStep"
     }
@@ -146,6 +163,10 @@ impl Command for ExportStepCommand {
 }
 
 impl Command for ImportThreeDmCommand {
+    fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
+        paths::parse(input, false)
+    }
+
     fn name(&self) -> &'static str {
         "Import3dm"
     }
@@ -231,6 +252,10 @@ impl Command for ImportThreeDmCommand {
 pub(super) struct ExportThreeDmCommand;
 
 impl Command for ExportThreeDmCommand {
+    fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
+        paths::parse(input, false)
+    }
+
     fn name(&self) -> &'static str {
         "Export3dm"
     }
