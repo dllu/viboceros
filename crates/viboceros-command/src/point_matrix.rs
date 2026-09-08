@@ -5,6 +5,82 @@ use super::*;
 const USAGE: &str = "PointGrid first-corner opposite-corner [height] [XCount=n YCount=n ZCount=n]";
 const MAX_POINTS: usize = 1_000_000;
 
+/// Requested grid counts; omitted values retain the command's remembered settings.
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct PointGridOptions([Option<usize>; 3]);
+
+impl PointGridOptions {
+    /// Parses an options-only interactive command prefix without changing settings.
+    pub fn parse(arguments: &[&str]) -> Result<Self, CommandError> {
+        let (options, coordinates) = Self::split(arguments)?;
+        if !coordinates.is_empty() {
+            return Err(CommandError::Usage(USAGE));
+        }
+        // Even the smallest possible unspecified counts must fit the budget.
+        options.resolve([2, 2, 1])?;
+        Ok(options)
+    }
+
+    fn split<'a>(arguments: &[&'a str]) -> Result<(Self, Vec<&'a str>), CommandError> {
+        let mut options = Self::default();
+        let mut coordinates = Vec::new();
+        let mut cursor = 0;
+        while cursor < arguments.len() {
+            if arguments[cursor].contains('=')
+                || ["XCount", "YCount", "ZCount"]
+                    .iter()
+                    .any(|name| option_name_eq(arguments[cursor], name))
+            {
+                let (name, value, consumed) = orient_option(arguments, cursor, USAGE)?;
+                let axis = ["XCount", "YCount", "ZCount"]
+                    .iter()
+                    .position(|expected| option_name_eq(name, expected))
+                    .ok_or(CommandError::Usage(USAGE))?;
+                if options.0[axis].is_some() {
+                    return Err(CommandError::Usage(USAGE));
+                }
+                options.0[axis] = Some(
+                    value
+                        .parse::<usize>()
+                        .ok()
+                        .filter(|&n| n > 0)
+                        .ok_or(CommandError::Usage(USAGE))?,
+                );
+                cursor += consumed;
+            } else {
+                coordinates.push(arguments[cursor]);
+                cursor += 1;
+            }
+        }
+        Ok((options, coordinates))
+    }
+
+    fn resolve(self, defaults: [usize; 3]) -> Result<([usize; 3], usize), CommandError> {
+        let mut counts = std::array::from_fn(|axis| self.0[axis].unwrap_or(defaults[axis]));
+        counts[0] = counts[0].max(2);
+        counts[1] = counts[1].max(2);
+        let total = counts
+            .into_iter()
+            .try_fold(1usize, |product, count| product.checked_mul(count))
+            .filter(|&n| n <= MAX_POINTS)
+            .ok_or(CommandError::TooManyPointGridPoints {
+                maximum: MAX_POINTS,
+            })?;
+        Ok((counts, total))
+    }
+}
+
+impl std::fmt::Display for PointGridOptions {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for (name, count) in ["XCount", "YCount", "ZCount"].into_iter().zip(self.0) {
+            if let Some(count) = count {
+                write!(f, " {name}={count}")?;
+            }
+        }
+        Ok(())
+    }
+}
+
 pub(super) struct PointMatrixCommand {
     counts: remembered::Remembered<[usize; 3]>,
 }
@@ -32,45 +108,8 @@ impl Command for PointMatrixCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let mut counts = self.counts.get();
-        let mut seen = [false; 3];
-        let mut coordinates = Vec::new();
-        let mut cursor = 0;
-        while cursor < arguments.len() {
-            if arguments[cursor].contains('=')
-                || ["XCount", "YCount", "ZCount"]
-                    .iter()
-                    .any(|name| option_name_eq(arguments[cursor], name))
-            {
-                let (name, value, consumed) = orient_option(arguments, cursor, USAGE)?;
-                let axis = ["XCount", "YCount", "ZCount"]
-                    .iter()
-                    .position(|expected| option_name_eq(name, expected))
-                    .ok_or(CommandError::Usage(USAGE))?;
-                if seen[axis] {
-                    return Err(CommandError::Usage(USAGE));
-                }
-                counts[axis] = value
-                    .parse::<usize>()
-                    .ok()
-                    .filter(|&n| n > 0)
-                    .ok_or(CommandError::Usage(USAGE))?;
-                seen[axis] = true;
-                cursor += consumed;
-            } else {
-                coordinates.push(arguments[cursor]);
-                cursor += 1;
-            }
-        }
-        counts[0] = counts[0].max(2);
-        counts[1] = counts[1].max(2);
-        let total = counts
-            .into_iter()
-            .try_fold(1usize, |product, count| product.checked_mul(count))
-            .filter(|&n| n <= MAX_POINTS)
-            .ok_or(CommandError::TooManyPointGridPoints {
-                maximum: MAX_POINTS,
-            })?;
+        let (options, coordinates) = PointGridOptions::split(arguments)?;
+        let (counts, total) = options.resolve(self.counts.get())?;
         let (first, consumed) = parse_point(&coordinates)?;
         let (opposite, more) = parse_point(&coordinates[consumed..])?;
         let frame = context.construction_plane.with_origin(first);

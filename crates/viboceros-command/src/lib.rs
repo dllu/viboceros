@@ -91,6 +91,7 @@ mod edge_surface;
 mod loft;
 mod point_grid;
 mod point_matrix;
+pub use point_matrix::PointGridOptions;
 mod sweep;
 #[cfg(test)]
 use curve_domain::{CURVE_SEAM_USAGE, REPARAMETERIZE_USAGE, SUBCURVE_USAGE};

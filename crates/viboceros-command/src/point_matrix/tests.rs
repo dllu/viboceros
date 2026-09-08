@@ -1,5 +1,30 @@
 use super::*;
 
+#[test]
+fn shared_options_roundtrip_without_filling_omitted_counts() {
+    let options = PointGridOptions::parse(&["xcount", "1", "ZCount=3"]).unwrap();
+    assert_eq!(options.to_string(), " XCount=1 ZCount=3");
+    assert_eq!(
+        PointGridOptions::parse(&options.to_string().split_whitespace().collect::<Vec<_>>())
+            .unwrap(),
+        options
+    );
+    assert_eq!(options.resolve([10, 7, 1]).unwrap(), ([2, 7, 3], 42));
+    assert_eq!(PointGridOptions::parse(&[]).unwrap().to_string(), "");
+    for arguments in [
+        vec!["XCount=0"],
+        vec!["XCount=2", "XCount=3"],
+        vec!["XCount=500001"],
+        vec!["0,0,0"],
+        vec!["Other=2"],
+    ] {
+        assert!(
+            PointGridOptions::parse(&arguments).is_err(),
+            "{arguments:?}"
+        );
+    }
+}
+
 fn points(document: &Document) -> Vec<[Real; 3]> {
     let Geometry::PointCloud(cloud) = document.objects().last().unwrap().geometry() else {
         panic!("cloud expected")

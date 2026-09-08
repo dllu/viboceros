@@ -33,6 +33,7 @@ mod curve_prompt;
 mod interface;
 mod object_selection;
 mod plane_primitives;
+mod point_grid;
 mod point_input;
 mod toolbar;
 use point_input::{plane_radius_exceeds_tolerance, plane_rectangle_exceeds_tolerance};
@@ -174,6 +175,11 @@ enum InteractiveCommand {
     Box {
         base: Option<Point3>,
         opposite: Option<Point3>,
+    },
+    PointGrid {
+        base: Option<Point3>,
+        opposite: Option<Point3>,
+        options: viboceros_command::PointGridOptions,
     },
     MeshPlane {
         first: Option<Point3>,
@@ -382,6 +388,7 @@ impl InteractiveCommand {
             Self::InterpCrv { .. } => "InterpCrv",
             Self::Rectangle { .. } => "Rectangle",
             Self::Box { .. } => "Box",
+            Self::PointGrid { .. } => "PointGrid",
             Self::MeshPlane { .. } => "MeshPlane",
             Self::MeshBox { .. } => "MeshBox",
             Self::MeshCone { .. } => "MeshCone",
@@ -517,6 +524,15 @@ impl InteractiveCommand {
             Self::MeshBox {
                 opposite: Some(_), ..
             } => "MeshBox: pick the height in the viewport (Esc to cancel)",
+            Self::PointGrid { base: None, .. } => {
+                "PointGrid: pick the first base corner (Esc to cancel)"
+            }
+            Self::PointGrid { opposite: None, .. } => {
+                "PointGrid: pick the opposite base corner (Esc to cancel)"
+            }
+            Self::PointGrid { .. } => {
+                "PointGrid: pick or enter height; Enter uses base width (Esc to cancel)"
+            }
             Self::Box { base: None, .. } => "Box: pick the first base corner (Esc to cancel)",
             Self::Box {
                 base: Some(_),
@@ -855,6 +871,7 @@ impl InteractiveCommand {
             | Self::InterpCrv { .. }
             | Self::Rectangle { first: None }
             | Self::Box { base: None, .. }
+            | Self::PointGrid { base: None, .. }
             | Self::MeshPlane { first: None, .. }
             | Self::MeshBox { base: None, .. }
             | Self::MeshCone { center: None, .. }
@@ -920,6 +937,7 @@ impl InteractiveCommand {
             | Self::Sphere { center: start }
             | Self::Rectangle { first: start }
             | Self::Box { base: start, .. }
+            | Self::PointGrid { base: start, .. }
             | Self::MeshPlane { first: start, .. }
             | Self::MeshBox { base: start, .. }
             | Self::MeshCone { center: start, .. }
@@ -1099,6 +1117,9 @@ impl VibocerosApp {
         if self.try_continue_object_prompt(&input) {
             return;
         }
+        if self.try_continue_point_grid_height(&input) {
+            return;
+        }
         if input.is_empty() {
             if self
                 .active_command
@@ -1176,7 +1197,16 @@ impl VibocerosApp {
         };
         let arguments = tokens.collect::<Vec<_>>();
         let normalized = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
-        let command = if normalized == "meshellipsoid" {
+        let command = if normalized == "pointgrid" {
+            let Ok(options) = viboceros_command::PointGridOptions::parse(&arguments) else {
+                return false;
+            };
+            InteractiveCommand::PointGrid {
+                base: None,
+                opposite: None,
+                options,
+            }
+        } else if normalized == "meshellipsoid" {
             let mut vertical_count = DEFAULT_MESH_ELLIPSOID_FACE_COUNT;
             let mut around_count = DEFAULT_MESH_ELLIPSOID_FACE_COUNT;
             let mut cap_style = MeshCapFaceStyle::Triangles;
@@ -3356,6 +3386,13 @@ impl VibocerosApp {
             InteractiveCommand::Box { base, opposite } => {
                 return self.apply_box_point(plane, base, opposite, point);
             }
+            InteractiveCommand::PointGrid {
+                base,
+                opposite,
+                options,
+            } => {
+                return self.apply_point_grid_point(plane, base, opposite, options, point);
+            }
             InteractiveCommand::MeshCone {
                 center: None,
                 radius_point: None,
@@ -5127,6 +5164,7 @@ mod tests {
     mod nurbs_selection;
     mod object_selection;
     mod plane_arrays;
+    mod point_grid;
     mod point_input;
     mod rhino_curve_prompt;
     mod single_span_selection;

@@ -21,14 +21,27 @@ after the coordinates. Duplicate/unknown options, zero counts, degenerate bases
 or heights, non-finite geometry, and more than one million output points are
 rejected before document mutation. Creation is one undo step.
 
+Enter `PointGrid` with optional count settings and no corners to start picking.
+Pick the first and opposite base corners, then pick a height point, type a signed
+height, or press Enter to use the base width. Height points are projected onto
+the construction-plane normal through the first corner. The first pick captures
+the grid's plane; changing viewports afterward does not rotate the grid. Another
+parallel view can make normal-direction height picking convenient. Typed point
+coordinates use the ordinary active-view coordinate input rules.
+
+Esc cancels without changing geometry or remembered counts. Invalid base picks
+or final heights keep the draft for retry; failed completion preserves undo/redo
+history. The UI and command share the count parser, and omitted counts remain
+unspecified until execution, so interactive commands honor remembered settings.
+
 Native point order is deterministic: X increases fastest, then Y decreases for
 positive height (increases for negative height), then Z advances from the base
 to the requested height. The cloud retains its exact grid locations; it is not
 a polygon mesh. Existing Explode and point-cloud picking operations apply.
 
-This implementation currently accepts typed two-corner rectangular input.
-Rhino's Diagonal, 3Point, Vertical, Center, and picked-height workflows are not
-yet implemented. Count-option prompts observed in Rhino 8.32 use `XCount`,
+This implementation currently accepts two-corner rectangular input.
+Rhino's Diagonal, 3Point, Vertical, and Center workflows are not yet implemented.
+Count-option prompts observed in Rhino 8.32 use `XCount`,
 `YCount`, and `ZCount`, unlike the names in the
 [online help](https://docs.mcneel.com/rhino/8/help/en-us/commands/pointgrid.htm).
 
@@ -43,6 +56,9 @@ point traversal changes on some oriented planes, the comparison matches lattice
 stations before comparing **unrounded** coordinates; duplicate points are not
 discarded. It verifies the complete point set, not arbitrary-plane storage-order
 parity. Native tests separately check ordered output and transactional failures.
+UI tests compare picked and typed results, exercise numeric/default height,
+cross-viewport completion, cancellation, tiny valid grids, retryable failures,
+and a final count-budget rejection using remembered settings.
 The 12-case Rhino 8.32 live comparison passed with maximum coordinate difference
 `2.7e-15`. Stored [raw Rhino measurements](../../tools/rhino_oracle/observations/point_matrix_command.json)
 replay in an independent one-to-one point-set test at `1e-10`; this test does not
