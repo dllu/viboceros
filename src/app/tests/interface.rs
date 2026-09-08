@@ -14,20 +14,29 @@ fn zoom_extents_routes_to_the_active_view_without_cancelling_modeling_or_redo() 
     }
     app.active_viewport = 1;
     let context = egui::Context::default();
-    context
-        .run_ui(
-            egui::RawInput {
-                screen_rect: Some(egui::Rect::from_min_size(
-                    egui::Pos2::ZERO,
-                    egui::vec2(800.0, 600.0),
-                )),
-                ..Default::default()
-            },
-            |ui| {
-                app.viewports[1].show(ui, &app.document, ViewportInput::default(), &[], 1, true);
-            },
-        )
-        .drop_without_applying_deltas();
+    for index in 0..app.viewports.len() {
+        context
+            .run_ui(
+                egui::RawInput {
+                    screen_rect: Some(egui::Rect::from_min_size(
+                        egui::Pos2::ZERO,
+                        egui::vec2(800.0, 600.0),
+                    )),
+                    ..Default::default()
+                },
+                |ui| {
+                    app.viewports[index].show(
+                        ui,
+                        &app.document,
+                        ViewportInput::default(),
+                        &[],
+                        index,
+                        true,
+                    );
+                },
+            )
+            .drop_without_applying_deltas();
+    }
     enter(&mut app, "Line");
     enter(&mut app, "0");
     let pending = app.active_command;
@@ -60,6 +69,17 @@ fn zoom_extents_routes_to_the_active_view_without_cancelling_modeling_or_redo() 
                 .unwrap()
                 .starts_with("Zoomed to selected visible objects")
         );
+        assert_eq!(app.active_command, pending);
+        assert_eq!(app.drafting_plane, plane);
+        assert_eq!(app.document.selected_object_ids().collect::<Vec<_>>(), [id]);
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
+        assert_eq!(app.document.undo_label(), undo.as_deref());
+        assert_eq!(app.document.redo_label(), redo.as_deref());
+    }
+    for command in ["Zoom All Extents", "ZEA", "Zoom All Selected", "ZSA"] {
+        enter(&mut app, command);
+        assert!(app.command_log.back().unwrap().starts_with("Zoomed to"));
+        assert!(app.command_log.back().unwrap().ends_with("(all viewports)"));
         assert_eq!(app.active_command, pending);
         assert_eq!(app.drafting_plane, plane);
         assert_eq!(app.document.selected_object_ids().collect::<Vec<_>>(), [id]);
@@ -230,9 +250,14 @@ fn interface_actions_do_not_destroy_redo_history_or_partial_coordinate_text() {
 fn interface_names_are_discoverable_without_hiding_modeling_commands() {
     let mut app = test_app();
     for name in interface::COMMAND_NAMES {
+        let expected = match name {
+            "ZE" => vec!["ZE", "ZEA"],
+            "ZS" => vec!["ZS", "ZSA"],
+            _ => vec![name],
+        };
         assert_eq!(
             command_completions(&app.commands, &format!("'_-{name}")),
-            [name]
+            expected
         );
     }
     enter(&mut app, "Help");

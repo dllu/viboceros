@@ -22,20 +22,37 @@ impl VibocerosApp {
             Ok(message) => {
                 if matches!(
                     command,
-                    InterfaceCommand::ZoomExtents | InterfaceCommand::ZoomSelected
+                    InterfaceCommand::ZoomExtents
+                        | InterfaceCommand::ZoomSelected
+                        | InterfaceCommand::ZoomAllExtents
+                        | InterfaceCommand::ZoomAllSelected
                 ) {
-                    let selected = command == InterfaceCommand::ZoomSelected;
-                    let result = if selected {
+                    let selected = matches!(
+                        command,
+                        InterfaceCommand::ZoomSelected | InterfaceCommand::ZoomAllSelected
+                    );
+                    let all = matches!(
+                        command,
+                        InterfaceCommand::ZoomAllExtents | InterfaceCommand::ZoomAllSelected
+                    );
+                    let target = if all {
+                        "all viewports"
+                    } else {
+                        "active viewport"
+                    };
+                    let result = if all {
+                        Viewport::zoom_all(&mut self.viewports, &self.document, selected)
+                    } else if selected {
                         self.viewports[self.active_viewport].zoom_selected(&self.document)
                     } else {
                         self.viewports[self.active_viewport].zoom_extents(&self.document)
                     };
                     self.push_log(match result {
                         Ok(true) if selected => {
-                            "Zoomed to selected visible objects (active viewport)".into()
+                            format!("Zoomed to selected visible objects ({target})")
                         }
                         Ok(false) if selected => "No selected visible objects to zoom to".into(),
-                        Ok(true) => "Zoomed to visible extents (active viewport)".into(),
+                        Ok(true) => format!("Zoomed to visible extents ({target})"),
                         Ok(false) => "No visible objects to zoom to".into(),
                         Err(error) => format!("Error: {error}"),
                     });

@@ -2869,6 +2869,80 @@ mod tests {
     }
 
     #[test]
+    fn all_viewport_zoom_preflights_every_fit_before_changing_any_camera() {
+        let mut document = Document::default();
+        let first = document
+            .add_geometry(Geometry::Point(point(100.0, 200.0, 300.0)))
+            .unwrap();
+        let second = document
+            .add_geometry(Geometry::Point(point(110.0, 210.0, 310.0)))
+            .unwrap();
+        document
+            .select_objects([first, second], SelectionMode::Replace)
+            .unwrap();
+        let mut viewports = [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ]
+        .map(Viewport::new);
+        for (index, viewport) in viewports.iter_mut().enumerate() {
+            viewport.last_rect = Some(Rect::from_min_size(
+                Pos2::ZERO,
+                Vec2::new(400.0 + 100.0 * index as f32, 300.0),
+            ));
+            viewport.pan = Vec2::new(index as f32 * 10.0, 50.0);
+        }
+        assert_eq!(
+            Viewport::zoom_all(&mut viewports, &document, true),
+            Ok(true)
+        );
+        for viewport in &viewports {
+            assert_eq!(viewport.target, NaVector3::new(105.0, 205.0, 305.0));
+            assert_eq!(viewport.pan, Vec2::ZERO);
+        }
+        let camera_states = |views: &[Viewport]| {
+            views
+                .iter()
+                .map(|view| {
+                    (
+                        view.target,
+                        view.pan,
+                        view.pixels_per_unit,
+                        view.perspective_camera_distance,
+                    )
+                })
+                .collect::<Vec<_>>()
+        };
+        let fitted = camera_states(&viewports);
+        document
+            .add_geometry(Geometry::Point(point(2e9, 2e9, 2e9)))
+            .unwrap();
+        let mut parallel = Viewport::new(ViewKind::Top);
+        parallel.last_rect = viewports[0].last_rect;
+        assert_eq!(parallel.zoom_extents(&document), Ok(true));
+        // The last, perspective view exceeds its dolly limit. Earlier valid
+        // parallel plans must not have been committed when this fails.
+        assert!(Viewport::zoom_all(&mut viewports, &document, false).is_err());
+        assert_eq!(camera_states(&viewports), fitted);
+        assert_eq!(
+            Viewport::zoom_all(&mut viewports, &document, true),
+            Ok(true)
+        );
+        assert_eq!(camera_states(&viewports), fitted);
+        viewports[3].last_rect = None;
+        assert!(Viewport::zoom_all(&mut viewports, &document, true).is_err());
+        assert_eq!(camera_states(&viewports), fitted);
+        document.clear_selection();
+        assert_eq!(
+            Viewport::zoom_all(&mut viewports, &document, true),
+            Ok(false)
+        );
+        assert_eq!(camera_states(&viewports), fitted);
+    }
+
+    #[test]
     fn zoom_selected_ignores_unselected_extents_and_empty_selection_is_a_noop() {
         let mut document = Document::default();
         let first = document

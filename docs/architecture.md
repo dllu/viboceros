@@ -99,7 +99,9 @@ separate nonnegative/signed policies. Its tests live beside the implementation.
 `curve/area` dispatches enclosed curve area to analytic formulas or the existing
 exact planar-face boundary integrator; temporary topology stays outside the document.
 The app's `viewport/extents` module stages visible-bounds camera fitting for
-[`Zoom Extents`](commands/zoom.md). The model-space camera target is shared by
+[`Zoom Extents` and `Zoom Selected`](commands/zoom.md). All-view actions reuse
+one bounds query and prepare every `CameraFit` before applying any camera changes.
+The model-space camera target is shared by
 CPU/GPU projection and drafting rays; fitting does not edit construction planes
 or model history. The interface parser emits a host action rather than putting
 viewport navigation into document transactions.

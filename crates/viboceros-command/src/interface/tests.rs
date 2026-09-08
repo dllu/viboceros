@@ -2,6 +2,27 @@ use super::*;
 
 #[test]
 fn zoom_extents_is_a_validated_host_action() {
+    for (input, expected) in [
+        ("Zoom All Extents", InterfaceCommand::ZoomAllExtents),
+        ("'_Zoom _All _Selected", InterfaceCommand::ZoomAllSelected),
+        ("ZEA", InterfaceCommand::ZoomAllExtents),
+        ("zsa", InterfaceCommand::ZoomAllSelected),
+    ] {
+        assert_eq!(parse(input), Some(Ok(expected)));
+        let mut current = state();
+        let original = current.clone();
+        current.apply(expected).unwrap();
+        assert_eq!(current, original);
+    }
+    for input in [
+        "ZEA extra",
+        "ZSA extra",
+        "Zoom All",
+        "Zoom All All Extents",
+        "Zoom All Selected extra",
+    ] {
+        assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
+    }
     for input in ["Zoom Extents", "'_Zoom _Extents", "ZE", "ze"] {
         assert_eq!(parse(input), Some(Ok(InterfaceCommand::ZoomExtents)));
         let mut current = state();

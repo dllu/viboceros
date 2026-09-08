@@ -37,7 +37,8 @@ non-finite or empty zoom rectangles. Pan updates that overflow screen coordinate
 are rejected without partially changing zoom state. Regression tests cover all
 four view kinds alongside normal pointer-pinned zoom and perspective dolly
 behavior. `Zoom Extents` (or `ZE`) fits visible objects in the active viewport;
-`Zoom Selected` (or `ZS`) fits only the visible selection. See
+`Zoom Selected` (or `ZS`) fits only the visible selection. Add `All` before the
+option, or use `ZEA`/`ZSA`, to fit all four viewports together. See
 [zoom behavior and limits](commands/zoom.md).
 
 `MeshToNURB` also supports [command-first object picking](object-selection.md).

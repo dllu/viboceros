@@ -3,7 +3,46 @@
 use super::*;
 use viboceros_geometry::BoundingBox3;
 
+struct CameraFit {
+    target: NaVector3<Real>,
+    scale: f32,
+    distance: Real,
+}
+
+impl CameraFit {
+    fn apply(self, viewport: &mut Viewport) {
+        viewport.target = self.target;
+        viewport.pan = Vec2::ZERO;
+        if viewport.kind == ViewKind::Perspective {
+            viewport.perspective_camera_distance = self.distance;
+        } else {
+            viewport.pixels_per_unit = self.scale;
+        }
+    }
+}
+
 impl Viewport {
+    pub(crate) fn zoom_all(
+        viewports: &mut [Self],
+        document: &Document,
+        selected_only: bool,
+    ) -> Result<bool, &'static str> {
+        let Some(bounds) = Self::zoom_bounds(document, selected_only) else {
+            return Ok(false);
+        };
+        let fits = viewports
+            .iter()
+            .map(|viewport| {
+                let rect = viewport.last_rect.ok_or("viewport has not been laid out")?;
+                viewport.fit_bounds(bounds, rect)
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        for (viewport, fit) in viewports.iter_mut().zip(fits) {
+            fit.apply(viewport);
+        }
+        Ok(!viewports.is_empty())
+    }
+
     pub(crate) fn zoom_extents(&mut self, document: &Document) -> Result<bool, &'static str> {
         self.zoom_objects(document, false)
     }
@@ -18,7 +57,15 @@ impl Viewport {
         selected_only: bool,
     ) -> Result<bool, &'static str> {
         let rect = self.last_rect.ok_or("viewport has not been laid out")?;
-        let bounds = document
+        let Some(bounds) = Self::zoom_bounds(document, selected_only) else {
+            return Ok(false);
+        };
+        self.fit_bounds(bounds, rect)?.apply(self);
+        Ok(true)
+    }
+
+    fn zoom_bounds(document: &Document, selected_only: bool) -> Option<BoundingBox3> {
+        document
             .objects()
             .filter(|object| {
                 (!selected_only || document.is_selected(object.id()))
@@ -28,15 +75,10 @@ impl Viewport {
                         .is_some_and(|layer| layer.is_visible())
             })
             .map(|object| object.geometry().bounds())
-            .reduce(|a, b| a.union(b).expect("finite bounds"));
-        let Some(bounds) = bounds else {
-            return Ok(false);
-        };
-        self.fit_bounds(bounds, rect)?;
-        Ok(true)
+            .reduce(|a, b| a.union(b).expect("finite bounds"))
     }
 
-    fn fit_bounds(&mut self, bounds: BoundingBox3, rect: Rect) -> Result<(), &'static str> {
+    fn fit_bounds(&self, bounds: BoundingBox3, rect: Rect) -> Result<CameraFit, &'static str> {
         if !rect.is_finite()
             || !rect.is_positive()
             || !rect.width().is_finite()
@@ -136,13 +178,10 @@ impl Viewport {
                 return Err("model extents cannot be represented by this camera");
             }
         }
-        self.target = target;
-        self.pan = Vec2::ZERO;
-        if self.kind == ViewKind::Perspective {
-            self.perspective_camera_distance = distance;
-        } else {
-            self.pixels_per_unit = scale;
-        }
-        Ok(())
+        Ok(CameraFit {
+            target,
+            scale,
+            distance,
+        })
     }
 }
