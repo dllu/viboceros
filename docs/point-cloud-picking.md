@@ -31,6 +31,10 @@ Tests compare each projection with exhaustive searches at zero and large signed
 translations, including zero-radius queries and ties. Other tests check lazy
 initialization, reuse of an initialized index, cloud equality after cloning,
 and translated pixel-capture boundaries in all three parallel views.
+Lifecycle tests query clones made before and after cache initialization, retain
+source-cloud query results after transformation, and verify transformed indexes
+against transformed points. Four synchronized workers also exercise concurrent
+first use and reuse of the same published XZ/YZ node buffers.
 Drafting tests compare axis-aligned snaps with the generic projected search over
 mixed point/cloud/line scenes in all planes, including large signed translations,
 locked targets, capture radii, and ties. Viewport tests check both points and

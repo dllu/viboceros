@@ -343,6 +343,85 @@ mod tests {
     }
 
     #[test]
+    fn cloned_cloud_queries_preserve_results_and_equality() {
+        let cloud = PointCloud3::try_new(vec![point(0.0, 1.0, 2.0), point(3.0, 4.0, 5.0)]).unwrap();
+        let cold_clone = cloud.clone();
+        let query = point(3.0, 4.0, 5.0);
+        cloud
+            .nearest_projected_relative(PointCloudProjection::Xz, query, [0.0; 2], 0.0)
+            .unwrap();
+        let cloned = cloud.clone();
+        assert_eq!(cloud, cloned);
+        for projection in [
+            PointCloudProjection::Xy,
+            PointCloudProjection::Xz,
+            PointCloudProjection::Yz,
+        ] {
+            for candidate in [&cloud, &cold_clone, &cloned] {
+                assert_eq!(
+                    candidate
+                        .nearest_projected_relative(projection, query, [0.0; 2], 0.0)
+                        .unwrap(),
+                    Some((1, query, 0.0))
+                );
+            }
+        }
+        assert_eq!(cloud, cloned);
+        assert_eq!(cloud, cold_clone);
+    }
+
+    #[test]
+    fn concurrent_projection_queries_publish_and_reuse_one_index_per_plane() {
+        let cloud = PointCloud3::try_new(
+            (0..1024)
+                .map(|i| point(Real::from(i), Real::from(i * 2), Real::from(i * 3)))
+                .collect(),
+        )
+        .unwrap();
+        let barrier = std::sync::Barrier::new(4);
+        let allocations = std::thread::scope(|scope| {
+            let handles: Vec<_> = (0..4)
+                .map(|worker| {
+                    let cloud = &cloud;
+                    let barrier = &barrier;
+                    scope.spawn(move || {
+                        let projection = if worker % 2 == 0 {
+                            PointCloudProjection::Xz
+                        } else {
+                            PointCloudProjection::Yz
+                        };
+                        barrier.wait();
+                        for query in 0..128 {
+                            let index = (query * 31 + worker) % 1024;
+                            let p = cloud.points[index];
+                            assert_eq!(
+                                cloud
+                                    .nearest_projected_relative(projection, p, [0.0; 2], 0.0)
+                                    .unwrap(),
+                                Some((index, p, 0.0))
+                            );
+                        }
+                        let cache = if worker % 2 == 0 {
+                            &cloud.xz
+                        } else {
+                            &cloud.yz
+                        };
+                        cache.get().unwrap().nodes.as_ptr() as usize
+                    })
+                })
+                .collect();
+            handles
+                .into_iter()
+                .map(|handle| handle.join().unwrap())
+                .collect::<Vec<_>>()
+        });
+        assert_eq!(allocations[0], allocations[2]);
+        assert_eq!(allocations[1], allocations[3]);
+        assert_eq!(cloud.xz.get().unwrap().nodes.len(), cloud.points.len());
+        assert_eq!(cloud.yz.get().unwrap().nodes.len(), cloud.points.len());
+    }
+
+    #[test]
     #[ignore = "manual release-mode indexed-versus-scan timing"]
     fn projected_index_query_benchmark() {
         use std::{hint::black_box, time::Instant};
@@ -498,6 +577,11 @@ mod tests {
     #[test]
     fn transforms_every_point_and_rebuilds_the_spatial_index() {
         let cloud = PointCloud3::try_new(vec![point(0.0, 0.0, 0.0), point(2.0, 3.0, 4.0)]).unwrap();
+        for projection in [PointCloudProjection::Xz, PointCloudProjection::Yz] {
+            cloud
+                .nearest_projected_relative(projection, point(2.0, 3.0, 4.0), [0.0; 2], 0.0)
+                .unwrap();
+        }
         let transformed = cloud
             .transformed(AffineTransform3::from_translation(
                 Vector3::try_new(10.0, -2.0, 1.0).unwrap(),
@@ -507,6 +591,25 @@ mod tests {
             transformed.points(),
             [point(10.0, -2.0, 1.0), point(12.0, 1.0, 5.0)]
         );
+        assert!(transformed.xz.get().is_none() && transformed.yz.get().is_none());
+        for projection in [
+            PointCloudProjection::Xy,
+            PointCloudProjection::Xz,
+            PointCloudProjection::Yz,
+        ] {
+            assert_eq!(
+                transformed
+                    .nearest_projected_relative(projection, point(12.0, 1.0, 5.0), [0.0; 2], 0.0)
+                    .unwrap(),
+                Some((1, point(12.0, 1.0, 5.0), 0.0))
+            );
+            assert_eq!(
+                cloud
+                    .nearest_projected_relative(projection, point(2.0, 3.0, 4.0), [0.0; 2], 0.0)
+                    .unwrap(),
+                Some((1, point(2.0, 3.0, 4.0), 0.0))
+            );
+        }
         assert_eq!(
             transformed
                 .nearest_xy(point(12.0, 1.0, 99.0), 0.0)
