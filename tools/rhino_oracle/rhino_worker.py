@@ -3895,6 +3895,9 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
+    if operation.get("op") == "document_units":
+        from generate_document_units_reference import generate_case
+        return generate_case(operation["source"], operation["target"], operation["rescale"]), 0
     if operation["op"] == "mesh_nurbs_conversion":
         return _geometry_conversion(operation, tolerance, "MeshToNURB")
     if operation["op"] == "nurbs_conversion":

@@ -7,6 +7,15 @@ from unittest.mock import MagicMock, patch
 
 
 class DocumentUnitsReferenceTests(unittest.TestCase):
+    def test_invalid_units_and_scale_do_not_create_documents(self):
+        rhino, system = MagicMock(), MagicMock()
+        probe = self.load_probe(rhino, system)
+        for source, target, scale in [(True, 2, True), (255, 2, True),
+                                      (2, 255, False), (2, 4, 1), (2, 4, "false")]:
+            with self.subTest(source=source, target=target, scale=scale), self.assertRaises(ValueError):
+                probe.generate_case(source, target, scale)
+        rhino.RhinoDoc.CreateHeadless.assert_not_called()
+
     def load_probe(self, rhino, system):
         path = Path(__file__).with_name("generate_document_units_reference.py")
         spec = importlib.util.spec_from_file_location("unit_probe_under_test", path)

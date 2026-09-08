@@ -2,6 +2,7 @@
 
 import importlib.util
 import math
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 import unittest
@@ -9,6 +10,18 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_document_units_dispatches_to_isolated_public_api_probe(self):
+        generate = Mock(return_value={"before": {}, "after": {}})
+        helper = SimpleNamespace(generate_case=generate)
+        with patch.dict(sys.modules, {"generate_document_units_reference": helper}):
+            value, elapsed = self.worker._execute(
+                {"op": "document_units", "source": 2, "target": 4, "rescale": True},
+                1, {},
+            )
+        generate.assert_called_once_with(2, 4, True)
+        self.assertEqual(value, {"before": {}, "after": {}})
+        self.assertEqual(elapsed, 0)
+
     def test_cplane_script_whitelist_uses_observed_options_and_world_coordinates(self):
         with patch.object(self.worker, "_command_point", side_effect=lambda p: ",".join(str(x) for x in p)):
             for step, expected in [

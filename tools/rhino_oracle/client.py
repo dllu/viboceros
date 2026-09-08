@@ -171,6 +171,9 @@ class OracleClient:
             worker_request["_host"] = {"exit_rhino_when_complete": True}
             _write_json(request_path, worker_request)
             shutil.copyfile(worker_source, worker_path)
+            if any(op.get("op") == "document_units" for op in request.get("operations", [])):
+                helper = Path(__file__).with_name("generate_document_units_reference.py")
+                shutil.copyfile(helper, job_path / helper.name)
             windows_worker = posix_to_wine_path(worker_path)
             # The generated temporary path never contains spaces, so use the
             # exact no-parentheses form documented by McNeel for /runscript.

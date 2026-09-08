@@ -1,0 +1,62 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "document_units",
+      "id": "2-to-4-scale-false",
+      "source": 2,
+      "target": 4,
+      "rescale": false
+    },
+    {
+      "op": "document_units",
+      "id": "2-to-4-scale-true",
+      "source": 2,
+      "target": 4,
+      "rescale": true
+    },
+    {
+      "op": "document_units",
+      "id": "2-to-8-scale-false",
+      "source": 2,
+      "target": 8,
+      "rescale": false
+    },
+    {
+      "op": "document_units",
+      "id": "2-to-8-scale-true",
+      "source": 2,
+      "target": 8,
+      "rescale": true
+    },
+    {
+      "op": "document_units",
+      "id": "8-to-2-scale-false",
+      "source": 8,
+      "target": 2,
+      "rescale": false
+    },
+    {
+      "op": "document_units",
+      "id": "8-to-2-scale-true",
+      "source": 8,
+      "target": 2,
+      "rescale": true
+    },
+    {
+      "op": "document_units",
+      "id": "0-to-2-scale-true",
+      "source": 0,
+      "target": 2,
+      "rescale": true
+    },
+    {
+      "op": "document_units",
+      "id": "2-to-0-scale-true",
+      "source": 2,
+      "target": 0,
+      "rescale": true
+    }
+  ]
+}

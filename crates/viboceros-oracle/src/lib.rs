@@ -41,6 +41,7 @@ mod bounding_box;
 mod conversion;
 mod conversion_session;
 mod distribute;
+mod document_units;
 mod group_memberships;
 mod group_picking;
 mod object_source;
@@ -181,6 +182,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: undo_selection::Fixture,
+    },
+    DocumentUnits {
+        id: String,
+        #[serde(flatten)]
+        fixture: document_units::Fixture,
     },
     BezierConversion {
         id: String,
@@ -1542,6 +1548,7 @@ impl Operation {
             | Self::GroupMemberships { id, .. }
             | Self::GroupPicking { id, .. }
             | Self::UndoSelection { id, .. }
+            | Self::DocumentUnits { id, .. }
             | Self::BezierConversion { id, .. }
             | Self::NurbsConversion { id, .. }
             | Self::MeshNurbsConversion { id, .. }
@@ -1933,6 +1940,7 @@ fn execute(
         Operation::GroupMemberships { fixture, .. } => group_memberships::run(fixture, tolerance)?,
         Operation::GroupPicking { fixture, .. } => group_picking::run(fixture, tolerance)?,
         Operation::UndoSelection { fixture, .. } => undo_selection::run(fixture, tolerance)?,
+        Operation::DocumentUnits { fixture, .. } => document_units::run(fixture)?,
         Operation::BezierConversion { fixture, .. } => conversion::run(fixture, tolerance)?,
         Operation::NurbsConversion { fixture, .. } => {
             conversion_session::run_nurbs(fixture, tolerance)?

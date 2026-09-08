@@ -27,41 +27,49 @@ def snapshot(document, ids):
             "objects": objects}
 
 
+def generate_case(source, target, scale):
+    if type(source) is not int or type(target) is not int or source not in (0, 2, 4, 8) or target not in (0, 2, 4, 8):
+        raise ValueError("unsupported unit code")
+    if type(scale) is not bool:
+        raise ValueError("rescale must be boolean")
+    document = Rhino.RhinoDoc.CreateHeadless(None)
+    try:
+        document.ModelUnitSystem = System.Enum.ToObject(Rhino.UnitSystem, source)
+        document.ModelAbsoluteTolerance = 0.001
+        document.ModelRelativeTolerance = 0.0001
+        document.ModelAngleToleranceRadians = 0.00001
+        ids = []
+        for x, mode in [(1000.0, Rhino.DocObjects.ObjectMode.Normal),
+                        (500.0, Rhino.DocObjects.ObjectMode.Hidden),
+                        (250.0, Rhino.DocObjects.ObjectMode.Locked)]:
+            attributes = Rhino.DocObjects.ObjectAttributes()
+            try:
+                attributes.Mode = mode
+                object_id = document.Objects.AddPoint(Rhino.Geometry.Point3d(x, 2*x, 3*x), attributes)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add probe point")
+                ids.append(object_id)
+            finally:
+                attributes.Dispose()
+        document.Objects.Select(ids[0])
+        before = snapshot(document, ids)
+        document.AdjustModelUnitSystem(System.Enum.ToObject(Rhino.UnitSystem, target), scale)
+        after = snapshot(document, ids)
+        if after["units"] != target:
+            raise ValueError("unit change did not apply")
+        return {"before": before, "after": after}
+    finally:
+        document.Dispose()
+
+
 def generate():
     results = []
     for source, target, scale in [(2, 4, False), (2, 4, True),
                                   (2, 8, False), (2, 8, True),
                                   (8, 2, False), (8, 2, True),
                                   (0, 2, True), (2, 0, True)]:
-        document = Rhino.RhinoDoc.CreateHeadless(None)
-        try:
-            document.ModelUnitSystem = System.Enum.ToObject(Rhino.UnitSystem, source)
-            document.ModelAbsoluteTolerance = 0.001
-            document.ModelRelativeTolerance = 0.0001
-            document.ModelAngleToleranceRadians = 0.00001
-            ids = []
-            for x, mode in [(1000.0, Rhino.DocObjects.ObjectMode.Normal),
-                            (500.0, Rhino.DocObjects.ObjectMode.Hidden),
-                            (250.0, Rhino.DocObjects.ObjectMode.Locked)]:
-                attributes = Rhino.DocObjects.ObjectAttributes()
-                try:
-                    attributes.Mode = mode
-                    object_id = document.Objects.AddPoint(Rhino.Geometry.Point3d(x, 2*x, 3*x), attributes)
-                    if object_id == System.Guid.Empty:
-                        raise ValueError("could not add probe point")
-                    ids.append(object_id)
-                finally:
-                    attributes.Dispose()
-            document.Objects.Select(ids[0])
-            before = snapshot(document, ids)
-            document.AdjustModelUnitSystem(System.Enum.ToObject(Rhino.UnitSystem, target), scale)
-            after = snapshot(document, ids)
-            if after["units"] != target:
-                raise ValueError("unit change did not apply")
-            results.append({"id": "%d-to-%d-scale-%s" % (source, target, str(scale).lower()),
-                            "elapsed_ns": 0, "value": {"before": before, "after": after}})
-        finally:
-            document.Dispose()
+        results.append({"id": "%d-to-%d-scale-%s" % (source, target, str(scale).lower()),
+                        "elapsed_ns": 0, "value": generate_case(source, target, scale)})
     return results
 
 

@@ -35,3 +35,13 @@ in an isolated instance using headless documents. It measures
 command behavior and UI/view settings have not yet been integrated.
 Interchange behavior is documented in
 [file formats](file-formats.md).
+
+The same measurement is available through the Python oracle client's normal
+`run_viboceros`, `run_rhino`, and comparison workflow. Use
+`tools/rhino_oracle/fixtures/document_units.json`; each `document_units` operation
+takes numeric `source` and `target` codes (0 unitless, 2 millimetres, 4 metres,
+8 inches) and a boolean `rescale`. It records three fixed normal/hidden/locked
+points before and after the change, with the first selected. Initial tolerances
+are fixed at 0.001 absolute, 0.0001 relative, and 0.00001 angular, independently
+of the request's global tolerance. This is a correctness probe, not a benchmark
+(elapsed time is zero). Each Rhino operation disposes its headless document.
