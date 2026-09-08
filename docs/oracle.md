@@ -23,6 +23,19 @@ selection offset. Rhino documents [IsShort](https://mcneel.github.io/rhinocommon
 as a faster alternative to calculating length; its near-boundary algorithm
 requires a separate independent implementation audit.
 
+The [representation follow-up](short-curve-representation-measurement.json)
+adds 66 classifications: midpoint knot refinement at levels 0, 1, 2, and 4;
+degree elevation from 2 through 5; and a polynomial quadratic arch with exact
+nominal length derived from its parabola. These preserve the underlying locus
+while changing the spans or degree. One refinement changes the circle's
+near-limit selection, whereas degree elevation alone does not. A fixed
+three-point Gauss–Legendre estimate explains the coarse-circle rejection but
+fails on the arch, where it underestimates length and would accept cases that
+Rhino rejects. It is therefore not implemented as a replacement predicate.
+The records also include control counts and polygon lengths, separately from
+Rhino's integrated lengths and shortness results. This diagnostic remains an
+open compatibility investigation, not a passing native comparison suite.
+
 The versioned Python oracle API runs identical JSON geometry and document-state
 batches in a native release build of Viboceros and Rhino 8, recursively checks
 results, and reports per-operation timings.

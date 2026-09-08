@@ -1,6 +1,7 @@
 """Test the worker's host-independent orchestration with a simulated document."""
 
 import importlib.util
+import json
 import math
 import sys
 from pathlib import Path
@@ -10,6 +11,26 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_shortness_representation_records_distinguish_length_from_predicate(self):
+        path = Path(__file__).resolve().parents[2] / "docs" / "short-curve-representation-measurement.json"
+        batches = json.loads(path.read_text())["batches"]
+        self.assertEqual(len(batches), 3)
+        checked = 0
+        for batch in batches:
+            self.assertEqual(batch["response"]["engine"], "rhino")
+            results = {result["id"]: result["value"] for result in batch["response"]["results"]}
+            self.assertEqual(len(results), len(batch["request"]["operations"]))
+            for operation in batch["request"]["operations"]:
+                value = results[operation["id"]]
+                measurements = value["measurements"]
+                self.assertEqual(len(measurements), len(operation["lengths"]))
+                self.assertEqual(value["selected"], [i for i, m in enumerate(measurements) if m["is_short_with_allowance"]])
+                for nominal, measurement in zip(operation["lengths"], measurements):
+                    self.assertLess(abs(measurement["length"] - nominal), 5e-9)
+                    self.assertGreaterEqual(measurement["control_count"], 3)
+                checked += len(measurements)
+        self.assertEqual(checked, 66)
+
     def test_document_units_dispatches_to_isolated_public_api_probe(self):
         generate = Mock(return_value={"before": {}, "after": {}})
         helper = SimpleNamespace(generate_case=generate)
@@ -331,6 +352,10 @@ class RhinoWorkerTests(unittest.TestCase):
             disposed.assert_called_once_with()
 
     def test_short_curve_probe_rejects_invalid_inputs_before_document_changes(self):
+        for options in [{"refinement": -1}, {"refinement": 5}, {"refinement": True}, {"refinement": 1},
+                        {"degree": 1}, {"degree": 6}, {"degree": True}, {"degree": 3}]:
+            with self.subTest(options=options), self.assertRaises(ValueError):
+                self.worker._short_curve_selection(dict({"lengths": [1.0], "maximum_length": 1.0}, **options))
         for options in [{"curve_kind": "unknown"}, {"curve_kind": "circle _Delete"}, {"inspect": "yes"}, {"inspect": 1}]:
             with self.subTest(options=options), self.assertRaises(ValueError):
                 self.worker._short_curve_selection(dict({"lengths": [1.0], "maximum_length": 1.0}, **options))

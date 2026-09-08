@@ -1,0 +1,840 @@
+{
+  "batches": [
+    {
+      "request": {
+        "protocol_version": 1,
+        "iterations": 1,
+        "tolerance": {
+          "absolute": 0.01,
+          "relative": 1e-12,
+          "angular": 1e-10
+        },
+        "operations": [
+          {
+            "op": "short_curve_selection",
+            "id": "refinement-0",
+            "curve_kind": "nurbs_circle",
+            "refinement": 0,
+            "inspect": true,
+            "maximum_length": 1,
+            "lengths": [
+              0.999,
+              0.9999,
+              0.99999,
+              0.999999,
+              1,
+              1.000001
+            ]
+          },
+          {
+            "op": "short_curve_selection",
+            "id": "refinement-1",
+            "curve_kind": "nurbs_circle",
+            "refinement": 1,
+            "inspect": true,
+            "maximum_length": 1,
+            "lengths": [
+              0.999,
+              0.9999,
+              0.99999,
+              0.999999,
+              1,
+              1.000001
+            ]
+          },
+          {
+            "op": "short_curve_selection",
+            "id": "refinement-2",
+            "curve_kind": "nurbs_circle",
+            "refinement": 2,
+            "inspect": true,
+            "maximum_length": 1,
+            "lengths": [
+              0.999,
+              0.9999,
+              0.99999,
+              0.999999,
+              1,
+              1.000001
+            ]
+          },
+          {
+            "op": "short_curve_selection",
+            "id": "refinement-4",
+            "curve_kind": "nurbs_circle",
+            "refinement": 4,
+            "inspect": true,
+            "maximum_length": 1,
+            "lengths": [
+              0.999,
+              0.9999,
+              0.99999,
+              0.999999,
+              1,
+              1.000001
+            ]
+          }
+        ]
+      },
+      "response": {
+        "engine": "rhino",
+        "engine_version": "8.32.26160.13001",
+        "iterations": 1,
+        "protocol_version": 1,
+        "results": [
+          {
+            "elapsed_ns": 0,
+            "id": "refinement-0",
+            "value": {
+              "measurements": [
+                {
+                  "control_count": 9,
+                  "control_polygon_length": 1.2719663051904275,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9990000022971648
+                },
+                {
+                  "control_count": 9,
+                  "control_polygon_length": 1.273112220780689,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9999000022992346
+                },
+                {
+                  "control_count": 9,
+                  "control_polygon_length": 1.2732268123397152,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 0.9999900022994412
+                },
+                {
+                  "control_count": 9,
+                  "control_polygon_length": 1.273238271495618,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 0.9999990022994623
+                },
+                {
+                  "control_count": 9,
+                  "control_polygon_length": 1.2732395447351625,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0000000022994642
+                },
+                {
+                  "control_count": 9,
+                  "control_polygon_length": 1.2732408179747086,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.000001002299468
+                }
+              ],
+              "selected": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "elapsed_ns": 0,
+            "id": "refinement-1",
+            "value": {
+              "measurements": [
+                {
+                  "control_count": 13,
+                  "control_polygon_length": 1.053731388982941,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9989999996696902
+                },
+                {
+                  "control_count": 13,
+                  "control_polygon_length": 1.0546806965405833,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9998999996693927
+                },
+                {
+                  "control_count": 13,
+                  "control_polygon_length": 1.0547756272963473,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9999899996693629
+                },
+                {
+                  "control_count": 13,
+                  "control_polygon_length": 1.0547851203719236,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.99999899966936
+                },
+                {
+                  "control_count": 13,
+                  "control_polygon_length": 1.0547861751580987,
+                  "is_short": false,
+                  "is_short_with_allowance": true,
+                  "length": 0.9999999996693585
+                },
+                {
+                  "control_count": 13,
+                  "control_polygon_length": 1.0547872299442749,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0000009996693602
+                }
+              ],
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            }
+          },
+          {
+            "elapsed_ns": 0,
+            "id": "refinement-2",
+            "value": {
+              "measurements": [
+                {
+                  "control_count": 21,
+                  "control_polygon_length": 1.0121044820038547,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9989999999574246
+                },
+                {
+                  "control_count": 21,
+                  "control_polygon_length": 1.013016287843498,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9998999999573867
+                },
+                {
+                  "control_count": 21,
+                  "control_polygon_length": 1.0131074684274628,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9999899999573829
+                },
+                {
+                  "control_count": 21,
+                  "control_polygon_length": 1.0131165864858587,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9999989999573834
+                },
+                {
+                  "control_count": 21,
+                  "control_polygon_length": 1.0131175996034574,
+                  "is_short": false,
+                  "is_short_with_allowance": true,
+                  "length": 0.9999999999573812
+                },
+                {
+                  "control_count": 21,
+                  "control_polygon_length": 1.01311861272106,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0000009999573845
+                }
+              ],
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            }
+          },
+          {
+            "elapsed_ns": 0,
+            "id": "refinement-4",
+            "value": {
+              "measurements": [
+                {
+                  "control_count": 69,
+                  "control_polygon_length": 0.9998083711551699,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9990000000003398
+                },
+                {
+                  "control_count": 69,
+                  "control_polygon_length": 1.0007090994174717,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9999000000003403
+                },
+                {
+                  "control_count": 69,
+                  "control_polygon_length": 1.0007991722437017,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9999900000003396
+                },
+                {
+                  "control_count": 69,
+                  "control_polygon_length": 1.000808179526324,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9999990000003396
+                },
+                {
+                  "control_count": 69,
+                  "control_polygon_length": 1.0008091803355046,
+                  "is_short": false,
+                  "is_short_with_allowance": true,
+                  "length": 1.0000000000003388
+                },
+                {
+                  "control_count": 69,
+                  "control_polygon_length": 1.0008101811446868,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0000010000003419
+                }
+              ],
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "protocol_version": 1,
+        "iterations": 1,
+        "tolerance": {
+          "absolute": 0.01,
+          "relative": 1e-12,
+          "angular": 1e-10
+        },
+        "operations": [
+          {
+            "op": "short_curve_selection",
+            "id": "degree-2",
+            "curve_kind": "nurbs_circle",
+            "degree": 2,
+            "inspect": true,
+            "maximum_length": 1,
+            "lengths": [
+              0.9999,
+              0.99999,
+              0.999999,
+              1,
+              1.0000005,
+              1.000001
+            ]
+          },
+          {
+            "op": "short_curve_selection",
+            "id": "degree-3",
+            "curve_kind": "nurbs_circle",
+            "degree": 3,
+            "inspect": true,
+            "maximum_length": 1,
+            "lengths": [
+              0.9999,
+              0.99999,
+              0.999999,
+              1,
+              1.0000005,
+              1.000001
+            ]
+          },
+          {
+            "op": "short_curve_selection",
+            "id": "degree-4",
+            "curve_kind": "nurbs_circle",
+            "degree": 4,
+            "inspect": true,
+            "maximum_length": 1,
+            "lengths": [
+              0.9999,
+              0.99999,
+              0.999999,
+              1,
+              1.0000005,
+              1.000001
+            ]
+          },
+          {
+            "op": "short_curve_selection",
+            "id": "degree-5",
+            "curve_kind": "nurbs_circle",
+            "degree": 5,
+            "inspect": true,
+            "maximum_length": 1,
+            "lengths": [
+              0.9999,
+              0.99999,
+              0.999999,
+              1,
+              1.0000005,
+              1.000001
+            ]
+          }
+        ]
+      },
+      "response": {
+        "engine": "rhino",
+        "engine_version": "8.32.26160.13001",
+        "iterations": 1,
+        "protocol_version": 1,
+        "results": [
+          {
+            "elapsed_ns": 0,
+            "id": "degree-2",
+            "value": {
+              "measurements": [
+                {
+                  "control_count": 9,
+                  "control_polygon_length": 1.2731122207806893,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9999000022992346
+                },
+                {
+                  "control_count": 9,
+                  "control_polygon_length": 1.2732268123397152,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 0.9999900022994415
+                },
+                {
+                  "control_count": 9,
+                  "control_polygon_length": 1.273238271495618,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 0.9999990022994621
+                },
+                {
+                  "control_count": 9,
+                  "control_polygon_length": 1.2732395447351625,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0000000022994642
+                },
+                {
+                  "control_count": 9,
+                  "control_polygon_length": 1.2732401813549354,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0000005022994656
+                },
+                {
+                  "control_count": 9,
+                  "control_polygon_length": 1.2732408179747086,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.000001002299468
+                }
+              ],
+              "selected": [
+                0
+              ]
+            }
+          },
+          {
+            "elapsed_ns": 0,
+            "id": "degree-3",
+            "value": {
+              "measurements": [
+                {
+                  "control_count": 13,
+                  "control_polygon_length": 1.1186578087655965,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9999000022992346
+                },
+                {
+                  "control_count": 13,
+                  "control_polygon_length": 1.1187584980373126,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 0.9999900022994416
+                },
+                {
+                  "control_count": 13,
+                  "control_polygon_length": 1.118768566964485,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 0.9999990022994628
+                },
+                {
+                  "control_count": 13,
+                  "control_polygon_length": 1.1187696857341696,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.000000002299464
+                },
+                {
+                  "control_count": 13,
+                  "control_polygon_length": 1.1187702451190131,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0000005022994656
+                },
+                {
+                  "control_count": 13,
+                  "control_polygon_length": 1.1187708045038567,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0000010022994679
+                }
+              ],
+              "selected": [
+                0
+              ]
+            }
+          },
+          {
+            "elapsed_ns": 0,
+            "id": "degree-4",
+            "value": {
+              "measurements": [
+                {
+                  "control_count": 17,
+                  "control_polygon_length": 1.076834668809422,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9999000022992346
+                },
+                {
+                  "control_count": 17,
+                  "control_polygon_length": 1.0769315936220962,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 0.9999900022994415
+                },
+                {
+                  "control_count": 17,
+                  "control_polygon_length": 1.076941286103364,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 0.9999990022994627
+                },
+                {
+                  "control_count": 17,
+                  "control_polygon_length": 1.0769423630457255,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0000000022994637
+                },
+                {
+                  "control_count": 17,
+                  "control_polygon_length": 1.0769429015169079,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0000005022994656
+                },
+                {
+                  "control_count": 17,
+                  "control_polygon_length": 1.0769434399880897,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0000010022994672
+                }
+              ],
+              "selected": [
+                0
+              ]
+            }
+          },
+          {
+            "elapsed_ns": 0,
+            "id": "degree-5",
+            "value": {
+              "measurements": [
+                {
+                  "control_count": 21,
+                  "control_polygon_length": 1.0568398361682814,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9999000022992348
+                },
+                {
+                  "control_count": 21,
+                  "control_polygon_length": 1.0569349612660466,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 0.9999900022994417
+                },
+                {
+                  "control_count": 21,
+                  "control_polygon_length": 1.0569444737758236,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 0.9999990022994626
+                },
+                {
+                  "control_count": 21,
+                  "control_polygon_length": 1.0569455307213527,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.000000002299464
+                },
+                {
+                  "control_count": 21,
+                  "control_polygon_length": 1.056946059194119,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.000000502299466
+                },
+                {
+                  "control_count": 21,
+                  "control_polygon_length": 1.0569465876668838,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0000010022994665
+                }
+              ],
+              "selected": [
+                0
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "protocol_version": 1,
+        "iterations": 1,
+        "tolerance": {
+          "absolute": 0.01,
+          "relative": 1e-12,
+          "angular": 1e-10
+        },
+        "operations": [
+          {
+            "op": "short_curve_selection",
+            "id": "arch-0",
+            "curve_kind": "bezier_arch",
+            "refinement": 0,
+            "inspect": true,
+            "maximum_length": 1,
+            "lengths": [
+              0.999,
+              1,
+              1.001,
+              1.005,
+              1.01,
+              1.02
+            ]
+          },
+          {
+            "op": "short_curve_selection",
+            "id": "arch-1",
+            "curve_kind": "bezier_arch",
+            "refinement": 1,
+            "inspect": true,
+            "maximum_length": 1,
+            "lengths": [
+              0.999,
+              1,
+              1.001,
+              1.005,
+              1.01,
+              1.02
+            ]
+          },
+          {
+            "op": "short_curve_selection",
+            "id": "arch-2",
+            "curve_kind": "bezier_arch",
+            "refinement": 2,
+            "inspect": true,
+            "maximum_length": 1,
+            "lengths": [
+              0.999,
+              1,
+              1.001,
+              1.005,
+              1.01,
+              1.02
+            ]
+          }
+        ]
+      },
+      "response": {
+        "engine": "rhino",
+        "engine_version": "8.32.26160.13001",
+        "iterations": 1,
+        "protocol_version": 1,
+        "results": [
+          {
+            "elapsed_ns": 0,
+            "id": "arch-0",
+            "value": {
+              "measurements": [
+                {
+                  "control_count": 3,
+                  "control_polygon_length": 1.5104247592303808,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9990000000063963
+                },
+                {
+                  "control_count": 3,
+                  "control_polygon_length": 1.5119366959263068,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.000000000006402
+                },
+                {
+                  "control_count": 3,
+                  "control_polygon_length": 1.5134486326222334,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0010000000064083
+                },
+                {
+                  "control_count": 3,
+                  "control_polygon_length": 1.5194963794059382,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0050000000064339
+                },
+                {
+                  "control_count": 3,
+                  "control_polygon_length": 1.5270560628855703,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0100000000064664
+                },
+                {
+                  "control_count": 3,
+                  "control_polygon_length": 1.5421754298448334,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0200000000065295
+                }
+              ],
+              "selected": [
+                0
+              ]
+            }
+          },
+          {
+            "elapsed_ns": 0,
+            "id": "arch-1",
+            "value": {
+              "measurements": [
+                {
+                  "control_count": 4,
+                  "control_polygon_length": 1.0929536232689787,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9990000024399079
+                },
+                {
+                  "control_count": 4,
+                  "control_polygon_length": 1.0940476709399185,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0000000024423503
+                },
+                {
+                  "control_count": 4,
+                  "control_polygon_length": 1.0951417186108583,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0010000024447925
+                },
+                {
+                  "control_count": 4,
+                  "control_polygon_length": 1.0995179092946181,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0050000024545618
+                },
+                {
+                  "control_count": 4,
+                  "control_polygon_length": 1.104988147649318,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0100000024667737
+                },
+                {
+                  "control_count": 4,
+                  "control_polygon_length": 1.1159286243587163,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0200000024911968
+                }
+              ],
+              "selected": [
+                0
+              ]
+            }
+          },
+          {
+            "elapsed_ns": 0,
+            "id": "arch-2",
+            "value": {
+              "measurements": [
+                {
+                  "control_count": 6,
+                  "control_polygon_length": 1.024115058982433,
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9990000002685724
+                },
+                {
+                  "control_count": 6,
+                  "control_polygon_length": 1.0251401991816145,
+                  "is_short": false,
+                  "is_short_with_allowance": true,
+                  "length": 1.0000000002688412
+                },
+                {
+                  "control_count": 6,
+                  "control_polygon_length": 1.026165339380796,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0010000002691097
+                },
+                {
+                  "control_count": 6,
+                  "control_polygon_length": 1.0302659001775225,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.005000000270185
+                },
+                {
+                  "control_count": 6,
+                  "control_polygon_length": 1.035391601173431,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0100000002715301
+                },
+                {
+                  "control_count": 6,
+                  "control_polygon_length": 1.0456430031652462,
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0200000002742176
+                }
+              ],
+              "selected": [
+                0,
+                1
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

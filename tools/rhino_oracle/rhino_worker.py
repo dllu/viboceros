@@ -2679,9 +2679,15 @@ def _point_input(operation):
 def _short_curve_selection(operation):
     lengths = operation["lengths"]
     curve_kind = operation.get("curve_kind", "line")
+    refinement = operation.get("refinement", 0)
+    degree = operation.get("degree", 2)
+    if type(degree) is not int or not 2 <= degree <= 5 or (degree != 2 and curve_kind not in ("nurbs_circle", "bezier_arch")):
+        raise ValueError("invalid short-curve degree elevation")
+    if type(refinement) is not int or not 0 <= refinement <= 4 or (refinement and curve_kind not in ("nurbs_circle", "bezier_arch")):
+        raise ValueError("invalid short-curve knot refinement")
     if type(operation.get("inspect", False)) is not bool:
         raise ValueError("invalid short-curve inspection flag")
-    if curve_kind not in ("line", "circle", "nurbs_circle"):
+    if curve_kind not in ("line", "circle", "nurbs_circle", "bezier_arch"):
         raise ValueError("unsupported short-curve fixture geometry")
     if (type(operation["maximum_length"]) not in (int, float)
             or not isinstance(lengths, list)
@@ -2705,18 +2711,34 @@ def _short_curve_selection(operation):
         for index, length in enumerate(lengths):
             if curve_kind == "line":
                 curve = Rhino.Geometry.LineCurve(_point([0, index, 0]), _point([length, index, 0]))
+            elif curve_kind == "bezier_arch":
+                # Exact arc length of (t, 2t(1-t)) on [0,1].
+                scale = length / (0.5 * math.sqrt(5.0) + 0.25 * math.log(2.0 + math.sqrt(5.0)))
+                curve = Rhino.Geometry.NurbsCurve.Create(False, 2, [_point([0, index, 0]), _point([0.5 * scale, index + scale, 0]), _point([scale, index, 0])])
             else:
                 circle = Rhino.Geometry.Circle(_point([0, index, 0]), length / (2.0 * math.pi))
                 curve = circle.ToNurbsCurve() if curve_kind == "nurbs_circle" else Rhino.Geometry.ArcCurve(circle)
             try:
+                if curve_kind in ("nurbs_circle", "bezier_arch") and degree != 2 and not curve.IncreaseDegree(degree):
+                    raise ValueError("short-curve degree elevation failed")
+                for _ in range(refinement):
+                    knots = sorted(set(float(knot) for knot in curve.Knots))
+                    for first, last in zip(knots, knots[1:]):
+                        if not curve.Knots.InsertKnot(first + (last - first) * 0.5, 1):
+                            raise ValueError("short-curve knot refinement failed")
                 object_id = document.Objects.AddCurve(curve)
                 if object_id == System.Guid.Empty:
                     raise ValueError("could not add short-curve fixture")
                 ids.append(object_id)
                 if operation.get("inspect", False):
-                    measurements.append({"length": curve.GetLength(),
+                    measurement = {"length": curve.GetLength(),
                                          "is_short": curve.IsShort(maximum),
-                                         "is_short_with_allowance": curve.IsShort(maximum * 1.000001)})
+                                         "is_short_with_allowance": curve.IsShort(maximum * 1.000001)}
+                    if curve_kind in ("nurbs_circle", "bezier_arch"):
+                        controls = [cp.Location for cp in curve.Points]
+                        measurement["control_count"] = len(controls)
+                        measurement["control_polygon_length"] = sum(a.DistanceTo(b) for a, b in zip(controls, controls[1:]))
+                    measurements.append(measurement)
             finally:
                 curve.Dispose()
         if not Rhino.RhinoApp.RunScript("_SelShortCrv %.17g" % maximum, False):

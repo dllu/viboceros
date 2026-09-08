@@ -42,6 +42,8 @@ can reject a circle even when its reported length is below the limit.
 Viboceros's integrated-length comparison selects additional near-limit NURBS
 circles. This difference is not fixed by the analytic relative allowance and
 remains unresolved; the NURBS records are diagnostics, not passing references.
+The [representation audit](../short-curve-representation-measurement.json) further
+shows that knot refinement can change Rhino's answer without changing the locus.
 Mesh closure uses exact
 location-welded polygon-edge topology, so quad meshes, indexed triangle meshes,
 and STL-style triangle soup classify consistently; quad diagonals are used only
