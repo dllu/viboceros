@@ -30,7 +30,7 @@ rejected before document mutation. Identical unit settings are a no-op and
 preserve redo history. Conversions involving unitless metadata retain
 coordinates; rescaling involving unset units is rejected unless nothing changes.
 
-The [Units command](commands/units.md) exposes this API for standard units with
+The [Units command](commands/units.md) exposes this API for standard/custom units with
 an explicit scale choice. Its CLI syntax is not Rhino dialog or macro parity.
 Eight retained Rhino 8.32 public-API measurements cover millimetres/metres,
 millimetres/inches, and unitless conversions, including hidden/locked objects

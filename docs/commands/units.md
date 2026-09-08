@@ -6,6 +6,7 @@
 Units
 Units Meters Scale=Yes
 Units Inches Scale=No
+Units Custom MetersPerUnit=0.25 Scale=Yes Name=quarter metre
 Undo
 ```
 
@@ -31,8 +32,18 @@ are `mm`, `cm`, `m`, `km`, `in`, `ft`, and `yd`.
 
 Conversions involving `None` retain coordinates even with `Scale=Yes`.
 Rescaling to or from `Unset` fails unless the unit setting is unchanged.
-Imported custom units can be reported and converted to a standard unit;
-creating custom units through this command is not implemented yet.
+Custom units use `Units Custom MetersPerUnit=value Scale=Yes|No Name=name`.
+The factor is the physical length of **one custom unit in meters**, not units
+per meter, and must be finite and positive. The options appear in the order
+shown. `Name=` must be last: its value is the remaining command text, including
+internal spaces, Unicode, and `=` characters. No quoting is needed; quote
+characters are literal parts of the name. Trailing command whitespace is
+discarded. Empty/whitespace-only names and embedded NULs are rejected.
+
+Custom settings are undoable and support the same explicit scale choice as
+standard units. Reports identify them as custom and include meters per unit.
+3DM export preserves the name and factor; custom-to-standard conversions use
+that factor. Layout units and custom-unit aliases are not changed.
 
 This is Viboceros's explicit CLI workflow, not Rhino dialog or macro-syntax
 parity. Rhino's [unit settings](https://docs.mcneel.com/rhino/8/help/en-us/documentproperties/units.htm)

@@ -24,6 +24,23 @@ fn units_command_routes_through_the_application_and_preserves_query_redo() {
     assert_eq!(format!("{:?}", app.document), before);
     enter(&mut app, "Redo");
     assert_eq!(app.document.units(), &LengthUnitSystem::Meters);
+    enter(
+        &mut app,
+        "Units Custom MetersPerUnit=0.25 Scale=Yes Name=fixture  尺",
+    );
+    assert_eq!(
+        app.document.units(),
+        &LengthUnitSystem::Custom {
+            name: "fixture  尺".into(),
+            meters_per_unit: 0.25
+        }
+    );
+    assert_eq!(
+        app.document.objects().next().unwrap().geometry(),
+        &Geometry::Point(Point3::try_new(4.0, 8.0, 12.0).unwrap())
+    );
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.units(), &LengthUnitSystem::Meters);
 }
 
 #[test]
