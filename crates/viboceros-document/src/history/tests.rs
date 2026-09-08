@@ -36,7 +36,7 @@ fn mixed_edit_prefixes_roll_back_exactly_including_selection_and_redo() {
             let choice = (random >> 32) as usize;
             let objects = document.objects().map(Object::id).collect::<Vec<_>>();
             let layers = document.layers().map(Layer::id).collect::<Vec<_>>();
-            let kind = if objects.is_empty() { 0 } else { choice % 16 };
+            let kind = if objects.is_empty() { 0 } else { choice % 17 };
             covered |= 1 << kind;
             let id = objects.get((choice / 16) % objects.len().max(1)).copied();
             let layer = layers[(choice / 256) % layers.len()];
@@ -95,6 +95,16 @@ fn mixed_edit_prefixes_roll_back_exactly_including_selection_and_redo() {
                     Ok(())
                 }
                 15 => document.set_current_layer(layer),
+                16 => document
+                    .set_units(
+                        if document.units() == &LengthUnitSystem::Meters {
+                            LengthUnitSystem::Millimeters
+                        } else {
+                            LengthUnitSystem::Meters
+                        },
+                        flag,
+                    )
+                    .map(|_| ()),
                 _ => unreachable!(),
             };
             if result.is_err() {
@@ -110,8 +120,8 @@ fn mixed_edit_prefixes_roll_back_exactly_including_selection_and_redo() {
         // pending state, and both history stacks, without pointer addresses.
         assert_eq!(format!("{document:?}"), before, "rollback seed {seed}");
     }
-    assert_eq!(covered, 0xffff);
-    assert_eq!(succeeded, 0xffff);
+    assert_eq!(covered, 0x1ffff);
+    assert_eq!(succeeded, 0x1ffff);
     assert!(
         rejected > 0,
         "the matrix must include rejected partial edits"

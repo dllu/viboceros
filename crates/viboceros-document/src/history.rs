@@ -36,6 +36,11 @@ pub(super) struct History {
 
 #[derive(Clone, Debug)]
 pub(super) enum Edit {
+    UnitsChanged {
+        units: viboceros_geometry::LengthUnitSystem,
+        tolerance: viboceros_geometry::Tolerance,
+        geometries: Option<Vec<(ObjectId, super::Geometry)>>,
+    },
     ObjectInserted {
         index: usize,
         id: ObjectId,
@@ -101,6 +106,13 @@ pub(super) enum Edit {
 impl Edit {
     pub fn undo(&mut self, document: &mut Document) -> Result<(), DocumentError> {
         match self {
+            Self::UnitsChanged {
+                units,
+                tolerance,
+                geometries,
+            } => {
+                super::units::exchange_units(document, units, tolerance, geometries)?;
+            }
             Self::ObjectInserted {
                 index,
                 id,
@@ -180,6 +192,13 @@ impl Edit {
 
     pub fn redo(&mut self, document: &mut Document) -> Result<(), DocumentError> {
         match self {
+            Self::UnitsChanged {
+                units,
+                tolerance,
+                geometries,
+            } => {
+                super::units::exchange_units(document, units, tolerance, geometries)?;
+            }
             Self::ObjectInserted {
                 index,
                 id,

@@ -7,6 +7,7 @@ mod history;
 mod object_layer;
 mod object_order;
 mod selection;
+mod units;
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
@@ -1977,7 +1978,8 @@ impl Document {
             | Edit::LayerRemoved { .. }
             | Edit::LayerChanged { .. }
             | Edit::ObjectGroupsChanged { .. }
-            | Edit::CurrentLayerChanged { .. } => BTreeSet::new(),
+            | Edit::CurrentLayerChanged { .. }
+            | Edit::UnitsChanged { .. } => BTreeSet::new(),
         }
     }
 
@@ -2122,6 +2124,8 @@ pub enum DocumentError {
 
     #[error(transparent)]
     Geometry(#[from] GeometryError),
+    #[error(transparent)]
+    Units(#[from] UnitError),
 }
 
 #[cfg(test)]
