@@ -101,6 +101,12 @@ exact planar-face boundary integrator; temporary topology stays outside the docu
 The app's `viewport/picking` module owns face hit metrics, perspective-correct
 depth interpolation, and mesh/NURBS/B-rep hit evaluation. Screen capture and
 feature priority remain separate from depth ordering among overlapping face hits.
+The `viewport/scene` module owns visible-object display dispatch, sampled curve
+and tessellated surface submission, per-primitive f64 depth staging, transparent
+triangle sorting, and final GPU buffer assembly. The interaction module invokes
+this builder without owning its internal staging types. This extraction changes
+module ownership, not rendering algorithms; application and offscreen pixel tests
+cover the same production path.
 The app's `viewport/camera` module owns CPU projection/unprojection, drafting
 rays, navigation updates, view depth, and GPU camera matrices. It rebases GPU
 positions around the model-space camera target in f64 before f32 conversion;
