@@ -5,6 +5,47 @@ use super::*;
 impl VibocerosApp {
     pub(super) fn try_continue_curve_option(&mut self, input: &str) -> bool {
         let option = input.trim_start_matches(['_', '-']);
+        if let Some(InteractiveCommand::Curve { degree, closure }) = self.active_command
+            && let Some((name, value)) = option.split_once('=')
+        {
+            let value = value.trim_start_matches('_');
+            let updated = if name.eq_ignore_ascii_case("Degree") {
+                value
+                    .parse::<usize>()
+                    .ok()
+                    .map(|degree| InteractiveCommand::Curve {
+                        degree: degree.clamp(1, MAX_CURVE_COMMAND_DEGREE),
+                        closure,
+                    })
+            } else if name.eq_ignore_ascii_case("Close") {
+                let closure = if value.eq_ignore_ascii_case("Open")
+                    || value.eq_ignore_ascii_case("No")
+                {
+                    Some(ControlPointCurveClosure::Open)
+                } else if value.eq_ignore_ascii_case("Smooth") || value.eq_ignore_ascii_case("Yes")
+                {
+                    Some(ControlPointCurveClosure::Smooth)
+                } else if value.eq_ignore_ascii_case("Sharp") {
+                    Some(ControlPointCurveClosure::Sharp)
+                } else {
+                    None
+                };
+                closure.map(|closure| InteractiveCommand::Curve { degree, closure })
+            } else {
+                return false;
+            };
+            self.push_log(format!("> {input}"));
+            if let Some(command) = updated {
+                self.active_command = Some(command);
+                self.command_input.clear();
+                if let InteractiveCommand::Curve { degree, closure } = command {
+                    self.push_log(format!("Curve settings: Degree={degree} Close={closure:?}"));
+                }
+            } else {
+                self.push_log("Error: use Degree=integer or Close=Open|Smooth|Sharp".to_owned());
+            }
+            return true;
+        }
         if let Some(command @ InteractiveCommand::Curve { degree, .. }) = self.active_command
             && (option.eq_ignore_ascii_case("Close") || option.eq_ignore_ascii_case("Sharp"))
         {

@@ -34,6 +34,15 @@ degree, and previous closure setting; you can correct the draft or press Enter
 to finish using its original settings. These prompt shortcuts are not yet
 available for `InterpCrv`.
 
+While collecting `Curve` control points, `Degree=n` and
+`Close=Open|Smooth|Sharp` update the draft settings without finishing or
+discarding points. Degree uses the one-line command's integer range policy
+(clamped to 1–11); the resulting degree can be lower when there are too few
+control points. Enter finishes using the updated settings. Invalid values leave
+both the draft and typed text intact. These single-entry settings use Viboceros's
+one-line syntax, not Rhino's multi-step option prompts. Draft `Undo` still removes
+points, not setting changes.
+
 The supported forms follow [Rhino's coordinate-entry documentation](https://docs.mcneel.com/rhino/8mac/help/en-us/user_interface/accurate_modeling.htm):
 
 | Input | Interpretation |

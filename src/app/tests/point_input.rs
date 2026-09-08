@@ -6,6 +6,97 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn curve_draft_settings_preserve_points_and_use_the_updated_geometry_parameters() {
+    for (input_degree, expected_degree) in [("0", 1), ("2", 2), ("999", 11)] {
+        let mut app = test_app();
+        for input in [
+            "Point 9,9,9",
+            "Undo",
+            "Curve",
+            "0",
+            "3,0,0",
+            "4,2,1",
+            "0,4,0",
+        ] {
+            enter(&mut app, input);
+        }
+        let points = app.curve_points.clone();
+        let last_point = app.last_point;
+        let plane = app.drafting_plane;
+        let document = format!("{:?}", app.document);
+        enter(&mut app, &format!("_dEgReE=_{input_degree}"));
+        enter(&mut app, "Close=Sharp");
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Curve {
+                degree: expected_degree,
+                closure: ControlPointCurveClosure::Sharp,
+            })
+        );
+        assert!(app.command_input.is_empty());
+        assert_eq!(app.curve_points, points);
+        assert_eq!(app.last_point, last_point);
+        assert_eq!(app.drafting_plane, plane);
+        assert_eq!(format!("{:?}", app.document), document);
+        enter(&mut app, "");
+        assert!(app.active_command.is_none());
+        let mut reference = test_app();
+        enter(
+            &mut reference,
+            &format!("Curve 0,0,0 3,0,0 4,2,1 0,4,0 Degree={expected_degree} Close=Sharp"),
+        );
+        assert_eq!(
+            app.document.objects().next().unwrap().geometry(),
+            reference.document.objects().next().unwrap().geometry()
+        );
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().len(), 0);
+    }
+}
+
+#[test]
+fn invalid_curve_draft_settings_preserve_all_draft_state_and_redo() {
+    let mut app = test_app();
+    for input in [
+        "Point 9,9,9",
+        "Undo",
+        "Curve Degree=5 Close=Sharp",
+        "0",
+        "1,0,0",
+    ] {
+        enter(&mut app, input);
+    }
+    let active = app.active_command;
+    let points = app.curve_points.clone();
+    let last_point = app.last_point;
+    let plane = app.drafting_plane;
+    let document = format!("{:?}", app.document);
+    for input in [
+        "Degree=",
+        "Degree=-1",
+        "Degree=1.5",
+        "Degree=NaN",
+        "Degree=999999999999999999999999999",
+        "Degree=2 extra",
+        "Close=",
+        "Close=invalid",
+        "Close=Open extra",
+    ] {
+        enter(&mut app, input);
+        assert_eq!(app.active_command, active, "{input}");
+        assert_eq!(app.curve_points, points);
+        assert_eq!(app.last_point, last_point);
+        assert_eq!(app.drafting_plane, plane);
+        assert_eq!(app.command_input, input);
+        assert_eq!(format!("{:?}", app.document), document);
+    }
+    enter(&mut app, "Close=Open");
+    enter(&mut app, "");
+    assert!(app.active_command.is_none());
+    assert_eq!(app.document.objects().len(), 1);
+}
+
+#[test]
 fn curve_close_options_match_one_line_geometry_and_make_one_history_edit() {
     for (option, closure) in [("_Close", "Smooth"), ("sHaRp", "Sharp")] {
         for degree in [1, 2, 3, 5] {
