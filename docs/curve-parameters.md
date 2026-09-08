@@ -51,7 +51,11 @@ Line/arc/circle/polyline spans have direct arc-length inversion, including insid
 polycurves. Rational and elliptical spans use controlled numerical integration.
 
 The `curve/arc_length` module owns span lengths, repeated-query prefix tables,
-distance-to-parameter inversion, and one-sided kink samples. Standalone NURBS
+distance-to-parameter inversion, and one-sided kink samples. Its `spans` submodule
+dispatches native curve representations into spans and computes initial lengths,
+including linear source indices for composite sampling. The sibling `tests`
+module keeps analytic references, parameter-scale regressions, and cache-budget
+checks separate from production code. Standalone NURBS
 curves use a checked `[0,1]` integration copy, shared with the preparation for
 [full-curve length](nurbs-numerics.md#arc-length-integration). Points and tangents
 are evaluated in that internal frame; parameters are returned in the original
