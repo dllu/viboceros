@@ -1,6 +1,40 @@
 use super::*;
 use viboceros_geometry::LengthUnitSystem;
 
+#[test]
+fn stl_import_preserves_small_facets_and_document_settings_through_history() {
+    let path = TemporaryFile::with_extension("stl");
+    let mesh = TriangleMesh::try_new(
+        vec![
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(1e-12, 0.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 1e-12, 0.0).unwrap(),
+        ],
+        vec![[0, 1, 2]],
+        Tolerance::NUMERICAL_VALIDATION,
+    )
+    .unwrap();
+    write_stl_file(&path.0, &mesh, StlFormat::Ascii).unwrap();
+    let tolerance = Tolerance::try_new(0.001, 1e-12, 1e-10).unwrap();
+    let mut document = Document::with_units(tolerance, LengthUnitSystem::Inches).unwrap();
+    let registry = CommandRegistry::with_builtins();
+    registry
+        .execute(&mut document, &format!("ImportStl {}", path.0.display()))
+        .unwrap();
+    assert_eq!(document.objects().len(), 1);
+    assert_eq!(
+        document.objects().next().unwrap().geometry(),
+        &Geometry::Mesh(mesh)
+    );
+    let imported = document.objects().cloned().collect::<Vec<_>>();
+    registry.execute(&mut document, "Undo").unwrap();
+    assert_eq!(document.objects().len(), 0);
+    registry.execute(&mut document, "Redo").unwrap();
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), imported);
+    assert_eq!(document.units(), &LengthUnitSystem::Inches);
+    assert_eq!(document.tolerance(), tolerance);
+}
+
 struct TemporaryFile(std::path::PathBuf);
 impl TemporaryFile {
     fn new() -> Self {

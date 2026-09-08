@@ -2,6 +2,12 @@
 
 [Project overview](../README.md) · [Command reference](commands/README.md)
 
+STL imports retain the file's unitless coordinates, including finite triangles
+below the document's modelling tolerance. `read_stl` and `read_stl_file` perform
+numerical validation without a tolerance argument. Neither import changes the
+document's units or tolerances; malformed, non-finite, and degenerate facets are
+still rejected. Binary export additionally checks for loss at 32-bit precision.
+
 Both ASCII and binary STL are supported. 3DM import/export uses McNeel's
 OpenNURBS toolkit and preserves points, point-cloud locations, lines, circular arcs, NURBS
 curves, parameterized polylines, exact piecewise polycurves, untrimmed NURBS surfaces, mixed triangle/quad meshes, and editable

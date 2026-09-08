@@ -48,10 +48,9 @@ pub enum StlError {
     BinaryPrecisionLoss { triangle: usize },
 }
 
-pub fn read_stl<R: Read + Seek>(
-    mut reader: R,
-    tolerance: Tolerance,
-) -> Result<TriangleMesh, StlError> {
+/// Reads unitless facet coordinates without a model-dependent minimum feature
+/// size. Numerical degeneracy and malformed/non-finite input remain errors.
+pub fn read_stl<R: Read + Seek>(mut reader: R) -> Result<TriangleMesh, StlError> {
     let file_length = reader.seek(SeekFrom::End(0))?;
     reader.seek(SeekFrom::Start(0))?;
 
@@ -72,7 +71,7 @@ pub fn read_stl<R: Read + Seek>(
     reader.seek(SeekFrom::Start(0))?;
 
     if binary_length == Some(file_length) {
-        return read_binary_stl(BufReader::new(reader), tolerance);
+        return read_binary_stl(BufReader::new(reader));
     }
 
     let starts_with_solid = prefix[..prefix_length]
@@ -83,7 +82,7 @@ pub fn read_stl<R: Read + Seek>(
         .map(|byte| byte.to_ascii_lowercase())
         .eq(b"solid".iter().copied());
     if starts_with_solid {
-        read_ascii_stl(BufReader::new(reader), tolerance)
+        read_ascii_stl(BufReader::new(reader))
     } else if let Some(declared) = binary_length {
         Err(StlError::BinaryLengthMismatch {
             declared,
@@ -97,11 +96,8 @@ pub fn read_stl<R: Read + Seek>(
     }
 }
 
-pub fn read_stl_file(
-    path: impl AsRef<Path>,
-    tolerance: Tolerance,
-) -> Result<TriangleMesh, StlError> {
-    read_stl(File::open(path)?, tolerance)
+pub fn read_stl_file(path: impl AsRef<Path>) -> Result<TriangleMesh, StlError> {
+    read_stl(File::open(path)?)
 }
 
 pub fn write_stl<W: Write>(
@@ -136,7 +132,7 @@ pub fn write_stl_file(
     Ok(())
 }
 
-fn read_binary_stl<R: Read>(mut reader: R, tolerance: Tolerance) -> Result<TriangleMesh, StlError> {
+fn read_binary_stl<R: Read>(mut reader: R) -> Result<TriangleMesh, StlError> {
     let mut header = [0_u8; BINARY_HEADER_SIZE as usize];
     reader.read_exact(&mut header)?;
     let triangle_count = read_u32(&mut reader)? as usize;
@@ -169,10 +165,14 @@ fn read_binary_stl<R: Read>(mut reader: R, tolerance: Tolerance) -> Result<Trian
         triangles.push([base, base + 1, base + 2]);
     }
 
-    Ok(TriangleMesh::try_new(vertices, triangles, tolerance)?)
+    Ok(TriangleMesh::try_new(
+        vertices,
+        triangles,
+        Tolerance::NUMERICAL_VALIDATION,
+    )?)
 }
 
-fn read_ascii_stl<R: BufRead>(reader: R, tolerance: Tolerance) -> Result<TriangleMesh, StlError> {
+fn read_ascii_stl<R: BufRead>(reader: R) -> Result<TriangleMesh, StlError> {
     #[derive(Clone, Copy)]
     enum State {
         Start,
@@ -250,7 +250,11 @@ fn read_ascii_stl<R: BufRead>(reader: R, tolerance: Tolerance) -> Result<Triangl
     if !matches!(state, State::Finished) {
         return malformed(last_line.max(1), "file ended before 'endsolid'");
     }
-    Ok(TriangleMesh::try_new(vertices, triangles, tolerance)?)
+    Ok(TriangleMesh::try_new(
+        vertices,
+        triangles,
+        Tolerance::NUMERICAL_VALIDATION,
+    )?)
 }
 
 fn write_binary_stl<W: Write>(mut writer: W, mesh: &TriangleMesh) -> Result<(), StlError> {
@@ -442,7 +446,7 @@ mod tests {
         write_stl(&mut bytes, &original, StlFormat::Binary).unwrap();
         bytes[..5].copy_from_slice(b"solid");
         assert_eq!(bytes.len(), 84 + 50 * 2);
-        let decoded = read_stl(ShortReadCursor::new(bytes), Tolerance::DEFAULT).unwrap();
+        let decoded = read_stl(ShortReadCursor::new(bytes)).unwrap();
         assert_eq!(decoded.triangles().len(), 2);
         assert_eq!(decoded.triangle_points(0), original.triangle_points(0));
     }
@@ -453,15 +457,38 @@ mod tests {
         let mut bytes = Vec::new();
         write_stl(&mut bytes, &original, StlFormat::Ascii).unwrap();
         assert!(bytes.starts_with(b"solid viboceros\n"));
-        let decoded = read_stl(Cursor::new(bytes), Tolerance::DEFAULT).unwrap();
+        let decoded = read_stl(Cursor::new(bytes)).unwrap();
         assert_eq!(decoded.triangles().len(), 2);
         assert_eq!(decoded.triangle_points(1), original.triangle_points(1));
     }
 
     #[test]
+    fn small_valid_triangles_survive_both_stl_encodings() {
+        let original = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1e-12, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 1e-12, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::NUMERICAL_VALIDATION,
+        )
+        .unwrap();
+        for format in [StlFormat::Ascii, StlFormat::Binary] {
+            let mut bytes = Vec::new();
+            write_stl(&mut bytes, &original, format).unwrap();
+            let decoded = read_stl(Cursor::new(bytes)).unwrap();
+            assert_eq!(decoded.triangles().len(), 1);
+            for (actual, expected) in decoded.vertices().iter().zip(original.vertices()) {
+                assert!(actual.distance_to(*expected).unwrap() < 1e-19);
+            }
+        }
+    }
+
+    #[test]
     fn reads_the_ascii_pyramid_fixture() {
         let bytes = include_bytes!("../tests/fixtures/pyramid_ascii.stl");
-        let decoded = read_stl(Cursor::new(bytes), Tolerance::DEFAULT).unwrap();
+        let decoded = read_stl(Cursor::new(bytes)).unwrap();
         assert_eq!(decoded.triangles().len(), 6);
         assert_eq!(
             decoded.bounds().min(),
@@ -476,12 +503,12 @@ mod tests {
     #[test]
     fn rejects_malformed_ascii_and_binary_lengths() {
         let ascii = b"solid bad\nfacet normal 0 0 1\nouter loop\nvertex 0 0 0\nendsolid bad\n";
-        assert!(read_stl(Cursor::new(ascii), Tolerance::DEFAULT).is_err());
+        assert!(read_stl(Cursor::new(ascii)).is_err());
 
         let mut binary = vec![0_u8; 84];
         binary[80..84].copy_from_slice(&1_u32.to_le_bytes());
         assert!(matches!(
-            read_stl(Cursor::new(binary), Tolerance::DEFAULT),
+            read_stl(Cursor::new(binary)),
             Err(StlError::BinaryLengthMismatch { .. })
         ));
 
@@ -489,12 +516,29 @@ mod tests {
         write_stl(&mut non_finite_normal, &mesh(), StlFormat::Binary).unwrap();
         non_finite_normal[84..88].copy_from_slice(&f32::NAN.to_le_bytes());
         assert!(matches!(
-            read_stl(Cursor::new(non_finite_normal), Tolerance::DEFAULT),
+            read_stl(Cursor::new(non_finite_normal)),
             Err(StlError::NonFiniteBinaryValue {
                 triangle: 0,
                 field: "normal"
             })
         ));
+    }
+
+    #[test]
+    fn rejects_coincident_vertices_in_both_encodings() {
+        let ascii = b"solid bad\nfacet normal 0 0 1\nouter loop\nvertex 0 0 0\nvertex 1 0 0\nvertex 0 0 0\nendloop\nendfacet\nendsolid bad\n";
+        let mut binary = Vec::new();
+        write_stl(&mut binary, &mesh(), StlFormat::Binary).unwrap();
+        // First facet: 84-byte prefix, 12-byte normal, then three XYZ vertices.
+        binary[120..132].fill(0);
+        for bytes in [ascii.to_vec(), binary] {
+            assert!(matches!(
+                read_stl(Cursor::new(bytes)),
+                Err(StlError::Geometry(GeometryError::DegenerateTriangle {
+                    triangle: 0
+                }))
+            ));
+        }
     }
 
     #[test]

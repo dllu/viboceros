@@ -18371,7 +18371,7 @@ impl Command for ImportStlCommand {
             return Err(CommandError::Usage("ImportStl path"));
         }
         let path = arguments.join(" ");
-        let mesh = read_stl_file(&path, document.tolerance())?;
+        let mesh = read_stl_file(&path)?;
         let triangle_count = mesh.triangles().len();
         let id = document.add_geometry(Geometry::Mesh(mesh))?;
         Ok(format!(
@@ -43986,7 +43986,7 @@ mod tests {
                 &format!("ExportStl Binary {}", output.display()),
             )
             .unwrap();
-        let exported = read_stl_file(&output, document.tolerance()).unwrap();
+        let exported = read_stl_file(&output).unwrap();
         assert_eq!(exported.triangles().len(), 1);
 
         registry.execute(&mut document, "Undo").unwrap();
@@ -44041,7 +44041,7 @@ mod tests {
                 &format!("ExportStl Ascii {}", stl_path.display()),
             )
             .unwrap();
-        let stl = read_stl_file(&stl_path, Tolerance::DEFAULT).unwrap();
+        let stl = read_stl_file(&stl_path).unwrap();
         assert!((stl.area().unwrap() - 32.0).abs() < 1.0e-12);
 
         registry
