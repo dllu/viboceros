@@ -69,6 +69,46 @@ def finish(error=None):
     except Exception as failure:
         progress('worker exit failed: %s' % failure)
 
+def last_snapshot(ids):
+    records = []
+    for key in ids:
+        obj = document.Objects.FindId(key)
+        if obj is None:
+            records.append(None)
+            continue
+        point = obj.Geometry.PointAtStart
+        layer = document.Layers[obj.Attributes.LayerIndex]
+        records.append(dict(point=[float(point.X), float(point.Y), float(point.Z)],
+            selected=bool(obj.IsSelected(False)), mode=str(obj.Attributes.Mode),
+            layer_visible=layer.IsVisible, layer_locked=layer.IsLocked))
+    return records
+
+def last_sequence(operation, ids):
+    records = [last_snapshot(ids)]
+    for number, step in enumerate(operation['last_steps']):
+        kind = step['kind']
+        if kind == 'select':
+            document.Objects.UnselectAll()
+            for index in step['objects']:
+                if not document.Objects.Select(ids[index]): raise ValueError('last-selection source is not selectable')
+        elif kind == 'recall':
+            script = '_SelLast' if step.get('deselect_others') is None else '_-SelLast _DeselectOthersBeforeSelect=_%s _Enter' % ('Yes' if step['deselect_others'] else 'No')
+            Rhino.RhinoApp.RunScript(script, False)
+        elif kind == 'layer':
+            layer = Rhino.DocObjects.Layer()
+            try:
+                layer.Name = 'Last layer %s %d' % (operation['id'], number)
+                index = document.Layers.Add(layer)
+                if index < 0: raise ValueError('last-selection layer insertion failed')
+                state['layers'].append(index)
+            finally:
+                layer.Dispose()
+        else:
+            if not Rhino.RhinoApp.RunScript({'undo':'_Undo', 'redo':'_Redo', 'delete':'_Delete'}[kind], False):
+                raise ValueError('last-selection command failed: ' + kind)
+        records.append(last_snapshot(ids))
+    return records
+
 def on_idle(sender, event):
     # RunScript/redraw can pump messages and re-enter Idle during setup/Move.
     if state['busy'] or state['finished']: return
@@ -147,6 +187,12 @@ def on_idle(sender, event):
                 Rhino.RhinoApp.RunScript('_SelNone', False)
                 Rhino.RhinoApp.RunScript('_-SelPrev _DeselectOthersBeforeSelect=_Yes _Enter', False)
                 value['selected'] = [i for i,key in enumerate(ids) if document.Objects.FindId(key).IsSelected(False)]
+            if operation.get('recall_last'):
+                Rhino.RhinoApp.RunScript('_SelNone', False)
+                Rhino.RhinoApp.RunScript('_-SelLast _DeselectOthersBeforeSelect=_Yes _Enter', False)
+                value['selected'] = [i for i,key in enumerate(ids) if document.Objects.FindId(key).IsSelected(False)]
+            if operation.get('last_steps'):
+                value['last_states'] = last_sequence(operation, ids)
             state['results'].append(dict(id=operation['id'], value=value, elapsed_ns=0))
             errors = cleanup()
             if errors: raise RuntimeError('; '.join(errors))

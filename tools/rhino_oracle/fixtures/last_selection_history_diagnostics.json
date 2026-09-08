@@ -1,0 +1,884 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "group_picking",
+      "id": "last-chain-False-0-move-history",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "reverse_bridge": false,
+      "move": true,
+      "recall_last": true,
+      "last_steps": [
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "delete"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "last-chain-False-1-move-history",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "reverse_bridge": false,
+      "move": true,
+      "recall_last": true,
+      "last_steps": [
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "delete"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "last-chain-False-2-move-history",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "reverse_bridge": false,
+      "move": true,
+      "recall_last": true,
+      "last_steps": [
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "delete"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "last-chain-True-0-move-history",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "reverse_bridge": true,
+      "move": true,
+      "recall_last": true,
+      "last_steps": [
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "delete"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "last-chain-True-1-move-history",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "reverse_bridge": true,
+      "move": true,
+      "recall_last": true,
+      "last_steps": [
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "delete"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "last-chain-True-2-move-history",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "reverse_bridge": true,
+      "move": true,
+      "recall_last": true,
+      "last_steps": [
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "delete"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "last-locked-0-move-history",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "locked": [
+        1
+      ],
+      "move": true,
+      "recall_last": true,
+      "last_steps": [
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "delete"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "last-locked-2-move-history",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "locked": [
+        1
+      ],
+      "move": true,
+      "recall_last": true,
+      "last_steps": [
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "delete"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "last-hidden-0-move-history",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "hidden": [
+        1
+      ],
+      "move": true,
+      "recall_last": true,
+      "last_steps": [
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "delete"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "last-hidden-2-move-history",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "hidden": [
+        1
+      ],
+      "move": true,
+      "recall_last": true,
+      "last_steps": [
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "delete"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "last-layer-locked-0-move-history",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "layer_mode": "locked",
+      "move": true,
+      "recall_last": true,
+      "last_steps": [
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "delete"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "last-layer-locked-2-move-history",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "layer_mode": "locked",
+      "move": true,
+      "recall_last": true,
+      "last_steps": [
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "delete"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "last-layer-hidden-0-move-history",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "layer_mode": "hidden",
+      "move": true,
+      "recall_last": true,
+      "last_steps": [
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "delete"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "last-layer-hidden-2-move-history",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "layer_mode": "hidden",
+      "move": true,
+      "recall_last": true,
+      "last_steps": [
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "delete"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "last-object-locked-layer-hidden-move-history",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "locked": [
+        1
+      ],
+      "layer_mode": "hidden",
+      "move": true,
+      "recall_last": true,
+      "last_steps": [
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "delete"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        }
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "last-object-hidden-layer-locked-move-history",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "hidden": [
+        1
+      ],
+      "layer_mode": "locked",
+      "move": true,
+      "recall_last": true,
+      "last_steps": [
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "select",
+          "objects": [
+            2
+          ]
+        },
+        {
+          "kind": "delete"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "recall",
+          "deselect_others": true
+        }
+      ]
+    }
+  ]
+}

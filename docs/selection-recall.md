@@ -1,4 +1,4 @@
-# Previous selection
+# Selection recall
 
 [Document commands](commands/document.md) · [Groups](groups.md) · [Oracle](oracle.md)
 
@@ -47,7 +47,35 @@ tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/selection
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/selection_recall_picking.json --timeout 300
 ```
 
-These fixtures do not establish SelLast's transaction-boundary behavior.
-Rhino's enclosing RunPythonScript transaction can include fixture setup objects
-in its last-changed set, so that comparison needs independently isolated command
-boundaries. Sub-object recall and modifier-key selection remain outside this probe.
+## Last changed objects
+
+`SelLast [DeselectOthersBeforeSelect=Yes|No]` recalls changed selectable objects
+without expanding their groups. Hidden/locked objects and objects on hidden/locked
+layers are excluded, even when the preceding group-picked Move affected them.
+It remembers its option independently of SelPrev; adding an empty layer leaves
+the recalled objects intact.
+
+`last_selection.json` checks 32 sequences after real idle-viewport clicks and
+Move, including overlapping/reordered groups, object/layer modes, explicit and
+remembered options, and empty-layer creation. All fields match Rhino exactly;
+the full recorded response is a native regression test. Setup returns from
+RunPythonScript before Move: otherwise Rhino's enclosing script transaction can
+incorrectly include fixture setup objects in the comparison's last-changed set.
+
+```sh
+tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/last_selection.json --timeout 300
+```
+
+### Known history differences
+
+`last_selection_history_diagnostics.json` preserves 16 additional sequences and
+their full Rhino observations; these are **not passing parity references**.
+After moving a picked group, deleting one member leaves the surviving changed
+members available to Rhino's SelLast, whereas native deletion replaces the
+recorded set. Undoing that deletion also differs in immediate selection and
+subsequent recall. Undoing Move can restore selection of hidden/locked picked
+peers in Rhino; native history currently only prunes existing selection.
+Coordinates and object/layer modes match in these diagnostic cases.
+
+Import/new-object transaction boundaries, broader history behavior, sub-object
+recall, and modifier-key selection remain outside the verified SelLast coverage.

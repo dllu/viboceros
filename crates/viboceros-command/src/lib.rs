@@ -415,7 +415,7 @@ impl CommandRegistry {
             .register(InvertCommand)
             .expect("unique built-in command");
         registry
-            .register(SelLastCommand)
+            .register(SelLastCommand::default())
             .expect("unique built-in command");
         registry
             .register(SelPrevCommand::default())
@@ -7416,7 +7416,10 @@ impl Command for InvertCommand {
     }
 }
 
-struct SelLastCommand;
+#[derive(Default)]
+struct SelLastCommand {
+    deselect_others: remembered::Remembered<Option<bool>>,
+}
 
 impl Command for SelLastCommand {
     fn name(&self) -> &'static str {
@@ -7431,6 +7434,7 @@ impl Command for SelLastCommand {
         let deselect_others = parse_action_selection_arguments(
             arguments,
             "SelLast [DeselectOthersBeforeSelect=Yes|No]",
+            &self.deselect_others,
         )?;
         let count = document.select_last_changed(deselect_others);
         Ok(format!("Selection contains {count} object(s)"))
@@ -7452,16 +7456,11 @@ impl Command for SelPrevCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let deselect_others = if arguments.is_empty() {
-            self.deselect_others.get().unwrap_or(true)
-        } else {
-            let value = parse_action_selection_arguments(
-                arguments,
-                "SelPrev [DeselectOthersBeforeSelect=Yes|No]",
-            )?;
-            self.deselect_others.set(Some(value));
-            value
-        };
+        let deselect_others = parse_action_selection_arguments(
+            arguments,
+            "SelPrev [DeselectOthersBeforeSelect=Yes|No]",
+            &self.deselect_others,
+        )?;
         let count = document.select_previous(deselect_others);
         Ok(format!("Selection contains {count} object(s)"))
     }
@@ -7470,9 +7469,10 @@ impl Command for SelPrevCommand {
 fn parse_action_selection_arguments(
     arguments: &[&str],
     usage: &'static str,
+    remembered: &remembered::Remembered<Option<bool>>,
 ) -> Result<bool, CommandError> {
     if arguments.is_empty() {
-        return Ok(true);
+        return Ok(remembered.get().unwrap_or(true));
     }
     let (name, value) = match arguments {
         [option] => option.split_once('=').ok_or(CommandError::Usage(usage))?,
@@ -7485,7 +7485,9 @@ fn parse_action_selection_arguments(
     {
         return Err(CommandError::Usage(usage));
     }
-    parse_yes_no(value.trim_start_matches('_')).ok_or(CommandError::Usage(usage))
+    let value = parse_yes_no(value.trim_start_matches('_')).ok_or(CommandError::Usage(usage))?;
+    remembered.set(Some(value));
+    Ok(value)
 }
 
 struct SelNameCommand;
@@ -39616,6 +39618,46 @@ mod tests {
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().len(), 2);
         assert_eq!(document.groups().len(), 1);
+    }
+
+    #[test]
+    fn sel_last_remembers_valid_options_independently_of_sel_prev() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let ids = (0..3)
+            .map(|i| {
+                document
+                    .add_geometry(Geometry::Point(
+                        Point3::try_new(i as f64, 0.0, 0.0).unwrap(),
+                    ))
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        let history = document.undo_label().map(str::to_owned);
+        registry
+            .execute(&mut document, "SelLast DeselectOthersBeforeSelect=No")
+            .unwrap();
+        assert!(
+            registry
+                .execute(&mut document, "SelLast DeselectOthersBeforeSelect=Maybe")
+                .is_err()
+        );
+        registry
+            .execute(&mut document, "SelPrev DeselectOthersBeforeSelect=Yes")
+            .unwrap();
+        document
+            .select_object(ids[0], SelectionMode::Replace)
+            .unwrap();
+        registry.execute(&mut document, "SelLast").unwrap();
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([ids[0], ids[2]])
+        );
+        CommandRegistry::with_builtins()
+            .execute(&mut document, "SelLast")
+            .unwrap();
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [ids[2]]);
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]

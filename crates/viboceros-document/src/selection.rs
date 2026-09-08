@@ -3,7 +3,14 @@ use super::*;
 
 impl Document {
     pub(super) fn previous_selection_targets(&self) -> BTreeSet<ObjectId> {
-        if self.previous_selection.is_empty() {
+        self.selectable_recorded_objects(&self.previous_selection)
+    }
+
+    pub(super) fn selectable_recorded_objects(
+        &self,
+        recorded: &BTreeSet<ObjectId>,
+    ) -> BTreeSet<ObjectId> {
+        if recorded.is_empty() {
             return BTreeSet::new();
         }
         let layers = self
@@ -15,7 +22,7 @@ impl Document {
         self.objects
             .iter()
             .filter(|object| {
-                self.previous_selection.contains(&object.id)
+                recorded.contains(&object.id)
                     && object.attributes.visible
                     && !object.attributes.locked
                     && layers.contains(&object.attributes.layer_id)
@@ -113,6 +120,72 @@ mod tests {
                     .unwrap()
             })
             .collect()
+    }
+
+    #[test]
+    fn adding_an_empty_layer_preserves_last_changed_objects() {
+        let mut document = Document::default();
+        let ids = points(&mut document, 3);
+        document.add_layer("Empty", ColorRgb::new(0, 0, 0)).unwrap();
+        assert_eq!(document.select_last_changed(true), 1);
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [ids[2]]);
+    }
+
+    #[test]
+    fn last_selection_recalls_changed_selectable_objects_not_their_groups() {
+        for mode in 0..5 {
+            let mut document = Document::default();
+            let ids = points(&mut document, 3);
+            document.add_group(None, [ids[0], ids[1]]).unwrap();
+            document.add_group(None, [ids[1], ids[2]]).unwrap();
+            match mode {
+                1 => {
+                    document.set_objects_locked([ids[1]], true).unwrap();
+                }
+                2 => {
+                    document.set_objects_visibility([ids[1]], false).unwrap();
+                }
+                3 | 4 => {
+                    let layer = document
+                        .add_layer("Bridge", ColorRgb::new(0, 0, 0))
+                        .unwrap();
+                    document.set_objects_layer([ids[1]], layer).unwrap();
+                    if mode == 3 {
+                        document.set_layer_locked(layer, true).unwrap();
+                    } else {
+                        document.set_layer_visibility(layer, false).unwrap();
+                    }
+                }
+                _ => {}
+            }
+            document
+                .select_object(ids[0], SelectionMode::Replace)
+                .unwrap();
+            document
+                .transform_objects(
+                    [ids[0], ids[1]],
+                    AffineTransform3::from_translation(
+                        viboceros_geometry::Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+                    ),
+                )
+                .unwrap();
+            let expected = if mode == 0 {
+                vec![ids[0], ids[1]]
+            } else {
+                vec![ids[0]]
+            };
+            assert_eq!(
+                document.selectable_last_changed_object_count(),
+                expected.len()
+            );
+            document.select_last_changed(true);
+            assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), expected);
+            assert!(!document.is_selected(ids[2]));
+            document
+                .select_objects_direct([ids[2]], SelectionMode::Replace)
+                .unwrap();
+            assert_eq!(document.select_last_changed(false), expected.len() + 1);
+        }
     }
 
     #[test]

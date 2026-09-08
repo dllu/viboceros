@@ -1,5 +1,6 @@
 //! Matches the dedicated Rhino idle-viewport worker's three-line cases.
 use super::*;
+mod last_selection;
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct GroupPickingFixture {
@@ -16,6 +17,10 @@ pub struct GroupPickingFixture {
     move_objects: bool,
     #[serde(default)]
     recall_previous: bool,
+    #[serde(default)]
+    recall_last: bool,
+    #[serde(default)]
+    last_steps: Vec<last_selection::Step>,
 }
 
 pub(super) fn run(
@@ -33,10 +38,19 @@ pub(super) fn run(
         || !valid(&f.hidden)
         || f.locked.iter().any(|i| f.hidden.contains(i))
         || !matches!(f.layer_mode.as_deref(), None | Some("locked" | "hidden"))
+        || (f.recall_last
+            && (!f.move_objects
+                || f.recall_previous
+                || f.hidden.contains(&f.seed)
+                || f.locked.contains(&f.seed)
+                || (f.seed == 1 && f.layer_mode.is_some())))
+        || f.last_steps.len() > 32
+        || (!f.last_steps.is_empty() && !f.recall_last)
     {
         return Err(ProbeError::FixtureInvariant("invalid group picking case"));
     }
     let mut document = Document::new(tolerance);
+    let registry = CommandRegistry::with_builtins();
     let ids = (0..3)
         .map(|i| {
             Ok(document.add_geometry(Geometry::Line(LineSegment::try_new(
@@ -91,7 +105,7 @@ pub(super) fn run(
         value["move_succeeded"] = if document.selected_object_count() == 0 {
             Value::Null
         } else {
-            CommandRegistry::with_builtins().execute(&mut document, "Move 0,0,0 0,1,0")?;
+            registry.execute(&mut document, "Move 0,0,0 0,1,0")?;
             json!(true)
         };
         value["points"] = json!(
@@ -117,12 +131,46 @@ pub(super) fn run(
                 .collect::<Vec<_>>()
         );
     }
+    if f.recall_last {
+        document.clear_selection();
+        registry.execute(&mut document, "SelLast DeselectOthersBeforeSelect=Yes")?;
+        value["selected"] = json!(
+            ids.iter()
+                .enumerate()
+                .filter(|(_, id)| document.is_selected(**id))
+                .map(|(i, _)| i)
+                .collect::<Vec<_>>()
+        );
+    }
+    if !f.last_steps.is_empty() {
+        value["last_states"] = last_selection::run(&mut document, &registry, &ids, &f.last_steps)?;
+    }
     Ok((value, 0))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn last_selection_after_idle_move_matches_recorded_rhino() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/last_selection.json"
+        ))
+        .unwrap();
+        let observed: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/last_selection.json"
+        ))
+        .unwrap();
+        let response = run_request(&request).unwrap();
+        let rows = observed["results"].as_array().unwrap();
+        assert_eq!(rows.len(), 32);
+        assert_eq!(response.results.len(), rows.len());
+        for (actual, expected) in response.results.iter().zip(rows) {
+            assert_eq!(actual.id, expected["id"].as_str().unwrap());
+            assert_eq!(actual.value, expected["value"], "{}", actual.id);
+        }
+    }
 
     #[test]
     fn recall_after_real_group_picking_matches_recorded_rhino() {
@@ -176,6 +224,9 @@ mod tests {
             ("locked", json!([1, 1])),
             ("layer_mode", json!("other")),
             ("move", json!("Yes")),
+            ("recall_last", json!(true)),
+            ("recall_last", json!("Yes")),
+            ("last_steps", json!([{"kind": "recall"}])),
         ] {
             let mut invalid = base.clone();
             invalid[key] = value;
@@ -188,5 +239,22 @@ mod tests {
         }))
         .unwrap();
         assert!(run(&fixture, Tolerance::default()).is_err());
+        for changes in [
+            json!({"locked": [0]}),
+            json!({"recall_previous": true}),
+            json!({"last_steps": [{"kind": "select", "objects": [3]}]}),
+            json!({"last_steps": [{"kind": "recall", "deselect_others": "Yes"}]}),
+        ] {
+            let mut value = base.clone();
+            value["move"] = json!(true);
+            value["recall_last"] = json!(true);
+            value
+                .as_object_mut()
+                .unwrap()
+                .extend(changes.as_object().unwrap().clone());
+            if let Ok(fixture) = serde_json::from_value::<GroupPickingFixture>(value) {
+                assert!(run(&fixture, Tolerance::default()).is_err());
+            }
+        }
     }
 }

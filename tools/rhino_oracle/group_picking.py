@@ -5,7 +5,7 @@ import re
 import subprocess
 import time
 
-from .client import OracleProtocolError, _read_optional_text, _rhino_window_for_pids
+from .client import OracleError, OracleProtocolError, _read_optional_text, _rhino_window_for_pids
 
 
 def validate_request(request):
@@ -39,6 +39,21 @@ def validate_request(request):
             raise OracleProtocolError("invalid group picking move flag")
         if type(operation.get("recall_previous", False)) is not bool:
             raise OracleProtocolError("invalid group picking recall flag")
+        if type(operation.get("recall_last", False)) is not bool:
+            raise OracleProtocolError("invalid last-selection recall flag")
+        if operation.get("recall_last") and (not operation.get("move") or operation.get("recall_previous")
+            or operation['seed'] in operation.get('hidden', []) or operation['seed'] in operation.get('locked', [])
+            or (operation['seed'] == 1 and operation.get('layer_mode'))):
+            raise OracleProtocolError("last-selection recall requires a completed Move")
+        steps = operation.get('last_steps', [])
+        if not isinstance(steps, list) or len(steps) > 32 or (steps and not operation.get('recall_last')):
+            raise OracleProtocolError('invalid last-selection steps')
+        for step in steps:
+            if not isinstance(step, dict) or step.get('kind') not in ('select', 'recall', 'undo', 'redo', 'delete', 'layer'):
+                raise OracleProtocolError('invalid last-selection step')
+            if step['kind'] == 'select': indices(step.get('objects'))
+            if step['kind'] == 'recall' and step.get('deselect_others') is not None and type(step['deselect_others']) is not bool:
+                raise OracleProtocolError('invalid last-selection option')
 
 
 class IdlePicker:
@@ -57,8 +72,15 @@ class IdlePicker:
             window = _rhino_window_for_pids(owned_pids)
             if window is None:
                 continue
-            subprocess.run(["xdotool", "windowactivate", "--sync", window,
-                            "mousemove", "--sync", x, y, "click", "1"], check=True, timeout=10)
+            try:
+                # X11 processes the warp before the following click. Waiting for
+                # a motion event can stall repeated picks at the same location.
+                subprocess.run(["xdotool", "windowactivate", "--sync", window,
+                                "mousemove", x, y, "click", "1"], check=True, timeout=10)
+            except subprocess.SubprocessError as error:
+                progress = _read_optional_text(job / "worker-progress.log")[-2000:]
+                raise OracleError("mouse input failed for %s in owned window %s: %s\n%s" %
+                                  (name, window, error, progress)) from error
             # Acknowledgement permits observation, never another command/Enter.
             temporary = job / "click-ack.json.tmp"
             temporary.write_text(json.dumps(name), encoding="utf-8")

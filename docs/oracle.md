@@ -30,6 +30,12 @@ options, changed groups, and deleted objects. `selection_recall_picking.json`
 uses the dedicated idle worker for 52 recalls after real group picking. These
 136 exact comparisons distinguish recall from ordinary group expansion and
 verify visibility/lock filtering. See [selection recall](selection-recall.md).
+`last_selection.json` adds 32 exact SelLast sequences after idle Move, checking
+group/mode filtering, remembered options, and empty-layer creation. The separate
+16-case `last_selection_history_diagnostics.json` records known deletion/undo
+differences, not passing parity. Both use the same owned-window idle worker.
+Repeated picks at identical coordinates do not wait for a new mouse-motion event;
+input failures report the case/window and progress without acknowledging a click.
 
 `point_input.json` compares 19 [typed-coordinate sequences](point-input.md)
 against Rhino's actual Polyline prompt in world, Front, Right, shifted, and

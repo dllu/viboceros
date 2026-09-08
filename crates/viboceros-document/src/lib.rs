@@ -966,7 +966,7 @@ impl Document {
     /// Rhino's default replaces the current selection; setting
     /// `deselect_others` to false adds the objects instead.
     pub fn select_last_changed(&mut self, deselect_others: bool) -> usize {
-        let targets = self.selectable_clusters(self.last_changed_objects.iter().copied());
+        let targets = self.selectable_recorded_objects(&self.last_changed_objects);
         self.apply_selection_mode(
             targets,
             if deselect_others {
@@ -1015,7 +1015,7 @@ impl Document {
     }
 
     pub fn selectable_last_changed_object_count(&self) -> usize {
-        self.selectable_clusters(self.last_changed_objects.iter().copied())
+        self.selectable_recorded_objects(&self.last_changed_objects)
             .len()
     }
 
@@ -1987,6 +1987,11 @@ impl Document {
     }
 
     fn update_last_changed_objects(&mut self, ids: &BTreeSet<ObjectId>) {
+        // Non-object edits (for example adding a layer) do not replace the
+        // objects remembered by SelLast.
+        if ids.is_empty() {
+            return;
+        }
         self.last_changed_objects = ids
             .iter()
             .copied()
