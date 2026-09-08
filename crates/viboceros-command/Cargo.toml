@@ -13,4 +13,5 @@ viboceros-geometry.workspace = true
 viboceros-io.workspace = true
 
 [dev-dependencies]
+tempfile = "3.27.0"
 monstertruck.workspace = true

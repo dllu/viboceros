@@ -1,5 +1,7 @@
 //! File import/export commands and document-to-format adapters.
 use super::{Command, CommandError};
+#[cfg(test)]
+mod tests;
 use std::collections::{BTreeMap, BTreeSet};
 use viboceros_document::{ColorRgb, Document, Geometry, ObjectAttributes, ObjectColorSource};
 use viboceros_geometry::{GeometryError, Tolerance, TriangleMesh};

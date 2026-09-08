@@ -9,6 +9,12 @@ and remove the temporary file. Stream-based writers cannot roll back bytes
 already accepted by a caller's stream. This is not a power-loss durability
 guarantee for the containing directory.
 
+STL/STEP commands export all visible meshable objects, including locked objects
+and objects on locked layers. Object hiding, hidden layers, and `Isolate` affect
+that set; selection alone does not restrict it. `Export3dm` instead retains the
+whole model and its object/layer visibility and lock attributes. A mesh export
+with no visible meshable objects fails without replacing an existing destination.
+
 STL imports retain the file's unitless coordinates, including finite triangles
 below the document's modelling tolerance. `read_stl` and `read_stl_file` perform
 numerical validation without a tolerance argument. Neither import changes the
