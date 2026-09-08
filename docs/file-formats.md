@@ -48,9 +48,15 @@ positive metres-per-unit scales round-trip without rescaling coordinates;
 new I/O models explicitly default to millimetres. The shared
 `LengthUnitSystem` provides validated, checked conversion factors;
 `Document::with_units` initializes explicit document units, and 3DM export
-retains them. Default documents use millimetres. Import commands do not yet
-convert source units, and changing an existing document's units is not yet
-implemented, so this is not an end-to-end physical-size guarantee.
+retains them. Default documents use millimetres. `Import3dm` converts file
+coordinates to document units before editing the document. Its source-space
+validation tolerance is converted too, so valid small features are not
+discarded merely because their numerical coordinates are small in file units.
+Unitless files retain coordinates; unset units and unrepresentable conversion
+factors or transformed coordinates are errors. The low-level
+`read_3dm_file` still reads raw file coordinates, while
+`read_3dm_file_in_units` performs the conversion. Changing an existing
+document's units is not yet implemented.
 
 Initial STEP interchange uses the Apache-2.0 Monstertruck kernel to read
 solid/shell B-reps and assemblies, apply instance transforms, and robustly

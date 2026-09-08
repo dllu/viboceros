@@ -3,6 +3,29 @@ use crate::ThreeDmError;
 use std::ffi::CString;
 use viboceros_geometry::LengthUnitSystem;
 
+pub(crate) fn transform_geometry(
+    geometry: &crate::ThreeDmGeometry,
+    transform: viboceros_geometry::AffineTransform3,
+    tolerance: viboceros_geometry::Tolerance,
+) -> Result<crate::ThreeDmGeometry, viboceros_geometry::GeometryError> {
+    use crate::ThreeDmGeometry as G;
+    Ok(match geometry {
+        G::Point(point) => G::Point(transform.transform_point(*point)?),
+        G::PointCloud(cloud) => G::PointCloud(cloud.transformed(transform)?),
+        G::Line(line) => G::Line(line.transformed(transform, tolerance)?),
+        G::Arc(arc) => match arc.transformed_similarity(transform, tolerance)? {
+            Some(arc) => G::Arc(arc),
+            None => G::NurbsCurve(arc.to_nurbs()?.transformed(transform)?),
+        },
+        G::NurbsCurve(curve) => G::NurbsCurve(curve.transformed(transform)?),
+        G::Polyline(curve) => G::Polyline(curve.transformed(transform, tolerance)?),
+        G::PolyCurve(curve) => G::PolyCurve(curve.transformed(transform)?),
+        G::NurbsSurface(surface) => G::NurbsSurface(surface.transformed(transform)?),
+        G::Brep(brep) => G::Brep(brep.transformed(transform, tolerance)?),
+        G::Mesh(mesh) => G::Mesh(mesh.transformed(transform, tolerance)?),
+    })
+}
+
 pub(crate) fn encode(units: &LengthUnitSystem) -> Result<(u32, f64, CString), ThreeDmError> {
     units
         .validate()

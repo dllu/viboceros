@@ -99,11 +99,15 @@ use viboceros_geometry::{
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
-    ThreeDmGroup, ThreeDmLayer, ThreeDmModel, ThreeDmObject, read_3dm_file, read_step_file,
-    read_stl_file, write_3dm_file, write_step_file, write_stl_file,
+    ThreeDmGroup, ThreeDmLayer, ThreeDmModel, ThreeDmObject, read_step_file, read_stl_file,
+    write_3dm_file, write_step_file, write_stl_file,
 };
 
 const SURFACE_EXPORT_SAMPLES_PER_SPAN: usize = 16;
+#[cfg(test)]
+use viboceros_io::read_3dm_file;
+#[cfg(test)]
+mod unit_import_tests;
 const MAX_EXTRACTED_POINTS: usize = 1_000_000;
 const MAX_ARRAY_OBJECTS: usize = 1_000_000;
 const MAX_SPAN_OUTPUT_OBJECTS: usize = 1_000_000;
@@ -18490,7 +18494,8 @@ impl Command for ImportThreeDmCommand {
             return Err(CommandError::Usage("Import3dm path"));
         }
         let path = arguments.join(" ");
-        let model = read_3dm_file(&path, document.tolerance())?;
+        let model =
+            viboceros_io::read_3dm_file_in_units(&path, document.units(), document.tolerance())?;
         let unsupported = model.unsupported_object_count();
         let layer_count = model.layers.len();
         let object_count = model.objects.len();

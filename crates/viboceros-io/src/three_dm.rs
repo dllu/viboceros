@@ -125,6 +125,8 @@ impl ThreeDmModel {
 #[derive(Debug, Error)]
 pub enum ThreeDmError {
     #[error(transparent)]
+    Units(#[from] viboceros_geometry::UnitError),
+    #[error(transparent)]
     Io(#[from] std::io::Error),
 
     #[error(transparent)]
@@ -150,7 +152,45 @@ pub fn read_3dm_file(
     path: impl AsRef<Path>,
     tolerance: Tolerance,
 ) -> Result<ThreeDmModel, ThreeDmError> {
-    let path = path_to_c_string(path.as_ref())?;
+    let handle = read_handle(path.as_ref())?;
+    let units = decode_units(&handle)?;
+    decode_model(&handle, tolerance, units)
+}
+
+/// Reads coordinates into target units. The supplied tolerance is expressed
+/// in target units; source geometry is decoded with a converted tolerance.
+/// Unitless files retain coordinates. Unset units and unrepresentable scales
+/// are errors. The source file is never modified.
+pub fn read_3dm_file_in_units(
+    path: impl AsRef<Path>,
+    target_units: &LengthUnitSystem,
+    tolerance: Tolerance,
+) -> Result<ThreeDmModel, ThreeDmError> {
+    let handle = read_handle(path.as_ref())?;
+    let source_units = decode_units(&handle)?;
+    let scale = source_units.scale_to(target_units)?;
+    let source_tolerance = Tolerance::try_new(
+        tolerance.absolute() / scale,
+        tolerance.relative(),
+        tolerance.angular(),
+    )?;
+    let mut model = decode_model(&handle, source_tolerance, source_units)?;
+    if scale != 1.0 {
+        let transform = viboceros_geometry::AffineTransform3::try_uniform_scale(
+            Point3::try_new(0.0, 0.0, 0.0)?,
+            scale,
+        )?;
+        for object in &mut model.objects {
+            object.geometry =
+                crate::three_dm_units::transform_geometry(&object.geometry, transform, tolerance)?;
+        }
+    }
+    model.units = target_units.clone();
+    Ok(model)
+}
+
+fn read_handle(path: &Path) -> Result<ModelHandle, ThreeDmError> {
+    let path = path_to_c_string(path)?;
     let mut error = [0 as c_char; ERROR_CAPACITY];
     let mut pointer = std::ptr::null_mut();
     // SAFETY: `path` and `error` are valid terminated buffers and `pointer`
@@ -163,7 +203,7 @@ pub fn read_3dm_file(
     let handle = ModelHandle(
         NonNull::new(pointer).ok_or(ThreeDmError::MalformedBridge("read returned a null model"))?,
     );
-    decode_model(&handle, tolerance)
+    Ok(handle)
 }
 
 /// Export can expand a discontinuous curve into multiple valid file objects.
@@ -318,7 +358,7 @@ pub fn write_3dm_file(
     }
 }
 
-fn decode_model(handle: &ModelHandle, tolerance: Tolerance) -> Result<ThreeDmModel, ThreeDmError> {
+fn decode_units(handle: &ModelHandle) -> Result<LengthUnitSystem, ThreeDmError> {
     let mut unit_system = 0;
     let mut meters_per_unit = 1.0;
     let mut unit_name = std::ptr::null();
@@ -340,7 +380,14 @@ fn decode_model(handle: &ModelHandle, tolerance: Tolerance) -> Result<ThreeDmMod
     let name = unsafe { CStr::from_ptr(unit_name) }
         .to_string_lossy()
         .into_owned();
-    let units = crate::three_dm_units::decode(unit_system, meters_per_unit, name)?;
+    crate::three_dm_units::decode(unit_system, meters_per_unit, name)
+}
+
+fn decode_model(
+    handle: &ModelHandle,
+    tolerance: Tolerance,
+    units: LengthUnitSystem,
+) -> Result<ThreeDmModel, ThreeDmError> {
     // SAFETY: the handle owns a live bridge model.
     let layer_count = unsafe { ffi::vibo_3dm_layer_count(handle.0.as_ptr()) };
     let mut layers = Vec::with_capacity(layer_count.max(1));
@@ -1623,6 +1670,133 @@ mod tests {
             Err(ThreeDmError::InvalidModel(_))
         ));
         assert_eq!(fs::read(&path).unwrap(), b"original");
+    }
+
+    #[test]
+    fn import_units_convert_tolerance_before_decoding_tiny_geometry() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("tiny-metres.3dm");
+        let source_tolerance = Tolerance::try_new(1e-13, 1e-12, 1e-10).unwrap();
+        let line = LineSegment::try_new(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(1e-5, 0.0, 0.0).unwrap(),
+            source_tolerance,
+        )
+        .unwrap();
+        let mut model = ThreeDmModel::new(
+            vec![ThreeDmLayer {
+                name: "Default".into(),
+                color: [0, 0, 0],
+                visible: true,
+                locked: false,
+            }],
+            vec![],
+            vec![ThreeDmObject::new(ThreeDmGeometry::Line(line), 0)],
+        );
+        model.units = LengthUnitSystem::Meters;
+        write_3dm_file(&path, &model).unwrap();
+        let target_tolerance = Tolerance::try_new(1e-4, 1e-12, 1e-10).unwrap();
+        let raw = read_3dm_file(&path, target_tolerance).unwrap();
+        assert_eq!(raw.unsupported_object_count(), 1);
+        let converted =
+            read_3dm_file_in_units(&path, &LengthUnitSystem::Millimeters, target_tolerance)
+                .unwrap();
+        assert_eq!(converted.units, LengthUnitSystem::Millimeters);
+        assert_eq!(converted.unsupported_object_count(), 0);
+        assert_eq!(converted.objects.len(), 1);
+        let ThreeDmGeometry::Line(line) = &converted.objects[0].geometry else {
+            panic!("lost line");
+        };
+        assert!((line.end().x() - 0.01).abs() < 1e-16);
+    }
+
+    #[test]
+    fn import_units_scale_coordinates_and_preserve_attributes() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("units.3dm");
+        let mut model = sample_model();
+        model.objects.truncate(1);
+        for (units, factor) in [
+            (LengthUnitSystem::Inches, 25.4),
+            (
+                LengthUnitSystem::Custom {
+                    name: "eighth-metre".into(),
+                    meters_per_unit: 0.125,
+                },
+                125.0,
+            ),
+            (LengthUnitSystem::None, 1.0),
+        ] {
+            model.units = units;
+            write_3dm_file(&path, &model).unwrap();
+            let converted =
+                read_3dm_file_in_units(&path, &LengthUnitSystem::Millimeters, Tolerance::DEFAULT)
+                    .unwrap();
+            assert_eq!(converted.layers, model.layers);
+            assert_eq!(converted.groups, model.groups);
+            let mut expected = model.objects[0].clone();
+            expected.geometry = ThreeDmGeometry::Point(
+                Point3::try_new(factor, 2.0 * factor, 3.0 * factor).unwrap(),
+            );
+            assert_eq!(converted.objects, vec![expected]);
+        }
+        model.units = LengthUnitSystem::Unset;
+        write_3dm_file(&path, &model).unwrap();
+        assert!(matches!(
+            read_3dm_file_in_units(&path, &LengthUnitSystem::Millimeters, Tolerance::DEFAULT),
+            Err(ThreeDmError::Units(viboceros_geometry::UnitError::Unset))
+        ));
+    }
+
+    #[test]
+    fn import_units_scale_mixed_geometry_without_losing_objects() {
+        let directory = tempfile::tempdir().unwrap();
+        let input = directory.path().join("source.3dm");
+        let output = directory.path().join("converted.3dm");
+        let mut source = sample_model();
+        source.units = LengthUnitSystem::Meters;
+        write_3dm_file(&input, &source).unwrap();
+        let converted = read_3dm_file_in_units(
+            &input,
+            &LengthUnitSystem::Custom {
+                name: "two-metres".into(),
+                meters_per_unit: 2.0,
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(converted.objects.len(), source.objects.len());
+        assert_eq!(converted.unsupported_object_count(), 0);
+        let ThreeDmGeometry::Point(point) = converted.objects[0].geometry else {
+            panic!("lost point");
+        };
+        assert_eq!(point, Point3::try_new(0.5, 1.0, 1.5).unwrap());
+        let source_tolerance = Tolerance::try_new(2e-9, 1e-12, 1e-10).unwrap();
+        let baseline = read_3dm_file(&input, source_tolerance).unwrap();
+        for (scaled, original) in converted.objects.iter().zip(&baseline.objects) {
+            if let (ThreeDmGeometry::Mesh(scaled), ThreeDmGeometry::Mesh(original)) =
+                (&scaled.geometry, &original.geometry)
+            {
+                assert_eq!(scaled.faces(), original.faces());
+                for (point, source) in scaled.vertices().iter().zip(original.vertices()) {
+                    assert_eq!(
+                        *point,
+                        Point3::try_new(source.x() / 2.0, source.y() / 2.0, source.z() / 2.0)
+                            .unwrap()
+                    );
+                }
+            }
+        }
+        write_3dm_file(&output, &converted).unwrap();
+        let restored =
+            read_3dm_file_in_units(&output, &LengthUnitSystem::Meters, Tolerance::DEFAULT).unwrap();
+        assert_eq!(restored.objects.len(), baseline.objects.len());
+        for (restored, original) in restored.objects.iter().zip(&baseline.objects) {
+            match (&restored.geometry, &original.geometry) {
+                (ThreeDmGeometry::Brep(a), ThreeDmGeometry::Brep(b)) => assert_brep_near(a, b),
+                (a, b) => assert_eq!(a, b),
+            }
+        }
     }
 
     #[test]
