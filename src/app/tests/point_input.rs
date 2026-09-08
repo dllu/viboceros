@@ -6,6 +6,95 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn interpolated_draft_options_match_one_line_completion_and_preview() {
+    for options in [
+        "Degree=1 Knots=Uniform",
+        "Degree=3 Knots=SqrtChrd",
+        "Degree=3 Knots=Uniform Close=Smooth",
+        "Degree=3 Knots=Chord Close=Sharp",
+        "Degree=3 Knots=Uniform StartTangent=1,2,0 EndTangent=-1,1,0",
+    ] {
+        let mut app = test_app();
+        enter(&mut app, &format!("InterpCurve {options}"));
+        assert!(
+            matches!(
+                app.active_command,
+                Some(InteractiveCommand::InterpCrv { .. })
+            ),
+            "{options}"
+        );
+        for input in ["0", "3,0,0", "4,2,1", "0,4,0"] {
+            enter(&mut app, input);
+        }
+        let preview = app.curve_draft_preview().unwrap();
+        assert_eq!(app.document.objects().len(), 0);
+        enter(&mut app, "");
+        assert!(app.active_command.is_none(), "{options}");
+        let geometry = app.document.objects().next().unwrap().geometry().clone();
+        assert_eq!(geometry, Geometry::NurbsCurve((*preview).clone()));
+        let mut reference = test_app();
+        enter(
+            &mut reference,
+            &format!("InterpCrv 0,0,0 3,0,0 4,2,1 0,4,0 {options}"),
+        );
+        assert_eq!(
+            &geometry,
+            reference.document.objects().next().unwrap().geometry(),
+            "{options}"
+        );
+        assert_eq!(app.document.undo_label(), Some("InterpCrv"));
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().len(), 0);
+        assert!(!app.document.can_undo());
+        enter(&mut app, "Redo");
+        assert_eq!(&geometry, app.document.objects().next().unwrap().geometry());
+    }
+}
+
+#[test]
+fn failed_closed_interpolation_retains_startup_options_for_retry() {
+    let mut app = test_app();
+    for input in ["InterpCrv Knots=Uniform Close=Sharp", "0"] {
+        enter(&mut app, input);
+    }
+    let active = app.active_command;
+    let points = app.curve_points.clone();
+    enter(&mut app, "");
+    assert_eq!(app.active_command, active);
+    assert_eq!(app.curve_points, points);
+    assert_eq!(app.document.objects().len(), 0);
+    assert!(!app.document.can_undo());
+    enter(&mut app, "1,0,0");
+    enter(&mut app, "");
+    assert!(app.active_command.is_none());
+    let Geometry::NurbsCurve(curve) = app.document.objects().next().unwrap().geometry() else {
+        panic!("curve");
+    };
+    assert!(curve.is_closed().unwrap());
+}
+
+#[test]
+fn invalid_interpolation_startup_options_do_not_create_a_draft_or_edit_history() {
+    for options in [
+        "Degree=2",
+        "Knots=invalid",
+        "Degree=1 Degree=3",
+        "Close=Smooth StartTangent=1,0,0",
+        "Degree=1 EndTangent=1,0,0",
+    ] {
+        let mut app = test_app();
+        for input in ["Point 9,9,9", "Undo"] {
+            enter(&mut app, input);
+        }
+        let document = format!("{:?}", app.document);
+        enter(&mut app, &format!("InterpCrv {options}"));
+        assert!(app.active_command.is_none());
+        assert_eq!(format!("{:?}", app.document), document);
+        assert!(app.curve_points.is_empty());
+    }
+}
+
+#[test]
 fn curve_prompt_uses_fixed_coordinate_wise_coincidence_not_model_tolerance() {
     let zero = 2.0_f64.powi(-32);
     for absolute in [1e-12, 1e-9, 0.01] {

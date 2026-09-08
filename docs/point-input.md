@@ -65,6 +65,12 @@ The preview uses the completion constructor, including degree reduction and
 closure. Invalid or insufficient controls produce no curve preview. The cursor's
 unaccepted point is still a straight tracking guide, not a prospective control
 point. `InterpCrv` uses the command's default open cubic chord-spaced interpolation.
+Start with options such as `InterpCrv Degree=3 Knots=Uniform Close=Smooth`
+to change that construction. `Degree=1|3`, `Knots=Uniform|Chord|SqrtChrd`,
+`Close=Open|Smooth|Sharp`, and world-space `StartTangent=x,y,z` /
+`EndTangent=x,y,z` use the one-line parser; tangents require an open cubic.
+Preview and completion retain all startup settings, including endpoint directions.
+Changing these options inside an active InterpCrv prompt is not yet supported.
 Model-space preview geometry is cached by points, construction mode, settings,
 and interpolation tolerance, including
 failed constructions. Camera movement reprojects it without rebuilding the curve;

@@ -2,14 +2,13 @@
 
 use std::sync::Arc;
 use viboceros_geometry::{
-    ControlPointCurveClosure, CurveInterpolationOptions, CurveKnotSpacing,
-    InterpolatedCurveClosure, NurbsCurve, Point3, Tolerance,
+    ControlPointCurveClosure, CurveInterpolationOptions, NurbsCurve, Point3, Tolerance,
 };
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) enum CurvePreviewSettings {
     Control(usize, ControlPointCurveClosure),
-    Interpolated(Tolerance),
+    Interpolated(CurveInterpolationOptions, Tolerance),
 }
 
 #[derive(Default)]
@@ -44,16 +43,8 @@ impl CurvePreviewCache {
                         closure,
                     )
                 }
-                CurvePreviewSettings::Interpolated(tolerance) => {
-                    NurbsCurve::try_interpolate_for_command(
-                        points,
-                        CurveInterpolationOptions::new(
-                            3,
-                            CurveKnotSpacing::Chord,
-                            InterpolatedCurveClosure::Open,
-                        ),
-                        tolerance,
-                    )
+                CurvePreviewSettings::Interpolated(options, tolerance) => {
+                    NurbsCurve::try_interpolate_for_command(points, options, tolerance)
                 }
             }
             .ok()

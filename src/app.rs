@@ -8,7 +8,7 @@ use viboceros_command::{
     DEFAULT_MESH_SPHERE_SUBDIVISIONS, DEFAULT_MESH_TORUS_FACE_COUNT,
     DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT, DistributionSettings,
     MAX_MESH_SPHERE_QUAD_SUBDIVISIONS, MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS, parse_curve_closure,
-    parse_curve_degree,
+    parse_curve_degree, parse_interp_curve_options,
 };
 use viboceros_document::{Document, DocumentError, suggested_layer_color};
 use viboceros_geometry::{
@@ -164,7 +164,9 @@ enum InteractiveCommand {
         degree: usize,
         closure: ControlPointCurveClosure,
     },
-    InterpCrv,
+    InterpCrv {
+        options: viboceros_geometry::CurveInterpolationOptions,
+    },
     Rectangle {
         first: Option<Point3>,
     },
@@ -376,7 +378,7 @@ impl InteractiveCommand {
             Self::Ellipse { .. } => "Ellipse",
             Self::Polyline => "Polyline",
             Self::Curve { .. } => "Curve",
-            Self::InterpCrv => "InterpCrv",
+            Self::InterpCrv { .. } => "InterpCrv",
             Self::Rectangle { .. } => "Rectangle",
             Self::Box { .. } => "Box",
             Self::MeshPlane { .. } => "MeshPlane",
@@ -488,7 +490,7 @@ impl InteractiveCommand {
             Self::Curve { .. } => {
                 "Curve: pick control points; Close/Sharp closes; Undo removes last point; Enter finishes (Esc cancels)"
             }
-            Self::InterpCrv => {
+            Self::InterpCrv { .. } => {
                 "InterpCrv: pick curve points; Undo removes last point; Enter finishes (Esc cancels)"
             }
             Self::Rectangle { first: None } => {
@@ -849,7 +851,7 @@ impl InteractiveCommand {
             | Self::Ellipse { center: None, .. }
             | Self::Polyline
             | Self::Curve { .. }
-            | Self::InterpCrv
+            | Self::InterpCrv { .. }
             | Self::Rectangle { first: None }
             | Self::Box { base: None, .. }
             | Self::MeshPlane { first: None, .. }
@@ -1020,7 +1022,7 @@ impl InteractiveCommand {
     const fn collects_curve_points(self) -> bool {
         matches!(
             self,
-            Self::Polyline | Self::Curve { .. } | Self::InterpCrv | Self::SplitCurve
+            Self::Polyline | Self::Curve { .. } | Self::InterpCrv { .. } | Self::SplitCurve
         )
     }
 }
@@ -1783,6 +1785,11 @@ impl VibocerosApp {
                 x_count,
                 y_count,
             }
+        } else if matches!(normalized.as_str(), "interpcrv" | "interpcurve") {
+            let Ok(options) = parse_interp_curve_options(&arguments) else {
+                return false;
+            };
+            InteractiveCommand::InterpCrv { options }
         } else if normalized == "curve" {
             let mut degree = 3;
             let mut closure = ControlPointCurveClosure::Open;
@@ -2681,7 +2688,6 @@ impl VibocerosApp {
                     first_axis: None,
                 },
                 "polyline" | "pline" => InteractiveCommand::Polyline,
-                "interpcrv" | "interpcurve" => InteractiveCommand::InterpCrv,
                 "rectangle" | "rect" => InteractiveCommand::Rectangle { first: None },
                 "box" => InteractiveCommand::Box {
                     base: None,
@@ -3167,7 +3173,7 @@ impl VibocerosApp {
                 ));
                 self.push_log(command.prompt().to_owned());
             }
-            InteractiveCommand::InterpCrv => {
+            InteractiveCommand::InterpCrv { .. } => {
                 if let Some(previous) = self.curve_points.last()
                     && previous.is_near(point, self.document.tolerance())
                 {
@@ -4586,6 +4592,36 @@ impl VibocerosApp {
                     ControlPointCurveClosure::Sharp => "Sharp",
                 };
                 format!("Curve {arguments} Degree={degree} Close={closure}")
+            }
+            InteractiveCommand::InterpCrv { options } => {
+                let knots = match options.knot_spacing() {
+                    viboceros_geometry::CurveKnotSpacing::Uniform => "Uniform",
+                    viboceros_geometry::CurveKnotSpacing::Chord => "Chord",
+                    viboceros_geometry::CurveKnotSpacing::SquareRootChord => "SqrtChrd",
+                };
+                let closure = match options.closure() {
+                    viboceros_geometry::InterpolatedCurveClosure::Open => "Open",
+                    viboceros_geometry::InterpolatedCurveClosure::Smooth => "Smooth",
+                    viboceros_geometry::InterpolatedCurveClosure::Sharp => "Sharp",
+                };
+                let mut input = format!(
+                    "InterpCrv {arguments} Degree={} Knots={knots} Close={closure}",
+                    options.degree()
+                );
+                for (name, tangent) in [
+                    ("StartTangent", options.start_tangent()),
+                    ("EndTangent", options.end_tangent()),
+                ] {
+                    if let Some(tangent) = tangent {
+                        input.push_str(&format!(
+                            " {name}={},{},{}",
+                            tangent.x(),
+                            tangent.y(),
+                            tangent.z()
+                        ));
+                    }
+                }
+                input
             }
             _ => format!("{} {arguments}", command.name()),
         };
@@ -6236,7 +6272,12 @@ mod tests {
     fn interactive_interp_crv_collects_points_until_enter() {
         let mut app = test_app();
         assert!(app.try_start_interactive_command("InterpCurve"));
-        assert_eq!(app.active_command, Some(InteractiveCommand::InterpCrv));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::InterpCrv {
+                options: Default::default()
+            })
+        );
 
         let points = [
             point(0.0, 0.0, 0.0),

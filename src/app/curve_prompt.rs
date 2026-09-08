@@ -10,9 +10,12 @@ impl VibocerosApp {
             (false, Some(InteractiveCommand::Curve { degree, closure })) => Some(
                 curve_preview::CurvePreviewSettings::Control(degree, closure),
             ),
-            (false, Some(InteractiveCommand::InterpCrv)) => Some(
-                curve_preview::CurvePreviewSettings::Interpolated(self.document.tolerance()),
-            ),
+            (false, Some(InteractiveCommand::InterpCrv { options })) => {
+                Some(curve_preview::CurvePreviewSettings::Interpolated(
+                    options,
+                    self.document.tolerance(),
+                ))
+            }
             _ => None,
         };
         self.curve_preview.get(settings, &self.curve_points)
@@ -113,7 +116,7 @@ impl VibocerosApp {
                 Some(
                     InteractiveCommand::Polyline
                         | InteractiveCommand::Curve { .. }
-                        | InteractiveCommand::InterpCrv
+                        | InteractiveCommand::InterpCrv { .. }
                 )
             )
         {

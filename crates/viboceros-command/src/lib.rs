@@ -1238,6 +1238,29 @@ impl Command for InterpCurveCommand {
     }
 }
 
+/// Parses an options-only InterpCrv tail for interactive drafting. Geometry
+/// validation remains with the interpolation constructor at completion.
+pub fn parse_interp_curve_options(
+    arguments: &[&str],
+) -> Result<CurveInterpolationOptions, CommandError> {
+    let (points, options) = parse_interp_curve_arguments(arguments)?;
+    if !points.is_empty() {
+        return Err(CommandError::Usage(INTERP_CRV_USAGE));
+    }
+    if !matches!(options.degree(), 1 | 3) {
+        return Err(GeometryError::UnsupportedCurveInterpolationDegree {
+            actual: options.degree(),
+        }
+        .into());
+    }
+    if (options.start_tangent().is_some() || options.end_tangent().is_some())
+        && (options.degree() != 3 || options.closure() != InterpolatedCurveClosure::Open)
+    {
+        return Err(GeometryError::CurveInterpolationTangentsRequireOpenCubic.into());
+    }
+    Ok(options)
+}
+
 fn parse_interp_curve_arguments(
     arguments: &[&str],
 ) -> Result<(Vec<Point3>, CurveInterpolationOptions), CommandError> {
