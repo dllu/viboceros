@@ -2692,6 +2692,50 @@ def _point_input(operation):
     return _in_construction_plane(operation, script, None)
 
 
+def _non_manifold_selection(operation):
+    as_brep = operation["as_brep"]
+    preselect = operation["preselect"]
+    if type(as_brep) is not bool or type(preselect) is not bool:
+        raise ValueError("selection modes must be boolean")
+    vertices = [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [0, -1, 1]]
+    tetra = [[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]]
+    document = Rhino.RhinoDoc.ActiveDoc
+    selected = [obj.Id for obj in document.Objects.GetSelectedObjects(False, False)]
+    ids = []
+    try:
+        document.Objects.UnselectAll()
+        for faces in [[[0, 2, 1]], tetra, tetra + [[0, 1, 4]]]:
+            mesh = _triangle_mesh(vertices, faces)
+            try:
+                if as_brep:
+                    brep = Rhino.Geometry.Brep.CreateFromMesh(mesh, True)
+                    if brep is None:
+                        raise ValueError("could not construct selection B-rep")
+                    try:
+                        key = document.Objects.AddBrep(brep)
+                    finally:
+                        brep.Dispose()
+                else:
+                    key = document.Objects.AddMesh(mesh)
+                if key == System.Guid.Empty:
+                    raise ValueError("could not add selection fixture")
+                ids.append(key)
+            finally:
+                mesh.Dispose()
+        if preselect:
+            document.Objects.Select(ids[0])
+        if not Rhino.RhinoApp.RunScript("_SelNonManifold", False):
+            raise ValueError("non-manifold selection command failed")
+        return {"selected": [i for i, key in enumerate(ids) if document.Objects.FindId(key).IsSelected(False)]}, 0
+    finally:
+        Rhino.RhinoApp.RunScript("!", False)
+        for key in ids:
+            document.Objects.Delete(key, True)
+        document.Objects.UnselectAll()
+        for key in selected:
+            document.Objects.Select(key)
+
+
 def _short_curve_selection(operation):
     lengths = operation["lengths"]
     curve_kind = operation.get("curve_kind", "line")
@@ -4106,6 +4150,8 @@ def _execute(operation, iterations, tolerance):
         return _control_point_prompt(operation, True)
     if kind == "short_curve_selection":
         return _short_curve_selection(operation)
+    if kind == "non_manifold_selection":
+        return _non_manifold_selection(operation)
     if kind == "sweep1":
         return _sweep1(operation, iterations, tolerance)
     if kind == "curve_frames":

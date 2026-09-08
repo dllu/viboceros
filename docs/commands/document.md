@@ -37,7 +37,8 @@ and undo/redo history remain unchanged. Tests cover a tetrahedron with an extra
 face sharing an edge, its B-rep conversion, open and closed manifold controls,
 preselection, hidden/locked exclusions, and invalid arguments. This follows
 the documented [Rhino selection command](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelNonManifold);
-no live Rhino comparison has yet been recorded for this command.
+all four [live Rhino comparison cases](../non-manifold-selection.md) agree on
+mesh/B-rep classification and additive selection.
 
 `SelPlanarCrv` uses document tolerance. `SelLine` also recognizes
 exactly straight, single-span higher-degree NURBS curves, while excluding

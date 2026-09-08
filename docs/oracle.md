@@ -341,6 +341,10 @@ The `curve_area.json` fixture checks eight [enclosed curve-area cases](curve-are
 against analytic references and Rhino's public API. The retained strict comparison
 has two conic discrepancies; it is not an all-passing parity claim.
 
+The `non_manifold_selection.json` fixture checks the actual
+[`SelNonManifold` command](non-manifold-selection.md) on mesh and B-rep objects,
+with separate unselected controls and additive-selection cases.
+
 The `polycurve.json` fixture exercises [exact piecewise curves](polycurves.md).
 It preserves and compares segment definitions and domains, then tests reversal,
 trimming, splitting, length-based reparameterization, derivatives, and division.

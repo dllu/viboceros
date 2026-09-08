@@ -1,0 +1,45 @@
+{
+  "absolute_epsilon": 1e-10,
+  "max_absolute_error": 0.0,
+  "operations": [
+    {
+      "differences": [],
+      "id": "mesh-selection",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "viboceros_ns_per_iteration": 0.0
+    },
+    {
+      "differences": [],
+      "id": "brep-selection",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "viboceros_ns_per_iteration": 0.0
+    },
+    {
+      "differences": [],
+      "id": "mesh-additive",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "viboceros_ns_per_iteration": 0.0
+    },
+    {
+      "differences": [],
+      "id": "brep-additive",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "viboceros_ns_per_iteration": 0.0
+    }
+  ],
+  "passed": true,
+  "protocol_version": 1,
+  "relative_epsilon": 1e-10
+}

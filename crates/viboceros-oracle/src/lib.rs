@@ -60,6 +60,7 @@ pub use sweep::SweepFixture;
 mod curve_area;
 mod curve_join_close;
 mod curve_native;
+mod non_manifold_selection;
 pub use curve_frames::CurveFramesFixture;
 pub use curve_native::NativeCurveFixture;
 mod polycurve_native;
@@ -327,6 +328,11 @@ pub enum Operation {
     CurveArea {
         id: String,
         curve: curve_join_close::CurveInput,
+    },
+    NonManifoldSelection {
+        id: String,
+        as_brep: bool,
+        preselect: bool,
     },
     PolycurveNative {
         id: String,
@@ -1581,6 +1587,7 @@ impl Operation {
             | Self::ThreeDmBrepInterchange { id, .. }
             | Self::CurveNative { id, .. }
             | Self::CurveArea { id, .. }
+            | Self::NonManifoldSelection { id, .. }
             | Self::CurveExtrudeCommand { id, .. }
             | Self::PolycurveNative { id, .. }
             | Self::CurveJoinClose { id, .. }
@@ -2014,6 +2021,9 @@ fn execute(
             curve_native::run(fixture, iterations, tolerance)?
         }
         Operation::CurveArea { curve, .. } => curve_area::run(curve, iterations, tolerance)?,
+        Operation::NonManifoldSelection {
+            as_brep, preselect, ..
+        } => non_manifold_selection::run(*as_brep, *preselect, tolerance)?,
         Operation::PolycurveNative { fixture, .. } => {
             polycurve_native::run(fixture, iterations, tolerance)?
         }

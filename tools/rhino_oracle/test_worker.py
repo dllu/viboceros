@@ -11,6 +11,43 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_non_manifold_selection_cleans_up_on_success_and_command_failure(self):
+        for as_brep in (False, True):
+            for succeeds in (False, True):
+                with self.subTest(as_brep=as_brep, succeeds=succeeds):
+                    meshes = [Mock() for _ in range(3)]
+                    breps = [Mock() for _ in range(3)]
+                    objects = SimpleNamespace(
+                        GetSelectedObjects=lambda a, b: [SimpleNamespace(Id="prior")],
+                        UnselectAll=Mock(), Select=Mock(), Delete=Mock(),
+                        AddMesh=Mock(side_effect=[0, 1, 2]), AddBrep=Mock(side_effect=[0, 1, 2]),
+                        FindId=lambda key: SimpleNamespace(IsSelected=lambda sub: key in (0, 2)),
+                    )
+                    self.worker.System.Guid = SimpleNamespace(Empty="empty")
+                    self.worker.Rhino.RhinoDoc = SimpleNamespace(ActiveDoc=SimpleNamespace(Objects=objects))
+                    self.worker.Rhino.RhinoApp = SimpleNamespace(RunScript=Mock(side_effect=lambda script, echo: script == "!" or succeeds))
+                    self.worker.Rhino.Geometry = SimpleNamespace(Brep=SimpleNamespace(CreateFromMesh=Mock(side_effect=breps)))
+                    with patch.object(self.worker, "_triangle_mesh", side_effect=meshes):
+                        if succeeds:
+                            self.assertEqual(self.worker._non_manifold_selection({"as_brep": as_brep, "preselect": True}), ({"selected": [0, 2]}, 0))
+                        else:
+                            with self.assertRaisesRegex(ValueError, "command failed"):
+                                self.worker._non_manifold_selection({"as_brep": as_brep, "preselect": True})
+                    for mesh in meshes:
+                        mesh.Dispose.assert_called_once_with()
+                    if as_brep:
+                        for brep in breps:
+                            brep.Dispose.assert_called_once_with()
+                    self.assertEqual([call.args for call in objects.Delete.call_args_list], [(0, True), (1, True), (2, True)])
+                    self.assertEqual(objects.Select.call_args_list[-1].args, ("prior",))
+
+    def test_non_manifold_selection_rejects_non_boolean_mode(self):
+        for mode in (None, 0, 1, "false"):
+            with self.assertRaisesRegex(ValueError, "boolean"):
+                self.worker._non_manifold_selection({"as_brep": mode, "preselect": False})
+            with self.assertRaisesRegex(ValueError, "boolean"):
+                self.worker._non_manifold_selection({"as_brep": False, "preselect": mode})
+
     def test_curve_area_disposes_owned_curve_and_properties(self):
         curve = Mock()
         properties = [Mock(Area=0.15) for _ in range(3)]
