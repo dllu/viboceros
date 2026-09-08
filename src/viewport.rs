@@ -2235,7 +2235,12 @@ mod tests {
             viewport.target = NaVector3::new(1e12, -2e12, 3e12);
             viewport.pan = Vec2::new(17.0, -23.0);
             let model = Point3::try_new(1e12 + 1.0, -2e12 + 2.0, 3e12 + 3.0).unwrap();
-            assert_eq!(viewport.gpu_position(model), Some([1.0, 2.0, 3.0]));
+            let expected = if kind.is_parallel() {
+                [40.0, 80.0, 120.0]
+            } else {
+                [1.0, 2.0, 3.0]
+            };
+            assert_eq!(viewport.gpu_position(model), Some(expected));
             let depth = viewport.view_depth(model);
             let mut origin_view = Viewport::new(kind);
             origin_view.pan = viewport.pan;
@@ -2258,6 +2263,44 @@ mod tests {
                 .gpu_position(Point3::try_new(Real::MAX, 0.0, 0.0).unwrap())
                 .is_none()
         );
+    }
+
+    #[test]
+    fn parallel_gpu_matrices_remain_normal_at_extreme_zoom_scales() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        for kind in [ViewKind::Top, ViewKind::Front, ViewKind::Right] {
+            for scale in [1.0, 2.0_f64.powi(126)] {
+                let mut viewport = Viewport::new(kind);
+                viewport.last_rect = Some(rect);
+                viewport.zoom_factor(1.0 / scale).unwrap();
+                let point = Point3::try_new(scale, 2.0 * scale, 3.0 * scale).unwrap();
+                assert_eq!(viewport.gpu_position(point), Some([40.0, 80.0, 120.0]));
+                let depth = viewport.view_depth(point);
+                let range = (depth - scale, depth + scale);
+                let uniform = viewport.gpu_view_uniform(rect, Some(range));
+                assert!(
+                    uniform
+                        .view_projection
+                        .iter()
+                        .flatten()
+                        .all(|v| *v == 0.0 || v.is_normal())
+                );
+                let (gpu, gpu_depth) = gpu_project(&viewport, rect, point, range);
+                assert!(gpu.distance(viewport.project(point, rect).unwrap()) < 0.001);
+                assert!((0.0..=1.0).contains(&gpu_depth));
+            }
+            let mut viewport = Viewport::new(kind);
+            viewport.last_rect = Some(rect);
+            viewport.zoom_factor(Real::from_bits(1)).unwrap();
+            let uniform = viewport.gpu_view_uniform(rect, Some((0.0, 0.0)));
+            assert!(
+                uniform
+                    .view_projection
+                    .iter()
+                    .flatten()
+                    .all(|v| *v == 0.0 || v.is_normal())
+            );
+        }
     }
 
     #[test]

@@ -4,6 +4,96 @@ use eframe::wgpu;
 
 #[test]
 #[ignore = "requires a graphics adapter; run explicitly with --ignored --nocapture"]
+fn gpu_parallel_zoom_preserves_pixels_at_extreme_model_scales() {
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(SIZE as f32));
+    for format in [
+        wgpu::TextureFormat::Rgba8Unorm,
+        wgpu::TextureFormat::Rgba8UnormSrgb,
+    ] {
+        let mut renderer = OffscreenRenderer::new(format);
+        for kind in [ViewKind::Top, ViewKind::Front, ViewKind::Right] {
+            let mut baseline = None;
+            for model_scale in [1.0, 2.0_f64.powi(126)] {
+                let mut viewport = Viewport::new(kind);
+                viewport.display_mode = DisplayMode::Shaded;
+                viewport.last_rect = Some(rect);
+                viewport.zoom_factor(1.0 / model_scale).unwrap();
+                let (right, up, forward) = match kind {
+                    ViewKind::Top => (NaVector3::x(), NaVector3::y(), -NaVector3::z()),
+                    ViewKind::Front => (NaVector3::x(), NaVector3::z(), NaVector3::y()),
+                    ViewKind::Right => (NaVector3::y(), NaVector3::z(), -NaVector3::x()),
+                    _ => unreachable!(),
+                };
+                let point = |x: Real, y: Real, z: Real| {
+                    let v = (right * x + up * y + forward * z) * model_scale;
+                    Point3::try_new(v.x, v.y, v.z).unwrap()
+                };
+                let mesh = TriangleMesh::try_new(
+                    vec![
+                        point(-2.0, -2.0, 0.0),
+                        point(2.0, -2.0, 0.0),
+                        point(0.0, 2.0, 0.0),
+                    ],
+                    vec![[0, 1, 2]],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap();
+                let mut scene = GpuSceneBuilder::new();
+                viewport.add_gpu_mesh_faces(&mut scene, &mesh, Color32::RED);
+                viewport.add_gpu_line(
+                    &mut scene,
+                    rect,
+                    point(-1.0, 3.0, -1.0),
+                    point(1.0, 3.0, -1.0),
+                    3.0,
+                    Color32::WHITE,
+                );
+                viewport.add_gpu_point(
+                    &mut scene,
+                    rect,
+                    point(-3.0, 0.0, -1.0),
+                    3.0,
+                    Color32::GREEN,
+                );
+                let uniform = viewport.gpu_view_uniform(rect, scene.depth_range());
+                let pixels = renderer.render(&scene.finish(uniform, false));
+                if let Some(expected) = &baseline {
+                    let differences = pixels.iter().zip(expected).filter(|(a, b)| a != b).count();
+                    assert_eq!(differences, 0, "{kind:?} {format:?}: scale={model_scale}");
+                } else {
+                    assert!(
+                        pixels
+                            .iter()
+                            .any(|pixel| pixel[0] > pixel[1] && pixel[3] == 255)
+                    );
+                    assert!(pixels.contains(&[0, 255, 0, 255]));
+                    assert!(pixels.contains(&[255; 4]));
+                    baseline = Some(pixels);
+                }
+            }
+            let mut viewport = Viewport::new(kind);
+            viewport.last_rect = Some(rect);
+            viewport.zoom_factor(Real::from_bits(1)).unwrap();
+            let mut scene = GpuSceneBuilder::new();
+            viewport.add_gpu_point(
+                &mut scene,
+                rect,
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                3.0,
+                Color32::GREEN,
+            );
+            let uniform = viewport.gpu_view_uniform(rect, scene.depth_range());
+            let pixels = renderer.render(&scene.finish(uniform, false));
+            assert!(
+                pixels.contains(&[0, 255, 0, 255]),
+                "minimum-scale point in {kind:?}"
+            );
+        }
+    }
+}
+
+#[test]
+#[ignore = "requires a graphics adapter; run explicitly with --ignored --nocapture"]
 fn gpu_camera_relative_geometry_preserves_large_translation_pixels() {
     let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(SIZE as f32));
     for format in [

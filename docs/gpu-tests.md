@@ -21,7 +21,7 @@ native SIGSEGV during this audit; the exact backend/driver cause is not isolated
 Serialization avoids concurrent adapter enumeration and device teardown in
 this test harness, without changing the application renderer.
 The original three-test suite passed five consecutive runs after serialization
-(118 renders per run); the added translation test brings the suite to 134 renders.
+(118 renders per run).
 
 The face test compares a grid of pixel centers with independent ray/triangle
 intersections, excluding a small barycentric edge band where rasterizer edge
@@ -44,7 +44,16 @@ It requires exact pixel equality in all four views and both target formats
 The perspective case uses an axis-aligned camera so local fixture coordinates
 remain exactly representable in f64 after translation. Before target-relative
 GPU coordinates, the Top/non-sRGB case differed at 13,072 pixels.
-All four tests use the application's camera, scene submission, shaders, pipelines,
+The parallel-scale test enlarges the same face/wire/point scene by `2^126` and
+applies the inverse `Zoom Factor`, requiring exact pixel equality in Top, Front,
+and Right views with both target formats (12 renders). It also renders a lone
+point at the minimum parallel zoom scale (6 renders). Parallel GPU vertices now
+include the zoom scale, applied in f64; otherwise horizontal/vertical matrix
+coefficients become subnormal at this model size. Depth padding uses those same
+scaled units so zero-depth scenes still have a finite projection at minimum zoom.
+An ordinary CPU test checks normal (or zero) matrix coefficients and CPU/GPU
+projection agreement at these scales. The full GPU suite now performs 152 renders.
+All five tests use the application's camera, scene submission, shaders, pipelines,
 depth attachment, and buffer-upload code.
 An ordinary non-GPU test checks the independent ray reference against analytic
 hits, reversed winding, behind-origin intersections, outside barycentric weights,

@@ -4,12 +4,19 @@ use super::*;
 use nalgebra::Matrix4 as NaMatrix4;
 
 impl Viewport {
-    /// Preserve small local features before the f64-to-f32 GPU boundary.
+    /// Preserve local features before the f64-to-f32 GPU boundary. Parallel
+    /// views also apply their uniform model-to-pixel scale here so GPU matrix
+    /// coefficients do not become subnormal merely because the model is large.
     pub(super) fn gpu_position(&self, point: Point3) -> Option<[f32; 3]> {
+        let scale = if self.kind.is_parallel() {
+            Real::from(self.pixels_per_unit)
+        } else {
+            1.0
+        };
         Some([
-            real_to_gpu(point.x() - self.target.x)?,
-            real_to_gpu(point.y() - self.target.y)?,
-            real_to_gpu(point.z() - self.target.z)?,
+            real_to_gpu((point.x() - self.target.x) * scale)?,
+            real_to_gpu((point.y() - self.target.y) * scale)?,
+            real_to_gpu((point.z() - self.target.z) * scale)?,
         ])
     }
 
@@ -472,12 +479,17 @@ impl Viewport {
                     ViewKind::Perspective => unreachable!(),
                 };
                 let (minimum_depth, maximum_depth) = depth_range.unwrap_or((-1.0, 1.0));
+                let minimum_depth = minimum_depth * Real::from(self.pixels_per_unit);
+                let maximum_depth = maximum_depth * Real::from(self.pixels_per_unit);
+                // Pad in the same scaled units as the vertices. Padding in
+                // model units can itself underflow at the smallest zoom scale.
                 let span = (maximum_depth - minimum_depth).abs().max(1.0);
                 let near = minimum_depth - span * 0.05 - 1.0e-3;
                 let far = maximum_depth + span * 0.05 + 1.0e-3;
                 let depth_span = far - near;
-                let horizontal_scale = 2.0 * Real::from(self.pixels_per_unit) / width;
-                let vertical_scale = 2.0 * Real::from(self.pixels_per_unit) / height;
+                // Parallel vertex positions already contain pixels_per_unit.
+                let horizontal_scale = 2.0 / width;
+                let vertical_scale = 2.0 / height;
                 NaMatrix4::new(
                     horizontal_scale * right.x,
                     horizontal_scale * right.y,
