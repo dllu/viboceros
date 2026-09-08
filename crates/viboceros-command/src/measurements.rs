@@ -66,13 +66,13 @@ impl Command for AreaCommand {
             document,
             MeasurementSign::Nonnegative,
             |geometry, tolerance| match geometry {
-                Geometry::Circle(circle) => Ok(circle.area()?),
-                Geometry::Ellipse(ellipse) => Ok(ellipse.area()?),
-                Geometry::Polyline(polyline) => Ok(polyline.planar_area(tolerance)?),
                 Geometry::NurbsSurface(surface) => Ok(surface.area(tolerance)?),
                 Geometry::Brep(brep) => Ok(brep.area(tolerance)?),
                 Geometry::Mesh(mesh) => Ok(mesh.area()?),
-                _ => Err(CommandError::UnsupportedAreaGeometry),
+                _ => geometry_curve_ref(geometry)
+                    .ok_or(CommandError::UnsupportedAreaGeometry)?
+                    .planar_area(tolerance)
+                    .map_err(CommandError::from),
             },
         )?;
         let total = format_measurement(total);

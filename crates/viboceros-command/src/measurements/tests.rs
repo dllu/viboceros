@@ -4,6 +4,63 @@ use viboceros_document::SelectionMode;
 use viboceros_geometry::{Brep, Frame3, NurbsSurface, Point3, TriangleMesh, Vector3};
 
 #[test]
+fn area_measures_selected_nurbs_and_polycurves_without_modifying_the_document() {
+    use viboceros_geometry::{Circle3, CurveSegment3, LineSegment, PolyCurve3, UnitVector3};
+    let mut document = Document::default();
+    let circle = Circle3::try_new(
+        Point3::try_new(10., 0., 0.).unwrap(),
+        2.,
+        UnitVector3::try_new(0., 0., 1., document.tolerance()).unwrap(),
+        document.tolerance(),
+    )
+    .unwrap();
+    let circle_id = document
+        .add_geometry(Geometry::NurbsCurve(circle.to_nurbs().unwrap()))
+        .unwrap();
+    let corners = [[0., 0.], [3., 0.], [3., 4.], [0., 4.], [0., 0.]]
+        .map(|[x, y]| Point3::try_new(x, y, 0.).unwrap());
+    let polycurve = PolyCurve3::try_new(
+        corners
+            .windows(2)
+            .map(|pair| {
+                CurveSegment3::Line(
+                    LineSegment::try_new(pair[0], pair[1], document.tolerance()).unwrap(),
+                )
+            })
+            .collect(),
+    )
+    .unwrap();
+    let polygon_id = document
+        .add_geometry(Geometry::PolyCurve(polycurve))
+        .unwrap();
+    document
+        .select_objects([circle_id, polygon_id], SelectionMode::Replace)
+        .unwrap();
+    let original = document.objects().cloned().collect::<Vec<_>>();
+    let selection = document.selected_object_ids().collect::<Vec<_>>();
+    let undo = document.undo_label().map(str::to_owned);
+    let redo = document.redo_label().map(str::to_owned);
+    let output = CommandRegistry::with_builtins()
+        .execute(&mut document, "Area")
+        .unwrap();
+    assert!(output.starts_with("Measured 2 object(s): total area "));
+    let area = output
+        .split_whitespace()
+        .last()
+        .unwrap()
+        .parse::<f64>()
+        .unwrap();
+    assert!((area - (12. + 4. * std::f64::consts::PI)).abs() < 1e-9);
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), original);
+    assert_eq!(
+        document.selected_object_ids().collect::<Vec<_>>(),
+        selection
+    );
+    assert_eq!(document.undo_label(), undo.as_deref());
+    assert_eq!(document.redo_label(), redo.as_deref());
+}
+
+#[test]
 fn measurement_output_preserves_small_nonzero_geometry() {
     let mut document = Document::new(Tolerance::try_new(1e-20, 1e-12, 1e-10).unwrap());
     let registry = CommandRegistry::with_builtins();

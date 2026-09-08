@@ -81,6 +81,8 @@ selection integration separate from accuracy-controlled arc-length measurement.
 The read-only [`measurements` command module](commands/measurements.md) owns
 Length, Area, and Volume, with shared streaming exact finite-value aggregation and
 separate nonnegative/signed policies. Its tests live beside the implementation.
+`curve/area` dispatches enclosed curve area to analytic formulas or the existing
+exact planar-face boundary integrator; temporary topology stays outside the document.
 Viewport hit-testing applies the filter before hit priority; clicks/windows use
 the same selection adapter. Prompt choices live outside model history, while
 finishing uses the registry's normal transaction lifecycle with explicit

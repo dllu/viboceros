@@ -18,12 +18,17 @@ tolerances.
 | Command | Supported geometry |
 | --- | --- |
 | Length | Lines, circles, arcs, ellipses, polylines, NURBS curves, and polycurves |
-| Area | Circles, ellipses, planar closed polylines, NURBS surfaces, B-reps, and meshes |
+| Area | Circles, ellipses, closed planar polylines/NURBS/polycurves, NURBS surfaces, B-reps, and meshes |
 | Volume | Closed meshes and solid B-reps |
 
 NURBS/B-rep measurements use the geometry kernel's accuracy-controlled routines,
-not viewport tessellation. Area does not yet support general closed NURBS curves
-or polycurves. Volume is signed: reversing orientation reverses its contribution,
+not viewport tessellation. General curve area uses `CurveRef::planar_area`,
+which constructs a temporary validated planar face retaining the exact rational
+boundary. This face is never added to the document. Open, nonplanar, or invalid
+general boundaries are rejected; self-intersecting winding-area semantics are
+not established. Separate selected curves contribute separate areas, not holes
+in one region. A lower-overhead standalone boundary-integral path remains future
+work. Volume is signed: reversing orientation reverses its contribution,
 so oppositely oriented objects can cancel. Open meshes/B-reps are rejected for
 volume. Length and area contributions must be nonnegative.
 
@@ -36,5 +41,6 @@ than formatted infinities. This improves aggregation, not the accuracy of each
 underlying geometry measurement.
 
 Tests cover mixed analytic lengths/areas, surface and B-rep area, signed mesh
-and B-rep volumes, small terms amid large contributions, and unchanged selection
+and B-rep volumes, rational circles and mixed polynomial/line polycurves,
+small terms amid large contributions, and unchanged selection
 and both history stacks after failed queries.

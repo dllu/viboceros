@@ -2,6 +2,7 @@
 use std::f64::consts::FRAC_PI_2;
 
 mod arc_length;
+mod area;
 pub(crate) use arc_length::{ArcLengthKink, ArcLengthSampler};
 
 use crate::{
