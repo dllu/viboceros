@@ -2,6 +2,26 @@ use super::*;
 use crate::{CircularArc3, CurveClosure, LineSegment, NurbsCurve};
 
 #[test]
+fn join_rounds_subnormal_endpoint_midpoints_symmetrically() {
+    let unit = Real::from_bits(1);
+    for (left, right, expected) in [(1.0, 2.0, 2.0), (-1.0, 2.0, 0.0), (-31.0, -30.0, -30.0)] {
+        let inputs = [
+            line([0.0, 0.0], [1.0, left * unit]),
+            line([1.0, right * unit], [2.0, 0.0]),
+        ];
+        for curves in [inputs.clone(), [inputs[1].clone(), inputs[0].clone()]] {
+            let joined = join(&curves, 1e-6, false);
+            assert_eq!(joined.len(), 1);
+            let Curve3::Polyline(curve) = joined[0].curve() else {
+                panic!("expected polyline")
+            };
+            assert_eq!(curve.vertices().len(), 3);
+            assert_eq!(curve.vertices()[1], p(1.0, expected * unit));
+        }
+    }
+}
+
+#[test]
 fn seeded_join_preserves_the_seed_domain_and_does_not_revisit_skipped_sources() {
     let inputs = [
         line([1.0, 0.0], [2.0, 0.0]),

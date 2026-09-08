@@ -30,6 +30,16 @@ impl Point3 {
         [self.x(), self.y(), self.z()]
     }
 
+    /// Coordinate-wise midpoint without overflowing endpoint sums or
+    /// prematurely rounding subnormal differences.
+    pub fn midpoint(self, other: Self) -> Result<Self, GeometryError> {
+        Self::try_new(
+            self.x().midpoint(other.x()),
+            self.y().midpoint(other.y()),
+            self.z().midpoint(other.z()),
+        )
+    }
+
     /// Euclidean distance, computed with scaled hypot operations to avoid
     /// intermediate overflow.
     pub fn distance_to(self, other: Self) -> Result<Real, GeometryError> {
@@ -69,6 +79,23 @@ impl TryFrom<[Real; 3]> for Point3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn midpoint_is_symmetric_and_handles_subnormal_and_extreme_coordinates() {
+        let unit = Real::from_bits(1);
+        for left in -32..=32 {
+            for right in -32..=32 {
+                let a = Point3::try_new(Real::from(left) * unit, Real::MAX, -Real::MAX).unwrap();
+                let b = Point3::try_new(Real::from(right) * unit, -Real::MAX, -Real::MAX).unwrap();
+                let expected = (Real::from(left + right) * 0.5).round_ties_even() * unit;
+                assert_eq!(
+                    a.midpoint(b).unwrap().to_array(),
+                    [expected, 0.0, -Real::MAX]
+                );
+                assert_eq!(a.midpoint(b).unwrap(), b.midpoint(a).unwrap());
+            }
+        }
+    }
 
     #[test]
     fn rejects_non_finite_coordinates() {

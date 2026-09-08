@@ -108,6 +108,12 @@ Confirmation disables object picking without enabling point drafting. Nested CPl
 input and display controls retain the current phase. Explicit ordered document
 renewal and ordered copies support pick-dependent creation order; inverse renewal
 uses adjacent cycle swaps with the same single scratch permutation as forward replay.
+`Point3::midpoint` centralizes coordinate-wise standard floating-point midpoint
+evaluation for box centers, curve-join endpoints, and point contacts. Scalar
+midpoints in NURBS and intersection algorithms use the same standard operation.
+Tests cover subnormal rounding, extreme coordinates, symmetry, and actual joined
+polyline vertices under reversed source order; they do not establish Rhino
+parity for subnormal geometry.
 The `bounds/bezier` module handles bounded tensor subdivision and rational hulls;
 curve/surface adapters select the complete native active spans.
 `bounds/bezier/compose` constructs homogeneous rational surface/UV-curve

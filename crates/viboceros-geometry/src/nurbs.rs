@@ -5163,11 +5163,7 @@ pub(crate) fn interval_fraction_unbounded(
 }
 
 fn finite_midpoint(left: Real, right: Real) -> Real {
-    if left.is_sign_negative() == right.is_sign_negative() {
-        left + (right - left) * 0.5
-    } else {
-        left * 0.5 + right * 0.5
-    }
+    left.midpoint(right)
 }
 
 fn farthest_coordinate(origin: Real, minimum: Real, maximum: Real) -> Real {
@@ -5298,11 +5294,7 @@ fn curve_span_lies_on_curve(
 }
 
 fn midpoint_between_points(left: Point3, right: Point3) -> Result<Point3, GeometryError> {
-    Point3::try_new(
-        finite_midpoint(left.x(), right.x()),
-        finite_midpoint(left.y(), right.y()),
-        finite_midpoint(left.z(), right.z()),
-    )
+    left.midpoint(right)
 }
 
 fn curve_pair_distance_tolerance(
@@ -6338,6 +6330,17 @@ fn blend_weighted_control_points_unbounded(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn scalar_midpoints_preserve_subnormal_rounding() {
+        let unit = Real::from_bits(1);
+        for (left, right, expected) in [(1.0, 2.0, 2.0), (-1.0, 2.0, 0.0), (-31.0, -30.0, -30.0)] {
+            assert_eq!(finite_midpoint(left * unit, right * unit), expected * unit);
+            assert_eq!(finite_midpoint(right * unit, left * unit), expected * unit);
+        }
+        assert_eq!(finite_midpoint(Real::MAX, Real::MAX), Real::MAX);
+        assert_eq!(finite_midpoint(-Real::MAX, Real::MAX), 0.0);
+    }
     use crate::Tolerance;
 
     fn point(x: Real, y: Real) -> Point3 {

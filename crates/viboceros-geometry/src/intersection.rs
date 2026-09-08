@@ -1495,11 +1495,7 @@ fn matching_polygon_start(
 }
 
 fn midpoint(first: Point3, second: Point3) -> Result<Point3, GeometryError> {
-    Point3::try_new(
-        finite_midpoint(first.x(), second.x()),
-        finite_midpoint(first.y(), second.y()),
-        finite_midpoint(first.z(), second.z()),
-    )
+    first.midpoint(second)
 }
 
 fn surface_projection_range(
@@ -3102,11 +3098,7 @@ fn control_projection_bounds(
 }
 
 fn finite_midpoint(left: Real, right: Real) -> Real {
-    if left.is_sign_negative() == right.is_sign_negative() {
-        left + (right - left) * 0.5
-    } else {
-        left * 0.5 + right * 0.5
-    }
+    left.midpoint(right)
 }
 
 fn interpolate_parameter(start: Real, end: Real, fraction: Real) -> Real {
@@ -3130,6 +3122,17 @@ fn intersection_parameter_near(left: Real, right: Real) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn scalar_midpoints_preserve_subnormal_rounding() {
+        let unit = Real::from_bits(1);
+        for (left, right, expected) in [(1.0, 2.0, 2.0), (-1.0, 2.0, 0.0), (-31.0, -30.0, -30.0)] {
+            assert_eq!(finite_midpoint(left * unit, right * unit), expected * unit);
+            assert_eq!(finite_midpoint(right * unit, left * unit), expected * unit);
+        }
+        assert_eq!(finite_midpoint(Real::MAX, Real::MAX), Real::MAX);
+        assert_eq!(finite_midpoint(-Real::MAX, Real::MAX), 0.0);
+    }
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()

@@ -263,13 +263,13 @@ fn assemble(
                 let first_arc = endpoint_is_arc(&curves[first.curve], first.start);
                 let second_arc = endpoint_is_arc(&curves[second.curve], second.start);
                 let point = if first_arc && second_arc {
-                    midpoint(first.point, second.point)?
+                    first.point.midpoint(second.point)?
                 } else if first_arc {
                     first.point
                 } else if second_arc {
                     second.point
                 } else {
-                    midpoint(first.point, second.point)?
+                    first.point.midpoint(second.point)?
                 };
                 targets[side] = Some(point);
             }
@@ -398,19 +398,6 @@ fn linear_form(curve: &Curve3, tolerance: Tolerance) -> Result<Polyline3, Geomet
         ),
         _ => unreachable!("linear form is only used for line/polyline inputs"),
     }
-}
-
-fn midpoint(left: Point3, right: Point3) -> Result<Point3, GeometryError> {
-    Point3::try_from(std::array::from_fn(|i| {
-        let a = left.to_array()[i];
-        let b = right.to_array()[i];
-        let difference = b - a;
-        if difference.is_finite() {
-            a + 0.5 * difference
-        } else {
-            0.5 * a + 0.5 * b
-        }
-    }))
 }
 
 fn seeded_partners(

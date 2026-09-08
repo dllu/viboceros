@@ -44,13 +44,7 @@ impl BoundingBox3 {
     }
 
     pub fn center(self) -> Result<Point3, GeometryError> {
-        // Standard midpoint avoids overflow without prematurely rounding
-        // subnormal differences or halved endpoints.
-        Point3::try_new(
-            self.min.x().midpoint(self.max.x()),
-            self.min.y().midpoint(self.max.y()),
-            self.min.z().midpoint(self.max.z()),
-        )
+        self.min.midpoint(self.max)
     }
 
     pub fn union(self, other: Self) -> Result<Self, GeometryError> {
