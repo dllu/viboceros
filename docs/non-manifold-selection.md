@@ -23,6 +23,10 @@ tools/rhino_oracle/run_headless.sh compare \
 The Rhino worker saves/restores prior selection, disposes constructed geometry,
 and deletes only its temporary objects, including after a command failure.
 Python tests verify success/failure cleanup and reject non-boolean mode flags.
+Partial-construction tests inject failed mesh additions, failed B-rep conversion,
+and failed B-rep additions on the second object. They check disposal of created
+geometry, deletion of only the first successfully added object, restoration of
+prior selection, and cancellation without running the selection command.
 The native probe checks that geometry and undo/redo labels remain unchanged.
 These probes are untimed; zero timing fields are not performance measurements.
 

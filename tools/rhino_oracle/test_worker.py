@@ -11,6 +11,41 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_non_manifold_selection_cleans_up_partial_construction(self):
+        for failure in ("mesh-empty", "mesh-raise", "brep-none", "brep-raise", "brep-add-empty", "brep-add-raise"):
+            with self.subTest(failure=failure):
+                as_brep = failure.startswith("brep")
+                meshes = [Mock() for _ in range(3)]
+                breps = [Mock() for _ in range(3)]
+                add_failure = RuntimeError("injected add failure") if failure.endswith("raise") else "empty"
+                objects = SimpleNamespace(
+                    GetSelectedObjects=lambda a, b: [SimpleNamespace(Id="prior")],
+                    UnselectAll=Mock(), Select=Mock(), Delete=Mock(),
+                    AddMesh=Mock(side_effect=[0, add_failure]),
+                    AddBrep=Mock(side_effect=[0, add_failure]),
+                )
+                created_breps = breps
+                if failure == "brep-none":
+                    created_breps = [breps[0], None]
+                elif failure == "brep-raise":
+                    created_breps = [breps[0], RuntimeError("injected conversion failure")]
+                script = Mock(return_value=True)
+                self.worker.System.Guid = SimpleNamespace(Empty="empty")
+                self.worker.Rhino.RhinoDoc = SimpleNamespace(ActiveDoc=SimpleNamespace(Objects=objects))
+                self.worker.Rhino.RhinoApp = SimpleNamespace(RunScript=script)
+                self.worker.Rhino.Geometry = SimpleNamespace(Brep=SimpleNamespace(CreateFromMesh=Mock(side_effect=created_breps)))
+                with patch.object(self.worker, "_triangle_mesh", side_effect=meshes):
+                    expected_error = RuntimeError if failure.endswith("raise") else ValueError
+                    with self.assertRaises(expected_error):
+                        self.worker._non_manifold_selection({"as_brep": as_brep, "preselect": True})
+                self.assertEqual([mesh.Dispose.call_count for mesh in meshes], [1, 1, 0])
+                expected_disposals = [1, 0, 0] if failure in ("brep-none", "brep-raise") else [1, 1, 0]
+                self.assertEqual([brep.Dispose.call_count for brep in breps], expected_disposals if as_brep else [0, 0, 0])
+                objects.Delete.assert_called_once_with(0, True)
+                objects.Select.assert_called_once_with("prior")
+                self.assertEqual(objects.UnselectAll.call_count, 2)
+                script.assert_called_once_with("!", False)
+
     def test_non_manifold_selection_cleans_up_on_success_and_command_failure(self):
         for as_brep in (False, True):
             for succeeds in (False, True):
