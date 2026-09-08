@@ -106,6 +106,11 @@ The drafting kernel's grid snap uses a signed remainder and a local adjustment,
 avoiding overflowing grid indices for finite coordinates and fine spacing. It
 retains plane elevation, rounds halfway cases away from zero, and rejects a
 genuinely unrepresentable final grid point. The current UI still uses unit spacing.
+Within `viboceros-drafting`, `object_snap` owns feature enumeration, projection
+metrics, indexed point-cloud queries, and snap priority. The crate root re-exports
+the public snap API and retains shared errors and basic tracking; `plane` owns
+plane-local drafting, and `point_input` owns typed point interpretation. API
+regression tests live in a separate `tests.rs` module.
 Clipping uses the line's dominant screen coordinate rather than a normalized
 segment parameter, so distant endpoints do not collapse a visible guide to a
 single point. Exact endpoint tests cover huge horizontal, vertical, and diagonal
