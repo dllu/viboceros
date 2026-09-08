@@ -268,16 +268,17 @@ pub(super) fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, Co
         .enumerate()
         .map(|(index, layer)| (layer.id(), index))
         .collect();
-    let mut used_group_names = document
+    let used_group_names = document
         .groups()
         .filter_map(|group| group.name().map(str::to_owned))
         .collect::<BTreeSet<_>>();
     let document_groups = document.groups().collect::<Vec<_>>();
+    let mut group_name_numbers = 1_u64..=u64::MAX;
     let groups = document_groups
         .iter()
         .map(|group| ThreeDmGroup {
             name: group.name().map_or_else(
-                || next_serialized_group_name(&mut used_group_names),
+                || next_serialized_group_name(&used_group_names, &mut group_name_numbers),
                 str::to_owned,
             ),
         })
@@ -317,10 +318,15 @@ pub(super) fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, Co
     Ok(model)
 }
 
-fn next_serialized_group_name(used: &mut BTreeSet<String>) -> String {
-    for number in 1_u64..=u64::MAX {
+fn next_serialized_group_name(
+    used: &BTreeSet<String>,
+    numbers: &mut impl Iterator<Item = u64>,
+) -> String {
+    // One monotonic sequence per export: earlier candidates never need to be
+    // revisited or added to the set of reserved document names.
+    for number in numbers.by_ref() {
         let candidate = format!("Group{number:02}");
-        if used.insert(candidate.clone()) {
+        if !used.contains(&candidate) {
             return candidate;
         }
     }

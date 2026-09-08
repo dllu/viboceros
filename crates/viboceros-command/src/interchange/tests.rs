@@ -3,6 +3,50 @@ use crate::CommandRegistry;
 use viboceros_document::SelectionMode;
 use viboceros_geometry::Point3;
 
+#[test]
+fn generated_group_names_scan_each_candidate_only_once() {
+    let used = (1..=1000)
+        .map(|i| format!("Group{i:02}"))
+        .collect::<BTreeSet<_>>();
+    let attempts = std::cell::Cell::new(0);
+    let mut numbers = (1_u64..=u64::MAX).inspect(|_| attempts.set(attempts.get() + 1));
+    for i in 1001..=5000 {
+        assert_eq!(
+            next_serialized_group_name(&used, &mut numbers),
+            format!("Group{i:02}")
+        );
+    }
+    assert_eq!(attempts.get(), 5000);
+    assert_eq!(used.len(), 1000);
+}
+
+#[test]
+fn export_group_names_reserve_later_named_groups_and_preserve_membership_order() {
+    let mut document = Document::default();
+    let object = document.add_geometry(triangle(0.0)).unwrap();
+    let first = document.add_empty_group(None).unwrap();
+    let named = document.add_empty_group(Some("Group01".into())).unwrap();
+    let second = document.add_empty_group(None).unwrap();
+    document.add_empty_group(Some("Group03".into())).unwrap();
+    document.add_empty_group(Some("Group100".into())).unwrap();
+    document
+        .set_object_group_memberships(object, [second, named, first])
+        .unwrap();
+    let before = format!("{document:?}");
+    let model = document_3dm_model(&document).unwrap();
+    assert_eq!(
+        model
+            .groups
+            .iter()
+            .map(|g| g.name.as_str())
+            .collect::<Vec<_>>(),
+        ["Group02", "Group01", "Group04", "Group03", "Group100"]
+    );
+    assert_eq!(model.objects[0].group_indices, [2, 1, 0]);
+    assert_eq!(format!("{document:?}"), before);
+    assert_eq!(document_3dm_model(&document).unwrap(), model);
+}
+
 fn triangle(x: f64) -> Geometry {
     Geometry::Mesh(
         TriangleMesh::try_new(
