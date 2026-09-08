@@ -17,6 +17,11 @@ otherwise compares ordered points. Transformations create fresh data and fresh
 indexes, leaving the original and its snapshots unchanged. The borrowed point
 slice API and interchange representation are unchanged.
 
+`point_cloud.rs` owns the public type, shared storage, and cache lifecycle.
+`point_cloud/index.rs` owns k-d tree construction, deterministic ordering, and
+bounded searches. `point_cloud/tests.rs` contains correctness, lifecycle,
+concurrency, and opt-in timing checks; the public query API stays unchanged.
+
 `PointCloudProjection` selects XY, XZ, or YZ for
 `PointCloud3::nearest_projected_relative`. Queries keep the camera origin and
 local cursor offset separate, evaluate distances in the selected model-space
