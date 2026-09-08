@@ -43512,20 +43512,10 @@ mod tests {
     #[test]
     fn imports_and_exports_stl_through_commands() {
         use std::fs;
-        use std::time::{SystemTime, UNIX_EPOCH};
 
-        let unique = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_nanos();
-        let source = std::env::temp_dir().join(format!(
-            "viboceros-{}-{unique}-source model.stl",
-            std::process::id()
-        ));
-        let output = std::env::temp_dir().join(format!(
-            "viboceros-{}-{unique}-output model.stl",
-            std::process::id()
-        ));
+        let directory = tempfile::tempdir().unwrap();
+        let source = directory.path().join("source model.stl");
+        let output = directory.path().join("output model.stl");
         fs::write(
             &source,
             "solid test\n  facet normal 0 0 1\n    outer loop\n      vertex 0 0 0\n      vertex 1 0 0\n      vertex 0 1 0\n    endloop\n  endfacet\nendsolid test\n",
@@ -43559,7 +43549,6 @@ mod tests {
     #[test]
     fn stl_and_step_exports_preserve_planar_brep_holes() {
         use std::fs;
-        use std::time::{SystemTime, UNIX_EPOCH};
 
         let rectangle = |min_x, min_y, max_x, max_y| {
             Polyline3::try_new(
@@ -43582,18 +43571,9 @@ mod tests {
         let mut document = Document::default();
         document.add_geometry(Geometry::Brep(brep)).unwrap();
 
-        let unique = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_nanos();
-        let stl_path = std::env::temp_dir().join(format!(
-            "viboceros-{}-{unique}-trimmed-hole.stl",
-            std::process::id()
-        ));
-        let step_path = std::env::temp_dir().join(format!(
-            "viboceros-{}-{unique}-trimmed-hole.step",
-            std::process::id()
-        ));
+        let directory = tempfile::tempdir().unwrap();
+        let stl_path = directory.path().join("trimmed-hole.stl");
+        let step_path = directory.path().join("trimmed-hole.step");
         let registry = CommandRegistry::with_builtins();
 
         registry
@@ -43622,7 +43602,6 @@ mod tests {
     #[test]
     fn imports_and_exports_step_without_polluting_undo_history() {
         use std::fs;
-        use std::time::{SystemTime, UNIX_EPOCH};
 
         use monstertruck::modeling::{BoundingBox, Point3 as TruckPoint3, primitive};
         use monstertruck::step::save::{
@@ -43642,18 +43621,9 @@ mod tests {
             },
         )
         .to_string();
-        let unique = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_nanos();
-        let path = std::env::temp_dir().join(format!(
-            "viboceros-{}-{unique}-command model.step",
-            std::process::id()
-        ));
-        let output = std::env::temp_dir().join(format!(
-            "viboceros-{}-{unique}-command output.step",
-            std::process::id()
-        ));
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("command model.step");
+        let output = directory.path().join("command output.step");
         fs::write(&path, step).unwrap();
 
         let registry = CommandRegistry::with_builtins();
@@ -43686,14 +43656,8 @@ mod tests {
 
     #[test]
     fn full_order_3dm_export_reports_actual_counts_without_document_or_history_edits() {
-        let unique = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap()
-            .as_nanos();
-        let path = std::env::temp_dir().join(format!(
-            "viboceros-{}-{unique}-full-order.3dm",
-            std::process::id()
-        ));
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("full-order.3dm");
         let mut document = Document::default();
         let registry = CommandRegistry::with_builtins();
         let curve = NurbsCurve::try_new(
@@ -43771,16 +43735,9 @@ mod tests {
     #[test]
     fn imports_and_exports_3dm_with_layers_and_groups_as_one_undo_step() {
         use std::fs;
-        use std::time::{SystemTime, UNIX_EPOCH};
 
-        let unique = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_nanos();
-        let path = std::env::temp_dir().join(format!(
-            "viboceros-{}-{unique}-command model.3dm",
-            std::process::id()
-        ));
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("command model.3dm");
 
         let registry = CommandRegistry::with_builtins();
         let mut source = Document::default();

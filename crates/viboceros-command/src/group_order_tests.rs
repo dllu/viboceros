@@ -207,28 +207,17 @@ fn decompositions_and_mesh_extractions_do_not_sort_memberships_by_group_id() {
     }
 }
 
-struct Temporary3dm(std::path::PathBuf);
+struct Temporary3dm {
+    path: std::path::PathBuf,
+    _directory: tempfile::TempDir,
+}
 impl Temporary3dm {
     fn new(label: &str) -> Self {
-        let time = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap()
-            .as_nanos();
-        let path = std::env::temp_dir().join(format!(
-            "viboceros-group-order-{}-{time}-{label}.3dm",
-            std::process::id()
-        ));
-        std::fs::OpenOptions::new()
-            .write(true)
-            .create_new(true)
-            .open(&path)
-            .unwrap();
-        Self(path)
-    }
-}
-impl Drop for Temporary3dm {
-    fn drop(&mut self) {
-        let _ = std::fs::remove_file(&self.0);
+        let directory = tempfile::tempdir().unwrap();
+        Self {
+            path: directory.path().join(format!("{label}.3dm")),
+            _directory: directory,
+        }
     }
 }
 
@@ -266,12 +255,15 @@ fn command_3dm_roundtrip_retains_individual_order_empty_groups_and_undo() {
             .collect(),
         objects,
     );
-    write_3dm_file(&input.0, &model).unwrap();
+    write_3dm_file(&input.path, &model).unwrap();
     let mut document = Document::default();
     let registry = CommandRegistry::with_builtins();
     for import in 0..2 {
         registry
-            .execute(&mut document, &format!("Import3dm {}", input.0.display()))
+            .execute(
+                &mut document,
+                &format!("Import3dm {}", input.path.display()),
+            )
             .unwrap();
         let groups = document.groups().map(|g| g.id()).collect::<Vec<_>>();
         for (object, order) in document.objects().skip(import * 3).zip(&orders) {
@@ -291,9 +283,12 @@ fn command_3dm_roundtrip_retains_individual_order_empty_groups_and_undo() {
     registry.execute(&mut document, "Redo").unwrap();
     assert_eq!(document.objects().cloned().collect::<Vec<_>>(), imported);
     registry
-        .execute(&mut document, &format!("Export3dm {}", output.0.display()))
+        .execute(
+            &mut document,
+            &format!("Export3dm {}", output.path.display()),
+        )
         .unwrap();
-    let decoded = read_3dm_file(&output.0, Tolerance::DEFAULT).unwrap();
+    let decoded = read_3dm_file(&output.path, Tolerance::DEFAULT).unwrap();
     assert_eq!(decoded.groups.len(), 8);
     for (index, object) in decoded.objects.iter().enumerate() {
         assert_eq!(

@@ -138,14 +138,14 @@ fn mesh_export_commands_preserve_small_geometry_without_changing_history() {
     ] {
         let path = TemporaryFile::with_extension(extension);
         registry
-            .execute(&mut document, &format!("{command} {}", path.0.display()))
+            .execute(&mut document, &format!("{command} {}", path.path.display()))
             .unwrap();
         assert_eq!(format!("{document:?}"), before);
-        assert!(std::fs::metadata(&path.0).unwrap().len() > 0);
+        assert!(std::fs::metadata(&path.path).unwrap().len() > 0);
         let mesh = if extension == "stl" {
-            read_stl_file(&path.0).unwrap()
+            read_stl_file(&path.path).unwrap()
         } else {
-            let mut imported = read_step_file(&path.0, Tolerance::NUMERICAL_VALIDATION).unwrap();
+            let mut imported = read_step_file(&path.path, Tolerance::NUMERICAL_VALIDATION).unwrap();
             assert_eq!(imported.objects.len(), 1);
             imported.objects.remove(0).mesh
         };
@@ -170,12 +170,12 @@ fn stl_import_preserves_small_facets_and_document_settings_through_history() {
         Tolerance::NUMERICAL_VALIDATION,
     )
     .unwrap();
-    write_stl_file(&path.0, &mesh, StlFormat::Ascii).unwrap();
+    write_stl_file(&path.path, &mesh, StlFormat::Ascii).unwrap();
     let tolerance = Tolerance::try_new(0.001, 1e-12, 1e-10).unwrap();
     let mut document = Document::with_units(tolerance, LengthUnitSystem::Inches).unwrap();
     let registry = CommandRegistry::with_builtins();
     registry
-        .execute(&mut document, &format!("ImportStl {}", path.0.display()))
+        .execute(&mut document, &format!("ImportStl {}", path.path.display()))
         .unwrap();
     assert_eq!(document.objects().len(), 1);
     assert_eq!(
@@ -191,20 +191,20 @@ fn stl_import_preserves_small_facets_and_document_settings_through_history() {
     assert_eq!(document.tolerance(), tolerance);
 }
 
-struct TemporaryFile(std::path::PathBuf);
+struct TemporaryFile {
+    path: std::path::PathBuf,
+    _directory: tempfile::TempDir,
+}
 impl TemporaryFile {
     fn new() -> Self {
         Self::with_extension("3dm")
     }
     fn with_extension(extension: &str) -> Self {
-        let unique = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap()
-            .as_nanos();
-        Self(std::env::temp_dir().join(format!(
-            "viboceros-unit-import-{}-{unique}.{extension}",
-            std::process::id()
-        )))
+        let directory = tempfile::tempdir().unwrap();
+        Self {
+            path: directory.path().join(format!("unit import.{extension}")),
+            _directory: directory,
+        }
     }
 }
 
@@ -228,10 +228,13 @@ fn step_export_converts_document_units_without_editing_document_or_history() {
     registry.execute(&mut document, "Undo").unwrap();
     let before = format!("{document:?}");
     registry
-        .execute(&mut document, &format!("ExportStep {}", output.0.display()))
+        .execute(
+            &mut document,
+            &format!("ExportStep {}", output.path.display()),
+        )
         .unwrap();
     assert_eq!(format!("{document:?}"), before);
-    let imported = read_step_file(&output.0, Tolerance::DEFAULT).unwrap();
+    let imported = read_step_file(&output.path, Tolerance::DEFAULT).unwrap();
     assert_eq!(imported.objects.len(), 1);
     assert!(imported.objects[0].mesh.bounds().max().is_near(
         Point3::try_new(25.4, 50.8, 0.0).unwrap(),
@@ -256,11 +259,11 @@ fn step_export_and_import_preserve_physical_size_in_a_nonmetric_document() {
     .unwrap();
     source.add_geometry(Geometry::Mesh(mesh)).unwrap();
     registry
-        .execute(&mut source, &format!("ExportStep {}", path.0.display()))
+        .execute(&mut source, &format!("ExportStep {}", path.path.display()))
         .unwrap();
     let mut target = Document::with_units(Tolerance::DEFAULT, LengthUnitSystem::Inches).unwrap();
     registry
-        .execute(&mut target, &format!("ImportStep {}", path.0.display()))
+        .execute(&mut target, &format!("ImportStep {}", path.path.display()))
         .unwrap();
     let Geometry::Mesh(mesh) = target.objects().next().unwrap().geometry() else {
         panic!("lost mesh");
@@ -275,11 +278,6 @@ fn step_export_and_import_preserve_physical_size_in_a_nonmetric_document() {
     registry.execute(&mut target, "Redo").unwrap();
     assert_eq!(target.objects().len(), 1);
 }
-impl Drop for TemporaryFile {
-    fn drop(&mut self) {
-        let _ = std::fs::remove_file(&self.0);
-    }
-}
 
 #[test]
 fn unit_aware_import_is_undoable_and_export_retains_target_units() {
@@ -288,11 +286,11 @@ fn unit_aware_import_is_undoable_and_export_retains_target_units() {
     let mut source = Document::with_units(Tolerance::DEFAULT, LengthUnitSystem::Inches).unwrap();
     let registry = CommandRegistry::with_builtins();
     registry.execute(&mut source, "Point 1,2,3").unwrap();
-    write_3dm_file(&input.0, &document_3dm_model(&source).unwrap()).unwrap();
+    write_3dm_file(&input.path, &document_3dm_model(&source).unwrap()).unwrap();
     let mut target =
         Document::with_units(Tolerance::DEFAULT, LengthUnitSystem::Centimeters).unwrap();
     registry
-        .execute(&mut target, &format!("Import3dm {}", input.0.display()))
+        .execute(&mut target, &format!("Import3dm {}", input.path.display()))
         .unwrap();
     assert_eq!(target.units(), &LengthUnitSystem::Centimeters);
     assert_eq!(target.objects().len(), 1);
@@ -305,9 +303,9 @@ fn unit_aware_import_is_undoable_and_export_retains_target_units() {
         Tolerance::DEFAULT
     ));
     registry
-        .execute(&mut target, &format!("Export3dm {}", output.0.display()))
+        .execute(&mut target, &format!("Export3dm {}", output.path.display()))
         .unwrap();
-    let exported = read_3dm_file(&output.0, Tolerance::DEFAULT).unwrap();
+    let exported = read_3dm_file(&output.path, Tolerance::DEFAULT).unwrap();
     assert_eq!(exported.units, LengthUnitSystem::Centimeters);
     assert_eq!(exported.objects[0].geometry, ThreeDmGeometry::Point(point));
     registry.execute(&mut target, "Undo").unwrap();
@@ -318,14 +316,14 @@ fn unit_aware_import_is_undoable_and_export_retains_target_units() {
     // Unset source units are rejected before document edits, including history.
     let mut source_model = document_3dm_model(&source).unwrap();
     source_model.units = LengthUnitSystem::Unset;
-    write_3dm_file(&input.0, &source_model).unwrap();
+    write_3dm_file(&input.path, &source_model).unwrap();
     let mut empty =
         Document::with_units(Tolerance::DEFAULT, LengthUnitSystem::Centimeters).unwrap();
     // IDs are document-specific; compare this document against its own state.
     let empty_before = format!("{empty:?}");
     assert!(
         registry
-            .execute(&mut empty, &format!("Import3dm {}", input.0.display()))
+            .execute(&mut empty, &format!("Import3dm {}", input.path.display()))
             .is_err()
     );
     assert_eq!(format!("{empty:?}"), empty_before);
@@ -337,10 +335,10 @@ fn unit_aware_import_is_undoable_and_export_retains_target_units() {
     };
     source_model.objects[0].geometry =
         ThreeDmGeometry::Point(Point3::try_new(1e100, 0.0, 0.0).unwrap());
-    write_3dm_file(&input.0, &source_model).unwrap();
+    write_3dm_file(&input.path, &source_model).unwrap();
     assert!(
         registry
-            .execute(&mut empty, &format!("Import3dm {}", input.0.display()))
+            .execute(&mut empty, &format!("Import3dm {}", input.path.display()))
             .is_err()
     );
     assert_eq!(format!("{empty:?}"), empty_before);
