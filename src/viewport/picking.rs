@@ -1,6 +1,6 @@
 //! Screen capture and depth ordering for mesh and tessellated surface hits.
 
-use super::screen::signed_area;
+use super::screen::{point_in_triangle, point_segment_distance, signed_area};
 use super::*;
 
 #[derive(Clone, Copy)]
