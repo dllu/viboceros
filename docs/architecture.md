@@ -20,6 +20,11 @@ file formats, or command parsing.
 Typed coordinates are resolved by `viboceros-drafting/point_input`, independent
 of UI and document edits. `app/point_input` shares the interactive command's
 point-validation and transaction path with mouse picks; see [point input](point-input.md).
+The command crate's `interchange` module owns the six STL/STEP/3DM import/export
+commands, document-to-file attribute/group adapters, and export mesh aggregation.
+Parsing and file replacement remain in `viboceros-io`; registry transactions
+remain responsible for rolling back failed imports. Existing mesh aggregation
+uses numerical validation, independently of surface tessellation tolerance.
 `CommandContext` carries an explicit construction plane separately from document
 history. The [plane-primitives module](construction-planes.md) handles orientation,
 projection, and native parameter policy for six primitive commands.

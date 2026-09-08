@@ -2,6 +2,50 @@ use super::*;
 use viboceros_geometry::LengthUnitSystem;
 
 #[test]
+fn mesh_export_commands_preserve_small_geometry_without_changing_history() {
+    let mut document = Document::new(Tolerance::try_new(0.001, 1e-12, 1e-10).unwrap());
+    let mesh = TriangleMesh::try_new(
+        vec![
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(1e-5, 0.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 1e-5, 0.0).unwrap(),
+        ],
+        vec![[0, 1, 2]],
+        Tolerance::NUMERICAL_VALIDATION,
+    )
+    .unwrap();
+    document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+    let registry = CommandRegistry::with_builtins();
+    registry.execute(&mut document, "Point 1,2,3").unwrap();
+    registry.execute(&mut document, "Undo").unwrap();
+    let before = format!("{document:?}");
+    for (command, extension) in [
+        ("ExportStl Ascii", "stl"),
+        ("ExportStl Binary", "stl"),
+        ("ExportStep", "step"),
+    ] {
+        let path = TemporaryFile::with_extension(extension);
+        registry
+            .execute(&mut document, &format!("{command} {}", path.0.display()))
+            .unwrap();
+        assert_eq!(format!("{document:?}"), before);
+        assert!(std::fs::metadata(&path.0).unwrap().len() > 0);
+        let mesh = if extension == "stl" {
+            read_stl_file(&path.0).unwrap()
+        } else {
+            let mut imported = read_step_file(&path.0, Tolerance::NUMERICAL_VALIDATION).unwrap();
+            assert_eq!(imported.objects.len(), 1);
+            imported.objects.remove(0).mesh
+        };
+        assert_eq!(mesh.triangles().len(), 1);
+        assert!(mesh.bounds().max().is_near(
+            Point3::try_new(1e-5, 1e-5, 0.0).unwrap(),
+            Tolerance::try_new(1e-11, 1e-12, 1e-10).unwrap()
+        ));
+    }
+}
+
+#[test]
 fn stl_import_preserves_small_facets_and_document_settings_through_history() {
     let path = TemporaryFile::with_extension("stl");
     let mesh = TriangleMesh::try_new(
