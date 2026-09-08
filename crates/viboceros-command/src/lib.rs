@@ -1365,7 +1365,11 @@ fn parse_interp_curve_tangent(value: &str) -> Result<Option<Vector3>, CommandErr
     }
     let (point, consumed) = parse_point(&[value])?;
     debug_assert_eq!(consumed, 1);
-    Ok(Some(Vector3::try_from(point.to_array())?))
+    let tangent = Vector3::try_from(point.to_array())?;
+    // Match interpolation's direction validation at entry, but retain the
+    // user's vector rather than replacing it with a rounded unit vector.
+    tangent.normalized_nonzero()?;
+    Ok(Some(tangent))
 }
 
 fn parse_curve_through_options(

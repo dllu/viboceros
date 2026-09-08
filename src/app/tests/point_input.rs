@@ -6,6 +6,73 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn zero_interpolation_tangent_updates_are_rejected_without_losing_the_draft() {
+    let mut app = test_app();
+    for input in [
+        "Point 9,9,9",
+        "Undo",
+        "InterpCrv StartTangent=1,2,0",
+        "0",
+        "1,1,0",
+    ] {
+        enter(&mut app, input);
+    }
+    let active = app.active_command;
+    let points = app.curve_points.clone();
+    let last = app.last_point;
+    let document = format!("{:?}", app.document);
+    for invalid in [
+        "StartTangent=0,0,0",
+        "EndTangent=-0,0,-0",
+        "Knots=Uniform EndTangent=1e-324,0,0",
+    ] {
+        enter(&mut app, invalid);
+        assert_eq!(app.active_command, active);
+        assert_eq!(app.curve_points, points);
+        assert_eq!(app.last_point, last);
+        assert_eq!(app.command_input, invalid);
+        assert_eq!(format!("{:?}", app.document), document);
+    }
+    enter(&mut app, "");
+    assert!(app.active_command.is_none());
+    assert_eq!(app.document.objects().len(), 1);
+}
+
+#[test]
+fn interpolation_accepts_nonzero_tangent_directions_at_extreme_scales() {
+    for value in ["5e-324", "1e-300", "1e308"] {
+        let mut app = test_app();
+        enter(&mut app, "InterpCrv");
+        enter(
+            &mut app,
+            &format!("StartTangent={value},0,0 EndTangent=0,{value},0"),
+        );
+        assert!(app.command_input.is_empty());
+        let Some(InteractiveCommand::InterpCrv { options }) = app.active_command else {
+            panic!("draft");
+        };
+        assert_eq!(
+            options.start_tangent().unwrap().x(),
+            value.parse::<f64>().unwrap()
+        );
+        for input in ["0", "1,1,0", "2,0,0", ""] {
+            enter(&mut app, input);
+        }
+        assert!(app.active_command.is_none(), "{value}");
+        let mut reference = test_app();
+        enter(
+            &mut reference,
+            "InterpCrv 0,0,0 1,1,0 2,0,0 StartTangent=1,0,0 EndTangent=0,1,0",
+        );
+        assert_eq!(
+            app.document.objects().next().unwrap().geometry(),
+            reference.document.objects().next().unwrap().geometry(),
+            "{value}"
+        );
+    }
+}
+
+#[test]
 fn interpolation_tangent_resets_allow_atomic_transition_to_closed_drafts() {
     let mut app = test_app();
     for input in [

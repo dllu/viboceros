@@ -72,6 +72,9 @@ Start with options such as `InterpCrv Degree=3 Knots=Uniform Close=Smooth`
 to change that construction. `Degree=1|3`, `Knots=Uniform|Chord|SqrtChrd`,
 `Close=Open|Smooth|Sharp`, and world-space `StartTangent=x,y,z` /
 `EndTangent=x,y,z` use the one-line parser; tangents require an open cubic.
+Explicit directions must be finite and nonzero. Zero vectors (including inputs
+that underflow to zero) are rejected at entry; valid nonzero subnormal and large
+vectors are retained, without applying model tolerance to their magnitude.
 Preview and completion retain all startup settings, including endpoint directions.
 These options can also be entered during an active InterpCrv prompt, alone or
 together (for example `Degree=1 Knots=Uniform`). Unspecified settings and points
