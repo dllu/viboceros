@@ -1,5 +1,7 @@
 //! File import/export commands and document-to-format adapters.
 use super::{Command, CommandError};
+mod names;
+use names::ImportNames;
 #[cfg(test)]
 mod tests;
 use std::collections::{BTreeMap, BTreeSet};
@@ -160,8 +162,13 @@ impl Command for ImportThreeDmCommand {
         let object_count = model.objects.len();
 
         let mut imported_layers = Vec::with_capacity(layer_count);
+        let mut layer_names = ImportNames::new(
+            document.layers().map(|layer| layer.name()),
+            true,
+            "Imported Layer",
+        );
         for layer in &model.layers {
-            let name = unique_import_layer_name(document, &layer.name);
+            let name = layer_names.allocate(&layer.name);
             let id = document.add_layer(
                 name,
                 ColorRgb::new(layer.color[0], layer.color[1], layer.color[2]),
@@ -193,8 +200,13 @@ impl Command for ImportThreeDmCommand {
         }
 
         let mut imported_groups = Vec::with_capacity(model.groups.len());
+        let mut group_names = ImportNames::new(
+            document.groups().filter_map(|group| group.name()),
+            false,
+            "Imported Group",
+        );
         for group in &model.groups {
-            let name = unique_import_group_name(document, &group.name);
+            let name = group_names.allocate(&group.name);
             imported_groups.push(document.add_empty_group(Some(name))?);
         }
         for (id, memberships) in imported_objects {
@@ -381,42 +393,6 @@ pub(super) fn document_geometry_from_3dm(geometry: ThreeDmGeometry) -> Geometry 
         ThreeDmGeometry::Brep(brep) => Geometry::Brep(brep),
         ThreeDmGeometry::Mesh(mesh) => Geometry::Mesh(mesh),
     }
-}
-
-fn unique_import_layer_name(document: &Document, source_name: &str) -> String {
-    let base = if source_name.trim().is_empty() {
-        "Imported Layer"
-    } else {
-        source_name.trim()
-    };
-    if document.layer_by_name(base).is_none() {
-        return base.to_owned();
-    }
-    for suffix in 1_u32.. {
-        let candidate = format!("{base} (Imported {suffix})");
-        if document.layer_by_name(&candidate).is_none() {
-            return candidate;
-        }
-    }
-    unreachable!("the finite document cannot contain every numbered layer name")
-}
-
-fn unique_import_group_name(document: &Document, source_name: &str) -> String {
-    let base = if source_name.trim().is_empty() {
-        "Imported Group"
-    } else {
-        source_name.trim()
-    };
-    if document.group_by_name(base).is_none() {
-        return base.to_owned();
-    }
-    for suffix in 1_u32.. {
-        let candidate = format!("{base} (Imported {suffix})");
-        if document.group_by_name(&candidate).is_none() {
-            return candidate;
-        }
-    }
-    unreachable!("the finite document cannot contain every numbered group name")
 }
 
 pub(super) fn combined_document_mesh(document: &Document) -> Result<TriangleMesh, CommandError> {

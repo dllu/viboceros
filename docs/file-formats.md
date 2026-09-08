@@ -39,6 +39,10 @@ and empty groups.
 Unnamed groups receive deterministic `GroupNN` names on export without changing
 the document. All existing names are reserved before allocation; a single
 candidate sequence avoids repeated scans when many unnamed groups are exported.
+3DM import resolves name collisions with ` (Imported N)` suffixes, preserving
+ASCII-case-insensitive layer matching and case-sensitive group matching. A
+per-import name index and per-base suffix cursors avoid scanning the document
+for every collision candidate or restarting suffix allocation for repeated names.
 Standalone circle and ellipse objects are exported without approximation as
 rational NURBS curves. Arc objects retain their analytic type and native domain.
 Polylines retain their native object type and every vertex parameter;
