@@ -49,11 +49,19 @@ applies the inverse `Zoom Factor`, requiring exact pixel equality in Top, Front,
 and Right views with both target formats (12 renders). It also renders a lone
 point at the minimum parallel zoom scale (6 renders). Parallel GPU vertices now
 include the zoom scale, applied in f64; otherwise horizontal/vertical matrix
-coefficients become subnormal at this model size. Depth padding uses those same
-scaled units so zero-depth scenes still have a finite projection at minimum zoom.
+coefficients become subnormal at this model size. Parallel depth is encoded after
+the complete scene range is known; zero-depth scenes use the interval midpoint.
 An ordinary CPU test checks normal (or zero) matrix coefficients and CPU/GPU
-projection agreement at these scales. The full GPU suite now performs 152 renders.
-All five tests use the application's camera, scene submission, shaders, pipelines,
+projection agreement at these scales.
+The depth-translation test moves the scene along the view-depth axis to `2^80`
+and `2^1020`, requiring exact pixel equality with the origin scene (18 renders).
+It also checks nearer-face occlusion in either insertion order at depth `2^80`
+with separation `2^40`, below absolute f32 resolution there (12 renders).
+These cover all three parallel views and both target formats. Unit tests cover
+singleton, subnormal, and overflowing depth spans, unchanged perspective encoding,
+and finite face-sort depth at the f64 model-coordinate limit.
+The full GPU suite now performs 182 renders.
+All six tests use the application's camera, scene submission, shaders, pipelines,
 depth attachment, and buffer-upload code.
 An ordinary non-GPU test checks the independent ray reference against analytic
 hits, reversed winding, behind-origin intersections, outside barycentric weights,

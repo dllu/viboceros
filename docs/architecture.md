@@ -105,8 +105,11 @@ The app's `viewport/camera` module owns CPU projection/unprojection, drafting
 rays, navigation updates, view depth, and GPU camera matrices. It rebases GPU
 positions around the model-space camera target in f64 before f32 conversion;
 parallel views additionally apply pixels-per-model-unit before GPU conversion.
-The GPU matrix and padded depth bounds use that same scaled local frame, avoiding
-subnormal screen coefficients at tiny parallel zoom scales. Cursor unprojection
+This avoids subnormal screen coefficients at tiny parallel zoom scales. The
+scene builder retains per-vertex depth in f64 until all submitted primitives
+have contributed to the range, then encodes parallel depth into `[0.05, 0.95]`
+(a singleton range uses `0.5`). Perspective positions retain their normal
+camera-space projection. Cursor unprojection
 shares this origin convention: perspective screen rays
 and drafting-plane intersections are evaluated locally, adding the target only
 when constructing the final model point. This avoids rounding an absolute camera

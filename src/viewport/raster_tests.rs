@@ -4,6 +4,95 @@ use eframe::wgpu;
 
 #[test]
 #[ignore = "requires a graphics adapter; run explicitly with --ignored --nocapture"]
+fn gpu_parallel_depth_translation_preserves_pixels() {
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(SIZE as f32));
+    for format in [
+        wgpu::TextureFormat::Rgba8Unorm,
+        wgpu::TextureFormat::Rgba8UnormSrgb,
+    ] {
+        let mut renderer = OffscreenRenderer::new(format);
+        for kind in [ViewKind::Top, ViewKind::Front, ViewKind::Right] {
+            let mut baseline = None;
+            let mut viewport = Viewport::new(kind);
+            viewport.display_mode = DisplayMode::Shaded;
+            let (right, up, forward) = match kind {
+                ViewKind::Top => (NaVector3::x(), NaVector3::y(), -NaVector3::z()),
+                ViewKind::Front => (NaVector3::x(), NaVector3::z(), NaVector3::y()),
+                ViewKind::Right => (NaVector3::y(), NaVector3::z(), -NaVector3::x()),
+                _ => unreachable!(),
+            };
+            for depth in [0.0, 2.0_f64.powi(80), 2.0_f64.powi(1020)] {
+                let point = |x: Real, y: Real| {
+                    let v = right * x + up * y + forward * depth;
+                    Point3::try_new(v.x, v.y, v.z).unwrap()
+                };
+                let mesh = TriangleMesh::try_new(
+                    vec![point(-2.0, -2.0), point(2.0, -2.0), point(0.0, 2.0)],
+                    vec![[0, 1, 2]],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap();
+                let mut scene = GpuSceneBuilder::new();
+                viewport.add_gpu_mesh_faces(&mut scene, &mesh, Color32::RED);
+                viewport.add_gpu_line(
+                    &mut scene,
+                    rect,
+                    point(-1.0, 3.0),
+                    point(1.0, 3.0),
+                    3.0,
+                    Color32::WHITE,
+                );
+                viewport.add_gpu_point(&mut scene, rect, point(-3.0, 0.0), 3.0, Color32::GREEN);
+
+                let pixels = renderer.render(&scene.finish(&viewport, rect, false));
+                if let Some(expected) = &baseline {
+                    let differences = pixels.iter().zip(expected).filter(|(a, b)| a != b).count();
+                    assert_eq!(differences, 0, "{kind:?} {format:?}: depth={depth}");
+                } else {
+                    assert!(
+                        pixels
+                            .iter()
+                            .any(|pixel| pixel[0] > pixel[1] && pixel[3] == 255)
+                    );
+                    assert!(pixels.contains(&[0, 255, 0, 255]));
+                    assert!(pixels.contains(&[255; 4]));
+                    baseline = Some(pixels);
+                }
+            }
+            for order in [[0, 1], [1, 0]] {
+                let mut scene = GpuSceneBuilder::new();
+                for index in order {
+                    let depth = 2.0_f64.powi(80) + f64::from(index) * 2.0_f64.powi(40);
+                    let points = [(-2.0, -2.0), (2.0, -2.0), (0.0, 2.0)].map(|(x, y)| {
+                        let v = right * x + up * y + forward * depth;
+                        Point3::try_new(v.x, v.y, v.z).unwrap()
+                    });
+                    let mesh =
+                        TriangleMesh::try_new(points.to_vec(), vec![[0, 1, 2]], Tolerance::DEFAULT)
+                            .unwrap();
+                    viewport.add_gpu_mesh_faces(
+                        &mut scene,
+                        &mesh,
+                        if index == 0 {
+                            Color32::RED
+                        } else {
+                            Color32::BLUE
+                        },
+                    );
+                }
+                let pixels = renderer.render(&scene.finish(&viewport, rect, false));
+                let center = pixels[(SIZE / 2 * SIZE + SIZE / 2) as usize];
+                assert!(
+                    center[0] > center[2] && center[3] == 255,
+                    "near face at large depth: {kind:?} {order:?}"
+                );
+            }
+        }
+    }
+}
+
+#[test]
+#[ignore = "requires a graphics adapter; run explicitly with --ignored --nocapture"]
 fn gpu_parallel_zoom_preserves_pixels_at_extreme_model_scales() {
     let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(SIZE as f32));
     for format in [
@@ -55,8 +144,8 @@ fn gpu_parallel_zoom_preserves_pixels_at_extreme_model_scales() {
                     3.0,
                     Color32::GREEN,
                 );
-                let uniform = viewport.gpu_view_uniform(rect, scene.depth_range());
-                let pixels = renderer.render(&scene.finish(uniform, false));
+
+                let pixels = renderer.render(&scene.finish(&viewport, rect, false));
                 if let Some(expected) = &baseline {
                     let differences = pixels.iter().zip(expected).filter(|(a, b)| a != b).count();
                     assert_eq!(differences, 0, "{kind:?} {format:?}: scale={model_scale}");
@@ -82,8 +171,8 @@ fn gpu_parallel_zoom_preserves_pixels_at_extreme_model_scales() {
                 3.0,
                 Color32::GREEN,
             );
-            let uniform = viewport.gpu_view_uniform(rect, scene.depth_range());
-            let pixels = renderer.render(&scene.finish(uniform, false));
+
+            let pixels = renderer.render(&scene.finish(&viewport, rect, false));
             assert!(
                 pixels.contains(&[0, 255, 0, 255]),
                 "minimum-scale point in {kind:?}"
@@ -158,8 +247,8 @@ fn gpu_camera_relative_geometry_preserves_large_translation_pixels() {
                     (scene.triangles.len(), scene.lines.len(), scene.points.len()),
                     (1, 1, 1)
                 );
-                let uniform = viewport.gpu_view_uniform(rect, scene.depth_range());
-                let pixels = renderer.render(&scene.finish(uniform, false));
+
+                let pixels = renderer.render(&scene.finish(&viewport, rect, false));
                 if let Some(expected) = &baseline {
                     let differences = pixels.iter().zip(expected).filter(|(a, b)| a != b).count();
                     assert_eq!(
@@ -301,8 +390,8 @@ fn gpu_depth_and_ghosted_compositing_ignore_object_insertion_order() {
             for mode in [DisplayMode::Shaded, DisplayMode::Ghosted] {
                 viewport.display_mode = mode;
                 let mut render = |scene: GpuSceneBuilder| {
-                    let uniform = viewport.gpu_view_uniform(rect, scene.depth_range());
-                    renderer.render(&scene.finish(uniform, mode == DisplayMode::Ghosted))[center]
+                    renderer.render(&scene.finish(&viewport, rect, mode == DisplayMode::Ghosted))
+                        [center]
                 };
                 let mut baseline = GpuSceneBuilder::new();
                 viewport.add_gpu_mesh_faces(&mut baseline, &front, Color32::RED);
@@ -510,9 +599,12 @@ fn gpu_camera_crossing_faces_match_independent_ray_coverage() {
                     viewport.display_mode = mode;
                     let mut scene = GpuSceneBuilder::new();
                     viewport.add_gpu_mesh_faces(&mut scene, &mesh, Color32::GRAY);
-                    let uniform = viewport.gpu_view_uniform(rect, scene.depth_range());
-                    let pixels =
-                        renderer.render(&scene.finish(uniform, mode == DisplayMode::Ghosted));
+
+                    let pixels = renderer.render(&scene.finish(
+                        &viewport,
+                        rect,
+                        mode == DisplayMode::Ghosted,
+                    ));
                     let mut covered = 0;
                     for y in (0..SIZE).step_by(4) {
                         for x in (0..SIZE).step_by(4) {
@@ -565,8 +657,8 @@ fn gpu_camera_crossing_wires_rasterize_in_both_endpoint_orders() {
         for points in [[start, end], [end, start]] {
             let mut scene = GpuSceneBuilder::new();
             viewport.add_gpu_line(&mut scene, rect, points[0], points[1], 3.0, Color32::WHITE);
-            let uniform = viewport.gpu_view_uniform(rect, scene.depth_range());
-            let pixels = renderer.render(&scene.finish(uniform, false));
+
+            let pixels = renderer.render(&scene.finish(&viewport, rect, false));
             for depth in [2.0, 8.0, 15.0] {
                 let x = 2.0 - 4.0 * (depth + 10.0) / 30.0;
                 let pointer = viewport.project(point(depth, x), rect).unwrap();
@@ -589,8 +681,8 @@ fn gpu_camera_crossing_wires_rasterize_in_both_endpoint_orders() {
             3.0,
             Color32::WHITE,
         );
-        let uniform = viewport.gpu_view_uniform(rect, scene.depth_range());
-        let pixels = renderer.render(&scene.finish(uniform, false));
+
+        let pixels = renderer.render(&scene.finish(&viewport, rect, false));
         assert!(pixels.iter().all(|pixel| pixel[3] == 0));
     }
 }

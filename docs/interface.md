@@ -23,10 +23,14 @@ visibility parity and live Rhino comparisons remain unverified.
 GPU positions are rebased around each viewport's model-space target in f64
 before conversion to f32. Camera matrices and depth bounds use the same local
 frame, preserving small features in models translated far from the origin.
-Parallel views also apply zoom scaling in f64 before GPU conversion, with depth
-padding in the resulting scaled units. This avoids subnormal projection
+Parallel views also apply screen-plane zoom scaling in f64 before GPU conversion.
+Per-vertex depth stays f64 until the scene range is known, then maps to a bounded
+GPU interval. This avoids absolute-depth cancellation as well as subnormal projection
 coefficients when fitting uniformly enormous geometry; pixel tests cover a
 `2^126` model-scale change with inverse zoom and a point at minimum zoom.
+Additional pixel tests preserve the image after translation along the view-depth
+axis to `2^1020`, and retain occlusion between depths distinguishable in f64 but
+not in absolute f32 coordinates. Singleton and overflowing depth spans are covered.
 Pixel tests cover translations of billions of units; CPU/GPU projection tests
 cover trillion-unit offsets. This does not remove f64 model-coordinate rounding,
 f32 precision loss across very large local extents, or all near-plane limitations.

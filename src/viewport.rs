@@ -177,13 +177,19 @@ struct SurfaceDisplayStyle {
 #[derive(Clone, Copy)]
 struct DepthTriangle {
     depth: Real,
+    vertex_depths: [Real; 3],
     vertices: [GpuTriangleVertex; 3],
+}
+
+struct DepthPrimitive<T, const N: usize> {
+    depths: [Real; N],
+    instance: T,
 }
 
 struct GpuSceneBuilder {
     triangles: Vec<DepthTriangle>,
-    lines: Vec<GpuLineInstance>,
-    points: Vec<GpuPointInstance>,
+    lines: Vec<DepthPrimitive<GpuLineInstance, 2>>,
+    points: Vec<DepthPrimitive<GpuPointInstance, 1>>,
     min_depth: Real,
     max_depth: Real,
 }
@@ -211,7 +217,9 @@ impl GpuSceneBuilder {
             .then_some((self.min_depth, self.max_depth))
     }
 
-    fn finish(mut self, uniform: GpuViewUniform, transparent: bool) -> GpuViewportScene {
+    fn finish(mut self, viewport: &Viewport, rect: Rect, transparent: bool) -> GpuViewportScene {
+        let range = self.depth_range();
+        let uniform = viewport.gpu_view_uniform(rect, range);
         if transparent {
             self.triangles
                 .sort_by(|left, right| right.depth.total_cmp(&left.depth));
@@ -221,10 +229,43 @@ impl GpuSceneBuilder {
             triangles: self
                 .triangles
                 .into_iter()
-                .flat_map(|triangle| triangle.vertices)
+                .flat_map(|mut triangle| {
+                    for (vertex, depth) in triangle.vertices.iter_mut().zip(triangle.vertex_depths)
+                    {
+                        viewport.encode_gpu_depth(&mut vertex.position, depth, range);
+                    }
+                    triangle.vertices
+                })
                 .collect(),
-            lines: self.lines,
-            points: self.points,
+            lines: self
+                .lines
+                .into_iter()
+                .map(|mut line| {
+                    viewport.encode_gpu_depth(
+                        &mut line.instance.start_width,
+                        line.depths[0],
+                        range,
+                    );
+                    viewport.encode_gpu_depth(
+                        &mut line.instance.end_padding,
+                        line.depths[1],
+                        range,
+                    );
+                    line.instance
+                })
+                .collect(),
+            points: self
+                .points
+                .into_iter()
+                .map(|mut point| {
+                    viewport.encode_gpu_depth(
+                        &mut point.instance.position_size,
+                        point.depths[0],
+                        range,
+                    );
+                    point.instance
+                })
+                .collect(),
             transparent,
         }
     }
@@ -1217,13 +1258,12 @@ impl Viewport {
             }
         }
 
-        let uniform = self.gpu_view_uniform(rect, scene.depth_range());
         let transparent = self.display_mode == DisplayMode::Ghosted;
         crate::viewport_gpu::paint(
             painter,
             rect,
             viewport_index,
-            scene.finish(uniform, transparent),
+            scene.finish(self, rect, transparent),
         );
     }
 
@@ -1244,10 +1284,14 @@ impl Viewport {
         let Some(position) = self.gpu_position(point) else {
             return;
         };
-        scene.include_depth(self.view_depth(point));
-        scene.points.push(GpuPointInstance {
-            position_size: [position[0], position[1], position[2], radius],
-            color: color_to_gpu(color),
+        let depth = self.view_depth(point);
+        scene.include_depth(depth);
+        scene.points.push(DepthPrimitive {
+            depths: [depth],
+            instance: GpuPointInstance {
+                position_size: [position[0], position[1], position[2], radius],
+                color: color_to_gpu(color),
+            },
         });
     }
 
@@ -1271,17 +1315,22 @@ impl Viewport {
         else {
             return;
         };
-        scene.include_depth(self.view_depth(start));
-        scene.include_depth(self.view_depth(end));
-        scene.lines.push(GpuLineInstance {
-            start_width: [
-                start_position[0],
-                start_position[1],
-                start_position[2],
-                width,
-            ],
-            end_padding: [end_position[0], end_position[1], end_position[2], 0.0],
-            color: color_to_gpu(color),
+        let depths = [self.view_depth(start), self.view_depth(end)];
+        for depth in depths {
+            scene.include_depth(depth);
+        }
+        scene.lines.push(DepthPrimitive {
+            depths,
+            instance: GpuLineInstance {
+                start_width: [
+                    start_position[0],
+                    start_position[1],
+                    start_position[2],
+                    width,
+                ],
+                end_padding: [end_position[0], end_position[1], end_position[2], 0.0],
+                color: color_to_gpu(color),
+            },
         });
     }
 
@@ -1422,8 +1471,10 @@ impl Viewport {
                 continue;
             };
             let normals = normals.map(vector_to_gpu);
+            let vertex_depths = points.map(|point| self.view_depth(point));
+            let depth_scale = vertex_depths.iter().map(|d| d.abs()).fold(0.0, Real::max);
             let mut depth = 0.0;
-            let mut count = 0;
+            let count = if clipped[1].is_some() { 4.0 } else { 3.0 };
             for point in clipped[0]
                 .into_iter()
                 .flatten()
@@ -1431,12 +1482,14 @@ impl Viewport {
             {
                 let point_depth = self.view_depth(point);
                 scene.include_depth(point_depth);
-                depth += point_depth;
-                count += 1;
+                if depth_scale > 0.0 {
+                    depth += point_depth / depth_scale;
+                }
             }
-            let depth = depth / Real::from(count);
+            let depth = (depth / count) * depth_scale;
             scene.triangles.push(DepthTriangle {
                 depth,
+                vertex_depths,
                 vertices: [
                     GpuTriangleVertex {
                         position: first,
@@ -1966,7 +2019,8 @@ mod tests {
             .gpu_view_uniform(rect, Some(depth_range))
             .view_projection;
         let [x, y, z] = viewport.gpu_position(point).unwrap();
-        let position = [x, y, z, 1.0];
+        let mut position = [x, y, z, 1.0];
+        viewport.encode_gpu_depth(&mut position, viewport.view_depth(point), Some(depth_range));
         let clip: [f32; 4] = std::array::from_fn(|row| {
             (0..4)
                 .map(|column| matrix[column][row] * position[column])
@@ -2235,10 +2289,11 @@ mod tests {
             viewport.target = NaVector3::new(1e12, -2e12, 3e12);
             viewport.pan = Vec2::new(17.0, -23.0);
             let model = Point3::try_new(1e12 + 1.0, -2e12 + 2.0, 3e12 + 3.0).unwrap();
-            let expected = if kind.is_parallel() {
-                [40.0, 80.0, 120.0]
-            } else {
-                [1.0, 2.0, 3.0]
+            let expected = match kind {
+                ViewKind::Top => [40.0, 80.0, 0.0],
+                ViewKind::Front => [40.0, 0.0, 120.0],
+                ViewKind::Right => [0.0, 80.0, 120.0],
+                ViewKind::Perspective => [1.0, 2.0, 3.0],
             };
             assert_eq!(viewport.gpu_position(model), Some(expected));
             let depth = viewport.view_depth(model);
@@ -2274,7 +2329,13 @@ mod tests {
                 viewport.last_rect = Some(rect);
                 viewport.zoom_factor(1.0 / scale).unwrap();
                 let point = Point3::try_new(scale, 2.0 * scale, 3.0 * scale).unwrap();
-                assert_eq!(viewport.gpu_position(point), Some([40.0, 80.0, 120.0]));
+                let expected = match kind {
+                    ViewKind::Top => [40.0, 80.0, 0.0],
+                    ViewKind::Front => [40.0, 0.0, 120.0],
+                    ViewKind::Right => [0.0, 80.0, 120.0],
+                    _ => unreachable!(),
+                };
+                assert_eq!(viewport.gpu_position(point), Some(expected));
                 let depth = viewport.view_depth(point);
                 let range = (depth - scale, depth + scale);
                 let uniform = viewport.gpu_view_uniform(rect, Some(range));
@@ -2301,6 +2362,26 @@ mod tests {
                     .all(|v| *v == 0.0 || v.is_normal())
             );
         }
+    }
+
+    #[test]
+    fn parallel_face_sort_depth_stays_finite_at_the_model_range_limit() {
+        let mut viewport = Viewport::new(ViewKind::Top);
+        viewport.display_mode = DisplayMode::Ghosted;
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(-1.0, -1.0, -Real::MAX),
+                point(1.0, -1.0, -Real::MAX),
+                point(0.0, 1.0, -Real::MAX),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut scene = GpuSceneBuilder::new();
+        viewport.add_gpu_mesh_faces(&mut scene, &mesh, Color32::GRAY);
+        assert_eq!(scene.triangles.len(), 1);
+        assert_eq!(scene.triangles[0].depth, Real::MAX);
     }
 
     #[test]

@@ -8,16 +8,64 @@ impl Viewport {
     /// views also apply their uniform model-to-pixel scale here so GPU matrix
     /// coefficients do not become subnormal merely because the model is large.
     pub(super) fn gpu_position(&self, point: Point3) -> Option<[f32; 3]> {
+        let mut local = [
+            point.x() - self.target.x,
+            point.y() - self.target.y,
+            point.z() - self.target.z,
+        ];
+        if let Some((axis, _)) = self.parallel_depth_axis() {
+            if !local[axis].is_finite() {
+                return None;
+            }
+            // Encode depth only after the complete scene's f64 range is known.
+            local[axis] = 0.0;
+        }
         let scale = if self.kind.is_parallel() {
             Real::from(self.pixels_per_unit)
         } else {
             1.0
         };
         Some([
-            real_to_gpu((point.x() - self.target.x) * scale)?,
-            real_to_gpu((point.y() - self.target.y) * scale)?,
-            real_to_gpu((point.z() - self.target.z) * scale)?,
+            real_to_gpu(local[0] * scale)?,
+            real_to_gpu(local[1] * scale)?,
+            real_to_gpu(local[2] * scale)?,
         ])
+    }
+
+    fn parallel_depth_axis(&self) -> Option<(usize, f32)> {
+        match self.kind {
+            ViewKind::Top => Some((2, -1.0)),
+            ViewKind::Front => Some((1, 1.0)),
+            ViewKind::Right => Some((0, -1.0)),
+            ViewKind::Perspective => None,
+        }
+    }
+
+    pub(super) fn encode_gpu_depth(
+        &self,
+        position: &mut [f32],
+        depth: Real,
+        range: Option<(Real, Real)>,
+    ) {
+        let Some((axis, sign)) = self.parallel_depth_axis() else {
+            return;
+        };
+        let encoded = if let Some((minimum, maximum)) = range
+            && minimum < maximum
+        {
+            let span = maximum - minimum;
+            let fraction = if span.is_finite() {
+                (depth - minimum) / span
+            } else {
+                (depth * 0.5 - minimum * 0.5) / (maximum * 0.5 - minimum * 0.5)
+            };
+            // Leave five percent at either end for clipping/bias, without
+            // adding an absolute padding that can round away at large depths.
+            (fraction * 0.9 + 0.05) as f32
+        } else {
+            0.5
+        };
+        position[axis] = sign * encoded;
     }
 
     fn perspective_near_floor(&self) -> Real {
@@ -478,15 +526,6 @@ impl Viewport {
                     ),
                     ViewKind::Perspective => unreachable!(),
                 };
-                let (minimum_depth, maximum_depth) = depth_range.unwrap_or((-1.0, 1.0));
-                let minimum_depth = minimum_depth * Real::from(self.pixels_per_unit);
-                let maximum_depth = maximum_depth * Real::from(self.pixels_per_unit);
-                // Pad in the same scaled units as the vertices. Padding in
-                // model units can itself underflow at the smallest zoom scale.
-                let span = (maximum_depth - minimum_depth).abs().max(1.0);
-                let near = minimum_depth - span * 0.05 - 1.0e-3;
-                let far = maximum_depth + span * 0.05 + 1.0e-3;
-                let depth_span = far - near;
                 // Parallel vertex positions already contain pixels_per_unit.
                 let horizontal_scale = 2.0 / width;
                 let vertical_scale = 2.0 / height;
@@ -499,10 +538,10 @@ impl Viewport {
                     vertical_scale * up.y,
                     vertical_scale * up.z,
                     offset_y,
-                    forward.x / depth_span,
-                    forward.y / depth_span,
-                    forward.z / depth_span,
-                    -near / depth_span,
+                    forward.x,
+                    forward.y,
+                    forward.z,
+                    0.0,
                     0.0,
                     0.0,
                     0.0,
@@ -554,6 +593,36 @@ fn matrix_to_gpu(matrix: NaMatrix4<Real>) -> [[f32; 4]; 4] {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn parallel_depth_encoding_handles_singletons_subnormals_and_overflowing_spans() {
+        for kind in [ViewKind::Top, ViewKind::Front, ViewKind::Right] {
+            let viewport = Viewport::new(kind);
+            let (axis, sign) = viewport.parallel_depth_axis().unwrap();
+            for (minimum, maximum) in [
+                (1e24, 1e24),
+                (0.0, Real::from_bits(1)),
+                (-Real::MAX, Real::MAX),
+                (2.0_f64.powi(80), 2.0_f64.powi(80) + 2.0_f64.powi(40)),
+            ] {
+                for (depth, expected) in [(minimum, 0.05), (maximum, 0.95)] {
+                    let mut position = [7.0, 8.0, 9.0, 10.0];
+                    viewport.encode_gpu_depth(&mut position, depth, Some((minimum, maximum)));
+                    let expected = if minimum == maximum { 0.5 } else { expected };
+                    assert_eq!(position[axis], sign * expected);
+                    for other in 0..4 {
+                        if other != axis {
+                            assert_eq!(position[other], [7.0, 8.0, 9.0, 10.0][other]);
+                        }
+                    }
+                }
+            }
+        }
+        let viewport = Viewport::new(ViewKind::Perspective);
+        let mut position = [1.0, 2.0, 3.0];
+        viewport.encode_gpu_depth(&mut position, 1e24, Some((0.0, 2e24)));
+        assert_eq!(position, [1.0, 2.0, 3.0]);
+    }
 
     #[test]
     fn command_zoom_factor_pins_view_center_and_stages_failures() {
