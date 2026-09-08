@@ -73,7 +73,12 @@ to change that construction. `Degree=1|3`, `Knots=Uniform|Chord|SqrtChrd`,
 `Close=Open|Smooth|Sharp`, and world-space `StartTangent=x,y,z` /
 `EndTangent=x,y,z` use the one-line parser; tangents require an open cubic.
 Preview and completion retain all startup settings, including endpoint directions.
-Changing these options inside an active InterpCrv prompt is not yet supported.
+These options can also be entered during an active InterpCrv prompt, alone or
+together (for example `Degree=1 Knots=Uniform`). Unspecified settings and points
+are retained. The entire update is rejected if an option is invalid, duplicated,
+or incompatible with another setting; document history is untouched. Enter
+finishes with the updated settings. Tangent vectors can be replaced but not yet
+cleared in-prompt.
 Model-space preview geometry is cached by points, construction mode, settings,
 and interpolation tolerance, including
 failed constructions. Camera movement reprojects it without rebuilding the curve;

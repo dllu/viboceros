@@ -8,7 +8,7 @@ use viboceros_command::{
     DEFAULT_MESH_SPHERE_SUBDIVISIONS, DEFAULT_MESH_TORUS_FACE_COUNT,
     DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT, DistributionSettings,
     MAX_MESH_SPHERE_QUAD_SUBDIVISIONS, MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS, parse_curve_closure,
-    parse_curve_degree, parse_interp_curve_options,
+    parse_curve_degree, parse_interp_curve_options, update_interp_curve_options,
 };
 use viboceros_document::{Document, DocumentError, suggested_layer_color};
 use viboceros_geometry::{

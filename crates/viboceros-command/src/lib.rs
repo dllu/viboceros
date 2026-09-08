@@ -1243,7 +1243,15 @@ impl Command for InterpCurveCommand {
 pub fn parse_interp_curve_options(
     arguments: &[&str],
 ) -> Result<CurveInterpolationOptions, CommandError> {
-    let (points, options) = parse_interp_curve_arguments(arguments)?;
+    update_interp_curve_options(CurveInterpolationOptions::default(), arguments)
+}
+
+/// Applies an options-only update atomically, retaining unspecified settings.
+pub fn update_interp_curve_options(
+    current: CurveInterpolationOptions,
+    arguments: &[&str],
+) -> Result<CurveInterpolationOptions, CommandError> {
+    let (points, options) = parse_interp_curve_arguments_from(arguments, current)?;
     if !points.is_empty() {
         return Err(CommandError::Usage(INTERP_CRV_USAGE));
     }
@@ -1264,12 +1272,19 @@ pub fn parse_interp_curve_options(
 fn parse_interp_curve_arguments(
     arguments: &[&str],
 ) -> Result<(Vec<Point3>, CurveInterpolationOptions), CommandError> {
+    parse_interp_curve_arguments_from(arguments, CurveInterpolationOptions::default())
+}
+
+fn parse_interp_curve_arguments_from(
+    arguments: &[&str],
+    current: CurveInterpolationOptions,
+) -> Result<(Vec<Point3>, CurveInterpolationOptions), CommandError> {
     let mut points = Vec::new();
-    let mut degree = 3;
-    let mut knot_spacing = CurveKnotSpacing::Chord;
-    let mut closure = InterpolatedCurveClosure::Open;
-    let mut start_tangent = None;
-    let mut end_tangent = None;
+    let mut degree = current.degree();
+    let mut knot_spacing = current.knot_spacing();
+    let mut closure = current.closure();
+    let mut start_tangent = current.start_tangent();
+    let mut end_tangent = current.end_tangent();
     let mut degree_seen = false;
     let mut knots_seen = false;
     let mut close_seen = false;

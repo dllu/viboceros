@@ -6,6 +6,92 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn interpolation_draft_settings_update_atomically_and_drive_preview_and_completion() {
+    let mut app = test_app();
+    for input in [
+        "Point 9,9,9",
+        "Undo",
+        "InterpCrv",
+        "0",
+        "3,0,0",
+        "4,2,1",
+        "0,4,0",
+    ] {
+        enter(&mut app, input);
+    }
+    let points = app.curve_points.clone();
+    let last = app.last_point;
+    let plane = app.drafting_plane;
+    let document = format!("{:?}", app.document);
+    let original = app.curve_draft_preview().unwrap();
+    enter(&mut app, "_Degree=1 _Knots=Uniform _Close=Sharp");
+    let updated = app.curve_draft_preview().unwrap();
+    assert_eq!(updated.degree(), 1);
+    assert!(updated.is_closed().unwrap());
+    assert!(!std::sync::Arc::ptr_eq(&original, &updated));
+    assert!(app.command_input.is_empty());
+    assert_eq!(app.curve_points, points);
+    assert_eq!(app.last_point, last);
+    assert_eq!(app.drafting_plane, plane);
+    assert_eq!(format!("{:?}", app.document), document);
+    let active = app.active_command;
+    for invalid in [
+        "Degree=2",
+        "Degree=3 Knots=bad",
+        "Knots=Chord Knots=Uniform",
+        "Close=Open StartTangent=1,0,0",
+        "Degree=3 extra",
+        "Knots=",
+        "EndTangent=NaN,0,0",
+    ] {
+        enter(&mut app, invalid);
+        assert_eq!(app.active_command, active, "{invalid}");
+        assert_eq!(app.command_input, invalid);
+        assert_eq!(app.curve_points, points);
+        assert_eq!(format!("{:?}", app.document), document);
+        assert!(std::sync::Arc::ptr_eq(
+            &updated,
+            &app.curve_draft_preview().unwrap()
+        ));
+    }
+    enter(&mut app, "");
+    assert_eq!(
+        app.document.objects().next().unwrap().geometry(),
+        &Geometry::NurbsCurve((*updated).clone())
+    );
+}
+
+#[test]
+fn interpolation_partial_updates_retain_unspecified_tangents() {
+    let mut app = test_app();
+    enter(&mut app, "InterpCrv StartTangent=1,2,0 EndTangent=-1,1,0");
+    enter(&mut app, "Knots=Uniform");
+    enter(&mut app, "StartTangent=2,1,0");
+    let Some(InteractiveCommand::InterpCrv { options }) = app.active_command else {
+        panic!("draft");
+    };
+    assert_eq!(
+        options.knot_spacing(),
+        viboceros_geometry::CurveKnotSpacing::Uniform
+    );
+    assert_eq!(options.start_tangent().unwrap().to_array(), [2., 1., 0.]);
+    assert_eq!(options.end_tangent().unwrap().to_array(), [-1., 1., 0.]);
+    for input in ["0", "3,0,0", "4,2,1", "0,4,0", ""] {
+        enter(&mut app, input);
+    }
+    assert!(app.active_command.is_none());
+    let mut reference = test_app();
+    enter(
+        &mut reference,
+        "InterpCrv 0,0,0 3,0,0 4,2,1 0,4,0 Knots=Uniform StartTangent=2,1,0 EndTangent=-1,1,0",
+    );
+    assert_eq!(
+        app.document.objects().next().unwrap().geometry(),
+        reference.document.objects().next().unwrap().geometry()
+    );
+}
+
+#[test]
 fn interpolation_close_actions_preserve_degree_and_knot_spacing() {
     for (action, closure) in [("_Close", "Smooth"), ("sHaRp", "Sharp")] {
         for options in ["Degree=1 Knots=Uniform", "Degree=3 Knots=SqrtChrd"] {

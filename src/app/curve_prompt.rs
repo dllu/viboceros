@@ -23,6 +23,26 @@ impl VibocerosApp {
 
     pub(super) fn try_continue_curve_option(&mut self, input: &str) -> bool {
         let option = input.trim_start_matches(['_', '-']);
+        if let Some(InteractiveCommand::InterpCrv { options }) = self.active_command
+            && let Some((name, _)) = option.split_once('=')
+            && ["Degree", "Knots", "Close", "StartTangent", "EndTangent"]
+                .iter()
+                .any(|known| name.eq_ignore_ascii_case(known))
+        {
+            self.push_log(format!("> {input}"));
+            match update_interp_curve_options(
+                options,
+                &input.split_whitespace().collect::<Vec<_>>(),
+            ) {
+                Ok(options) => {
+                    self.active_command = Some(InteractiveCommand::InterpCrv { options });
+                    self.command_input.clear();
+                    self.push_log(format!("InterpCrv settings: {options:?}"));
+                }
+                Err(error) => self.push_log(format!("Error: {error}")),
+            }
+            return true;
+        }
         if let Some(InteractiveCommand::Curve { degree, closure }) = self.active_command
             && let Some((name, value)) = option.split_once('=')
         {
