@@ -3626,6 +3626,7 @@ dependencies = [
  "bytemuck",
  "eframe",
  "nalgebra",
+ "serde_json",
  "viboceros-command",
  "viboceros-document",
  "viboceros-drafting",

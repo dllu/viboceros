@@ -53,6 +53,9 @@ viboceros-document.workspace = true
 viboceros-drafting.workspace = true
 viboceros-geometry.workspace = true
 
+[dev-dependencies]
+serde_json = { workspace = true, features = ["float_roundtrip"] }
+
 [profile.release]
 lto = "thin"
 codegen-units = 1

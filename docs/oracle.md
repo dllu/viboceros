@@ -15,6 +15,10 @@ checks adjacent-point rejection; see [typed point input](point-input.md).
 The [threshold follow-up](control-point-threshold-measurement.json) embeds three
 additional requests and their responses (30 cases), establishing a fixed,
 coordinate-wise `2^-32` comparison for the tested near-origin controls.
+The app test `recorded_rhino_curve_threshold_sequences_match_interactive_completion`
+replays all 30 stored requests with their document tolerances and checks accepted
+controls, output degree, closure, and control locations against Rhino's responses.
+JSON uses round-trip float parsing so adjacent binary64 boundary values remain distinct.
 
 Standard geometry/command batches apply the request's absolute, relative, and angular tolerances to
 Rhino's active document and restores its previous settings on success or failure.

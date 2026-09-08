@@ -5099,6 +5099,7 @@ mod tests {
     mod object_selection;
     mod plane_arrays;
     mod point_input;
+    mod rhino_curve_prompt;
     mod single_span_selection;
     use super::*;
     use std::collections::BTreeSet;
