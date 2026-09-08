@@ -38,7 +38,11 @@ use to_nurbs::ToNurbsCommand;
 mod bounding_box;
 mod distribute;
 mod geometry_selection;
+mod object_name;
 mod selection_commands;
+#[cfg(test)]
+use object_name::SET_OBJECT_NAME_USAGE;
+use object_name::SetObjectNameCommand;
 use selection_commands::{
     InvertCommand, SelAllCommand, SelColorCommand, SelGroupCommand, SelLastCommand,
     SelLayerCommand, SelNameCommand, SelNoneCommand, SelPrevCommand, SelectDuplicateCommand,
@@ -15000,76 +15004,6 @@ impl Command for ExtractDuplicateMeshFacesCommand {
             counts.extracted_faces, counts.extracted_meshes, counts.unchanged_meshes
         ))
     }
-}
-
-const SET_OBJECT_NAME_USAGE: &str = "SetObjectName name [AppendCounter=Yes|No]";
-
-struct SetObjectNameCommand;
-
-impl Command for SetObjectNameCommand {
-    fn name(&self) -> &'static str {
-        "SetObjectName"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (name, append_counter) = parse_set_object_name_arguments(arguments)?;
-        let selected = document
-            .objects()
-            .filter(|object| document.is_selected(object.id()))
-            .map(|object| object.id())
-            .collect::<Vec<_>>();
-        if selected.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
-        let has_name = name.is_some();
-        let assignments = match name.as_ref() {
-            Some(name) if append_counter => selected
-                .iter()
-                .enumerate()
-                .map(|(index, id)| (*id, Some(format!("{name} {index}"))))
-                .collect::<Vec<_>>(),
-            _ => selected
-                .iter()
-                .map(|id| (*id, name.clone()))
-                .collect::<Vec<_>>(),
-        };
-        document.set_object_names(assignments)?;
-        Ok(if has_name {
-            format!("Named {} object(s)", selected.len())
-        } else {
-            format!("Cleared names on {} object(s)", selected.len())
-        })
-    }
-}
-
-fn parse_set_object_name_arguments(
-    arguments: &[&str],
-) -> Result<(Option<String>, bool), CommandError> {
-    let mut append_counter = false;
-    let mut name_parts = Vec::new();
-    for argument in arguments {
-        let normalized = argument.trim_start_matches('_');
-        if let Some((option, value)) = normalized.split_once('=')
-            && option.eq_ignore_ascii_case("AppendCounter")
-        {
-            append_counter = parse_yes_no(value.trim_start_matches('_'))
-                .ok_or(CommandError::Usage(SET_OBJECT_NAME_USAGE))?;
-        } else {
-            name_parts.push(*argument);
-        }
-    }
-    if name_parts.is_empty() {
-        return Err(CommandError::Usage(SET_OBJECT_NAME_USAGE));
-    }
-    let joined = name_parts.join(" ");
-    let trimmed = joined.trim();
-    let unquoted = if trimmed.len() >= 2 && trimmed.starts_with('"') && trimmed.ends_with('"') {
-        &trimmed[1..trimmed.len() - 1]
-    } else {
-        trimmed
-    };
-    let name = (!unquoted.trim().is_empty()).then(|| unquoted.trim().to_owned());
-    Ok((name, append_counter))
 }
 
 struct SetObjectColorCommand;

@@ -75,6 +75,8 @@ The command-owned `object_selection` module supplies typed filters and boolean
 options to the separate [app object-prompt adapter](object-selection.md).
 `selection_commands` owns basic, action-history, attribute, and duplicate
 selectors together with their argument parsing and remembered selection options.
+`object_name` owns `SetObjectName`, keeping quoted literal names distinct from
+options and preserving quoted internal whitespace before document assignment.
 The independent `geometry_selection` command module owns document-wide type,
 topology, planarity, and short-curve selectors. It preflights eligible matches
 before applying additive selection and leaves model history unchanged.

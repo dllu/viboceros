@@ -100,8 +100,15 @@ indexing, face order, and winding must match.
 
 `SetObjectName` assigns one shared name to the selection. Add
 `AppendCounter=Yes` for Rhino's zero-based suffixes in document order, or use
+`SetObjectName ""` to clear names. Quoted names preserve internal whitespace
+and treat option-like text literally: `SetObjectName "Part AppendCounter=Yes A"`
+does not enable counters. Options can precede or follow the quoted name.
+Unquoted words are joined with single spaces; name boundaries are trimmed.
+Quotes must enclose complete tokens; embedded/escaped quotes are not supported.
+Malformed quotes and invalid options leave objects, selection, and history
+unchanged. Parsing and assignment live in the `object_name` command module.
 
-`SetObjectName ""` to clear names. Unnamed `Group` calls receive Rhino-style
+Unnamed `Group` calls receive Rhino-style
 `Group01`, `Group02`, ... names; explicit group names are case-sensitive.
 `Ungroup` removes each selected object's last membership; `UngroupAll` removes
 every membership on those objects. Both retain empty definitions. See
