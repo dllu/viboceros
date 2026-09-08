@@ -42,6 +42,13 @@ An independently generated Rhino 8 nested line/arc reference is retained in
 `crates/viboceros-io/tests/fixtures/`, with its generator and provenance documented
 alongside it. Tests check the analytic locus and subsequent round trip.
 
+The low-level 3DM I/O model preserves standard, unitless, unset, and custom
+length-unit metadata (`ThreeDmModel::units`). Custom names and finite,
+positive metres-per-unit scales round-trip without rescaling coordinates;
+new I/O models explicitly default to millimetres. The document and command
+layers do not yet retain or convert these units, so this is not yet an
+end-to-end physical-size guarantee for application imports and exports.
+
 Initial STEP interchange uses the Apache-2.0 Monstertruck kernel to read
 solid/shell B-reps and assemblies, apply instance transforms, and robustly
 tessellate exact trimmed surfaces into validated display meshes. Repeated

@@ -1374,6 +1374,9 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
 }  // namespace
 
 struct ViboThreeDmModel {
+  uint32_t unit_system = 0;
+  double meters_per_unit = 1.0;
+  std::string unit_name;
   std::vector<BridgeLayer> layers;
   std::vector<BridgeGroup> groups;
   std::vector<BridgeObject> objects;
@@ -1407,6 +1410,12 @@ extern "C" int32_t vibo_3dm_read(const char* path,
     }
 
     auto decoded = std::make_unique<ViboThreeDmModel>();
+    const ON_UnitSystem& units = source.m_settings.m_ModelUnitsAndTolerances.m_unit_system;
+    decoded->unit_system = static_cast<uint32_t>(units.UnitSystem());
+    if (units.UnitSystem() == ON::LengthUnitSystem::CustomUnits) {
+      decoded->meters_per_unit = units.MetersPerUnit(ON_DBL_QNAN);
+      decoded->unit_name = utf8(units.UnitSystemName());
+    }
     ONX_ModelComponentIterator layer_iterator(
         source, ON_ModelComponent::Type::Layer);
     for (const ON_Layer* layer =
@@ -1617,8 +1626,20 @@ extern "C" int32_t vibo_3dm_object(
   return 1;
 }
 
+extern "C" int32_t vibo_3dm_units(const ViboThreeDmModel* model,
+    uint32_t* unit_system, double* meters_per_unit, const char** name) {
+  if (model == nullptr || unit_system == nullptr || meters_per_unit == nullptr || name == nullptr) {
+    return 0;
+  }
+  *unit_system = model->unit_system;
+  *meters_per_unit = model->meters_per_unit;
+  *name = model->unit_name.c_str();
+  return 1;
+}
+
 extern "C" int32_t vibo_3dm_write(
-    const char* path, const ViboWriteLayer* layers, size_t layer_count,
+    const char* path, uint32_t unit_system, double meters_per_unit,
+    const char* unit_name, const ViboWriteLayer* layers, size_t layer_count,
     const ViboWriteGroup* groups, size_t group_count,
     const ViboWriteObject* objects, size_t object_count, char* error,
     size_t error_capacity) {
@@ -1633,6 +1654,18 @@ extern "C" int32_t vibo_3dm_write(
   try {
     begin_open_nurbs();
     ONX_Model model;
+    if ((unit_system > 25 && unit_system != 255) ||
+        (unit_system == 11 && (unit_name == nullptr ||
+          !std::isfinite(meters_per_unit) || meters_per_unit <= 0.0))) {
+      set_error(error, error_capacity, "invalid model length units");
+      return 0;
+    }
+    ON_UnitSystem& units = model.m_settings.m_ModelUnitsAndTolerances.m_unit_system;
+    if (unit_system == 11) {
+      units.SetCustomUnitSystem(ON_wString(unit_name), meters_per_unit);
+    } else {
+      units.SetUnitSystem(static_cast<ON::LengthUnitSystem>(unit_system));
+    }
     model.m_sStartSectionComments =
         "Created by Viboceros using the OpenNURBS toolkit.";
     model.m_properties.m_Application.m_application_name = L"Viboceros";

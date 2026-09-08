@@ -11,6 +11,7 @@ use viboceros_geometry::{
     PointCloud3, PolyCurve3, Polyline3, Tolerance, TriangleMesh, WeightedPoint3,
 };
 
+use crate::ThreeDmUnitSystem;
 use crate::three_dm_geometry::{self, GeometryCodecError};
 
 const ERROR_CAPACITY: usize = 4096;
@@ -93,6 +94,8 @@ impl ThreeDmObject {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ThreeDmModel {
+    /// File metadata only; assigning units does not rescale coordinates.
+    pub units: ThreeDmUnitSystem,
     pub layers: Vec<ThreeDmLayer>,
     pub groups: Vec<ThreeDmGroup>,
     pub objects: Vec<ThreeDmObject>,
@@ -106,6 +109,7 @@ impl ThreeDmModel {
         objects: Vec<ThreeDmObject>,
     ) -> Self {
         Self {
+            units: ThreeDmUnitSystem::default(),
             layers,
             groups,
             objects,
@@ -181,6 +185,7 @@ pub fn write_3dm_file(
     model: &ThreeDmModel,
 ) -> Result<ThreeDmWriteReport, ThreeDmError> {
     validate_model(model)?;
+    let (unit_system, meters_per_unit, unit_name) = model.units.encode()?;
     let mut prepared = Vec::new();
     let mut report = ThreeDmWriteReport {
         source_object_count: model.objects.len(),
@@ -289,6 +294,9 @@ pub fn write_3dm_file(
     let success = unsafe {
         ffi::vibo_3dm_write(
             native_path.as_ptr(),
+            unit_system,
+            meters_per_unit,
+            unit_name.as_ptr(),
             pointer_or_null(&layers),
             layers.len(),
             pointer_or_null(&groups),
@@ -311,6 +319,28 @@ pub fn write_3dm_file(
 }
 
 fn decode_model(handle: &ModelHandle, tolerance: Tolerance) -> Result<ThreeDmModel, ThreeDmError> {
+    let mut unit_system = 0;
+    let mut meters_per_unit = 1.0;
+    let mut unit_name = std::ptr::null();
+    // SAFETY: handle is live and all output pointers reference writable storage.
+    let success = unsafe {
+        ffi::vibo_3dm_units(
+            handle.0.as_ptr(),
+            &mut unit_system,
+            &mut meters_per_unit,
+            &mut unit_name,
+        )
+    };
+    if success == 0 || unit_name.is_null() {
+        return Err(ThreeDmError::MalformedBridge(
+            "missing length unit metadata",
+        ));
+    }
+    // SAFETY: bridge owns a terminated string for the lifetime of the handle.
+    let name = unsafe { CStr::from_ptr(unit_name) }
+        .to_string_lossy()
+        .into_owned();
+    let units = ThreeDmUnitSystem::decode(unit_system, meters_per_unit, name)?;
     // SAFETY: the handle owns a live bridge model.
     let layer_count = unsafe { ffi::vibo_3dm_layer_count(handle.0.as_ptr()) };
     let mut layers = Vec::with_capacity(layer_count.max(1));
@@ -390,6 +420,7 @@ fn decode_model(handle: &ModelHandle, tolerance: Tolerance) -> Result<ThreeDmMod
         }
     }
     Ok(ThreeDmModel {
+        units,
         layers,
         groups,
         objects,
@@ -1088,6 +1119,12 @@ mod ffi {
             error_capacity: usize,
         ) -> c_int;
         pub fn vibo_3dm_free(model: *mut ViboThreeDmModel);
+        pub fn vibo_3dm_units(
+            model: *const ViboThreeDmModel,
+            unit_system: *mut u32,
+            meters_per_unit: *mut f64,
+            name: *mut *const c_char,
+        ) -> c_int;
         pub fn vibo_3dm_layer_count(model: *const ViboThreeDmModel) -> usize;
         pub fn vibo_3dm_layer(
             model: *const ViboThreeDmModel,
@@ -1122,6 +1159,9 @@ mod ffi {
         ) -> c_int;
         pub fn vibo_3dm_write(
             path: *const c_char,
+            unit_system: u32,
+            meters_per_unit: f64,
+            unit_name: *const c_char,
             layers: *const ViboWriteLayer,
             layer_count: usize,
             groups: *const ViboWriteGroup,
@@ -1531,6 +1571,57 @@ mod tests {
             }
         }
         fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn model_length_units_round_trip_without_rescaling_coordinates() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("units.3dm");
+        let mut model = sample_model();
+        write_3dm_file(&path, &model).unwrap();
+        let baseline = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        // General B-rep round-trip fidelity is checked separately; compare
+        // against the same serialization here to isolate unit-driven scaling.
+        assert_eq!(baseline.objects[0], model.objects[0]);
+        // Every OpenNURBS standard identifier, unitless, unset, and custom.
+        for code in (0..=25).chain(std::iter::once(255)) {
+            model.units = ThreeDmUnitSystem::decode(code, 0.125, "custom µ-unit".into()).unwrap();
+            write_3dm_file(&path, &model).unwrap();
+            let decoded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+            assert_eq!(decoded.units, model.units, "unit identifier {code}");
+            assert_eq!(
+                decoded.objects, baseline.objects,
+                "coordinates or attributes changed for {code}"
+            );
+        }
+    }
+
+    #[test]
+    fn invalid_custom_units_do_not_replace_an_existing_file() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("units.3dm");
+        fs::write(&path, b"original").unwrap();
+        let mut model = sample_model();
+        for scale in [0.0, -1.0, f64::NAN, f64::INFINITY, f64::NEG_INFINITY] {
+            model.units = ThreeDmUnitSystem::Custom {
+                name: "bad scale".into(),
+                meters_per_unit: scale,
+            };
+            assert!(matches!(
+                write_3dm_file(&path, &model),
+                Err(ThreeDmError::InvalidModel(_))
+            ));
+            assert_eq!(fs::read(&path).unwrap(), b"original");
+        }
+        model.units = ThreeDmUnitSystem::Custom {
+            name: "bad\0name".into(),
+            meters_per_unit: 1.0,
+        };
+        assert!(matches!(
+            write_3dm_file(&path, &model),
+            Err(ThreeDmError::InvalidModel(_))
+        ));
+        assert_eq!(fs::read(&path).unwrap(), b"original");
     }
 
     #[test]
