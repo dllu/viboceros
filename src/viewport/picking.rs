@@ -1,5 +1,6 @@
 //! Screen capture and depth ordering for mesh and tessellated surface hits.
 
+use super::screen::signed_area;
 use super::*;
 
 #[derive(Clone, Copy)]
@@ -24,13 +25,6 @@ impl PickHit {
                 && (self.priority < other.priority
                     || (self.priority == other.priority && self.depth < other.depth)))
     }
-}
-
-pub(super) fn signed_area(start: Pos2, end: Pos2, target: Pos2) -> Real {
-    (Real::from(end.x) - Real::from(start.x)).mul_add(
-        Real::from(target.y) - Real::from(start.y),
-        -(Real::from(end.y) - Real::from(start.y)) * (Real::from(target.x) - Real::from(start.x)),
-    )
 }
 
 /// Perspective projection interpolates reciprocal view depth in screen space.

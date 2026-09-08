@@ -29,7 +29,9 @@ mod scene;
 #[cfg(test)]
 use scene::GpuSceneBuilder;
 mod picking;
-use picking::{PickHit, signed_area};
+use picking::PickHit;
+mod screen;
+use screen::{point_in_triangle, point_segment_distance, rect_corners, segment_intersects_rect};
 #[cfg(test)]
 mod raster_tests;
 #[cfg(test)]
@@ -1218,84 +1220,6 @@ fn selection_mode(modifiers: egui::Modifiers) -> SelectionMode {
 
 fn is_crossing_selection(start: Pos2, end: Pos2) -> bool {
     end.x < start.x
-}
-
-fn segment_intersects_rect(start: Pos2, end: Pos2, rect: Rect) -> bool {
-    if rect.contains(start) || rect.contains(end) {
-        return true;
-    }
-    let delta = end - start;
-    let mut minimum = 0.0_f32;
-    let mut maximum = 1.0_f32;
-    for (direction, distance) in [
-        (-delta.x, start.x - rect.left()),
-        (delta.x, rect.right() - start.x),
-        (-delta.y, start.y - rect.top()),
-        (delta.y, rect.bottom() - start.y),
-    ] {
-        if direction == 0.0 {
-            if distance < 0.0 {
-                return false;
-            }
-            continue;
-        }
-        let parameter = distance / direction;
-        if direction < 0.0 {
-            minimum = minimum.max(parameter);
-        } else {
-            maximum = maximum.min(parameter);
-        }
-        if minimum > maximum {
-            return false;
-        }
-    }
-    true
-}
-
-fn rect_corners(rect: Rect) -> [Pos2; 4] {
-    [
-        rect.left_top(),
-        rect.right_top(),
-        rect.right_bottom(),
-        rect.left_bottom(),
-    ]
-}
-
-fn point_segment_distance(point: Pos2, start: Pos2, end: Pos2) -> f32 {
-    let start_x = f64::from(start.x);
-    let start_y = f64::from(start.y);
-    let delta_x = f64::from(end.x) - start_x;
-    let delta_y = f64::from(end.y) - start_y;
-    let length_squared = delta_x.mul_add(delta_x, delta_y * delta_y);
-    let parameter = if length_squared > 0.0 && length_squared.is_finite() {
-        ((f64::from(point.x) - start_x).mul_add(delta_x, (f64::from(point.y) - start_y) * delta_y)
-            / length_squared)
-            .clamp(0.0, 1.0)
-    } else {
-        0.0
-    };
-    let closest_x = delta_x.mul_add(parameter, start_x);
-    let closest_y = delta_y.mul_add(parameter, start_y);
-    let distance = (f64::from(point.x) - closest_x).hypot(f64::from(point.y) - closest_y);
-    if distance.is_finite() && distance <= f64::from(f32::MAX) {
-        distance as f32
-    } else {
-        f32::INFINITY
-    }
-}
-
-fn point_in_triangle(point: Pos2, first: Pos2, second: Pos2, third: Pos2) -> bool {
-    let area = signed_area(first, second, third);
-    if !area.is_finite() || area.abs() <= f64::EPSILON {
-        return false;
-    }
-    let tolerance = area.abs().max(1.0) * 1.0e-12;
-    let signs = [
-        signed_area(first, second, point),
-        signed_area(second, third, point),
-        signed_area(third, first, point),
-    ];
-    signs.iter().all(|value| *value >= -tolerance) || signs.iter().all(|value| *value <= tolerance)
 }
 
 fn vector_to_gpu(vector: NaVector3<Real>) -> [f32; 3] {

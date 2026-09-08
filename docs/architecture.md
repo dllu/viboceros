@@ -101,6 +101,10 @@ exact planar-face boundary integrator; temporary topology stays outside the docu
 The app's `viewport/picking` module owns face hit metrics, perspective-correct
 depth interpolation, and mesh/NURBS/B-rep hit evaluation. Screen capture and
 feature priority remain separate from depth ordering among overlapping face hits.
+The shared `viewport/screen` module owns triangle containment, point-to-segment
+distance, and rectangle/segment intersection predicates. Coordinate differences
+use f64 intermediates so opposite finite f32 screen endpoints do not overflow;
+rectangle tests cover misses, crossings, endpoint reversal, and boundary contact.
 Constant-depth faces retain their exact depth rather than accumulating rounded
 barycentric products. Parallel interpolated depths are bounded by vertex depths;
 a scaled, renormalized fallback handles overflowing products at captured edges.
