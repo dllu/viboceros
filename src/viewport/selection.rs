@@ -89,13 +89,19 @@ impl Viewport {
                 }
                 Geometry::PointCloud(cloud) => {
                     let distance = if self.kind == ViewKind::Top {
-                        self.unproject(pointer, rect, 0.0)
-                            .and_then(|query| {
+                        let origin = self.world_origin(rect);
+                        let scale = Real::from(self.pixels_per_unit);
+                        Point3::try_new(self.target.x, self.target.y, 0.0)
+                            .ok()
+                            .and_then(|target| {
                                 cloud
-                                    .nearest_xy(
-                                        query,
-                                        Real::from(PICK_CAPTURE_PIXELS)
-                                            / Real::from(self.pixels_per_unit),
+                                    .nearest_xy_relative(
+                                        target,
+                                        [
+                                            (Real::from(pointer.x) - Real::from(origin.x)) / scale,
+                                            (Real::from(origin.y) - Real::from(pointer.y)) / scale,
+                                        ],
+                                        Real::from(PICK_CAPTURE_PIXELS) / scale,
                                     )
                                     .ok()
                                     .flatten()
@@ -503,4 +509,31 @@ pub(super) fn selection_mode(modifiers: egui::Modifiers) -> SelectionMode {
 
 pub(super) fn is_crossing_selection(start: Pos2, end: Pos2) -> bool {
     end.x < start.x
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn translated_point_cloud_capture_matches_screen_distance() {
+        let mut view = Viewport::new(ViewKind::Top);
+        view.target = NaVector3::new(2.0_f64.powi(52), 0.0, 0.0);
+        let point = Point3::try_new(view.target.x, 0.0, 0.0).unwrap();
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let id = document
+            .add_geometry(Geometry::PointCloud(
+                viboceros_geometry::PointCloud3::try_new(vec![point]).unwrap(),
+            ))
+            .unwrap();
+        let projected = view.project(point, rect).unwrap();
+        for offset in [0.0, 7.0, 8.0, 9.0, 12.0] {
+            assert_eq!(
+                view.pick_object(projected + Vec2::new(offset, 0.0), rect, &document),
+                (offset <= PICK_CAPTURE_PIXELS).then_some(id),
+                "offset={offset}",
+            );
+        }
+    }
 }

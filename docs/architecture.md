@@ -213,6 +213,11 @@ validated mixed triangle/quad polygon meshes, layers, groups, and bounded
 undo/redo.
 Native point clouds preserve point order and duplicates, cache finite bounds,
 and use a balanced XY spatial index for snapping and picking.
+Top-view cloud picking queries this index with a separate camera origin and
+local cursor offset. Distances are evaluated as `(point - origin) - offset`,
+avoiding loss of cursor precision when forming an absolute world query. Grid
+tests compare indexed results with local-coordinate exhaustive searches at
+zero and large signed translations, including radius boundaries and ties.
 
 Implementation is incomplete. General surface/surface
 intersections, editable STEP B-reps,

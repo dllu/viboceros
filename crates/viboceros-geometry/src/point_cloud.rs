@@ -66,24 +66,46 @@ impl PointCloud3 {
         query: Point3,
         maximum_distance: Real,
     ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
+        self.nearest_xy_relative(query, [0.0; 2], maximum_distance)
+    }
+
+    /// Searches XY distances evaluated as `(point - origin) - offset`.
+    /// Keeping the local offset separate avoids rounding it away when the
+    /// origin has large absolute coordinates. Ties retain source order.
+    pub fn nearest_xy_relative(
+        &self,
+        origin: Point3,
+        offset: [Real; 2],
+        maximum_distance: Real,
+    ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
         if !maximum_distance.is_finite() || maximum_distance < 0.0 {
             return Err(GeometryError::InvalidPointCloudSearchRadius);
         }
+        if offset.iter().any(|value| !value.is_finite()) {
+            return Err(GeometryError::NonFinite {
+                context: "point cloud search offset",
+            });
+        }
         let mut best = None;
-        self.nearest_xy_from(self.xy_root, query, maximum_distance, &mut best);
+        self.nearest_xy_from(self.xy_root, origin, offset, maximum_distance, &mut best);
         Ok(best.map(|(distance, point_index)| (point_index, self.points[point_index], distance)))
     }
 
     fn nearest_xy_from(
         &self,
         node_index: usize,
-        query: Point3,
+        origin: Point3,
+        offset: [Real; 2],
         maximum_distance: Real,
         best: &mut Option<(Real, usize)>,
     ) {
         let node = self.xy_nodes[node_index];
         let point = self.points[node.point_index];
-        let distance = (point.x() - query.x()).hypot(point.y() - query.y());
+        let relative = [
+            (point.x() - origin.x()) - offset[0],
+            (point.y() - origin.y()) - offset[1],
+        ];
+        let distance = relative[0].hypot(relative[1]);
         if distance <= maximum_distance
             && best.is_none_or(|(best_distance, best_index)| {
                 distance < best_distance
@@ -93,20 +115,20 @@ impl PointCloud3 {
             *best = Some((distance, node.point_index));
         }
 
-        let delta = coordinate(query, node.axis) - coordinate(point, node.axis);
+        let delta = -relative[usize::from(node.axis)];
         let (near, far) = if delta < 0.0 {
             (node.left, node.right)
         } else {
             (node.right, node.left)
         };
         if let Some(near) = near {
-            self.nearest_xy_from(near, query, maximum_distance, best);
+            self.nearest_xy_from(near, origin, offset, maximum_distance, best);
         }
         let search_distance = best.map_or(maximum_distance, |(distance, _)| distance);
         if delta.abs() <= search_distance
             && let Some(far) = far
         {
-            self.nearest_xy_from(far, query, maximum_distance, best);
+            self.nearest_xy_from(far, origin, offset, maximum_distance, best);
         }
     }
 }
@@ -188,6 +210,56 @@ mod tests {
         assert_eq!(cloud.points(), points);
         assert_eq!(cloud.bounds().min(), point(-1.0, -2.0, 0.0));
         assert_eq!(cloud.bounds().max(), point(3.0, 5.0, 4.0));
+    }
+
+    #[test]
+    fn relative_xy_search_matches_local_grid_without_absolute_query_rounding() {
+        let local: Vec<_> = (-2..=2)
+            .flat_map(|x| (-2..=2).map(move |y| (x, y)))
+            .collect();
+        for translation in [0.0, 2.0_f64.powi(52), -2.0_f64.powi(52)] {
+            let origin = point(translation, translation, 0.0);
+            let cloud = PointCloud3::try_new(
+                local
+                    .iter()
+                    .map(|&(x, y)| {
+                        point(
+                            translation + Real::from(x),
+                            translation + Real::from(y),
+                            7.0,
+                        )
+                    })
+                    .collect(),
+            )
+            .unwrap();
+            for x in -10..=10 {
+                for y in -10..=10 {
+                    let offset = [Real::from(x) / 4.0, Real::from(y) / 4.0];
+                    for radius in [0.0, 0.25, 0.5, 2.0] {
+                        let mut expected: Option<(usize, Real)> = None;
+                        for (index, &(px, py)) in local.iter().enumerate() {
+                            let distance =
+                                (Real::from(px) - offset[0]).hypot(Real::from(py) - offset[1]);
+                            if distance <= radius
+                                && expected.is_none_or(|(_, best)| distance < best)
+                            {
+                                expected = Some((index, distance));
+                            }
+                        }
+                        let actual = cloud.nearest_xy_relative(origin, offset, radius).unwrap();
+                        assert_eq!(
+                            actual.map(|(index, _, distance)| (index, distance)),
+                            expected
+                        );
+                    }
+                }
+            }
+            for invalid in [Real::NAN, Real::INFINITY, Real::NEG_INFINITY] {
+                for offset in [[invalid, 0.0], [0.0, invalid]] {
+                    assert!(cloud.nearest_xy_relative(origin, offset, 1.0).is_err());
+                }
+            }
+        }
     }
 
     #[test]
