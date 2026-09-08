@@ -3174,20 +3174,23 @@ impl VibocerosApp {
                 ));
                 self.push_log(command.prompt().to_owned());
             }
-            InteractiveCommand::InterpCrv { .. } => {
-                if self.curve_points.len() >= viboceros_geometry::MAX_CURVE_INTERPOLATION_POINTS {
-                    self.push_log(format!(
-                        "Error: InterpCrv supports at most {} input points; Undo removes the last point",
-                        viboceros_geometry::MAX_CURVE_INTERPOLATION_POINTS,
-                    ));
-                    return false;
-                }
+            InteractiveCommand::InterpCrv { options } => {
                 if let Some(previous) = self.curve_points.last()
                     && point_input::coincident_curve_controls(*previous, point)
                 {
                     self.push_log(
                         "Error: adjacent curve interpolation points must differ".to_owned(),
                     );
+                    return false;
+                }
+                if let Some(completed) = self.try_auto_close_interpolation(point, options) {
+                    return completed;
+                }
+                if self.curve_points.len() >= viboceros_geometry::MAX_CURVE_INTERPOLATION_POINTS {
+                    self.push_log(format!(
+                        "Error: InterpCrv supports at most {} input points; Undo removes the last point",
+                        viboceros_geometry::MAX_CURVE_INTERPOLATION_POINTS,
+                    ));
                     return false;
                 }
                 self.curve_points.push(point);

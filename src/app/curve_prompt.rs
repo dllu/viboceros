@@ -3,6 +3,39 @@
 use super::*;
 
 impl VibocerosApp {
+    /// A closing point is a completion gesture, not another interpolation point.
+    /// Private Rhino probes establish an inclusive Euclidean ON_SQRT_EPSILON
+    /// threshold (the OpenNURBS decimal constant, not f64::EPSILON.sqrt()).
+    pub(super) fn try_auto_close_interpolation(
+        &mut self,
+        point: Point3,
+        options: viboceros_geometry::CurveInterpolationOptions,
+    ) -> Option<bool> {
+        if self.curve_points.len() < 3
+            || !self.curve_points[0]
+                .distance_to(point)
+                .is_ok_and(|distance| distance <= 1.490116119385e-8)
+        {
+            return None;
+        }
+        let original = self.active_command;
+        let closure = if options.closure() == viboceros_geometry::InterpolatedCurveClosure::Sharp {
+            viboceros_geometry::InterpolatedCurveClosure::Sharp
+        } else {
+            viboceros_geometry::InterpolatedCurveClosure::Smooth
+        };
+        self.active_command = Some(InteractiveCommand::InterpCrv {
+            options: options.with_closure(closure),
+        });
+        self.finish_interactive_curve();
+        if self.active_command.is_some() {
+            self.active_command = original;
+            Some(false)
+        } else {
+            Some(true)
+        }
+    }
+
     pub(super) fn curve_draft_preview(
         &mut self,
     ) -> Option<std::sync::Arc<viboceros_geometry::NurbsCurve>> {

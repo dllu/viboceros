@@ -48,6 +48,14 @@ All eight results replay through app completion with control-point error at
 most `1e-9`. Command interpolation now retains these distinct points instead
 of rejecting or merging them using model tolerance. This does not measure
 the exact duplicate/near-zero seam threshold or automatic closing behavior.
+The separate [auto-close audit](interpolation-auto-close-measurement.json)
+embeds four requests and responses (18 cases) that establish an inclusive
+Euclidean `1.490116119385e-8` prompt-closing threshold near the world origin.
+The `PointOnly` diagnostic ending sends no Enter or closure option: its exact
+seam case confirms completion from the point itself. Use that ending only to
+probe suspected automatic completion; non-closing input may wait until the
+client timeout. App regressions replay every measured geometry and distinguish
+automatic completion from the cases that still require Enter.
 
 Standard geometry/command batches apply the request's absolute, relative, and angular tolerances to
 Rhino's active document and restores its previous settings on success or failure.

@@ -2686,7 +2686,9 @@ def _control_point_prompt_script(operation, interpolate=False):
     closure = operation.get("closure", "Open")
     if not interpolate and closure != "Open":
         raise ValueError("closure probes require InterpCrv")
-    endings = {"Open": "_Enter", "Smooth": "_Close", "Sharp": "_Sharp _Close"}
+    # PointOnly diagnoses whether a seam input itself completes the command.
+    # Non-closing inputs intentionally remain subject to the client's timeout.
+    endings = {"Open": "_Enter", "Smooth": "_Close", "Sharp": "_Sharp _Close", "PointOnly": ""}
     if closure not in endings:
         raise ValueError("invalid curve prompt closure")
     return "%s _Degree=%d _SubDFriendly=_No %s %s" % (command, degree, " ".join(points), endings[closure])

@@ -40,8 +40,20 @@ and sharp closure, at model tolerances `0.01` and `1e-9`. All eight cases match
 Rhino control points within `1e-9`; Rhino's responses are identical across those
 tolerances. This corrects both rejection of nearby interior points and unwanted
 seam-point removal. The general-purpose interpolation helper retains its explicit
-tolerance policy. Exact/near-zero seam repetitions and automatic prompt closing
-still require separate boundary probes.
+tolerance policy.
+The point prompt automatically finishes a smooth closed curve after at least
+three collected points when the next point is within Euclidean distance
+`1.490116119385e-8` of the first (inclusive, independent of model tolerance).
+This is the OpenNURBS decimal `ON_SQRT_EPSILON` constant, not the slightly
+different square root of binary64 epsilon. The closing gesture is not appended
+as another interpolation point. Sharp settings are retained; incompatible
+tangent constraints leave the original draft intact on failure.
+The [18-case seam audit](interpolation-auto-close-measurement.json) checks
+ordinary, exact-boundary, and diagonal offsets near the world origin, and an
+exact seam with no final Enter. Typed and picked completion, undo/redo, and
+failed-completion recovery have separate app tests. Large translated coordinates,
+two-point closure, and Rhino's constrained/sharp auto-close behavior remain
+unmeasured; the one-line constructor does not perform this prompt gesture.
 An [ordinary three-point closure baseline](interpolation-closure-prompt-measurement.json)
 now matches Rhino's smooth and sharp control points within `1e-9` through app
 completion.

@@ -108,7 +108,7 @@ fn replay_interpolation_closures(request: &Value, response: &Value) {
     );
     for operation in request["operations"].as_array().unwrap() {
         let closure = operation["closure"].as_str().unwrap();
-        assert!(matches!(closure, "Smooth" | "Sharp"));
+        assert!(matches!(closure, "Smooth" | "Sharp" | "Open" | "PointOnly"));
         assert_eq!(operation["degree"], 3);
         assert_eq!(operation["origin"], serde_json::json!([0, 0, 0]));
         assert_eq!(operation["x_axis"], serde_json::json!([1, 0, 0]));
@@ -132,14 +132,26 @@ fn replay_interpolation_closures(request: &Value, response: &Value) {
         for point in operation["points"].as_array().unwrap() {
             enter(&mut app, point.as_str().unwrap());
         }
-        enter(
-            &mut app,
-            if closure == "Smooth" {
-                "Close"
-            } else {
-                "Sharp"
-            },
-        );
+        if matches!(closure, "Open" | "PointOnly") {
+            assert_eq!(
+                app.active_command.is_none(),
+                result["value"]["closed"].as_bool().unwrap(),
+                "{}",
+                operation["id"]
+            );
+            if app.active_command.is_some() && closure == "Open" {
+                enter(&mut app, "");
+            }
+        } else {
+            enter(
+                &mut app,
+                if closure == "Smooth" {
+                    "Close"
+                } else {
+                    "Sharp"
+                },
+            );
+        }
         assert!(app.active_command.is_none(), "{closure}");
         assert_eq!(app.document.objects().count(), 1);
         let Geometry::NurbsCurve(curve) = app.document.objects().next().unwrap().geometry() else {
@@ -153,7 +165,10 @@ fn replay_interpolation_closures(request: &Value, response: &Value) {
             curve.degree(),
             result["value"]["degree"].as_u64().unwrap() as usize
         );
-        assert_eq!(curve.is_periodic(), closure == "Smooth");
+        assert_eq!(
+            curve.is_periodic(),
+            closure != "Sharp" && result["value"]["closed"].as_bool().unwrap()
+        );
         let controls = result["value"]["control_points"].as_array().unwrap();
         assert_eq!(curve.control_points().len(), controls.len());
         for (actual, expected) in curve.control_points().iter().zip(controls) {
@@ -168,6 +183,85 @@ fn replay_interpolation_closures(request: &Value, response: &Value) {
                 "{closure}"
             );
         }
+    }
+}
+
+#[test]
+fn recorded_interpolation_auto_closure_matches_boundary_and_finishes_without_enter() {
+    let measurement: Value = serde_json::from_str(include_str!(
+        "../../../docs/interpolation-auto-close-measurement.json"
+    ))
+    .unwrap();
+    let batches = measurement["batches"].as_array().unwrap();
+    assert_eq!(batches.len(), 4);
+    assert_eq!(
+        batches
+            .iter()
+            .map(|batch| batch["request"]["operations"].as_array().unwrap().len())
+            .sum::<usize>(),
+        18
+    );
+    for batch in batches {
+        replay_interpolation_closures(&batch["request"], &batch["response"]);
+    }
+}
+
+#[test]
+fn interpolation_auto_close_is_one_edit_and_failed_closure_preserves_the_draft() {
+    for picked in [false, true] {
+        let mut app = test_app();
+        enter(&mut app, "InterpCrv");
+        for point in ["w0,0,0", "w2,3,0", "w10,0,0"] {
+            enter(&mut app, point);
+        }
+        let closing = Point3::try_new(1e-9, 0., 0.).unwrap();
+        if picked {
+            assert!(app.accept_drafting_point(closing));
+        } else {
+            enter(&mut app, "w0.000000001,0,0");
+        }
+        assert!(app.active_command.is_none());
+        assert!(app.curve_points.is_empty());
+        assert_eq!(app.last_point, Some(closing));
+        assert_eq!(app.document.objects().count(), 1);
+        let geometry = app.document.objects().next().unwrap().geometry().clone();
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().count(), 0);
+        enter(&mut app, "Redo");
+        assert_eq!(app.document.objects().next().unwrap().geometry(), &geometry);
+
+        enter(&mut app, "InterpCrv StartTangent=1,0,0");
+        for point in ["w0,0,0", "w2,3,0", "w10,0,0"] {
+            enter(&mut app, point);
+        }
+        let original = (
+            app.active_command,
+            app.curve_points.clone(),
+            app.drafting_plane,
+            app.last_point,
+        );
+        let preview = app.curve_draft_preview().unwrap();
+        app.command_input = "w0,0,0".to_owned();
+        if picked {
+            assert!(!app.accept_drafting_point(Point3::try_new(0., 0., 0.).unwrap()));
+        } else {
+            app.run_command();
+        }
+        assert_eq!(
+            (
+                app.active_command,
+                app.curve_points.clone(),
+                app.drafting_plane,
+                app.last_point
+            ),
+            original
+        );
+        assert_eq!(app.command_input, "w0,0,0");
+        assert!(std::sync::Arc::ptr_eq(
+            &preview,
+            &app.curve_draft_preview().unwrap()
+        ));
+        assert_eq!(app.document.objects().count(), 1);
     }
 }
 
