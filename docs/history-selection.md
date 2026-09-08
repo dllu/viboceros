@@ -42,3 +42,9 @@ coordinates, and object/layer modes, including hidden/locked group-picked peers.
 Native tests compare complete recorded responses. Full sub-object selection
 replay, selection-action ordering, and other commands' consumption of input
 selection remain outside this coverage.
+
+The idle worker rejects unsuccessful commands and selections, registers inserted
+objects before subsequent setup can fail, and attempts all registered cleanup
+even if deselection or output discovery fails. A failed baseline scan never
+authorizes cleanup of enumerated objects. Atomic error responses discard partial
+results; fault-injection tests cover these contracts and repeated finalization.
