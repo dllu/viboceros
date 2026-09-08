@@ -311,64 +311,15 @@ impl Viewport {
     }
 }
 
-/// Clip before dash tessellation: painter clipping alone would still allocate
-/// dashes all the way to a distant anchor. `extend` clips the infinite line.
+/// Bound dash tessellation to the viewport; point-sized guides are not drawn.
 pub(super) fn clip_drafting_line(
     start: Pos2,
     end: Pos2,
     rect: Rect,
     extend: bool,
 ) -> Option<[Pos2; 2]> {
-    if !start.is_finite() || !end.is_finite() || !rect.is_finite() || !rect.is_positive() {
+    if start == end || !rect.is_positive() {
         return None;
     }
-    let a = [f64::from(start.x), f64::from(start.y)];
-    let b = [f64::from(end.x), f64::from(end.y)];
-    let delta = [b[0] - a[0], b[1] - a[1]];
-    if delta == [0.0; 2] {
-        return None;
-    }
-    let axis = usize::from(delta[1].abs() > delta[0].abs());
-    let other = 1 - axis;
-    let bounds = [
-        [f64::from(rect.left()), f64::from(rect.right())],
-        [f64::from(rect.top()), f64::from(rect.bottom())],
-    ];
-    // Clip in a screen coordinate, not a parameter near 0.5 or 1 whose
-    // endpoints can round together for distant anchors. Original f32
-    // coordinate products are exact in f64, retaining a small intercept
-    // when their large products cancel.
-    let slope = delta[other] / delta[axis];
-    let intercept = (a[other] * b[axis] - b[other] * a[axis]) / delta[axis];
-    let [mut low, mut high] = bounds[axis];
-    if !extend {
-        low = low.max(a[axis].min(b[axis]));
-        high = high.min(a[axis].max(b[axis]));
-    }
-    if slope == 0.0 {
-        if !(bounds[other][0]..=bounds[other][1]).contains(&intercept) {
-            return None;
-        }
-    } else {
-        let first = (bounds[other][0] - intercept) / slope;
-        let second = (bounds[other][1] - intercept) / slope;
-        low = low.max(first.min(second));
-        high = high.min(first.max(second));
-    }
-    if low > high {
-        return None;
-    }
-    let coordinates = if delta[axis] > 0.0 {
-        [low, high]
-    } else {
-        [high, low]
-    };
-    Some(coordinates.map(|coordinate| {
-        let mut point = [0.0; 2];
-        point[axis] = coordinate as f32;
-        point[other] = slope
-            .mul_add(coordinate, intercept)
-            .clamp(bounds[other][0], bounds[other][1]) as f32;
-        Pos2::new(point[0], point[1])
-    }))
+    super::screen::clip_line_to_rect(start, end, rect, extend)
 }
