@@ -112,16 +112,18 @@ pub struct DraftingInput {
 }
 
 #[derive(Clone, Copy, Debug)]
-pub struct ViewportInput {
+pub struct ViewportInput<'a> {
     pub drafting: DraftingInput,
     pub object_filter: Option<ObjectSelectionFilter>,
+    pub preview_curve: Option<&'a NurbsCurve>,
 }
 
-impl Default for ViewportInput {
+impl Default for ViewportInput<'_> {
     fn default() -> Self {
         Self {
             drafting: DraftingInput::default(),
             object_filter: Some(ObjectSelectionFilter::Any),
+            preview_curve: None,
         }
     }
 }
@@ -376,7 +378,7 @@ impl Viewport {
         &mut self,
         ui: &mut egui::Ui,
         document: &Document,
-        input: ViewportInput,
+        input: ViewportInput<'_>,
         preview_polyline: &[Point3],
         viewport_index: usize,
         active: bool,
@@ -454,6 +456,15 @@ impl Viewport {
         painter.rect_filled(rect, 0.0, self.background_color());
         self.paint_grid(&painter, rect);
         self.paint_objects(&painter, rect, document, viewport_index);
+        if drafting.active
+            && let Some(curve) = input.preview_curve
+        {
+            let mut projected = ProjectedPrimitives::default();
+            self.add_projected_nurbs_curve(&mut projected, rect, curve);
+            for segment in projected.segments {
+                painter.line_segment(segment, Stroke::new(2.0, Color32::from_rgb(20, 115, 190)));
+            }
+        }
         if let Some(cursor) = drafting_cursor {
             self.paint_drafting(&painter, rect, drafting, cursor, preview_polyline);
         }
@@ -2215,6 +2226,65 @@ mod tests {
 
     fn point(x: f64, y: f64, z: f64) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn curve_draft_is_painted_without_hover_in_every_view_but_not_after_drafting() {
+        let curve = NurbsCurve::try_control_point_curve_with_closure(
+            3,
+            vec![
+                point(0., 0., 0.),
+                point(3., 0., 0.),
+                point(4., 2., 1.),
+                point(0., 4., 0.),
+            ],
+            viboceros_geometry::ControlPointCurveClosure::Smooth,
+        )
+        .unwrap();
+        let document = Document::default();
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Perspective,
+            ViewKind::Front,
+            ViewKind::Right,
+        ] {
+            let context = egui::Context::default();
+            let mut viewport = Viewport::new(kind);
+            for active in [true, false] {
+                let output = context.run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.))),
+                        ..Default::default()
+                    },
+                    |ui| {
+                        viewport.show(
+                            ui,
+                            &document,
+                            ViewportInput {
+                                drafting: DraftingInput {
+                                    active,
+                                    ..Default::default()
+                                },
+                                preview_curve: Some(&curve),
+                                ..Default::default()
+                            },
+                            &[],
+                            0,
+                            false,
+                        );
+                    },
+                );
+                let has_preview = output.shapes.iter().any(|clipped| matches!(
+                    &clipped.shape,
+                    egui::Shape::LineSegment { stroke, .. }
+                        if stroke.color == Color32::from_rgb(20, 115, 190) && stroke.width == 2.0
+                ));
+                assert_eq!(has_preview, active, "{kind:?}");
+                output.drop_without_applying_deltas();
+            }
+        }
+        assert_eq!(document.objects().len(), 0);
+        assert!(!document.can_undo());
     }
 
     fn gpu_project(

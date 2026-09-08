@@ -6,6 +6,53 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn curve_preview_tracks_settings_and_matches_committed_geometry_without_edits() {
+    let mut app = test_app();
+    assert!(app.curve_draft_preview().is_none());
+    for input in ["Point 9,9,9", "Undo", "Curve", "0"] {
+        enter(&mut app, input);
+    }
+    assert!(app.curve_draft_preview().is_none());
+    for input in ["3,0,0", "4,2,1", "0,4,0"] {
+        enter(&mut app, input);
+    }
+    let document = format!("{:?}", app.document);
+    let open = app.curve_draft_preview().unwrap();
+    assert!(!open.is_closed().unwrap());
+    enter(&mut app, "Degree=2");
+    let quadratic = app.curve_draft_preview().unwrap();
+    assert_eq!(quadratic.degree(), 2);
+    assert_ne!(open, quadratic);
+    enter(&mut app, "Close=Smooth");
+    let closed = app.curve_draft_preview().unwrap();
+    assert!(closed.is_periodic());
+    assert!(closed.is_closed().unwrap());
+    assert_eq!(format!("{:?}", app.document), document);
+    enter(&mut app, "");
+    assert_eq!(
+        app.document.objects().next().unwrap().geometry(),
+        &Geometry::NurbsCurve(closed)
+    );
+    assert!(app.curve_draft_preview().is_none());
+}
+
+#[test]
+fn curve_preview_disappears_when_undo_leaves_insufficient_closed_controls() {
+    let mut app = test_app();
+    for input in ["Curve Close=Sharp", "0", "1,0,0", "0,1,0"] {
+        enter(&mut app, input);
+    }
+    assert!(app.curve_draft_preview().is_some());
+    enter(&mut app, "Undo");
+    assert!(app.curve_draft_preview().is_none());
+    assert_eq!(app.document.objects().len(), 0);
+    enter(&mut app, "Close=Open");
+    assert!(app.curve_draft_preview().is_some());
+    app.cancel_interactive_command(false);
+    assert!(app.curve_draft_preview().is_none());
+}
+
+#[test]
 fn curve_draft_settings_preserve_points_and_use_the_updated_geometry_parameters() {
     for (input_degree, expected_degree) in [("0", 1), ("2", 2), ("999", 11)] {
         let mut app = test_app();

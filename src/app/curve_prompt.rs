@@ -3,6 +3,21 @@
 use super::*;
 
 impl VibocerosApp {
+    pub(super) fn curve_draft_preview(&self) -> Option<viboceros_geometry::NurbsCurve> {
+        if self.plane_prompt.is_some() {
+            return None;
+        }
+        let InteractiveCommand::Curve { degree, closure } = self.active_command? else {
+            return None;
+        };
+        viboceros_geometry::NurbsCurve::try_control_point_curve_with_closure(
+            degree,
+            self.curve_points.clone(),
+            closure,
+        )
+        .ok()
+    }
+
     pub(super) fn try_continue_curve_option(&mut self, input: &str) -> bool {
         let option = input.trim_start_matches(['_', '-']);
         if let Some(InteractiveCommand::Curve { degree, closure }) = self.active_command

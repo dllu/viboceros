@@ -4976,6 +4976,7 @@ impl eframe::App for VibocerosApp {
             .map_or(Some(viboceros_command::ObjectSelectionFilter::Any), |p| {
                 p.selection_filter()
             });
+        let preview_curve = self.curve_draft_preview();
         let document = &self.document;
         let curve_points = self
             .plane_prompt
@@ -5005,6 +5006,7 @@ impl eframe::App for VibocerosApp {
                                     ViewportInput {
                                         drafting,
                                         object_filter,
+                                        preview_curve: preview_curve.as_ref(),
                                     },
                                     curve_points,
                                     index,
