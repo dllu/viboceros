@@ -2,6 +2,118 @@ use super::*;
 use viboceros_geometry::LengthUnitSystem;
 
 #[test]
+fn extreme_unit_point_import_preserves_attributes_and_exact_undo_redo() {
+    let registry = CommandRegistry::with_builtins();
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("extreme point import.3dm");
+    for (factor, coordinate, absolute) in [(1e-320, 1.0, 1e-9), (1e300, 1e-300, 1e-100)] {
+        let mut source = Document::new(Tolerance::DEFAULT);
+        let id = source
+            .add_geometry(Geometry::Point(
+                Point3::try_new(coordinate, 0.0, 0.0).unwrap(),
+            ))
+            .unwrap();
+        source.add_group(Some("source group".into()), [id]).unwrap();
+        let mut model = document_3dm_model(&source).unwrap();
+        model.units = LengthUnitSystem::Custom {
+            name: "extreme units".into(),
+            meters_per_unit: factor,
+        };
+        model.objects[0].name = Some("extreme point".into());
+        model.objects[0].object_color = [12, 34, 56];
+        model.objects[0].color_source = viboceros_io::ThreeDmColorSource::Object;
+        write_3dm_file(&path, &model).unwrap();
+        let source_bytes = std::fs::read(&path).unwrap();
+        let tolerance = Tolerance::try_new(absolute, 1e-12, 1e-10).unwrap();
+        let mut target = Document::with_units(tolerance, LengthUnitSystem::Meters).unwrap();
+        registry.execute(&mut target, "Point 7,8,9").unwrap();
+        registry.execute(&mut target, "SelAll").unwrap();
+        let before = document_3dm_model(&target).unwrap();
+        let selection = target.selected_object_ids().collect::<Vec<_>>();
+        registry
+            .execute(&mut target, &format!("Import3dm {}", path.display()))
+            .unwrap();
+        let imported = target
+            .objects()
+            .find(|object| object.attributes().name() == Some("extreme point"))
+            .unwrap();
+        let imported_id = imported.id();
+        assert_eq!(
+            imported.geometry(),
+            &Geometry::Point(Point3::try_new(coordinate * factor, 0.0, 0.0).unwrap())
+        );
+        assert_eq!(
+            imported.attributes().object_color(),
+            ColorRgb::new(12, 34, 56)
+        );
+        assert_eq!(
+            imported.attributes().color_source(),
+            ObjectColorSource::Object
+        );
+        assert_eq!(imported.group_ids().len(), 1);
+        assert_eq!(
+            target.group(imported.group_ids()[0]).unwrap().name(),
+            Some("source group")
+        );
+        assert_eq!(target.units(), &LengthUnitSystem::Meters);
+        assert_eq!(target.tolerance(), tolerance);
+        let after = document_3dm_model(&target).unwrap();
+        registry.execute(&mut target, "Undo").unwrap();
+        assert_eq!(document_3dm_model(&target).unwrap(), before);
+        assert_eq!(target.selected_object_ids().collect::<Vec<_>>(), selection);
+        assert!(target.object(imported_id).is_none());
+        registry.execute(&mut target, "Redo").unwrap();
+        assert_eq!(document_3dm_model(&target).unwrap(), after);
+        assert!(target.object(imported_id).is_some());
+        assert_eq!(std::fs::read(&path).unwrap(), source_bytes);
+    }
+}
+
+#[test]
+fn unrepresentable_brep_import_tolerance_preserves_document_and_redo() {
+    let registry = CommandRegistry::with_builtins();
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("mixed extreme import.3dm");
+    let mut source = Document::new(Tolerance::DEFAULT);
+    registry.execute(&mut source, "Point 1,2,3").unwrap();
+    registry.execute(&mut source, "Box 0,0,0 1,1,0 1").unwrap();
+    let mut model = document_3dm_model(&source).unwrap();
+    assert!(
+        model
+            .objects
+            .iter()
+            .any(|object| matches!(object.geometry, ThreeDmGeometry::Brep(_)))
+    );
+    for (factor, absolute) in [(1e-320, 1e-9), (1e300, 1e-100)] {
+        model.units = LengthUnitSystem::Custom {
+            name: "extreme units".into(),
+            meters_per_unit: factor,
+        };
+        write_3dm_file(&path, &model).unwrap();
+        let source_bytes = std::fs::read(&path).unwrap();
+        let mut target = Document::with_units(
+            Tolerance::try_new(absolute, 1e-12, 1e-10).unwrap(),
+            LengthUnitSystem::Meters,
+        )
+        .unwrap();
+        registry.execute(&mut target, "Point 7,8,9").unwrap();
+        registry.execute(&mut target, "Point 10,11,12").unwrap();
+        registry.execute(&mut target, "Undo").unwrap();
+        let before = format!("{target:?}");
+        assert!(matches!(
+            registry.execute(&mut target, &format!("Import3dm {}", path.display())),
+            Err(CommandError::ThreeDm(
+                ThreeDmError::UnrepresentableSourceTolerance
+            ))
+        ));
+        assert_eq!(format!("{target:?}"), before);
+        registry.execute(&mut target, "Redo").unwrap();
+        assert_eq!(target.objects().len(), 2);
+        assert_eq!(std::fs::read(&path).unwrap(), source_bytes);
+    }
+}
+
+#[test]
 fn mesh_export_commands_preserve_small_geometry_without_changing_history() {
     let mut document = Document::new(Tolerance::try_new(0.001, 1e-12, 1e-10).unwrap());
     let mesh = TriangleMesh::try_new(

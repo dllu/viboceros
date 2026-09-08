@@ -105,6 +105,9 @@ That conversion is deferred until a B-rep is decoded: a point-only file is
 not rejected because an unused matching tolerance would over/underflow.
 If a B-rep needs an unrepresentable source tolerance, the import fails with
 an explicit error rather than silently skipping the B-rep.
+Native-file command regressions cover both extremes, including attribute/group
+preservation, exact Undo/Redo restoration, unchanged target settings, and failed
+mixed-geometry imports preserving the complete document and redo history.
 Unitless files retain coordinates; unset units and unrepresentable conversion
 factors or transformed coordinates are errors. The low-level
 `read_3dm_file` still reads raw file coordinates, while
