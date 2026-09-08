@@ -56,3 +56,12 @@ so holes remain open, with interior knot-span samples refining nonplanar
 trimmed surfaces. STEP writes the results as faceted shells with shared
 topology and planar faces. Editable STEP B-rep interchange and production
 surface and solid modelling are not implemented yet.
+
+Assembly regression tests include repeated parts beneath a translated,
+rotated parent, with expected corner coordinates checked independently of
+the importer's matrix arithmetic. These are generated STEP fixtures, not
+Rhino parity measurements. Length-unit conversion is not implemented:
+STEP coordinate values are currently imported in file units, while export
+declares millimetres. The document model does not yet retain a unit system,
+so physical-size preservation across files with different units is not
+guaranteed.
