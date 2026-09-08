@@ -150,6 +150,9 @@ impl NurbsCurve {
     ///
     /// Unlike the RhinoCommon interpolation helper, the command preserves a
     /// requested cubic degree when only two unconstrained points are supplied.
+    /// Open command curves retain distinct nearby inputs independently of model
+    /// tolerance. Closed seam reconciliation currently retains the tolerance
+    /// policy and requires a separate Rhino boundary audit.
     pub fn try_interpolate_for_command(
         points: &[Point3],
         options: CurveInterpolationOptions,
@@ -158,7 +161,11 @@ impl NurbsCurve {
         Self::try_interpolate_impl(
             points,
             options,
-            InterpolationCoincidence::Within(tolerance),
+            if options.closure == InterpolatedCurveClosure::Open {
+                InterpolationCoincidence::Exact
+            } else {
+                InterpolationCoincidence::Within(tolerance)
+            },
             true,
             MAX_CURVE_INTERPOLATION_POINTS,
         )
@@ -1073,6 +1080,27 @@ mod tests {
         .unwrap();
         assert_eq!(uniform.degree(), 3);
         assert_eq!(uniform.domain(), 0.0..=1.0);
+    }
+
+    #[test]
+    fn open_command_interpolation_retains_distinct_inputs_below_model_tolerance() {
+        let points = [
+            point(0., 0., 0.),
+            point(0.001, 0., 0.),
+            point(2., 3., 0.),
+            point(10., 0., 0.),
+        ];
+        let options = CurveInterpolationOptions::default();
+        let tolerance = Tolerance::try_new(0.01, 1e-12, 1e-10).unwrap();
+        assert!(NurbsCurve::try_interpolate(&points, options, tolerance).is_err());
+        let curve = NurbsCurve::try_interpolate_for_command(&points, options, tolerance).unwrap();
+        assert_eq!(curve.control_points().len(), 6);
+        let mut repeated = points;
+        repeated[1] = repeated[0];
+        assert!(matches!(
+            NurbsCurve::try_interpolate_for_command(&repeated, options, tolerance),
+            Err(GeometryError::CoincidentCurveInterpolationPoints { .. })
+        ));
     }
 
     #[test]

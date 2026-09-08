@@ -3,6 +3,81 @@
 use super::*;
 use serde_json::Value;
 
+#[test]
+fn successful_recorded_interpolation_prompts_match_despite_coarse_model_tolerance() {
+    let request: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/interpolation_point_prompt_rhino_only.json"
+    ))
+    .unwrap();
+    let response: Value = serde_json::from_str(include_str!(
+        "../../../docs/interpolation-point-prompt-measurement.json"
+    ))
+    .unwrap();
+    let mut successes = 0;
+    let mut failures = 0;
+    assert_eq!(response["engine"], "rhino");
+    assert_eq!(request["operations"].as_array().unwrap().len(), 8);
+    assert_eq!(response["results"].as_array().unwrap().len(), 8);
+    for operation in request["operations"].as_array().unwrap() {
+        let id = operation["id"].as_str().unwrap();
+        let result = response["results"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|r| r["id"] == id)
+            .unwrap();
+        let expected = &result["value"];
+        if expected["command_succeeded"] == false {
+            // Rhino solver rejection is diagnostic, not an instruction to
+            // reject distinct inputs that our solver may be able to handle.
+            failures += 1;
+            continue;
+        }
+        let mut app = test_app();
+        app.document.set_tolerance(
+            Tolerance::try_new(
+                request["tolerance"]["absolute"].as_f64().unwrap(),
+                request["tolerance"]["relative"].as_f64().unwrap(),
+                request["tolerance"]["angular"].as_f64().unwrap(),
+            )
+            .unwrap(),
+        );
+        enter(&mut app, "InterpCrv");
+        for input in operation["points"].as_array().unwrap() {
+            enter(&mut app, input.as_str().unwrap());
+        }
+        let preview = app.curve_draft_preview().unwrap();
+        enter(&mut app, "");
+        assert!(app.active_command.is_none(), "{id}");
+        let Geometry::NurbsCurve(curve) = app.document.objects().next().unwrap().geometry() else {
+            panic!("curve");
+        };
+        assert_eq!(curve, preview.as_ref());
+        assert_eq!(
+            curve.degree(),
+            expected["degree"].as_u64().unwrap() as usize
+        );
+        assert_eq!(
+            curve.is_closed().unwrap(),
+            expected["closed"].as_bool().unwrap()
+        );
+        let controls = expected["control_points"].as_array().unwrap();
+        assert_eq!(curve.control_points().len(), controls.len(), "{id}");
+        for (actual, expected) in curve.control_points().iter().zip(controls) {
+            let expected = Point3::try_new(
+                expected[0].as_f64().unwrap(),
+                expected[1].as_f64().unwrap(),
+                expected[2].as_f64().unwrap(),
+            )
+            .unwrap();
+            let error = actual.point().distance_to(expected).unwrap();
+            assert!(error <= 1e-9, "{id}: control error {error}");
+        }
+        successes += 1;
+    }
+    assert_eq!((successes, failures), (6, 2));
+}
+
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.to_owned();
     app.run_command();

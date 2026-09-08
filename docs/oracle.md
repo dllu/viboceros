@@ -24,9 +24,11 @@ JSON uses round-trip float parsing so adjacent binary64 boundary values remain d
 using the same coordinate whitelist and private construction-plane wrapper for
 InterpCrv (open cubic, chord knots). Explicit command rejections become
 `command_succeeded: false` records; unexpected failures still fail the batch.
-Its [recorded response](interpolation-point-prompt-measurement.json) exposes an
-unresolved point-tolerance discrepancy; run it with `run_headless.sh rhino`, not
-the native comparison runner.
+Its [recorded response](interpolation-point-prompt-measurement.json) exposed an
+open-curve point-tolerance discrepancy that is now corrected. An app test replays
+the six successful cases and compares control points within `1e-9`; two Rhino
+solver rejections remain diagnostic. Run it with `run_headless.sh rhino`, not
+the native comparison runner. Closed-seam tolerance has not been audited here.
 
 Standard geometry/command batches apply the request's absolute, relative, and angular tolerances to
 Rhino's active document and restores its previous settings on success or failure.

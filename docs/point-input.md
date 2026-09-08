@@ -24,15 +24,17 @@ floating-point values below/above `2^-32`, equality, and diagonal offsets.
 These probes use points near the world origin; they do not establish behavior
 at very large translated coordinates or every repetition pattern.
 
-Known InterpCrv discrepancy: its point collection and command constructor still
-use model absolute tolerance to reject nearby adjacent points. A
+InterpCrv's point prompt uses the same fixed coincidence test as Curve, and
+open command interpolation retains distinct points below model tolerance. A
 [Rhino 8.32 diagnostic](interpolation-point-prompt-measurement.json) at absolute
 tolerance `0.01` instead skipped offsets through `2^-32`, failed construction
 at the next float above that boundary and at `1e-9`, and successfully included
 offsets of `1e-6`, `0.001`, and `0.1`. Thus point-prompt rejection and solver
-failure are distinct behaviors; the current model-tolerance rule is too strict
-for some valid inputs. This is an unresolved compatibility gap, not a passing
-native reference.
+failure are distinct behaviors. The six successful cases now replay through
+the app and match Rhino control points within `1e-9`; the two Rhino solver
+failures remain diagnostics rather than required native rejections. Closed
+interpolation still uses model tolerance for coincidence and seam reconciliation;
+that behavior requires a separate boundary audit.
 
 During `Polyline`, `Curve`, or `InterpCrv`, type `Undo` to remove the last
 draft point without changing document history or its redo stack. Relative input

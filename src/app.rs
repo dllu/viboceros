@@ -3176,7 +3176,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::InterpCrv { .. } => {
                 if let Some(previous) = self.curve_points.last()
-                    && previous.is_near(point, self.document.tolerance())
+                    && point_input::coincident_curve_controls(*previous, point)
                 {
                     self.push_log(
                         "Error: adjacent curve interpolation points must differ".to_owned(),
