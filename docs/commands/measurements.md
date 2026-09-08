@@ -27,7 +27,12 @@ which constructs a temporary validated planar face retaining the exact rational
 boundary. This face is never added to the document. Open, nonplanar, or invalid
 general boundaries are rejected. A checked unit-domain copy prevents failures
 caused solely by extreme NURBS parameter scales; controls, weights, and the
-stored source remain unchanged. Collapsed knot intervals are not silently lost.
+stored source remain unchanged. Polycurve outer domains are normalized before
+NURBS conversion, so a leaf's internal knots are not first squeezed into an
+outer interval with too few representable values. This also leaves the stored
+composite and its independent leaf domains unchanged. Collapsed knot intervals
+are not silently lost; normalization does not guarantee that every possible
+relative span size or extreme leaf domain can be converted.
 Self-intersecting winding-area semantics are
 not established. Separate selected curves contribute separate areas, not holes
 in one region. A lower-overhead standalone boundary-integral path remains future
