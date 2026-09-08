@@ -4,6 +4,15 @@ use super::*;
 use nalgebra::Matrix4 as NaMatrix4;
 
 impl Viewport {
+    /// Preserve small local features before the f64-to-f32 GPU boundary.
+    pub(super) fn gpu_position(&self, point: Point3) -> Option<[f32; 3]> {
+        Some([
+            real_to_gpu(point.x() - self.target.x)?,
+            real_to_gpu(point.y() - self.target.y)?,
+            real_to_gpu(point.z() - self.target.z)?,
+        ])
+    }
+
     fn perspective_near_floor(&self) -> Real {
         (self.perspective_camera_distance * 1e-6).max(1e-6)
     }
@@ -191,16 +200,14 @@ impl Viewport {
             ),
             ViewKind::Perspective => {
                 let (right, up, forward) = self.perspective_basis();
-                let camera = self.target - forward * self.perspective_camera_distance;
-                let relative = NaVector3::new(point.x(), point.y(), point.z()) - camera;
-                let depth = relative.dot(&forward);
+                let depth = local.dot(&forward) + self.perspective_camera_distance;
                 if !depth.is_finite() || depth <= 1.0e-6 {
                     return None;
                 }
                 let focal_length = self.perspective_focal_length_pixels(rect);
                 (
-                    relative.dot(&right) / depth * focal_length,
-                    relative.dot(&up) / depth * focal_length,
+                    local.dot(&right) / depth * focal_length,
+                    local.dot(&up) / depth * focal_length,
                 )
             }
         };
@@ -354,20 +361,19 @@ impl Viewport {
         let view_projection = match self.kind {
             ViewKind::Perspective => {
                 let (right, up, forward) = self.perspective_basis();
-                let camera = self.target - forward * self.perspective_camera_distance;
                 let view = NaMatrix4::new(
                     right.x,
                     right.y,
                     right.z,
-                    -right.dot(&camera),
+                    0.0,
                     up.x,
                     up.y,
                     up.z,
-                    -up.dot(&camera),
+                    0.0,
                     forward.x,
                     forward.y,
                     forward.z,
-                    -forward.dot(&camera),
+                    self.perspective_camera_distance,
                     0.0,
                     0.0,
                     0.0,
@@ -432,11 +438,11 @@ impl Viewport {
                     horizontal_scale * right.x,
                     horizontal_scale * right.y,
                     horizontal_scale * right.z,
-                    offset_x - horizontal_scale * right.dot(&self.target),
+                    offset_x,
                     vertical_scale * up.x,
                     vertical_scale * up.y,
                     vertical_scale * up.z,
-                    offset_y - vertical_scale * up.dot(&self.target),
+                    offset_y,
                     forward.x / depth_span,
                     forward.y / depth_span,
                     forward.z / depth_span,
@@ -458,13 +464,13 @@ impl Viewport {
 
     pub(super) fn view_depth(&self, point: Point3) -> Real {
         match self.kind {
-            ViewKind::Top => -point.z(),
-            ViewKind::Front => point.y(),
-            ViewKind::Right => -point.x(),
+            ViewKind::Top => self.target.z - point.z(),
+            ViewKind::Front => point.y() - self.target.y,
+            ViewKind::Right => self.target.x - point.x(),
             ViewKind::Perspective => {
                 let (_, _, forward) = self.perspective_basis();
-                let camera = self.target - forward * self.perspective_camera_distance;
-                (NaVector3::new(point.x(), point.y(), point.z()) - camera).dot(&forward)
+                (NaVector3::new(point.x(), point.y(), point.z()) - self.target).dot(&forward)
+                    + self.perspective_camera_distance
             }
         }
     }

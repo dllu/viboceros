@@ -20,7 +20,8 @@ runner uses multiple threads. A concurrent three-test run terminated with a
 native SIGSEGV during this audit; the exact backend/driver cause is not isolated.
 Serialization avoids concurrent adapter enumeration and device teardown in
 this test harness, without changing the application renderer.
-Five consecutive combined runs passed after serialization (118 renders per run).
+The original three-test suite passed five consecutive runs after serialization
+(118 renders per run); the added translation test brings the suite to 134 renders.
 
 The face test compares a grid of pixel centers with independent ray/triangle
 intersections, excluding a small barycentric edge band where rasterizer edge
@@ -36,7 +37,14 @@ faces must combine two distinct depth-separated layers with the expected alpha
 and near-layer color dominance, in either insertion order, while keeping rear
 wires visible. These are nonintersecting, constant-depth faces; sorting general
 intersecting transparent geometry is not established by these fixtures.
-All three tests use the application's camera, scene submission, shaders, pipelines,
+The translation test renders a small face, wire, and point at the origin and
+again with the camera target and geometry translated by `(2^30, -2^31, 2^32)`.
+It requires exact pixel equality in all four views and both target formats
+(16 renders); each primitive has a distinct visible color in the baseline.
+The perspective case uses an axis-aligned camera so local fixture coordinates
+remain exactly representable in f64 after translation. Before target-relative
+GPU coordinates, the Top/non-sRGB case differed at 13,072 pixels.
+All four tests use the application's camera, scene submission, shaders, pipelines,
 depth attachment, and buffer-upload code.
 An ordinary non-GPU test checks the independent ray reference against analytic
 hits, reversed winding, behind-origin intersections, outside barycentric weights,
@@ -44,5 +52,5 @@ parallel rays, and an unnormalized ray direction.
 
 Verified on NVIDIA GB10, Vulkan, driver 610.43.02. This does not establish
 other-backend parity, exact colors/lighting, intersecting transparency order,
-large-coordinate accuracy, or agreement with Rhino. The tests deliberately
+unrestricted large-coordinate accuracy, or agreement with Rhino. The tests deliberately
 avoid platform-specific golden screenshots; they check geometric coverage.

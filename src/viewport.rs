@@ -1241,7 +1241,7 @@ impl Viewport {
         if !rect.expand(radius).contains(projected) {
             return;
         }
-        let Some(position) = point_to_gpu(point) else {
+        let Some(position) = self.gpu_position(point) else {
             return;
         };
         scene.include_depth(self.view_depth(point));
@@ -1266,7 +1266,8 @@ impl Viewport {
         if self.project(start, rect).is_none() || self.project(end, rect).is_none() {
             return;
         }
-        let (Some(start_position), Some(end_position)) = (point_to_gpu(start), point_to_gpu(end))
+        let (Some(start_position), Some(end_position)) =
+            (self.gpu_position(start), self.gpu_position(end))
         else {
             return;
         };
@@ -1415,7 +1416,9 @@ impl Viewport {
             // Submit the original triangle so hardware clipping interpolates
             // smooth normals correctly. Only visible geometry sets the depth
             // range; behind-camera vertices must not move the near plane.
-            let [Some(first), Some(second), Some(third)] = points.map(point_to_gpu) else {
+            let [Some(first), Some(second), Some(third)] =
+                points.map(|point| self.gpu_position(point))
+            else {
                 continue;
             };
             let normals = normals.map(vector_to_gpu);
@@ -1730,14 +1733,6 @@ fn point_in_triangle(point: Pos2, first: Pos2, second: Pos2, third: Pos2) -> boo
     signs.iter().all(|value| *value >= -tolerance) || signs.iter().all(|value| *value <= tolerance)
 }
 
-fn point_to_gpu(point: Point3) -> Option<[f32; 3]> {
-    Some([
-        real_to_gpu(point.x())?,
-        real_to_gpu(point.y())?,
-        real_to_gpu(point.z())?,
-    ])
-}
-
 fn vector_to_gpu(vector: NaVector3<Real>) -> [f32; 3] {
     [vector.x as f32, vector.y as f32, vector.z as f32]
 }
@@ -1970,7 +1965,8 @@ mod tests {
         let matrix = viewport
             .gpu_view_uniform(rect, Some(depth_range))
             .view_projection;
-        let position = [point.x() as f32, point.y() as f32, point.z() as f32, 1.0];
+        let [x, y, z] = viewport.gpu_position(point).unwrap();
+        let position = [x, y, z, 1.0];
         let clip: [f32; 4] = std::array::from_fn(|row| {
             (0..4)
                 .map(|column| matrix[column][row] * position[column])
@@ -2203,7 +2199,7 @@ mod tests {
                     );
                     assert!(scene.min_depth > 0.0);
                     for (vertex, point) in scene.triangles[0].vertices.iter().zip(points) {
-                        assert_eq!(vertex.position, point_to_gpu(point).unwrap());
+                        assert_eq!(vertex.position, viewport.gpu_position(point).unwrap());
                     }
                     let (gpu_pointer, gpu_depth) = gpu_project(
                         &viewport,
@@ -2224,6 +2220,44 @@ mod tests {
         let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
         let point = Point3::try_new(f64::MAX, 0.0, 0.0).unwrap();
         assert_eq!(viewport.project(point, rect), None);
+    }
+
+    #[test]
+    fn target_relative_gpu_positions_and_depth_keep_small_translated_features() {
+        let rect = Rect::from_min_size(Pos2::new(20.0, 30.0), Vec2::new(800.0, 600.0));
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let mut viewport = Viewport::new(kind);
+            viewport.target = NaVector3::new(1e12, -2e12, 3e12);
+            viewport.pan = Vec2::new(17.0, -23.0);
+            let model = Point3::try_new(1e12 + 1.0, -2e12 + 2.0, 3e12 + 3.0).unwrap();
+            assert_eq!(viewport.gpu_position(model), Some([1.0, 2.0, 3.0]));
+            let depth = viewport.view_depth(model);
+            let mut origin_view = Viewport::new(kind);
+            origin_view.pan = viewport.pan;
+            let local_model = Point3::try_new(1.0, 2.0, 3.0).unwrap();
+            assert_eq!(depth, origin_view.view_depth(local_model));
+            assert_eq!(
+                viewport.project(model, rect),
+                origin_view.project(local_model, rect)
+            );
+            let (gpu, gpu_depth) = gpu_project(&viewport, rect, model, (depth - 1.0, depth + 1.0));
+            assert!(gpu.distance(viewport.project(model, rect).unwrap()) < 0.001);
+            assert!((0.0..=1.0).contains(&gpu_depth));
+        }
+        let viewport = Viewport {
+            target: NaVector3::new(-Real::MAX, 0.0, 0.0),
+            ..Viewport::default()
+        };
+        assert!(
+            viewport
+                .gpu_position(Point3::try_new(Real::MAX, 0.0, 0.0).unwrap())
+                .is_none()
+        );
     }
 
     #[test]

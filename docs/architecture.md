@@ -102,7 +102,9 @@ The app's `viewport/picking` module owns face hit metrics, perspective-correct
 depth interpolation, and mesh/NURBS/B-rep hit evaluation. Screen capture and
 feature priority remain separate from depth ordering among overlapping face hits.
 The app's `viewport/camera` module owns CPU projection/unprojection, drafting
-rays, navigation updates, view depth, and GPU camera matrices. Viewport drawing
+rays, navigation updates, view depth, and GPU camera matrices. It rebases GPU
+positions around the model-space camera target in f64 before f32 conversion;
+the GPU matrix and depth bounds use that same local frame. Viewport drawing
 and hit-testing consume these shared methods; camera math remains independent
 of the painter and document mutation. Its extraction retains the projection,
 target-plane zoom, and multi-frame navigation regressions.

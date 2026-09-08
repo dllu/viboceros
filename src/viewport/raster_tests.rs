@@ -3,6 +3,95 @@ use crate::viewport_gpu::readback::{OffscreenRenderer, SIZE};
 use eframe::wgpu;
 
 #[test]
+#[ignore = "requires a graphics adapter; run explicitly with --ignored --nocapture"]
+fn gpu_camera_relative_geometry_preserves_large_translation_pixels() {
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(SIZE as f32));
+    for format in [
+        wgpu::TextureFormat::Rgba8Unorm,
+        wgpu::TextureFormat::Rgba8UnormSrgb,
+    ] {
+        let mut renderer = OffscreenRenderer::new(format);
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let mut baseline = None;
+            for translation in [
+                NaVector3::zeros(),
+                NaVector3::new(1073741824.0, -2147483648.0, 4294967296.0),
+            ] {
+                let mut viewport = Viewport::new(kind);
+                viewport.target = translation;
+                viewport.orbit_yaw = 0.0;
+                viewport.orbit_pitch = 0.0;
+                viewport.display_mode = DisplayMode::Shaded;
+                let (right, up, forward) = match kind {
+                    ViewKind::Top => (NaVector3::x(), NaVector3::y(), -NaVector3::z()),
+                    ViewKind::Front => (NaVector3::x(), NaVector3::z(), NaVector3::y()),
+                    ViewKind::Right => (NaVector3::y(), NaVector3::z(), -NaVector3::x()),
+                    ViewKind::Perspective => viewport.perspective_basis(),
+                };
+                let point = |x: Real, y: Real, z: Real| {
+                    let v = translation + right * x + up * y + forward * z;
+                    Point3::try_new(v.x, v.y, v.z).unwrap()
+                };
+                let mesh = TriangleMesh::try_new(
+                    vec![
+                        point(-2.0, -2.0, 0.0),
+                        point(2.0, -2.0, 0.0),
+                        point(0.0, 2.0, 0.0),
+                    ],
+                    vec![[0, 1, 2]],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap();
+                let mut scene = GpuSceneBuilder::new();
+                viewport.add_gpu_mesh_faces(&mut scene, &mesh, Color32::RED);
+                viewport.add_gpu_line(
+                    &mut scene,
+                    rect,
+                    point(-1.0, 3.0, -1.0),
+                    point(1.0, 3.0, -1.0),
+                    3.0,
+                    Color32::WHITE,
+                );
+                viewport.add_gpu_point(
+                    &mut scene,
+                    rect,
+                    point(-3.0, 0.0, -1.0),
+                    3.0,
+                    Color32::GREEN,
+                );
+                assert_eq!(
+                    (scene.triangles.len(), scene.lines.len(), scene.points.len()),
+                    (1, 1, 1)
+                );
+                let uniform = viewport.gpu_view_uniform(rect, scene.depth_range());
+                let pixels = renderer.render(&scene.finish(uniform, false));
+                if let Some(expected) = &baseline {
+                    let differences = pixels.iter().zip(expected).filter(|(a, b)| a != b).count();
+                    assert_eq!(
+                        differences, 0,
+                        "{kind:?} {format:?}: translated image differs"
+                    );
+                } else {
+                    assert!(
+                        pixels
+                            .iter()
+                            .any(|pixel| pixel[0] > pixel[1] && pixel[3] == 255)
+                    );
+                    assert!(pixels.contains(&[0, 255, 0, 255]));
+                    assert!(pixels.contains(&[255; 4]));
+                    baseline = Some(pixels);
+                }
+            }
+        }
+    }
+}
+
+#[test]
 fn face_click_selection_uses_depth_not_insertion_order() {
     let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(SIZE as f32));
     for kind in [

@@ -19,8 +19,13 @@ permutations with zero, one, two, or three hidden corners, winding preservation,
 face picking, crossing selection, and CPU/GPU projection agreement. These are
 submission and projection tests. Separate [offscreen GPU tests](gpu-tests.md)
 check actual face and wire pixel coverage on the production renderer. Full
-visibility parity, live Rhino comparisons, and large-coordinate GPU precision
-remain unverified.
+visibility parity and live Rhino comparisons remain unverified.
+GPU positions are rebased around each viewport's model-space target in f64
+before conversion to f32. Camera matrices and depth bounds use the same local
+frame, preserving small features in models translated far from the origin.
+Pixel tests cover translations of billions of units; CPU/GPU projection tests
+cover trillion-unit offsets. This does not remove f64 model-coordinate rounding,
+f32 precision loss across very large local extents, or all near-plane limitations.
 When shaded or ghosted faces overlap under a click, the nearest face at the
 cursor wins instead of whichever object was inserted first. The picking module
 uses screen-space barycentric depth for parallel views and reciprocal-depth
