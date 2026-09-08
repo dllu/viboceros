@@ -1,7 +1,8 @@
 # Object selection and confirmation
 
-[MeshToNURB](commands/mesh-to-nurb.md), [ToNURBS](commands/to-nurbs.md), and
-[ConvertToBeziers](commands/beziers.md) use these workflows. Other object-taking
+[MeshToNURB](commands/mesh-to-nurb.md), [ToNURBS](commands/to-nurbs.md),
+[ConvertToBeziers](commands/beziers.md), and
+[ConvertToSingleSpans](commands/single-spans.md) use these workflows. Other object-taking
 commands do not yet share this interactive framework.
 
 With no eligible preselection, enter the command and click objects or drag
@@ -33,6 +34,15 @@ or keep the inputs. Enter uses the displayed choice. Named deletion options also
 answer the question; no additional Enter is required. Invalid/duplicate input
 keeps the question open without changing geometry or remembered choices.
 
+ConvertToSingleSpans picks only surfaces and single-face B-reps. Enter opens
+options, including for no-op-only inputs; preselection opens them directly.
+`Direction=U|V|Both` and `DeleteInput=Yes|No` update options, and Enter converts.
+Bare `Direction` opens a value chooser; selecting a value or pressing Enter returns
+to options. `Toggle` switches U/V and is unavailable in Both. These edits are
+remembered immediately, even if conversion is cancelled; cancellation during
+selection accepts nothing. Its Direction chooser takes precedence over the
+global `Direction` alias for `Dir`.
+
 Escape cancels the entire pending command, including from a submenu. Command-first
 picks and initial ineligible selection are cleared; preselection is retained.
 Cancellation makes no geometry edit, adds no undo entry, and does not discard redo.
@@ -48,11 +58,12 @@ conversion is one undoable edit.
 ## Separation of responsibilities
 
 `viboceros-command::object_selection` defines geometry filters, typed boolean
-options/aliases, menus, and workflow descriptions. The command supplies a
+options/aliases, menus, finite choices and two-value actions, and workflow descriptions. The command supplies a
 selection-dependent confirmation description; no-op-only input can bypass it.
 Reading descriptions and validating edits do not change document state.
 Command-owned acceptance hooks distinguish immediate option memory from deferred
-confirmation. `execute_postselected` shares normal transaction/rollback handling
+confirmation. Selection-only phases do not call options-stage acceptance hooks;
+immediate selection-stage options are a separate workflow. `execute_postselected` shares normal transaction/rollback handling
 while allowing different selection cleanup and creation ordering.
 
 `app/object_selection` owns phase and pre/postselection origin, separately from

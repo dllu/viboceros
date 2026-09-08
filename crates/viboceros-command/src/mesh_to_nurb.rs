@@ -42,6 +42,7 @@ impl Command for MeshToNurbCommand {
             filter: ObjectSelectionFilter::Mesh,
             workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
             menus: vec![],
+            choices: vec![],
             options: vec![
                 BooleanSelectionOption {
                     name: "TrimTriangularFaces",

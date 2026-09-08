@@ -3585,6 +3585,7 @@ def _conversion_accepts_source(command, definition):
     kind = definition["type"]
     if command == "MeshToNURB": return kind == "mesh"
     if command == "ToNURBS": return kind not in ("point", "point_cloud")
+    if command == "ConvertToSingleSpans": return kind == "surface" or (kind == "brep" and definition.get("cap_surface") is None)
     return kind in ("nurbs", "surface", "line", "polyline", "arc", "circle", "ellipse", "polycurve") or (kind == "brep" and definition.get("cap_surface") is None)
 
 
@@ -3603,9 +3604,9 @@ def _conversion_arguments(operation, command, direction):
     postselect = operation.get("postselect", False)
     cancel = operation.get("cancel", False)
     cancel_at_selection = operation.get("cancel_at_selection", False)
-    if type(postselect) is not bool or type(cancel) is not bool or ((postselect or cancel) and command not in ("MeshToNURB", "ToNURBS", "ConvertToBeziers")) or (cancel and ((not postselect and command not in ("ToNURBS", "ConvertToBeziers")) or undo_after)):
+    if type(postselect) is not bool or type(cancel) is not bool or ((postselect or cancel) and command not in ("MeshToNURB", "ToNURBS", "ConvertToBeziers", "ConvertToSingleSpans")) or (cancel and ((not postselect and command not in ("ToNURBS", "ConvertToBeziers", "ConvertToSingleSpans")) or undo_after)):
         raise ValueError("invalid conversion selection/cancellation path")
-    if type(cancel_at_selection) is not bool or (cancel_at_selection and (not cancel or not postselect or command not in ("ToNURBS", "ConvertToBeziers"))):
+    if type(cancel_at_selection) is not bool or (cancel_at_selection and (not cancel or not postselect or command not in ("ToNURBS", "ConvertToBeziers", "ConvertToSingleSpans"))):
         raise ValueError("invalid conversion cancellation stage")
     initial_selection = operation.get("initial_selection", [])
     if not isinstance(initial_selection, list) or any(type(i) is not int or not 0 <= i < len(definitions) or _conversion_accepts_source(command, definitions[i]) for i in initial_selection) or len(set(initial_selection)) != len(initial_selection) or (initial_selection and not postselect):
@@ -3625,8 +3626,7 @@ def _conversion_arguments(operation, command, direction):
     if command != "ConvertToSingleSpans" and (direction is not None or toggles):
         raise ValueError("direction options require ConvertToSingleSpans")
     if direction == "Both" and toggles: raise ValueError("Toggle requires U or V direction")
-    if command == "ConvertToSingleSpans" and not any(definitions[i]["type"]=="surface" or
-            (definitions[i]["type"]=="brep" and definitions[i].get("cap_surface") is None) for i in selected):
+    if command == "ConvertToSingleSpans" and not any(_conversion_accepts_source(command, definitions[i]) for i in selected) and not (cancel_at_selection and any(_conversion_accepts_source(command, d) for d in definitions)):
         raise ValueError("single span conversion requires a surface")
     # At least one known curve/surface avoids an interactive object prompt.
     if not cancel and not any(definitions[i]["type"] in ("nurbs", "surface", "line", "polyline", "arc", "circle", "ellipse", "polycurve") or
@@ -3685,6 +3685,14 @@ def _conversion_selection_script(operation, command, script, ids, selected):
             if operation.get("cancel_at_selection", False): return "_ConvertToBeziers " + picks + " !"
             return "_ConvertToBeziers " + picks + " _Enter " + ("!" if cancel else script.split()[-1])
         if cancel: return "_ConvertToBeziers !"
+    if command == "ConvertToSingleSpans":
+        if postselect:
+            picks = " ".join("_SelID %s" % ids[i] for i in selected if _conversion_accepts_source(command, definitions[i]))
+            if operation.get("cancel_at_selection", False): return "_ConvertToSingleSpans " + picks + " !"
+            options = script[len("_ConvertToSingleSpans"):]
+            if cancel: options = options.rsplit(" _Enter", 1)[0] + " !"
+            return "_ConvertToSingleSpans " + picks + " _Enter" + options
+        if cancel: return script.rsplit(" _Enter", 1)[0] + " !"
     return script
 
 
@@ -3860,14 +3868,14 @@ def _conversion_session(operation, tolerance):
                 raise ValueError("cancelled Bezier conversion cannot seed options")
             if name == "ToNURBS" and (step.get("cancel", False) or not any(source["type"] in ("line","arc","circle","polyline","polycurve","mesh") for i,source in enumerate(step["sources"]) if i in step.get("selected",range(len(step["sources"]))))):
                 raise ValueError("ToNURBS no-op cannot seed conversion options")
-            if name == "ConvertToSingleSpans" and step.get("direction") not in ("U","V","Both"):
+            if name == "ConvertToSingleSpans" and (step.get("direction") not in ("U","V","Both") or step.get("cancel_at_selection", False)):
                 raise ValueError("conversion session must seed direction")
             seeded.add(name)
         if name == "ToNURBS" and any(source["type"] == "mesh" for i,source in enumerate(step["sources"]) if i in step.get("selected",range(len(step["sources"])))):
             if not mesh_seeded and type(step.get("trim_triangular_faces")) is not bool:
                 raise ValueError("conversion session must seed triangle trimming")
             mesh_seeded = True
-        if name == "ConvertToSingleSpans":
+        if name == "ConvertToSingleSpans" and not step.get("cancel_at_selection", False):
             direction = step.get("direction") or direction
             if step.get("toggles", 0):
                 if direction == "Both": raise ValueError("Toggle requires U or V direction")

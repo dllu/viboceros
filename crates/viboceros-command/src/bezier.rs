@@ -33,6 +33,7 @@ impl Command for ConvertToBeziersCommand {
                 aliases: &[],
             }],
             menus: vec![],
+            choices: vec![],
             workflow: ObjectSelectionWorkflow::ChooseBooleanAfterSelection,
         }))
     }

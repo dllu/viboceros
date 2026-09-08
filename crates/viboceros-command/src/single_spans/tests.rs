@@ -1,6 +1,106 @@
 use super::*;
 
 #[test]
+fn prompted_options_are_remembered_immediately_and_postselected_toggle_is_applied_once() {
+    let r = CommandRegistry::with_builtins();
+    let mut prompt = r
+        .object_selection_prompt("ConvertToSingleSpans Direction=U")
+        .unwrap()
+        .unwrap();
+    assert_eq!(prompt.filter, ObjectSelectionFilter::Surfaces);
+    prompt.update_options("DeleteInput=Yes Toggle").unwrap();
+    r.accept_object_selection_options(&prompt).unwrap();
+    let accepted = r
+        .object_selection_prompt("ConvertToSingleSpans")
+        .unwrap()
+        .unwrap();
+    assert_eq!(accepted.choices[0].value, "V");
+    assert!(accepted.options[0].value);
+    let (mut d, id) = selected(Geometry::NurbsSurface(surface()));
+    r.execute_postselected(
+        &mut d,
+        "ConvertToSingleSpans Toggle",
+        CommandContext::default(),
+    )
+    .unwrap();
+    assert!(d.object(id).is_none());
+    assert_eq!(d.selected_object_count(), 0);
+    assert_eq!(
+        r.object_selection_prompt("ConvertToSingleSpans")
+            .unwrap()
+            .unwrap()
+            .choices[0]
+            .value,
+        "U"
+    );
+    for object in d.objects() {
+        let Geometry::NurbsSurface(s) = object.geometry() else {
+            panic!()
+        };
+        assert_eq!(s.domain_u(), 0.0..=1.0);
+        assert_eq!(s.domain_v(), surface().domain_v());
+    }
+    let mut empty = Document::default();
+    assert!(
+        r.execute_postselected(
+            &mut empty,
+            "ConvertToSingleSpans Direction=Both DeleteInput=No",
+            CommandContext::default()
+        )
+        .is_err()
+    );
+    check_preference(&r, SurfaceKnotDirection::U, true);
+}
+
+#[test]
+fn postselected_single_span_sources_follow_action_order_and_undo_in_one_edit() {
+    for delete in [false, true] {
+        let r = CommandRegistry::with_builtins();
+        let (mut d, a) = selected(Geometry::NurbsSurface(surface()));
+        let b = d
+            .add_geometry(Geometry::NurbsSurface(
+                surface()
+                    .try_reparameterized(30.0..=40.0, 50.0..=60.0)
+                    .unwrap(),
+            ))
+            .unwrap();
+        d.select_objects_direct([b], SelectionMode::Replace)
+            .unwrap();
+        d.select_objects_direct([a], SelectionMode::Add).unwrap();
+        let before = d.objects().cloned().collect::<Vec<_>>();
+        r.execute_postselected(
+            &mut d,
+            &format!(
+                "ConvertToSingleSpans Direction=U DeleteInput={}",
+                if delete { "Yes" } else { "No" }
+            ),
+            CommandContext::default(),
+        )
+        .unwrap();
+        assert_eq!(d.selected_object_count(), 0);
+        let outputs = d
+            .objects()
+            .filter(|o| o.id() != a && o.id() != b)
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 4);
+        for (i, o) in outputs.iter().enumerate() {
+            let Geometry::NurbsSurface(s) = o.geometry() else {
+                panic!()
+            };
+            assert_eq!(s.domain_u(), 0.0..=1.0);
+            assert_eq!(s.domain_v(), if i < 2 { 50.0..=60.0 } else { 10.0..=18.0 });
+        }
+        let after = d.objects().cloned().collect::<Vec<_>>();
+        for _ in 0..3 {
+            r.execute(&mut d, "Undo").unwrap();
+            assert_eq!(d.objects().cloned().collect::<Vec<_>>(), before);
+            r.execute(&mut d, "Redo").unwrap();
+            assert_eq!(d.objects().cloned().collect::<Vec<_>>(), after);
+        }
+    }
+}
+
+#[test]
 fn toggle_follows_option_order_and_remembers_only_accepted_choices() {
     let r = CommandRegistry::with_builtins();
     let (mut d, _) = selected(Geometry::NurbsSurface(surface()));
@@ -102,6 +202,19 @@ fn unrepresentable_later_source_rolls_back_everything_and_does_not_accept_option
     );
     assert_eq!(d.undo_label(), history.as_deref());
     check_preference(&r, SurfaceKnotDirection::U, true);
+    assert!(
+        r.execute_postselected(
+            &mut d,
+            "ConvertToSingleSpans Direction=Both DeleteInput=No",
+            CommandContext::default()
+        )
+        .is_err()
+    );
+    assert_eq!(d.objects().cloned().collect::<Vec<_>>(), before);
+    assert_eq!(d.selected_object_ids().collect::<Vec<_>>(), [first, second]);
+    assert_eq!(d.undo_label(), history.as_deref());
+    // In an interactive run the options stage already accepted these edits.
+    check_preference(&r, SurfaceKnotDirection::Both, false);
 }
 
 fn surface() -> NurbsSurface {

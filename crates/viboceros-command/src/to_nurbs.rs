@@ -187,6 +187,7 @@ fn prompt(options: Options, mesh: bool) -> ObjectSelectionPrompt {
         command: "ToNURBS",
         filter: ObjectSelectionFilter::ToNurbs,
         workflow: ObjectSelectionWorkflow::ConfirmAfterSelection,
+        choices: vec![],
         options: vec![BooleanSelectionOption {
             name: "DeleteInputObjects",
             value: options.delete_input,

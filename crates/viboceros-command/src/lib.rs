@@ -5,8 +5,8 @@ mod bezier;
 mod mesh_to_nurb;
 mod object_selection;
 pub use object_selection::{
-    BooleanSelectionMenu, BooleanSelectionOption, ObjectSelectionFilter, ObjectSelectionPrompt,
-    ObjectSelectionWorkflow,
+    BooleanSelectionMenu, BooleanSelectionOption, ChoiceSelectionOption, ObjectSelectionFilter,
+    ObjectSelectionPrompt, ObjectSelectionWorkflow, SelectionToggle,
 };
 mod remembered;
 mod single_spans;

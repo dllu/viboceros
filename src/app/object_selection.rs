@@ -8,6 +8,7 @@ pub(super) enum ObjectPromptPhase {
     Selecting,
     Options,
     Menu(usize),
+    Choice(usize),
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -25,6 +26,7 @@ impl PendingObjectCommand {
     pub(super) fn label(&self) -> &'static str {
         match self.phase {
             ObjectPromptPhase::Menu(index) => self.description.menus[index].name,
+            ObjectPromptPhase::Choice(index) => self.description.choices[index].name,
             _ => self.description.command,
         }
     }
@@ -51,6 +53,9 @@ impl PendingObjectCommand {
             ObjectPromptPhase::Options => "Set conversion options; Enter converts, Esc cancels",
             ObjectPromptPhase::Menu(_) => {
                 "Set mesh options; Enter returns to conversion options, Esc cancels"
+            }
+            ObjectPromptPhase::Choice(_) => {
+                "Choose a value; Enter keeps the shown choice, Esc cancels"
             }
         }
     }
@@ -87,6 +92,11 @@ impl VibocerosApp {
                 .object_selection_confirmation(&self.document, &description)
             {
                 Ok(Some(description)) => {
+                    if let Err(error) = self.commands.accept_object_selection_options(&description)
+                    {
+                        self.push_log(format!("Error: {error}"));
+                        return true;
+                    }
                     self.cancel_interactive_command(false);
                     self.object_prompt = Some(PendingObjectCommand {
                         description,
@@ -103,7 +113,9 @@ impl VibocerosApp {
             }
         } else {
             self.cancel_interactive_command(false);
-            if let Err(error) = self.commands.accept_object_selection_options(&description) {
+            if description.workflow == ObjectSelectionWorkflow::OptionsDuringSelection
+                && let Err(error) = self.commands.accept_object_selection_options(&description)
+            {
                 self.push_log(format!("Error: {error}"));
                 return true;
             }
@@ -122,11 +134,22 @@ impl VibocerosApp {
 
     fn log_object_prompt(&mut self) {
         if let Some(pending) = &self.object_prompt {
-            self.push_log(format!(
-                "{}. {}",
-                pending.hint(),
-                pending.description.command_line()
-            ));
+            let mut message = format!("{}. {}", pending.hint(), pending.description.command_line());
+            for (index, choice) in pending.description.choices.iter().enumerate() {
+                if pending.phase == ObjectPromptPhase::Selecting
+                    || matches!(pending.phase, ObjectPromptPhase::Choice(selected) if selected != index)
+                {
+                    continue;
+                }
+                message.push_str(&format!("; {}: {}", choice.name, choice.choices.join("/")));
+                if pending.phase == ObjectPromptPhase::Options
+                    && let Some(toggle) = &choice.toggle
+                    && toggle.values.contains(&choice.value)
+                {
+                    message.push_str(&format!("; {}", toggle.name));
+                }
+            }
+            self.push_log(message);
         }
     }
 
@@ -135,7 +158,10 @@ impl VibocerosApp {
             return false;
         };
         if input.is_empty() {
-            if matches!(pending.phase, ObjectPromptPhase::Menu(_)) {
+            if matches!(
+                pending.phase,
+                ObjectPromptPhase::Menu(_) | ObjectPromptPhase::Choice(_)
+            ) {
                 pending.phase = ObjectPromptPhase::Options;
                 self.object_prompt = Some(pending);
                 self.log_object_prompt();
@@ -157,6 +183,12 @@ impl VibocerosApp {
                         .object_selection_confirmation(&self.document, &pending.description)
                     {
                         Ok(Some(description)) => {
+                            if let Err(error) =
+                                self.commands.accept_object_selection_options(&description)
+                            {
+                                self.push_log(format!("Error: {error}"));
+                                return true;
+                            }
                             pending.description = description;
                             pending.phase = ObjectPromptPhase::Options;
                             self.object_prompt = Some(pending);
@@ -217,10 +249,29 @@ impl VibocerosApp {
             self.command_input.clear();
             return true;
         }
-        if input
+        // Active option names take precedence over global command aliases
+        // (notably Direction, which is also an alias of Dir).
+        let option_name = normalized
             .split_whitespace()
             .next()
-            .is_some_and(|name| self.commands.recognizes(name))
+            .unwrap_or("")
+            .split('=')
+            .next()
+            .unwrap_or("");
+        let local_choice = pending.description.choices.iter().any(|c| {
+            c.name.eq_ignore_ascii_case(option_name)
+                || c.toggle
+                    .as_ref()
+                    .is_some_and(|t| t.name.eq_ignore_ascii_case(option_name))
+        });
+        let local_value = matches!(pending.phase, ObjectPromptPhase::Choice(index)
+            if pending.description.choices[index].choices.iter().any(|v| v.eq_ignore_ascii_case(&normalized)));
+        if !local_choice
+            && !local_value
+            && input
+                .split_whitespace()
+                .next()
+                .is_some_and(|name| self.commands.recognizes(name))
         {
             self.cancel_object_prompt(true);
             return false;
@@ -229,6 +280,19 @@ impl VibocerosApp {
             && pending.description.workflow != ObjectSelectionWorkflow::OptionsDuringSelection
         {
             self.push_log("Select objects first; Enter opens conversion options".into());
+            return true;
+        }
+        if pending.phase == ObjectPromptPhase::Options
+            && let Some(index) = pending
+                .description
+                .choices
+                .iter()
+                .position(|choice| choice.name.eq_ignore_ascii_case(&normalized))
+        {
+            pending.phase = ObjectPromptPhase::Choice(index);
+            self.object_prompt = Some(pending);
+            self.command_input.clear();
+            self.log_object_prompt();
             return true;
         }
         if pending.phase == ObjectPromptPhase::Options
@@ -246,6 +310,7 @@ impl VibocerosApp {
         }
         let update = match pending.phase {
             ObjectPromptPhase::Menu(index) => pending.description.update_menu_options(index, input),
+            ObjectPromptPhase::Choice(index) => pending.description.choices[index].set(input),
             _ => pending.description.update_options(input),
         };
         match update.and_then(|()| {
@@ -253,6 +318,9 @@ impl VibocerosApp {
                 .accept_object_selection_options(&pending.description)
         }) {
             Ok(()) => {
+                if matches!(pending.phase, ObjectPromptPhase::Choice(_)) {
+                    pending.phase = ObjectPromptPhase::Options;
+                }
                 let answered = pending.description.workflow
                     == ObjectSelectionWorkflow::ChooseBooleanAfterSelection;
                 self.object_prompt = Some(pending);

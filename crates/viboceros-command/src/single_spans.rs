@@ -32,7 +32,90 @@ impl Command for ConvertToSingleSpansCommand {
         &["ConvertSurfaceToSingleSpans"]
     }
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        self.convert(document, parse(arguments, self.options.get())?, false)
+    }
+
+    fn object_selection_prompt(
+        &self,
+        arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
         let options = parse(arguments, self.options.get())?;
+        Ok(Some(ObjectSelectionPrompt {
+            command: self.name(),
+            filter: ObjectSelectionFilter::Surfaces,
+            workflow: ObjectSelectionWorkflow::ConfirmAfterSelection,
+            options: vec![BooleanSelectionOption {
+                name: "DeleteInput",
+                value: options.delete_input,
+                aliases: &[],
+            }],
+            menus: vec![],
+            choices: vec![ChoiceSelectionOption {
+                name: "Direction",
+                value: match options.direction {
+                    SurfaceKnotDirection::U => "U",
+                    SurfaceKnotDirection::V => "V",
+                    SurfaceKnotDirection::Both => "Both",
+                },
+                choices: &["U", "V", "Both"],
+                toggle: Some(SelectionToggle {
+                    name: "Toggle",
+                    values: ["U", "V"],
+                }),
+            }],
+        }))
+    }
+
+    fn object_selection_confirmation(
+        &self,
+        document: &Document,
+        arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        if !document
+            .selected_objects()
+            .any(|o| ObjectSelectionFilter::Surfaces.accepts(o.geometry()))
+        {
+            return Err(CommandError::UnsupportedConvertToSingleSpansGeometry);
+        }
+        self.object_selection_prompt(arguments)
+    }
+
+    fn accept_object_selection_options(&self, arguments: &[&str]) -> Result<(), CommandError> {
+        self.options.set(parse(arguments, self.options.get())?);
+        Ok(())
+    }
+
+    fn run_postselected(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        _context: CommandContext,
+    ) -> Result<String, CommandError> {
+        let options = parse(arguments, self.options.get())?;
+        if document.selected_object_count() == 0 {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        if !document
+            .selected_objects()
+            .any(|o| ObjectSelectionFilter::Surfaces.accepts(o.geometry()))
+        {
+            return Err(CommandError::UnsupportedConvertToSingleSpansGeometry);
+        }
+        // The options phase accepted these choices before geometry execution.
+        self.options.set(options);
+        let message = self.convert(document, options, true)?;
+        document.clear_selection();
+        Ok(message)
+    }
+}
+
+impl ConvertToSingleSpansCommand {
+    fn convert(
+        &self,
+        document: &mut Document,
+        options: Options,
+        postselected: bool,
+    ) -> Result<String, CommandError> {
         if document.selected_object_count() == 0 {
             return Err(CommandError::NoObjectsSelected);
         }
@@ -40,7 +123,19 @@ impl Command for ConvertToSingleSpansCommand {
         let mut sources = Vec::new();
         let mut outputs = Vec::new();
         let mut controls = 0usize;
-        for object in document.objects().filter(|o| document.is_selected(o.id())) {
+        let mut selected = document
+            .objects()
+            .filter(|o| document.is_selected(o.id()))
+            .collect::<Vec<_>>();
+        if postselected {
+            let ranks = document
+                .selected_object_ids()
+                .enumerate()
+                .map(|(rank, id)| (id, rank))
+                .collect::<BTreeMap<_, _>>();
+            selected.sort_unstable_by_key(|o| ranks[&o.id()]);
+        }
+        for object in selected {
             let surface = match object.geometry() {
                 Geometry::NurbsSurface(s) => s,
                 Geometry::Brep(b) if b.faces().len() == 1 => b.faces()[0].surface(),

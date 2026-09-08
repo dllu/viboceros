@@ -147,6 +147,14 @@ ineligible, and cancelled commands cannot seed a deterministic session. The
 same complete conversion records check source retention/deletion, fresh output
 attributes, empty groups, cleared picks, and pick-dependent creation order.
 
+`single_span_postselection.json` adds 108 cases and three
+`single_span_postselection_sessions.json` sequences add 34 steps. Macros finish
+selection before entering the options stage and its Direction chooser. Cancelled
+options are remembered, but selection-stage presets are not. This includes
+toggle-only follow-ups and no-op input. A cancelled options stage can seed a
+session; cancelled selection cannot. Disjoint grouped subset probes avoid
+confounding group behavior with overlapping-surface hit ambiguity.
+
 With Rhino installed through the configured Wine/FEX launcher, run the core fixture:
 
 ```sh

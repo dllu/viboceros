@@ -1,6 +1,63 @@
 use super::*;
 
 #[test]
+fn choice_options_and_toggle_actions_are_canonical_bounded_and_atomic() {
+    let mut prompt = CommandRegistry::with_builtins()
+        .object_selection_prompt("ToNURBS")
+        .unwrap()
+        .unwrap();
+    prompt.choices.push(ChoiceSelectionOption {
+        name: "Direction",
+        value: "Both",
+        choices: &["U", "V", "Both"],
+        toggle: Some(SelectionToggle {
+            name: "Toggle",
+            values: ["U", "V"],
+        }),
+    });
+    let before = prompt.clone();
+    assert!(prompt.update_options("Toggle").is_err());
+    assert_eq!(prompt, before);
+    prompt
+        .update_options("DeleteInput=Yes _Direction _u _Toggle Toggle Toggle")
+        .unwrap();
+    assert_eq!(
+        prompt.command_line(),
+        "ToNURBS DeleteInputObjects=Yes Direction=V"
+    );
+    prompt.update_options("Toggle").unwrap();
+    assert_eq!(prompt.choices[0].value, "U");
+    let before = prompt.clone();
+    for invalid in [
+        "Direction=W",
+        "Direction=V Direction=U",
+        "Toggle Unknown=Yes",
+        "Direction=Both Toggle",
+        "DeleteInput=No Direction=Invalid",
+    ] {
+        assert!(prompt.update_options(invalid).is_err());
+        assert_eq!(prompt, before);
+    }
+    prompt.choices[0].set("_v").unwrap();
+    assert_eq!(prompt.choices[0].value, "V");
+    assert!(prompt.choices[0].set("V Both").is_err());
+    assert_eq!(prompt.choices[0].value, "V");
+    prompt.menus.push(BooleanSelectionMenu {
+        name: "MeshOptions",
+        options: vec![BooleanSelectionOption {
+            name: "TrimTriangularFaces",
+            value: true,
+            aliases: &[],
+        }],
+    });
+    let before = prompt.clone();
+    assert!(prompt.update_menu_options(0, "Direction=U").is_err());
+    assert_eq!(prompt, before);
+    assert!(prompt.update_menu_options(0, "Toggle").is_err());
+    assert_eq!(prompt, before);
+}
+
+#[test]
 fn confirmation_menus_are_selection_dependent_atomic_and_readonly_until_conversion() {
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::default();

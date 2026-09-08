@@ -10,6 +10,8 @@ mod nurbs_tests;
 #[cfg(test)]
 mod postselection_tests;
 #[cfg(test)]
+mod single_span_picking_tests;
+#[cfg(test)]
 mod tests;
 use crate::conversion::{ConversionFixture, delete_option, run_command};
 use crate::curve_join_close::CurveInput;
@@ -211,7 +213,8 @@ pub(super) fn run(
                     && (step.conversion.trim_triangular_faces.is_none()
                         || step.conversion.use_ngons.is_none()))
                 || (step.command == ConversionCommand::ConvertToSingleSpans
-                    && step.conversion.direction.is_none())
+                    && (step.conversion.direction.is_none()
+                        || step.conversion.geometry.cancel_at_selection))
                 || (step.command == ConversionCommand::ConvertToBeziers
                     && step.conversion.geometry.cancel)
                 || (step.command == ConversionCommand::ToNURBS
@@ -231,7 +234,9 @@ pub(super) fn run(
             }
             mesh_seeded = true;
         }
-        if step.command == ConversionCommand::ConvertToSingleSpans {
+        if step.command == ConversionCommand::ConvertToSingleSpans
+            && !step.conversion.geometry.cancel_at_selection
+        {
             direction = step.conversion.direction.or(direction);
             if step.conversion.toggles > 0 {
                 direction = Some(match direction {

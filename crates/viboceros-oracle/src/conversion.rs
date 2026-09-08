@@ -53,17 +53,28 @@ pub(super) fn run_command(
     let filter = match name {
         Some("ToNURBS") => viboceros_command::ObjectSelectionFilter::ToNurbs,
         Some("ConvertToBeziers") => viboceros_command::ObjectSelectionFilter::Beziers,
+        Some("ConvertToSingleSpans") => viboceros_command::ObjectSelectionFilter::Surfaces,
         _ => viboceros_command::ObjectSelectionFilter::Mesh,
     };
     if ((f.postselect || f.cancel)
-        && !matches!(name, Some("MeshToNURB" | "ToNURBS" | "ConvertToBeziers")))
+        && !matches!(
+            name,
+            Some("MeshToNURB" | "ToNURBS" | "ConvertToBeziers" | "ConvertToSingleSpans")
+        ))
         || (f.cancel
-            && ((!f.postselect && !matches!(name, Some("ToNURBS" | "ConvertToBeziers")))
+            && ((!f.postselect
+                && !matches!(
+                    name,
+                    Some("ToNURBS" | "ConvertToBeziers" | "ConvertToSingleSpans")
+                ))
                 || undo_after))
         || (f.cancel_at_selection
             && (!f.cancel
                 || !f.postselect
-                || !matches!(name, Some("ToNURBS" | "ConvertToBeziers"))))
+                || !matches!(
+                    name,
+                    Some("ToNURBS" | "ConvertToBeziers" | "ConvertToSingleSpans")
+                )))
         || (!f.initial_selection.is_empty() && !f.postselect)
         || f.initial_selection.iter().any(|i| *i >= f.sources.len())
         || f.initial_selection.iter().collect::<BTreeSet<_>>().len() != f.initial_selection.len()
@@ -103,7 +114,7 @@ pub(super) fn run_command(
         }
     }
     if f.cancel
-        && name == Some("ConvertToBeziers")
+        && matches!(name, Some("ConvertToBeziers" | "ConvertToSingleSpans"))
         && !f.cancel_at_selection
         && !selected
             .iter()
@@ -154,7 +165,9 @@ pub(super) fn run_command(
         inspect_sources,
     )?;
     if f.postselect {
-        registry.accept_object_selection_input(command)?;
+        if name == Some("MeshToNURB") {
+            registry.accept_object_selection_input(command)?;
+        }
         document.clear_selection();
         for index in selected {
             if filter.accepts(document.object(ids[index]).unwrap().geometry()) {
@@ -162,6 +175,9 @@ pub(super) fn run_command(
             }
         }
         if f.cancel {
+            if !f.cancel_at_selection {
+                registry.accept_object_selection_input(command)?;
+            }
             document.clear_selection();
         } else {
             registry.execute_postselected(

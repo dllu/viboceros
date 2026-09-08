@@ -8,6 +8,33 @@ from . import test_worker
 class ConversionSessionTests(unittest.TestCase):
     def setUp(self): test_worker.RhinoWorkerTests.setUp(self)
 
+    def test_single_span_scripts_separate_picking_direction_choice_and_confirmation(self):
+        base=dict(sources=[dict(type="surface"),dict(type="line"),dict(type="brep"),dict(type="brep",cap_surface={})],selected=[2,1,0,3],direction="U",toggles=1,delete_input=False)
+        for postselect in [False,True]:
+            for cancel in [False,True]:
+                op=dict(base,postselect=postselect,cancel=cancel)
+                _,selected,_,script=self.worker._conversion_arguments(op,"ConvertToSingleSpans","U")
+                expected="_ConvertToSingleSpans"+(" _SelID face _SelID surface _Enter" if postselect else "")+" _Direction _U _DeleteInput=No _Toggle"+(" !" if cancel else " _Enter")
+                self.assertEqual(self.worker._conversion_selection_script(op,"ConvertToSingleSpans",script,["surface","line","face","solid"],selected),expected)
+        op=dict(base,postselect=True,cancel=True,cancel_at_selection=True,selected=[])
+        _,selected,_,script=self.worker._conversion_arguments(op,"ConvertToSingleSpans","U")
+        self.assertEqual(self.worker._conversion_selection_script(op,"ConvertToSingleSpans",script,[],selected),"_ConvertToSingleSpans  !")
+
+    def test_single_span_cancelled_options_seed_memory_but_selection_cancellation_does_not(self):
+        first=dict(command="ConvertToSingleSpans",sources=[dict(type="surface")],direction="U",delete_input=False,cancel=True)
+        ignored=dict(first,postselect=True,cancel_at_selection=True,selected=[],direction="Both",delete_input=True)
+        toggle=dict(command="ConvertToSingleSpans",sources=first["sources"],postselect=True,toggles=1)
+        with patch.object(self.worker,"_geometry_conversion",return_value=({},0)) as run:
+            self.worker._conversion_session(dict(steps=[first,ignored,toggle]),{})
+            self.assertEqual(run.call_count,3)
+        with patch.object(self.worker,"_geometry_conversion") as run,self.assertRaises(ValueError):
+            self.worker._conversion_session(dict(steps=[ignored,toggle]),{})
+        run.assert_not_called()
+        for changes in [dict(cancel_at_selection=True),dict(selected=[]),dict(postselect=True,initial_selection=[0]),
+                        dict(postselect=True,cancel_at_selection=True,sources=[dict(type="line")],selected=[])]:
+            with self.subTest(changes=changes),self.assertRaises(ValueError):
+                self.worker._conversion_arguments(dict(first,**changes),"ConvertToSingleSpans","U")
+
     def test_bezier_postselection_scripts_finish_with_one_boolean_answer_or_cancel(self):
         base=dict(sources=[dict(type="line"),dict(type="surface"),dict(type="mesh"),dict(type="brep",cap_surface={}),dict(type="point")],selected=[1,4,0,2,3])
         ids=["line","surface","mesh","solid","point"]

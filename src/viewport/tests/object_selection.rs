@@ -1,6 +1,66 @@
 use super::*;
 
 #[test]
+fn surface_filter_precedes_coincident_point_curve_and_mesh_hits() {
+    let mut document = Document::default();
+    let points = vec![
+        point(-2., 0., 0.),
+        point(2., 0., 0.),
+        point(-2., 2., 0.),
+        point(2., 2., 0.),
+    ];
+    let surface = document
+        .add_geometry(Geometry::NurbsSurface(
+            viboceros_geometry::NurbsSurface::try_new(
+                1,
+                1,
+                2,
+                2,
+                points.clone(),
+                vec![0., 0., 1., 1.],
+                vec![0., 0., 1., 1.],
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    document
+        .add_geometry(Geometry::Line(
+            LineSegment::try_new(points[0], points[1], Tolerance::DEFAULT).unwrap(),
+        ))
+        .unwrap();
+    document
+        .add_geometry(Geometry::Mesh(
+            TriangleMesh::try_new(points, vec![[0, 1, 2]], Tolerance::DEFAULT).unwrap(),
+        ))
+        .unwrap();
+    let dot = document
+        .add_geometry(Geometry::Point(point(0., 0., 0.)))
+        .unwrap();
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+    for kind in [
+        ViewKind::Top,
+        ViewKind::Perspective,
+        ViewKind::Front,
+        ViewKind::Right,
+    ] {
+        let view = Viewport::new(kind);
+        let pointer = view.project(point(0., 0., 0.), rect).unwrap();
+        assert_eq!(view.pick_object(pointer, rect, &document), Some(dot));
+        assert_eq!(
+            view.pick_object_matching(pointer, rect, &document, ObjectSelectionFilter::Surfaces),
+            Some(surface)
+        );
+    }
+    document.set_objects_locked([surface], true).unwrap();
+    let view = Viewport::new(ViewKind::Top);
+    let pointer = view.project(point(0., 0., 0.), rect).unwrap();
+    assert_eq!(
+        view.pick_object_matching(pointer, rect, &document, ObjectSelectionFilter::Surfaces),
+        None
+    );
+}
+
+#[test]
 fn confirmation_disables_real_selection_events_without_enabling_point_drafting() {
     let mut document = Document::default();
     document

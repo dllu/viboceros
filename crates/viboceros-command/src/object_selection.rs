@@ -1,5 +1,8 @@
-//! Command-owned object filters and boolean options for selection prompts.
+//! Command-owned object filters and typed options for selection prompts.
 use super::*;
+
+mod choice;
+pub use choice::{ChoiceSelectionOption, SelectionToggle};
 
 #[cfg(test)]
 mod tests;
@@ -11,6 +14,7 @@ pub enum ObjectSelectionFilter {
     Mesh,
     ToNurbs,
     Beziers,
+    Surfaces,
 }
 
 impl ObjectSelectionFilter {
@@ -19,9 +23,9 @@ impl ObjectSelectionFilter {
             Self::Any => true,
             Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
             Self::ToNurbs => !matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_)),
-            Self::Beziers => {
-                geometry.curve_ref().is_some()
-                    || matches!(geometry, Geometry::NurbsSurface(_))
+            Self::Beziers => geometry.curve_ref().is_some() || Self::Surfaces.accepts(geometry),
+            Self::Surfaces => {
+                matches!(geometry, Geometry::NurbsSurface(_))
                     || matches!(geometry, Geometry::Brep(brep) if brep.faces().len() == 1)
             }
         }
@@ -55,6 +59,7 @@ pub struct ObjectSelectionPrompt {
     pub filter: ObjectSelectionFilter,
     pub options: Vec<BooleanSelectionOption>,
     pub menus: Vec<BooleanSelectionMenu>,
+    pub choices: Vec<ChoiceSelectionOption>,
     pub workflow: ObjectSelectionWorkflow,
 }
 
@@ -68,7 +73,7 @@ impl ObjectSelectionPrompt {
             option.value = value;
             return Ok(());
         }
-        const USAGE: &str = "known-option=Yes|No [known-option=Yes|No ...]";
+        const USAGE: &str = "known-option=value [known-option=value ...] or an available action";
         let arguments = input.split_whitespace().collect::<Vec<_>>();
         if arguments.is_empty() {
             return Err(CommandError::Usage(USAGE));
@@ -76,8 +81,19 @@ impl ObjectSelectionPrompt {
         let mut staged = self.clone();
         let mut seen = BTreeSet::new();
         let mut menus_seen = BTreeSet::new();
+        let mut changed = false;
         let mut i = 0;
         while i < arguments.len() {
+            if let Some(choice) = staged.choices.iter_mut().find(|c| {
+                c.toggle
+                    .as_ref()
+                    .is_some_and(|t| option_name_eq(arguments[i], t.name))
+            }) {
+                choice.toggle()?;
+                changed = true;
+                i += 1;
+                continue;
+            }
             if let Some(menu) = staged
                 .menus
                 .iter()
@@ -90,6 +106,19 @@ impl ObjectSelectionPrompt {
                 continue;
             }
             let (name, value, consumed) = orient_option(&arguments, i, USAGE)?;
+            if let Some(choice) = staged
+                .choices
+                .iter_mut()
+                .find(|c| option_name_eq(name, c.name))
+            {
+                if !seen.insert(choice.name) {
+                    return Err(CommandError::Usage(USAGE));
+                }
+                choice.set(value)?;
+                changed = true;
+                i += consumed;
+                continue;
+            }
             let option = staged
                 .options
                 .iter_mut()
@@ -103,9 +132,10 @@ impl ObjectSelectionPrompt {
                 return Err(CommandError::Usage(USAGE));
             }
             option.value = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
+            changed = true;
             i += consumed;
         }
-        if seen.is_empty() {
+        if !changed {
             return Err(CommandError::Usage(USAGE));
         }
         *self = staged;
@@ -122,6 +152,7 @@ impl ObjectSelectionPrompt {
         let mut scoped = Self {
             options,
             menus: vec![],
+            choices: vec![],
             ..self.clone()
         };
         scoped.update_options(input)?;
@@ -137,6 +168,9 @@ impl ObjectSelectionPrompt {
                 option.name,
                 if option.value { "Yes" } else { "No" }
             ));
+        }
+        for choice in &self.choices {
+            input.push_str(&format!(" {}={}", choice.name, choice.value));
         }
         for menu in &self.menus {
             input.push_str(&format!(" {}", menu.name));

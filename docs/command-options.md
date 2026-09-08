@@ -16,7 +16,7 @@ keeps its registry for the application session. The small `remembered` module
 provides synchronized copy-in/copy-out storage without holding a lock during
 geometry work or document mutation; the command API remains `Send + Sync`.
 
-Preselected commands accept choices only after successful execution. Invalid options,
+Direct preselected registry invocations accept choices only after successful execution. Invalid options,
 ineligible selections, and geometry/document failures leave previous choices
 unchanged. An eligible single-span no-op accepts choices without changing
 document history or clearing redo. A `ToNURBS` no-op leaves choices unchanged.
@@ -38,6 +38,13 @@ confirmation, including when selected during the command.
 Answering converts immediately; Enter uses the displayed choice. Cancellation
 at either stage accepts no choice, including an initial explicit native preset.
 Preselection is retained on cancellation; command-first picks are cleared.
+
+`ConvertToSingleSpans` accepts edits immediately at its separate options stage,
+including Direction choices and U/V toggles. Escape retains these values, as does
+a later geometry failure. Cancelling during selection accepts no choices. This
+distinction also applies to initial native presets: they are accepted on reaching
+options, not on starting selection. No-op-only picks still open options and
+remember accepted edits, but create no model history.
 
 Native bootstrap choices are deletion No, Direction Both, and triangle trimming Yes. They are not
 serialized across application restarts. Rhino's factory defaults and restart
@@ -69,3 +76,6 @@ MeshToNURB memory. A cancelled ToNURBS command cannot seed a deterministic sessi
 Two `bezier_postselection_sessions.json` sequences add 24 steps checking both
 cancellation stages, pre/postselection, omitted answers, and memory across undo.
 A cancelled ConvertToBeziers command cannot seed a deterministic session either.
+Three `single_span_postselection_sessions.json` sequences add 34 steps. Cancelled
+single-span options may seed memory; selection-stage cancellation may not, and its
+unused presets do not affect the direction of a subsequent toggle-only command.
