@@ -18,8 +18,8 @@ impl Viewport {
             let origin = self.world_origin(rect);
             let focal = self.perspective_focal_length_pixels(rect);
             let ray = forward
-                + right * (Real::from(pointer.x - origin.x) / focal)
-                + up * (Real::from(origin.y - pointer.y) / focal);
+                + right * ((Real::from(pointer.x) - Real::from(origin.x)) / focal)
+                + up * ((Real::from(origin.y) - Real::from(pointer.y)) / focal);
             (
                 Point3::try_new(camera.x, camera.y, camera.z).ok()?,
                 Vector3::try_new(ray.x, ray.y, ray.z).ok()?,
@@ -112,8 +112,8 @@ impl Viewport {
         match self.kind {
             ViewKind::Top | ViewKind::Front | ViewKind::Right => {
                 let scale = Real::from(self.pixels_per_unit);
-                let horizontal = Real::from(position.x - origin.x) / scale;
-                let vertical = Real::from(origin.y - position.y) / scale;
+                let horizontal = (Real::from(position.x) - Real::from(origin.x)) / scale;
+                let vertical = (Real::from(origin.y) - Real::from(position.y)) / scale;
                 match self.kind {
                     ViewKind::Top => Point3::try_new(
                         horizontal + self.target.x,
@@ -140,8 +140,8 @@ impl Viewport {
                 let (right, up, forward) = self.perspective_basis();
                 let camera = self.target - forward * self.perspective_camera_distance;
                 let focal_length = self.perspective_focal_length_pixels(rect);
-                let horizontal = Real::from(position.x - origin.x) / focal_length;
-                let vertical = Real::from(origin.y - position.y) / focal_length;
+                let horizontal = (Real::from(position.x) - Real::from(origin.x)) / focal_length;
+                let vertical = (Real::from(origin.y) - Real::from(position.y)) / focal_length;
                 let ray = forward + right * horizontal + up * vertical;
                 if !ray.z.is_finite() || ray.z.abs() <= 1.0e-12 {
                     return None;
@@ -380,4 +380,55 @@ pub(super) fn zoom_pan(pan: Vec2, pointer: Pos2, rect: Rect, ratio: Real) -> Opt
 
 fn matrix_to_gpu(matrix: NaMatrix4<Real>) -> [[f32; 4]; 4] {
     std::array::from_fn(|column| std::array::from_fn(|row| matrix[(row, column)] as f32))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn unprojection_subtracts_finite_screen_coordinates_without_f32_overflow() {
+        let rect = Rect::from_center_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let pointer = Pos2::new(-f32::MAX, f32::MAX);
+        let horizontal = -2.0 * Real::from(f32::MAX) / 40.0;
+        for kind in [ViewKind::Top, ViewKind::Front, ViewKind::Right] {
+            let view = Viewport {
+                pan: Vec2::new(f32::MAX, -f32::MAX),
+                ..Viewport::new(kind)
+            };
+            let actual = view.unproject(pointer, rect, 0.0).unwrap();
+            let expected = match kind {
+                ViewKind::Top => [horizontal, horizontal, 0.0],
+                ViewKind::Front => [horizontal, 0.0, horizontal],
+                ViewKind::Right => [0.0, horizontal, horizontal],
+                _ => unreachable!(),
+            };
+            assert_eq!(actual.to_array(), expected);
+            assert_eq!(
+                view.unproject_drafting_plane(pointer, rect, None).unwrap(),
+                actual
+            );
+        }
+        let pointer = Pos2::new(-f32::MAX, 0.0);
+        let mut view = Viewport {
+            pan: Vec2::new(f32::MAX, 0.0),
+            orbit_yaw: 0.0,
+            ..Viewport::new(ViewKind::Perspective)
+        };
+        let actual = view.unproject(pointer, rect, 0.0).unwrap();
+        let expected_y = -2.0 * Real::from(f32::MAX) / view.perspective_focal_length_pixels(rect)
+            * view.perspective_camera_distance;
+        assert!((actual.y() / expected_y - 1.0).abs() < 1e-14);
+        assert!(actual.z().abs() < 1e-12);
+        // The XY plane is genuinely near-parallel at this extreme screen
+        // offset. Retain drafting's angular rejection policy.
+        assert!(view.unproject_drafting_plane(pointer, rect, None).is_none());
+        view.plane.set(
+            WorldPlane::Front
+                .frame()
+                .with_origin(Point3::try_new(0.0, -1.0, 0.0).unwrap()),
+        );
+        let drafted = view.unproject_drafting_plane(pointer, rect, None).unwrap();
+        assert!((drafted.y() + 1.0).abs() < 1e-12);
+    }
 }

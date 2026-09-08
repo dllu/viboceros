@@ -103,6 +103,10 @@ rays, navigation updates, view depth, and GPU camera matrices. Viewport drawing
 and hit-testing consume these shared methods; camera math remains independent
 of the painter and document mutation. Its extraction retains the projection,
 target-plane zoom, and multi-frame navigation regressions.
+Screen-to-model conversion promotes screen coordinates to f64 before subtracting
+them, avoiding f32 intermediate overflow in parallel/perspective unprojection
+and drafting rays. Tests cover both screen axes, all view kinds, and a facing
+construction plane while retaining near-parallel drafting-ray rejection.
 The app's `viewport/extents` module stages visible-bounds camera fitting for
 [`Zoom Extents` and `Zoom Selected`](commands/zoom.md). All-view actions reuse
 one bounds query and prepare every `CameraFit` before applying any camera changes.
