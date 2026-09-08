@@ -6,7 +6,7 @@ mod three_dm;
 mod three_dm_curves;
 mod three_dm_geometry;
 mod three_dm_units;
-pub use three_dm_units::ThreeDmUnitSystem;
+pub use viboceros_geometry::LengthUnitSystem;
 #[cfg(test)]
 mod three_dm_rational_tests;
 

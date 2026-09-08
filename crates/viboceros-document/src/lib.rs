@@ -13,7 +13,10 @@ use std::fmt;
 
 use thiserror::Error;
 use uuid::Uuid;
-use viboceros_geometry::{AffineTransform3, BoundingBox3, GeometryError, PointMorph, Tolerance};
+use viboceros_geometry::{
+    AffineTransform3, BoundingBox3, GeometryError, LengthUnitSystem, PointMorph, Tolerance,
+    UnitError,
+};
 #[cfg(test)]
 use viboceros_geometry::{
     Brep, Circle3, CircularArc3, Ellipse3, LineSegment, NurbsCurve, NurbsSurface, Point3,
@@ -353,6 +356,7 @@ impl Group {
 #[derive(Clone, Debug)]
 pub struct Document {
     tolerance: Tolerance,
+    units: LengthUnitSystem,
     layers: Vec<Layer>,
     current_layer: LayerId,
     objects: Vec<Object>,
@@ -377,6 +381,7 @@ impl Document {
         let current_layer = default_layer.id;
         Self {
             tolerance,
+            units: LengthUnitSystem::default(),
             layers: vec![default_layer],
             current_layer,
             objects: Vec::new(),
@@ -388,6 +393,19 @@ impl Document {
             last_changed_objects: BTreeSet::new(),
             history: History::default(),
         }
+    }
+
+    /// Creates an empty document with explicit length units. Tolerances and
+    /// subsequently supplied coordinates are expressed in those units.
+    pub fn with_units(tolerance: Tolerance, units: LengthUnitSystem) -> Result<Self, UnitError> {
+        units.validate()?;
+        let mut document = Self::new(tolerance);
+        document.units = units;
+        Ok(document)
+    }
+
+    pub fn units(&self) -> &LengthUnitSystem {
+        &self.units
     }
 
     /// Starts an atomic edit transaction. Successful commands commit all edits

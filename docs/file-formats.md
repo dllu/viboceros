@@ -45,9 +45,12 @@ alongside it. Tests check the analytic locus and subsequent round trip.
 The low-level 3DM I/O model preserves standard, unitless, unset, and custom
 length-unit metadata (`ThreeDmModel::units`). Custom names and finite,
 positive metres-per-unit scales round-trip without rescaling coordinates;
-new I/O models explicitly default to millimetres. The document and command
-layers do not yet retain or convert these units, so this is not yet an
-end-to-end physical-size guarantee for application imports and exports.
+new I/O models explicitly default to millimetres. The shared
+`LengthUnitSystem` provides validated, checked conversion factors;
+`Document::with_units` initializes explicit document units, and 3DM export
+retains them. Default documents use millimetres. Import commands do not yet
+convert source units, and changing an existing document's units is not yet
+implemented, so this is not an end-to-end physical-size guarantee.
 
 Initial STEP interchange uses the Apache-2.0 Monstertruck kernel to read
 solid/shell B-reps and assemblies, apply instance transforms, and robustly
@@ -69,6 +72,5 @@ rotated parent, with expected corner coordinates checked independently of
 the importer's matrix arithmetic. These are generated STEP fixtures, not
 Rhino parity measurements. Length-unit conversion is not implemented:
 STEP coordinate values are currently imported in file units, while export
-declares millimetres. The document model does not yet retain a unit system,
-so physical-size preservation across files with different units is not
-guaranteed.
+declares millimetres regardless of document units, so physical-size
+preservation across files with different units is not guaranteed.

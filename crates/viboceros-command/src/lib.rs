@@ -18648,7 +18648,9 @@ fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, CommandError>
             })
         })
         .collect::<Result<_, CommandError>>()?;
-    Ok(ThreeDmModel::new(layers, groups, objects))
+    let mut model = ThreeDmModel::new(layers, groups, objects);
+    model.units = document.units().clone();
+    Ok(model)
 }
 
 fn next_serialized_group_name(used: &mut BTreeSet<String>) -> String {
@@ -44155,6 +44157,43 @@ mod tests {
         registry.execute(&mut document, "Redo").unwrap();
         assert_eq!(document.objects().len(), 2);
         std::fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn document_units_are_validated_and_retained_by_3dm_export() {
+        use viboceros_geometry::LengthUnitSystem;
+        for units in [
+            LengthUnitSystem::Inches,
+            LengthUnitSystem::Custom {
+                name: "eighth-metre".into(),
+                meters_per_unit: 0.125,
+            },
+        ] {
+            let mut document = Document::with_units(Tolerance::DEFAULT, units.clone()).unwrap();
+            let registry = CommandRegistry::with_builtins();
+            registry.execute(&mut document, "Point 1,2,3").unwrap();
+            registry.execute(&mut document, "Undo").unwrap();
+            registry.execute(&mut document, "Redo").unwrap();
+            assert_eq!(document.units(), &units);
+            let model = document_3dm_model(&document).unwrap();
+            assert_eq!(model.units, units);
+            assert_eq!(model.objects.len(), 1);
+            assert_eq!(
+                model.objects[0].geometry,
+                ThreeDmGeometry::Point(Point3::try_new(1.0, 2.0, 3.0).unwrap())
+            );
+        }
+        assert!(
+            Document::with_units(
+                Tolerance::DEFAULT,
+                LengthUnitSystem::Custom {
+                    name: "bad".into(),
+                    meters_per_unit: f64::NAN
+                }
+            )
+            .is_err()
+        );
+        assert_eq!(Document::default().units(), &LengthUnitSystem::Millimeters);
     }
 
     #[test]

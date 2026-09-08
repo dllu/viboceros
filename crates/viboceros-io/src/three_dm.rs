@@ -11,7 +11,7 @@ use viboceros_geometry::{
     PointCloud3, PolyCurve3, Polyline3, Tolerance, TriangleMesh, WeightedPoint3,
 };
 
-use crate::ThreeDmUnitSystem;
+use crate::LengthUnitSystem;
 use crate::three_dm_geometry::{self, GeometryCodecError};
 
 const ERROR_CAPACITY: usize = 4096;
@@ -95,7 +95,7 @@ impl ThreeDmObject {
 #[derive(Clone, Debug, PartialEq)]
 pub struct ThreeDmModel {
     /// File metadata only; assigning units does not rescale coordinates.
-    pub units: ThreeDmUnitSystem,
+    pub units: LengthUnitSystem,
     pub layers: Vec<ThreeDmLayer>,
     pub groups: Vec<ThreeDmGroup>,
     pub objects: Vec<ThreeDmObject>,
@@ -109,7 +109,7 @@ impl ThreeDmModel {
         objects: Vec<ThreeDmObject>,
     ) -> Self {
         Self {
-            units: ThreeDmUnitSystem::default(),
+            units: LengthUnitSystem::default(),
             layers,
             groups,
             objects,
@@ -185,7 +185,7 @@ pub fn write_3dm_file(
     model: &ThreeDmModel,
 ) -> Result<ThreeDmWriteReport, ThreeDmError> {
     validate_model(model)?;
-    let (unit_system, meters_per_unit, unit_name) = model.units.encode()?;
+    let (unit_system, meters_per_unit, unit_name) = crate::three_dm_units::encode(&model.units)?;
     let mut prepared = Vec::new();
     let mut report = ThreeDmWriteReport {
         source_object_count: model.objects.len(),
@@ -340,7 +340,7 @@ fn decode_model(handle: &ModelHandle, tolerance: Tolerance) -> Result<ThreeDmMod
     let name = unsafe { CStr::from_ptr(unit_name) }
         .to_string_lossy()
         .into_owned();
-    let units = ThreeDmUnitSystem::decode(unit_system, meters_per_unit, name)?;
+    let units = crate::three_dm_units::decode(unit_system, meters_per_unit, name)?;
     // SAFETY: the handle owns a live bridge model.
     let layer_count = unsafe { ffi::vibo_3dm_layer_count(handle.0.as_ptr()) };
     let mut layers = Vec::with_capacity(layer_count.max(1));
@@ -1585,7 +1585,8 @@ mod tests {
         assert_eq!(baseline.objects[0], model.objects[0]);
         // Every OpenNURBS standard identifier, unitless, unset, and custom.
         for code in (0..=25).chain(std::iter::once(255)) {
-            model.units = ThreeDmUnitSystem::decode(code, 0.125, "custom µ-unit".into()).unwrap();
+            model.units =
+                crate::three_dm_units::decode(code, 0.125, "custom µ-unit".into()).unwrap();
             write_3dm_file(&path, &model).unwrap();
             let decoded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
             assert_eq!(decoded.units, model.units, "unit identifier {code}");
@@ -1603,7 +1604,7 @@ mod tests {
         fs::write(&path, b"original").unwrap();
         let mut model = sample_model();
         for scale in [0.0, -1.0, f64::NAN, f64::INFINITY, f64::NEG_INFINITY] {
-            model.units = ThreeDmUnitSystem::Custom {
+            model.units = LengthUnitSystem::Custom {
                 name: "bad scale".into(),
                 meters_per_unit: scale,
             };
@@ -1613,7 +1614,7 @@ mod tests {
             ));
             assert_eq!(fs::read(&path).unwrap(), b"original");
         }
-        model.units = ThreeDmUnitSystem::Custom {
+        model.units = LengthUnitSystem::Custom {
             name: "bad\0name".into(),
             meters_per_unit: 1.0,
         };

@@ -52,7 +52,9 @@ mod surface_pullback;
 mod sweep;
 mod tolerance;
 mod transform;
+mod units;
 mod vector;
+pub use units::{LengthUnitSystem, UnitError};
 
 pub use bezier::MAX_BEZIER_CONTROL_POINTS;
 pub use bounds::BoundingBox3;
