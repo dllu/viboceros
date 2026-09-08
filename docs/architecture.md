@@ -130,7 +130,11 @@ them, avoiding f32 intermediate overflow in parallel/perspective unprojection
 and drafting rays. Tests cover both screen axes, all view kinds, and a facing
 construction plane while retaining near-parallel drafting-ray rejection.
 The app's `viewport/extents` module stages visible-bounds camera fitting for
-[`Zoom Extents` and `Zoom Selected`](commands/zoom.md). All-view actions reuse
+the actual local GPU representation. It validates transformed corners after
+choosing the target and scale, rather than rejecting large absolute coordinates.
+Tests include finite points at the f64 limit and small parallel-view screen
+extents at extreme depth, alongside genuinely unrepresentable-span failures.
+It provides [`Zoom Extents` and `Zoom Selected`](commands/zoom.md). All-view actions reuse
 one bounds query and prepare every `CameraFit` before applying any camera changes.
 The model-space camera target is shared by
 CPU/GPU projection and drafting rays; fitting does not edit construction planes

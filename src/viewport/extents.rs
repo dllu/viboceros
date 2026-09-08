@@ -103,12 +103,6 @@ impl Viewport {
                     maximum[axis]
                 }
             }));
-            if corner
-                .iter()
-                .any(|value| value.abs() > Real::from(f32::MAX))
-            {
-                return Err("model bounds exceed the GPU coordinate range");
-            }
             let local = corner - target;
             let (x, y) = match self.kind {
                 ViewKind::Top => (local.x, local.y),
@@ -171,6 +165,9 @@ impl Viewport {
                 }
             }))
             .expect("finite bounds");
+            if staged.gpu_position(corner).is_none() {
+                return Err("fitted model bounds exceed the GPU coordinate range");
+            }
             if !staged
                 .project(corner, rect)
                 .is_some_and(|point| rect.contains(point))

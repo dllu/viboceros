@@ -60,12 +60,15 @@ A point-sized scene uses the default scale/distance after centering.
 
 The action preserves geometry, selection, model undo/redo, construction planes,
 and unfinished modeling prompts. An empty visible scene leaves the camera alone.
-The viewport must have been laid out at least once. Fitting conservatively rejects
-absolute bounds outside the finite f32 range, or fits requiring a perspective
-distance above 1e9, before camera mutation. GPU vertices are rebased around the
-fitted target in f64 before conversion to f32, preserving small local features
-far from the origin. Very large local extents and f64 model-coordinate rounding
-still limit accuracy; see [GPU tests](../gpu-tests.md).
+The viewport must have been laid out at least once. Fitting validates the actual
+target-relative GPU conversion of every bounding-box corner, not its absolute
+world-coordinate magnitude. Small screen-plane extents can therefore fit at very
+large parallel-view depths, and an isolated finite point can be centered even
+at the f64 coordinate limit. Unrepresentable local extents, scales below the
+supported minimum, or perspective distances above 1e9 still fail before camera
+mutation. GPU vertices are rebased around the fitted target in f64 before
+conversion to f32. This does not recover detail already lost in the model's f64
+coordinates; see [GPU tests](../gpu-tests.md).
 
 `src/viewport/extents.rs` owns fitting. A model-space target is shared by CPU
 projection, unprojection, drafting rays, perspective depth, and GPU matrices.

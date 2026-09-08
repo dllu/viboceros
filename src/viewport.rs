@@ -2451,7 +2451,7 @@ mod tests {
             .add_geometry(Geometry::Point(point(102.0, 202.0, 302.0)))
             .unwrap();
         document
-            .add_geometry(Geometry::Point(point(Real::MAX, 0.0, 0.0)))
+            .add_geometry(Geometry::Point(point(Real::MAX, Real::MAX, Real::MAX)))
             .unwrap();
         document
             .select_objects([first, second], SelectionMode::Replace)
@@ -2553,10 +2553,70 @@ mod tests {
             assert_eq!(view.zoom_extents(&document), Ok(false));
             assert_eq!(state(&view), original);
             document
+                .add_geometry(Geometry::Point(point(0.0, 0.0, 0.0)))
+                .unwrap();
+            document
                 .add_geometry(Geometry::Point(point(Real::MAX, 0.0, 0.0)))
                 .unwrap();
             assert!(view.zoom_extents(&document).is_err());
             assert_eq!(state(&view), original);
+        }
+    }
+
+    #[test]
+    fn zoom_extents_accepts_representable_local_geometry_at_extreme_absolute_coordinates() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        for kind in [ViewKind::Top, ViewKind::Front, ViewKind::Right] {
+            let points = match kind {
+                ViewKind::Top => [
+                    [-2.0, -3.0, 2.0_f64.powi(1020)],
+                    [2.0, 3.0, 2.0_f64.powi(1020)],
+                ],
+                ViewKind::Front => [
+                    [-2.0, 2.0_f64.powi(1020), -3.0],
+                    [2.0, 2.0_f64.powi(1020), 3.0],
+                ],
+                ViewKind::Right => [
+                    [2.0_f64.powi(1020), -2.0, -3.0],
+                    [2.0_f64.powi(1020), 2.0, 3.0],
+                ],
+                _ => unreachable!(),
+            }
+            .map(|p| Point3::try_from(p).unwrap());
+            let mut document = Document::default();
+            for point in points {
+                document.add_geometry(Geometry::Point(point)).unwrap();
+            }
+            let mut view = Viewport::new(kind);
+            view.last_rect = Some(rect);
+            assert_eq!(view.zoom_extents(&document), Ok(true), "{kind:?}");
+            for point in points {
+                assert!(view.gpu_position(point).is_some());
+                let (gpu, depth) = gpu_project(&view, rect, point, (-1.0, 1.0));
+                assert!(gpu.distance(view.project(point, rect).unwrap()) < 0.001);
+                assert!(rect.shrink(20.0).contains(gpu));
+                assert!((0.0..=1.0).contains(&depth));
+            }
+        }
+        let point = Point3::try_from([Real::MAX; 3]).unwrap();
+        let mut document = Document::default();
+        document.add_geometry(Geometry::Point(point)).unwrap();
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let mut view = Viewport::new(kind);
+            view.last_rect = Some(rect);
+            assert_eq!(view.zoom_extents(&document), Ok(true));
+            assert_eq!(view.target, NaVector3::repeat(Real::MAX));
+            assert_eq!(view.project(point, rect), Some(rect.center()));
+            assert_eq!(view.gpu_position(point), Some([0.0; 3]));
+            let depth = view.view_depth(point);
+            let (gpu, gpu_depth) = gpu_project(&view, rect, point, (depth - 1.0, depth + 1.0));
+            assert!(gpu.distance(rect.center()) < 0.001);
+            assert!((0.0..=1.0).contains(&gpu_depth));
         }
     }
 
