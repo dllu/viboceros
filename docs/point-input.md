@@ -108,6 +108,9 @@ dense fallback for ordinary-size systems that the fast path cannot solve.
 Both paths solve offsets from a local origin before restoring world coordinates,
 reducing cancellation for clustered points far from the origin. Fixed endpoint
 and tangent-handle coordinates are retained exactly.
+Two-point uniform cubics do not require a representable chord length: their
+domain is `[0,1]` and control points use overflow-safe convex interpolation.
+Chord-based two-point domains still require a finite endpoint distance.
 Model-space preview geometry is cached by points, construction mode, settings,
 and interpolation tolerance, including
 failed constructions. Camera movement reprojects it without rebuilding the curve;

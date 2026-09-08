@@ -341,18 +341,27 @@ fn interpolate_two_point_command_cubic(
     end: Point3,
     spacing: CurveKnotSpacing,
 ) -> Result<NurbsCurve, GeometryError> {
-    let chord = start.vector_to(end)?;
-    let distance = chord.length()?;
-    let controls = vec![
-        start,
-        start.translated(chord.scaled(1.0 / 3.0)?)?,
-        start.translated(chord.scaled(2.0 / 3.0)?)?,
-        end,
-    ];
     let domain_end = match spacing {
         CurveKnotSpacing::Uniform => 1.0,
-        CurveKnotSpacing::Chord | CurveKnotSpacing::SquareRootChord => distance,
+        CurveKnotSpacing::Chord | CurveKnotSpacing::SquareRootChord => start.distance_to(end)?,
     };
+    let blend = |fraction: Real| {
+        let coordinates = std::array::from_fn(|axis| {
+            let a = start.to_array()[axis];
+            let b = end.to_array()[axis];
+            if a.is_sign_negative() == b.is_sign_negative() {
+                // Same-sign subtraction is representable; preserve small
+                // displacements on top of a large common coordinate.
+                fraction.mul_add(b - a, a)
+            } else {
+                // Opposite-sign endpoints can have an overflowing difference,
+                // but their weighted terms cannot overflow when added.
+                (1.0 - fraction).mul_add(a, fraction * b)
+            }
+        });
+        Point3::try_from(coordinates)
+    };
+    let controls = vec![start, blend(1.0 / 3.0)?, blend(2.0 / 3.0)?, end];
     NurbsCurve::try_new(
         CUBIC_DEGREE,
         controls,
@@ -1119,6 +1128,49 @@ mod tests {
         .unwrap();
         assert_eq!(uniform.degree(), 3);
         assert_eq!(uniform.domain(), 0.0..=1.0);
+    }
+
+    #[test]
+    fn uniform_two_point_cubic_does_not_need_a_representable_chord() {
+        for points in [
+            [point(-1e308, 0., 0.), point(1e308, 0., 0.)],
+            [point(0., 0., 0.), point(f64::MAX, f64::MAX, 0.)],
+            [point(f64::MAX, f64::MAX, 0.), point(f64::MAX, f64::MAX, 1.)],
+        ] {
+            let uniform = CurveInterpolationOptions::new(
+                3,
+                CurveKnotSpacing::Uniform,
+                InterpolatedCurveClosure::Open,
+            );
+            let curve =
+                NurbsCurve::try_interpolate_for_command(&points, uniform, Tolerance::DEFAULT)
+                    .unwrap();
+            assert_eq!(curve.domain(), 0.0..=1.0);
+            assert_eq!(curve.degree(), 3);
+            assert_eq!(curve.control_points()[0].point(), points[0]);
+            assert_eq!(curve.control_points()[3].point(), points[1]);
+            for control in curve.control_points() {
+                for ((value, a), b) in control
+                    .point()
+                    .to_array()
+                    .into_iter()
+                    .zip(points[0].to_array())
+                    .zip(points[1].to_array())
+                {
+                    assert!(value >= a.min(b) && value <= a.max(b));
+                }
+            }
+            if points[0].distance_to(points[1]).is_err() {
+                assert!(
+                    NurbsCurve::try_interpolate_for_command(
+                        &points,
+                        CurveInterpolationOptions::default(),
+                        Tolerance::DEFAULT
+                    )
+                    .is_err()
+                );
+            }
+        }
     }
 
     #[test]
