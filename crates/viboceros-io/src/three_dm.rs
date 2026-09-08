@@ -94,6 +94,8 @@ impl ThreeDmObject {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ThreeDmModel {
+    /// Stored model policy, distinct from the tolerance used to decode geometry.
+    pub tolerance: Tolerance,
     /// File metadata only; assigning units does not rescale coordinates.
     pub units: LengthUnitSystem,
     pub layers: Vec<ThreeDmLayer>,
@@ -110,6 +112,7 @@ impl ThreeDmModel {
     ) -> Self {
         Self {
             units: LengthUnitSystem::default(),
+            tolerance: Tolerance::DEFAULT,
             layers,
             groups,
             objects,
@@ -153,6 +156,8 @@ pub enum ThreeDmError {
     Native(String),
 }
 
+/// Reads raw file coordinates and preserves model-unit/tolerance metadata.
+/// The argument controls geometry decoding, not the returned model policy.
 pub fn read_3dm_file(
     path: impl AsRef<Path>,
     tolerance: Tolerance,
@@ -165,6 +170,8 @@ pub fn read_3dm_file(
 /// Reads coordinates into target units. The supplied tolerance is expressed
 /// in target units; B-rep topology matching uses a converted source tolerance.
 /// Defined primitives use numerical validation, not a minimum feature size.
+/// The returned model's tolerance is the supplied destination policy, rather
+/// than a rescaled copy of the archive's stored tolerance metadata.
 /// Unitless files retain coordinates. Unset units and unrepresentable scales
 /// are errors. The source file is never modified.
 pub fn read_3dm_file_in_units(
@@ -187,6 +194,9 @@ pub fn read_3dm_file_in_units(
         }
     }
     model.units = target_units.clone();
+    // Converted geometry joins a destination model with the caller's policy.
+    // Raw reads preserve the archive's numeric tolerance metadata instead.
+    model.tolerance = tolerance;
     Ok(model)
 }
 
@@ -331,6 +341,9 @@ pub fn write_3dm_file(
             unit_system,
             meters_per_unit,
             unit_name.as_ptr(),
+            model.tolerance.absolute(),
+            model.tolerance.relative(),
+            model.tolerance.angular(),
             pointer_or_null(&layers),
             layers.len(),
             pointer_or_null(&groups),
@@ -380,6 +393,18 @@ fn decode_model(
     units: LengthUnitSystem,
     coordinate_scale: f64,
 ) -> Result<ThreeDmModel, ThreeDmError> {
+    let mut absolute = 0.0;
+    let mut relative = 0.0;
+    let mut angle = 0.0;
+    // SAFETY: the handle is live and all three output pointers are writable.
+    if unsafe {
+        ffi::vibo_3dm_tolerances(handle.0.as_ptr(), &mut absolute, &mut relative, &mut angle)
+    } == 0
+    {
+        return Err(ThreeDmError::MalformedBridge("invalid tolerance metadata"));
+    }
+    let stored_tolerance = Tolerance::try_new(absolute, relative, angle)
+        .map_err(|_| ThreeDmError::InvalidModel("invalid model tolerance metadata".into()))?;
     // SAFETY: the handle owns a live bridge model.
     let layer_count = unsafe { ffi::vibo_3dm_layer_count(handle.0.as_ptr()) };
     let mut layers = Vec::with_capacity(layer_count.max(1));
@@ -466,6 +491,7 @@ fn decode_model(
         }
     }
     Ok(ThreeDmModel {
+        tolerance: stored_tolerance,
         units,
         layers,
         groups,
@@ -1223,6 +1249,9 @@ mod ffi {
             unit_system: u32,
             meters_per_unit: f64,
             unit_name: *const c_char,
+            absolute_tolerance: f64,
+            relative_tolerance: f64,
+            angle_tolerance: f64,
             layers: *const ViboWriteLayer,
             layer_count: usize,
             groups: *const ViboWriteGroup,
@@ -1231,6 +1260,12 @@ mod ffi {
             object_count: usize,
             error: *mut c_char,
             error_capacity: usize,
+        ) -> c_int;
+        pub fn vibo_3dm_tolerances(
+            model: *const ViboThreeDmModel,
+            absolute: *mut f64,
+            relative: *mut f64,
+            angle: *mut f64,
         ) -> c_int;
     }
 }

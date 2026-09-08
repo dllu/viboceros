@@ -115,11 +115,16 @@ int32_t vibo_3dm_object(const ViboThreeDmModel* model, size_t index,
 
 int32_t vibo_3dm_write(const char* path, uint32_t unit_system,
                        double meters_per_unit, const char* unit_name,
+                       double absolute_tolerance, double relative_tolerance,
+                       double angle_tolerance,
                        const ViboWriteLayer* layers,
                        size_t layer_count, const ViboWriteGroup* groups,
                        size_t group_count, const ViboWriteObject* objects,
                        size_t object_count, char* error,
                        size_t error_capacity);
+
+int32_t vibo_3dm_tolerances(const ViboThreeDmModel* model,
+                          double* absolute, double* relative, double* angle);
 
 #ifdef __cplusplus
 }

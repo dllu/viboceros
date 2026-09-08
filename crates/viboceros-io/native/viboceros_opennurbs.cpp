@@ -1395,6 +1395,9 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
 }  // namespace
 
 struct ViboThreeDmModel {
+  double absolute_tolerance = 0.001;
+  double relative_tolerance = 0.01;
+  double angle_tolerance = ON_PI / 180.0;
   uint32_t unit_system = 0;
   double meters_per_unit = 1.0;
   std::string unit_name;
@@ -1431,6 +1434,10 @@ extern "C" int32_t vibo_3dm_read(const char* path,
     }
 
     auto decoded = std::make_unique<ViboThreeDmModel>();
+    const auto& tolerances = source.m_settings.m_ModelUnitsAndTolerances;
+    decoded->absolute_tolerance = tolerances.m_absolute_tolerance;
+    decoded->relative_tolerance = tolerances.m_relative_tolerance;
+    decoded->angle_tolerance = tolerances.m_angle_tolerance;
     const ON_UnitSystem& units = source.m_settings.m_ModelUnitsAndTolerances.m_unit_system;
     decoded->unit_system = static_cast<uint32_t>(units.UnitSystem());
     if (units.UnitSystem() == ON::LengthUnitSystem::CustomUnits) {
@@ -1658,9 +1665,21 @@ extern "C" int32_t vibo_3dm_units(const ViboThreeDmModel* model,
   return 1;
 }
 
+extern "C" int32_t vibo_3dm_tolerances(const ViboThreeDmModel* model,
+    double* absolute, double* relative, double* angle) {
+  if (model == nullptr || absolute == nullptr || relative == nullptr || angle == nullptr) {
+    return 0;
+  }
+  *absolute = model->absolute_tolerance;
+  *relative = model->relative_tolerance;
+  *angle = model->angle_tolerance;
+  return 1;
+}
+
 extern "C" int32_t vibo_3dm_write(
     const char* path, uint32_t unit_system, double meters_per_unit,
-    const char* unit_name, const ViboWriteLayer* layers, size_t layer_count,
+    const char* unit_name, double absolute_tolerance, double relative_tolerance,
+    double angle_tolerance, const ViboWriteLayer* layers, size_t layer_count,
     const ViboWriteGroup* groups, size_t group_count,
     const ViboWriteObject* objects, size_t object_count, char* error,
     size_t error_capacity) {
@@ -1675,6 +1694,15 @@ extern "C" int32_t vibo_3dm_write(
   try {
     begin_open_nurbs();
     ONX_Model model;
+    if (!std::isfinite(absolute_tolerance) || absolute_tolerance <= 0.0 ||
+        !std::isfinite(relative_tolerance) || relative_tolerance <= 0.0 || relative_tolerance >= 1.0 ||
+        !std::isfinite(angle_tolerance) || angle_tolerance <= 0.0 || angle_tolerance > ON_PI) {
+      set_error(error, error_capacity, "invalid model tolerances for 3DM");
+      return 0;
+    }
+    model.m_settings.m_ModelUnitsAndTolerances.m_absolute_tolerance = absolute_tolerance;
+    model.m_settings.m_ModelUnitsAndTolerances.m_relative_tolerance = relative_tolerance;
+    model.m_settings.m_ModelUnitsAndTolerances.m_angle_tolerance = angle_tolerance;
     if ((unit_system > 25 && unit_system != 255) ||
         (unit_system == 11 && (unit_name == nullptr ||
           !std::isfinite(meters_per_unit) || meters_per_unit <= 0.0))) {

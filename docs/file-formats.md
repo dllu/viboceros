@@ -115,6 +115,10 @@ factors or transformed coordinates are errors. The low-level
 undoable unit changes through `Document::set_units`; see [document units](units.md).
 The [Units command](commands/units.md) exposes standard and custom model-unit changes;
 the toolbar reports the current units but has no settings editor.
+3DM export also preserves the document's absolute, relative, and angular model
+tolerances. Raw reads expose file tolerance metadata separately from geometry
+decoding tolerance. Unit-aware reads and import commands retain destination
+tolerances; see [tolerance settings and encoding limits](tolerances.md).
 
 Initial STEP interchange uses the Apache-2.0 Monstertruck kernel to read
 solid/shell B-reps and assemblies, apply instance transforms, and robustly

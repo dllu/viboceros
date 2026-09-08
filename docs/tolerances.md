@@ -40,6 +40,14 @@ tracking are unchanged. In particular, increasing absolute tolerance does not
 delete existing features smaller than the new tolerance or rewrite stored
 B-rep vertex/edge tolerances. Subsequent operations use the new document policy.
 
-There is no graphical tolerance-settings editor yet, and full tolerance
-persistence in 3DM remains unfinished. `Units`
-reports these settings but continues to leave their numeric values unchanged.
+`Export3dm` stores all three model tolerances in the archive's native settings.
+Raw `read_3dm_file` retains those numeric values independently of its geometry
+decoding tolerance. Unit-aware reads and `Import3dm` use the destination policy;
+importing geometry never replaces an existing document's tolerance settings.
+Invalid nonpositive/nonfinite archived tolerances are reported as invalid model
+metadata. Export requires relative tolerance below 1 and angular tolerance at
+most π radians, matching OpenNURBS's valid ranges; unencodable settings fail
+without replacing an existing file. Layout/page tolerances are not preserved.
+
+There is no graphical tolerance-settings editor yet. `Units` reports these
+settings but continues to leave their numeric values unchanged.

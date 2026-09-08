@@ -56,6 +56,61 @@ mod tests {
     use crate::CommandRegistry;
 
     #[test]
+    fn export_persists_tolerances_and_import_keeps_the_destination_policy() {
+        let registry = CommandRegistry::with_builtins();
+        let mut source = Document::new(Tolerance::DEFAULT);
+        registry.execute(&mut source, "Point 1,2,3").unwrap();
+        registry
+            .execute(
+                &mut source,
+                "Tolerance Absolute=0.0125 Relative=0.00025 AngleDegrees=0.5",
+            )
+            .unwrap();
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("model tolerances.3dm");
+        let before = format!("{source:?}");
+        registry
+            .execute(&mut source, &format!("Export3dm {}", path.display()))
+            .unwrap();
+        assert_eq!(format!("{source:?}"), before);
+        let model = viboceros_io::read_3dm_file(&path, Tolerance::NUMERICAL_VALIDATION).unwrap();
+        assert_eq!(model.tolerance, source.tolerance());
+        let destination_policy = Tolerance::try_new(0.001, 1e-6, 0.01).unwrap();
+        let mut destination = Document::new(destination_policy);
+        registry
+            .execute(&mut destination, &format!("Import3dm {}", path.display()))
+            .unwrap();
+        assert_eq!(destination.tolerance(), destination_policy);
+        assert_eq!(destination.objects().len(), 1);
+        registry.execute(&mut destination, "Undo").unwrap();
+        assert_eq!(destination.tolerance(), destination_policy);
+        registry.execute(&mut destination, "Redo").unwrap();
+        assert_eq!(destination.tolerance(), destination_policy);
+    }
+
+    #[test]
+    fn unencodable_tolerances_do_not_replace_an_existing_3dm_file() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::new(Tolerance::DEFAULT);
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("preserved.3dm");
+        let command = format!("Export3dm {}", path.display());
+        registry.execute(&mut document, &command).unwrap();
+        let bytes = std::fs::read(&path).unwrap();
+        for tolerance in [
+            Tolerance::try_new(0.01, 1.0, 0.01).unwrap(),
+            Tolerance::try_new(0.01, 0.01, 4.0).unwrap(),
+        ] {
+            document.set_tolerance(tolerance);
+            let before = format!("{document:?}");
+            assert!(registry.execute(&mut document, &command).is_err());
+            assert_eq!(format!("{document:?}"), before);
+            assert_eq!(std::fs::read(&path).unwrap(), bytes);
+            assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 1);
+        }
+    }
+
+    #[test]
     fn setting_all_fields_is_one_undo_step_and_partial_edits_keep_other_fields() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::new(Tolerance::DEFAULT);

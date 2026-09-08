@@ -352,6 +352,7 @@ pub(super) fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, Co
         .collect::<Result<_, CommandError>>()?;
     let mut model = ThreeDmModel::new(layers, groups, objects);
     model.units = document.units().clone();
+    model.tolerance = document.tolerance();
     Ok(model)
 }
 
