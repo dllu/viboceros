@@ -150,22 +150,19 @@ impl NurbsCurve {
     ///
     /// Unlike the RhinoCommon interpolation helper, the command preserves a
     /// requested cubic degree when only two unconstrained points are supplied.
-    /// Open command curves retain distinct nearby inputs independently of model
-    /// tolerance. Closed seam reconciliation currently retains the tolerance
-    /// policy and requires a separate Rhino boundary audit.
+    /// Command curves retain distinct nearby inputs independently of model
+    /// tolerance, including points next to a closed seam. Point-prompt duplicate
+    /// filtering belongs to the caller; this constructor rejects exact adjacent
+    /// duplicates and reconciles exact endpoint repetition for closed curves.
     pub fn try_interpolate_for_command(
         points: &[Point3],
         options: CurveInterpolationOptions,
-        tolerance: Tolerance,
+        _tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
         Self::try_interpolate_impl(
             points,
             options,
-            if options.closure == InterpolatedCurveClosure::Open {
-                InterpolationCoincidence::Exact
-            } else {
-                InterpolationCoincidence::Within(tolerance)
-            },
+            InterpolationCoincidence::Exact,
             true,
             MAX_CURVE_INTERPOLATION_POINTS,
         )
@@ -1209,6 +1206,47 @@ mod tests {
             NurbsCurve::try_interpolate_for_command(&repeated, options, tolerance),
             Err(GeometryError::CoincidentCurveInterpolationPoints { .. })
         ));
+    }
+
+    #[test]
+    fn closed_command_interpolation_retains_nearby_interior_and_seam_points() {
+        let coarse = Tolerance::try_new(0.01, 1e-12, 1e-10).unwrap();
+        let fine = Tolerance::try_new(1e-9, 1e-12, 1e-10).unwrap();
+        for points in [
+            [
+                point(0., 0., 0.),
+                point(0.001, 0., 0.),
+                point(2., 3., 0.),
+                point(10., 0., 0.),
+            ],
+            [
+                point(0., 0., 0.),
+                point(2., 3., 0.),
+                point(10., 0., 0.),
+                point(0.001, 0., 0.),
+            ],
+        ] {
+            for degree in [1, 3] {
+                for closure in [
+                    InterpolatedCurveClosure::Smooth,
+                    InterpolatedCurveClosure::Sharp,
+                ] {
+                    let options =
+                        CurveInterpolationOptions::new(degree, CurveKnotSpacing::Chord, closure);
+                    let curve =
+                        NurbsCurve::try_interpolate_for_command(&points, options, coarse).unwrap();
+                    assert_eq!(
+                        curve,
+                        NurbsCurve::try_interpolate_for_command(&points, options, fine).unwrap()
+                    );
+                    assert_eq!(
+                        curve.control_points().len(),
+                        if degree == 1 { 5 } else { 7 }
+                    );
+                    assert!(curve.is_closed().unwrap());
+                }
+            }
+        }
     }
 
     #[test]

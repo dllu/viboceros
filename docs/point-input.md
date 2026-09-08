@@ -32,12 +32,19 @@ at the next float above that boundary and at `1e-9`, and successfully included
 offsets of `1e-6`, `0.001`, and `0.1`. Thus point-prompt rejection and solver
 failure are distinct behaviors. The six successful cases now replay through
 the app and match Rhino control points within `1e-9`; the two Rhino solver
-failures remain diagnostics rather than required native rejections. Closed
-interpolation still uses model tolerance for coincidence and seam reconciliation;
-that behavior requires a separate boundary audit.
+failures remain diagnostics rather than required native rejections.
+Closed command interpolation also retains distinct points independently of model
+tolerance. A [closed-curve follow-up](interpolation-closure-tolerance-measurement.json)
+places a `0.001` offset both inside the sequence and beside the seam, for smooth
+and sharp closure, at model tolerances `0.01` and `1e-9`. All eight cases match
+Rhino control points within `1e-9`; Rhino's responses are identical across those
+tolerances. This corrects both rejection of nearby interior points and unwanted
+seam-point removal. The general-purpose interpolation helper retains its explicit
+tolerance policy. Exact/near-zero seam repetitions and automatic prompt closing
+still require separate boundary probes.
 An [ordinary three-point closure baseline](interpolation-closure-prompt-measurement.json)
 now matches Rhino's smooth and sharp control points within `1e-9` through app
-completion; this does not establish near-seam coincidence behavior.
+completion.
 
 During `Polyline`, `Curve`, or `InterpCrv`, type `Undo` to remove the last
 draft point without changing document history or its redo stack. Relative input

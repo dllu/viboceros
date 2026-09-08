@@ -96,6 +96,16 @@ fn recorded_interpolation_closures_match_prompt_completion() {
     assert_eq!(response["engine"], "rhino");
     assert_eq!(response["results"].as_array().unwrap().len(), 2);
     assert_eq!(request["operations"].as_array().unwrap().len(), 2);
+    replay_interpolation_closures(&request, &response);
+}
+
+fn replay_interpolation_closures(request: &Value, response: &Value) {
+    assert_eq!(response["engine"], "rhino");
+    assert_eq!(request["protocol_version"], response["protocol_version"]);
+    assert_eq!(
+        request["operations"].as_array().unwrap().len(),
+        response["results"].as_array().unwrap().len()
+    );
     for operation in request["operations"].as_array().unwrap() {
         let closure = operation["closure"].as_str().unwrap();
         assert!(matches!(closure, "Smooth" | "Sharp"));
@@ -158,6 +168,20 @@ fn recorded_interpolation_closures_match_prompt_completion() {
                 "{closure}"
             );
         }
+    }
+}
+
+#[test]
+fn recorded_closed_interpolation_retains_nearby_points_at_both_model_tolerances() {
+    let measurement: Value = serde_json::from_str(include_str!(
+        "../../../docs/interpolation-closure-tolerance-measurement.json"
+    ))
+    .unwrap();
+    let batches = measurement["batches"].as_array().unwrap();
+    assert_eq!(batches.len(), 2);
+    for batch in batches {
+        assert_eq!(batch["request"]["operations"].as_array().unwrap().len(), 4);
+        replay_interpolation_closures(&batch["request"], &batch["response"]);
     }
 }
 
