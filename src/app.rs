@@ -3154,7 +3154,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::Curve { .. } => {
                 if let Some(previous) = self.curve_points.last()
-                    && previous.is_near(point, self.document.tolerance())
+                    && point_input::coincident_curve_controls(*previous, point)
                 {
                     self.push_log("Error: adjacent curve control points must differ".to_owned());
                     return false;

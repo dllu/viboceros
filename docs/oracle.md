@@ -12,6 +12,9 @@ running the geometry constructor. Run it with `run_headless.sh rhino
 tools/rhino_oracle/fixtures/control_point_prompt_rhino_only.json --timeout 300`;
 the native oracle does not implement this operation. Its [recorded response](control-point-prompt-measurement.json)
 checks adjacent-point rejection; see [typed point input](point-input.md).
+The [threshold follow-up](control-point-threshold-measurement.json) embeds three
+additional requests and their responses (30 cases), establishing a fixed,
+coordinate-wise `2^-32` comparison for the tested near-origin controls.
 
 Standard geometry/command batches apply the request's absolute, relative, and angular tolerances to
 Rhino's active document and restores its previous settings on success or failure.

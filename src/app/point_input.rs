@@ -3,6 +3,16 @@
 use super::*;
 use viboceros_drafting::PointInput;
 
+/// Curve's point prompt uses a fixed coordinate-wise comparison, not model
+/// distance tolerance. Private Rhino probes check the inclusive 2^-32 boundary
+/// and diagonal offsets (see docs/control-point-threshold-measurement.json).
+pub(super) fn coincident_curve_controls(first: Point3, second: Point3) -> bool {
+    const ZERO_TOLERANCE: f64 = 2.3283064365386963e-10; // 2^-32
+    (first.x() - second.x()).abs() <= ZERO_TOLERANCE
+        && (first.y() - second.y()).abs() <= ZERO_TOLERANCE
+        && (first.z() - second.z()).abs() <= ZERO_TOLERANCE
+}
+
 impl VibocerosApp {
     pub(super) fn try_continue_point_input(&mut self, input: &str) -> bool {
         if input

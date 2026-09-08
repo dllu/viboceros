@@ -6,6 +6,51 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn curve_prompt_uses_fixed_coordinate_wise_coincidence_not_model_tolerance() {
+    let zero = 2.0_f64.powi(-32);
+    for absolute in [1e-12, 1e-9, 0.01] {
+        for (offset, accepted) in [
+            (point(zero.next_down(), 0., 0.), false),
+            (point(zero, 0., 0.), false),
+            (point(zero.next_up(), 0., 0.), true),
+            (point(-zero, 0., 0.), false),
+            (point(zero, zero, 0.), false),
+            (point(zero * 0.75, zero * 0.75, 0.), false),
+            (point(0., 0., zero.next_up()), true),
+            (point(1e-9, 0., 0.), true),
+        ] {
+            for typed in [true, false] {
+                let mut app = test_app();
+                app.document
+                    .set_tolerance(Tolerance::try_new(absolute, 1e-12, 1e-10).unwrap());
+                enter(&mut app, "Curve");
+                enter(&mut app, "0");
+                let document = format!("{:?}", app.document);
+                if typed {
+                    enter(&mut app, &format!("w{}", format_model_point(offset)));
+                } else {
+                    assert_eq!(app.accept_drafting_point(offset), accepted);
+                }
+                assert_eq!(app.curve_points.len(), if accepted { 2 } else { 1 });
+                assert_eq!(
+                    app.last_point,
+                    Some(if accepted { offset } else { point(0., 0., 0.) })
+                );
+                assert_eq!(format!("{:?}", app.document), document);
+                for input in ["2,3,0", "10,0,0", ""] {
+                    enter(&mut app, input);
+                }
+                let Geometry::NurbsCurve(curve) = app.document.objects().next().unwrap().geometry()
+                else {
+                    panic!("curve");
+                };
+                assert_eq!(curve.degree(), if accepted { 3 } else { 2 });
+            }
+        }
+    }
+}
+
+#[test]
 fn curve_prompt_skips_adjacent_points_in_measured_rhino_sequences() {
     for inputs in [
         vec!["0", "2,3,0", "10,0,0"],
