@@ -9,7 +9,21 @@ fn zoom_extents_is_a_validated_host_action() {
         current.apply(InterfaceCommand::ZoomExtents).unwrap();
         assert_eq!(current, original);
     }
-    for input in ["Zoom", "Zoom Extents extra", "ZE extra", "Zoom Selected"] {
+    for input in ["Zoom Selected", "'_Zoom _Selected", "ZS", "zs"] {
+        assert_eq!(parse(input), Some(Ok(InterfaceCommand::ZoomSelected)));
+        let mut current = state();
+        let original = current.clone();
+        current.apply(InterfaceCommand::ZoomSelected).unwrap();
+        assert_eq!(current, original);
+    }
+    for input in [
+        "Zoom",
+        "Zoom Extents extra",
+        "ZE extra",
+        "ZS extra",
+        "Zoom Selected extra",
+        "Zoom Window",
+    ] {
         assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
     }
 }

@@ -2869,6 +2869,57 @@ mod tests {
     }
 
     #[test]
+    fn zoom_selected_ignores_unselected_extents_and_empty_selection_is_a_noop() {
+        let mut document = Document::default();
+        let first = document
+            .add_geometry(Geometry::Point(point(100.0, 200.0, 300.0)))
+            .unwrap();
+        let second = document
+            .add_geometry(Geometry::Point(point(102.0, 202.0, 302.0)))
+            .unwrap();
+        document
+            .add_geometry(Geometry::Point(point(Real::MAX, 0.0, 0.0)))
+            .unwrap();
+        document
+            .select_objects([first, second], SelectionMode::Replace)
+            .unwrap();
+        let original = document.objects().cloned().collect::<Vec<_>>();
+        let selected = document.selected_object_ids().collect::<Vec<_>>();
+        let undo = document.undo_label().map(str::to_owned);
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let mut viewport = Viewport::new(kind);
+            viewport.last_rect = Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0)));
+            assert_eq!(viewport.zoom_selected(&document), Ok(true));
+            assert_eq!(viewport.target, NaVector3::new(101.0, 201.0, 301.0));
+            let state = |view: &Viewport| {
+                (
+                    view.target,
+                    view.pan,
+                    view.pixels_per_unit,
+                    view.perspective_camera_distance,
+                )
+            };
+            let fitted = state(&viewport);
+            assert!(viewport.zoom_extents(&document).is_err());
+            assert_eq!(state(&viewport), fitted);
+            assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), selected);
+            document.clear_selection();
+            assert_eq!(viewport.zoom_selected(&document), Ok(false));
+            assert_eq!(state(&viewport), fitted);
+            document
+                .select_objects([first, second], SelectionMode::Replace)
+                .unwrap();
+        }
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), original);
+        assert_eq!(document.undo_label(), undo.as_deref());
+    }
+
+    #[test]
     fn zoom_extents_handles_point_scenes_and_large_parallel_extents() {
         for kind in [
             ViewKind::Top,

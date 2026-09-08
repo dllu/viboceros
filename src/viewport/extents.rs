@@ -5,11 +5,24 @@ use viboceros_geometry::BoundingBox3;
 
 impl Viewport {
     pub(crate) fn zoom_extents(&mut self, document: &Document) -> Result<bool, &'static str> {
+        self.zoom_objects(document, false)
+    }
+
+    pub(crate) fn zoom_selected(&mut self, document: &Document) -> Result<bool, &'static str> {
+        self.zoom_objects(document, true)
+    }
+
+    fn zoom_objects(
+        &mut self,
+        document: &Document,
+        selected_only: bool,
+    ) -> Result<bool, &'static str> {
         let rect = self.last_rect.ok_or("viewport has not been laid out")?;
         let bounds = document
             .objects()
             .filter(|object| {
-                object.attributes().is_visible()
+                (!selected_only || document.is_selected(object.id()))
+                    && object.attributes().is_visible()
                     && document
                         .layer(object.attributes().layer_id())
                         .is_some_and(|layer| layer.is_visible())

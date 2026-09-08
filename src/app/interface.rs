@@ -20,9 +20,21 @@ impl VibocerosApp {
         let mut state = self.interface_state();
         match state.apply(command) {
             Ok(message) => {
-                if command == InterfaceCommand::ZoomExtents {
-                    let result = self.viewports[self.active_viewport].zoom_extents(&self.document);
+                if matches!(
+                    command,
+                    InterfaceCommand::ZoomExtents | InterfaceCommand::ZoomSelected
+                ) {
+                    let selected = command == InterfaceCommand::ZoomSelected;
+                    let result = if selected {
+                        self.viewports[self.active_viewport].zoom_selected(&self.document)
+                    } else {
+                        self.viewports[self.active_viewport].zoom_extents(&self.document)
+                    };
                     self.push_log(match result {
+                        Ok(true) if selected => {
+                            "Zoomed to selected visible objects (active viewport)".into()
+                        }
+                        Ok(false) if selected => "No selected visible objects to zoom to".into(),
                         Ok(true) => "Zoomed to visible extents (active viewport)".into(),
                         Ok(false) => "No visible objects to zoom to".into(),
                         Err(error) => format!("Error: {error}"),

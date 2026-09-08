@@ -48,6 +48,25 @@ fn zoom_extents_routes_to_the_active_view_without_cancelling_modeling_or_redo() 
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
     assert_eq!(app.document.undo_label(), undo.as_deref());
     assert_eq!(app.document.redo_label(), redo.as_deref());
+    let id = app.document.objects().next().unwrap().id();
+    app.document
+        .select_object(id, viboceros_document::SelectionMode::Replace)
+        .unwrap();
+    for command in ["Zoom Selected", "ZS"] {
+        enter(&mut app, command);
+        assert!(
+            app.command_log
+                .back()
+                .unwrap()
+                .starts_with("Zoomed to selected visible objects")
+        );
+        assert_eq!(app.active_command, pending);
+        assert_eq!(app.drafting_plane, plane);
+        assert_eq!(app.document.selected_object_ids().collect::<Vec<_>>(), [id]);
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
+        assert_eq!(app.document.undo_label(), undo.as_deref());
+        assert_eq!(app.document.redo_label(), redo.as_deref());
+    }
 }
 
 #[test]

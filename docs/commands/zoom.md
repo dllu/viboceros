@@ -1,4 +1,4 @@
-# Zoom to extents
+# Zoom to extents and selection
 
 [Interface commands](interface.md) · [Viewport controls](../interface.md)
 
@@ -6,6 +6,12 @@
 or Perspective viewport. Names and options accept case-insensitive Rhino-style
 prefixes. This implements the active-view Extents action described in
 [Rhino's Zoom documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/zoom.htm).
+
+`Zoom Selected` or `ZS` uses the same fitting policy but only includes visible
+selected objects. Distant unselected objects do not affect the fit, even if
+their coordinates exceed the supported camera/GPU range. An empty eligible
+selection leaves the view unchanged; this action does not start a selection
+prompt or change which objects are selected.
 
 The camera target moves to the center of the combined visible-object bounds,
 pan resets, and the existing view orientation is retained. Parallel views change
@@ -28,8 +34,10 @@ loss for geometry far from the origin.
 projection, unprojection, drafting rays, perspective depth, and GPU matrices.
 Tests fit translated boxes in all four views, compare GPU and CPU projections,
 check picking and unprojection, reject unsupported ranges, exclude hidden
-geometry, and execute ZE during a modeling prompt with redo history present.
+geometry, and execute ZE and ZS during a modeling prompt with redo history present.
+Selection-fitting tests exercise all four view kinds, irrelevant unsupported
+geometry, empty-selection no-ops, and retained selection/model history.
 No live Rhino camera comparison has been performed for this implementation.
 
-Other Zoom options (including All, Selected, Window, and view history), zoom
+Other Zoom options (including All, Window, and view history), zoom
 shortcuts, and configurable extents borders remain unimplemented.

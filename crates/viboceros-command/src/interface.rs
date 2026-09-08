@@ -66,6 +66,7 @@ pub enum ViewportTarget {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum InterfaceCommand {
     ZoomExtents,
+    ZoomSelected,
     SetSnap(SwitchAction),
     SetOsnap(SwitchAction),
     SmartTrack(SwitchAction),
@@ -75,9 +76,10 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 7] = [
+pub const COMMAND_NAMES: [&str; 8] = [
     "Zoom",
     "ZE",
+    "ZS",
     "DisableOsnap",
     "SetDisplayMode",
     "SetSnap",
@@ -85,7 +87,7 @@ pub const COMMAND_NAMES: [&str; 7] = [
     "Snap",
 ];
 
-pub const HELP: &str = "Interface: Zoom Extents (ZE); Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom Extents (ZE); Zoom Selected (ZS); Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -110,13 +112,20 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
         _ => Err(InterfaceError::Usage(usage)),
     };
     Some(
-        if name.eq_ignore_ascii_case("Zoom") || name.eq_ignore_ascii_case("ZE") {
+        if name.eq_ignore_ascii_case("Zoom")
+            || name.eq_ignore_ascii_case("ZE")
+            || name.eq_ignore_ascii_case("ZS")
+        {
             match args.as_slice() {
                 [] if name.eq_ignore_ascii_case("ZE") => Ok(InterfaceCommand::ZoomExtents),
+                [] if name.eq_ignore_ascii_case("ZS") => Ok(InterfaceCommand::ZoomSelected),
                 [option] if name.eq_ignore_ascii_case("Zoom") && keyword(option, "Extents") => {
                     Ok(InterfaceCommand::ZoomExtents)
                 }
-                _ => Err(InterfaceError::Usage("Zoom Extents | ZE")),
+                [option] if name.eq_ignore_ascii_case("Zoom") && keyword(option, "Selected") => {
+                    Ok(InterfaceCommand::ZoomSelected)
+                }
+                _ => Err(InterfaceError::Usage("Zoom Extents|Selected | ZE | ZS")),
             }
         } else if name.eq_ignore_ascii_case("Snap") {
             if args.is_empty() {
@@ -201,6 +210,7 @@ impl InterfaceState {
         let on_off = |value| if value { "On" } else { "Off" };
         Ok(match command {
             InterfaceCommand::ZoomExtents => "Zoom extents requested (active viewport)".into(),
+            InterfaceCommand::ZoomSelected => "Zoom selected requested (active viewport)".into(),
             InterfaceCommand::SetSnap(action) => {
                 self.grid_snap = action.apply(self.grid_snap);
                 format!("Grid snap: {}", on_off(self.grid_snap))
