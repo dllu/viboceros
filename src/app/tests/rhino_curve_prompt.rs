@@ -136,6 +136,11 @@ fn replay_interpolation_closures(request: &Value, response: &Value) {
         for point in operation["points"].as_array().unwrap() {
             enter(&mut app, point.as_str().unwrap());
         }
+        let preview = if closure == "Open" && app.active_command.is_some() {
+            Some(app.curve_draft_preview().unwrap())
+        } else {
+            None
+        };
         if matches!(closure, "Open" | "PointOnly") {
             // Only PointOnly measures completion without Enter; neither closed
             // state nor periodicity alone records when Rhino's prompt finished.
@@ -157,6 +162,14 @@ fn replay_interpolation_closures(request: &Value, response: &Value) {
         let Geometry::NurbsCurve(curve) = app.document.objects().next().unwrap().geometry() else {
             panic!("curve");
         };
+        if let Some(preview) = preview {
+            assert_eq!(
+                curve,
+                preview.as_ref(),
+                "{}: preview mismatch",
+                operation["id"]
+            );
+        }
         assert_eq!(
             curve.is_closed().unwrap(),
             result["value"]["closed"].as_bool().unwrap()
@@ -271,6 +284,26 @@ fn recorded_degree_one_interpolation_seams_match_rhino() {
             panic!("curve");
         };
         assert_eq!(curve, preview.as_ref());
+    }
+}
+
+#[test]
+fn recorded_degree_one_seam_boundary_matches_at_both_tolerances_and_after_translation() {
+    let measurement: Value = serde_json::from_str(include_str!(
+        "../../../docs/interpolation-degree-one-seam-boundary-measurement.json"
+    ))
+    .unwrap();
+    let batches = measurement["batches"].as_array().unwrap();
+    assert_eq!(batches.len(), 2);
+    assert_eq!(
+        batches
+            .iter()
+            .map(|b| b["request"]["operations"].as_array().unwrap().len())
+            .sum::<usize>(),
+        9
+    );
+    for batch in batches {
+        replay_interpolation_closures(&batch["request"], &batch["response"]);
     }
 }
 

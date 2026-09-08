@@ -83,6 +83,14 @@ its eventual endpoint is reconciled to the start.
 A further no-Enter batch timed out during its first `1e-10` offset; its subsequent
 `2^-32` case was not reached and must not be treated as measured.
 
+The [degree-one reconciliation boundary audit](interpolation-degree-one-seam-boundary-measurement.json)
+contains nine successful Enter-completed cases: equality and the next float
+around `1.490116119385e-8`, a longer diagonal, two model tolerances, and three
+translated endpoints at X=`1e6`. It confirms the current distance-based
+reconciliation rule within control-point error `1e-9`. Replay also compares
+the cached preview to completion for every still-active open prompt; this
+does not establish a tighter automatic-completion threshold.
+
 Standard geometry/command batches apply the request's absolute, relative, and angular tolerances to
 Rhino's active document and restores its previous settings on success or failure.
 This matters for command macros, which read document settings rather than an API

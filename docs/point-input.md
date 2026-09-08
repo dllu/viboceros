@@ -76,8 +76,13 @@ prompt (visually checked in the private Xvfb) until the 100-second client timeou
 [Exact returns](interpolation-degree-one-exact-close-measurement.json), however,
 finish without Enter for both point counts. The cubic near-seam automatic
 completion rule must not be applied unchanged to degree-one drafts.
-The exact degree-one reconciliation boundary and smaller nonzero prompt offsets
-are not fully audited.
+The [nine-case reconciliation boundary audit](interpolation-degree-one-seam-boundary-measurement.json)
+confirms equality at `1.490116119385e-8` is included, the next float is excluded,
+and a longer diagonal is excluded at model tolerances `0.01` and `1e-9`.
+Three additional cases at X=`1e6` agree within `1e-9`; closed topology there
+still need not imply an exactly reconciled endpoint. Preview and completion
+both replay against these references. Smaller nonzero automatic-completion
+offsets remain incompletely audited.
 An [ordinary three-point closure baseline](interpolation-closure-prompt-measurement.json)
 now matches Rhino's smooth and sharp control points within `1e-9` through app
 completion.
