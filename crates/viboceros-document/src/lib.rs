@@ -6,6 +6,7 @@ mod groups;
 mod history;
 mod object_layer;
 mod object_order;
+mod selection;
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
@@ -1753,37 +1754,6 @@ impl Document {
             .iter()
             .position(|layer| layer.id == id)
             .ok_or(DocumentError::LayerNotFound(id))
-    }
-
-    fn selectable_group_cluster(&self, id: ObjectId) -> BTreeSet<ObjectId> {
-        let mut connected = BTreeSet::from([id]);
-        loop {
-            let previous_len = connected.len();
-            for group in &self.groups {
-                if group
-                    .members
-                    .iter()
-                    .any(|member| connected.contains(member))
-                {
-                    connected.extend(group.members.iter().copied());
-                }
-            }
-            if connected.len() == previous_len {
-                break;
-            }
-        }
-        connected.retain(|member| self.is_object_selectable(*member));
-        connected
-    }
-
-    fn selectable_clusters(&self, ids: impl IntoIterator<Item = ObjectId>) -> BTreeSet<ObjectId> {
-        let mut clusters = BTreeSet::new();
-        for id in ids {
-            if self.is_object_selectable(id) {
-                clusters.extend(self.selectable_group_cluster(id));
-            }
-        }
-        clusters
     }
 
     fn update_selection(&mut self, next: BTreeSet<ObjectId>) -> usize {

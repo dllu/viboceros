@@ -48,6 +48,22 @@ geometry copies. Group creation/removal, membership changes, object deletion,
 geometry changes, and clear-document operations compose in the same transaction.
 Undo/redo and rollback restore exact membership order and both indices.
 
+Group-aware selection builds temporary membership and eligibility indices, then
+visits each reached object and group once across all seeds. It does not rescan
+the group table to a fixed point for each seed. Hidden or locked members can
+connect groups but cannot seed selection or appear in the result. This preserves
+the existing native connected-component policy; exhaustive three-object
+hypergraph tests verify it against an independent fixed-point implementation.
+This policy is not a new claim of Rhino mouse-picking parity. Selection action
+ordering and history remain handled by the document's shared selection update.
+
+A manual release-mode benchmark checks exact results on a 1,024-object reverse
+chain, without a machine-dependent timing assertion:
+
+```sh
+cargo test -p viboceros-document --release reverse_chain_traversal_benchmark -- --ignored --nocapture
+```
+
 3DM import first creates the complete group table, including empty definitions,
 then assigns each object's file-ordered memberships. Export writes that order
 back. Repeated import with name collisions, hidden/locked objects, and undo/redo
