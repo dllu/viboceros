@@ -241,14 +241,7 @@ pub fn write_3dm_file(
     }
     report.written_object_count = prepared.len();
     let destination = path.as_ref();
-    let parent = destination
-        .parent()
-        .filter(|parent| !parent.as_os_str().is_empty())
-        .unwrap_or_else(|| Path::new("."));
-    let staged = tempfile::Builder::new()
-        .prefix(".viboceros-")
-        .suffix(".3dm.tmp")
-        .tempfile_in(parent)?;
+    let staged = crate::staged_file::StagedFile::new(destination, ".3dm.tmp")?;
     let native_path = path_to_c_string(staged.path())?;
     let layer_names = model
         .layers
@@ -351,10 +344,7 @@ pub fn write_3dm_file(
     if success == 0 {
         Err(native_error(&error))
     } else {
-        staged.as_file().sync_all()?;
-        staged
-            .persist(destination)
-            .map_err(|error| ThreeDmError::Io(error.error))?;
+        staged.commit()?;
         Ok(report)
     }
 }

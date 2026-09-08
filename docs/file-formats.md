@@ -2,6 +2,13 @@
 
 [Project overview](../README.md) · [Command reference](commands/README.md)
 
+Path-based STL, STEP, and 3DM exports write to a temporary file beside the
+destination, flush/synchronize the completed contents, then replace the destination.
+Validation, writing, or commit failures leave the existing destination intact
+and remove the temporary file. Stream-based writers cannot roll back bytes
+already accepted by a caller's stream. This is not a power-loss durability
+guarantee for the containing directory.
+
 STL imports retain the file's unitless coordinates, including finite triangles
 below the document's modelling tolerance. `read_stl` and `read_stl_file` perform
 numerical validation without a tolerance argument. Neither import changes the

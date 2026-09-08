@@ -1,5 +1,6 @@
 //! CAD file-format readers and writers.
 
+mod staged_file;
 mod step;
 mod stl;
 mod three_dm;

@@ -126,10 +126,13 @@ pub fn write_stl_file(
     format: StlFormat,
 ) -> Result<(), StlError> {
     validate_stl_for_write(mesh, format)?;
-    let mut writer = BufWriter::new(File::create(path)?);
-    write_validated_stl(&mut writer, mesh, format)?;
-    writer.flush()?;
-    Ok(())
+    let staged = crate::staged_file::StagedFile::new(path.as_ref(), ".stl.tmp")?;
+    {
+        let mut writer = BufWriter::new(staged.file());
+        write_validated_stl(&mut writer, mesh, format)?;
+        writer.flush()?;
+    }
+    Ok(staged.commit()?)
 }
 
 fn read_binary_stl<R: Read>(mut reader: R) -> Result<TriangleMesh, StlError> {
@@ -460,6 +463,26 @@ mod tests {
         let decoded = read_stl(Cursor::new(bytes)).unwrap();
         assert_eq!(decoded.triangles().len(), 2);
         assert_eq!(decoded.triangle_points(1), original.triangle_points(1));
+    }
+
+    #[test]
+    fn file_exports_replace_complete_files_and_clean_up_failed_commits() {
+        let directory = tempfile::tempdir().unwrap();
+        let destination = directory.path().join("mesh.stl");
+        let blocked = directory.path().join("directory.stl");
+        fs::create_dir(&blocked).unwrap();
+        fs::write(blocked.join("keep"), b"original").unwrap();
+        for format in [StlFormat::Ascii, StlFormat::Binary] {
+            fs::write(&destination, b"old destination").unwrap();
+            write_stl_file(&destination, &mesh(), format).unwrap();
+            assert_eq!(read_stl_file(&destination).unwrap().triangles().len(), 2);
+            assert!(matches!(
+                write_stl_file(&blocked, &mesh(), format),
+                Err(StlError::Io(_))
+            ));
+            assert_eq!(fs::read(blocked.join("keep")).unwrap(), b"original");
+            assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 2);
+        }
     }
 
     #[test]

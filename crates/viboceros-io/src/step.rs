@@ -276,19 +276,9 @@ fn write_step_staged(
     destination: &Path,
     write: impl FnOnce(&std::fs::File) -> Result<(), StepError>,
 ) -> Result<(), StepError> {
-    let parent = destination
-        .parent()
-        .filter(|parent| !parent.as_os_str().is_empty())
-        .unwrap_or_else(|| Path::new("."));
-    let staged = tempfile::Builder::new()
-        .prefix(".viboceros-")
-        .suffix(".step.tmp")
-        .tempfile_in(parent)?;
-    write(staged.as_file())?;
-    staged.as_file().sync_all()?;
-    staged
-        .persist(destination)
-        .map_err(|error| StepError::Io(error.error))?;
+    let staged = crate::staged_file::StagedFile::new(destination, ".step.tmp")?;
+    write(staged.file())?;
+    staged.commit()?;
     Ok(())
 }
 
