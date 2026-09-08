@@ -10,6 +10,8 @@ the toolbar wraps at narrow window widths. Undo/Redo buttons are disabled while
 a modeling prompt is unfinished.
 The layer pane creates, renames, recolors, shows, locks, activates, and deletes
 empty layers; it reports object counts and combines edits into one undo step.
+Scroll inside the pane to reach lower layers, new-layer controls, and groups in
+large documents. The pane heading remains visible while its contents scroll.
 
 Osnap captures visible Point, End, Mid, Center, and Quad features, including
 indexed members of point clouds and features on locked objects and layers;
