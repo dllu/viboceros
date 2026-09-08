@@ -150,6 +150,76 @@ fn command_names_aliases_and_script_prefixes_can_replace_a_point_prompt() {
 }
 
 #[test]
+fn unit_scale_changes_invalidate_old_relative_point_references() {
+    let mut app = test_app();
+    for input in ["Line", "1000,0,0", "Units Meters Scale=Yes"] {
+        enter(&mut app, input);
+    }
+    assert!(app.active_command.is_none());
+    assert!(app.curve_points.is_empty());
+    assert_eq!(app.last_point, None);
+    enter(&mut app, "Point");
+    enter(&mut app, "rw1,0,0");
+    assert_eq!(app.document.objects().len(), 0);
+    enter(&mut app, "2,0,0");
+    assert_eq!(app.last_point, Some(point(2.0, 0.0, 0.0)));
+    enter(&mut app, "Undo"); // Point edit, not a unit edit.
+    assert_eq!(app.last_point, Some(point(2.0, 0.0, 0.0)));
+    enter(&mut app, "Undo"); // Unit edit.
+    assert_eq!(app.last_point, None);
+    for input in ["Line", "5,0,0", "Redo"] {
+        enter(&mut app, input);
+    }
+    assert_eq!(app.last_point, None);
+}
+
+#[test]
+fn metadata_only_unit_scale_changes_clear_references_but_custom_renames_do_not() {
+    let mut app = test_app();
+    for input in ["Polyline", "1000,0,0", "2000,0,0", "Units Meters Scale=No"] {
+        enter(&mut app, input);
+    }
+    assert!(app.active_command.is_none());
+    assert!(app.curve_points.is_empty());
+    assert_eq!(app.last_point, None);
+    assert_eq!(app.document.objects().len(), 0);
+    for input in [
+        "Line",
+        "3,4,5",
+        "Units Custom MetersPerUnit=1 Scale=No Name=custom metre",
+    ] {
+        enter(&mut app, input);
+    }
+    assert_eq!(app.last_point, Some(point(3.0, 4.0, 5.0)));
+    enter(
+        &mut app,
+        "Units Custom MetersPerUnit=1 Scale=Yes Name=renamed metre",
+    );
+    assert_eq!(app.last_point, Some(point(3.0, 4.0, 5.0)));
+    enter(
+        &mut app,
+        "Units Custom MetersPerUnit=0.5 Scale=No Name=half metre",
+    );
+    assert_eq!(app.last_point, None);
+}
+
+#[test]
+fn unit_queries_noops_and_failures_preserve_relative_point_references() {
+    for command in [
+        "Units",
+        "Units Millimeters Scale=Yes",
+        "Units Meters",
+        "Units Unset Scale=Yes",
+    ] {
+        let mut app = test_app();
+        for input in ["Line", "1000,0,0", command] {
+            enter(&mut app, input);
+        }
+        assert_eq!(app.last_point, Some(point(1000.0, 0.0, 0.0)), "{command}");
+    }
+}
+
+#[test]
 fn cancellation_discards_geometry_but_remembers_accepted_interactive_points() {
     let mut app = test_app();
     for input in ["Polyline", "1,2,3", "r1,2", "1,,2"] {

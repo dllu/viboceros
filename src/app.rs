@@ -1123,12 +1123,21 @@ impl VibocerosApp {
         };
         self.cancel_interactive_command(false);
         self.push_log(format!("> {input}"));
+        let previous_unit_scale = self.document.units().meters_per_unit();
         match self.commands.execute_in_context(
             &mut self.document,
             input,
             viboceros_command::CommandContext { construction_plane },
         ) {
-            Ok(message) => self.push_log(message),
+            Ok(message) => {
+                self.push_log(message);
+                if self.document.units().meters_per_unit() != previous_unit_scale {
+                    // Accepted points outlive a cancelled drawing command, but
+                    // must not silently become relative anchors in new units.
+                    // Observe the document so Undo/Redo follow the same rule.
+                    self.last_point = None;
+                }
+            }
             Err(error) => self.push_log(format!("Error: {error}")),
         }
     }

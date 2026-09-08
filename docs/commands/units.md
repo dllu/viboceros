@@ -50,3 +50,9 @@ parity. Rhino's [unit settings](https://docs.mcneel.com/rhino/8/help/en-us/docum
 offer a rescale choice when changing unit systems. The underlying document
 conversion behavior is checked against retained Rhino 8 API fixtures.
 This command does not edit layout units, tolerances, or viewport/grid settings.
+In the application, changing the physical unit scale clears the remembered
+relative-point reference, including changes made by Undo/Redo and `Scale=No`.
+Enter a new absolute point before using relative coordinates again. Unit
+queries, no-ops, failed changes, and custom-name-only changes retain that
+reference. Like other model commands, `Units` cancels an in-progress drawing
+command; its uncommitted points are not rescaled into a new command.
