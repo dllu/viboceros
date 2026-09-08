@@ -6,6 +6,76 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn polyline_close_finishes_once_without_duplicating_an_existing_seam() {
+    for repeated_start in [false, true] {
+        let mut app = test_app();
+        for input in ["Polyline", "1,2,3", "4,2,3", "4,5,3"] {
+            enter(&mut app, input);
+        }
+        if repeated_start {
+            assert!(app.accept_drafting_point(point(1.0, 2.0, 3.0)));
+        }
+        let last_point = app.last_point;
+        enter(&mut app, "_cLoSe");
+        assert!(app.active_command.is_none());
+        assert!(app.curve_points.is_empty());
+        assert!(app.command_input.is_empty());
+        assert_eq!(app.last_point, last_point);
+        let Geometry::Polyline(polyline) = app.document.objects().next().unwrap().geometry() else {
+            panic!("polyline");
+        };
+        assert!(polyline.is_closed());
+        assert_eq!(
+            polyline.vertices(),
+            &[
+                point(1.0, 2.0, 3.0),
+                point(4.0, 2.0, 3.0),
+                point(4.0, 5.0, 3.0),
+                point(1.0, 2.0, 3.0),
+            ]
+        );
+        assert_eq!(app.document.undo_label(), Some("Polyline"));
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().len(), 0);
+        assert!(!app.document.can_undo());
+        enter(&mut app, "Redo");
+        assert_eq!(app.document.objects().len(), 1);
+    }
+}
+
+#[test]
+fn invalid_polyline_close_preserves_points_plane_reference_and_redo() {
+    for points in [
+        vec!["0", "1,0,0"],
+        vec!["0", "1,0,0", "0.0000000001,0,0"],
+        vec!["-1e308,0,0", "0", "1e308,0,0"],
+    ] {
+        let mut app = test_app();
+        for input in ["Point 9,9,9", "Undo", "Polyline"] {
+            enter(&mut app, input);
+        }
+        for input in points {
+            enter(&mut app, input);
+        }
+        let document = format!("{:?}", app.document);
+        let points = app.curve_points.clone();
+        let plane = app.drafting_plane;
+        let last_point = app.last_point;
+        enter(&mut app, "Close");
+        assert_eq!(app.active_command, Some(InteractiveCommand::Polyline));
+        assert_eq!(app.curve_points, points);
+        assert_eq!(app.drafting_plane, plane);
+        assert_eq!(app.last_point, last_point);
+        assert_eq!(app.command_input, "Close");
+        assert_eq!(format!("{:?}", app.document), document);
+        // An open completion remains available after a rejected closing edge.
+        enter(&mut app, "");
+        assert!(app.active_command.is_none());
+        assert_eq!(app.document.objects().len(), 1);
+    }
+}
+
+#[test]
 fn curve_prompt_undo_removes_points_without_touching_document_history() {
     for command in ["Polyline", "Curve", "InterpCrv"] {
         let mut app = test_app();

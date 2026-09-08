@@ -480,7 +480,7 @@ impl InteractiveCommand {
                 ..
             } => "Ellipse: pick the second-axis radius in the viewport (Esc to cancel)",
             Self::Polyline => {
-                "Polyline: pick vertices; Undo removes last point; Enter finishes (Esc cancels)"
+                "Polyline: pick vertices; Close closes; Undo removes last point; Enter finishes (Esc cancels)"
             }
             Self::Curve { .. } => {
                 "Curve: pick control points; Undo removes last point; Enter finishes (Esc cancels)"

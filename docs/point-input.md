@@ -20,6 +20,13 @@ operates on document history. This implements the point-removal part of Rhino's
 [curve Undo option](https://docs.mcneel.com/rhino/8/help/en-us/commands/curve.htm),
 not general undo of all prompt options.
 
+In `Polyline`, `Close` finishes with a segment back to the first vertex after at
+least three points. An exactly repeated first vertex is not appended twice.
+An invalid closing segment leaves the draft and input available for correction;
+near-but-not-identical endpoints are not silently moved. Closing does not change
+the remembered last explicitly entered point. The whole polyline is one document
+undo step.
+
 The supported forms follow [Rhino's coordinate-entry documentation](https://docs.mcneel.com/rhino/8mac/help/en-us/user_interface/accurate_modeling.htm):
 
 | Input | Interpretation |
