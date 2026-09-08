@@ -275,7 +275,7 @@ fn rejects_missing_mixed_and_cyclic_step_units() {
     let cube = cube_step();
     for text in [
         cube.replace("GLOBAL_UNIT_ASSIGNED_CONTEXT", "UNSUPPORTED_UNIT_CONTEXT"),
-        cube.replace("SI_UNIT(.MILLI.,.METRE.)", "CONVERSION_BASED_UNIT('cycle',#900001)").replace("#13 =", "#900001 = LENGTH_MEASURE_WITH_UNIT(LENGTH_MEASURE(1.),#12);\n#13 ="),
+        cube.replace("NAMED_UNIT(*) SI_UNIT(.MILLI.,.METRE.)", "NAMED_UNIT(#900002) CONVERSION_BASED_UNIT('cycle',#900001)").replace("#13 =", "#900001 = LENGTH_MEASURE_WITH_UNIT(LENGTH_MEASURE(1.),#12);\n#900002 = DIMENSIONAL_EXPONENTS(1.,0.,0.,0.,0.,0.,0.);\n#13 ="),
         cube.replace("#13 =", "#900001 = (LENGTH_UNIT() NAMED_UNIT(*) SI_UNIT($,.METRE.));\n#900002 = GLOBAL_UNIT_ASSIGNED_CONTEXT((#900001));\n#13 ="),
         cube.replace("SI_UNIT(.MILLI.,.METRE.)", "SI_UNIT(.UNKNOWN.,.METRE.)"),
         cube.replace("SI_UNIT($,.RADIAN.)", "SI_UNIT(.MILLI.,.RADIAN.)"),

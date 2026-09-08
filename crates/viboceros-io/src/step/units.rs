@@ -3,7 +3,7 @@ use super::StepError;
 use monstertruck::step::load::step_p21::ast::{
     DataSection, EntityInstance, Name, Parameter, Record,
 };
-use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 
 fn invalid(message: &str) -> StepError {
     StepError::InvalidLengthUnits(message.into())
@@ -31,6 +31,15 @@ pub(super) fn uniform_meters_per_unit(data: &DataSection) -> Result<f64, StepErr
             EntityInstance::Simple { id, record } => (*id, std::slice::from_ref(record)),
             EntityInstance::Complex { id, subsuper } => (*id, subsuper.0.as_slice()),
         };
+        if records.len() > 1 {
+            let mut names = HashSet::with_capacity(records.len());
+            if records
+                .iter()
+                .any(|record| !names.insert(record.name.as_str()))
+            {
+                return Err(invalid("duplicate complex-entity component"));
+            }
+        }
         if entities.insert(id, records).is_some() {
             return Err(invalid("duplicate entity identifier"));
         }
@@ -100,6 +109,49 @@ struct Resolver<'a> {
     scales: BTreeMap<u64, f64>,
 }
 impl Resolver<'_> {
+    fn validate_length_dimensions(&self, records: &[Record]) -> Result<(), StepError> {
+        let length = component(records, "LENGTH_UNIT")
+            .ok_or_else(|| invalid("conversion references a non-length unit"))?;
+        if !list(&length.parameter)?.is_empty()
+            || component(records, "PLANE_ANGLE_UNIT").is_some()
+            || component(records, "SOLID_ANGLE_UNIT").is_some()
+        {
+            return Err(invalid("conflicting or malformed length-unit type"));
+        }
+        let named = component(records, "NAMED_UNIT")
+            .ok_or_else(|| invalid("length unit has no named-unit dimensions"))?;
+        let args = list(&named.parameter)?;
+        if args.len() != 1 {
+            return Err(invalid("invalid named-unit dimensions"));
+        }
+        if matches!(args[0], Parameter::Omitted) && component(records, "SI_UNIT").is_some() {
+            // SI dimensions are derived from the SI unit name, checked below.
+            return Ok(());
+        }
+        let id = reference(&args[0])?;
+        let dimensions = self
+            .entities
+            .get(&id)
+            .and_then(|records| component(records, "DIMENSIONAL_EXPONENTS"))
+            .ok_or_else(|| invalid("missing dimensional exponents"))?;
+        let exponents = list(&dimensions.parameter)?;
+        if exponents.len() != 7 {
+            return Err(invalid("expected seven dimensional exponents"));
+        }
+        for (index, exponent) in exponents.iter().enumerate() {
+            let value = match exponent {
+                Parameter::Real(value) => *value,
+                Parameter::Integer(value) => *value as f64,
+                _ => return Err(invalid("invalid dimensional exponent")),
+            };
+            let expected = if index == 0 { 1.0 } else { 0.0 };
+            if value != expected {
+                return Err(invalid("unit dimensions are not length"));
+            }
+        }
+        Ok(())
+    }
+
     fn length_scale(&mut self, id: u64) -> Result<f64, StepError> {
         if let Some(scale) = self.scales.get(&id) {
             return Ok(*scale);
@@ -111,9 +163,7 @@ impl Resolver<'_> {
             .entities
             .get(&id)
             .ok_or_else(|| invalid("missing referenced length unit"))?;
-        if component(records, "LENGTH_UNIT").is_none() {
-            return Err(invalid("conversion references a non-length unit"));
-        }
+        self.validate_length_dimensions(records)?;
         if component(records, "CONVERSION_BASED_UNIT_WITH_OFFSET").is_some()
             || (component(records, "SI_UNIT").is_some()
                 && component(records, "CONVERSION_BASED_UNIT").is_some())

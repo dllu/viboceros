@@ -94,3 +94,6 @@ counterparts perform checked conversion.
 Both reader paths reject zero or multiple data sections explicitly rather
 than panicking or silently ignoring later sections. UTF-8 decoding retains
 the Latin-1 fallback for legacy raw header bytes.
+The unit-aware reader also rejects duplicate complex-entity components and
+checks explicit dimensional exponents against length dimensions. Conversion
+units must reference dimensions; SI units may use their derived dimensions.
