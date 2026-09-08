@@ -24,25 +24,29 @@ impl Command for SelectGeometryCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         require_consumed(arguments, 0, self.name)?;
         let tolerance = document.tolerance();
-        let matches = document
-            .objects()
-            .filter(|object| document.is_object_selectable(object.id()))
-            .map(|object| {
-                Ok(self
-                    .filter
-                    .matches(object.geometry(), tolerance)?
-                    .then_some(object.id()))
-            })
-            .collect::<Result<Vec<Option<ObjectId>>, GeometryError>>()?
-            .into_iter()
-            .flatten()
-            .collect::<Vec<_>>();
-        document.select_objects(matches, SelectionMode::Add)?;
-        Ok(format!(
-            "Selected {} object(s)",
-            document.selected_object_count()
-        ))
+        select_matching_geometry(document, |geometry| {
+            self.filter.matches(geometry, tolerance)
+        })
     }
+}
+
+/// Retain only matches, but defer every selection change until all fallible
+/// predicates succeed. Hidden/locked objects never reach the predicate.
+fn select_matching_geometry(
+    document: &mut Document,
+    mut predicate: impl FnMut(&Geometry) -> Result<bool, GeometryError>,
+) -> Result<String, CommandError> {
+    let mut matches = Vec::new();
+    for object in document.objects() {
+        if document.is_object_selectable(object.id()) && predicate(object.geometry())? {
+            matches.push(object.id());
+        }
+    }
+    document.select_objects(matches, SelectionMode::Add)?;
+    Ok(format!(
+        "Selected {} object(s)",
+        document.selected_object_count()
+    ))
 }
 
 #[derive(Clone, Copy)]
@@ -153,26 +157,10 @@ impl Command for SelShortCurveCommand {
         // boundary but not the next float (see the retained line probes).
         // Above MAX every representable length is eligible; keep a finite cap.
         let comparison_limit = (maximum_length * 1.000001).min(Real::MAX);
-        let matches = document
-            .objects()
-            .filter(|object| document.is_object_selectable(object.id()))
-            .filter_map(|object| {
-                geometry_curve_ref(object.geometry()).map(|curve| (object.id(), curve))
-            })
-            .map(|(id, curve)| {
-                Ok(curve
-                    .is_short_for_selection(comparison_limit)?
-                    .then_some(id))
-            })
-            .collect::<Result<Vec<Option<ObjectId>>, GeometryError>>()?
-            .into_iter()
-            .flatten()
-            .collect::<Vec<_>>();
-        document.select_objects(matches, SelectionMode::Add)?;
-        Ok(format!(
-            "Selected {} object(s)",
-            document.selected_object_count()
-        ))
+        select_matching_geometry(document, |geometry| match geometry_curve_ref(geometry) {
+            Some(curve) => curve.is_short_for_selection(comparison_limit),
+            None => Ok(false),
+        })
     }
 }
 
@@ -180,6 +168,62 @@ impl Command for SelShortCurveCommand {
 mod tests {
     use super::*;
     use serde_json::Value;
+
+    #[test]
+    fn shared_selection_preflight_skips_ineligible_objects_and_commits_only_on_success() {
+        let mut document = Document::default();
+        let ids = [0., 1., 2., 100., 200.].map(|x| {
+            document
+                .add_geometry(Geometry::Point(Point3::try_new(x, 0., 0.).unwrap()))
+                .unwrap()
+        });
+        document.set_objects_visibility([ids[3]], false).unwrap();
+        document.set_objects_locked([ids[4]], true).unwrap();
+        let registry = CommandRegistry::with_builtins();
+        registry.execute(&mut document, "Point 9,9,9").unwrap();
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_object(ids[0], SelectionMode::Replace)
+            .unwrap();
+        let original = document.objects().cloned().collect::<Vec<_>>();
+        let undo = document.undo_label().map(str::to_owned);
+        let redo = document.redo_label().map(str::to_owned);
+        assert!(redo.is_some());
+        let mut calls = 0;
+        let result = select_matching_geometry(&mut document, |geometry| {
+            let Geometry::Point(point) = geometry else {
+                panic!("unexpected geometry")
+            };
+            assert!(point.x() < 100., "ineligible object reached predicate");
+            calls += 1;
+            if calls == 3 {
+                Err(GeometryError::NumericalIntegrationDidNotConverge)
+            } else {
+                Ok(true)
+            }
+        });
+        assert!(result.is_err());
+        assert_eq!(calls, 3);
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            vec![ids[0]]
+        );
+        assert_eq!(
+            select_matching_geometry(&mut document, |_| Ok(false)).unwrap(),
+            "Selected 1 object(s)"
+        );
+        assert_eq!(
+            select_matching_geometry(&mut document, |_| Ok(true)).unwrap(),
+            "Selected 3 object(s)"
+        );
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([ids[0], ids[1], ids[2]])
+        );
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), original);
+        assert_eq!(document.undo_label(), undo.as_deref());
+        assert_eq!(document.redo_label(), redo.as_deref());
+    }
 
     #[test]
     fn non_manifold_selection_uses_topology_and_preserves_document_history() {

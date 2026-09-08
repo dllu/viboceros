@@ -25,6 +25,12 @@ trimmed B-reps while excluding multi-face B-reps. `SelPolysrf` (alias
 `SelPolysurface`) and its open/closed variants classify only multi-face B-reps
 by shared-edge topology.
 
+Geometry filters and `SelShortCrv` share a fallible preflight pass. Its candidate
+buffer retains only matching IDs, not placeholder entries for rejected objects.
+Hidden and locked objects are skipped before evaluating geometry predicates.
+Selection changes are committed only after every predicate succeeds; a late
+numerical failure preserves preselection, geometry, and undo/redo history.
+
 `SelNonManifold` adds selectable meshes and B-reps with edges used by more than
 two faces. Open boundaries alone do not qualify. Geometry, visibility, locking,
 and undo/redo history remain unchanged. Tests cover a tetrahedron with an extra
