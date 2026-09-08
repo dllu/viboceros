@@ -6,69 +6,6 @@ use viboceros_drafting::PointInput;
 impl VibocerosApp {
     pub(super) fn try_continue_point_input(&mut self, input: &str) -> bool {
         if input
-            .trim_start_matches(['_', '-'])
-            .eq_ignore_ascii_case("Close")
-            && self.active_command == Some(InteractiveCommand::Polyline)
-        {
-            self.push_log(format!("> {input}"));
-            if self.curve_points.len() < 3 {
-                self.push_log("Error: Close requires at least three polyline points".to_owned());
-                return true;
-            }
-            let first = self.curve_points[0];
-            let last = *self.curve_points.last().expect("at least three points");
-            let append = first != last;
-            if append
-                && !first
-                    .distance_to(last)
-                    .is_ok_and(|length| length > self.document.tolerance().absolute())
-            {
-                self.push_log(
-                    "Error: closing segment length must be finite and greater than tolerance"
-                        .to_owned(),
-                );
-                return true;
-            }
-            if append {
-                self.curve_points.push(first);
-            }
-            self.finish_interactive_curve();
-            if self.active_command.is_none() {
-                self.command_input.clear();
-            } else if append {
-                // Failed completion restores its input points. Remove the
-                // implicit closing vertex so the user's original draft survives.
-                self.curve_points.pop();
-            }
-            return true;
-        }
-        // A prompt option takes precedence over the document-level command.
-        // Match the whole entry so malformed command arguments are not ignored.
-        if input
-            .trim_start_matches(['_', '-'])
-            .eq_ignore_ascii_case("Undo")
-            && matches!(
-                self.active_command,
-                Some(
-                    InteractiveCommand::Polyline
-                        | InteractiveCommand::Curve { .. }
-                        | InteractiveCommand::InterpCrv
-                )
-            )
-        {
-            self.push_log(format!("> {input}"));
-            if self.curve_points.pop().is_some() {
-                self.last_point = self.curve_points.last().copied();
-                if self.curve_points.is_empty() {
-                    self.drafting_plane = None;
-                }
-            } else {
-                self.push_log("No draft points to undo".to_owned());
-            }
-            self.command_input.clear();
-            return true;
-        }
-        if input
             .split_whitespace()
             .next()
             .is_some_and(|name| self.commands.recognizes(name))

@@ -27,6 +27,13 @@ near-but-not-identical endpoints are not silently moved. Closing does not change
 the remembered last explicitly entered point. The whole polyline is one document
 undo step.
 
+In `Curve`, `Close` finishes with smooth closure and `Sharp` finishes with a
+kink, using the same geometry as `Curve ... Close=Smooth|Sharp`. Both require
+at least three control points. Failure retains the points, construction plane,
+degree, and previous closure setting; you can correct the draft or press Enter
+to finish using its original settings. These prompt shortcuts are not yet
+available for `InterpCrv`.
+
 The supported forms follow [Rhino's coordinate-entry documentation](https://docs.mcneel.com/rhino/8mac/help/en-us/user_interface/accurate_modeling.htm):
 
 | Input | Interpretation |
@@ -72,7 +79,8 @@ editing other command options inside an active prompt. Nonzero scalar input is
 explicitly rejected rather than interpreted as a point.
 
 `viboceros-drafting/point_input` owns parsing and frame resolution;
-`app/point_input` routes typed and picked points through one validation path.
+`app/point_input` routes typed and picked points through one validation path;
+`app/curve_prompt` handles draft-only options separately from document commands.
 Angle reduction preserves tiny negative angles and exact quadrants. Tests cover
 large magnitudes, full floating-point precision, invalid input, relative origins,
 construction planes, command replacement, cancellation, and undo.

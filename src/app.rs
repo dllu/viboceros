@@ -26,6 +26,7 @@ use crate::viewport::{
 const MAX_LOG_ENTRIES: usize = 100;
 
 mod construction_plane;
+mod curve_prompt;
 mod interface;
 mod object_selection;
 mod plane_primitives;
@@ -483,7 +484,7 @@ impl InteractiveCommand {
                 "Polyline: pick vertices; Close closes; Undo removes last point; Enter finishes (Esc cancels)"
             }
             Self::Curve { .. } => {
-                "Curve: pick control points; Undo removes last point; Enter finishes (Esc cancels)"
+                "Curve: pick control points; Close/Sharp closes; Undo removes last point; Enter finishes (Esc cancels)"
             }
             Self::InterpCrv => {
                 "InterpCrv: pick curve points; Undo removes last point; Enter finishes (Esc cancels)"
@@ -1100,7 +1101,9 @@ impl VibocerosApp {
             }
             return;
         }
-        if self.active_command.is_some() && self.try_continue_point_input(&input) {
+        if self.active_command.is_some()
+            && (self.try_continue_curve_option(&input) || self.try_continue_point_input(&input))
+        {
             return;
         }
         self.command_input.clear();

@@ -6,6 +6,78 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn curve_close_options_match_one_line_geometry_and_make_one_history_edit() {
+    for (option, closure) in [("_Close", "Smooth"), ("sHaRp", "Sharp")] {
+        for degree in [1, 2, 3, 5] {
+            let mut app = test_app();
+            enter(&mut app, &format!("Curve Degree={degree}"));
+            for input in ["0", "3,0,0", "4,2,1", "0,4,0"] {
+                enter(&mut app, input);
+            }
+            let last_point = app.last_point;
+            enter(&mut app, option);
+            assert!(app.active_command.is_none());
+            assert!(app.curve_points.is_empty());
+            assert!(app.command_input.is_empty());
+            assert_eq!(app.last_point, last_point);
+            let geometry = app.document.objects().next().unwrap().geometry().clone();
+            let Geometry::NurbsCurve(curve) = &geometry else {
+                panic!("curve")
+            };
+            assert!(curve.is_closed().unwrap());
+            if degree > 1 {
+                assert_eq!(curve.is_periodic(), closure == "Smooth");
+            }
+            let mut reference = test_app();
+            enter(
+                &mut reference,
+                &format!("Curve 0,0,0 3,0,0 4,2,1 0,4,0 Degree={degree} Close={closure}"),
+            );
+            assert_eq!(
+                &geometry,
+                reference.document.objects().next().unwrap().geometry()
+            );
+            enter(&mut app, "Undo");
+            assert_eq!(app.document.objects().len(), 0);
+            assert!(!app.document.can_undo());
+            enter(&mut app, "Redo");
+            assert_eq!(&geometry, app.document.objects().next().unwrap().geometry());
+        }
+    }
+}
+
+#[test]
+fn failed_curve_close_restores_original_options_and_preserves_redo() {
+    for option in ["Close", "Sharp"] {
+        for inputs in [vec!["0", "1,0,0"], vec!["0", "1,0,0", "0"]] {
+            let mut app = test_app();
+            for input in ["Point 9,9,9", "Undo", "Curve Degree=5"] {
+                enter(&mut app, input);
+            }
+            for input in inputs {
+                enter(&mut app, input);
+            }
+            let active = app.active_command;
+            let points = app.curve_points.clone();
+            let plane = app.drafting_plane;
+            let last_point = app.last_point;
+            let document = format!("{:?}", app.document);
+            enter(&mut app, option);
+            assert_eq!(app.active_command, active);
+            assert_eq!(app.curve_points, points);
+            assert_eq!(app.drafting_plane, plane);
+            assert_eq!(app.last_point, last_point);
+            assert_eq!(app.command_input, option);
+            assert_eq!(format!("{:?}", app.document), document);
+            enter(&mut app, "0,1,0");
+            enter(&mut app, option);
+            assert!(app.active_command.is_none());
+            assert_eq!(app.document.objects().len(), 1);
+        }
+    }
+}
+
+#[test]
 fn polyline_close_finishes_once_without_duplicating_an_existing_seam() {
     for repeated_start in [false, true] {
         let mut app = test_app();
