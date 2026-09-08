@@ -78,8 +78,14 @@ selectors together with their argument parsing and remembered selection options.
 The document's `wildcard` module shares name matching between object and layer
 selection. Its greedy matcher is checked against an independent prefix-table
 reference for 116,281 short pattern/name pairs, including names containing
-literal wildcard characters. Matching retains Unicode lowercasing semantics;
-this exhaustive finite test is not a claim of general Rhino Unicode parity.
+literal wildcard characters. ASCII candidate names are matched directly from
+borrowed bytes with on-demand lowercase conversion and no per-candidate heap
+allocation. Non-ASCII names retain whole-string Unicode lowercasing (including
+contextual and expanding mappings) before matching. Both paths share the same
+backtracking implementation, with additional reference tests covering all ASCII
+bytes and mixed Unicode inputs. Worst-case backtracking remains O(pattern length
+× name length); these tests are not a claim of general Rhino Unicode parity or
+an end-to-end performance measurement.
 `object_name` owns `SetObjectName`, keeping quoted literal names distinct from
 options and preserving quoted internal whitespace before document assignment.
 The independent `geometry_selection` command module owns document-wide type,
