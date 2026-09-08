@@ -456,6 +456,9 @@ impl Viewport {
         painter.rect_filled(rect, 0.0, self.background_color());
         self.paint_grid(&painter, rect);
         self.paint_objects(&painter, rect, document, viewport_index);
+        if drafting.active {
+            self.paint_draft_points(&painter, rect, preview_polyline);
+        }
         if drafting.active
             && let Some(curve) = input.preview_curve
         {
@@ -466,7 +469,7 @@ impl Viewport {
             }
         }
         if let Some(cursor) = drafting_cursor {
-            self.paint_drafting(&painter, rect, drafting, cursor, preview_polyline);
+            self.paint_drafting(&painter, rect, drafting, cursor);
         }
         if let (Some(start), Some(end)) = (self.selection_drag_start, selection_pointer) {
             self.paint_selection_window(&painter, start, end);
@@ -1848,19 +1851,8 @@ impl Viewport {
         }
     }
 
-    fn paint_drafting(
-        &self,
-        painter: &egui::Painter,
-        rect: Rect,
-        input: DraftingInput,
-        cursor: DraftingCursor,
-        preview_polyline: &[Point3],
-    ) {
-        const TRACK_COLOR: Color32 = Color32::from_rgb(15, 155, 190);
-        const SNAP_COLOR: Color32 = Color32::from_rgb(210, 45, 145);
-        const GRID_COLOR: Color32 = Color32::from_rgb(80, 120, 45);
-
-        for vertices in preview_polyline.windows(2) {
+    fn paint_draft_points(&self, painter: &egui::Painter, rect: Rect, points: &[Point3]) {
+        for vertices in points.windows(2) {
             if let (Some(start), Some(end)) = (
                 self.project(vertices[0], rect),
                 self.project(vertices[1], rect),
@@ -1868,6 +1860,24 @@ impl Viewport {
                 painter.line_segment([start, end], Stroke::new(1.5, Color32::from_gray(80)));
             }
         }
+        // Keep even a single accepted point visible while typing elsewhere.
+        for point in points {
+            if let Some(position) = self.project(*point, rect) {
+                painter.circle_filled(position, 2.5, Color32::from_gray(80));
+            }
+        }
+    }
+
+    fn paint_drafting(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        input: DraftingInput,
+        cursor: DraftingCursor,
+    ) {
+        const TRACK_COLOR: Color32 = Color32::from_rgb(15, 155, 190);
+        const SNAP_COLOR: Color32 = Color32::from_rgb(210, 45, 145);
+        const GRID_COLOR: Color32 = Color32::from_rgb(80, 120, 45);
 
         if let Some(track) = cursor.track
             && let Some(anchor_point) = input.anchor
@@ -2226,6 +2236,76 @@ mod tests {
 
     fn point(x: f64, y: f64, z: f64) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn accepted_draft_points_remain_visible_without_hover_and_follow_the_current_list() {
+        let points = [point(0., 0., 0.), point(3., 2., 1.), point(4., 1., 2.)];
+        let document = Document::default();
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Perspective,
+            ViewKind::Front,
+            ViewKind::Right,
+        ] {
+            let context = egui::Context::default();
+            let mut viewport = Viewport::new(kind);
+            for (active, count) in [(true, 3), (true, 2), (true, 1), (true, 0), (false, 3)] {
+                let output = context.run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.))),
+                        ..Default::default()
+                    },
+                    |ui| {
+                        viewport.show(
+                            ui,
+                            &document,
+                            ViewportInput {
+                                drafting: DraftingInput {
+                                    active,
+                                    ..Default::default()
+                                },
+                                ..Default::default()
+                            },
+                            &points[..count],
+                            0,
+                            false,
+                        );
+                    },
+                );
+                let segments = output
+                    .shapes
+                    .iter()
+                    .filter(|clipped| {
+                        matches!(
+                            &clipped.shape,
+                            egui::Shape::LineSegment { stroke, .. }
+                                if stroke.color == Color32::from_gray(80) && stroke.width == 1.5
+                        )
+                    })
+                    .count();
+                let markers = output
+                    .shapes
+                    .iter()
+                    .filter(|clipped| {
+                        matches!(
+                            &clipped.shape,
+                            egui::Shape::Circle(circle)
+                                if circle.fill == Color32::from_gray(80) && circle.radius == 2.5
+                        )
+                    })
+                    .count();
+                assert_eq!(
+                    segments,
+                    if active { count.saturating_sub(1) } else { 0 },
+                    "{kind:?}"
+                );
+                assert_eq!(markers, if active { count } else { 0 }, "{kind:?}");
+                output.drop_without_applying_deltas();
+            }
+        }
+        assert_eq!(document.objects().len(), 0);
+        assert!(!document.can_undo());
     }
 
     #[test]

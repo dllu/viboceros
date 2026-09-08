@@ -44,7 +44,10 @@ one-line syntax, not Rhino's multi-step option prompts. Draft `Undo` still remov
 points, not setting changes.
 
 `Curve` and `InterpCrv` display the curve from their accepted points in
-all four viewports, alongside the control polygon in the hovered viewport.
+all four viewports, alongside the accepted-point polygon and point markers.
+Polyline drafts and accepted construction-plane prompt points also remain visible
+without hovering, including while the command field has focus. Cursor tracking
+and snap indicators remain local to the hovered viewport.
 The preview uses the completion constructor, including degree reduction and
 closure. Invalid or insufficient controls produce no curve preview. The cursor's
 unaccepted point is still a straight tracking guide, not a prospective control
