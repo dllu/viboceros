@@ -2,7 +2,7 @@
 
 use super::{CurveRef, CurveSample};
 use crate::{
-    GeometryError, NurbsCurve, ParameterSide, Point3, Real, Tolerance, UnitVector3,
+    Curve3, GeometryError, ParameterSide, Point3, Real, Tolerance, UnitVector3,
     integration::integrate_adaptive, parameter::scaled_ratio, require_finite,
 };
 use std::f64::consts::FRAC_PI_2;
@@ -56,7 +56,7 @@ pub(crate) struct ArcLengthSampler<'a> {
     source: CurveRef<'a>,
     // All internal spans and lookup nodes belong to this frame when present.
     // Only public parameter inputs/outputs are mapped to/from the source.
-    normalized: Option<NurbsCurve>,
+    normalized: Option<Curve3>,
     spans: Vec<ParameterSpan>,
     lookup_tables: Vec<Vec<ArcLengthLookupNode>>,
     total_length: Real,
@@ -83,14 +83,14 @@ impl<'a> ArcLengthSampler<'a> {
     ) -> Result<Self, GeometryError> {
         let normalized = match curve {
             CurveRef::NurbsCurve(c) if c.domain() != (0.0..=1.0) => {
-                Some(c.for_integration()?.into_owned())
+                Some(Curve3::NurbsCurve(c.for_integration()?.into_owned()))
+            }
+            CurveRef::PolyCurve(c) if c.domain() != (0.0..=1.0) => {
+                Some(Curve3::PolyCurve(c.try_reparameterized(0.0..=1.0)?))
             }
             _ => None,
         };
-        let integration_curve = normalized
-            .as_ref()
-            .map(CurveRef::NurbsCurve)
-            .unwrap_or(curve);
+        let integration_curve = normalized.as_ref().map(Curve3::as_ref).unwrap_or(curve);
         let raw_spans = raw_spans(integration_curve, tolerance)?;
         let mut spans = Vec::with_capacity(raw_spans.len());
         let mut sum = 0.0;
@@ -139,7 +139,7 @@ impl<'a> ArcLengthSampler<'a> {
     fn curve(&self) -> CurveRef<'_> {
         self.normalized
             .as_ref()
-            .map(CurveRef::NurbsCurve)
+            .map(Curve3::as_ref)
             .unwrap_or(self.source)
     }
 
@@ -681,7 +681,7 @@ fn neumaier_add(sum: &mut Real, correction: &mut Real, value: Real) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::Vector3;
+    use crate::{NurbsCurve, Vector3};
 
     #[test]
     fn optional_cache_density_adapts_without_exceeding_aggregate_budget() {
@@ -848,6 +848,117 @@ mod tests {
         for invalid in [f64::NAN, f64::INFINITY] {
             assert!(sampler.distance_at_parameter(invalid).is_err());
             assert!(sampler.sample_at_distance(invalid).is_err());
+        }
+    }
+
+    #[test]
+    fn normalized_polycurve_sampling_retains_junction_tangents() {
+        use crate::{CurveSegment3, LineSegment, PolyCurve3};
+        let points =
+            [[0., 0., 0.], [1., 0., 0.], [1., 1., 0.]].map(|p| Point3::try_from(p).unwrap());
+        let segments = points
+            .windows(2)
+            .map(|p| {
+                CurveSegment3::Line(LineSegment::try_new(p[0], p[1], Tolerance::DEFAULT).unwrap())
+            })
+            .collect::<Vec<_>>();
+        for parameters in [
+            vec![0., f64::from_bits(1), f64::from_bits(2)],
+            vec![-1e200, 0., 1e200],
+        ] {
+            let curve =
+                PolyCurve3::try_with_segment_domains(segments.clone(), parameters.clone()).unwrap();
+            let sampler =
+                ArcLengthSampler::try_new(CurveRef::PolyCurve(&curve), Tolerance::DEFAULT).unwrap();
+            let kinks = sampler.kinks(0.1).unwrap();
+            assert_eq!(kinks.len(), 1);
+            assert_eq!(kinks[0].distance, 1.);
+            assert_eq!(
+                kinks[0].incoming_tangent.as_vector().to_array(),
+                [1., 0., 0.]
+            );
+            assert_eq!(
+                kinks[0].outgoing_tangent.as_vector().to_array(),
+                [0., 1., 0.]
+            );
+            let corner = sampler.sample_at_distance(1.).unwrap();
+            assert_eq!(corner.point(), points[1]);
+            assert_eq!(corner.parameter(), parameters[1]);
+            assert_eq!(sampler.distance_at_parameter(parameters[1]).unwrap(), 1.);
+            assert_eq!(
+                sampler.point_at_distance(0.5).unwrap(),
+                Point3::try_new(0.5, 0., 0.).unwrap()
+            );
+            assert_eq!(
+                sampler.point_at_distance(1.5).unwrap(),
+                Point3::try_new(1., 0.5, 0.).unwrap()
+            );
+        }
+    }
+
+    #[test]
+    fn polycurve_sampling_preserves_leaf_spans_on_tiny_outer_domains() {
+        use crate::{Circle3, CurveSegment3, PolyCurve3};
+        let tolerance = Tolerance::DEFAULT;
+        let circle = Circle3::try_new(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            2.,
+            UnitVector3::try_new(0., 0., 1., tolerance).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let leaf = circle.to_nurbs().unwrap();
+        for domain in [
+            [0., 1.],
+            [1., f64::from_bits(1_f64.to_bits() + 1)],
+            [0., f64::from_bits(1)],
+            [-f64::MAX / 2., f64::MAX / 2.],
+        ] {
+            let curve = PolyCurve3::try_with_segment_domains(
+                vec![CurveSegment3::NurbsCurve(leaf.clone())],
+                domain.to_vec(),
+            )
+            .unwrap();
+            let original = curve.clone();
+            let mut sampler = ArcLengthSampler::try_new(CurveRef::PolyCurve(&curve), tolerance)
+                .unwrap_or_else(|error| panic!("{domain:?}: {error}"));
+            assert!((sampler.total_length() - 4. * std::f64::consts::PI).abs() < 1e-10);
+            for cached in [false, true] {
+                if cached {
+                    sampler.prepare_repeated_sampling(16).unwrap();
+                }
+                for i in 0..=8 {
+                    let fraction = i as f64 / 8.;
+                    let distance = sampler.total_length() * fraction;
+                    let sample = sampler.sample_at_distance(distance).unwrap();
+                    let expected = circle
+                        .point_at_angle(fraction * std::f64::consts::TAU)
+                        .unwrap();
+                    assert!(
+                        sample.point().distance_to(expected).unwrap() < 1e-9,
+                        "{domain:?}, cached={cached}, i={i}: {:?} != {expected:?}",
+                        sample.point()
+                    );
+                    assert!(curve.domain().contains(&sample.parameter()));
+                    assert_eq!(
+                        sample.parameter(),
+                        sampler.parameter_at_distance(distance).unwrap()
+                    );
+                    if domain[0] == 0. && domain[1] == 1. || domain[1] > 1e100 {
+                        assert!(
+                            (sampler.distance_at_parameter(sample.parameter()).unwrap() - distance)
+                                .abs()
+                                < 1e-9
+                        );
+                    }
+                }
+                assert_eq!(sampler.distance_at_parameter(domain[0]).unwrap(), 0.);
+                assert_eq!(
+                    sampler.distance_at_parameter(domain[1]).unwrap(),
+                    sampler.total_length()
+                );
+            }
+            assert_eq!(curve, original);
         }
     }
 
