@@ -6,6 +6,12 @@ The dependency direction runs from mathematical primitives through document
 state and commands to the user interface. Geometry does not depend on the UI,
 file formats, or command parsing.
 
+Vector cross products use compensated two-product determinants. Overflow
+recovery is component-local: already-representable components are retained
+instead of being recomputed from globally normalized vectors. Regression tests
+cover cancellation, exact parallelism, disparate magnitudes, axis permutations,
+and genuine result overflow.
+
 | Module | Responsibility |
 | --- | --- |
 | `viboceros-geometry` | Validated primitives, NURBS, intersections, B-rep topology, tessellation, and mass properties; nalgebra and faer provide linear algebra. |

@@ -100,8 +100,15 @@ impl Vector3 {
         ];
         let mut result = [0.0; 3];
         for (index, component) in normalized.into_iter().enumerate() {
-            result[index] = component.signum()
-                * product_three(component.abs(), left_scale, right_scale, "cross product")?;
+            // Normalizing the complete vectors may underflow a small coordinate
+            // even when its product with another large coordinate is representable.
+            // Only replace determinants that actually needed overflow recovery.
+            result[index] = if let Some(value) = direct[index] {
+                value
+            } else {
+                component.signum()
+                    * product_three(component.abs(), left_scale, right_scale, "cross product")?
+            };
         }
         Self::try_from(result)
     }
@@ -261,6 +268,33 @@ impl TryFrom<[Real; 3]> for Vector3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn overflow_fallback_preserves_other_representable_cross_components() {
+        for huge in [1e160, 1e200, 1e300, f64::MAX] {
+            let small = 1.0 / huge;
+            for axis in 0..3 {
+                let mut left = [huge, huge, small];
+                let mut right = [huge, huge, 0.0];
+                let mut expected = [-huge * small, huge * small, 0.0];
+                left.rotate_left(axis);
+                right.rotate_left(axis);
+                expected.rotate_left(axis);
+                let left = Vector3::try_from(left).unwrap();
+                let right = Vector3::try_from(right).unwrap();
+                assert_eq!(left.cross(right).unwrap().to_array(), expected);
+                assert_eq!(right.cross(left).unwrap().to_array(), expected.map(|x| -x));
+            }
+        }
+    }
+
+    #[test]
+    fn cross_product_still_rejects_a_genuinely_unrepresentable_component() {
+        let a = Vector3::try_new(f64::MAX, 0.0, 0.0).unwrap();
+        let b = Vector3::try_new(0.0, f64::MAX, 0.0).unwrap();
+        assert!(a.cross(b).is_err());
+        assert!(b.cross(a).is_err());
+    }
 
     #[test]
     fn cross_product_of_identical_or_opposite_vectors_is_exactly_zero() {
