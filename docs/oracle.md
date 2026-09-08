@@ -19,6 +19,11 @@ No Enter or selection command substitutes for a mouse pick. Its 52 exact checks
 cover ordered group selection, hidden/locked peers and layers, and subsequent
 Move commands. Run it as a separate batch with `run_headless.sh` (one iteration);
 it cannot be mixed with synchronous geometry operations. See [groups](groups.md).
+The idle worker guards against event-loop re-entry and finalizes only once.
+Cleanup attempts every owned resource even after a failure, publishes cleanup
+errors, and leaves process termination to the owned-window client fallback if
+Rhino cannot exit. Fault-injection tests cover callback detachment, setup,
+disposable attributes/layers, cleanup, logging, and exit failures.
 
 `point_input.json` compares 19 [typed-coordinate sequences](point-input.md)
 against Rhino's actual Polyline prompt in world, Front, Right, shifted, and
