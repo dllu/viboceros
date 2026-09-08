@@ -10,12 +10,16 @@ use monstertruck::modeling::{Curve, Line, Plane, Point3 as TruckPoint3, Surface}
 use monstertruck::step::load::convert::StepCompressedTrimmedShell;
 use monstertruck::step::load::step_p21::{ast::Name, tables::PlaceHolder};
 use monstertruck::step::load::{LoadError, LossCategory, ShellLoadReport, Table};
-use monstertruck::step::save::{CompleteStepDisplay, StepHeaderDescriptor, StepModels};
+use monstertruck::step::save::{
+    CompleteStepDisplay, StepHeaderDescriptor, StepMeasurementContext, StepModels,
+};
 use monstertruck::topology::compress::{
     CompressedEdge, CompressedEdgeIndex, CompressedFace, CompressedShell, CompressedTrimmedSolid,
 };
 use thiserror::Error;
-use viboceros_geometry::{GeometryError, Point3, Tolerance, TriangleMesh};
+use viboceros_geometry::{
+    AffineTransform3, GeometryError, LengthUnitSystem, Point3, Tolerance, TriangleMesh, UnitError,
+};
 
 /// Relative chord tolerance used to create a display mesh from exact STEP
 /// geometry. The absolute document tolerance and Monstertruck's numerical
@@ -76,6 +80,12 @@ pub enum StepError {
     #[error(transparent)]
     Geometry(#[from] GeometryError),
 
+    #[error(transparent)]
+    Units(#[from] UnitError),
+
+    #[error("STEP export requires physical length units; the source is unitless")]
+    UnitlessExport,
+
     #[error("STEP assembly contains an invalid transform: {0}")]
     InvalidAssemblyTransform(String),
 
@@ -111,14 +121,30 @@ pub fn read_step_file(
 
 /// Writes validated triangle meshes as STEP shell-based surface models. Mesh
 /// edges are shared topologically and every triangle is an oriented planar
-/// `ADVANCED_FACE`; open meshes remain open shells rather than being
+/// `ADVANCED_FACE`; coordinates are interpreted as millimetres.
+/// Open meshes remain open shells rather than being
 /// misrepresented as solids.
-pub fn write_step<W: Write>(mut writer: W, meshes: &[TriangleMesh]) -> Result<(), StepError> {
+pub fn write_step<W: Write>(writer: W, meshes: &[TriangleMesh]) -> Result<(), StepError> {
+    write_step_with_accuracy(
+        writer,
+        meshes,
+        StepMeasurementContext::default().distance_accuracy_value,
+    )
+}
+
+fn write_step_with_accuracy<W: Write>(
+    mut writer: W,
+    meshes: &[TriangleMesh],
+    accuracy: f64,
+) -> Result<(), StepError> {
     if meshes.is_empty() {
         return Err(StepError::NoMeshesToWrite);
     }
     let shells = meshes.iter().map(mesh_to_shell).collect::<Vec<_>>();
-    let models = StepModels::from_iter(&shells);
+    let models = StepModels::from_iter(&shells).with_measurement_context(StepMeasurementContext {
+        distance_accuracy_value: accuracy,
+        ..Default::default()
+    });
     let display = CompleteStepDisplay::new(
         models,
         StepHeaderDescriptor {
@@ -131,7 +157,53 @@ pub fn write_step<W: Write>(mut writer: W, meshes: &[TriangleMesh]) -> Result<()
 }
 
 pub fn write_step_file(path: impl AsRef<Path>, meshes: &[TriangleMesh]) -> Result<(), StepError> {
-    let destination = path.as_ref();
+    write_step_staged(path.as_ref(), |file| write_step(file, meshes))
+}
+
+/// Converts source coordinates to millimetres to match the STEP unit declaration.
+/// The source meshes are unchanged; tolerance is expressed in source units.
+pub fn write_step_in_units<W: Write>(
+    writer: W,
+    meshes: &[TriangleMesh],
+    units: &LengthUnitSystem,
+    tolerance: Tolerance,
+) -> Result<(), StepError> {
+    if matches!(units, LengthUnitSystem::None) {
+        return Err(StepError::UnitlessExport);
+    }
+    let scale = units.scale_to(&LengthUnitSystem::Millimeters)?;
+    if scale == 1.0 {
+        return write_step_with_accuracy(writer, meshes, tolerance.absolute());
+    }
+    let target_tolerance = Tolerance::try_new(
+        tolerance.absolute() * scale,
+        tolerance.relative(),
+        tolerance.angular(),
+    )?;
+    let transform = AffineTransform3::try_uniform_scale(Point3::try_new(0.0, 0.0, 0.0)?, scale)?;
+    let converted = meshes
+        .iter()
+        .map(|mesh| mesh.transformed(transform, target_tolerance))
+        .collect::<Result<Vec<_>, _>>()?;
+    write_step_with_accuracy(writer, &converted, target_tolerance.absolute())
+}
+
+/// Atomically writes STEP in millimetres, converting from explicit source units.
+pub fn write_step_file_in_units(
+    path: impl AsRef<Path>,
+    meshes: &[TriangleMesh],
+    units: &LengthUnitSystem,
+    tolerance: Tolerance,
+) -> Result<(), StepError> {
+    write_step_staged(path.as_ref(), |file| {
+        write_step_in_units(file, meshes, units, tolerance)
+    })
+}
+
+fn write_step_staged(
+    destination: &Path,
+    write: impl FnOnce(&std::fs::File) -> Result<(), StepError>,
+) -> Result<(), StepError> {
     let parent = destination
         .parent()
         .filter(|parent| !parent.as_os_str().is_empty())
@@ -140,7 +212,7 @@ pub fn write_step_file(path: impl AsRef<Path>, meshes: &[TriangleMesh]) -> Resul
         .prefix(".viboceros-")
         .suffix(".step.tmp")
         .tempfile_in(parent)?;
-    write_step(staged.as_file(), meshes)?;
+    write(staged.as_file())?;
     staged.as_file().sync_all()?;
     staged
         .persist(destination)

@@ -4,15 +4,49 @@ use viboceros_geometry::LengthUnitSystem;
 struct TemporaryFile(std::path::PathBuf);
 impl TemporaryFile {
     fn new() -> Self {
+        Self::with_extension("3dm")
+    }
+    fn with_extension(extension: &str) -> Self {
         let unique = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
             .as_nanos();
         Self(std::env::temp_dir().join(format!(
-            "viboceros-unit-import-{}-{unique}.3dm",
+            "viboceros-unit-import-{}-{unique}.{extension}",
             std::process::id()
         )))
     }
+}
+
+#[test]
+fn step_export_converts_document_units_without_editing_document_or_history() {
+    let output = TemporaryFile::with_extension("step");
+    let mut document = Document::with_units(Tolerance::DEFAULT, LengthUnitSystem::Inches).unwrap();
+    let mesh = TriangleMesh::try_new(
+        vec![
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+        ],
+        vec![[0, 1, 2]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+    let registry = CommandRegistry::with_builtins();
+    registry.execute(&mut document, "Point 9,8,7").unwrap();
+    registry.execute(&mut document, "Undo").unwrap();
+    let before = format!("{document:?}");
+    registry
+        .execute(&mut document, &format!("ExportStep {}", output.0.display()))
+        .unwrap();
+    assert_eq!(format!("{document:?}"), before);
+    let imported = read_step_file(&output.0, Tolerance::DEFAULT).unwrap();
+    assert_eq!(imported.objects.len(), 1);
+    assert!(imported.objects[0].mesh.bounds().max().is_near(
+        Point3::try_new(25.4, 50.8, 0.0).unwrap(),
+        Tolerance::DEFAULT
+    ));
 }
 impl Drop for TemporaryFile {
     fn drop(&mut self) {

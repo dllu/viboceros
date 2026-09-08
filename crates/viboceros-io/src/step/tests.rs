@@ -1,6 +1,142 @@
 use std::io::Cursor;
 
 use super::*;
+
+fn unit_test_mesh() -> TriangleMesh {
+    TriangleMesh::try_new(
+        vec![
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+        ],
+        vec![[0, 1, 2]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap()
+}
+
+#[test]
+fn unit_aware_step_export_matches_its_millimetre_declaration() {
+    let mesh = unit_test_mesh();
+    let original = mesh.clone();
+    for (units, factor) in [
+        (LengthUnitSystem::Millimeters, 1.0),
+        (LengthUnitSystem::Meters, 1000.0),
+        (LengthUnitSystem::Inches, 25.4),
+        (
+            LengthUnitSystem::Custom {
+                name: "eighth-metre".into(),
+                meters_per_unit: 0.125,
+            },
+            125.0,
+        ),
+    ] {
+        let mut bytes = Vec::new();
+        write_step_in_units(
+            &mut bytes,
+            std::slice::from_ref(&mesh),
+            &units,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let text = std::str::from_utf8(&bytes).unwrap();
+        assert!(text.contains("SI_UNIT(.MILLI.,.METRE.)"));
+        let imported = read_step(Cursor::new(bytes), Tolerance::DEFAULT).unwrap();
+        assert_eq!(imported.objects.len(), 1);
+        let mesh = &imported.objects[0].mesh;
+        assert_eq!(mesh.triangles().len(), 1);
+        assert!(
+            mesh.bounds()
+                .min()
+                .is_near(Point3::try_new(0.0, 0.0, 0.0).unwrap(), Tolerance::DEFAULT)
+        );
+        assert!(mesh.bounds().max().is_near(
+            Point3::try_new(factor, factor * 2.0, 0.0).unwrap(),
+            Tolerance::DEFAULT
+        ));
+    }
+    assert_eq!(mesh, original);
+}
+
+#[test]
+fn invalid_export_units_preserve_the_destination_and_stream() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("existing.step");
+    std::fs::write(&path, b"original").unwrap();
+    let mesh = unit_test_mesh();
+    for units in [
+        LengthUnitSystem::None,
+        LengthUnitSystem::Unset,
+        LengthUnitSystem::Custom {
+            name: "invalid".into(),
+            meters_per_unit: f64::NAN,
+        },
+        LengthUnitSystem::Custom {
+            name: "overflow".into(),
+            meters_per_unit: f64::MAX,
+        },
+    ] {
+        assert!(
+            write_step_file_in_units(
+                &path,
+                std::slice::from_ref(&mesh),
+                &units,
+                Tolerance::DEFAULT
+            )
+            .is_err()
+        );
+        assert_eq!(std::fs::read(&path).unwrap(), b"original");
+        let mut stream = b"original".to_vec();
+        assert!(
+            write_step_in_units(
+                &mut stream,
+                std::slice::from_ref(&mesh),
+                &units,
+                Tolerance::DEFAULT
+            )
+            .is_err()
+        );
+        assert_eq!(stream, b"original");
+    }
+}
+
+#[test]
+fn unit_aware_export_scales_validation_and_declared_accuracy() {
+    let mesh = unit_test_mesh()
+        .transformed(
+            AffineTransform3::try_uniform_scale(Point3::try_new(0.0, 0.0, 0.0).unwrap(), 1e-5)
+                .unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+    let mut bytes = Vec::new();
+    write_step_in_units(
+        &mut bytes,
+        &[mesh],
+        &LengthUnitSystem::Nanometers,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let text = std::str::from_utf8(&bytes).unwrap();
+    let table = Table::from_step(text).unwrap();
+    assert!(table.cartesian_point.values().any(|point| {
+        point
+            .coordinates
+            .first()
+            .is_some_and(|x| (*x - 1e-11).abs() < 1e-26)
+    }));
+    // The uncertainty value is in the same millimetres as the coordinates.
+    let accuracy = text
+        .split("LENGTH_MEASURE(")
+        .nth(1)
+        .unwrap()
+        .split(')')
+        .next()
+        .unwrap()
+        .parse::<f64>()
+        .unwrap();
+    assert!((accuracy - 1e-15).abs() < 1e-30);
+}
 use monstertruck::modeling::{BoundingBox, Point3 as TruckPoint3, primitive};
 use monstertruck::step::save::{
     CompleteStepDisplay, StepHeaderDescriptor, StepModel as TruckStepModel,

@@ -70,13 +70,18 @@ silent. STL and STEP export tessellate visible NURBS surfaces and B-rep faces;
 exact outer and inner p-curves are sampled into a constrained UV triangulation
 so holes remain open, with interior knot-span samples refining nonplanar
 trimmed surfaces. STEP writes the results as faceted shells with shared
-topology and planar faces. Editable STEP B-rep interchange and production
+topology and planar faces. `ExportStep` converts physical document units to
+millimetres and writes the correspondingly converted absolute tolerance as
+the file's distance accuracy. Unitless and unset documents are rejected;
+conversion failures leave an existing destination unchanged. The low-level
+`write_step`/`write_step_file` APIs interpret coordinates as millimetres;
+their `_in_units` counterparts accept explicit source units and tolerance.
+Editable STEP B-rep interchange and production
 surface and solid modelling are not implemented yet.
 
 Assembly regression tests include repeated parts beneath a translated,
 rotated parent, with expected corner coordinates checked independently of
 the importer's matrix arithmetic. These are generated STEP fixtures, not
-Rhino parity measurements. Length-unit conversion is not implemented:
-STEP coordinate values are currently imported in file units, while export
-declares millimetres regardless of document units, so physical-size
-preservation across files with different units is not guaranteed.
+Rhino parity measurements. STEP import unit conversion is not implemented:
+coordinate values are currently imported in file units, so import into a
+document using different units does not yet preserve physical size.

@@ -100,7 +100,7 @@ use viboceros_geometry::{
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
     ThreeDmGroup, ThreeDmLayer, ThreeDmModel, ThreeDmObject, read_step_file, read_stl_file,
-    write_3dm_file, write_step_file, write_stl_file,
+    write_3dm_file, write_stl_file,
 };
 
 const SURFACE_EXPORT_SAMPLES_PER_SPAN: usize = 16;
@@ -18477,7 +18477,12 @@ impl Command for ExportStepCommand {
         let path = arguments.join(" ");
         let mesh = combined_document_mesh(document)?;
         let triangle_count = mesh.triangles().len();
-        write_step_file(&path, std::slice::from_ref(&mesh))?;
+        viboceros_io::write_step_file_in_units(
+            &path,
+            std::slice::from_ref(&mesh),
+            document.units(),
+            document.tolerance(),
+        )?;
         Ok(format!(
             "Exported {triangle_count} triangles as a STEP faceted shell to '{path}'"
         ))
