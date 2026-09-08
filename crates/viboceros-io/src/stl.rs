@@ -200,11 +200,21 @@ fn read_ascii_stl<R: BufRead>(reader: R) -> Result<TriangleMesh, StlError> {
         if trimmed.is_empty() {
             continue;
         }
-        let tokens: Vec<_> = trimmed.split_whitespace().collect();
-        let keyword = tokens[0].to_ascii_lowercase();
+        // The longest geometry record has five tokens. Keep a sixth to detect
+        // trailing fields, without allocating a token vector for every record
+        // or collecting arbitrarily many tokens from malformed input. Solid
+        // names are free-form metadata, so their trailing words are ignored.
+        let mut token_storage = [""; 6];
+        let mut token_count = 0;
+        for (slot, token) in token_storage.iter_mut().zip(trimmed.split_whitespace()) {
+            *slot = token;
+            token_count += 1;
+        }
+        let tokens = &token_storage[..token_count];
+        let keyword = tokens[0];
         state = match state {
-            State::Start if keyword == "solid" => State::Solid,
-            State::Solid if keyword == "facet" => {
+            State::Start if keyword.eq_ignore_ascii_case("solid") => State::Solid,
+            State::Solid if keyword.eq_ignore_ascii_case("facet") => {
                 if tokens.len() == 5 && tokens[1].eq_ignore_ascii_case("normal") {
                     for value in &tokens[2..5] {
                         parse_real(value, line_number)?;
@@ -214,7 +224,7 @@ fn read_ascii_stl<R: BufRead>(reader: R) -> Result<TriangleMesh, StlError> {
                 }
                 State::Facet
             }
-            State::Solid if keyword == "endsolid" => State::Finished,
+            State::Solid if keyword.eq_ignore_ascii_case("endsolid") => State::Finished,
             State::Facet
                 if tokens.len() == 2
                     && tokens[0].eq_ignore_ascii_case("outer")
@@ -222,7 +232,9 @@ fn read_ascii_stl<R: BufRead>(reader: R) -> Result<TriangleMesh, StlError> {
             {
                 State::Loop(0)
             }
-            State::Loop(vertex_count) if keyword == "vertex" && tokens.len() == 4 => {
+            State::Loop(vertex_count)
+                if keyword.eq_ignore_ascii_case("vertex") && tokens.len() == 4 =>
+            {
                 if vertex_count >= 3 {
                     return malformed(line_number, "a facet must contain exactly three vertices");
                 }
@@ -233,8 +245,10 @@ fn read_ascii_stl<R: BufRead>(reader: R) -> Result<TriangleMesh, StlError> {
                 )?;
                 State::Loop(vertex_count + 1)
             }
-            State::Loop(3) if keyword == "endloop" && tokens.len() == 1 => State::EndLoop,
-            State::EndLoop if keyword == "endfacet" && tokens.len() == 1 => {
+            State::Loop(3) if keyword.eq_ignore_ascii_case("endloop") && tokens.len() == 1 => {
+                State::EndLoop
+            }
+            State::EndLoop if keyword.eq_ignore_ascii_case("endfacet") && tokens.len() == 1 => {
                 let base = u32::try_from(vertices.len()).map_err(|_| StlError::TooManyTriangles)?;
                 if base > u32::MAX - 3 {
                     return Err(StlError::TooManyTriangles);
@@ -545,6 +559,55 @@ mod tests {
                 field: "normal"
             })
         ));
+    }
+
+    #[test]
+    fn ascii_state_machine_rejects_incomplete_extra_and_reordered_records() {
+        let records = [
+            "solid sample",
+            "facet normal 0 0 1",
+            "outer loop",
+            "vertex 0 0 0",
+            "vertex 1 0 0",
+            "vertex 0 1 0",
+            "endloop",
+            "endfacet",
+            "endsolid sample",
+        ];
+        let read = |records: &[&str]| read_stl(Cursor::new(records.join("\n")));
+        assert!(read(&records).is_ok());
+        for end in 0..records.len() {
+            assert!(
+                read(&records[..end]).is_err(),
+                "accepted incomplete prefix {end}"
+            );
+        }
+        for index in 1..records.len() - 1 {
+            let mut missing = records.to_vec();
+            missing.remove(index);
+            assert!(read(&missing).is_err(), "accepted missing record {index}");
+            let mut extra = records.to_vec();
+            extra.insert(index, records[index]);
+            assert!(read(&extra).is_err(), "accepted duplicated record {index}");
+            let invalid = format!("{} extra {}", records[index], "word ".repeat(10_000));
+            let mut trailing = records.to_vec();
+            trailing[index] = &invalid;
+            assert!(read(&trailing).is_err(), "accepted extra fields at {index}");
+        }
+        let mut trailing = records.to_vec();
+        trailing.push("facet normal 0 0 1");
+        assert!(read(&trailing).is_err());
+        let mut swapped = records;
+        swapped.swap(6, 7);
+        assert!(read(&swapped).is_err());
+    }
+
+    #[test]
+    fn ascii_reader_retains_case_whitespace_and_free_form_name_support() {
+        let text = "  SoLiD a name with more than six words in it\r\n\n FaCeT NoRmAl 0 0 1\n\tOuTeR LoOp\n VeRtEx 0 0 0\n VeRtEx 1 0 0\n VeRtEx 0 1 0\n EnDlOoP\n EnDfAcEt\n EnDsOlId a name with more than six words in it\n\n";
+        let mesh = read_stl(Cursor::new(text)).unwrap();
+        assert_eq!(mesh.triangles().len(), 1);
+        assert_eq!(mesh.vertices()[1], Point3::try_new(1.0, 0.0, 0.0).unwrap());
     }
 
     #[test]

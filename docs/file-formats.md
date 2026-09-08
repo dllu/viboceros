@@ -14,6 +14,10 @@ below the document's modelling tolerance. `read_stl` and `read_stl_file` perform
 numerical validation without a tolerance argument. Neither import changes the
 document's units or tolerances; malformed, non-finite, and degenerate facets are
 still rejected. Binary export additionally checks for loss at 32-bit precision.
+The ASCII reader accepts one solid block, case-insensitive keywords, whitespace,
+and free-form solid names. It rejects incomplete facets, extra geometry fields,
+and nonblank content after `endsolid`. Record tokenization uses bounded stack
+storage; this does not impose a file-size or line-length limit.
 
 Both ASCII and binary STL are supported. 3DM import/export uses McNeel's
 OpenNURBS toolkit and preserves points, point-cloud locations, lines, circular arcs, NURBS
