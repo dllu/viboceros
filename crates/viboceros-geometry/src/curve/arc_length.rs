@@ -7,6 +7,25 @@ use crate::{
 };
 use std::f64::consts::FRAC_PI_2;
 
+// Bounds the optional cache to 16 MiB of parameter/length pairs. Counts
+// include both endpoints of every variable-speed span, not just one span.
+const MAX_LOOKUP_NODES: usize = 1_048_576;
+
+fn checked_lookup_nodes_per_span(
+    variable_spans: usize,
+    subdivisions: usize,
+) -> Result<usize, GeometryError> {
+    let invalid = || GeometryError::InvalidArcLengthLookupBudget {
+        maximum: MAX_LOOKUP_NODES,
+    };
+    let nodes = subdivisions.checked_add(1).ok_or_else(invalid)?;
+    let total = variable_spans.checked_mul(nodes).ok_or_else(invalid)?;
+    if subdivisions == 0 || nodes > MAX_LOOKUP_NODES || total > MAX_LOOKUP_NODES {
+        return Err(invalid());
+    }
+    Ok(nodes)
+}
+
 #[derive(Clone, Copy, Debug)]
 struct ParameterSpan {
     start: Real,
@@ -28,7 +47,7 @@ pub(crate) struct ArcLengthSampler<'a> {
     tolerance: Tolerance,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 struct ArcLengthLookupNode {
     parameter: Real,
     length: Real,
@@ -207,14 +226,17 @@ impl<'a> ArcLengthSampler<'a> {
         &mut self,
         subdivisions_per_span: usize,
     ) -> Result<(), GeometryError> {
-        debug_assert!(subdivisions_per_span > 0);
+        let nodes_per_span = checked_lookup_nodes_per_span(
+            self.spans.iter().filter(|span| span.variable_speed).count(),
+            subdivisions_per_span,
+        )?;
         let mut tables = Vec::with_capacity(self.spans.len());
         for span in &self.spans {
             if !span.variable_speed {
                 tables.push(Vec::new());
                 continue;
             }
-            let mut nodes = Vec::with_capacity(subdivisions_per_span + 1);
+            let mut nodes = Vec::with_capacity(nodes_per_span);
             nodes.push(ArcLengthLookupNode {
                 parameter: span.start,
                 length: 0.0,
@@ -629,6 +651,65 @@ fn neumaier_add(sum: &mut Real, correction: &mut Real, value: Real) {
 mod tests {
     use super::*;
     use crate::Vector3;
+
+    #[test]
+    fn invalid_lookup_request_preserves_existing_tables() {
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![
+                Point3::try_new(0., 0., 0.).unwrap(),
+                Point3::try_new(0.5, 1., 0.).unwrap(),
+                Point3::try_new(1., 0., 0.).unwrap(),
+            ],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        let curve = curve.try_insert_knot(0.5, 1).unwrap();
+        let mut sampler =
+            ArcLengthSampler::try_new(CurveRef::NurbsCurve(&curve), Tolerance::DEFAULT).unwrap();
+        sampler.prepare_repeated_sampling(16).unwrap();
+        let original = sampler.lookup_tables.clone();
+        let sample = sampler
+            .sample_at_distance(sampler.total_length() * 0.37)
+            .unwrap();
+        for invalid in [0, usize::MAX, MAX_LOOKUP_NODES, MAX_LOOKUP_NODES / 2] {
+            assert!(sampler.prepare_repeated_sampling(invalid).is_err());
+            assert_eq!(sampler.lookup_tables, original);
+            assert_eq!(
+                sampler
+                    .sample_at_distance(sampler.total_length() * 0.37)
+                    .unwrap(),
+                sample
+            );
+        }
+    }
+
+    #[test]
+    fn lookup_budget_checks_aggregate_counts_and_overflow_without_allocating() {
+        assert_eq!(checked_lookup_nodes_per_span(0, 32).unwrap(), 33);
+        assert_eq!(
+            checked_lookup_nodes_per_span(1, MAX_LOOKUP_NODES - 1).unwrap(),
+            MAX_LOOKUP_NODES
+        );
+        assert_eq!(
+            checked_lookup_nodes_per_span(2, MAX_LOOKUP_NODES / 2 - 1).unwrap(),
+            MAX_LOOKUP_NODES / 2
+        );
+        for (spans, subdivisions) in [
+            (1, 0),
+            (0, usize::MAX),
+            (1, MAX_LOOKUP_NODES),
+            (2, MAX_LOOKUP_NODES / 2),
+            (usize::MAX, 1),
+        ] {
+            assert!(matches!(
+                checked_lookup_nodes_per_span(spans, subdivisions),
+                Err(GeometryError::InvalidArcLengthLookupBudget {
+                    maximum: MAX_LOOKUP_NODES
+                })
+            ));
+        }
+    }
 
     #[test]
     fn lookup_distance_and_inverse_share_the_same_length_scale() {

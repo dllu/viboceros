@@ -271,6 +271,9 @@ pub enum GeometryError {
     #[error("adaptive numerical integration did not converge at the requested tolerance")]
     NumericalIntegrationDidNotConverge,
 
+    #[error("arc-length lookup requires positive subdivisions and at most {maximum} total nodes")]
+    InvalidArcLengthLookupBudget { maximum: usize },
+
     #[error("surface pullback did not converge at absolute model tolerance {tolerance}")]
     SurfacePullbackDidNotConverge { tolerance: Real },
 

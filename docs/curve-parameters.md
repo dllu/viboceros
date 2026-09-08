@@ -67,6 +67,15 @@ total length. Regressions cover all prefix nodes and the analytic midpoint of a
 symmetric arch at tiny, unit, and huge geometry scales, using a loose tolerance
 that exposes the independently rounded integration totals.
 
+Lookup preparation requires positive subdivisions and allows at most 1,048,576
+nodes across all variable-speed spans, including each span's two endpoints.
+This bounds node storage to 16 MiB per prepared table set (excluding container
+metadata). Checked count arithmetic rejects overflow and over-budget requests
+before allocating nodes. Replacement tables are staged, so rejection or an
+integration error leaves an existing cache usable. Budget tests exercise limits
+without allocating maximum-size tables, and verify retained sample results
+after rejected replacement requests.
+
 An interval with only two representable floats cannot encode an interior native
 parameter. In such domains sampled geometry remains accurate, but the returned
 parameter rounds to a source-domain value and re-evaluating it can produce a
