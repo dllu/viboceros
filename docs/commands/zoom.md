@@ -19,6 +19,12 @@ aspect-ratio-aware fit. All fits are validated before any camera changes: a
 missing viewport layout, GPU-range error, or perspective distance-limit failure
 leaves every view unchanged. Active-viewport identity is preserved.
 
+Ctrl/Cmd+Shift+E invokes active-view Extents; Ctrl/Cmd+Alt+E invokes All Extents.
+Both work with coordinate text focused and leave partially typed input and
+unfinished modeling prompts intact. Held-key repeats and matching key releases
+are consumed without repeating the action; extra modifiers do not trigger either
+shortcut. Tests exercise both Ctrl and macOS Command modifier representations.
+
 The camera target moves to the center of the combined visible-object bounds,
 pan resets, and the existing view orientation is retained. Parallel views change
 scale; Perspective changes camera distance without changing its lens. All eight
@@ -47,5 +53,5 @@ during an unfinished modeling prompt. Selection-fitting tests exercise all four 
 geometry, empty-selection no-ops, and retained selection/model history.
 No live Rhino camera comparison has been performed for this implementation.
 
-Other Zoom options (including Window and view history), zoom
-shortcuts, and configurable extents borders remain unimplemented.
+Other Zoom options (including Window and view history) and configurable extents
+borders remain unimplemented.

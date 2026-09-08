@@ -43,7 +43,9 @@ model undo steps or destroy redo history. `DisableOsnap` uses **Enable/Disable**
 not On/Off; the toolbar's Osnap indicator is lit when snapping is enabled.
 
 F9 toggles grid snap; F4 toggles object snaps. Ctrl/Cmd+Alt+W, S, and G select
-Wireframe, Shaded, and Ghosted in the active viewport. These shortcuts work while
+Wireframe, Shaded, and Ghosted in the active viewport. Ctrl/Cmd+Shift+E zooms to
+active-view extents; Ctrl/Cmd+Alt+E zooms all viewports to extents.
+These shortcuts work while
 editing coordinates, ignore key auto-repeat, and leave unrelated shortcuts and
 text-editor undo alone. F3 and F11 are not drafting toggles. The view-preset menu
 changes the active viewport's existing Top/Perspective/Front/Right preset; it is

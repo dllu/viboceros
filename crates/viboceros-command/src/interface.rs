@@ -91,7 +91,7 @@ pub const COMMAND_NAMES: [&str; 10] = [
     "Snap",
 ];
 
-pub const HELP: &str = "Interface: Zoom [All] Extents|Selected (ZE, ZS, ZEA, ZSA); Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [All] Extents|Selected (ZE, ZS, ZEA, ZSA); Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {

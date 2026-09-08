@@ -117,6 +117,16 @@ impl VibocerosApp {
         // own undo history; document undo/redo is not intercepted here.
         let shortcuts = [
             (
+                egui::Modifiers::COMMAND | egui::Modifiers::SHIFT,
+                egui::Key::E,
+                InterfaceCommand::ZoomExtents,
+            ),
+            (
+                egui::Modifiers::COMMAND | egui::Modifiers::ALT,
+                egui::Key::E,
+                InterfaceCommand::ZoomAllExtents,
+            ),
+            (
                 egui::Modifiers::NONE,
                 egui::Key::F9,
                 InterfaceCommand::SetSnap(SwitchAction::Toggle),

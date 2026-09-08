@@ -6,14 +6,7 @@ fn enter(app: &mut VibocerosApp, command: &str) {
     app.run_command();
 }
 
-#[test]
-fn zoom_extents_routes_to_the_active_view_without_cancelling_modeling_or_redo() {
-    let mut app = test_app();
-    for command in ["Point 100,200,300", "Point 110,210,310", "Undo"] {
-        enter(&mut app, command);
-    }
-    app.active_viewport = 1;
-    let context = egui::Context::default();
+fn layout_viewports(context: &egui::Context, app: &mut VibocerosApp) {
     for index in 0..app.viewports.len() {
         context
             .run_ui(
@@ -37,6 +30,17 @@ fn zoom_extents_routes_to_the_active_view_without_cancelling_modeling_or_redo() 
             )
             .drop_without_applying_deltas();
     }
+}
+
+#[test]
+fn zoom_extents_routes_to_the_active_view_without_cancelling_modeling_or_redo() {
+    let mut app = test_app();
+    for command in ["Point 100,200,300", "Point 110,210,310", "Undo"] {
+        enter(&mut app, command);
+    }
+    app.active_viewport = 1;
+    let context = egui::Context::default();
+    layout_viewports(&context, &mut app);
     enter(&mut app, "Line");
     enter(&mut app, "0");
     let pending = app.active_command;
@@ -316,6 +320,98 @@ fn frame(
         },
     );
     (height, output)
+}
+
+#[test]
+fn zoom_shortcuts_preserve_focused_modeling_input_and_consume_repeats() {
+    let mut app = test_app();
+    let context = egui::Context::default();
+    for command in [
+        "Point 100,200,300",
+        "Point 110,210,310",
+        "Undo",
+        "Line",
+        "0",
+    ] {
+        enter(&mut app, command);
+    }
+    layout_viewports(&context, &mut app);
+    app.command_input = "r1.5,".into();
+    app.command_focus_requested = true;
+    frame(&context, &mut app, 1000.0, vec![])
+        .1
+        .drop_without_applying_deltas();
+    let focused = context.memory(|memory| memory.focused());
+    assert!(context.text_edit_focused());
+    let pending = app.active_command;
+    let plane = app.drafting_plane;
+    let objects = app.document.objects().cloned().collect::<Vec<_>>();
+    let undo = app.document.undo_label().map(str::to_owned);
+    let redo = app.document.redo_label().map(str::to_owned);
+    for platform in [egui::Modifiers::CTRL, egui::Modifiers::MAC_CMD] {
+        for (extra, suffix) in [
+            (egui::Modifiers::SHIFT, "(active viewport)"),
+            (egui::Modifiers::ALT, "(all viewports)"),
+        ] {
+            let modifiers = egui::Modifiers::COMMAND | platform | extra;
+            frame(
+                &context,
+                &mut app,
+                1000.0,
+                vec![key(egui::Key::E, modifiers, true, false)],
+            )
+            .1
+            .drop_without_applying_deltas();
+            assert!(
+                app.command_log
+                    .back()
+                    .unwrap()
+                    .starts_with("Zoomed to visible extents")
+            );
+            assert!(app.command_log.back().unwrap().ends_with(suffix));
+            let log = app.command_log.clone();
+            // egui derives repeats from held state, even when RawInput says false.
+            frame(
+                &context,
+                &mut app,
+                1000.0,
+                vec![key(egui::Key::E, modifiers, true, false)],
+            )
+            .1
+            .drop_without_applying_deltas();
+            assert_eq!(app.command_log, log);
+            frame(
+                &context,
+                &mut app,
+                1000.0,
+                vec![key(egui::Key::E, modifiers, false, false)],
+            )
+            .1
+            .drop_without_applying_deltas();
+            assert_eq!(app.command_log, log);
+            assert_eq!(app.command_input, "r1.5,");
+            assert_eq!(app.active_command, pending);
+            assert_eq!(app.drafting_plane, plane);
+            assert_eq!(context.memory(|memory| memory.focused()), focused);
+            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
+            assert_eq!(app.document.undo_label(), undo.as_deref());
+            assert_eq!(app.document.redo_label(), redo.as_deref());
+        }
+    }
+    let log = app.command_log.clone();
+    let modifiers = egui::Modifiers::COMMAND
+        | egui::Modifiers::CTRL
+        | egui::Modifiers::SHIFT
+        | egui::Modifiers::ALT;
+    frame(
+        &context,
+        &mut app,
+        1000.0,
+        vec![key(egui::Key::E, modifiers, true, false)],
+    )
+    .1
+    .drop_without_applying_deltas();
+    assert_eq!(app.command_log, log);
 }
 
 #[test]
