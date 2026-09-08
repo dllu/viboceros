@@ -10,6 +10,7 @@ pub enum ObjectSelectionFilter {
     Any,
     Mesh,
     ToNurbs,
+    Beziers,
 }
 
 impl ObjectSelectionFilter {
@@ -18,6 +19,11 @@ impl ObjectSelectionFilter {
             Self::Any => true,
             Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
             Self::ToNurbs => !matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_)),
+            Self::Beziers => {
+                geometry.curve_ref().is_some()
+                    || matches!(geometry, Geometry::NurbsSurface(_))
+                    || matches!(geometry, Geometry::Brep(brep) if brep.faces().len() == 1)
+            }
         }
     }
 }
@@ -39,6 +45,8 @@ pub struct BooleanSelectionMenu {
 pub enum ObjectSelectionWorkflow {
     OptionsDuringSelection,
     ConfirmAfterSelection,
+    /// A single Yes/No answer executes immediately; Enter uses its current value.
+    ChooseBooleanAfterSelection,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -53,6 +61,13 @@ pub struct ObjectSelectionPrompt {
 impl ObjectSelectionPrompt {
     /// Stage an entire input before accepting any option, including duplicates.
     pub fn update_options(&mut self, input: &str) -> Result<(), CommandError> {
+        if self.workflow == ObjectSelectionWorkflow::ChooseBooleanAfterSelection
+            && let [option] = self.options.as_mut_slice()
+            && let Some(value) = parse_yes_no(input.trim())
+        {
+            option.value = value;
+            return Ok(());
+        }
         const USAGE: &str = "known-option=Yes|No [known-option=Yes|No ...]";
         let arguments = input.split_whitespace().collect::<Vec<_>>();
         if arguments.is_empty() {

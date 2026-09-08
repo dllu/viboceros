@@ -17,20 +17,94 @@ impl Command for ConvertToBeziersCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let delete_input = if arguments.is_empty() {
-            self.delete_input.get()
+        self.convert(document, arguments, false)
+    }
+
+    fn object_selection_prompt(
+        &self,
+        arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        Ok(Some(ObjectSelectionPrompt {
+            command: self.name(),
+            filter: ObjectSelectionFilter::Beziers,
+            options: vec![BooleanSelectionOption {
+                name: "DeleteInput",
+                value: self.parse(arguments)?,
+                aliases: &[],
+            }],
+            menus: vec![],
+            workflow: ObjectSelectionWorkflow::ChooseBooleanAfterSelection,
+        }))
+    }
+
+    fn object_selection_confirmation(
+        &self,
+        document: &Document,
+        arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        if !document
+            .selected_objects()
+            .any(|o| ObjectSelectionFilter::Beziers.accepts(o.geometry()))
+        {
+            return Err(CommandError::UnsupportedConvertToBeziersGeometry);
+        }
+        self.object_selection_prompt(arguments)
+    }
+
+    fn accept_object_selection_options(&self, arguments: &[&str]) -> Result<(), CommandError> {
+        // Cancellation has not answered Rhino's deletion question.
+        self.parse(arguments).map(|_| ())
+    }
+
+    fn run_postselected(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        _context: CommandContext,
+    ) -> Result<String, CommandError> {
+        let message = self.convert(document, arguments, true)?;
+        document.clear_selection();
+        Ok(message)
+    }
+}
+
+impl ConvertToBeziersCommand {
+    fn parse(&self, arguments: &[&str]) -> Result<bool, CommandError> {
+        if arguments.is_empty() {
+            Ok(self.delete_input.get())
         } else {
-            parse_delete_input(arguments, USAGE, &["DeleteInput"])?
-        };
+            parse_delete_input(arguments, USAGE, &["DeleteInput"])
+        }
+    }
+
+    fn convert(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        postselected: bool,
+    ) -> Result<String, CommandError> {
+        let delete_input = self.parse(arguments)?;
         if document.selected_object_ids().len() == 0 {
             return Err(CommandError::NoObjectsSelected);
         }
         let mut sources = Vec::new();
         let mut outputs = Vec::new();
         let mut controls = 0usize;
-        // Rhino visits source document order, independent of selection order.
+        let mut selected = document
+            .objects()
+            .filter(|o| document.is_selected(o.id()))
+            .collect::<Vec<_>>();
+        if postselected {
+            let ranks = document
+                .selected_object_ids()
+                .enumerate()
+                .map(|(rank, id)| (id, rank))
+                .collect::<BTreeMap<_, _>>();
+            selected.sort_unstable_by_key(|o| ranks[&o.id()]);
+        }
+        // Preselection follows document order; command-first picks keep their order.
         // Stage every result before the registry's transaction mutates anything.
-        for object in document.objects().filter(|o| document.is_selected(o.id())) {
+        for object in selected {
             let pieces = match object.geometry() {
                 Geometry::NurbsSurface(surface) => surface_pieces(surface)?,
                 Geometry::Brep(brep) if brep.faces().len() == 1 => {

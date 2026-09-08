@@ -138,6 +138,15 @@ cannot seed option memory. A separate script builder is tested for precise phase
 ordering. Native probes exercise explicit ordered copies/renewal and preserve
 complete source/output records without normalizing selection or creation order.
 
+`bezier_postselection.json` adds 61 cases and two
+`bezier_postselection_sessions.json` sequences add 24 steps. The macro completes
+ordered selection before answering the separate Yes/No deletion question; the
+answer finishes the command without an extra Enter. Cancellation at selection
+or at the deletion question accepts no choice. Initial selection must be
+ineligible, and cancelled commands cannot seed a deterministic session. The
+same complete conversion records check source retention/deletion, fresh output
+attributes, empty groups, cleared picks, and pick-dependent creation order.
+
 With Rhino installed through the configured Wine/FEX launcher, run the core fixture:
 
 ```sh

@@ -5050,6 +5050,7 @@ fn point_is_near_axis(
 
 #[cfg(test)]
 mod tests {
+    mod bezier_selection;
     mod construction_plane;
     mod distribute;
     mod interface;

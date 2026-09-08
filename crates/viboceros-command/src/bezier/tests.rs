@@ -45,6 +45,123 @@ fn curve() -> NurbsCurve {
 }
 
 #[test]
+fn deletion_prompt_is_readonly_atomic_and_accepts_bare_answers() {
+    let registry = CommandRegistry::with_builtins();
+    let mut prompt = registry
+        .object_selection_prompt("ConvertToBeziers")
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        prompt.workflow,
+        ObjectSelectionWorkflow::ChooseBooleanAfterSelection
+    );
+    assert_eq!(prompt.filter, ObjectSelectionFilter::Beziers);
+    assert!(!prompt.options[0].value);
+    for answer in ["_Yes", "No", "DeleteInput Yes", "_DeleteInput=No"] {
+        prompt.update_options(answer).unwrap();
+    }
+    let before = prompt.clone();
+    for invalid in [
+        "Yes No",
+        "DeleteInput=Yes DeleteInput=No",
+        "DeleteInput=Yes garbage",
+        "Maybe",
+        "MeshOptions",
+        "",
+    ] {
+        assert!(prompt.update_options(invalid).is_err());
+        assert_eq!(prompt, before);
+    }
+    prompt.update_options("Yes").unwrap();
+    registry.accept_object_selection_options(&prompt).unwrap();
+    assert!(
+        !registry
+            .object_selection_prompt("ConvertToBeziers")
+            .unwrap()
+            .unwrap()
+            .options[0]
+            .value
+    );
+    assert!(
+        registry
+            .object_selection_confirmation(&Document::default(), &prompt)
+            .is_err()
+    );
+}
+
+#[test]
+fn postselected_bezier_outputs_follow_pick_order_and_clear_selection_in_one_transaction() {
+    for delete in [false, true] {
+        let mut doc = Document::default();
+        let registry = CommandRegistry::with_builtins();
+        let a = doc.add_geometry(Geometry::NurbsCurve(curve())).unwrap();
+        let b = doc
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(
+                    Point3::try_new(20., 0., 0.).unwrap(),
+                    Point3::try_new(23., 0., 0.).unwrap(),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let group = doc.add_group(Some("sources".into()), [a, b]).unwrap();
+        doc.select_objects_direct([b], SelectionMode::Replace)
+            .unwrap();
+        doc.select_objects_direct([a], SelectionMode::Add).unwrap();
+        let before = doc.objects().cloned().collect::<Vec<_>>();
+        registry
+            .execute_postselected(
+                &mut doc,
+                &format!(
+                    "ConvertToBeziers DeleteInput={}",
+                    if delete { "Yes" } else { "No" }
+                ),
+                CommandContext::default(),
+            )
+            .unwrap();
+        assert_eq!(doc.selected_object_count(), 0);
+        let outputs = doc
+            .objects()
+            .filter(|o| o.id() != a && o.id() != b)
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        assert_eq!(
+            outputs[0]
+                .geometry()
+                .curve_ref()
+                .unwrap()
+                .start_point()
+                .unwrap()
+                .x(),
+            20.
+        );
+        assert!(
+            outputs[1]
+                .geometry()
+                .curve_ref()
+                .unwrap()
+                .start_point()
+                .unwrap()
+                .x()
+                < 10.
+        );
+        assert!(outputs.iter().all(|o| o.group_ids().is_empty()));
+        assert_eq!(
+            doc.group(group).unwrap().members().len(),
+            if delete { 0 } else { 2 }
+        );
+        let after = doc.objects().cloned().collect::<Vec<_>>();
+        for _ in 0..3 {
+            registry.execute(&mut doc, "Undo").unwrap();
+            assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+            registry.execute(&mut doc, "Redo").unwrap();
+            assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), after);
+        }
+    }
+}
+
+#[test]
 fn fresh_unit_domain_output_keeps_empty_groups_and_is_fully_undoable() {
     for delete in [false, true] {
         let registry = CommandRegistry::with_builtins();
@@ -242,6 +359,11 @@ fn invalid_options_and_unrepresentable_final_controls_leave_document_unchanged()
         "ConvertToBeziers Other=Yes",
     ] {
         assert!(registry.execute(&mut doc, command).is_err());
+        assert!(
+            registry
+                .execute_postselected(&mut doc, command, CommandContext::default())
+                .is_err()
+        );
         assert_eq!(
             doc.objects().map(|o| o.id()).collect::<Vec<_>>(),
             [first, second]

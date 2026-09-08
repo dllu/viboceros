@@ -1,7 +1,8 @@
 # Object selection and confirmation
 
-[MeshToNURB](commands/mesh-to-nurb.md) and [ToNURBS](commands/to-nurbs.md) use these
-workflows. Other object-taking commands do not yet share this interactive framework.
+[MeshToNURB](commands/mesh-to-nurb.md), [ToNURBS](commands/to-nurbs.md), and
+[ConvertToBeziers](commands/beziers.md) use these workflows. Other object-taking
+commands do not yet share this interactive framework.
 
 With no eligible preselection, enter the command and click objects or drag
 selection windows. Ordinary clicks add picks without Shift; Ctrl/Command removes
@@ -9,13 +10,13 @@ them. Empty clicks leave picks alone. `SelAll` adds only eligible, selectable
 objects; `SelNone` clears the picks. Hidden/locked objects and objects on hidden/
 locked layers cannot be picked. A group's other members are not implicitly picked.
 
-| Behavior | MeshToNURB | ToNURBS |
-| --- | --- | --- |
-| Eligible picks | Meshes | Curves, surfaces, B-reps, meshes |
-| Enter after picking | Converts | Opens confirmation; no-op-only input finishes |
-| With preselection | Converts immediately | Opens confirmation unless all inputs are no-ops |
-| Option edits | Accepted immediately | Staged until a real conversion succeeds |
-| Cancelled choices | Remembered | Discarded |
+| Behavior | MeshToNURB | ToNURBS | ConvertToBeziers |
+| --- | --- | --- | --- |
+| Eligible picks | Meshes | Curves, surfaces, B-reps, meshes | Curves, surfaces, single-face B-reps |
+| Enter after picking | Converts | Opens confirmation; no-op-only input finishes | Opens deletion question |
+| With preselection | Converts immediately | Opens confirmation unless all inputs are no-ops | Asks deletion; explicit answer executes immediately |
+| Option edits | Accepted immediately | Staged until a real conversion succeeds | Yes/No answer converts immediately |
+| Cancelled choices | Remembered | Discarded | Discarded |
 
 At the MeshToNURB prompt, type `TrimTriangularFaces=No`, `UseNgons=No`, or both.
 Paired forms such as `TrimTriangularFaces No` are also accepted.
@@ -26,6 +27,11 @@ returns from the submenu to the main options; another Enter converts. Flat or
 inline mesh options and the `DeleteInput` alias are also accepted. Invalid or
 duplicate options leave the whole input editable and do not partially accept it.
 Mesh-only options are unavailable for curve-only selections.
+
+For ConvertToBeziers, finish picking first, then answer `Yes` or `No` to delete
+or keep the inputs. Enter uses the displayed choice. Named deletion options also
+answer the question; no additional Enter is required. Invalid/duplicate input
+keeps the question open without changing geometry or remembered choices.
 
 Escape cancels the entire pending command, including from a submenu. Command-first
 picks and initial ineligible selection are cleared; preselection is retained.

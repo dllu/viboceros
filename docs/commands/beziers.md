@@ -13,12 +13,14 @@ Even an unclamped single-span input is genuinely clamped into a fresh object.
 
 Every output has a `[0,1]` domain, or `[0,1]²` UV domain. Surface conversion drops
 trims and uses the full underlying surface, not just its visible trimmed region.
-Pieces follow source document order, then increasing span order; surface patches
-use U-span outer/V-span inner order, independent of selection action order.
+Preselected inputs follow document order; inputs picked during the command follow
+selection-action order. Pieces within each source follow increasing span order;
+surface patches use U-span outer/V-span inner order.
 
 Outputs are unnamed, ungrouped, unselected, and have fresh current-layer attributes
 (including color-by-layer), not copies of source attributes. `DeleteInput=No`
-leaves source identity, attributes, memberships, and selection unchanged.
+leaves source identity, attributes, and memberships unchanged. Preselection is
+retained; command-first picks are cleared after conversion.
 `DeleteInput=Yes` deletes eligible sources but retains empty group definitions.
 Only single-face B-reps are eligible: polysurfaces are ignored, even when a curve
 is also selected. Selected points, point clouds, and meshes are ignored. With no
@@ -30,6 +32,22 @@ see [option lifetime and session verification](../command-options.md). Use
 explicit options for reproducible scripts. All generated geometry is staged
 before insertion/deletion in one undoable transaction; geometry failures roll
 back without partial output.
+
+## Interactive workflow
+
+With no eligible preselection, enter `ConvertToBeziers`, pick curves or surfaces,
+then press Enter. The separate deletion question accepts `Yes` or `No` and
+converts immediately; Enter uses its displayed choice. Named forms such as
+`DeleteInput=Yes` also answer the question. Selection is frozen at this stage.
+Bare `ConvertToBeziers` with preselection opens the question directly; a complete
+preselected invocation such as `ConvertToBeziers Yes` executes immediately.
+With no preselection, an explicit initial choice presets the eventual question.
+
+Ordinary clicks add picks without expanding groups; Ctrl/Command removes picks.
+`SelAll` and selection windows filter eligible, selectable geometry. Escape from
+either stage makes no geometry/history edit and leaves remembered choices and
+redo unchanged. It clears command-first picks and any initial ineligible
+selection, but keeps preselection. See [object-selection controls](../object-selection.md).
 
 ## Geometry and limits
 
@@ -71,6 +89,16 @@ objects, groups, layers, selection, and disposable construction geometry.
 An isolated GUI test converted a curve and surface with both deletion choices,
 exercised undo/redo, and checked three 3DM exports for exact geometry, unit domains,
 current-layer attributes, and retained empty groups.
+
+The 61 `bezier_postselection.json` cases and two 12-step
+`bezier_postselection_sessions.json` sequences add command-first conversion,
+reverse pick order, initial ineligible selections, cancellation at both stages,
+preselection cancellation, omitted answers, and memory across undo. All 63 Rhino
+comparisons pass at the same tolerances, maximum error `2.67e-15`. A separate
+real-mouse Rhino check confirms that picking one grouped curve excludes its
+companions. Eight additional private-Xvfb GUI exports check exact definitions,
+domains, source/fresh attributes, ordering, groups, cancellation, remembered
+answers, and repeated undo/redo. The question is visible before any model edit.
 
 The [Rhino command documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/convert.htm)
 describes the conversion; document attributes and ordering above were established

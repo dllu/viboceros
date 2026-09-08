@@ -38,7 +38,16 @@ impl PendingObjectCommand {
                 ObjectSelectionWorkflow::ConfirmAfterSelection => {
                     "Select objects; Enter opens conversion options, Esc cancels"
                 }
+                ObjectSelectionWorkflow::ChooseBooleanAfterSelection => {
+                    "Select curves and surfaces; Enter opens the deletion question, Esc cancels"
+                }
             },
+            ObjectPromptPhase::Options
+                if self.description.workflow
+                    == ObjectSelectionWorkflow::ChooseBooleanAfterSelection =>
+            {
+                "Delete input? Yes or No converts; Enter uses the shown choice, Esc cancels"
+            }
             ObjectPromptPhase::Options => "Set conversion options; Enter converts, Esc cancels",
             ObjectPromptPhase::Menu(_) => {
                 "Set mesh options; Enter returns to conversion options, Esc cancels"
@@ -64,6 +73,13 @@ impl VibocerosApp {
             .any(|o| description.filter.accepts(o.geometry()));
         if preselected {
             if description.workflow == ObjectSelectionWorkflow::OptionsDuringSelection {
+                return false;
+            }
+            // An explicit answer in a complete preselected invocation executes
+            // directly. The bare command still asks its Yes/No question.
+            if description.workflow == ObjectSelectionWorkflow::ChooseBooleanAfterSelection
+                && input.split_whitespace().nth(1).is_some()
+            {
                 return false;
             }
             match self
@@ -135,7 +151,7 @@ impl VibocerosApp {
                     self.push_log("Select at least one eligible object; Esc cancels".into());
                     return true;
                 }
-                if pending.description.workflow == ObjectSelectionWorkflow::ConfirmAfterSelection {
+                if pending.description.workflow != ObjectSelectionWorkflow::OptionsDuringSelection {
                     match self
                         .commands
                         .object_selection_confirmation(&self.document, &pending.description)
@@ -210,7 +226,7 @@ impl VibocerosApp {
             return false;
         }
         if pending.phase == ObjectPromptPhase::Selecting
-            && pending.description.workflow == ObjectSelectionWorkflow::ConfirmAfterSelection
+            && pending.description.workflow != ObjectSelectionWorkflow::OptionsDuringSelection
         {
             self.push_log("Select objects first; Enter opens conversion options".into());
             return true;
@@ -237,8 +253,13 @@ impl VibocerosApp {
                 .accept_object_selection_options(&pending.description)
         }) {
             Ok(()) => {
+                let answered = pending.description.workflow
+                    == ObjectSelectionWorkflow::ChooseBooleanAfterSelection;
                 self.object_prompt = Some(pending);
                 self.command_input.clear();
+                if answered {
+                    return self.try_continue_object_prompt("");
+                }
                 self.log_object_prompt();
             }
             Err(error) => self.push_log(format!("Error: {error}")),

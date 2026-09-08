@@ -3581,6 +3581,13 @@ def _group_memberships(operation, tolerance):
             for geometry in reversed(owned): geometry.Dispose()
 
 
+def _conversion_accepts_source(command, definition):
+    kind = definition["type"]
+    if command == "MeshToNURB": return kind == "mesh"
+    if command == "ToNURBS": return kind not in ("point", "point_cloud")
+    return kind in ("nurbs", "surface", "line", "polyline", "arc", "circle", "ellipse", "polycurve") or (kind == "brep" and definition.get("cap_surface") is None)
+
+
 def _conversion_arguments(operation, command, direction):
     definitions = operation["sources"]
     selected = operation.get("selected", list(range(len(definitions))))
@@ -3596,13 +3603,13 @@ def _conversion_arguments(operation, command, direction):
     postselect = operation.get("postselect", False)
     cancel = operation.get("cancel", False)
     cancel_at_selection = operation.get("cancel_at_selection", False)
-    if type(postselect) is not bool or type(cancel) is not bool or ((postselect or cancel) and command not in ("MeshToNURB", "ToNURBS")) or (cancel and ((not postselect and command != "ToNURBS") or undo_after)):
+    if type(postselect) is not bool or type(cancel) is not bool or ((postselect or cancel) and command not in ("MeshToNURB", "ToNURBS", "ConvertToBeziers")) or (cancel and ((not postselect and command not in ("ToNURBS", "ConvertToBeziers")) or undo_after)):
         raise ValueError("invalid conversion selection/cancellation path")
-    if type(cancel_at_selection) is not bool or (cancel_at_selection and (not cancel or not postselect or command != "ToNURBS")):
+    if type(cancel_at_selection) is not bool or (cancel_at_selection and (not cancel or not postselect or command not in ("ToNURBS", "ConvertToBeziers"))):
         raise ValueError("invalid conversion cancellation stage")
     initial_selection = operation.get("initial_selection", [])
-    if not isinstance(initial_selection, list) or any(type(i) is not int or not 0 <= i < len(definitions) or (definitions[i]["type"] == "mesh" if command == "MeshToNURB" else definitions[i]["type"] not in ("point", "point_cloud")) for i in initial_selection) or len(set(initial_selection)) != len(initial_selection) or (initial_selection and not postselect):
-        raise ValueError("invalid initial non-mesh selection")
+    if not isinstance(initial_selection, list) or any(type(i) is not int or not 0 <= i < len(definitions) or _conversion_accepts_source(command, definitions[i]) for i in initial_selection) or len(set(initial_selection)) != len(initial_selection) or (initial_selection and not postselect):
+        raise ValueError("invalid initial ineligible selection")
     if ngons is not None and (type(ngons) is not bool or command != "MeshToNURB"):
         raise ValueError("invalid n-gon conversion option")
     if command == "MeshToNURB" and delete is not None:
@@ -3632,6 +3639,10 @@ def _conversion_arguments(operation, command, direction):
         raise ValueError("ToNURBS selection prompt requires eligible fixture geometry")
     if command == "ToNURBS" and cancel and not cancel_at_selection and not any(definitions[i]["type"] in ("line", "arc", "circle", "polyline", "polycurve", "mesh") for i in selected):
         raise ValueError("ToNURBS options require a convertible pick")
+    if command == "ConvertToBeziers":
+        eligible = any(_conversion_accepts_source(command, definitions[i]) for i in selected)
+        if not eligible and not (cancel_at_selection and any(_conversion_accepts_source(command, d) for d in definitions)):
+            raise ValueError("Bezier conversion requires an eligible pick")
     if command == "ConvertToBeziers":
         script="_ConvertToBeziers " + ("_Enter" if delete is None else "_Yes" if delete else "_No")
     elif command == "ToNURBS":
@@ -3668,6 +3679,12 @@ def _conversion_selection_script(operation, command, script, ids, selected):
             if cancel: options = options.rsplit(" _Enter", 1)[0] + " !"
             return "_ToNURBS " + picks + " _Enter" + options
         if cancel: return script.rsplit(" _Enter", 1)[0] + " !"
+    if command == "ConvertToBeziers":
+        if postselect:
+            picks = " ".join("_SelID %s" % ids[i] for i in selected if _conversion_accepts_source(command, definitions[i]))
+            if operation.get("cancel_at_selection", False): return "_ConvertToBeziers " + picks + " !"
+            return "_ConvertToBeziers " + picks + " _Enter " + ("!" if cancel else script.split()[-1])
+        if cancel: return "_ConvertToBeziers !"
     return script
 
 
@@ -3839,6 +3856,8 @@ def _conversion_session(operation, tolerance):
                 if type(step.get("trim_triangular_faces")) is not bool or type(step.get("use_ngons")) is not bool:
                     raise ValueError("conversion session must seed mesh conversion options")
             elif type(step.get("delete_input")) is not bool: raise ValueError("conversion session must seed deletion choice")
+            if name == "ConvertToBeziers" and step.get("cancel", False):
+                raise ValueError("cancelled Bezier conversion cannot seed options")
             if name == "ToNURBS" and (step.get("cancel", False) or not any(source["type"] in ("line","arc","circle","polyline","polycurve","mesh") for i,source in enumerate(step["sources"]) if i in step.get("selected",range(len(step["sources"]))))):
                 raise ValueError("ToNURBS no-op cannot seed conversion options")
             if name == "ConvertToSingleSpans" and step.get("direction") not in ("U","V","Both"):

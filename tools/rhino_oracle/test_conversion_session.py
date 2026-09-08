@@ -8,6 +8,37 @@ from . import test_worker
 class ConversionSessionTests(unittest.TestCase):
     def setUp(self): test_worker.RhinoWorkerTests.setUp(self)
 
+    def test_bezier_postselection_scripts_finish_with_one_boolean_answer_or_cancel(self):
+        base=dict(sources=[dict(type="line"),dict(type="surface"),dict(type="mesh"),dict(type="brep",cap_surface={}),dict(type="point")],selected=[1,4,0,2,3])
+        ids=["line","surface","mesh","solid","point"]
+        for delete in [False,True,None]:
+            answer="_Enter" if delete is None else "_Yes" if delete else "_No"
+            for postselect in [False,True]:
+                for cancel in [False,True]:
+                    op=dict(base,delete_input=delete,postselect=postselect,cancel=cancel)
+                    _,selected,_,script=self.worker._conversion_arguments(op,"ConvertToBeziers",None)
+                    expected="_ConvertToBeziers " + ("_SelID surface _SelID line _Enter " if postselect else "") + ("!" if cancel else answer)
+                    self.assertEqual(self.worker._conversion_selection_script(op,"ConvertToBeziers",script,ids,selected),expected)
+        op=dict(base,postselect=True,cancel=True,cancel_at_selection=True,selected=[])
+        _,selected,_,script=self.worker._conversion_arguments(op,"ConvertToBeziers",None)
+        self.assertEqual(self.worker._conversion_selection_script(op,"ConvertToBeziers",script,ids,selected),"_ConvertToBeziers  !")
+
+    def test_bezier_invalid_cancellation_paths_and_session_seeds_fail_before_document_access(self):
+        base=dict(sources=[dict(type="line"),dict(type="mesh")],selected=[0],delete_input=True)
+        for changes in [dict(postselect=1),dict(cancel=1),dict(cancel_at_selection=True),
+                        dict(cancel=True,cancel_at_selection=True),dict(cancel=True,selected=[]),
+                        dict(cancel=True,undo_after=True),dict(postselect=True,initial_selection=[0]),
+                        dict(postselect=True,cancel=True,selected=[1]),
+                        dict(postselect=True,cancel=True,cancel_at_selection=True,selected=[],sources=[dict(type="point")])]:
+            with self.subTest(changes=changes),self.assertRaises(ValueError):
+                self.worker._geometry_conversion(dict(base,**changes),{})
+        for postselect in [False,True]:
+            first=dict(base,command="ConvertToBeziers",cancel=True,postselect=postselect)
+            with patch.object(self.worker,"_geometry_conversion") as run,self.assertRaises(ValueError):
+                self.worker._conversion_session(dict(steps=[first]),{})
+            run.assert_not_called()
+        self.worker._conversion_arguments(dict(base,postselect=True,initial_selection=[1]),"ConvertToBeziers",None)
+
     def test_nurbs_postselection_scripts_keep_selection_confirmation_and_mesh_options_ordered(self):
         base=dict(sources=[dict(type="line"),dict(type="mesh"),dict(type="point")],selected=[1,2,0],
                   delete_input=False,trim_triangular_faces=False)

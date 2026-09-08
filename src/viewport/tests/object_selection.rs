@@ -48,6 +48,7 @@ fn confirmation_disables_real_selection_events_without_enabling_point_drafting()
         modifiers: egui::Modifiers::NONE,
     };
     for filter in [
+        Some(ObjectSelectionFilter::Beziers),
         Some(ObjectSelectionFilter::ToNurbs),
         None,
         Some(ObjectSelectionFilter::ToNurbs),

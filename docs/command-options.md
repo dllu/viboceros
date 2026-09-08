@@ -34,6 +34,11 @@ Their edited values are staged, not remembered: only a successful real conversio
 commits them. Escape from any phase discards those edits. No-op-only input skips
 confirmation, including when selected during the command.
 
+`ConvertToBeziers` asks a separate Yes/No deletion question after selection.
+Answering converts immediately; Enter uses the displayed choice. Cancellation
+at either stage accepts no choice, including an initial explicit native preset.
+Preselection is retained on cancellation; command-first picks are cleared.
+
 Native bootstrap choices are deletion No, Direction Both, and triangle trimming Yes. They are not
 serialized across application restarts. Rhino's factory defaults and restart
 persistence are not established by these tests. This is not a global preference
@@ -61,3 +66,6 @@ independence from `ToNURBS`. They exercise Rhino's actual selection prompt.
 Three `nurbs_postselection_sessions.json` probes add 31 steps checking staged
 ToNURBS choices, both cancellation paths, no-op inputs, undo, and interleaved
 MeshToNURB memory. A cancelled ToNURBS command cannot seed a deterministic session.
+Two `bezier_postselection_sessions.json` sequences add 24 steps checking both
+cancellation stages, pre/postselection, omitted answers, and memory across undo.
+A cancelled ConvertToBeziers command cannot seed a deterministic session either.

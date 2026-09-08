@@ -2,6 +2,8 @@
 use super::*;
 
 #[cfg(test)]
+mod bezier_tests;
+#[cfg(test)]
 mod mesh_tests;
 #[cfg(test)]
 mod nurbs_tests;
@@ -210,6 +212,8 @@ pub(super) fn run(
                         || step.conversion.use_ngons.is_none()))
                 || (step.command == ConversionCommand::ConvertToSingleSpans
                     && step.conversion.direction.is_none())
+                || (step.command == ConversionCommand::ConvertToBeziers
+                    && step.conversion.geometry.cancel)
                 || (step.command == ConversionCommand::ToNURBS
                     && (step.conversion.geometry.cancel
                         || !step.conversion.selected_sources().any(converts_to_nurbs))))
