@@ -11,6 +11,18 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_point_grid_probe_uses_observed_count_names_and_always_supplies_height(self):
+        operation = {"count": [3, 2, 1], "points": [[0, 0, 0], [6, 4, 0]]}
+        with patch.object(self.worker, "_command_point", side_effect=["0,0,0", "6,4,0"]), \
+                patch.object(self.worker, "_in_construction_plane", return_value=({}, 0)) as run:
+            self.worker._point_grid_command(operation)
+        self.assertEqual(run.call_args.args[1], "_PointGrid _XCount=3 _YCount=2 _ZCount=1 w0,0,0 w6,4,0 _Enter")
+        for count in ([0, 2, 1], [True, 2, 1], [2.5, 2, 1], [101, 2, 1], [2, 1]):
+            with self.subTest(count=count), patch.object(self.worker, "_in_construction_plane") as run:
+                with self.assertRaises(ValueError):
+                    self.worker._point_grid_command(dict(operation, count=count))
+                run.assert_not_called()
+
     def test_non_manifold_selection_cleans_up_partial_construction(self):
         for failure in ("mesh-empty", "mesh-raise", "brep-none", "brep-raise", "brep-add-empty", "brep-add-raise"):
             with self.subTest(failure=failure):

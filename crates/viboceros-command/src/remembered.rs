@@ -9,6 +9,10 @@ use std::sync::Mutex;
 pub(super) struct Remembered<T>(Mutex<T>);
 
 impl<T: Copy> Remembered<T> {
+    pub(super) fn new(value: T) -> Self {
+        Self(Mutex::new(value))
+    }
+
     pub(super) fn get(&self) -> T {
         *self
             .0

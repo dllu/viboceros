@@ -2897,6 +2897,36 @@ def _in_construction_plane(operation, script, record):
             document.Objects.Select(object_id)
 
 
+def _point_grid_command(operation):
+    counts = operation.get("count", [3, 2, 1])
+    if len(counts) != 3 or any(type(n) is not int or not 1 <= n <= 100 for n in counts):
+        raise ValueError("PointGrid probe counts must be three integers in [1,100]")
+    points = operation["points"]
+    if len(points) != 2:
+        raise ValueError("PointGrid requires two corners")
+    script = "_PointGrid _XCount=%d _YCount=%d _ZCount=%d w%s w%s" % (
+        counts[0], counts[1], counts[2], _command_point(points[0]), _command_point(points[1]))
+    script += (" %.17g" % _finite(operation["height"], "grid height")
+               if operation.get("height") is not None else " _Enter")
+    def record(geometry):
+        if not isinstance(geometry, Rhino.Geometry.PointCloud):
+            raise ValueError("PointGrid did not produce a point cloud")
+        plane = Rhino.Geometry.Plane(_point(points[0]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
+        axes = [plane.XAxis, plane.YAxis, plane.ZAxis]
+        delta = _point(points[1]) - plane.Origin
+        size = [Rhino.Geometry.Vector3d.Multiply(delta, axis) for axis in axes]
+        size[2] = operation.get("height") if operation.get("height") is not None else abs(size[1])
+        dimensions = [max(2, counts[0]), max(2, counts[1]), counts[2]]
+        def key(p):
+            local = p - plane.Origin
+            return tuple(int(round(Rhino.Geometry.Vector3d.Multiply(local, axes[i]) / size[i] * (dimensions[i] - 1)))
+                         for i in [2, 1, 0])
+        # Point clouds have no edges or face connectivity. Match lattice stations
+        # without rounding any reported coordinates or discarding duplicate points.
+        return {"points": [_xyz(p) for p in sorted(geometry.GetPoints(), key=key)]}
+    return _in_construction_plane(operation, script, record)
+
+
 def _interface_script(command):
     """Whitelist interface-only input; never forward an unrestricted macro."""
     if not isinstance(command, string_types) or not 1 <= len(command) <= 512:
@@ -4140,6 +4170,8 @@ def _execute(operation, iterations, tolerance):
         return _interface_commands(operation)
     if kind == "plane_transform":
         return _plane_transform(operation)
+    if kind == "point_grid_command":
+        return _point_grid_command(operation)
     if kind == "plane_primitive":
         return _in_construction_plane(operation, _plane_primitive_script(operation), lambda g: _plane_primitive_record(g, operation.get("raw_representation", False), operation["primitive"]))
     if kind == "point_input":

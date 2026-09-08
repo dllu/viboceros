@@ -5,6 +5,7 @@ commands. These pages describe implemented behavior and known limitations;
 Rhino's complete command set is still a work in progress.
 
 - [Curve creation and editing](curves.md)
+- [Rectangular point grids](point-grid.md)
 - [NURBS structure and parameterization](nurbs.md)
 - [Object conversion to NURBS](to-nurbs.md)
 - [Bézier conversion](beziers.md)
@@ -33,6 +34,7 @@ See [remembered options](../command-options.md) for conversion-option lifetime.
 
 ```text
 Point 1,2,0
+PointGrid 0,0,0 6,4,0 XCount=7 YCount=5 ZCount=1
 Line 0,0,0 10,5,0
 Circle 0,0,0 5
 Arc 5,0,0 0,5,0 -5,0,0

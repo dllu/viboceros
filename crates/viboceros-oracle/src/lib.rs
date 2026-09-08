@@ -73,6 +73,7 @@ pub use edge_surface::EdgeSurfaceFixture;
 mod loft;
 pub use loft::LoftFixture;
 mod point_grid;
+mod point_matrix;
 pub use point_grid::PointGridFixture;
 mod surface_jets;
 pub use surface_jets::SurfaceJetsFixture;
@@ -264,6 +265,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: SurfaceJetsFixture,
+    },
+    PointGridCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: point_matrix::PointMatrixFixture,
     },
     SurfaceGrid {
         id: String,
@@ -1573,6 +1579,7 @@ impl Operation {
             | Self::PlaneTransform { id, .. }
             | Self::Loft { id, .. }
             | Self::EdgeSurface { id, .. }
+            | Self::PointGridCommand { id, .. }
             | Self::SurfaceGrid { id, .. }
             | Self::SurfaceCurvature { id, .. }
             | Self::CurvatureCommand { id, .. }
@@ -1993,6 +2000,7 @@ fn execute(
         Operation::EdgeSurface { fixture, .. } => {
             edge_surface::run(fixture, iterations, tolerance)?
         }
+        Operation::PointGridCommand { fixture, .. } => point_matrix::run(fixture, tolerance)?,
         Operation::SurfaceGrid { fixture, .. } => point_grid::run(fixture, iterations, tolerance)?,
         Operation::CurveSurfaceMorph { fixture, .. } => {
             curve_morph::run(fixture, iterations, tolerance)?
