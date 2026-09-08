@@ -16,6 +16,17 @@ impl PolyCurve3 {
         if !needs_copy {
             return Ok(Cow::Borrowed(self));
         }
+        // Validate the smaller outer frame before copying potentially large
+        // leaf geometry. Failure here is loss of numerical resolution, not
+        // an invalid source polycurve.
+        let parameters = self
+            .parameters
+            .iter()
+            .map(|&parameter| map_parameter(parameter, self.domain(), 0.0..=1.0))
+            .collect::<Result<Vec<_>, _>>()?;
+        if parameters.windows(2).any(|pair| pair[0] >= pair[1]) {
+            return Err(GeometryError::NumericalIntegrationDidNotConverge);
+        }
         let segments = self
             .segments()
             .iter()
@@ -28,11 +39,6 @@ impl PolyCurve3 {
                 })
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
-        let parameters = self
-            .parameters
-            .iter()
-            .map(|&parameter| map_parameter(parameter, self.domain(), 0.0..=1.0))
-            .collect::<Result<Vec<_>, _>>()?;
         Ok(Cow::Owned(Self::try_with_segment_domains(
             segments, parameters,
         )?))
@@ -43,6 +49,58 @@ impl PolyCurve3 {
 mod tests {
     use super::*;
     use crate::{NurbsCurve, Point3};
+
+    #[test]
+    fn collapsed_outer_intervals_report_numerical_failure_without_editing_source() {
+        use crate::LineSegment;
+        let points =
+            [[0., 0., 0.], [1., 0., 0.], [1., 1., 0.]].map(|p| Point3::try_from(p).unwrap());
+        let segments = points
+            .windows(2)
+            .map(|p| {
+                CurveSegment3::Line(
+                    LineSegment::try_new(p[0], p[1], crate::Tolerance::DEFAULT).unwrap(),
+                )
+            })
+            .collect::<Vec<_>>();
+        let source =
+            PolyCurve3::try_with_segment_domains(segments, vec![-f64::from_bits(1), 0., f64::MAX])
+                .unwrap();
+        let original = source.clone();
+        assert!(matches!(
+            source.for_integration(),
+            Err(GeometryError::NumericalIntegrationDidNotConverge)
+        ));
+        assert_eq!(source, original);
+    }
+
+    #[test]
+    fn collapsed_leaf_intervals_are_rejected_even_when_mapped_knots_are_valid() {
+        let leaf = NurbsCurve::try_new(
+            1,
+            vec![
+                Point3::try_new(0., 0., 0.).unwrap(),
+                Point3::try_new(1., 0., 0.).unwrap(),
+                Point3::try_new(1., 1., 0.).unwrap(),
+                Point3::try_new(2., 1., 0.).unwrap(),
+            ],
+            vec![-1., -1., 0., f64::from_bits(1), f64::MAX, f64::MAX],
+        )
+        .unwrap();
+        let mapped = leaf.try_reparameterized(0.0..=1.0).unwrap();
+        assert_eq!(mapped.knots()[2], mapped.knots()[3]);
+        let source = PolyCurve3::try_with_segment_domains(
+            vec![CurveSegment3::NurbsCurve(leaf)],
+            vec![0., 1.],
+        )
+        .unwrap();
+        let original = source.clone();
+        assert!(matches!(
+            source.for_integration(),
+            Err(GeometryError::NumericalIntegrationDidNotConverge)
+        ));
+        assert_eq!(source, original);
+    }
 
     #[test]
     fn integration_copy_preserves_controls_weights_breaks_and_source() {

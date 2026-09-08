@@ -72,6 +72,14 @@ cover adjacent-float, subnormal, tiny, and huge independent NURBS leaf domains.
 Unrepresentable relative span sizes and extreme analytic leaf domains remain
 separate limitations.
 
+Preparation checks normalized outer intervals before copying leaf geometry.
+If distinct breaks collapse, it reports a numerical integration failure rather
+than classifying the unchanged source as an invalid polycurve. NURBS leaf
+checks also reject lost intervals even when the resulting repeated knots would
+still form a valid NURBS representation; accepting that representation would
+silently discard part of the source. Regressions cover both rejection paths
+and verify that source geometry remains unchanged.
+
 Repeated-query tables can integrate to a slightly different total than the
 original span estimate. Both query directions use the original span's distance
 scale: a prefix integral is multiplied by `span_length / table_length`, while
