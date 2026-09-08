@@ -10,8 +10,15 @@ because one endpoint is behind the camera. The shared path covers lines,
 polylines, sampled curves, and mesh wires. A scale-aware rounding guard keeps
 reconstructed endpoints in front of the GPU near-plane floor; source geometry
 is not modified. Regressions exercise both endpoint orders, line/polyline/NURBS
-picking, crossing selection, and GPU submission. Triangle-face near-plane
-clipping and full Rhino visibility parity remain unverified.
+picking, crossing selection, and GPU submission.
+Shaded and ghosted faces also retain their visible portion: CPU selection clips
+triangles into at most two triangles without heap allocation, while GPU submission
+keeps the original vertices for hardware clipping and smooth-normal interpolation.
+Only the clipped face contributes to camera depth bounds. Tests cover all vertex
+permutations with zero, one, two, or three hidden corners, winding preservation,
+face picking, crossing selection, and CPU/GPU projection agreement. These are
+submission and projection tests, not raster-image or live Rhino comparisons;
+full visibility parity and large-coordinate GPU precision remain unverified.
 The compact toolbar contains Undo/Redo, active-viewport view/display selectors,
 Grid Snap, Osnap, and SmartTrack. Modeling commands remain in the command line;
 the toolbar wraps at narrow window widths. Undo/Redo buttons are disabled while

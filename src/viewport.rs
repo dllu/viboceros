@@ -905,7 +905,9 @@ impl Viewport {
         if include_faces {
             for triangle in 0..mesh.triangles().len() {
                 if let Some(points) = mesh.triangle_points(triangle) {
-                    projected.add_triangle(points.map(|point| self.project(point, rect)));
+                    for points in self.clip_triangle(points).into_iter().flatten() {
+                        projected.add_triangle(points.map(|point| self.project(point, rect)));
+                    }
                 }
             }
         }
@@ -1036,20 +1038,20 @@ impl Viewport {
             let Some(points) = mesh.triangle_points(triangle_index) else {
                 continue;
             };
-            let [Some(first), Some(second), Some(third)] =
-                points.map(|point| self.project(point, rect))
-            else {
-                continue;
-            };
-            if self.display_mode != DisplayMode::Wireframe
-                && point_in_triangle(pointer, first, second, third)
-            {
-                return 0.0;
+            for points in self.clip_triangle(points).into_iter().flatten() {
+                let [Some(first), Some(second), Some(third)] =
+                    points.map(|point| self.project(point, rect))
+                else {
+                    continue;
+                };
+                if point_in_triangle(pointer, first, second, third) {
+                    return 0.0;
+                }
+                nearest = nearest
+                    .min(point_segment_distance(pointer, first, second))
+                    .min(point_segment_distance(pointer, second, third))
+                    .min(point_segment_distance(pointer, third, first));
             }
-            nearest = nearest
-                .min(point_segment_distance(pointer, first, second))
-                .min(point_segment_distance(pointer, second, third))
-                .min(point_segment_distance(pointer, third, first));
         }
         nearest
     }
@@ -1433,7 +1435,7 @@ impl Viewport {
         if self.display_mode != DisplayMode::Wireframe
             && let Ok(mesh) = surface.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)
         {
-            self.add_gpu_mesh_faces(scene, rect, &mesh, style.color);
+            self.add_gpu_mesh_faces(scene, &mesh, style.color);
         }
 
         if let Ok(curves) = surface.wireframe_curves(style.wire_density) {
@@ -1454,7 +1456,7 @@ impl Viewport {
         if self.display_mode != DisplayMode::Wireframe
             && let Ok(mesh) = brep.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)
         {
-            self.add_gpu_mesh_faces(scene, rect, &mesh, style.color);
+            self.add_gpu_mesh_faces(scene, &mesh, style.color);
         }
         if let Ok(curves) = brep.wireframe_curves(style.wire_density, tolerance) {
             for curve in &curves {
@@ -1472,7 +1474,7 @@ impl Viewport {
         width: f32,
         tolerance: Tolerance,
     ) {
-        self.add_gpu_mesh_faces(scene, rect, mesh, color);
+        self.add_gpu_mesh_faces(scene, mesh, color);
         if let Ok(lines) = mesh.wireframe_lines(tolerance) {
             for line in lines {
                 self.add_gpu_line(scene, rect, line.start(), line.end(), width, color);
@@ -1480,13 +1482,7 @@ impl Viewport {
         }
     }
 
-    fn add_gpu_mesh_faces(
-        &self,
-        scene: &mut GpuSceneBuilder,
-        rect: Rect,
-        mesh: &TriangleMesh,
-        color: Color32,
-    ) {
+    fn add_gpu_mesh_faces(&self, scene: &mut GpuSceneBuilder, mesh: &TriangleMesh, color: Color32) {
         if self.display_mode == DisplayMode::Wireframe {
             return;
         }
@@ -1502,24 +1498,30 @@ impl Viewport {
             let Some(points) = mesh.triangle_points(triangle_index) else {
                 continue;
             };
-            if points
-                .iter()
-                .any(|point| self.project(*point, rect).is_none())
-            {
+            let clipped = self.clip_triangle(points);
+            if clipped[0].is_none() {
                 continue;
             }
+            // Submit the original triangle so hardware clipping interpolates
+            // smooth normals correctly. Only visible geometry sets the depth
+            // range; behind-camera vertices must not move the near plane.
             let [Some(first), Some(second), Some(third)] = points.map(point_to_gpu) else {
                 continue;
             };
             let normals = normals.map(vector_to_gpu);
-            let depth = points
+            let mut depth = 0.0;
+            let mut count = 0;
+            for point in clipped[0]
                 .into_iter()
-                .map(|point| self.view_depth(point))
-                .sum::<Real>()
-                / 3.0;
-            for point in points {
-                scene.include_depth(self.view_depth(point));
+                .flatten()
+                .chain(clipped[1].map(|triangle| triangle[2]))
+            {
+                let point_depth = self.view_depth(point);
+                scene.include_depth(point_depth);
+                depth += point_depth;
+                count += 1;
             }
+            let depth = depth / Real::from(count);
             scene.triangles.push(DepthTriangle {
                 depth,
                 vertices: [
@@ -2199,6 +2201,114 @@ mod tests {
         let mut scene = GpuSceneBuilder::new();
         viewport.add_gpu_line(&mut scene, rect, start, behind, 1.0, Color32::BLACK);
         assert!(scene.lines.is_empty());
+    }
+
+    #[test]
+    fn camera_crossing_faces_remain_visible_and_selectable() {
+        let mut viewport = Viewport::new(ViewKind::Perspective);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let (right, up, forward) = viewport.perspective_basis();
+        let camera = viewport.target - forward * viewport.perspective_camera_distance;
+        let to_point = |x: Real, y: Real, depth: Real| {
+            let v = camera + right * x + up * y + forward * depth;
+            Point3::try_new(v.x, v.y, v.z).unwrap()
+        };
+        for depths in [
+            [10.0, 10.0, 10.0],
+            [-10.0, 10.0, 10.0],
+            [-10.0, -10.0, 10.0],
+            [-10.0; 3],
+        ] {
+            let vertices = [
+                to_point(-3.0, -2.0, depths[0]),
+                to_point(3.0, -2.0, depths[1]),
+                to_point(0.0, 3.0, depths[2]),
+            ];
+            for indices in [
+                [0, 1, 2],
+                [1, 2, 0],
+                [2, 0, 1],
+                [2, 1, 0],
+                [1, 0, 2],
+                [0, 2, 1],
+            ] {
+                let points = indices.map(|index| vertices[index]);
+                let clipped = viewport.clip_triangle(points);
+                let visible_count = depths.iter().filter(|depth| **depth > 0.0).count();
+                let expected = match visible_count {
+                    0 => 0,
+                    2 => 2,
+                    _ => 1,
+                };
+                assert_eq!(clipped.iter().flatten().count(), expected);
+                let vector = |point: Point3| NaVector3::from(point.to_array());
+                let normal = (vector(points[1]) - vector(points[0]))
+                    .cross(&(vector(points[2]) - vector(points[0])));
+                for triangle in clipped.into_iter().flatten() {
+                    assert!(
+                        triangle
+                            .iter()
+                            .all(|point| viewport.view_depth(*point) > 0.0)
+                    );
+                    let clipped_normal = (vector(triangle[1]) - vector(triangle[0]))
+                        .cross(&(vector(triangle[2]) - vector(triangle[0])));
+                    assert!(normal.dot(&clipped_normal) > 0.0);
+                }
+                let mesh =
+                    TriangleMesh::try_new(points.to_vec(), vec![[0, 1, 2]], Tolerance::DEFAULT)
+                        .unwrap();
+                for mode in [DisplayMode::Shaded, DisplayMode::Ghosted] {
+                    viewport.display_mode = mode;
+                    let mut scene = GpuSceneBuilder::new();
+                    viewport.add_gpu_mesh_faces(&mut scene, &mesh, Color32::GRAY);
+                    assert_eq!(scene.triangles.len(), usize::from(visible_count > 0));
+                    let mut projected = ProjectedPrimitives::default();
+                    viewport.add_projected_mesh(
+                        &mut projected,
+                        rect,
+                        &mesh,
+                        true,
+                        Tolerance::DEFAULT,
+                    );
+                    assert_eq!(projected.triangles.len(), expected);
+                    if visible_count == 0 {
+                        assert!(
+                            viewport
+                                .mesh_pick_distance(rect.center(), rect, &mesh, Tolerance::DEFAULT)
+                                .is_infinite()
+                        );
+                        continue;
+                    }
+                    // A convex combination strictly inside the original face,
+                    // biased toward the always-visible final source vertex.
+                    let p = vector(vertices[0]) * 0.1
+                        + vector(vertices[1]) * 0.1
+                        + vector(vertices[2]) * 0.8;
+                    let pointer = viewport
+                        .project(Point3::try_new(p.x, p.y, p.z).unwrap(), rect)
+                        .unwrap();
+                    assert_eq!(
+                        viewport.mesh_pick_distance(pointer, rect, &mesh, Tolerance::DEFAULT),
+                        0.0
+                    );
+                    assert!(
+                        projected.is_crossed_by(Rect::from_center_size(pointer, Vec2::splat(2.0)))
+                    );
+                    assert!(scene.min_depth > 0.0);
+                    for (vertex, point) in scene.triangles[0].vertices.iter().zip(points) {
+                        assert_eq!(vertex.position, point_to_gpu(point).unwrap());
+                    }
+                    let (gpu_pointer, gpu_depth) = gpu_project(
+                        &viewport,
+                        rect,
+                        Point3::try_new(p.x, p.y, p.z).unwrap(),
+                        scene.depth_range().unwrap(),
+                    );
+                    assert!(gpu_pointer.distance(pointer) < 0.02);
+                    assert!((0.0..=1.0).contains(&gpu_depth));
+                }
+            }
+        }
     }
 
     #[test]

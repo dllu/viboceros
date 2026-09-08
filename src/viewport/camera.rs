@@ -15,19 +15,25 @@ impl Viewport {
         if self.kind.is_parallel() {
             return Some([start, end]);
         }
-        let depths = [self.view_depth(start), self.view_depth(end)];
-        if depths.iter().any(|depth| !depth.is_finite()) {
-            return None;
-        }
-        let scale = start
-            .to_array()
-            .into_iter()
-            .chain(end.to_array())
+        self.clip_segment_at_near(start, end, self.primitive_near(&[start, end]))
+    }
+
+    fn primitive_near(&self, points: &[Point3]) -> Real {
+        let scale = points
+            .iter()
+            .flat_map(|point| point.to_array())
             .chain(self.target.iter().copied())
             .fold(self.perspective_camera_distance.max(1.0), |scale, value| {
                 scale.max(value.abs())
             });
-        let near = self.perspective_near_floor() + 64.0 * Real::EPSILON * scale;
+        self.perspective_near_floor() + 64.0 * Real::EPSILON * scale
+    }
+
+    fn clip_segment_at_near(&self, start: Point3, end: Point3, near: Real) -> Option<[Point3; 2]> {
+        let depths = [self.view_depth(start), self.view_depth(end)];
+        if depths.iter().any(|depth| !depth.is_finite()) {
+            return None;
+        }
         if depths.iter().all(|depth| *depth < near) {
             return None;
         }
@@ -49,6 +55,52 @@ impl Viewport {
         } else {
             [start, clipped]
         })
+    }
+
+    /// A triangle clipped against one plane has at most four vertices. Keep
+    /// its winding and triangulate the resulting polygon without allocating.
+    pub(super) fn clip_triangle(&self, points: [Point3; 3]) -> [Option<[Point3; 3]>; 2] {
+        if self.kind.is_parallel() {
+            return [Some(points), None];
+        }
+        let near = self.primitive_near(&points);
+        let depths = points.map(|point| self.view_depth(point));
+        if depths.iter().any(|depth| !depth.is_finite()) {
+            return [None, None];
+        }
+        if depths.iter().all(|depth| *depth >= near) {
+            return [Some(points), None];
+        }
+        if depths.iter().all(|depth| *depth < near) {
+            return [None, None];
+        }
+        let mut polygon = [points[0]; 4];
+        let mut count = 0;
+        for end in 0..3 {
+            let start = (end + 2) % 3;
+            let start_inside = depths[start] >= near;
+            let end_inside = depths[end] >= near;
+            if start_inside != end_inside {
+                let Some(clipped) = self.clip_segment_at_near(points[start], points[end], near)
+                else {
+                    return [None, None];
+                };
+                polygon[count] = clipped[usize::from(start_inside)];
+                count += 1;
+            }
+            if end_inside {
+                polygon[count] = points[end];
+                count += 1;
+            }
+        }
+        match count {
+            3 => [Some([polygon[0], polygon[1], polygon[2]]), None],
+            4 => [
+                Some([polygon[0], polygon[1], polygon[2]]),
+                Some([polygon[0], polygon[2], polygon[3]]),
+            ],
+            _ => [None, None],
+        }
     }
 
     pub(super) fn project_segment(
