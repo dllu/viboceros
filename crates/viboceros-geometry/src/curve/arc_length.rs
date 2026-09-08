@@ -386,14 +386,16 @@ impl<'a> ArcLengthSampler<'a> {
         fractional_tolerance: Option<Real>,
     ) -> Result<Point3, GeometryError> {
         let parameter = self.parameter_at_distance_impl(distance, fractional_tolerance)?;
+        // A short final segment can be smaller than one ulp of the total.
+        // Its rounded cumulative endpoints may coincide, but the exact end
+        // query must still return the stored geometric endpoint.
+        if distance == self.total_length {
+            return self.source.end_point();
+        }
         if let Some((line, fraction)) = self.linear_distance_location(distance) {
             return line.point_at(fraction);
         }
-        if distance == self.total_length {
-            self.source.end_point()
-        } else {
-            self.evaluate(parameter)
-        }
+        self.evaluate(parameter)
     }
 
     pub(crate) fn parameter_at_distance(&self, distance: Real) -> Result<Real, GeometryError> {

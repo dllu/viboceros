@@ -81,6 +81,13 @@ L-shaped path, including interior points on both legs and outgoing corner tangen
 This does not eliminate normalization failures when distinct outer breaks or
 mapped leaf spans collapse entirely; nonlinear spans still use numerical inversion.
 
+Exact end-distance queries return the stored source endpoint before evaluating
+local fractions. A short final segment may lie below the floating-point
+resolution of the aggregate length, making its cumulative start and end equal.
+That does not remove the geometric endpoint. Regressions use a length-`1e16`
+leg followed by a unit leg, in both polyline and polycurve representations,
+and check endpoint coordinates, native end parameters, and final tangents.
+
 Polycurve sampling likewise normalizes the outer domain before mapping leaf
 spans into it. Shared `polycurve/integration_frame` preparation also normalizes
 each NURBS or polyline leaf using its checked frame. The temporary copy retains native

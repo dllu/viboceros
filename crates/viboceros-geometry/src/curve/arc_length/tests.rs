@@ -2,6 +2,39 @@ use super::*;
 use crate::{NurbsCurve, Vector3};
 
 #[test]
+fn exact_endpoint_survives_a_final_span_below_total_length_resolution() {
+    use crate::{CurveSegment3, PolyCurve3, Polyline3};
+    let vertices = [[0., 0., 0.], [1e16, 0., 0.], [1e16, 1., 0.]]
+        .map(|p| Point3::try_from(p).unwrap())
+        .to_vec();
+    let polyline = Polyline3::try_new(vertices.clone(), Tolerance::DEFAULT).unwrap();
+    let composite = PolyCurve3::try_with_segment_domains(
+        polyline
+            .segments()
+            .map(CurveSegment3::Line)
+            .collect::<Vec<_>>(),
+        vec![0., 1., 2.],
+    )
+    .unwrap();
+    for source in [
+        CurveRef::Polyline(&polyline),
+        CurveRef::PolyCurve(&composite),
+    ] {
+        let sampler = ArcLengthSampler::try_new(source, Tolerance::DEFAULT).unwrap();
+        assert_eq!(sampler.total_length(), 1e16);
+        assert_eq!(
+            sampler.point_at_distance(sampler.total_length()).unwrap(),
+            vertices[2]
+        );
+        let sample = sampler.sample_at_distance(sampler.total_length()).unwrap();
+        assert_eq!(sample.point(), vertices[2]);
+        assert_eq!(sample.parameter(), *source.domain().end());
+        assert_eq!(sample.tangent().as_vector().to_array(), [0., 1., 0.]);
+        assert_eq!(sampler.point_at_distance(0.).unwrap(), vertices[0]);
+    }
+}
+
+#[test]
 fn optional_cache_density_adapts_without_exceeding_aggregate_budget() {
     for (spans, preferred, expected) in [
         (0, 32, None),
