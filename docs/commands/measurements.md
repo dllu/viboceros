@@ -46,4 +46,5 @@ underlying geometry measurement.
 Tests cover mixed analytic lengths/areas, surface and B-rep area, signed mesh
 and B-rep volumes, rational circles and mixed polynomial/line polycurves,
 small terms amid large contributions, and unchanged selection
-and both history stacks after failed queries.
+and both history stacks after failed queries. The [curve-area oracle](../curve-area.md)
+records analytic checks and the current differences from Rhino's public API.

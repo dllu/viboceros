@@ -1061,6 +1061,22 @@ def _curve_frames(operation, iterations):
         curve.Dispose()
 
 
+def _curve_area(operation, iterations):
+    curve = _join_close_input(operation["curve"])
+    try:
+        def compute():
+            properties = Rhino.Geometry.AreaMassProperties.Compute(curve)
+            if properties is None:
+                raise ValueError("could not compute enclosed curve area")
+            try:
+                return {"area": float(properties.Area)}
+            finally:
+                properties.Dispose()
+        return _measure(iterations, compute)
+    finally:
+        curve.Dispose()
+
+
 def _curve_native(operation, iterations, tolerance):
     source = _join_close_input(operation["curve"])
     try:
@@ -4124,6 +4140,8 @@ def _execute(operation, iterations, tolerance):
         return _polycurve_native(operation, iterations, tolerance)
     if kind == "curve_native":
         return _curve_native(operation, iterations, tolerance)
+    if kind == "curve_area":
+        return _curve_area(operation, iterations)
     if kind in ("polycurve_geometry", "polycurve_document"):
         return _polycurve_geometry(operation, iterations, tolerance)
     if kind == "trimmed_surface_mass_properties":

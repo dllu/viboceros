@@ -1,0 +1,85 @@
+{
+  "absolute_epsilon": 1e-08,
+  "max_absolute_error": 2.3261394943574487e-07,
+  "operations": [
+    {
+      "differences": [],
+      "id": "analytic-circle",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 9643555.0,
+      "rhino_to_viboceros_ratio": 200907.39583333334,
+      "viboceros_ns_per_iteration": 48.0
+    },
+    {
+      "differences": [
+        "analytic-ellipse.value.area: 18.849555921538759 != 18.849556154152708 (error 2.33e-07, limit 1e-08)"
+      ],
+      "id": "analytic-ellipse",
+      "max_absolute_error": 2.3261394943574487e-07,
+      "passed": false,
+      "rhino_ns_per_iteration": 2250671.0,
+      "rhino_to_viboceros_ratio": 28133.3875,
+      "viboceros_ns_per_iteration": 80.0
+    },
+    {
+      "differences": [],
+      "id": "closed-cubic",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 717163.0,
+      "rhino_to_viboceros_ratio": 20.036963567277603,
+      "viboceros_ns_per_iteration": 35792.0
+    },
+    {
+      "differences": [],
+      "id": "reversed-cubic",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 457764.0,
+      "rhino_to_viboceros_ratio": 14.755157297576071,
+      "viboceros_ns_per_iteration": 31024.0
+    },
+    {
+      "differences": [],
+      "id": "mixed-polycurve",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 450134.0,
+      "rhino_to_viboceros_ratio": 7.951773600904466,
+      "viboceros_ns_per_iteration": 56608.0
+    },
+    {
+      "differences": [
+        "rational-circle.value.area: 12.566370614359174 != 12.566370769435153 (error 1.55e-07, limit 1e-08)"
+      ],
+      "id": "rational-circle",
+      "max_absolute_error": 1.5507597872499446e-07,
+      "passed": false,
+      "rhino_ns_per_iteration": 1075745.0,
+      "rhino_to_viboceros_ratio": 10.503681065458522,
+      "viboceros_ns_per_iteration": 102416.0
+    },
+    {
+      "differences": [],
+      "id": "translated-cubic",
+      "max_absolute_error": 5.191919116853683e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 526428.0,
+      "rhino_to_viboceros_ratio": 16.872692307692308,
+      "viboceros_ns_per_iteration": 31200.0
+    },
+    {
+      "differences": [],
+      "id": "reparameterized-cubic",
+      "max_absolute_error": 5.551115123125783e-17,
+      "passed": true,
+      "rhino_ns_per_iteration": 602722.0,
+      "rhino_to_viboceros_ratio": 18.996533030761473,
+      "viboceros_ns_per_iteration": 31728.0
+    }
+  ],
+  "passed": false,
+  "protocol_version": 1,
+  "relative_epsilon": 1e-10
+}

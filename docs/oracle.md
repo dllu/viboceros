@@ -337,6 +337,10 @@ API builds the same input geometry as the native probe, avoiding changes to the
 input from a separate trim-fitting operation. Numerical API calls are timed;
 the native probe also checks `Area` and `Volume` command results and document state.
 
+The `curve_area.json` fixture checks eight [enclosed curve-area cases](curve-area.md)
+against analytic references and Rhino's public API. The retained strict comparison
+has two conic discrepancies; it is not an all-passing parity claim.
+
 The `polycurve.json` fixture exercises [exact piecewise curves](polycurves.md).
 It preserves and compares segment definitions and domains, then tests reversal,
 trimming, splitting, length-based reparameterization, derivatives, and division.

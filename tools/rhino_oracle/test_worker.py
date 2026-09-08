@@ -11,6 +11,27 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_curve_area_disposes_owned_curve_and_properties(self):
+        curve = Mock()
+        properties = [Mock(Area=0.15) for _ in range(3)]
+        compute = Mock(side_effect=properties)
+        self.worker.Rhino.Geometry = SimpleNamespace(AreaMassProperties=SimpleNamespace(Compute=compute))
+        with patch.object(self.worker, "_join_close_input", return_value=curve):
+            value, _ = self.worker._execute({"op": "curve_area", "curve": {}}, 2, {})
+        self.assertEqual(value, {"area": 0.15})
+        self.assertEqual(compute.call_count, 3)  # warm-up plus two timed iterations
+        for result in properties:
+            result.Dispose.assert_called_once_with()
+        curve.Dispose.assert_called_once_with()
+
+    def test_curve_area_failure_disposes_owned_curve(self):
+        curve = Mock()
+        self.worker.Rhino.Geometry = SimpleNamespace(AreaMassProperties=SimpleNamespace(Compute=lambda curve: None))
+        with patch.object(self.worker, "_join_close_input", return_value=curve):
+            with self.assertRaisesRegex(ValueError, "enclosed curve area"):
+                self.worker._curve_area({"curve": {}}, 1)
+        curve.Dispose.assert_called_once_with()
+
     def test_shortness_representation_records_distinguish_length_from_predicate(self):
         path = Path(__file__).resolve().parents[2] / "docs" / "short-curve-representation-measurement.json"
         batches = json.loads(path.read_text())["batches"]
