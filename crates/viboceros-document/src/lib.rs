@@ -9,6 +9,8 @@ mod object_order;
 mod selection;
 mod settings;
 mod units;
+mod wildcard;
+use wildcard::CaseInsensitiveWildcard;
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
@@ -70,50 +72,6 @@ pub enum SelectionMode {
     Add,
     Remove,
     Toggle,
-}
-
-#[derive(Clone, Debug)]
-struct CaseInsensitiveWildcard {
-    pattern: Vec<char>,
-}
-
-impl CaseInsensitiveWildcard {
-    fn new(pattern: &str) -> Self {
-        Self {
-            pattern: pattern.to_lowercase().chars().collect(),
-        }
-    }
-
-    fn matches(&self, candidate: &str) -> bool {
-        let candidate = candidate.to_lowercase().chars().collect::<Vec<_>>();
-        let mut pattern_index = 0;
-        let mut candidate_index = 0;
-        let mut star_index = None;
-        let mut star_candidate_index = 0;
-        while candidate_index < candidate.len() {
-            if pattern_index < self.pattern.len()
-                && (self.pattern[pattern_index] == '?'
-                    || self.pattern[pattern_index] == candidate[candidate_index])
-            {
-                pattern_index += 1;
-                candidate_index += 1;
-            } else if pattern_index < self.pattern.len() && self.pattern[pattern_index] == '*' {
-                star_index = Some(pattern_index);
-                pattern_index += 1;
-                star_candidate_index = candidate_index;
-            } else if let Some(star) = star_index {
-                pattern_index = star + 1;
-                star_candidate_index += 1;
-                candidate_index = star_candidate_index;
-            } else {
-                return false;
-            }
-        }
-        while pattern_index < self.pattern.len() && self.pattern[pattern_index] == '*' {
-            pattern_index += 1;
-        }
-        pattern_index == self.pattern.len()
-    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -3120,6 +3078,9 @@ mod tests {
     #[test]
     fn name_wildcards_support_rhino_star_question_and_case_rules() {
         for (pattern, candidate, expected) in [
+            ("*a", "*ba", true),
+            ("**a", "**ba", true),
+            ("a*b", "a*middleb", true),
             ("Bolt*", "bolt assembly", true),
             ("?olt?", "BOLTA", true),
             ("*", "", true),

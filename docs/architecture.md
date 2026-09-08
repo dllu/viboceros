@@ -75,6 +75,11 @@ The command-owned `object_selection` module supplies typed filters and boolean
 options to the separate [app object-prompt adapter](object-selection.md).
 `selection_commands` owns basic, action-history, attribute, and duplicate
 selectors together with their argument parsing and remembered selection options.
+The document's `wildcard` module shares name matching between object and layer
+selection. Its greedy matcher is checked against an independent prefix-table
+reference for 116,281 short pattern/name pairs, including names containing
+literal wildcard characters. Matching retains Unicode lowercasing semantics;
+this exhaustive finite test is not a claim of general Rhino Unicode parity.
 `object_name` owns `SetObjectName`, keeping quoted literal names distinct from
 options and preserving quoted internal whitespace before document assignment.
 The independent `geometry_selection` command module owns document-wide type,
