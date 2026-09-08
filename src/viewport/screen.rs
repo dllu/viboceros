@@ -93,22 +93,43 @@ pub(super) fn rect_corners(rect: Rect) -> [Pos2; 4] {
 }
 
 pub(super) fn point_segment_distance(point: Pos2, start: Pos2, end: Pos2) -> f32 {
-    let start_x = f64::from(start.x);
-    let start_y = f64::from(start.y);
-    let delta_x = f64::from(end.x) - start_x;
-    let delta_y = f64::from(end.y) - start_y;
-    let length_squared = delta_x.mul_add(delta_x, delta_y * delta_y);
-    let parameter = if length_squared > 0.0 && length_squared.is_finite() {
-        ((f64::from(point.x) - start_x).mul_add(delta_x, (f64::from(point.y) - start_y) * delta_y)
-            / length_squared)
-            .clamp(0.0, 1.0)
+    if !point.is_finite() || !start.is_finite() || !end.is_finite() {
+        return f32::INFINITY;
+    }
+    let [px, py] = [Real::from(point.x), Real::from(point.y)];
+    let [ax, ay] = [Real::from(start.x), Real::from(start.y)];
+    let [bx, by] = [Real::from(end.x), Real::from(end.y)];
+    let [dx, dy] = [bx - ax, by - ay];
+    // Check each endpoint independently: a normalized parameter near one can
+    // round to one even when the cursor projects well inside a long segment.
+    let distance = if (px - ax).mul_add(dx, (py - ay) * dy) <= 0.0 {
+        (px - ax).hypot(py - ay)
+    } else if (px - bx).mul_add(dx, (py - by) * dy) >= 0.0 {
+        (px - bx).hypot(py - by)
     } else {
-        0.0
+        // Each product of original f32 coordinates is exact in f64. An
+        // error-free expansion retains small terms through cancellation.
+        let mut partials = [0.0; 6];
+        let mut length = 0;
+        for mut term in [ax * by, -ay * bx, bx * py, -by * px, px * ay, -py * ax] {
+            let mut count = 0;
+            for i in 0..length {
+                let value = partials[i];
+                let sum = term + value;
+                let virtual_value = sum - term;
+                let error = (term - (sum - virtual_value)) + (value - virtual_value);
+                if error != 0.0 {
+                    partials[count] = error;
+                    count += 1;
+                }
+                term = sum;
+            }
+            partials[count] = term;
+            length = count + 1;
+        }
+        partials[..length].iter().sum::<Real>().abs() / dx.hypot(dy)
     };
-    let closest_x = delta_x.mul_add(parameter, start_x);
-    let closest_y = delta_y.mul_add(parameter, start_y);
-    let distance = (f64::from(point.x) - closest_x).hypot(f64::from(point.y) - closest_y);
-    if distance.is_finite() && distance <= f64::from(f32::MAX) {
+    if distance.is_finite() && distance <= Real::from(f32::MAX) {
         distance as f32
     } else {
         f32::INFINITY
@@ -132,6 +153,68 @@ pub(super) fn point_in_triangle(point: Pos2, first: Pos2, second: Pos2, third: P
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn long_segment_capture_measures_perpendicular_distance() {
+        for scale in [1e20, f32::MAX] {
+            for (start, end, pointer, expected) in [
+                (
+                    Pos2::new(scale, 0.0),
+                    Pos2::ZERO,
+                    Pos2::new(400.0, 3.0),
+                    3.0,
+                ),
+                (
+                    Pos2::new(-scale, 250.0),
+                    Pos2::new(scale, 250.0),
+                    Pos2::new(400.0, 253.0),
+                    3.0,
+                ),
+                (
+                    Pos2::new(250.0, -scale),
+                    Pos2::new(250.0, scale),
+                    Pos2::new(253.0, 400.0),
+                    3.0,
+                ),
+                (
+                    Pos2::new(-scale, -scale),
+                    Pos2::new(scale, scale),
+                    Pos2::new(400.0, 400.0),
+                    0.0,
+                ),
+            ] {
+                assert_eq!(point_segment_distance(pointer, start, end), expected);
+                assert_eq!(point_segment_distance(pointer, end, start), expected);
+            }
+        }
+    }
+
+    #[test]
+    fn segment_distance_matches_integer_dot_and_cross_reference() {
+        let points: Vec<[i32; 2]> = (-2..=2)
+            .flat_map(|x| (-2..=2).map(move |y| [x, y]))
+            .collect();
+        let pos = |p: [i32; 2]| Pos2::new(p[0] as f32, p[1] as f32);
+        let norm = |x: i32, y: i32| f64::from(x * x + y * y).sqrt();
+        for &a in &points {
+            for &b in &points {
+                for &p in &points {
+                    let [dx, dy] = [b[0] - a[0], b[1] - a[1]];
+                    let [x, y] = [p[0] - a[0], p[1] - a[1]];
+                    let dot = x * dx + y * dy;
+                    let squared_length = dx * dx + dy * dy;
+                    let expected = if dot <= 0 {
+                        norm(x, y)
+                    } else if dot >= squared_length {
+                        norm(p[0] - b[0], p[1] - b[1])
+                    } else {
+                        f64::from((x * dy - y * dx).abs()) / norm(dx, dy)
+                    } as f32;
+                    assert_eq!(point_segment_distance(pos(p), pos(a), pos(b)), expected);
+                }
+            }
+        }
+    }
 
     #[test]
     fn rectangle_intersection_matches_integer_orientation_reference() {

@@ -516,6 +516,31 @@ mod tests {
     use super::*;
 
     #[test]
+    fn long_visible_line_is_captured_at_its_screen_distance() {
+        let view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let id = document
+            .add_geometry(Geometry::Line(
+                viboceros_geometry::LineSegment::try_new(
+                    Point3::try_new(-1e30, 0.0, 0.0).unwrap(),
+                    Point3::try_new(1e30, 0.0, 0.0).unwrap(),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        for x in [100.0, 400.0, 700.0] {
+            for offset in [0.0, 3.0, 8.0, 9.0] {
+                assert_eq!(
+                    view.pick_object(Pos2::new(x, 300.0 + offset), rect, &document),
+                    (offset <= PICK_CAPTURE_PIXELS).then_some(id)
+                );
+            }
+        }
+    }
+
+    #[test]
     fn translated_point_cloud_capture_matches_screen_distance() {
         let mut view = Viewport::new(ViewKind::Top);
         view.target = NaVector3::new(2.0_f64.powi(52), 0.0, 0.0);

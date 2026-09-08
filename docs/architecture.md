@@ -121,6 +121,10 @@ and degenerate rectangles. An independent integer-orientation reference checks
 Coordinate differences
 use f64 intermediates so opposite finite f32 screen endpoints do not overflow;
 rectangle tests cover misses, crossings, endpoint reversal, and boundary contact.
+Segment click distances use separate endpoint dot tests and a perpendicular
+determinant, rather than reconstructing a nearest point from a rounded parameter.
+A fixed-size, allocation-free expansion preserves cancelling coordinate products.
+Tests check 15,625 integer-reference distances and long-segment document capture.
 Constant-depth faces retain their exact depth rather than accumulating rounded
 barycentric products. Parallel interpolated depths are bounded by vertex depths;
 a scaled, renormalized fallback handles overflowing products at captured edges.
