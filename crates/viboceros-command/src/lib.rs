@@ -3815,8 +3815,11 @@ fn parse_duplicate_border_arguments(
 }
 
 fn brep_naked_edge_curve_components(brep: &Brep) -> Vec<Vec<NurbsCurve>> {
-    let naked = (0..brep.edges().len())
-        .filter(|edge| brep.edge_use_count(*edge) == Some(1))
+    let naked = brep
+        .edge_use_counts()
+        .into_iter()
+        .enumerate()
+        .filter_map(|(edge, count)| (count == 1).then_some(edge))
         .collect::<Vec<_>>();
     let mut edges_at_vertex = BTreeMap::<usize, Vec<usize>>::new();
     for (local_edge, &edge_index) in naked.iter().enumerate() {

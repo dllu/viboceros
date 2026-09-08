@@ -125,8 +125,8 @@ fn record(brep: &Brep, mesh: &TriangleMesh, tolerance: Tolerance) -> Result<Valu
         .iter()
         .sum::<f64>();
     let mut queries = Vec::new();
-    for (i, edge) in brep.edges().iter().enumerate() {
-        if brep.edge_use_count(i) == Some(1) {
+    for (edge, count) in brep.edges().iter().zip(brep.edge_use_counts()) {
+        if count == 1 {
             for s in [0.0, 0.25, 0.5, 0.75, 1.0] {
                 queries.push(
                     edge.curve()

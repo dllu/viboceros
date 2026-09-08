@@ -53,6 +53,10 @@ each direction, not an additional geometric self-intersection proof.
 
 `edge_use_count` still returns an exact count for a requested edge, using an
 allocation-free traversal. It returns `None` for an invalid edge index.
+For whole-model inspection, `edge_use_counts` returns exact counts in edge-index
+order using O(trims + edges) time and one `usize` per edge. `DupBorder` and the
+B-rep meshing oracle use this bulk query to find naked edges without repeated
+trim scans; their edge ordering and boundary geometry are unchanged.
 Regression tests compare all queries with explicit use enumeration across open,
 closed, non-manifold, reversed, singular-trim, and high-valence cases. This is an
 algorithmic complexity improvement; no Rhino performance ratio is claimed.

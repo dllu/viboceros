@@ -3,6 +3,23 @@
 use super::Brep;
 
 impl Brep {
+    /// Exact trim-use counts in edge-index order, computed in one traversal.
+    /// Prefer this to repeated `edge_use_count` calls when inspecting all edges.
+    /// Singular trims have no edge and do not contribute.
+    pub fn edge_use_counts(&self) -> Vec<usize> {
+        let mut counts = vec![0; self.edges.len()];
+        for face in &self.faces {
+            for boundary in &face.loops {
+                for trim in &boundary.trims {
+                    if let Some(edge) = trim.edge {
+                        counts[edge] += 1;
+                    }
+                }
+            }
+        }
+        counts
+    }
+
     /// Exact use count for one edge, ignoring singular trims with no edge.
     pub fn edge_use_count(&self, edge_index: usize) -> Option<usize> {
         (edge_index < self.edges.len()).then(|| {
@@ -78,15 +95,18 @@ mod tests {
                 flipped_face.faces[0].reversed = !flipped_face.faces[0].reversed;
                 for brep in [source.clone(), source.reversed(), flipped_face] {
                     let uses = brep.trim_uses();
+                    let counts = brep.edge_use_counts();
+                    assert_eq!(counts.len(), brep.edges.len());
                     let mut expected_manifold = true;
                     let mut expected_closed = true;
                     let mut expected_solid = true;
-                    for edge in 0..brep.edges.len() {
+                    for (edge, &count) in counts.iter().enumerate() {
                         let edge_uses = uses
                             .iter()
                             .filter(|usage| usage.trim.edge == Some(edge))
                             .collect::<Vec<_>>();
                         assert_eq!(brep.edge_use_count(edge), Some(edge_uses.len()));
+                        assert_eq!(count, edge_uses.len());
                         expected_manifold &= edge_uses.len() <= 2;
                         expected_closed &= edge_uses.len() == 2;
                         expected_solid &= edge_uses.len() == 2
