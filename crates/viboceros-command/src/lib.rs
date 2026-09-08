@@ -37,8 +37,10 @@ use single_spans::ConvertToSingleSpansCommand;
 use to_nurbs::ToNurbsCommand;
 mod bounding_box;
 mod distribute;
+mod geometry_selection;
 mod grouping;
 pub use distribute::{DistributionMode, DistributionSettings, distribution_unit_count};
+use geometry_selection::{GeometrySelectionFilter, SelShortCurveCommand, SelectGeometryCommand};
 use grouping::{GroupCommand, UngroupAllCommand, UngroupCommand};
 #[cfg(test)]
 mod group_order_tests;
@@ -7543,167 +7545,6 @@ fn parse_attribute_pattern(
     } else {
         pattern.to_owned()
     })
-}
-
-struct SelectGeometryCommand {
-    name: &'static str,
-    aliases: &'static [&'static str],
-    filter: GeometrySelectionFilter,
-}
-
-impl Command for SelectGeometryCommand {
-    fn name(&self) -> &'static str {
-        self.name
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        self.aliases
-    }
-
-    fn records_history(&self) -> bool {
-        false
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        require_consumed(arguments, 0, self.name)?;
-        let tolerance = document.tolerance();
-        let matches = document
-            .objects()
-            .filter(|object| document.is_object_selectable(object.id()))
-            .map(|object| {
-                Ok(self
-                    .filter
-                    .matches(object.geometry(), tolerance)?
-                    .then_some(object.id()))
-            })
-            .collect::<Result<Vec<Option<ObjectId>>, GeometryError>>()?
-            .into_iter()
-            .flatten()
-            .collect::<Vec<_>>();
-        document.select_objects(matches, SelectionMode::Add)?;
-        Ok(format!(
-            "Selected {} object(s)",
-            document.selected_object_count()
-        ))
-    }
-}
-
-#[derive(Clone, Copy)]
-enum GeometrySelectionFilter {
-    Curve,
-    OpenCurve,
-    ClosedCurve,
-    PlanarCurve,
-    Line,
-    Polyline,
-    Point,
-    PointCloud,
-    Surface,
-    Polysurface,
-    OpenPolysurface,
-    ClosedPolysurface,
-    Mesh,
-    OpenMesh,
-    ClosedMesh,
-}
-
-impl GeometrySelectionFilter {
-    fn matches(self, geometry: &Geometry, tolerance: Tolerance) -> Result<bool, GeometryError> {
-        let matches = match self {
-            Self::Curve => geometry_curve_ref(geometry).is_some(),
-            Self::OpenCurve => match geometry_curve_ref(geometry) {
-                Some(curve) => !curve.is_closed()?,
-                None => false,
-            },
-            Self::ClosedCurve => match geometry_curve_ref(geometry) {
-                Some(curve) => curve.is_closed()?,
-                None => false,
-            },
-            Self::PlanarCurve => match geometry_curve_ref(geometry) {
-                Some(curve) => curve.is_planar(tolerance)?,
-                None => false,
-            },
-            Self::Line => match geometry {
-                Geometry::Line(_) => true,
-                Geometry::NurbsCurve(curve) => {
-                    curve.spans().count() == 1 && curve.is_linear_at_zero_tolerance()?
-                }
-                _ => false,
-            },
-            Self::Polyline => match geometry {
-                Geometry::Polyline(_) => true,
-                Geometry::NurbsCurve(curve) => {
-                    curve.degree() == 1 && curve.control_points().len() > 2
-                }
-                _ => false,
-            },
-            Self::Point => matches!(geometry, Geometry::Point(_)),
-            Self::PointCloud => matches!(geometry, Geometry::PointCloud(_)),
-            Self::Surface => match geometry {
-                Geometry::NurbsSurface(_) => true,
-                Geometry::Brep(brep) => brep.faces().len() == 1,
-                _ => false,
-            },
-            Self::Polysurface => match geometry {
-                Geometry::Brep(brep) => brep.faces().len() > 1,
-                _ => false,
-            },
-            Self::OpenPolysurface => match geometry {
-                Geometry::Brep(brep) => brep.faces().len() > 1 && !brep.is_closed(),
-                _ => false,
-            },
-            Self::ClosedPolysurface => match geometry {
-                Geometry::Brep(brep) => brep.faces().len() > 1 && brep.is_closed(),
-                _ => false,
-            },
-            Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
-            Self::OpenMesh => match geometry {
-                Geometry::Mesh(mesh) => !mesh.topology().is_closed(),
-                _ => false,
-            },
-            Self::ClosedMesh => match geometry {
-                Geometry::Mesh(mesh) => mesh.topology().is_closed(),
-                _ => false,
-            },
-        };
-        Ok(matches)
-    }
-}
-
-struct SelShortCurveCommand;
-
-impl Command for SelShortCurveCommand {
-    fn name(&self) -> &'static str {
-        "SelShortCrv"
-    }
-
-    fn records_history(&self) -> bool {
-        false
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let [maximum_length] = arguments else {
-            return Err(CommandError::Usage("SelShortCrv maximum-length"));
-        };
-        let maximum_length = parse_positive_curve_length(maximum_length)?;
-        let tolerance = document.tolerance();
-        let matches = document
-            .objects()
-            .filter(|object| document.is_object_selectable(object.id()))
-            .filter_map(|object| {
-                geometry_curve_ref(object.geometry()).map(|curve| (object.id(), curve))
-            })
-            .map(|(id, curve)| Ok((curve.length(tolerance)? <= maximum_length).then_some(id)))
-            .collect::<Result<Vec<Option<ObjectId>>, GeometryError>>()?
-            .into_iter()
-            .flatten()
-            .collect::<Vec<_>>();
-        document.select_objects(matches, SelectionMode::Add)?;
-        Ok(format!(
-            "Selected {} object(s)",
-            document.selected_object_count()
-        ))
-    }
 }
 
 struct LengthCommand;

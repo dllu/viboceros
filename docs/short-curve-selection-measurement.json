@@ -1,0 +1,236 @@
+{
+  "batches": [
+    {
+      "request": {
+        "protocol_version": 1,
+        "iterations": 1,
+        "tolerance": {
+          "absolute": 0.01,
+          "relative": 1e-12,
+          "angular": 1e-10
+        },
+        "operations": [
+          {
+            "op": "short_curve_selection",
+            "id": "unit-boundary",
+            "maximum_length": 1,
+            "lengths": [
+              0.5,
+              0.9999999999999999,
+              1,
+              1.0000000000000002,
+              2
+            ]
+          }
+        ]
+      },
+      "response": {
+        "engine": "rhino",
+        "engine_version": "8.32.26160.13001",
+        "iterations": 1,
+        "protocol_version": 1,
+        "results": [
+          {
+            "elapsed_ns": 0,
+            "id": "unit-boundary",
+            "value": {
+              "selected": [
+                0,
+                1,
+                2,
+                3
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "protocol_version": 1,
+        "iterations": 1,
+        "tolerance": {
+          "absolute": 0.01,
+          "relative": 1e-12,
+          "angular": 1e-10
+        },
+        "operations": [
+          {
+            "op": "short_curve_selection",
+            "id": "near-limit",
+            "maximum_length": 1,
+            "lengths": [
+              1,
+              1.00000000000001,
+              1.000000000001,
+              1.0000000001,
+              1.00000001,
+              1.0000001,
+              1.000001,
+              1.001,
+              1.01
+            ]
+          }
+        ]
+      },
+      "response": {
+        "engine": "rhino",
+        "engine_version": "8.32.26160.13001",
+        "iterations": 1,
+        "protocol_version": 1,
+        "results": [
+          {
+            "elapsed_ns": 0,
+            "id": "near-limit",
+            "value": {
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "protocol_version": 1,
+        "iterations": 1,
+        "tolerance": {
+          "absolute": 1e-9,
+          "relative": 1e-12,
+          "angular": 1e-10
+        },
+        "operations": [
+          {
+            "op": "short_curve_selection",
+            "id": "limit-0.001",
+            "maximum_length": 0.001,
+            "lengths": [
+              0.001,
+              0.001000001,
+              0.001000002,
+              0.0010000100000000002,
+              0.0010001,
+              0.0010002,
+              0.001001
+            ]
+          },
+          {
+            "op": "short_curve_selection",
+            "id": "limit-1",
+            "maximum_length": 1,
+            "lengths": [
+              1,
+              1.000001,
+              1.000002,
+              1.00001,
+              1.0001,
+              1.0002,
+              1.001
+            ]
+          },
+          {
+            "op": "short_curve_selection",
+            "id": "limit-1000",
+            "maximum_length": 1000,
+            "lengths": [
+              1000,
+              1000.0009999999999,
+              1000.0020000000001,
+              1000.0100000000001,
+              1000.1,
+              1000.1999999999999,
+              1000.9999999999999
+            ]
+          }
+        ]
+      },
+      "response": {
+        "engine": "rhino",
+        "engine_version": "8.32.26160.13001",
+        "iterations": 1,
+        "protocol_version": 1,
+        "results": [
+          {
+            "elapsed_ns": 0,
+            "id": "limit-0.001",
+            "value": {
+              "selected": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "elapsed_ns": 0,
+            "id": "limit-1",
+            "value": {
+              "selected": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "elapsed_ns": 0,
+            "id": "limit-1000",
+            "value": {
+              "selected": [
+                0,
+                1
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "protocol_version": 1,
+        "iterations": 1,
+        "tolerance": {
+          "absolute": 0.01,
+          "relative": 1e-12,
+          "angular": 1e-10
+        },
+        "operations": [
+          {
+            "op": "short_curve_selection",
+            "id": "allowance-boundary",
+            "maximum_length": 1,
+            "lengths": [
+              1.000001,
+              1.0000010000000001,
+              1.000001000001,
+              1.0000010000010002,
+              1.0000011
+            ]
+          }
+        ]
+      },
+      "response": {
+        "engine": "rhino",
+        "engine_version": "8.32.26160.13001",
+        "iterations": 1,
+        "protocol_version": 1,
+        "results": [
+          {
+            "elapsed_ns": 0,
+            "id": "allowance-boundary",
+            "value": {
+              "selected": [
+                0
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

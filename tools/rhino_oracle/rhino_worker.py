@@ -2676,6 +2676,47 @@ def _point_input(operation):
     return _in_construction_plane(operation, script, None)
 
 
+def _short_curve_selection(operation):
+    lengths = operation["lengths"]
+    if (type(operation["maximum_length"]) not in (int, float)
+            or not isinstance(lengths, list)
+            or any(type(value) not in (int, float) for value in lengths)):
+        raise ValueError("short-curve fixture requires numeric lengths")
+    maximum = float(operation["maximum_length"])
+    _finite(maximum, "maximum curve length")
+    if maximum <= 0 or not 1 <= len(lengths) <= 32:
+        raise ValueError("invalid short-curve fixture")
+    lengths = [float(value) for value in lengths]
+    for value in lengths:
+        _finite(value, "curve length")
+        if value <= 0:
+            raise ValueError("invalid curve length")
+    document = Rhino.RhinoDoc.ActiveDoc
+    selected = [obj.Id for obj in document.Objects.GetSelectedObjects(False, False)]
+    ids = []
+    try:
+        document.Objects.UnselectAll()
+        for index, length in enumerate(lengths):
+            curve = Rhino.Geometry.LineCurve(_point([0, index, 0]), _point([length, index, 0]))
+            try:
+                object_id = document.Objects.AddCurve(curve)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add short-curve fixture")
+                ids.append(object_id)
+            finally:
+                curve.Dispose()
+        if not Rhino.RhinoApp.RunScript("_SelShortCrv %.17g" % maximum, False):
+            raise ValueError("short-curve command failed")
+        return {"selected": [i for i, key in enumerate(ids) if document.Objects.FindId(key).IsSelected(False)]}, 0
+    finally:
+        Rhino.RhinoApp.RunScript("!", False)
+        for key in ids:
+            document.Objects.Delete(key, True)
+        document.Objects.UnselectAll()
+        for key in selected:
+            document.Objects.Select(key)
+
+
 def _control_point_prompt_script(operation, interpolate=False):
     points = operation["points"]
     _point_input_script(points)  # Reuse the coordinate-only macro whitelist.
@@ -4008,6 +4049,8 @@ def _execute(operation, iterations, tolerance):
         return _control_point_prompt(operation)
     if kind == "interpolation_point_prompt":
         return _control_point_prompt(operation, True)
+    if kind == "short_curve_selection":
+        return _short_curve_selection(operation)
     if kind == "sweep1":
         return _sweep1(operation, iterations, tolerance)
     if kind == "curve_frames":

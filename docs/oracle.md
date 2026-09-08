@@ -2,6 +2,14 @@
 
 [Project overview](../README.md)
 
+The [short-curve selection diagnostic](short-curve-selection-measurement.json)
+embeds four requests and responses (40 line lengths). `short_curve_selection`
+creates owned line objects, runs the actual `SelShortCrv` command, and records
+selected source indices, restoring the original selection and deleting only
+its temporary lines. This is a Rhino-only probe; command tests replay its
+measurements. The measured relative `1e-6` allowance is more specific than the
+[help page's “less than” description](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelShortCrv).
+
 The versioned Python oracle API runs identical JSON geometry and document-state
 batches in a native release build of Viboceros and Rhino 8, recursively checks
 results, and reports per-operation timings.

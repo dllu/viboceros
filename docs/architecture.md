@@ -73,6 +73,9 @@ disjoint splitting and mesh explosion share a single reusable vertex-remap
 scratch array, avoiding per-component initialization of a source-sized array.
 The command-owned `object_selection` module supplies typed filters and boolean
 options to the separate [app object-prompt adapter](object-selection.md).
+The independent `geometry_selection` command module owns document-wide type,
+topology, planarity, and short-curve selectors. It preflights eligible matches
+before applying additive selection and leaves model history unchanged.
 Viewport hit-testing applies the filter before hit priority; clicks/windows use
 the same selection adapter. Prompt choices live outside model history, while
 finishing uses the registry's normal transaction lifecycle with explicit

@@ -13,5 +13,6 @@ viboceros-geometry.workspace = true
 viboceros-io.workspace = true
 
 [dev-dependencies]
+serde_json = { workspace = true, features = ["float_roundtrip"] }
 tempfile = "3.27.0"
 monstertruck.workspace = true

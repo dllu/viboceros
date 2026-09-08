@@ -330,6 +330,47 @@ class RhinoWorkerTests(unittest.TestCase):
             self.assertEqual(elapsed, 0)
             disposed.assert_called_once_with()
 
+    def test_short_curve_probe_rejects_invalid_inputs_before_document_changes(self):
+        for maximum in [0, -1, float("nan"), float("inf"), True, "1 _Delete"]:
+            with self.subTest(maximum=maximum), self.assertRaises(ValueError):
+                self.worker._short_curve_selection({"lengths": [1.0], "maximum_length": maximum})
+        for lengths in [[], [1.0] * 33, [0], [-1], [float("inf")], [True], ["1 _Delete"], "1"]:
+            with self.subTest(lengths=lengths), self.assertRaises(ValueError):
+                self.worker._short_curve_selection({"lengths": lengths, "maximum_length": 1.0})
+
+    def test_short_curve_probe_restores_selection_and_owned_objects_after_failure(self):
+        for failure in [False, True]:
+            selected = {"existing"}
+            objects = {"existing"}
+            disposed = Mock()
+            def add(curve):
+                objects.add("probe")
+                return "probe"
+            self.document.Objects = SimpleNamespace(
+                GetSelectedObjects=lambda a,b: [SimpleNamespace(Id="existing")],
+                UnselectAll=selected.clear, Select=selected.add, AddCurve=add,
+                Delete=lambda key,quiet: objects.remove(key),
+                FindId=lambda key: SimpleNamespace(IsSelected=lambda _: key in selected))
+            self.worker.System.Guid = SimpleNamespace(Empty="empty")
+            self.worker.Rhino.Geometry = SimpleNamespace(LineCurve=lambda a,b: SimpleNamespace(Dispose=disposed))
+            def run(script, quiet):
+                if script != "!":
+                    self.assertEqual(script, "_SelShortCrv 1")
+                    self.assertEqual(selected, set())
+                    selected.add("probe")
+                    if failure: raise ValueError("command failure")
+                return True
+            self.worker.Rhino.RhinoApp.RunScript = run
+            with patch.object(self.worker, "_point", side_effect=lambda value: value):
+                if failure:
+                    with self.assertRaisesRegex(ValueError, "command failure"):
+                        self.worker._short_curve_selection({"lengths": [0.5], "maximum_length": 1})
+                else:
+                    self.assertEqual(self.worker._short_curve_selection({"lengths": [0.5], "maximum_length": 1}), ({"selected": [0]}, 0))
+            self.assertEqual(objects, {"existing"})
+            self.assertEqual(selected, {"existing"})
+            disposed.assert_called_once_with()
+
     def test_point_input_probe_restores_plane_selection_and_owned_outputs_on_failure(self):
         for failed in [False, True]:
             with self.subTest(failed=failed):

@@ -30,8 +30,13 @@ exactly straight, single-span higher-degree NURBS curves, while excluding
 multi-span curves and polylines as Rhino does. `SelPolyline` includes native
 polylines and multi-segment degree-one NURBS curves, but excludes line objects
 and two-control-point degree-one NURBS curves. `SelShortCrv` takes an explicit
-positive maximum length and includes curves exactly on that boundary; it uses
-the same controlled length calculation as `Length`. Mesh closure uses exact
+positive maximum length and includes curves up to `maximum × 1.000001`;
+[40 retained Rhino line measurements](../short-curve-selection-measurement.json)
+verify this relative allowance, including adjacent floats at its boundary,
+three length scales, and two document tolerances. The enlarged comparison limit
+is capped at the largest finite value. Nonlinear curves still use the same
+controlled length calculation as `Length`; their near-boundary classification
+has not been separately audited. Mesh closure uses exact
 location-welded polygon-edge topology, so quad meshes, indexed triangle meshes,
 and STL-style triangle soup classify consistently; quad diagonals are used only
 when an operation explicitly needs triangles.
