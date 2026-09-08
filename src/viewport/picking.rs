@@ -61,11 +61,30 @@ fn triangle_depth(
         signed_area(screen[0], screen[1], pointer) / area,
     ];
     let depth = if perspective {
-        1.0 / weights
+        // The inside predicate tolerates a small edge overshoot. Negative
+        // weights are not meaningful depths and can reverse the reciprocal sum.
+        let weights = weights.map(|w| w.max(0.0));
+        let weight_sum = weights.into_iter().sum::<Real>();
+        if !weight_sum.is_finite() || weight_sum <= 0.0 {
+            return None;
+        }
+        // Scale by the nearest contributing vertex, not an unused vertex with
+        // zero weight. Every ratio is then in [0, 1], without forming 1/depth.
+        let minimum = weights
             .into_iter()
             .zip(depths)
-            .map(|(w, d)| w / d)
+            .filter(|(w, _)| *w > 0.0)
+            .map(|(_, d)| d)
+            .fold(Real::INFINITY, Real::min);
+        let maximum = depths.into_iter().fold(Real::NEG_INFINITY, Real::max);
+        let reciprocal = weights
+            .into_iter()
+            .zip(depths)
+            .filter(|(w, _)| *w > 0.0)
+            .map(|(w, d)| w * (minimum / d))
             .sum::<Real>()
+            / weight_sum;
+        (minimum / reciprocal).clamp(minimum, maximum)
     } else {
         let minimum = depths.into_iter().fold(Real::INFINITY, Real::min);
         let maximum = depths.into_iter().fold(Real::NEG_INFINITY, Real::max);
@@ -216,6 +235,62 @@ impl Viewport {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn perspective_depth_is_bounded_at_captured_edges() {
+        let screen = [Pos2::ZERO, Pos2::new(1.0, 0.0), Pos2::new(0.0, 1.0)];
+        let pointer = Pos2::new(-5e-13, 0.0);
+        assert!(point_in_triangle(pointer, screen[0], screen[1], screen[2]));
+        assert_eq!(
+            triangle_depth(pointer, screen, [1e14, 1.0, 1e14], true),
+            Some(1e14)
+        );
+    }
+
+    #[test]
+    fn perspective_depth_handles_extreme_positive_vertex_ranges() {
+        let screen = [Pos2::ZERO, Pos2::new(8.0, 0.0), Pos2::new(0.0, 8.0)];
+        for depths in [
+            [Real::from_bits(1), Real::from_bits(2), Real::from_bits(4)],
+            [Real::MAX, Real::MAX.next_down(), Real::MAX / 2.0],
+            [Real::from_bits(1), 1.0, Real::MAX],
+        ] {
+            for (vertex, expected) in screen.into_iter().zip(depths) {
+                assert_eq!(triangle_depth(vertex, screen, depths, true), Some(expected));
+            }
+            let minimum = depths.into_iter().fold(Real::INFINITY, Real::min);
+            let maximum = depths.into_iter().fold(Real::NEG_INFINITY, Real::max);
+            for x in 0..=8 {
+                for y in 0..=8 - x {
+                    let actual =
+                        triangle_depth(Pos2::new(x as f32, y as f32), screen, depths, true);
+                    assert!(
+                        actual.is_some_and(|d| (minimum..=maximum).contains(&d)),
+                        "depths={depths:?}, ({x},{y}), actual={actual:?}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn perspective_depth_matches_scaled_analytic_harmonic_mean() {
+        let screen = [Pos2::ZERO, Pos2::new(8.0, 0.0), Pos2::new(0.0, 8.0)];
+        // At (2, 2), barycentric weights are 1/2, 1/4, 1/4, so
+        // 1 / (1/(2s) + 1/(8s) + 1/(16s)) = 16s/11.
+        for exponent in [-1000, -500, 0, 500, 1000] {
+            let scale = 2.0_f64.powi(exponent);
+            let actual = triangle_depth(
+                Pos2::new(2.0, 2.0),
+                screen,
+                [scale, 2.0 * scale, 4.0 * scale],
+                true,
+            )
+            .unwrap();
+            let expected = scale * (16.0 / 11.0);
+            assert!((actual / expected - 1.0).abs() <= 2.0 * Real::EPSILON);
+        }
+    }
 
     #[test]
     fn captured_edge_depth_survives_an_overflowing_weighted_product() {

@@ -107,6 +107,11 @@ a scaled, renormalized fallback handles overflowing products at captured edges.
 Grid tests exercise positive/negative f64-limit depths, subnormal constants, and
 nearby finite vertex depths; document picking checks nearer-face choice in both
 insertion orders.
+Perspective interpolation clamps tolerated edge weights to nonnegative values
+and scales reciprocal depths by the nearest contributing vertex. This avoids
+negative edge-hit depths and reciprocal overflow for tiny positive depths;
+zero-weight vertices do not influence the scale. Tests check exact vertex hits,
+finite depth bounds, and an analytic harmonic mean across binary scales.
 The `viewport/scene` module owns visible-object display dispatch, sampled curve
 and tessellated surface submission, per-primitive f64 depth staging, transparent
 triangle sorting, and final GPU buffer assembly. The interaction module invokes
