@@ -4,7 +4,7 @@ use viboceros_geometry::{AffineTransform3, LengthUnitSystem, Point3, Tolerance};
 impl Document {
     /// Changes model units as one atomic, undoable document-setting edit.
     /// When rescale is true, all geometry (including hidden/locked objects)
-    /// and the absolute tolerance are scaled to preserve physical size.
+    /// is scaled to preserve physical size. Numeric tolerances stay unchanged.
     /// Otherwise only metadata changes. Selection, attributes, groups, and
     /// object order are preserved. No history entry is created for a no-op.
     /// Unitless conversions retain coordinates; rescaling involving unset
@@ -23,6 +23,8 @@ impl Document {
         } else {
             1.0
         };
+        // Scale the geometry-validation threshold, not the document setting.
+        // Existing short edges must survive conversion into larger units.
         let tolerance = Tolerance::try_new(
             self.tolerance.absolute() * scale,
             self.tolerance.relative(),
@@ -50,7 +52,7 @@ impl Document {
             None
         };
         let old_units = std::mem::replace(&mut self.units, units);
-        let old_tolerance = std::mem::replace(&mut self.tolerance, tolerance);
+        let old_tolerance = self.tolerance;
         self.record_edit(
             "Units",
             Edit::UnitsChanged {

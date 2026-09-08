@@ -6,6 +6,86 @@ fn point(x: f64) -> Geometry {
 }
 
 #[test]
+fn unit_changes_match_rhino8_public_api_measurements() {
+    use serde_json::Value;
+    fn units(code: &Value) -> LengthUnitSystem {
+        match code.as_u64().unwrap() {
+            0 => LengthUnitSystem::None,
+            2 => LengthUnitSystem::Millimeters,
+            4 => LengthUnitSystem::Meters,
+            8 => LengthUnitSystem::Inches,
+            _ => panic!("unexpected fixture unit"),
+        }
+    }
+    fn check(document: &Document, state: &Value) {
+        assert_eq!(document.units(), &units(&state["units"]));
+        for (actual, key) in [
+            (document.tolerance.absolute(), "absolute"),
+            (document.tolerance.relative(), "relative"),
+            (document.tolerance.angular(), "angular"),
+        ] {
+            assert_eq!(actual, state[key].as_f64().unwrap());
+        }
+        let expected = state["objects"].as_array().unwrap();
+        assert_eq!(document.objects.len(), expected.len());
+        for (object, expected) in document.objects.iter().zip(expected) {
+            let Geometry::Point(point) = object.geometry() else {
+                panic!("expected point");
+            };
+            for (actual, expected) in [point.x(), point.y(), point.z()]
+                .into_iter()
+                .zip(expected["point"].as_array().unwrap())
+            {
+                let expected = expected.as_f64().unwrap();
+                assert!((actual - expected).abs() <= 1e-12 * expected.abs().max(1.0));
+            }
+            assert_eq!(
+                object.attributes().is_visible(),
+                expected["mode"] != "Hidden"
+            );
+            assert_eq!(
+                object.attributes().is_locked(),
+                expected["mode"] == "Locked"
+            );
+            assert_eq!(
+                document.selection.contains(&object.id),
+                expected["selected"].as_bool().unwrap()
+            );
+        }
+    }
+    let fixture: Value = serde_json::from_str(include_str!("fixtures/rhino8.json")).unwrap();
+    assert_eq!(fixture["engine"], "rhino");
+    assert!(fixture.get("error").is_none());
+    let cases = fixture["results"].as_array().unwrap();
+    assert_eq!(cases.len(), 8);
+    for case in cases {
+        let before = &case["value"]["before"];
+        let after = &case["value"]["after"];
+        let mut document = Document::with_units(
+            Tolerance::try_new(0.001, 0.0001, 0.00001).unwrap(),
+            units(&before["units"]),
+        )
+        .unwrap();
+        let first = document.add_geometry(point(1000.0)).unwrap();
+        let hidden = document.add_geometry(point(500.0)).unwrap();
+        let locked = document.add_geometry(point(250.0)).unwrap();
+        document
+            .select_object(first, SelectionMode::Replace)
+            .unwrap();
+        document.set_objects_visibility([hidden], false).unwrap();
+        document.set_objects_locked([locked], true).unwrap();
+        check(&document, before);
+        let rescale = case["id"].as_str().unwrap().ends_with("-true");
+        document.set_units(units(&after["units"]), rescale).unwrap();
+        check(&document, after);
+        document.undo().unwrap();
+        check(&document, before);
+        document.redo().unwrap();
+        check(&document, after);
+    }
+}
+
+#[test]
 fn unit_scaling_includes_hidden_locked_objects_and_replays_exactly() {
     let mut document = Document::new(Tolerance::try_new(1e-3, 1e-12, 1e-10).unwrap());
     let first = document.add_geometry(point(1000.0)).unwrap();
@@ -31,7 +111,7 @@ fn unit_scaling_includes_hidden_locked_objects_and_replays_exactly() {
     assert!(!document.object(hidden).unwrap().attributes().is_visible());
     assert_eq!(document.selection, selection);
     assert_eq!(document.groups, groups);
-    assert_eq!(document.tolerance.absolute(), 1e-6);
+    assert_eq!(document.tolerance.absolute(), tolerance.absolute());
     assert_eq!(document.tolerance.relative(), tolerance.relative());
     assert_eq!(document.tolerance.angular(), tolerance.angular());
     assert_eq!(document.undo_label(), Some("Units"));

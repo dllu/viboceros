@@ -1,0 +1,616 @@
+{
+  "iterations": 1,
+  "results": [
+    {
+      "value": {
+        "before": {
+          "relative": 0.0001,
+          "objects": [
+            {
+              "mode": "Normal",
+              "selected": true,
+              "point": [
+                1000.0,
+                2000.0,
+                3000.0
+              ]
+            },
+            {
+              "mode": "Hidden",
+              "selected": false,
+              "point": [
+                500.0,
+                1000.0,
+                1500.0
+              ]
+            },
+            {
+              "mode": "Locked",
+              "selected": false,
+              "point": [
+                250.0,
+                500.0,
+                750.0
+              ]
+            }
+          ],
+          "absolute": 0.001,
+          "units": 2,
+          "angular": 1e-05
+        },
+        "after": {
+          "relative": 0.0001,
+          "objects": [
+            {
+              "mode": "Normal",
+              "selected": true,
+              "point": [
+                1000.0,
+                2000.0,
+                3000.0
+              ]
+            },
+            {
+              "mode": "Hidden",
+              "selected": false,
+              "point": [
+                500.0,
+                1000.0,
+                1500.0
+              ]
+            },
+            {
+              "mode": "Locked",
+              "selected": false,
+              "point": [
+                250.0,
+                500.0,
+                750.0
+              ]
+            }
+          ],
+          "absolute": 0.001,
+          "units": 4,
+          "angular": 1e-05
+        }
+      },
+      "elapsed_ns": 0,
+      "id": "2-to-4-scale-false"
+    },
+    {
+      "value": {
+        "before": {
+          "relative": 0.0001,
+          "objects": [
+            {
+              "mode": "Normal",
+              "selected": true,
+              "point": [
+                1000.0,
+                2000.0,
+                3000.0
+              ]
+            },
+            {
+              "mode": "Hidden",
+              "selected": false,
+              "point": [
+                500.0,
+                1000.0,
+                1500.0
+              ]
+            },
+            {
+              "mode": "Locked",
+              "selected": false,
+              "point": [
+                250.0,
+                500.0,
+                750.0
+              ]
+            }
+          ],
+          "absolute": 0.001,
+          "units": 2,
+          "angular": 1e-05
+        },
+        "after": {
+          "relative": 0.0001,
+          "objects": [
+            {
+              "mode": "Normal",
+              "selected": true,
+              "point": [
+                1.0,
+                2.0,
+                3.0
+              ]
+            },
+            {
+              "mode": "Hidden",
+              "selected": false,
+              "point": [
+                0.5,
+                1.0,
+                1.5
+              ]
+            },
+            {
+              "mode": "Locked",
+              "selected": false,
+              "point": [
+                0.25,
+                0.5,
+                0.75
+              ]
+            }
+          ],
+          "absolute": 0.001,
+          "units": 4,
+          "angular": 1e-05
+        }
+      },
+      "elapsed_ns": 0,
+      "id": "2-to-4-scale-true"
+    },
+    {
+      "value": {
+        "before": {
+          "relative": 0.0001,
+          "objects": [
+            {
+              "mode": "Normal",
+              "selected": true,
+              "point": [
+                1000.0,
+                2000.0,
+                3000.0
+              ]
+            },
+            {
+              "mode": "Hidden",
+              "selected": false,
+              "point": [
+                500.0,
+                1000.0,
+                1500.0
+              ]
+            },
+            {
+              "mode": "Locked",
+              "selected": false,
+              "point": [
+                250.0,
+                500.0,
+                750.0
+              ]
+            }
+          ],
+          "absolute": 0.001,
+          "units": 2,
+          "angular": 1e-05
+        },
+        "after": {
+          "relative": 0.0001,
+          "objects": [
+            {
+              "mode": "Normal",
+              "selected": true,
+              "point": [
+                1000.0,
+                2000.0,
+                3000.0
+              ]
+            },
+            {
+              "mode": "Hidden",
+              "selected": false,
+              "point": [
+                500.0,
+                1000.0,
+                1500.0
+              ]
+            },
+            {
+              "mode": "Locked",
+              "selected": false,
+              "point": [
+                250.0,
+                500.0,
+                750.0
+              ]
+            }
+          ],
+          "absolute": 0.001,
+          "units": 8,
+          "angular": 1e-05
+        }
+      },
+      "elapsed_ns": 0,
+      "id": "2-to-8-scale-false"
+    },
+    {
+      "value": {
+        "before": {
+          "relative": 0.0001,
+          "objects": [
+            {
+              "mode": "Normal",
+              "selected": true,
+              "point": [
+                1000.0,
+                2000.0,
+                3000.0
+              ]
+            },
+            {
+              "mode": "Hidden",
+              "selected": false,
+              "point": [
+                500.0,
+                1000.0,
+                1500.0
+              ]
+            },
+            {
+              "mode": "Locked",
+              "selected": false,
+              "point": [
+                250.0,
+                500.0,
+                750.0
+              ]
+            }
+          ],
+          "absolute": 0.001,
+          "units": 2,
+          "angular": 1e-05
+        },
+        "after": {
+          "relative": 0.0001,
+          "objects": [
+            {
+              "mode": "Normal",
+              "selected": true,
+              "point": [
+                39.37007874015748,
+                78.74015748031496,
+                118.11023622047244
+              ]
+            },
+            {
+              "mode": "Hidden",
+              "selected": false,
+              "point": [
+                19.68503937007874,
+                39.37007874015748,
+                59.05511811023622
+              ]
+            },
+            {
+              "mode": "Locked",
+              "selected": false,
+              "point": [
+                9.84251968503937,
+                19.68503937007874,
+                29.52755905511811
+              ]
+            }
+          ],
+          "absolute": 0.001,
+          "units": 8,
+          "angular": 1e-05
+        }
+      },
+      "elapsed_ns": 0,
+      "id": "2-to-8-scale-true"
+    },
+    {
+      "value": {
+        "before": {
+          "relative": 0.0001,
+          "objects": [
+            {
+              "mode": "Normal",
+              "selected": true,
+              "point": [
+                1000.0,
+                2000.0,
+                3000.0
+              ]
+            },
+            {
+              "mode": "Hidden",
+              "selected": false,
+              "point": [
+                500.0,
+                1000.0,
+                1500.0
+              ]
+            },
+            {
+              "mode": "Locked",
+              "selected": false,
+              "point": [
+                250.0,
+                500.0,
+                750.0
+              ]
+            }
+          ],
+          "absolute": 0.001,
+          "units": 8,
+          "angular": 1e-05
+        },
+        "after": {
+          "relative": 0.0001,
+          "objects": [
+            {
+              "mode": "Normal",
+              "selected": true,
+              "point": [
+                1000.0,
+                2000.0,
+                3000.0
+              ]
+            },
+            {
+              "mode": "Hidden",
+              "selected": false,
+              "point": [
+                500.0,
+                1000.0,
+                1500.0
+              ]
+            },
+            {
+              "mode": "Locked",
+              "selected": false,
+              "point": [
+                250.0,
+                500.0,
+                750.0
+              ]
+            }
+          ],
+          "absolute": 0.001,
+          "units": 2,
+          "angular": 1e-05
+        }
+      },
+      "elapsed_ns": 0,
+      "id": "8-to-2-scale-false"
+    },
+    {
+      "value": {
+        "before": {
+          "relative": 0.0001,
+          "objects": [
+            {
+              "mode": "Normal",
+              "selected": true,
+              "point": [
+                1000.0,
+                2000.0,
+                3000.0
+              ]
+            },
+            {
+              "mode": "Hidden",
+              "selected": false,
+              "point": [
+                500.0,
+                1000.0,
+                1500.0
+              ]
+            },
+            {
+              "mode": "Locked",
+              "selected": false,
+              "point": [
+                250.0,
+                500.0,
+                750.0
+              ]
+            }
+          ],
+          "absolute": 0.001,
+          "units": 8,
+          "angular": 1e-05
+        },
+        "after": {
+          "relative": 0.0001,
+          "objects": [
+            {
+              "mode": "Normal",
+              "selected": true,
+              "point": [
+                25400.0,
+                50800.0,
+                76200.0
+              ]
+            },
+            {
+              "mode": "Hidden",
+              "selected": false,
+              "point": [
+                12700.0,
+                25400.0,
+                38100.0
+              ]
+            },
+            {
+              "mode": "Locked",
+              "selected": false,
+              "point": [
+                6350.0,
+                12700.0,
+                19050.0
+              ]
+            }
+          ],
+          "absolute": 0.001,
+          "units": 2,
+          "angular": 1e-05
+        }
+      },
+      "elapsed_ns": 0,
+      "id": "8-to-2-scale-true"
+    },
+    {
+      "value": {
+        "before": {
+          "relative": 0.0001,
+          "objects": [
+            {
+              "mode": "Normal",
+              "selected": true,
+              "point": [
+                1000.0,
+                2000.0,
+                3000.0
+              ]
+            },
+            {
+              "mode": "Hidden",
+              "selected": false,
+              "point": [
+                500.0,
+                1000.0,
+                1500.0
+              ]
+            },
+            {
+              "mode": "Locked",
+              "selected": false,
+              "point": [
+                250.0,
+                500.0,
+                750.0
+              ]
+            }
+          ],
+          "absolute": 0.001,
+          "units": 0,
+          "angular": 1e-05
+        },
+        "after": {
+          "relative": 0.0001,
+          "objects": [
+            {
+              "mode": "Normal",
+              "selected": true,
+              "point": [
+                1000.0,
+                2000.0,
+                3000.0
+              ]
+            },
+            {
+              "mode": "Hidden",
+              "selected": false,
+              "point": [
+                500.0,
+                1000.0,
+                1500.0
+              ]
+            },
+            {
+              "mode": "Locked",
+              "selected": false,
+              "point": [
+                250.0,
+                500.0,
+                750.0
+              ]
+            }
+          ],
+          "absolute": 0.001,
+          "units": 2,
+          "angular": 1e-05
+        }
+      },
+      "elapsed_ns": 0,
+      "id": "0-to-2-scale-true"
+    },
+    {
+      "value": {
+        "before": {
+          "relative": 0.0001,
+          "objects": [
+            {
+              "mode": "Normal",
+              "selected": true,
+              "point": [
+                1000.0,
+                2000.0,
+                3000.0
+              ]
+            },
+            {
+              "mode": "Hidden",
+              "selected": false,
+              "point": [
+                500.0,
+                1000.0,
+                1500.0
+              ]
+            },
+            {
+              "mode": "Locked",
+              "selected": false,
+              "point": [
+                250.0,
+                500.0,
+                750.0
+              ]
+            }
+          ],
+          "absolute": 0.001,
+          "units": 2,
+          "angular": 1e-05
+        },
+        "after": {
+          "relative": 0.0001,
+          "objects": [
+            {
+              "mode": "Normal",
+              "selected": true,
+              "point": [
+                1000.0,
+                2000.0,
+                3000.0
+              ]
+            },
+            {
+              "mode": "Hidden",
+              "selected": false,
+              "point": [
+                500.0,
+                1000.0,
+                1500.0
+              ]
+            },
+            {
+              "mode": "Locked",
+              "selected": false,
+              "point": [
+                250.0,
+                500.0,
+                750.0
+              ]
+            }
+          ],
+          "absolute": 0.001,
+          "units": 0,
+          "angular": 1e-05
+        }
+      },
+      "elapsed_ns": 0,
+      "id": "2-to-0-scale-true"
+    }
+  ],
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "protocol_version": 1
+}
