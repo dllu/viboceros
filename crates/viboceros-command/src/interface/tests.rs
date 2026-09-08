@@ -1,6 +1,46 @@
 use super::*;
 
 #[test]
+fn zoom_factor_is_finite_positive_and_does_not_mutate_interface_state() {
+    for (input, value) in [
+        ("Zoom Factor 2", 2.0),
+        ("'_Zoom _Factor 0.5", 0.5),
+        ("zoom factor 1", 1.0),
+        ("Zoom Factor 1e300", 1e300),
+        ("Zoom Factor 5e-324", f64::from_bits(1)),
+    ] {
+        let action = InterfaceCommand::ZoomFactor(ZoomFactor::try_new(value).unwrap());
+        assert_eq!(parse(input), Some(Ok(action)));
+        let mut current = state();
+        let original = current.clone();
+        current.apply(action).unwrap();
+        assert_eq!(current, original);
+    }
+    for value in [0.0, -0.0, -1.0, f64::NAN, f64::INFINITY, f64::NEG_INFINITY] {
+        assert!(ZoomFactor::try_new(value).is_none());
+    }
+    for input in [
+        "Zoom Factor",
+        "Zoom Factor 0",
+        "Zoom Factor -0",
+        "Zoom Factor -1",
+        "Zoom Factor NaN",
+        "Zoom Factor inf",
+        "Zoom Factor 1e999",
+        "Zoom Factor 1e-999",
+        "Zoom Factor abc",
+        "Zoom Factor 2 extra",
+        "ZE Factor 2",
+        "Zoom All Factor 2",
+    ] {
+        assert!(
+            matches!(parse(input), Some(Err(InterfaceError::Usage(_)))),
+            "{input}"
+        );
+    }
+}
+
+#[test]
 fn zoom_extents_is_a_validated_host_action() {
     for (input, expected) in [
         ("Zoom All Extents", InterfaceCommand::ZoomAllExtents),

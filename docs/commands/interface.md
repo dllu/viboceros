@@ -12,6 +12,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | --- | --- |
 | `Zoom Extents` / `ZE` | Fit visible geometry in the active viewport; [details and limits](zoom.md). |
 | `Zoom Selected` / `ZS` | Fit visible selected geometry without changing selection or model history. |
+| `Zoom Factor <number>` | Scale the active view about its center; positive factors above 1 zoom in and below 1 zoom out. |
 | `Zoom All Extents` / `ZEA` | Fit all four views, applying only after every fit succeeds. |
 | `Zoom All Selected` / `ZSA` | Fit visible selected geometry in all four views with the same all-or-nothing policy. |
 | `Snap` | Toggle the one-unit grid snap. |

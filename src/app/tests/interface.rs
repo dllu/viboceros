@@ -91,6 +91,30 @@ fn zoom_extents_routes_to_the_active_view_without_cancelling_modeling_or_redo() 
         assert_eq!(app.document.undo_label(), undo.as_deref());
         assert_eq!(app.document.redo_label(), redo.as_deref());
     }
+    for command in [
+        "Zoom Factor 2",
+        "'_Zoom _Factor 0.5",
+        "Zoom Factor 1",
+        "Zoom Factor NaN",
+        "Zoom Factor 0",
+    ] {
+        enter(&mut app, command);
+        let message = app.command_log.back().unwrap();
+        if command.ends_with("NaN") || command.ends_with(" 0") {
+            assert!(message.starts_with("Error:"));
+        } else if command.ends_with(" 1") {
+            assert!(message.starts_with("Zoom unchanged"));
+        } else {
+            assert!(message.starts_with("Zoomed by factor"));
+        }
+        assert_eq!(app.active_viewport, 1);
+        assert_eq!(app.active_command, pending);
+        assert_eq!(app.drafting_plane, plane);
+        assert_eq!(app.document.selected_object_ids().collect::<Vec<_>>(), [id]);
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
+        assert_eq!(app.document.undo_label(), undo.as_deref());
+        assert_eq!(app.document.redo_label(), redo.as_deref());
+    }
 }
 
 #[test]

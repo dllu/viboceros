@@ -1,4 +1,4 @@
-# Zoom to extents and selection
+# Zoom
 
 [Interface commands](interface.md) · [Viewport controls](../interface.md)
 
@@ -24,6 +24,20 @@ Both work with coordinate text focused and leave partially typed input and
 unfinished modeling prompts intact. Held-key repeats and matching key releases
 are consumed without repeating the action; extra modifiers do not trigger either
 shortcut. Tests exercise both Ctrl and macOS Command modifier representations.
+
+`Zoom Factor 2` doubles the active view's target-plane magnification;
+`Zoom Factor 0.5` halves it. Factors must be finite and strictly positive,
+matching the documented [Rhino Factor option](https://docs.mcneel.com/rhino/8/help/en-us/commands/zoom.htm).
+The viewport center stays fixed on the target plane, including after panning.
+Parallel views change scale; perspective views change camera distance, retaining
+the lens, model-space target, and construction plane. Existing camera limits
+clamp extreme factors; factor 1, a factor below camera precision, or an
+already-reached limit reports no change.
+Factors are parsed and applied in f64, including finite values outside f32 range.
+Missing layout, invalid arguments, or an unrepresentable resulting pan leave
+the camera unchanged. Like the other Zoom actions, Factor preserves modeling
+prompts, selection, and undo/redo. It currently requires an inline factor; bare
+`Zoom Factor` does not open a numeric prompt, and `Zoom All Factor` is unsupported.
 
 Perspective wheel zoom pins the point under the pointer on the camera-target
 plane (through the target, perpendicular to the viewing direction), rather than

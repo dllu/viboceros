@@ -327,39 +327,56 @@ impl Viewport {
     }
 
     pub(super) fn zoom_by(&mut self, factor: f32, pointer: Option<Pos2>, rect: Rect) {
+        let _ = self.zoom_by_factor(Real::from(factor), pointer, rect);
+    }
+
+    pub(crate) fn zoom_factor(&mut self, factor: Real) -> Result<bool, &'static str> {
+        let rect = self.last_rect.ok_or("viewport has not been laid out")?;
+        self.zoom_by_factor(factor, Some(rect.center()), rect)
+    }
+
+    fn zoom_by_factor(
+        &mut self,
+        factor: Real,
+        pointer: Option<Pos2>,
+        rect: Rect,
+    ) -> Result<bool, &'static str> {
         if !factor.is_finite()
             || factor <= 0.0
             || !rect.is_finite()
             || !rect.is_positive()
+            || !rect.width().is_finite()
+            || !rect.height().is_finite()
             || pointer.is_some_and(|pointer| !pointer.is_finite())
         {
-            return;
+            return Err("invalid zoom factor or viewport coordinates");
         }
         if self.kind == ViewKind::Perspective {
             let old_distance = self.perspective_camera_distance;
-            let new_distance = (old_distance / Real::from(factor)).clamp(
+            let new_distance = (old_distance / factor).clamp(
                 MIN_PERSPECTIVE_CAMERA_DISTANCE,
                 MAX_PERSPECTIVE_CAMERA_DISTANCE,
             );
             if new_distance == old_distance {
-                return;
+                return Ok(false);
             }
             // At the target plane, screen offsets scale by old/new distance.
             // This needs no world-plane intersection or large model subtraction.
             if let Some(pointer) = pointer {
                 let Some(pan) = zoom_pan(self.pan, pointer, rect, old_distance / new_distance)
                 else {
-                    return;
+                    return Err("zoom exceeds the screen-coordinate range");
                 };
                 self.pan = pan;
             }
             self.perspective_camera_distance = new_distance;
-            return;
+            return Ok(true);
         }
         let old_scale = self.pixels_per_unit;
-        let new_scale = (old_scale * factor).clamp(f32::MIN_POSITIVE, 2_000.0);
+        let new_scale =
+            (Real::from(old_scale) * factor).clamp(Real::from(f32::MIN_POSITIVE), 2_000.0) as f32;
         if new_scale == old_scale {
-            return;
+            return Ok(false);
         }
         if let Some(pointer) = pointer {
             let Some(pan) = zoom_pan(
@@ -368,11 +385,12 @@ impl Viewport {
                 rect,
                 Real::from(new_scale) / Real::from(old_scale),
             ) else {
-                return;
+                return Err("zoom exceeds the screen-coordinate range");
             };
             self.pan = pan;
         }
         self.pixels_per_unit = new_scale;
+        Ok(true)
     }
 
     pub(super) fn gpu_view_uniform(
@@ -524,6 +542,71 @@ fn matrix_to_gpu(matrix: NaMatrix4<Real>) -> [[f32; 4]; 4] {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn command_zoom_factor_pins_view_center_and_stages_failures() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let mut view = Viewport {
+                last_rect: Some(rect),
+                pan: Vec2::new(17.0, -23.0),
+                ..Viewport::new(kind)
+            };
+            let plane = view.plane.clone();
+            let before = (
+                view.pan,
+                view.pixels_per_unit,
+                view.perspective_camera_distance,
+            );
+            assert_eq!(view.zoom_factor(2.0), Ok(true));
+            assert_eq!(view.pan, before.0 * 2.0);
+            if kind.is_parallel() {
+                assert_eq!(view.pixels_per_unit, before.1 * 2.0);
+            } else {
+                assert_eq!(view.perspective_camera_distance, before.2 / 2.0);
+            }
+            assert_eq!(view.zoom_factor(0.5), Ok(true));
+            assert_eq!(
+                (
+                    view.pan,
+                    view.pixels_per_unit,
+                    view.perspective_camera_distance
+                ),
+                before
+            );
+            assert_eq!(view.plane, plane);
+            assert_eq!(view.zoom_factor(1.0), Ok(false));
+            for factor in [0.0, -1.0, Real::NAN, Real::INFINITY] {
+                assert!(view.zoom_factor(factor).is_err());
+                assert_eq!(
+                    (
+                        view.pan,
+                        view.pixels_per_unit,
+                        view.perspective_camera_distance
+                    ),
+                    before
+                );
+            }
+            view.pan = Vec2::splat(f32::MAX);
+            assert!(view.zoom_factor(2.0).is_err());
+            assert_eq!(view.pan, Vec2::splat(f32::MAX));
+            assert_eq!(
+                (view.pixels_per_unit, view.perspective_camera_distance),
+                (before.1, before.2)
+            );
+            view.pan = Vec2::ZERO;
+            assert_eq!(view.zoom_factor(Real::MAX), Ok(true));
+            assert_eq!(view.zoom_factor(Real::MAX), Ok(false));
+            assert_eq!(view.zoom_factor(Real::from_bits(1)), Ok(true));
+            assert_eq!(view.zoom_factor(Real::from_bits(1)), Ok(false));
+        }
+        assert!(Viewport::default().zoom_factor(2.0).is_err());
+    }
 
     #[test]
     fn perspective_unprojection_rounds_world_translation_only_at_the_end() {

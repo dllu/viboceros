@@ -20,6 +20,20 @@ impl VibocerosApp {
         let mut state = self.interface_state();
         match state.apply(command) {
             Ok(message) => {
+                if let InterfaceCommand::ZoomFactor(factor) = command {
+                    let result = self.viewports[self.active_viewport].zoom_factor(factor.value());
+                    self.push_log(match result {
+                        Ok(true) => {
+                            format!("Zoomed by factor {} (active viewport)", factor.value())
+                        }
+                        Ok(false) => {
+                            "Zoom unchanged (factor has no effect at current precision or limits)"
+                                .into()
+                        }
+                        Err(error) => format!("Error: {error}"),
+                    });
+                    return;
+                }
                 if matches!(
                     command,
                     InterfaceCommand::ZoomExtents
