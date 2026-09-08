@@ -1,6 +1,145 @@
 use super::*;
 
 #[test]
+fn new_layer_text_focus_survives_a_layer_insert() {
+    let mut document = Document::default();
+    let context = egui::Context::default();
+    let mut sidebar = DocumentSidebar::default();
+    let mut frame = |document: &Document, events| {
+        context.run_ui(
+            egui::RawInput {
+                screen_rect: Some(egui::Rect::from_min_size(
+                    egui::Pos2::ZERO,
+                    egui::vec2(800.0, 600.0),
+                )),
+                events,
+                ..Default::default()
+            },
+            |ui| {
+                assert!(sidebar.show(ui, document).is_empty());
+            },
+        )
+    };
+    let output = frame(&document, vec![]);
+    let position = output
+        .shapes
+        .iter()
+        .find_map(|clipped| {
+            let egui::epaint::Shape::Text(text) = &clipped.shape else {
+                return None;
+            };
+            (text.galley.text() == "Layer name")
+                .then_some(text.galley.rect.translate(text.pos.to_vec2()).center())
+        })
+        .unwrap();
+    output.drop_without_applying_deltas();
+    for pressed in [true, false] {
+        frame(
+            &document,
+            vec![
+                egui::Event::PointerMoved(position),
+                egui::Event::PointerButton {
+                    pos: position,
+                    button: egui::PointerButton::Primary,
+                    pressed,
+                    modifiers: Default::default(),
+                },
+            ],
+        )
+        .drop_without_applying_deltas();
+    }
+    document.add_layer("Inserted", ColorRgb::BLACK).unwrap();
+    frame(&document, vec![egui::Event::Text("Design".into())]).drop_without_applying_deltas();
+    assert_eq!(sidebar.new_layer_name, "Design");
+}
+
+#[test]
+fn deleting_a_pressed_row_does_not_click_its_replacement() {
+    for layers in [false, true] {
+        let mut document = Document::default();
+        let mut layer_ids = Vec::new();
+        let mut group_ids = Vec::new();
+        for name in ["First", "Second", "Third"] {
+            if layers {
+                layer_ids.push(document.add_layer(name, ColorRgb::BLACK).unwrap());
+            } else {
+                group_ids.push(document.add_empty_group(Some(name.into())).unwrap());
+            }
+        }
+        let context = egui::Context::default();
+        let mut sidebar = DocumentSidebar::default();
+        let mut frame = |document: &Document, events| {
+            let mut actions = Vec::new();
+            let output = context.run_ui(
+                egui::RawInput {
+                    screen_rect: Some(egui::Rect::from_min_size(
+                        egui::Pos2::ZERO,
+                        egui::vec2(800.0, 600.0),
+                    )),
+                    events,
+                    ..Default::default()
+                },
+                |ui| {
+                    actions = sidebar.show(ui, document);
+                },
+            );
+            (output, actions)
+        };
+        let (output, _) = frame(&document, vec![]);
+        let texts = output
+            .shapes
+            .iter()
+            .filter_map(|clipped| {
+                let egui::epaint::Shape::Text(text) = &clipped.shape else {
+                    return None;
+                };
+                Some((
+                    text.galley.text(),
+                    text.galley.rect.translate(text.pos.to_vec2()),
+                ))
+            })
+            .collect::<Vec<_>>();
+        let row = texts
+            .iter()
+            .find(|(text, _)| *text == if layers { "Second" } else { "Second · 0" })
+            .unwrap()
+            .1;
+        let position = texts
+            .iter()
+            .find(|(text, rect)| *text == "×" && (rect.center().y - row.center().y).abs() < 3.0)
+            .unwrap()
+            .1
+            .center();
+        output.drop_without_applying_deltas();
+        let click = |pressed| {
+            vec![
+                egui::Event::PointerMoved(position),
+                egui::Event::PointerButton {
+                    pos: position,
+                    button: egui::PointerButton::Primary,
+                    pressed,
+                    modifiers: Default::default(),
+                },
+            ]
+        };
+        let (output, actions) = frame(&document, click(true));
+        output.drop_without_applying_deltas();
+        assert!(actions.is_empty());
+        if layers {
+            document.delete_layer(layer_ids[1]).unwrap();
+        } else {
+            document.remove_group(group_ids[1]).unwrap();
+        }
+        let (output, actions) = frame(&document, click(false));
+        output.drop_without_applying_deltas();
+        assert!(
+            actions.is_empty(),
+            "release must not delete the shifted replacement row (layers={layers})"
+        );
+    }
+}
+
+#[test]
 fn long_names_leave_layer_and_group_actions_visible() {
     let mut document = Document::default();
     let layer = document

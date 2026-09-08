@@ -109,59 +109,65 @@ impl DocumentSidebar {
                         });
                         for layer in document.layers() {
                             let id = layer.id();
-                            let name = layer.name();
-                            let color = layer.color();
-                            let visible = layer.is_visible();
-                            let locked = layer.is_locked();
-                            let object_count = object_counts.get(&id).copied().unwrap_or_default();
-                            ui.horizontal(|ui| {
-                                let mut new_visible = visible;
-                                let visibility = ui
-                                    .add_enabled_ui(id != current, |ui| {
-                                        ui.checkbox(&mut new_visible, "")
-                                    })
-                                    .inner
-                                    .on_hover_text(if id == current {
-                                        "The current layer must remain visible"
-                                    } else {
-                                        "Show or hide this layer"
-                                    });
-                                if visibility.changed() {
-                                    actions.push(SidebarAction::SetVisibility {
-                                        id,
-                                        name: name.to_owned(),
-                                        visible: new_visible,
-                                    });
-                                }
+                            ui.scope_builder(
+                                egui::UiBuilder::new().id(ui.make_persistent_id(("layer", id))),
+                                |ui| {
+                                    let name = layer.name();
+                                    let color = layer.color();
+                                    let visible = layer.is_visible();
+                                    let locked = layer.is_locked();
+                                    let object_count =
+                                        object_counts.get(&id).copied().unwrap_or_default();
+                                    ui.horizontal(|ui| {
+                                        let mut new_visible = visible;
+                                        let visibility = ui
+                                            .add_enabled_ui(id != current, |ui| {
+                                                ui.checkbox(&mut new_visible, "")
+                                            })
+                                            .inner
+                                            .on_hover_text(if id == current {
+                                                "The current layer must remain visible"
+                                            } else {
+                                                "Show or hide this layer"
+                                            });
+                                        if visibility.changed() {
+                                            actions.push(SidebarAction::SetVisibility {
+                                                id,
+                                                name: name.to_owned(),
+                                                visible: new_visible,
+                                            });
+                                        }
 
-                                let mut new_locked = locked;
-                                let lock = ui
-                                    .add_enabled_ui(id != current, |ui| {
-                                        ui.checkbox(&mut new_locked, "")
-                                    })
-                                    .inner
-                                    .on_hover_text(if id == current {
-                                        "The current layer must remain unlocked"
-                                    } else {
-                                        "Lock or unlock this layer"
-                                    });
-                                if lock.changed() {
-                                    actions.push(SidebarAction::SetLocked {
-                                        id,
-                                        name: name.to_owned(),
-                                        locked: new_locked,
-                                    });
-                                }
+                                        let mut new_locked = locked;
+                                        let lock = ui
+                                            .add_enabled_ui(id != current, |ui| {
+                                                ui.checkbox(&mut new_locked, "")
+                                            })
+                                            .inner
+                                            .on_hover_text(if id == current {
+                                                "The current layer must remain unlocked"
+                                            } else {
+                                                "Lock or unlock this layer"
+                                            });
+                                        if lock.changed() {
+                                            actions.push(SidebarAction::SetLocked {
+                                                id,
+                                                name: name.to_owned(),
+                                                locked: new_locked,
+                                            });
+                                        }
 
-                                let swatch = Color32::from_rgb(color.red, color.green, color.blue);
-                                ui.label(RichText::new("●").color(swatch))
-                                    .on_hover_text(format!(
-                                        "RGB {}, {}, {}",
-                                        color.red, color.green, color.blue
-                                    ));
-                                // Reserve fixed controls from the right before giving
-                                // the name its remaining width.
-                                ui.with_layout(
+                                        let swatch =
+                                            Color32::from_rgb(color.red, color.green, color.blue);
+                                        ui.label(RichText::new("●").color(swatch)).on_hover_text(
+                                            format!(
+                                                "RGB {}, {}, {}",
+                                                color.red, color.green, color.blue
+                                            ),
+                                        );
+                                        // Reserve fixed controls from the right before giving
+                                        // the name its remaining width.
+                                        ui.with_layout(
                                     egui::Layout::right_to_left(egui::Align::Center),
                                     |ui| {
                                         let can_delete = id != current && object_count == 0;
@@ -205,78 +211,89 @@ impl DocumentSidebar {
                                         }
                                     },
                                 );
-                            });
-
-                            if self
-                                .layer_editor
-                                .as_ref()
-                                .is_some_and(|editor| editor.id == id)
-                            {
-                                let editor = self
-                                    .layer_editor
-                                    .as_mut()
-                                    .expect("the layer editor id was checked");
-                                ui.indent(("layer_editor", id), |ui| {
-                                    ui.group(|ui| {
-                                        ui.horizontal(|ui| {
-                                            ui.label("Name");
-                                            ui.add(
-                                                egui::TextEdit::singleline(&mut editor.name)
-                                                    .desired_width(150.0),
-                                            );
-                                        });
-                                        ui.horizontal(|ui| {
-                                            ui.label("Color");
-                                            ui.color_edit_button_srgb(&mut editor.color);
-                                            ui.small(format!(
-                                                "{}, {}, {}",
-                                                editor.color[0], editor.color[1], editor.color[2]
-                                            ));
-                                        });
-                                        ui.horizontal(|ui| {
-                                            if ui
-                                                .add_enabled(
-                                                    editor.has_valid_changes(),
-                                                    egui::Button::new("Apply"),
-                                                )
-                                                .clicked()
-                                            {
-                                                actions.push(SidebarAction::EditLayer {
-                                                    id,
-                                                    old_name: editor.original_name.clone(),
-                                                    name: editor.name.trim().to_owned(),
-                                                    color: editor.resolved_color(),
-                                                });
-                                            }
-                                            if ui.button("Cancel").clicked() {
-                                                cancel_editor = Some(id);
-                                            }
-                                        });
                                     });
-                                });
-                            }
+
+                                    if self
+                                        .layer_editor
+                                        .as_ref()
+                                        .is_some_and(|editor| editor.id == id)
+                                    {
+                                        let editor = self
+                                            .layer_editor
+                                            .as_mut()
+                                            .expect("the layer editor id was checked");
+                                        ui.indent(("layer_editor", id), |ui| {
+                                            ui.group(|ui| {
+                                                ui.horizontal(|ui| {
+                                                    ui.label("Name");
+                                                    ui.add(
+                                                        egui::TextEdit::singleline(
+                                                            &mut editor.name,
+                                                        )
+                                                        .desired_width(150.0),
+                                                    );
+                                                });
+                                                ui.horizontal(|ui| {
+                                                    ui.label("Color");
+                                                    ui.color_edit_button_srgb(&mut editor.color);
+                                                    ui.small(format!(
+                                                        "{}, {}, {}",
+                                                        editor.color[0],
+                                                        editor.color[1],
+                                                        editor.color[2]
+                                                    ));
+                                                });
+                                                ui.horizontal(|ui| {
+                                                    if ui
+                                                        .add_enabled(
+                                                            editor.has_valid_changes(),
+                                                            egui::Button::new("Apply"),
+                                                        )
+                                                        .clicked()
+                                                    {
+                                                        actions.push(SidebarAction::EditLayer {
+                                                            id,
+                                                            old_name: editor.original_name.clone(),
+                                                            name: editor.name.trim().to_owned(),
+                                                            color: editor.resolved_color(),
+                                                        });
+                                                    }
+                                                    if ui.button("Cancel").clicked() {
+                                                        cancel_editor = Some(id);
+                                                    }
+                                                });
+                                            });
+                                        });
+                                    }
+                                },
+                            );
                         }
                         ui.add_space(8.0);
                         ui.label(RichText::new("New layer").strong());
-                        ui.horizontal(|ui| {
-                            let response = ui.add(
-                                egui::TextEdit::singleline(&mut self.new_layer_name)
-                                    .desired_width(175.0)
-                                    .hint_text("Layer name"),
-                            );
-                            let valid_name = !self.new_layer_name.trim().is_empty();
-                            let add_clicked = ui
-                                .add_enabled(valid_name, egui::Button::new("Add"))
-                                .clicked();
-                            let enter_pressed = response.lost_focus()
-                                && ui.input(|input| input.key_pressed(egui::Key::Enter));
-                            if valid_name && (add_clicked || enter_pressed) {
-                                actions.push(SidebarAction::AddLayer {
-                                    name: self.new_layer_name.trim().to_owned(),
+                        ui.scope_builder(
+                            egui::UiBuilder::new().id(ui.make_persistent_id("new_layer_controls")),
+                            |ui| {
+                                ui.horizontal(|ui| {
+                                    let response = ui.add(
+                                        egui::TextEdit::singleline(&mut self.new_layer_name)
+                                            .id_salt("name")
+                                            .desired_width(175.0)
+                                            .hint_text("Layer name"),
+                                    );
+                                    let valid_name = !self.new_layer_name.trim().is_empty();
+                                    let add_clicked = ui
+                                        .add_enabled(valid_name, egui::Button::new("Add"))
+                                        .clicked();
+                                    let enter_pressed = response.lost_focus()
+                                        && ui.input(|input| input.key_pressed(egui::Key::Enter));
+                                    if valid_name && (add_clicked || enter_pressed) {
+                                        actions.push(SidebarAction::AddLayer {
+                                            name: self.new_layer_name.trim().to_owned(),
+                                        });
+                                    }
                                 });
-                            }
-                        });
-
+                            },
+                        );
                         ui.add_space(14.0);
                         ui.heading("Groups");
                         ui.separator();
@@ -285,32 +302,40 @@ impl DocumentSidebar {
                         }
                         for (index, group) in document.groups().enumerate() {
                             let id = group.id();
-                            let name = group
-                                .name()
-                                .map(str::to_owned)
-                                .unwrap_or_else(|| format!("Group {}", index + 1));
-                            let members = group.members().len();
-                            ui.horizontal(|ui| {
-                                ui.with_layout(
-                                    egui::Layout::right_to_left(egui::Align::Center),
-                                    |ui| {
-                                        if ui.small_button("×").on_hover_text("Ungroup").clicked()
-                                        {
-                                            actions.push(SidebarAction::RemoveGroup {
-                                                id,
-                                                name: name.clone(),
-                                            });
-                                        }
-                                        ui.add(
-                                            egui::Label::new(format!("{name} · {members}"))
-                                                .truncate(),
-                                        )
-                                        .on_hover_text(
-                                            format!("{name}\nGroup {id} with {members} object(s)"),
+                            ui.scope_builder(
+                                egui::UiBuilder::new().id(ui.make_persistent_id(("group", id))),
+                                |ui| {
+                                    let name = group
+                                        .name()
+                                        .map(str::to_owned)
+                                        .unwrap_or_else(|| format!("Group {}", index + 1));
+                                    let members = group.members().len();
+                                    ui.horizontal(|ui| {
+                                        ui.with_layout(
+                                            egui::Layout::right_to_left(egui::Align::Center),
+                                            |ui| {
+                                                if ui
+                                                    .small_button("×")
+                                                    .on_hover_text("Ungroup")
+                                                    .clicked()
+                                                {
+                                                    actions.push(SidebarAction::RemoveGroup {
+                                                        id,
+                                                        name: name.clone(),
+                                                    });
+                                                }
+                                                ui.add(
+                                                    egui::Label::new(format!("{name} · {members}"))
+                                                        .truncate(),
+                                                )
+                                                .on_hover_text(format!(
+                                                    "{name}\nGroup {id} with {members} object(s)"
+                                                ));
+                                            },
                                         );
-                                    },
-                                );
-                            });
+                                    });
+                                },
+                            );
                         }
                         ui.add_space(8.0);
                         ui.small("Create a group with: Group [name]");

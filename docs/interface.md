@@ -14,6 +14,8 @@ Scroll inside the pane to reach lower layers, new-layer controls, and groups in
 large documents. The pane heading remains visible while its contents scroll.
 Long layer and group names are truncated in rows, with full names on hover;
 action buttons and the scrollbar have reserved space so neither obscures the other.
+Rows use stable layer/group identities: removing a pressed row cannot redirect
+the click to its replacement, and adding a layer preserves new-layer text focus.
 
 Osnap captures visible Point, End, Mid, Center, and Quad features, including
 indexed members of point clouds and features on locked objects and layers;
