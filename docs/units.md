@@ -30,14 +30,15 @@ rejected before document mutation. Identical unit settings are a no-op and
 preserve redo history. Conversions involving unitless metadata retain
 coordinates; rescaling involving unset units is rejected unless nothing changes.
 
-This is currently a Rust document API, not a Rhino Units command implementation.
+The [Units command](commands/units.md) exposes this API for standard units with
+an explicit scale choice. Its CLI syntax is not Rhino dialog or macro parity.
 Eight retained Rhino 8.32 public-API measurements cover millimetres/metres,
 millimetres/inches, and unitless conversions, including hidden/locked objects
 and selection. The fixture in `crates/viboceros-document/src/units/fixtures/`
 was generated with `tools/rhino_oracle/generate_document_units_reference.py`
 in an isolated instance using headless documents. It measures
 `RhinoDoc.AdjustModelUnitSystem`, not the interactive Units command. Rhino
-command behavior and UI/view settings have not yet been integrated.
+dialog behavior and automatic UI/view-setting adjustments are not emulated.
 Interchange behavior is documented in
 [file formats](file-formats.md).
 

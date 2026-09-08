@@ -7,6 +7,26 @@ fn enter(app: &mut VibocerosApp, command: &str) {
 }
 
 #[test]
+fn units_command_routes_through_the_application_and_preserves_query_redo() {
+    use viboceros_geometry::LengthUnitSystem;
+    let mut app = test_app();
+    enter(&mut app, "Point 1000,2000,3000");
+    enter(&mut app, "Units Meters Scale=Yes");
+    assert_eq!(app.document.units(), &LengthUnitSystem::Meters);
+    assert_eq!(
+        app.document.objects().next().unwrap().geometry(),
+        &Geometry::Point(Point3::try_new(1.0, 2.0, 3.0).unwrap())
+    );
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.units(), &LengthUnitSystem::Millimeters);
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "Units");
+    assert_eq!(format!("{:?}", app.document), before);
+    enter(&mut app, "Redo");
+    assert_eq!(app.document.units(), &LengthUnitSystem::Meters);
+}
+
+#[test]
 fn interface_commands_preserve_a_front_view_polyline_and_one_model_undo_step() {
     let mut app = test_app();
     app.active_viewport = 2;

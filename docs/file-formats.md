@@ -106,7 +106,8 @@ factors or transformed coordinates are errors. The low-level
 `read_3dm_file` still reads raw file coordinates, while
 `read_3dm_file_in_units` performs the conversion. The document API supports
 undoable unit changes through `Document::set_units`; see [document units](units.md).
-A Units command and UI control are not yet implemented.
+The [Units command](commands/units.md) exposes standard model-unit changes;
+the toolbar reports the current units but has no settings editor.
 
 Initial STEP interchange uses the Apache-2.0 Monstertruck kernel to read
 solid/shell B-reps and assemblies, apply instance transforms, and robustly

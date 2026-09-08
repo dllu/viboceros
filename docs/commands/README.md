@@ -18,6 +18,7 @@ Rhino's complete command set is still a work in progress.
 - [Splitting curves and surfaces](split.md)
 - [Extraction, measurement, and intersections](editing.md)
 - [Selection, attributes, layers, and groups](document.md)
+- [Model units](units.md)
 - [Display modes and drafting controls](interface.md)
 - [Construction-plane editing](../cplane.md)
 
