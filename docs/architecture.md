@@ -16,10 +16,11 @@ subnormal range. Binary-scaled integer determinants check representable
 differences of both overflowing and near-underflow normal products.
 Direct vector dot products compensate both multiplication and summation
 rounding; tests cover exact orthogonality, near-cancelling integer products,
-and small terms between large opposite terms. Dot products whose individual
-products underflow or overflow, or whose running sum overflows, use an
-allocation-free fixed-size integer accumulator spanning the full binary64
-product range. That fallback rounds only the final sum (nearest, ties to even);
+and small terms between large opposite terms. Dot products use an allocation-free
+fixed-size integer accumulator when individual products overflow or could lose
+bits below the subnormal quantum (even when the rounded products are normal),
+or when the running sum overflows. The accumulator spans the full binary64
+product range and rounds only the final sum (nearest, ties to even);
 tests compare it with hardware multiplication and fused multiply-add across
 10,000 deterministic full-range inputs, plus cancellation and rounding boundaries.
 

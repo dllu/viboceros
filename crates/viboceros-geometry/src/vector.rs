@@ -115,13 +115,21 @@ impl Vector3 {
     }
 }
 
+// A product has up to 106 significant bits. Below 2^-969 its exact
+// low-order bits may lie below 2^-1074, where FMA cannot recover them.
+// Include equality because a product may round up to the boundary.
+const MIN_COMPENSATED_PRODUCT: Real = 2.0 * Real::MIN_POSITIVE / Real::EPSILON;
+
+fn product_needs_exact_underflow_recovery(product: Real, a: Real, b: Real) -> bool {
+    product.abs() <= MIN_COMPENSATED_PRODUCT && a != 0.0 && b != 0.0
+}
+
 fn direct_dot(left: [Real; 3], right: [Real; 3]) -> Option<Real> {
     let mut sum: Real = 0.0;
     let mut correction = 0.0;
     for (a, b) in left.into_iter().zip(right) {
         let product = a * b;
-        // FMA cannot recover product bits below the subnormal quantum.
-        if !product.is_finite() || (product.abs() < Real::MIN_POSITIVE && a != 0.0 && b != 0.0) {
+        if !product.is_finite() || product_needs_exact_underflow_recovery(product, a, b) {
             return None;
         }
         let next = sum + product;
@@ -152,13 +160,8 @@ fn determinant(left_a: Real, right_a: Real, left_b: Real, right_b: Real) -> Real
 fn direct_determinant(left_a: Real, right_a: Real, left_b: Real, right_b: Real) -> Option<Real> {
     let first = left_a * right_a;
     let second = left_b * right_b;
-    // A product has up to 106 significant bits. Below 2^-969 its exact
-    // low-order bits may lie below 2^-1074, where FMA cannot recover them.
-    // Include normal products near underflow, not just subnormal products.
-    // Include equality because the product may round up to the boundary.
-    const MIN_COMPENSATED_PRODUCT: Real = 2.0 * Real::MIN_POSITIVE / Real::EPSILON;
     for (product, a, b) in [(first, left_a, right_a), (second, left_b, right_b)] {
-        if product.abs() <= MIN_COMPENSATED_PRODUCT && a != 0.0 && b != 0.0 {
+        if product_needs_exact_underflow_recovery(product, a, b) {
             return None;
         }
     }
@@ -263,6 +266,39 @@ impl TryFrom<[Real; 3]> for Vector3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn dot_product_keeps_low_bits_of_normal_products_near_underflow() {
+        let e = Real::EPSILON;
+        let scale = 2.0_f64.powi(-486);
+        let left = [
+            (1.0 + e) * scale,
+            (1.0 + e) * scale,
+            -(2.0 + 6.0 * e) * scale,
+        ];
+        let right = [(1.0 + 2.0 * e) * scale, (1.0 + 2.0 * e) * scale, scale];
+        // Exact sum: 2*(1+e)*(1+2e) - (2+6e) = 4e^2.
+        // After scaling this is 2^-1074. Each positive product has a
+        // half-subnormal residual which rounds to zero if recovered alone.
+        for order in [
+            [0, 1, 2],
+            [0, 2, 1],
+            [1, 0, 2],
+            [1, 2, 0],
+            [2, 0, 1],
+            [2, 1, 0],
+        ] {
+            let a = Vector3::try_from(order.map(|i| left[i])).unwrap();
+            let b = Vector3::try_from(order.map(|i| right[i])).unwrap();
+            assert!(
+                left.into_iter()
+                    .zip(right)
+                    .all(|(x, y)| (x * y).is_normal())
+            );
+            assert_eq!(a.dot(b).unwrap(), Real::from_bits(1));
+            assert_eq!(b.dot(a).unwrap(), Real::from_bits(1));
+        }
+    }
 
     #[test]
     fn cross_product_combines_subnormal_products_before_rounding() {
