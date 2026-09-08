@@ -389,6 +389,82 @@ fn transforms_every_point_and_rebuilds_the_spatial_index() {
 }
 
 #[test]
+fn coincident_projections_preserve_earliest_source_order() {
+    for projection in [
+        PointCloudProjection::Xy,
+        PointCloudProjection::Xz,
+        PointCloudProjection::Yz,
+    ] {
+        let axes = projection.axes();
+        let points = (0..1024)
+            .map(|i| {
+                let mut coordinates = [0.0; 3];
+                coordinates[usize::from(axes[0])] = (i % 7) as Real;
+                coordinates[usize::from(axes[2])] = ((i * 313) % 1024) as Real;
+                Point3::try_new(coordinates[0], coordinates[1], coordinates[2]).unwrap()
+            })
+            .collect::<Vec<_>>();
+        let cloud = PointCloud3::try_new(points.clone()).unwrap();
+        for (group, &candidate) in points.iter().take(7).enumerate() {
+            for offset in [[group as Real, 0.0], [group as Real, 0.25]] {
+                for radius in [0.0, 0.25, 10.0] {
+                    let expected = (offset[1] <= radius).then_some((group, candidate, offset[1]));
+                    assert_eq!(
+                        cloud
+                            .nearest_projected_relative(
+                                projection,
+                                point(0.0, 0.0, 0.0),
+                                offset,
+                                radius
+                            )
+                            .unwrap(),
+                        expected
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
+#[ignore = "release-mode timing diagnostic"]
+fn coincident_projected_index_query_benchmark() {
+    use std::{hint::black_box, time::Instant};
+    for projection in [
+        PointCloudProjection::Xy,
+        PointCloudProjection::Xz,
+        PointCloudProjection::Yz,
+    ] {
+        let axes = projection.axes();
+        let points = (0..100_000)
+            .map(|i| {
+                let mut coordinates = [0.0; 3];
+                coordinates[usize::from(axes[2])] = ((i * 7919) % 100_000) as Real;
+                Point3::try_new(coordinates[0], coordinates[1], coordinates[2]).unwrap()
+            })
+            .collect::<Vec<_>>();
+        let cloud = PointCloud3::try_new(points).unwrap();
+        let origin = point(0.0, 0.0, 0.0);
+        cloud
+            .nearest_projected_relative(projection, origin, [0.0; 2], 0.0)
+            .unwrap();
+        let start = Instant::now();
+        for _ in 0..128 {
+            assert_eq!(
+                black_box(&cloud)
+                    .nearest_projected_relative(projection, origin, black_box([0.0; 2]), 0.0)
+                    .unwrap(),
+                Some((0, cloud.points()[0], 0.0))
+            );
+        }
+        eprintln!(
+            "{projection:?}: coincident points=100000 queries=128 indexed={:?}",
+            start.elapsed()
+        );
+    }
+}
+
+#[test]
 fn indexed_nearest_matches_a_stable_brute_force_search() {
     fn random_unit(state: &mut u64) -> Real {
         *state = state

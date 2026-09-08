@@ -30,6 +30,12 @@ and offset validation happens before initializing an index. Existing XY APIs
 delegate to the same implementation. Cloud equality depends on ordered points,
 not cache state; transformed clouds rebuild their indexes from transformed data.
 
+Each index node also stores its subtree's earliest source index (one additional
+`usize` per node). Once a query finds a zero-distance hit, it visits eligible
+children in earliest-source order and skips subtrees that cannot win the tie.
+This avoids scanning every point when many different depths project onto the
+same position. Nonzero-distance ties still use the ordinary spatial search.
+
 The drafting API's `nearest_object_snap_axis_aligned` uses the same cached indexes
 for clouds while retaining ordinary feature enumeration and priority rules for
 other geometry. The camera's projection choice is shared by picking and Osnap.
@@ -65,6 +71,14 @@ projection against an exhaustive scan, requiring identical results. Output
 separates first-use index construction, warmed indexed queries, and scan time.
 Timing is diagnostic, not a machine-dependent test threshold or a Rhino speed
 comparison; it does not include rendering or document/UI overhead.
+
+The same command also runs a coincident-projection fixture: 100,000 shuffled-depth
+points, 128 warmed exact-hit queries, and an assertion that every result is the
+earliest source point. A local before/after run measured 139–204 ms before subtree
+source-index pruning and 0.037–0.040 ms afterward across XY/XZ/YZ. These are
+diagnostic timings for this deliberately degenerate fixture, not a general
+speedup claim. Regular tests check multiple coincident clusters, nonzero-distance
+ties, radius boundaries, and the subtree source-index bounds themselves.
 
 One local release-mode run produced the following totals for the fixture above:
 

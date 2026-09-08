@@ -13,6 +13,7 @@ pub(super) struct ProjectedIndex {
 #[derive(Clone, Copy, Debug)]
 pub(super) struct ProjectedNode {
     point_index: usize,
+    minimum_source_index: usize,
     axis: u8,
     left: Option<usize>,
     right: Option<usize>,
@@ -37,6 +38,13 @@ impl ProjectedIndex {
         best: &mut Option<(Real, usize)>,
     ) {
         let node = self.nodes[node_index];
+        // Distances cannot improve on zero. Only an earlier source point can
+        // replace an exact hit, even when an entire subtree projects identically.
+        if best
+            .is_some_and(|(distance, index)| distance == 0.0 && node.minimum_source_index >= index)
+        {
+            return;
+        }
         let point = points[node.point_index];
         let relative = [
             (coordinate(point, self.axes[0]) - coordinate(origin, self.axes[0])) - offset[0],
@@ -58,6 +66,21 @@ impl ProjectedIndex {
         } else {
             (node.right, node.left)
         };
+        if best.is_some_and(|(distance, _)| distance == 0.0) {
+            let mut children = [near, far.filter(|_| delta == 0.0)];
+            if children[0].map(|i| self.nodes[i].minimum_source_index)
+                > children[1].map(|i| self.nodes[i].minimum_source_index)
+            {
+                children.swap(0, 1);
+            }
+            // Source order finds the winning exact tie before considering
+            // subtrees whose minimum index can then rule them out entirely.
+            for child in children.into_iter().flatten() {
+                self.nearest_from(child, points, origin, offset, maximum_distance, best);
+            }
+            return;
+        }
+
         if let Some(near) = near {
             self.nearest_from(near, points, origin, offset, maximum_distance, best);
         }
@@ -90,6 +113,7 @@ fn build_projected_tree(
     let node_index = nodes.len();
     nodes.push(ProjectedNode {
         point_index: *middle_index,
+        minimum_source_index: *middle_index,
         axis,
         left: None,
         right: None,
@@ -100,6 +124,11 @@ fn build_projected_tree(
         .then(|| build_projected_tree(points, right_indices, depth + 1, nodes, axes));
     nodes[node_index].left = left;
     nodes[node_index].right = right;
+    for child in [left, right].into_iter().flatten() {
+        nodes[node_index].minimum_source_index = nodes[node_index]
+            .minimum_source_index
+            .min(nodes[child].minimum_source_index);
+    }
     node_index
 }
 
@@ -125,4 +154,41 @@ fn compare_point_indices(
 #[inline]
 fn coordinate(point: Point3, axis: u8) -> Real {
     point.to_array()[usize::from(axis)]
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn subtree_source_bounds_match_all_descendants() {
+        fn check(index: &ProjectedIndex, node_index: usize) -> usize {
+            let node = index.nodes[node_index];
+            let minimum = [node.left, node.right]
+                .into_iter()
+                .flatten()
+                .map(|child| check(index, child))
+                .fold(node.point_index, usize::min);
+            assert_eq!(node.minimum_source_index, minimum);
+            minimum
+        }
+        let points = (0..1024)
+            .map(|i| {
+                Point3::try_new(
+                    Real::from(i % 7),
+                    Real::from(i * 313 % 1024),
+                    Real::from(i % 13),
+                )
+                .unwrap()
+            })
+            .collect::<Vec<_>>();
+        for projection in [
+            PointCloudProjection::Xy,
+            PointCloudProjection::Xz,
+            PointCloudProjection::Yz,
+        ] {
+            let index = ProjectedIndex::new(&points, projection);
+            assert_eq!(check(&index, index.root), 0);
+        }
+    }
 }
