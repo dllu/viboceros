@@ -62,6 +62,7 @@ pub(super) enum GeometrySelectionFilter {
     Mesh,
     OpenMesh,
     ClosedMesh,
+    NonManifold,
 }
 
 impl GeometrySelectionFilter {
@@ -122,6 +123,11 @@ impl GeometrySelectionFilter {
                 Geometry::Mesh(mesh) => mesh.topology().is_closed(),
                 _ => false,
             },
+            Self::NonManifold => match geometry {
+                Geometry::Mesh(mesh) => !mesh.topology().is_manifold(),
+                Geometry::Brep(brep) => !brep.is_manifold(),
+                _ => false,
+            },
         };
         Ok(matches)
     }
@@ -174,6 +180,75 @@ impl Command for SelShortCurveCommand {
 mod tests {
     use super::*;
     use serde_json::Value;
+
+    #[test]
+    fn non_manifold_selection_uses_topology_and_preserves_document_history() {
+        let tolerance = Tolerance::DEFAULT;
+        let mesh = TriangleMesh::try_new(
+            [
+                [0., 0., 0.],
+                [1., 0., 0.],
+                [0., 1., 0.],
+                [0., 0., 1.],
+                [0., -1., 1.],
+            ]
+            .map(|p| Point3::try_from(p).unwrap())
+            .to_vec(),
+            vec![[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3], [0, 1, 4]],
+            tolerance,
+        )
+        .unwrap();
+        let brep = Brep::try_from_mesh(&mesh, true, tolerance).unwrap();
+        assert!(!mesh.topology().is_manifold());
+        assert!(!brep.is_manifold());
+        let mut document = Document::default();
+        let registry = CommandRegistry::with_builtins();
+        let selected = document
+            .add_geometry(Geometry::Point(Point3::try_new(9., 9., 9.).unwrap()))
+            .unwrap();
+        let mesh_id = document.add_geometry(Geometry::Mesh(mesh.clone())).unwrap();
+        let brep_id = document.add_geometry(Geometry::Brep(brep)).unwrap();
+        let open =
+            TriangleMesh::try_new(mesh.vertices().to_vec(), vec![[0, 2, 1]], tolerance).unwrap();
+        let face = Brep::try_from_mesh(&open, true, tolerance).unwrap();
+        document.add_geometry(Geometry::Mesh(open)).unwrap();
+        document.add_geometry(Geometry::Brep(face)).unwrap();
+        let closed = TriangleMesh::try_new(
+            mesh.vertices().to_vec(),
+            vec![[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]],
+            tolerance,
+        )
+        .unwrap();
+        document.add_geometry(Geometry::Mesh(closed)).unwrap();
+        let hidden = document.add_geometry(Geometry::Mesh(mesh.clone())).unwrap();
+        let locked = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        document.set_objects_visibility([hidden], false).unwrap();
+        document.set_objects_locked([locked], true).unwrap();
+        registry.execute(&mut document, "Point 8,8,8").unwrap();
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_object(selected, SelectionMode::Replace)
+            .unwrap();
+        let original = document.objects().cloned().collect::<Vec<_>>();
+        let undo = document.undo_label().map(str::to_owned);
+        let redo = document.redo_label().map(str::to_owned);
+        assert_eq!(
+            registry.execute(&mut document, "SelNonManifold").unwrap(),
+            "Selected 3 object(s)"
+        );
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([selected, mesh_id, brep_id])
+        );
+        assert!(
+            registry
+                .execute(&mut document, "SelNonManifold extra")
+                .is_err()
+        );
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), original);
+        assert_eq!(document.undo_label(), undo.as_deref());
+        assert_eq!(document.redo_label(), redo.as_deref());
+    }
 
     #[test]
     fn short_selection_integration_failure_preserves_selection_and_history() {

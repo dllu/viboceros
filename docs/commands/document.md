@@ -25,6 +25,14 @@ trimmed B-reps while excluding multi-face B-reps. `SelPolysrf` (alias
 `SelPolysurface`) and its open/closed variants classify only multi-face B-reps
 by shared-edge topology.
 
+`SelNonManifold` adds selectable meshes and B-reps with edges used by more than
+two faces. Open boundaries alone do not qualify. Geometry, visibility, locking,
+and undo/redo history remain unchanged. Tests cover a tetrahedron with an extra
+face sharing an edge, its B-rep conversion, open and closed manifold controls,
+preselection, hidden/locked exclusions, and invalid arguments. This follows
+the documented [Rhino selection command](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelNonManifold);
+no live Rhino comparison has yet been recorded for this command.
+
 `SelPlanarCrv` uses document tolerance. `SelLine` also recognizes
 exactly straight, single-span higher-degree NURBS curves, while excluding
 multi-span curves and polylines as Rhino does. `SelPolyline` includes native

@@ -127,6 +127,7 @@ SelClosedPolysrf
 SelMesh
 SelOpenMesh
 SelClosedMesh
+SelNonManifold
 SelColor 12,34,56
 SelName "Fastener *"
 SelLayer "Construction *"
