@@ -20,6 +20,14 @@ replays all 30 stored requests with their document tolerances and checks accepte
 controls, output degree, closure, and control locations against Rhino's responses.
 JSON uses round-trip float parsing so adjacent binary64 boundary values remain distinct.
 
+`interpolation_point_prompt_rhino_only.json` is a separate eight-case diagnostic
+using the same coordinate whitelist and private construction-plane wrapper for
+InterpCrv (open cubic, chord knots). Explicit command rejections become
+`command_succeeded: false` records; unexpected failures still fail the batch.
+Its [recorded response](interpolation-point-prompt-measurement.json) exposes an
+unresolved point-tolerance discrepancy; run it with `run_headless.sh rhino`, not
+the native comparison runner.
+
 Standard geometry/command batches apply the request's absolute, relative, and angular tolerances to
 Rhino's active document and restores its previous settings on success or failure.
 This matters for command macros, which read document settings rather than an API

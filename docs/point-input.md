@@ -24,6 +24,16 @@ floating-point values below/above `2^-32`, equality, and diagonal offsets.
 These probes use points near the world origin; they do not establish behavior
 at very large translated coordinates or every repetition pattern.
 
+Known InterpCrv discrepancy: its point collection and command constructor still
+use model absolute tolerance to reject nearby adjacent points. A
+[Rhino 8.32 diagnostic](interpolation-point-prompt-measurement.json) at absolute
+tolerance `0.01` instead skipped offsets through `2^-32`, failed construction
+at the next float above that boundary and at `1e-9`, and successfully included
+offsets of `1e-6`, `0.001`, and `0.1`. Thus point-prompt rejection and solver
+failure are distinct behaviors; the current model-tolerance rule is too strict
+for some valid inputs. This is an unresolved compatibility gap, not a passing
+native reference.
+
 During `Polyline`, `Curve`, or `InterpCrv`, type `Undo` to remove the last
 draft point without changing document history or its redo stack. Relative input
 then starts at the last remaining point. Removing every point clears the relative

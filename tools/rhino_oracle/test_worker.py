@@ -289,12 +289,24 @@ class RhinoWorkerTests(unittest.TestCase):
         operation = {"points": ["w0,0,0", "w0,0,0", "w2,3,0", "w10,0,0"], "degree": 3}
         self.assertEqual(self.worker._control_point_prompt_script(operation),
                          "_Curve _Degree=3 _SubDFriendly=_No w0,0,0 w0,0,0 w2,3,0 w10,0,0 _Enter")
+        self.assertEqual(self.worker._control_point_prompt_script(operation, True),
+                         "_InterpCrv _Knots=_Chord _Degree=3 _SubDFriendly=_No w0,0,0 w0,0,0 w2,3,0 w10,0,0 _Enter")
         for degree in [0, 12, -1, True, 3.0, "3", "3 _Delete"]:
             with self.subTest(degree=degree), self.assertRaises(ValueError):
                 self.worker._control_point_prompt_script(dict(operation, degree=degree))
         for points in [["0", "_Delete"], ["0", "1,2 _Enter"], ["0"], ["0"] * 257]:
             with self.subTest(points=points), self.assertRaises(ValueError):
                 self.worker._control_point_prompt_script(dict(operation, points=points))
+
+    def test_interpolation_prompt_records_only_explicit_command_rejection(self):
+        operation = {"points": ["0", "1,0,0"]}
+        with patch.object(self.worker, "_in_construction_plane", side_effect=self.worker._PointInputCommandFailed("rejected")):
+            self.assertEqual(self.worker._control_point_prompt(operation, True), ({"command_succeeded": False}, 0))
+            with self.assertRaises(self.worker._PointInputCommandFailed):
+                self.worker._control_point_prompt(operation)
+        with patch.object(self.worker, "_in_construction_plane", side_effect=ValueError("unexpected record failure")):
+            with self.assertRaisesRegex(ValueError, "unexpected record failure"):
+                self.worker._control_point_prompt(operation, True)
 
     def test_point_input_probe_restores_plane_selection_and_owned_outputs_on_failure(self):
         for failed in [False, True]:

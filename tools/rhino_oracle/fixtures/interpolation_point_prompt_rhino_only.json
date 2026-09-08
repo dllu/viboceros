@@ -1,0 +1,219 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 0.01,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "interpolation_point_prompt",
+      "id": "distance-0",
+      "degree": 3,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        "w0,0,0",
+        "w0,0,0",
+        "w2,3,0",
+        "w10,0,0"
+      ]
+    },
+    {
+      "op": "interpolation_point_prompt",
+      "id": "distance-1e-10",
+      "degree": 3,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        "w0,0,0",
+        "w1e-10,0,0",
+        "w2,3,0",
+        "w10,0,0"
+      ]
+    },
+    {
+      "op": "interpolation_point_prompt",
+      "id": "distance-2.3283064365386963e-10",
+      "degree": 3,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        "w0,0,0",
+        "w2.3283064365386963e-10,0,0",
+        "w2,3,0",
+        "w10,0,0"
+      ]
+    },
+    {
+      "op": "interpolation_point_prompt",
+      "id": "distance-2.328306436538697e-10",
+      "degree": 3,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        "w0,0,0",
+        "w2.328306436538697e-10,0,0",
+        "w2,3,0",
+        "w10,0,0"
+      ]
+    },
+    {
+      "op": "interpolation_point_prompt",
+      "id": "distance-1e-9",
+      "degree": 3,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        "w0,0,0",
+        "w1e-9,0,0",
+        "w2,3,0",
+        "w10,0,0"
+      ]
+    },
+    {
+      "op": "interpolation_point_prompt",
+      "id": "distance-0.000001",
+      "degree": 3,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        "w0,0,0",
+        "w0.000001,0,0",
+        "w2,3,0",
+        "w10,0,0"
+      ]
+    },
+    {
+      "op": "interpolation_point_prompt",
+      "id": "distance-0.001",
+      "degree": 3,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        "w0,0,0",
+        "w0.001,0,0",
+        "w2,3,0",
+        "w10,0,0"
+      ]
+    },
+    {
+      "op": "interpolation_point_prompt",
+      "id": "distance-0.1",
+      "degree": 3,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        "w0,0,0",
+        "w0.1,0,0",
+        "w2,3,0",
+        "w10,0,0"
+      ]
+    }
+  ]
+}

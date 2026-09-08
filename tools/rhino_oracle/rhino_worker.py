@@ -2676,16 +2676,17 @@ def _point_input(operation):
     return _in_construction_plane(operation, script, None)
 
 
-def _control_point_prompt_script(operation):
+def _control_point_prompt_script(operation, interpolate=False):
     points = operation["points"]
     _point_input_script(points)  # Reuse the coordinate-only macro whitelist.
     degree = operation.get("degree", 3)
     if type(degree) is not int or not 1 <= degree <= 11:
         raise ValueError("invalid control-point prompt degree")
-    return "_Curve _Degree=%d _SubDFriendly=_No %s _Enter" % (degree, " ".join(points))
+    command = "_InterpCrv _Knots=_Chord" if interpolate else "_Curve"
+    return "%s _Degree=%d _SubDFriendly=_No %s _Enter" % (command, degree, " ".join(points))
 
 
-def _control_point_prompt(operation):
+def _control_point_prompt(operation, interpolate=False):
     def record(geometry):
         curve = geometry.ToNurbsCurve()
         try:
@@ -2693,7 +2694,18 @@ def _control_point_prompt(operation):
                     "control_points": [_xyz(cp.Location) for cp in curve.Points]}
         finally:
             curve.Dispose()
-    return _in_construction_plane(operation, _control_point_prompt_script(operation), record)
+    try:
+        return _in_construction_plane(operation, _control_point_prompt_script(operation, interpolate), record)
+    except _PointInputCommandFailed:
+        if not interpolate:
+            raise
+        # This diagnostic probes inputs that Rhino may refuse to interpolate.
+        # Record command rejection without losing the other batch measurements.
+        return {"command_succeeded": False}, 0
+
+
+class _PointInputCommandFailed(ValueError):
+    pass
 
 
 def _in_construction_plane(operation, script, record):
@@ -2713,7 +2725,7 @@ def _in_construction_plane(operation, script, record):
         viewport.SetConstructionPlane(plane)
         document.Objects.UnselectAll()
         if not _run_surface_script(script, True):
-            raise ValueError("point-input Polyline command failed")
+            raise _PointInputCommandFailed("point-input command failed")
         outputs = [obj for obj in objects() if obj.Id not in before]
         if len(outputs) != 1:
             raise ValueError("expected one point-input polyline")
@@ -3983,6 +3995,8 @@ def _execute(operation, iterations, tolerance):
         return _point_input(operation)
     if kind == "control_point_prompt":
         return _control_point_prompt(operation)
+    if kind == "interpolation_point_prompt":
+        return _control_point_prompt(operation, True)
     if kind == "sweep1":
         return _sweep1(operation, iterations, tolerance)
     if kind == "curve_frames":
