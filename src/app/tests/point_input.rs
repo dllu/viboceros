@@ -6,6 +6,63 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn curve_prompt_undo_removes_points_without_touching_document_history() {
+    for command in ["Polyline", "Curve", "InterpCrv"] {
+        let mut app = test_app();
+        for input in ["Point 9,9,9", "Undo", command, "1,2,3"] {
+            enter(&mut app, input);
+        }
+        assert!(app.accept_drafting_point(point(4.0, 5.0, 6.0)));
+        let document = format!("{:?}", app.document);
+        let active = app.active_command;
+        let plane = app.drafting_plane;
+        enter(&mut app, "_uNdO");
+        assert_eq!(app.curve_points, vec![point(1.0, 2.0, 3.0)]);
+        assert_eq!(app.last_point, Some(point(1.0, 2.0, 3.0)));
+        assert_eq!(app.drafting_plane, plane);
+        assert_eq!(app.active_command, active);
+        assert!(app.command_input.is_empty());
+        assert_eq!(format!("{:?}", app.document), document);
+        enter(&mut app, "rw2,0,0");
+        assert_eq!(app.curve_points[1], point(3.0, 2.0, 3.0));
+        for _ in 0..3 {
+            enter(&mut app, "Undo");
+        }
+        assert!(app.curve_points.is_empty());
+        assert_eq!(app.last_point, None);
+        assert_eq!(app.drafting_plane, None);
+        assert_eq!(app.active_command, active);
+        assert_eq!(format!("{:?}", app.document), document);
+        enter(&mut app, "rw1,0,0");
+        assert!(app.curve_points.is_empty());
+        for input in ["0", "1,0,0", ""] {
+            enter(&mut app, input);
+        }
+        assert!(app.active_command.is_none(), "{command}");
+        assert_eq!(app.document.objects().len(), 1);
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().len(), 0);
+        enter(&mut app, "Redo");
+        assert_eq!(app.document.objects().len(), 1);
+    }
+}
+
+#[test]
+fn curve_prompt_undo_can_correct_failed_closed_curve_completion() {
+    let mut app = test_app();
+    for input in ["Curve Close=Sharp", "0", "1,0,0", "0", ""] {
+        enter(&mut app, input);
+    }
+    assert!(app.active_command.is_some());
+    for input in ["Undo", "0,1,0", ""] {
+        enter(&mut app, input);
+    }
+    assert!(app.active_command.is_none());
+    assert_eq!(app.document.objects().len(), 1);
+    assert_eq!(app.document.undo_label(), Some("Curve"));
+}
+
+#[test]
 fn failed_curve_completion_retains_the_draft_for_correction() {
     let mut app = test_app();
     enter(&mut app, "Point 9,9,9");

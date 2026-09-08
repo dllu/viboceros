@@ -5,6 +5,32 @@ use viboceros_drafting::PointInput;
 
 impl VibocerosApp {
     pub(super) fn try_continue_point_input(&mut self, input: &str) -> bool {
+        // A prompt option takes precedence over the document-level command.
+        // Match the whole entry so malformed command arguments are not ignored.
+        if input
+            .trim_start_matches(['_', '-'])
+            .eq_ignore_ascii_case("Undo")
+            && matches!(
+                self.active_command,
+                Some(
+                    InteractiveCommand::Polyline
+                        | InteractiveCommand::Curve { .. }
+                        | InteractiveCommand::InterpCrv
+                )
+            )
+        {
+            self.push_log(format!("> {input}"));
+            if self.curve_points.pop().is_some() {
+                self.last_point = self.curve_points.last().copied();
+                if self.curve_points.is_empty() {
+                    self.drafting_plane = None;
+                }
+            } else {
+                self.push_log("No draft points to undo".to_owned());
+            }
+            self.command_input.clear();
+            return true;
+        }
         if input
             .split_whitespace()
             .next()

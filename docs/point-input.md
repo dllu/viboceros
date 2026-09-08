@@ -11,6 +11,15 @@ captured construction plane remain available for correction and retry. The
 failed transaction does not leave partial geometry behind. Polyline segments
 with unrepresentable lengths are rejected before a vertex is appended.
 
+During `Polyline`, `Curve`, or `InterpCrv`, type `Undo` to remove the last
+draft point without changing document history or its redo stack. Relative input
+then starts at the last remaining point. Removing every point clears the relative
+origin and captured plane; the next absolute point or mouse pick starts afresh.
+Undo on an empty draft leaves the prompt active. After completion, `Undo` again
+operates on document history. This implements the point-removal part of Rhino's
+[curve Undo option](https://docs.mcneel.com/rhino/8/help/en-us/commands/curve.htm),
+not general undo of all prompt options.
+
 The supported forms follow [Rhino's coordinate-entry documentation](https://docs.mcneel.com/rhino/8mac/help/en-us/user_interface/accurate_modeling.htm):
 
 | Input | Interpretation |
@@ -52,7 +61,7 @@ for Circle/Polygon orientation, rectangle projection, and signed box heights.
 
 Not yet implemented: general scalar distance/angle
 constraints, unit expressions, surveyor/DMS notation, `x,y<elevation`, and
-editing command options inside an active prompt. Nonzero scalar input is
+editing other command options inside an active prompt. Nonzero scalar input is
 explicitly rejected rather than interpreted as a point.
 
 `viboceros-drafting/point_input` owns parsing and frame resolution;

@@ -479,12 +479,14 @@ impl InteractiveCommand {
                 first_axis: Some(_),
                 ..
             } => "Ellipse: pick the second-axis radius in the viewport (Esc to cancel)",
-            Self::Polyline => "Polyline: pick vertices; press Enter to finish (Esc to cancel)",
+            Self::Polyline => {
+                "Polyline: pick vertices; Undo removes last point; Enter finishes (Esc cancels)"
+            }
             Self::Curve { .. } => {
-                "Curve: pick control points; press Enter to finish (Esc to cancel)"
+                "Curve: pick control points; Undo removes last point; Enter finishes (Esc cancels)"
             }
             Self::InterpCrv => {
-                "InterpCrv: pick points on the curve; press Enter to finish (Esc to cancel)"
+                "InterpCrv: pick curve points; Undo removes last point; Enter finishes (Esc cancels)"
             }
             Self::Rectangle { first: None } => {
                 "Rectangle: pick the first corner in the viewport (Esc to cancel)"
