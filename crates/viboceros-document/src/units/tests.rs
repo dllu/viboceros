@@ -6,6 +6,84 @@ fn point(x: f64) -> Geometry {
 }
 
 #[test]
+fn small_geometry_survives_successive_unit_conversions() {
+    use viboceros_geometry::{
+        Circle3, Ellipse3, LineSegment, Polyline3, TriangleMesh, UnitVector3,
+    };
+    let tolerance = Tolerance::try_new(0.001, 1e-12, 1e-10).unwrap();
+    let origin = Point3::try_new(0.0, 0.0, 0.0).unwrap();
+    let x = Point3::try_new(0.1, 0.0, 0.0).unwrap();
+    let y = Point3::try_new(0.0, 0.1, 0.0).unwrap();
+    let geometries = [
+        Geometry::Circle(
+            Circle3::try_new(
+                origin,
+                0.1,
+                UnitVector3::try_new(0.0, 0.0, 1.0, tolerance).unwrap(),
+                tolerance,
+            )
+            .unwrap(),
+        ),
+        Geometry::Ellipse(
+            Ellipse3::try_new(
+                origin,
+                0.1,
+                0.05,
+                UnitVector3::try_new(1.0, 0.0, 0.0, tolerance).unwrap(),
+                UnitVector3::try_new(0.0, 1.0, 0.0, tolerance).unwrap(),
+                tolerance,
+            )
+            .unwrap(),
+        ),
+        Geometry::Line(LineSegment::try_new(origin, x, tolerance).unwrap()),
+        Geometry::Polyline(Polyline3::try_new(vec![origin, x, y], tolerance).unwrap()),
+        Geometry::Mesh(
+            TriangleMesh::try_new(vec![origin, x, y], vec![[0, 1, 2]], tolerance).unwrap(),
+        ),
+    ];
+    for geometry in geometries {
+        let mut document = Document::new(tolerance);
+        let id = document.add_geometry(geometry.clone()).unwrap();
+        for _ in 0..3 {
+            document.set_units(LengthUnitSystem::Meters, true).unwrap();
+            document
+                .set_units(LengthUnitSystem::Millimeters, true)
+                .unwrap();
+            assert_eq!(document.tolerance, tolerance);
+            assert_eq!(document.object(id).unwrap().geometry(), &geometry);
+        }
+    }
+}
+
+#[test]
+fn unit_conversion_rejects_numerical_collapse_atomically() {
+    use viboceros_geometry::LineSegment;
+    let tiny = Tolerance::try_new(f64::MIN_POSITIVE, 1e-12, 1e-10).unwrap();
+    let origin = Point3::try_new(0.0, 0.0, 0.0).unwrap();
+    let end = Point3::try_new(1e-200, 0.0, 0.0).unwrap();
+    let mut document = Document::default();
+    document.add_geometry(point(1.0)).unwrap();
+    document
+        .add_geometry(Geometry::Line(
+            LineSegment::try_new(origin, end, tiny).unwrap(),
+        ))
+        .unwrap();
+    let before = format!("{document:?}");
+    assert!(
+        document
+            .set_units(
+                LengthUnitSystem::Custom {
+                    name: "huge".into(),
+                    meters_per_unit: 1e200,
+                },
+                true
+            )
+            .is_err()
+    );
+    assert_eq!(format!("{document:?}"), before);
+}
+
+#[test]
 fn unit_changes_match_rhino8_public_api_measurements() {
     use serde_json::Value;
     fn units(code: &Value) -> LengthUnitSystem {

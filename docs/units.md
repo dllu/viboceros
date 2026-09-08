@@ -10,8 +10,10 @@ undoable setting edit:
 - `rescale = false` changes metadata only, retaining coordinates and tolerance.
 - `rescale = true` scales all geometry about the world origin. Numeric absolute,
   relative, and angular tolerances stay unchanged. Hidden and locked objects
-  are included. Geometry conversion uses a proportionally scaled validation
-  tolerance internally so shrinking existing geometry does not collapse it.
+  are included. Existing curves and meshes use numerical validation rather
+  than the document's minimum modelling threshold; small features must survive
+  successive conversions. Brep reconstruction retains a scaled topology-matching
+  allowance and scales stored vertex/edge tolerances.
 
 Attributes, groups, object order, selection, and selection-recall memories are
 preserved. Undo and redo exchange stored geometry rather than applying an

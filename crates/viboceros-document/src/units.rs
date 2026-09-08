@@ -23,13 +23,6 @@ impl Document {
         } else {
             1.0
         };
-        // Scale the geometry-validation threshold, not the document setting.
-        // Existing short edges must survive conversion into larger units.
-        let tolerance = Tolerance::try_new(
-            self.tolerance.absolute() * scale,
-            self.tolerance.relative(),
-            self.tolerance.angular(),
-        )?;
         // Complete every fallible transformation before touching the document.
         let geometries = if scale != 1.0 {
             let transform =
@@ -37,7 +30,28 @@ impl Document {
             let staged = self
                 .objects
                 .iter()
-                .map(|object| object.geometry.transformed(transform, tolerance))
+                .map(|object| {
+                    // Model tolerance is not a minimum feature size for existing
+                    // geometry. In particular it stays numerically unchanged
+                    // across conversions, so scaling it here breaks round trips.
+                    // Brep reconstruction additionally checks approximate topology;
+                    // retain its dimensional matching allowance while the kernel
+                    // scales stored vertex/edge tolerances and validates edge curves.
+                    let tolerance = if matches!(object.geometry, Geometry::Brep(_)) {
+                        Tolerance::try_new(
+                            self.tolerance.absolute() * scale,
+                            self.tolerance.relative(),
+                            self.tolerance.angular(),
+                        )?
+                    } else {
+                        Tolerance::try_new(
+                            f64::MIN_POSITIVE,
+                            Tolerance::DEFAULT.relative(),
+                            Tolerance::DEFAULT.angular(),
+                        )?
+                    };
+                    object.geometry.transformed(transform, tolerance)
+                })
                 .collect::<Result<Vec<_>, _>>()?;
             Some(
                 self.objects
