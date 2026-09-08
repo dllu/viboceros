@@ -153,6 +153,75 @@ mod tests {
     use super::*;
 
     #[test]
+    fn deletion_history_recalls_match_rhino_at_recall_boundaries() {
+        // Immediate selection after Undo remains a separate known discrepancy;
+        // compare complete states at every explicit recall, not that discrepancy.
+        for (fixture, reference, count) in [
+            (
+                include_str!(
+                    "../../../tools/rhino_oracle/fixtures/deletion_recall_diagnostics.json"
+                ),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/deletion_recall_diagnostics.json"
+                ),
+                54,
+            ),
+            (
+                include_str!(
+                    "../../../tools/rhino_oracle/fixtures/last_selection_history_diagnostics.json"
+                ),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/last_selection_history_diagnostics.json"
+                ),
+                16,
+            ),
+        ] {
+            let request: ProbeRequest = serde_json::from_str(fixture).unwrap();
+            let input: Value = serde_json::from_str(fixture).unwrap();
+            let observed: Value = serde_json::from_str(reference).unwrap();
+            let response = run_request(&request).unwrap();
+            let rows = observed["results"].as_array().unwrap();
+            assert_eq!(rows.len(), count);
+            assert_eq!(response.results.len(), count);
+            for ((actual, expected), operation) in response
+                .results
+                .iter()
+                .zip(rows)
+                .zip(input["operations"].as_array().unwrap())
+            {
+                assert_eq!(actual.id, expected["id"].as_str().unwrap());
+                let a = actual.value["last_states"].as_array().unwrap();
+                let b = expected["value"]["last_states"].as_array().unwrap();
+                let steps = operation["last_steps"].as_array().unwrap();
+                assert_eq!(a.len(), steps.len() + 1);
+                assert_eq!(a.len(), b.len());
+                for (actual_state, expected_state) in a.iter().zip(b) {
+                    let objects = actual_state.as_array().unwrap();
+                    let observed_objects = expected_state.as_array().unwrap();
+                    assert_eq!(objects.len(), observed_objects.len());
+                    for (object, observed) in objects.iter().zip(observed_objects) {
+                        assert_eq!(
+                            object.is_null(),
+                            observed.is_null(),
+                            "{} existence",
+                            actual.id
+                        );
+                        for field in ["point", "mode", "layer_visible", "layer_locked"] {
+                            assert_eq!(object[field], observed[field], "{} {field}", actual.id);
+                        }
+                    }
+                }
+                assert_eq!(a[0], b[0], "{} initial recall", actual.id);
+                for (i, step) in steps.iter().enumerate() {
+                    if step["kind"] == "recall" {
+                        assert_eq!(a[i + 1], b[i + 1], "{} recall step {i}", actual.id);
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
     fn last_selection_after_idle_move_matches_recorded_rhino() {
         let request: ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/last_selection.json"

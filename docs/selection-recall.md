@@ -70,12 +70,21 @@ tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/last_sele
 
 `last_selection_history_diagnostics.json` preserves 16 additional sequences and
 their full Rhino observations; these are **not passing parity references**.
-After moving a picked group, deleting one member leaves the surviving changed
-members available to Rhino's SelLast, whereas native deletion replaces the
-recorded set. Undoing that deletion also differs in immediate selection and
-subsequent recall. Undoing Move can restore selection of hidden/locked picked
-peers in Rhino; native history currently only prunes existing selection.
-Coordinates and object/layer modes match in these diagnostic cases.
+SelLast now retains the changed set through pure deletions and their undo/redo:
+surviving members remain recallable, and restored members become recallable
+again. Deleting unrelated objects does not replace the remembered set.
+`deletion_recall_diagnostics.json` adds 54 sequences covering deletion of moved
+members, unrelated objects, both end objects, and all selectable objects.
+Complete states at every explicit recall match Rhino across all 70 sequences
+and are checked by native regression tests.
+
+Immediate selection after Undo still differs: Rhino can reselect a restored
+deleted object or hidden/locked peers from a previously group-picked Move.
+Native history currently only prunes existing selection. The full diagnostic
+responses retain these differences; they are not normalized into passing traces.
+Coordinates and object/layer modes match in these cases. Broader selection replay
+also needs separate checks for mesh-face edits and Explode; restoring the entire
+pre-command selection indiscriminately is not yet established as Rhino behavior.
 
 Import/new-object transaction boundaries, broader history behavior, sub-object
 recall, and modifier-key selection remain outside the verified SelLast coverage.

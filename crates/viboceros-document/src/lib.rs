@@ -435,6 +435,7 @@ impl Document {
             label: transaction.label,
             edits: transaction.edits,
             object_ids: transaction.object_ids,
+            updates_last_changed_objects: false,
         });
         Ok(true)
     }
@@ -493,7 +494,7 @@ impl Document {
             }
         }
         let label = entry.label.clone();
-        self.update_last_changed_objects(&entry.object_ids);
+        self.update_last_changed_objects(&entry);
         self.history.redo.push(entry);
         self.prune_selection_after_history();
         Ok(Some(label))
@@ -515,7 +516,7 @@ impl Document {
             }
         }
         let label = entry.label.clone();
-        self.update_last_changed_objects(&entry.object_ids);
+        self.update_last_changed_objects(&entry);
         self.push_replayed_undo(entry);
         self.prune_selection_after_history();
         Ok(Some(label))
@@ -962,7 +963,8 @@ impl Document {
         Ok(self.apply_selection_mode(matches, SelectionMode::Add))
     }
 
-    /// Selects the objects affected by the latest object-editing transaction.
+    /// Selects recorded added/changed objects. Pure deletion preserves this set;
+    /// missing objects are filtered until history restores them.
     /// Rhino's default replaces the current selection; setting
     /// `deselect_others` to false adds the objects instead.
     pub fn select_last_changed(&mut self, deselect_others: bool) -> usize {
@@ -1964,6 +1966,7 @@ impl Document {
                 label: label.to_owned(),
                 edits: vec![edit],
                 object_ids: BTreeSet::from([object_id]),
+                updates_last_changed_objects: false,
             });
             return;
         }
@@ -1977,25 +1980,33 @@ impl Document {
             label: label.to_owned(),
             edits: vec![edit],
             object_ids,
+            updates_last_changed_objects: false,
         });
     }
 
-    fn push_new_undo(&mut self, entry: HistoryEntry) {
-        self.update_last_changed_objects(&entry.object_ids);
+    fn push_new_undo(&mut self, mut entry: HistoryEntry) {
+        entry.updates_last_changed_objects = !entry.object_ids.is_empty()
+            && self
+                .objects
+                .iter()
+                .any(|object| entry.object_ids.contains(&object.id));
+        self.update_last_changed_objects(&entry);
         self.history.redo.clear();
         self.push_replayed_undo(entry);
     }
 
-    fn update_last_changed_objects(&mut self, ids: &BTreeSet<ObjectId>) {
-        // Non-object edits (for example adding a layer) do not replace the
-        // objects remembered by SelLast.
-        if ids.is_empty() {
+    fn update_last_changed_objects(&mut self, entry: &HistoryEntry) {
+        // Non-object edits and pure deletions preserve recall memory. Keep
+        // deleted IDs in that memory so undoing deletion makes them recallable
+        // again, together with surviving members of the original changed set.
+        if !entry.updates_last_changed_objects {
             return;
         }
-        self.last_changed_objects = ids
+        self.last_changed_objects = self
+            .objects
             .iter()
-            .copied()
-            .filter(|id| self.object(*id).is_some())
+            .filter(|object| entry.object_ids.contains(&object.id))
+            .map(|object| object.id)
             .collect();
     }
 

@@ -9,6 +9,8 @@ pub(super) struct HistoryEntry {
     pub label: String,
     pub edits: Vec<Edit>,
     pub object_ids: BTreeSet<ObjectId>,
+    /// Pure removal entries preserve SelLast, including when replayed.
+    pub updates_last_changed_objects: bool,
 }
 
 #[derive(Clone, Debug)]

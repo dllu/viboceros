@@ -32,8 +32,10 @@ uses the dedicated idle worker for 52 recalls after real group picking. These
 verify visibility/lock filtering. See [selection recall](selection-recall.md).
 `last_selection.json` adds 32 exact SelLast sequences after idle Move, checking
 group/mode filtering, remembered options, and empty-layer creation. The separate
-16-case `last_selection_history_diagnostics.json` records known deletion/undo
-differences, not passing parity. Both use the same owned-window idle worker.
+16-case `last_selection_history_diagnostics.json` and 54-case
+`deletion_recall_diagnostics.json` retain immediate undo-selection differences,
+not passing full-trace parity. All explicit SelLast recall checkpoints now match
+and have native regression coverage. These use the same owned-window idle worker.
 Repeated picks at identical coordinates do not wait for a new mouse-motion event;
 input failures report the case/window and progress without acknowledging a click.
 

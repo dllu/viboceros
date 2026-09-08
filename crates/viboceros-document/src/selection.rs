@@ -123,6 +123,51 @@ mod tests {
     }
 
     #[test]
+    fn deletion_and_its_replay_preserve_last_changed_members() {
+        for removed in [vec![0], vec![2], vec![0, 1], vec![0, 1, 2]] {
+            let mut document = Document::default();
+            let ids = points(&mut document, 3);
+            document.add_group(None, [ids[0], ids[1]]).unwrap();
+            document.begin_transaction("Move pair").unwrap();
+            document
+                .transform_objects(
+                    [ids[0], ids[1]],
+                    AffineTransform3::from_translation(
+                        viboceros_geometry::Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+                    ),
+                )
+                .unwrap();
+            document.commit_transaction().unwrap();
+            document.begin_transaction("Delete subset").unwrap();
+            for &index in &removed {
+                document.delete_object(ids[index]).unwrap();
+            }
+            document.commit_transaction().unwrap();
+            let survivors = [0, 1]
+                .into_iter()
+                .filter(|i| !removed.contains(i))
+                .map(|i| ids[i])
+                .collect::<BTreeSet<_>>();
+            for replay in 0..4 {
+                document.select_last_changed(true);
+                assert_eq!(
+                    document.selected_object_ids().collect::<BTreeSet<_>>(),
+                    if replay % 2 == 0 {
+                        survivors.clone()
+                    } else {
+                        BTreeSet::from([ids[0], ids[1]])
+                    }
+                );
+                if replay % 2 == 0 {
+                    document.undo().unwrap();
+                } else {
+                    document.redo().unwrap();
+                }
+            }
+        }
+    }
+
+    #[test]
     fn adding_an_empty_layer_preserves_last_changed_objects() {
         let mut document = Document::default();
         let ids = points(&mut document, 3);

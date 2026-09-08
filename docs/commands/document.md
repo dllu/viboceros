@@ -37,8 +37,8 @@ and STL-style triangle soup classify consistently; quad diagonals are used only
 when an operation explicitly needs triangles.
 
 `SelLast` recalls selectable changed objects without group expansion and remembers
-its Yes/No option. Idle Move, option memory, and empty-layer creation are verified;
-deletion/undo tracking and selection still have documented Rhino differences.
+its Yes/No option. Idle Move, option memory, empty-layer creation, and recall after
+pure deletion/undo/redo are verified. Immediate undo-selection still differs.
 `SelPrev` recalls recorded selectable objects without group expansion. Replacement
 swaps with a nonempty current set; additive recall leaves previous memory intact.
 It remembers `DeselectOthersBeforeSelect=Yes|No` per registry. See
