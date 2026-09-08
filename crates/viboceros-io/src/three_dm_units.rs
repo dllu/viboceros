@@ -29,7 +29,9 @@ pub(crate) fn transform_geometry(
         G::PolyCurve(curve) => G::PolyCurve(curve.transformed(transform)?),
         G::NurbsSurface(surface) => G::NurbsSurface(surface.transformed(transform)?),
         G::Brep(brep) => G::Brep(brep.transformed(transform, tolerance)?),
-        G::Mesh(mesh) => G::Mesh(mesh.transformed(transform, tolerance)?),
+        G::Mesh(mesh) => {
+            G::Mesh(mesh.transformed(transform, viboceros_geometry::Tolerance::MESH_VALIDATION)?)
+        }
     })
 }
 

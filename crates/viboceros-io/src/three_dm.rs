@@ -697,7 +697,7 @@ fn decode_object(
             ThreeDmGeometry::Mesh(TriangleMesh::try_new_faces(
                 vertices,
                 faces,
-                Tolerance::NUMERICAL_VALIDATION,
+                Tolerance::MESH_VALIDATION,
             )?)
         }
         OBJECT_BREP | OBJECT_POLYCURVE | OBJECT_ARC

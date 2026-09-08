@@ -476,6 +476,6 @@ pub(super) fn combined_document_mesh(document: &Document) -> Result<TriangleMesh
     Ok(TriangleMesh::try_new(
         vertices,
         triangles,
-        Tolerance::NUMERICAL_VALIDATION,
+        Tolerance::MESH_VALIDATION,
     )?)
 }

@@ -171,7 +171,7 @@ fn read_binary_stl<R: Read>(mut reader: R) -> Result<TriangleMesh, StlError> {
     Ok(TriangleMesh::try_new(
         vertices,
         triangles,
-        Tolerance::NUMERICAL_VALIDATION,
+        Tolerance::MESH_VALIDATION,
     )?)
 }
 
@@ -270,7 +270,7 @@ fn read_ascii_stl<R: BufRead>(reader: R) -> Result<TriangleMesh, StlError> {
     Ok(TriangleMesh::try_new(
         vertices,
         triangles,
-        Tolerance::NUMERICAL_VALIDATION,
+        Tolerance::MESH_VALIDATION,
     )?)
 }
 
@@ -414,9 +414,7 @@ fn quantized_triangle(
         )
         .expect("finite f32 coordinates are valid Real points")
     });
-    let minimum_tolerance =
-        Tolerance::try_new(Real::MIN_POSITIVE, Real::MIN_POSITIVE, Real::MIN_POSITIVE)
-            .expect("positive finite tolerance components");
+    let minimum_tolerance = Tolerance::MESH_VALIDATION;
     let normal = (|| {
         let first = points[0]
             .vector_to(points[1])?
@@ -508,7 +506,7 @@ mod tests {
                 Point3::try_new(0.0, 1e-12, 0.0).unwrap(),
             ],
             vec![[0, 1, 2]],
-            Tolerance::NUMERICAL_VALIDATION,
+            Tolerance::MESH_VALIDATION,
         )
         .unwrap();
         for format in [StlFormat::Ascii, StlFormat::Binary] {
@@ -519,6 +517,29 @@ mod tests {
             for (actual, expected) in decoded.vertices().iter().zip(original.vertices()) {
                 assert!(actual.distance_to(*expected).unwrap() < 1e-19);
             }
+        }
+    }
+
+    #[test]
+    fn thin_noncollinear_triangles_survive_both_stl_encodings() {
+        let tolerance =
+            Tolerance::try_new(f64::MIN_POSITIVE, f64::MIN_POSITIVE, f64::MIN_POSITIVE).unwrap();
+        let original = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 1e-12, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            tolerance,
+        )
+        .unwrap();
+        for format in [StlFormat::Ascii, StlFormat::Binary] {
+            let mut bytes = Vec::new();
+            write_stl(&mut bytes, &original, format).unwrap();
+            let decoded = read_stl(Cursor::new(bytes)).unwrap();
+            assert_eq!(decoded.triangles().len(), 1);
+            assert!((decoded.vertices()[2].y() - 1e-12).abs() < 1e-19);
         }
     }
 

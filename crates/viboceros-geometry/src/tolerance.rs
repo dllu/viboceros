@@ -12,6 +12,15 @@ pub struct Tolerance {
 }
 
 impl Tolerance {
+    /// Already-defined mesh facets need nonzero edges and a nonzero numerical
+    /// cross product, not a minimum modelling angle or feature size. Do not use
+    /// this for approximate frame orthogonality, joining, or fitting.
+    pub const MESH_VALIDATION: Self = Self {
+        absolute: Real::MIN_POSITIVE,
+        relative: Real::MIN_POSITIVE,
+        angular: Real::MIN_POSITIVE,
+    };
+
     /// Validation policy for already-defined primitives, not a modelling or
     /// joining tolerance. Rejects zero/subnormal-size degeneracies without
     /// imposing a document-dependent minimum feature size. Approximate topology
@@ -83,6 +92,28 @@ impl Default for Tolerance {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn mesh_validation_rejects_exactly_collinear_integer_edges() {
+        use crate::{Point3, TriangleMesh};
+        for x in 1..8 {
+            for y in 1..8 {
+                for multiplier in 2..8 {
+                    let points = vec![
+                        Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                        Point3::try_new(x as f64, y as f64, 0.0).unwrap(),
+                        Point3::try_new((x * multiplier) as f64, (y * multiplier) as f64, 0.0)
+                            .unwrap(),
+                    ];
+                    assert!(
+                        TriangleMesh::try_new(points, vec![[0, 1, 2]], Tolerance::MESH_VALIDATION)
+                            .is_err(),
+                        "accepted collinear {x},{y} times {multiplier}"
+                    );
+                }
+            }
+        }
+    }
 
     #[test]
     fn rejects_invalid_components() {

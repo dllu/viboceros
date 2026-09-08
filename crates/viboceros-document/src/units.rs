@@ -43,6 +43,8 @@ impl Document {
                             self.tolerance.relative(),
                             self.tolerance.angular(),
                         )?
+                    } else if matches!(object.geometry, Geometry::Mesh(_)) {
+                        Tolerance::MESH_VALIDATION
                     } else {
                         Tolerance::NUMERICAL_VALIDATION
                     };

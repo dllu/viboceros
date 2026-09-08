@@ -94,9 +94,9 @@ impl Vector3 {
         let left = self.to_array().map(|value| value / left_scale);
         let right = other.to_array().map(|value| value / right_scale);
         let normalized = [
-            left[1].mul_add(right[2], -left[2] * right[1]),
-            left[2].mul_add(right[0], -left[0] * right[2]),
-            left[0].mul_add(right[1], -left[1] * right[0]),
+            direct_determinant(left[1], right[2], left[2], right[1]).unwrap(),
+            direct_determinant(left[2], right[0], left[0], right[2]).unwrap(),
+            direct_determinant(left[0], right[1], left[1], right[0]).unwrap(),
         ];
         let mut result = [0.0; 3];
         for (index, component) in normalized.into_iter().enumerate() {
@@ -160,14 +160,18 @@ impl Vector3 {
 fn direct_determinant(left_a: Real, right_a: Real, left_b: Real, right_b: Real) -> Option<Real> {
     let second = left_b * right_b;
     if second.is_finite() {
-        let value = left_a.mul_add(right_a, -second);
+        // Compensate the rounded product too. FMA(a,b,-c*d) alone
+        // leaves a nonzero product-rounding residual even when a*b == c*d.
+        let error = left_b.mul_add(right_b, -second);
+        let value = left_a.mul_add(right_a, -second) - error;
         if value.is_finite() {
             return Some(value);
         }
     }
     let first = left_a * right_a;
     if first.is_finite() {
-        let value = (-left_b).mul_add(right_b, first);
+        let error = left_a.mul_add(right_a, -first);
+        let value = (-left_b).mul_add(right_b, first) + error;
         if value.is_finite() {
             return Some(value);
         }
@@ -257,6 +261,36 @@ impl TryFrom<[Real; 3]> for Vector3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn cross_product_of_identical_or_opposite_vectors_is_exactly_zero() {
+        for coordinates in [
+            [0.1, 0.3, 0.7],
+            [std::f64::consts::FRAC_1_SQRT_2; 3],
+            [1e200, -3e200, 7e200],
+            [1e-200, 3e-200, -7e-200],
+        ] {
+            let vector = Vector3::try_from(coordinates).unwrap();
+            assert_eq!(vector.cross(vector).unwrap().to_array(), [0.0; 3]);
+            assert_eq!(
+                vector
+                    .cross(vector.scaled(-1.0).unwrap())
+                    .unwrap()
+                    .to_array(),
+                [0.0; 3]
+            );
+        }
+    }
+
+    #[test]
+    fn cross_product_retains_the_difference_of_rounded_near_equal_products() {
+        let e = 2.0_f64.powi(-27);
+        let a = Vector3::try_new(1.0, 1.0 + e, 0.0).unwrap();
+        let b = Vector3::try_new(1.0 + e, 1.0 + 2.0 * e, 0.0).unwrap();
+        // Exact binary arithmetic: (1+2e) - (1+e)^2 = -e^2.
+        assert_eq!(a.cross(b).unwrap().z(), -e * e);
+        assert_eq!(b.cross(a).unwrap().z(), e * e);
+    }
 
     #[test]
     fn normalizes_huge_vectors_without_overflow() {

@@ -177,7 +177,7 @@ pub fn read_step_in_units<R: Read>(
         for object in &mut imported.objects {
             object.mesh = object
                 .mesh
-                .transformed(transform, Tolerance::NUMERICAL_VALIDATION)?;
+                .transformed(transform, Tolerance::MESH_VALIDATION)?;
         }
     }
     Ok(imported)
@@ -255,7 +255,7 @@ pub fn write_step_in_units<W: Write>(
     let transform = AffineTransform3::try_uniform_scale(Point3::try_new(0.0, 0.0, 0.0)?, scale)?;
     let converted = meshes
         .iter()
-        .map(|mesh| mesh.transformed(transform, Tolerance::NUMERICAL_VALIDATION))
+        .map(|mesh| mesh.transformed(transform, Tolerance::MESH_VALIDATION))
         .collect::<Result<Vec<_>, _>>()?;
     write_step_with_accuracy(writer, &converted, target_tolerance.absolute())
 }
@@ -722,7 +722,7 @@ fn polygon_to_mesh(
     Ok(TriangleMesh::try_new(
         vertices,
         triangles,
-        Tolerance::NUMERICAL_VALIDATION,
+        Tolerance::MESH_VALIDATION,
     )?)
 }
 
