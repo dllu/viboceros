@@ -47,6 +47,9 @@ impl Document {
     }
 
     pub(super) fn prune_selection_after_history(&mut self) {
+        let mut seen = BTreeSet::new();
+        self.selection_order
+            .retain(|id| self.selection.contains(id) && seen.insert(*id));
         let allowed = self.selectable_clusters(self.selection.iter().copied());
         let next = self.selection.intersection(&allowed).copied().collect();
         self.update_selection(next);
@@ -120,6 +123,34 @@ mod tests {
                     .unwrap()
             })
             .collect()
+    }
+
+    #[test]
+    fn repeated_object_edits_replay_without_duplicate_selection_order() {
+        let mut document = Document::default();
+        let id = points(&mut document, 1)[0];
+        document.begin_transaction("Repeated edits").unwrap();
+        for selected in [true, false, true] {
+            document.clear_selection();
+            if selected {
+                document.select_object(id, SelectionMode::Add).unwrap();
+            }
+            document
+                .transform_objects(
+                    [id],
+                    AffineTransform3::from_translation(
+                        viboceros_geometry::Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+                    ),
+                )
+                .unwrap();
+        }
+        document.commit_transaction().unwrap();
+        for _ in 0..3 {
+            document.undo().unwrap();
+            assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [id]);
+            document.redo().unwrap();
+            assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [id]);
+        }
     }
 
     #[test]

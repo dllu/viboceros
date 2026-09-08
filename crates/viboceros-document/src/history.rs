@@ -37,14 +37,17 @@ pub(super) enum Edit {
         index: usize,
         id: ObjectId,
         stored: Option<Object>,
+        selected: bool,
     },
     ObjectRemoved {
         index: usize,
         id: ObjectId,
         stored: Option<Object>,
+        selected: bool,
     },
     ObjectChanged {
         id: ObjectId,
+        selected: bool,
         /// Keep large before/after snapshots out of every small history edit.
         states: Box<[Object; 2]>,
     },
@@ -95,18 +98,35 @@ pub(super) enum Edit {
 impl Edit {
     pub fn undo(&mut self, document: &mut Document) -> Result<(), DocumentError> {
         match self {
-            Self::ObjectInserted { index, id, stored } => {
+            Self::ObjectInserted {
+                index,
+                id,
+                stored,
+                selected,
+            } => {
                 ensure_empty(stored, "inserted object was already stored")?;
                 *stored = Some(remove_object(document, *index, *id)?);
+                exchange_selection(document, *id, selected, false);
             }
-            Self::ObjectRemoved { index, stored, .. } => {
+            Self::ObjectRemoved {
+                index,
+                id,
+                stored,
+                selected,
+            } => {
                 let object = stored.take().ok_or(DocumentError::HistoryInvariant(
                     "removed object was not stored",
                 ))?;
                 insert_at(&mut document.objects, *index, object)?;
+                exchange_selection(document, *id, selected, true);
             }
-            Self::ObjectChanged { id, states } => {
+            Self::ObjectChanged {
+                id,
+                states,
+                selected,
+            } => {
                 replace_object(document, *id, &states[1], &states[0])?;
+                exchange_selection(document, *id, selected, true);
             }
             Self::ObjectsMovedToEnd {
                 moved,
@@ -157,18 +177,35 @@ impl Edit {
 
     pub fn redo(&mut self, document: &mut Document) -> Result<(), DocumentError> {
         match self {
-            Self::ObjectInserted { index, stored, .. } => {
+            Self::ObjectInserted {
+                index,
+                id,
+                stored,
+                selected,
+            } => {
                 let object = stored.take().ok_or(DocumentError::HistoryInvariant(
                     "inserted object was not stored",
                 ))?;
                 insert_at(&mut document.objects, *index, object)?;
+                exchange_selection(document, *id, selected, true);
             }
-            Self::ObjectRemoved { index, id, stored } => {
+            Self::ObjectRemoved {
+                index,
+                id,
+                stored,
+                selected,
+            } => {
                 ensure_empty(stored, "removed object was already stored")?;
                 *stored = Some(remove_object(document, *index, *id)?);
+                exchange_selection(document, *id, selected, false);
             }
-            Self::ObjectChanged { id, states } => {
+            Self::ObjectChanged {
+                id,
+                states,
+                selected,
+            } => {
                 replace_object(document, *id, &states[0], &states[1])?;
+                exchange_selection(document, *id, selected, true);
             }
             Self::ObjectsMovedToEnd {
                 moved,
@@ -216,6 +253,22 @@ impl Edit {
         }
         Ok(())
     }
+}
+
+// Selection belongs to the stored object state. Exchange it on every replay:
+// users may change selection between Undo and Redo. Unrelated IDs are untouched.
+fn exchange_selection(document: &mut Document, id: ObjectId, stored: &mut bool, exists: bool) {
+    let current = document.selection.contains(&id);
+    if *stored && exists {
+        if document.selection.insert(id) {
+            document.selection_order.push(id);
+        }
+    } else {
+        document.selection.remove(&id);
+    }
+    // The replay boundary filters/deduplicates order once, avoiding quadratic
+    // work when undoing commands with many selected output objects.
+    *stored = current;
 }
 
 fn ensure_empty<T>(value: &Option<T>, message: &'static str) -> Result<(), DocumentError> {

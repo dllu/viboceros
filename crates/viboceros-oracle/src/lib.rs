@@ -46,6 +46,7 @@ mod group_picking;
 mod object_source;
 mod plane_arrays;
 mod trimmed_brep;
+mod undo_selection;
 pub use trimmed_brep::{TrimBoundary, TrimmedBrepFixture};
 mod polycurve;
 pub use polycurve::PolyCurveFixture;
@@ -175,6 +176,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: group_picking::GroupPickingFixture,
+    },
+    UndoSelection {
+        id: String,
+        #[serde(flatten)]
+        fixture: undo_selection::Fixture,
     },
     BezierConversion {
         id: String,
@@ -1535,6 +1541,7 @@ impl Operation {
             | Self::Distribute { id, .. }
             | Self::GroupMemberships { id, .. }
             | Self::GroupPicking { id, .. }
+            | Self::UndoSelection { id, .. }
             | Self::BezierConversion { id, .. }
             | Self::NurbsConversion { id, .. }
             | Self::MeshNurbsConversion { id, .. }
@@ -1833,16 +1840,33 @@ fn validate_request(request: &ProbeRequest) -> Result<(), ProbeError> {
         ));
     }
     let mut ids = BTreeSet::new();
+    if request
+        .operations
+        .iter()
+        .any(|op| matches!(op, Operation::UndoSelection { .. }))
+        && (request.iterations != 1
+            || request.operations.len() > 64
+            || request
+                .operations
+                .iter()
+                .any(|op| !matches!(op, Operation::UndoSelection { .. })))
+    {
+        return Err(ProbeError::FixtureInvariant(
+            "undo selection requires a dedicated single-iteration batch of at most 64 cases",
+        ));
+    }
     for operation in &request.operations {
         let id = operation.id();
         if id.trim().is_empty() || !ids.insert(id) {
             return Err(ProbeError::InvalidOperationId(id.to_owned()));
         }
-        if matches!(operation, Operation::GroupPicking { .. })
-            && (id.len() > 100
-                || !id
-                    .bytes()
-                    .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-')))
+        if matches!(
+            operation,
+            Operation::GroupPicking { .. } | Operation::UndoSelection { .. }
+        ) && (id.len() > 100
+            || !id
+                .bytes()
+                .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-')))
         {
             return Err(ProbeError::InvalidOperationId(id.to_owned()));
         }
@@ -1908,6 +1932,7 @@ fn execute(
         Operation::Distribute { fixture, .. } => distribute::run(fixture, tolerance)?,
         Operation::GroupMemberships { fixture, .. } => group_memberships::run(fixture, tolerance)?,
         Operation::GroupPicking { fixture, .. } => group_picking::run(fixture, tolerance)?,
+        Operation::UndoSelection { fixture, .. } => undo_selection::run(fixture, tolerance)?,
         Operation::BezierConversion { fixture, .. } => conversion::run(fixture, tolerance)?,
         Operation::NurbsConversion { fixture, .. } => {
             conversion_session::run_nurbs(fixture, tolerance)?

@@ -14329,6 +14329,9 @@ impl Command for ExtractMeshFacesCommand {
         let source_count = plans.len();
 
         if !options.make_copy {
+            // Native face arguments stand in for Rhino's sub-object picker;
+            // whole-object selection is not part of the stored mesh state.
+            document.clear_selection();
             document.replace_object_geometries(plans.iter().map(|plan| {
                 (
                     plan.source,
@@ -14548,6 +14551,7 @@ impl Command for DeleteFacesCommand {
             .collect::<Result<Vec<_>, CommandError>>()?;
         let source_count = plans.len();
 
+        document.clear_selection();
         document.replace_object_geometries(plans.iter().filter_map(|plan| {
             plan.remainder
                 .as_ref()
@@ -16093,6 +16097,8 @@ impl Command for ExplodeCommand {
             })
             .collect::<BTreeMap<_, _>>();
 
+        // Rhino consumes Explode's source selection before deleting its inputs.
+        document.select_objects_direct(exploded_ids.iter().copied(), SelectionMode::Remove)?;
         let mut selected_result_ids = Vec::with_capacity(output_count);
         for (source, parts, attributes) in exploded {
             let geometries = parts.into_geometries();

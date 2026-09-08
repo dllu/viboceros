@@ -15,7 +15,7 @@ class GroupPickingTests(unittest.TestCase):
     def test_permanent_request_and_rejected_modes(self):
         request = json.loads(Path(__file__).with_name("fixtures").joinpath("group_picking.json").read_text())
         validate_request(request)
-        for name in ("last_selection.json", "last_selection_history_diagnostics.json", "deletion_recall_diagnostics.json"):
+        for name in ("last_selection.json", "last_selection_history.json", "deletion_recall.json"):
             validate_request(json.loads(Path(__file__).with_name("fixtures").joinpath(name).read_text()))
         for changes in [dict(seed=True), dict(seed=3), dict(groups=[[0, 0]]),
                         dict(groups=[[False]]), dict(groups=[[3]]), dict(locked=[1, 1]),

@@ -1248,6 +1248,7 @@ impl Document {
                 "Transform object",
                 Edit::ObjectChanged {
                     id,
+                    selected: self.is_selected(id),
                     states: Box::new([before, after]),
                 },
             );
@@ -1299,6 +1300,7 @@ impl Document {
                 "Replace object geometry",
                 Edit::ObjectChanged {
                     id,
+                    selected: self.is_selected(id),
                     states: Box::new([before, after]),
                 },
             );
@@ -1481,6 +1483,7 @@ impl Document {
                     index,
                     id: copy_id,
                     stored: None,
+                    selected: false,
                 },
             );
             copied.push((source_id, copy_id));
@@ -1585,6 +1588,7 @@ impl Document {
                         index,
                         id,
                         stored: None,
+                        selected: false,
                     },
                 );
                 copied_by_original.insert(original_id, id);
@@ -1636,6 +1640,7 @@ impl Document {
                 index,
                 id,
                 stored: None,
+                selected: false,
             },
         );
         Ok(id)
@@ -1673,7 +1678,7 @@ impl Document {
         // groups remain addressable and their creation order survives undo.
         self.set_object_group_memberships(id, [])?;
         let object = self.objects.remove(index);
-        self.selection.remove(&id);
+        let selected = self.selection.remove(&id);
         self.selection_order.retain(|selected| *selected != id);
         self.record_edit(
             "Delete object",
@@ -1681,6 +1686,7 @@ impl Document {
                 index,
                 id,
                 stored: Some(object),
+                selected,
             },
         );
         Ok(())
@@ -1795,6 +1801,7 @@ impl Document {
                 label,
                 Edit::ObjectChanged {
                     id,
+                    selected: self.is_selected(id),
                     states: Box::new([before, after]),
                 },
             );
@@ -1849,6 +1856,7 @@ impl Document {
                 label,
                 Edit::ObjectChanged {
                     id,
+                    selected: self.is_selected(id),
                     states: Box::new([before, after]),
                 },
             );

@@ -43,6 +43,7 @@ impl Document {
                 "Set object layer",
                 Edit::ObjectChanged {
                     id,
+                    selected: self.is_selected(id),
                     states: Box::new([before, after]),
                 },
             );
@@ -100,6 +101,7 @@ impl Document {
                     index,
                     id,
                     stored: None,
+                    selected: false,
                 },
             );
             copied_by_original.insert(original.id, id);

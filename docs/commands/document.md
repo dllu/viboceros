@@ -38,7 +38,8 @@ when an operation explicitly needs triangles.
 
 `SelLast` recalls selectable changed objects without group expansion and remembers
 its Yes/No option. Idle Move, option memory, empty-layer creation, and recall after
-pure deletion/undo/redo are verified. Immediate undo-selection still differs.
+pure deletion/undo/redo are verified. Object-state selection replay is described
+in [history selection](../history-selection.md).
 `SelPrev` recalls recorded selectable objects without group expansion. Replacement
 swaps with a nonempty current set; additive recall leaves previous memory intact.
 It remembers `DeselectOthersBeforeSelect=Yes|No` per registry. See

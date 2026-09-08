@@ -1,0 +1,66 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "Move-false",
+      "op": "undo_selection",
+      "kind": "Move",
+      "clear": false
+    },
+    {
+      "id": "Move-true",
+      "op": "undo_selection",
+      "kind": "Move",
+      "clear": true
+    },
+    {
+      "id": "Delete-false",
+      "op": "undo_selection",
+      "kind": "Delete",
+      "clear": false
+    },
+    {
+      "id": "Delete-true",
+      "op": "undo_selection",
+      "kind": "Delete",
+      "clear": true
+    },
+    {
+      "id": "Explode-false",
+      "op": "undo_selection",
+      "kind": "Explode",
+      "clear": false
+    },
+    {
+      "id": "Explode-true",
+      "op": "undo_selection",
+      "kind": "Explode",
+      "clear": true
+    },
+    {
+      "id": "DeleteFaces-false",
+      "op": "undo_selection",
+      "kind": "DeleteFaces",
+      "clear": false
+    },
+    {
+      "id": "DeleteFaces-true",
+      "op": "undo_selection",
+      "kind": "DeleteFaces",
+      "clear": true
+    },
+    {
+      "id": "ExtractMeshFaces-false",
+      "op": "undo_selection",
+      "kind": "ExtractMeshFaces",
+      "clear": false
+    },
+    {
+      "id": "ExtractMeshFaces-true",
+      "op": "undo_selection",
+      "kind": "ExtractMeshFaces",
+      "clear": true
+    }
+  ]
+}

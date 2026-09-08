@@ -1,0 +1,750 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "Move-false",
+      "value": {
+        "states": [
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": false
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": null,
+              "kind": "Curve",
+              "selected": true
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": null,
+              "kind": "Curve",
+              "selected": true
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": null,
+              "kind": "Curve",
+              "selected": true
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": null,
+              "kind": "Curve",
+              "selected": true
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": null,
+              "kind": "Curve",
+              "selected": true
+            }
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "Move-true",
+      "value": {
+        "states": [
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": false
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": null,
+              "kind": "Curve",
+              "selected": true
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": null,
+              "kind": "Curve",
+              "selected": false
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": null,
+              "kind": "Curve",
+              "selected": true
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": null,
+              "kind": "Curve",
+              "selected": false
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": null,
+              "kind": "Curve",
+              "selected": true
+            }
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "Delete-false",
+      "value": {
+        "states": [
+          {
+            "count": 1,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": false
+            },
+            "selected_outputs": 0,
+            "source": null
+          },
+          {
+            "count": 1,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": null
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": null,
+              "kind": "Curve",
+              "selected": true
+            }
+          },
+          {
+            "count": 1,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": null
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": null,
+              "kind": "Curve",
+              "selected": true
+            }
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "Delete-true",
+      "value": {
+        "states": [
+          {
+            "count": 1,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": false
+            },
+            "selected_outputs": 0,
+            "source": null
+          },
+          {
+            "count": 1,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": null
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": null,
+              "kind": "Curve",
+              "selected": true
+            }
+          },
+          {
+            "count": 1,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": null
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": null,
+              "kind": "Curve",
+              "selected": true
+            }
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "Explode-false",
+      "value": {
+        "states": [
+          {
+            "count": 5,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": false
+            },
+            "selected_outputs": 4,
+            "source": null
+          },
+          {
+            "count": 5,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 4,
+            "source": null
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": null,
+              "kind": "Curve",
+              "selected": false
+            }
+          },
+          {
+            "count": 5,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 4,
+            "source": null
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": null,
+              "kind": "Curve",
+              "selected": false
+            }
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "Explode-true",
+      "value": {
+        "states": [
+          {
+            "count": 5,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": false
+            },
+            "selected_outputs": 4,
+            "source": null
+          },
+          {
+            "count": 5,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": null
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": null,
+              "kind": "Curve",
+              "selected": false
+            }
+          },
+          {
+            "count": 5,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": null
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": null,
+              "kind": "Curve",
+              "selected": false
+            }
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "DeleteFaces-false",
+      "value": {
+        "states": [
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": false
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": 3,
+              "kind": "Mesh",
+              "selected": false
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": 3,
+              "kind": "Mesh",
+              "selected": false
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": 4,
+              "kind": "Mesh",
+              "selected": false
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": 3,
+              "kind": "Mesh",
+              "selected": false
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": 4,
+              "kind": "Mesh",
+              "selected": false
+            }
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "DeleteFaces-true",
+      "value": {
+        "states": [
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": false
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": 3,
+              "kind": "Mesh",
+              "selected": false
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": 3,
+              "kind": "Mesh",
+              "selected": false
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": 4,
+              "kind": "Mesh",
+              "selected": false
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": 3,
+              "kind": "Mesh",
+              "selected": false
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": 4,
+              "kind": "Mesh",
+              "selected": false
+            }
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "ExtractMeshFaces-false",
+      "value": {
+        "states": [
+          {
+            "count": 3,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": false
+            },
+            "selected_outputs": 1,
+            "source": {
+              "faces": 3,
+              "kind": "Mesh",
+              "selected": false
+            }
+          },
+          {
+            "count": 3,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 1,
+            "source": {
+              "faces": 3,
+              "kind": "Mesh",
+              "selected": false
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": 4,
+              "kind": "Mesh",
+              "selected": false
+            }
+          },
+          {
+            "count": 3,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 1,
+            "source": {
+              "faces": 3,
+              "kind": "Mesh",
+              "selected": false
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": 4,
+              "kind": "Mesh",
+              "selected": false
+            }
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "ExtractMeshFaces-true",
+      "value": {
+        "states": [
+          {
+            "count": 3,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": false
+            },
+            "selected_outputs": 1,
+            "source": {
+              "faces": 3,
+              "kind": "Mesh",
+              "selected": false
+            }
+          },
+          {
+            "count": 3,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": 3,
+              "kind": "Mesh",
+              "selected": false
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": 4,
+              "kind": "Mesh",
+              "selected": false
+            }
+          },
+          {
+            "count": 3,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": 3,
+              "kind": "Mesh",
+              "selected": false
+            }
+          },
+          {
+            "count": 2,
+            "other": {
+              "faces": null,
+              "kind": "Point",
+              "selected": true
+            },
+            "selected_outputs": 0,
+            "source": {
+              "faces": 4,
+              "kind": "Mesh",
+              "selected": false
+            }
+          }
+        ],
+        "succeeded": true
+      }
+    }
+  ]
+}

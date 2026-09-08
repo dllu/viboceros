@@ -155,6 +155,10 @@ class OracleClient:
             validate_request(request)
             worker_source = Path(__file__).with_name("group_picking_worker.py")
             interaction = IdlePicker()
+        if any(operation.get("op") == "undo_selection" for operation in request.get("operations", [])):
+            from .undo_selection import validate_request
+            validate_request(request)
+            worker_source = Path(__file__).with_name("undo_selection_worker.py")
         if not worker_source.is_file():
             raise OracleError(f"Rhino worker not found: {worker_source}")
 

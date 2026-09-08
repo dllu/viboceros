@@ -66,25 +66,23 @@ incorrectly include fixture setup objects in the comparison's last-changed set.
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/last_selection.json --timeout 300
 ```
 
-### Known history differences
+### History
 
-`last_selection_history_diagnostics.json` preserves 16 additional sequences and
-their full Rhino observations; these are **not passing parity references**.
+`last_selection_history.json` preserves 16 additional sequences and their full
+Rhino observations.
 SelLast now retains the changed set through pure deletions and their undo/redo:
 surviving members remain recallable, and restored members become recallable
 again. Deleting unrelated objects does not replace the remembered set.
-`deletion_recall_diagnostics.json` adds 54 sequences covering deletion of moved
+`deletion_recall.json` adds 54 sequences covering deletion of moved
 members, unrelated objects, both end objects, and all selectable objects.
-Complete states at every explicit recall match Rhino across all 70 sequences
-and are checked by native regression tests.
+Complete traces now match Rhino across all 70 sequences, including immediate
+Undo/Redo selection, and are checked by native regression tests. These fixtures
+were formerly named with a `_diagnostics` suffix while that behavior differed.
 
-Immediate selection after Undo still differs: Rhino can reselect a restored
-deleted object or hidden/locked peers from a previously group-picked Move.
-Native history currently only prunes existing selection. The full diagnostic
-responses retain these differences; they are not normalized into passing traces.
-Coordinates and object/layer modes match in these cases. Broader selection replay
-also needs separate checks for mesh-face edits and Explode; restoring the entire
-pre-command selection indiscriminately is not yet established as Rhino behavior.
+Undo can reselect a restored deleted object or hidden/locked peers from a
+previously group-picked Move. Selection travels with recorded object states,
+not a snapshot of the entire document selection. See [history selection](history-selection.md)
+for the independently checked Explode and mesh-face edit behavior.
 
 Import/new-object transaction boundaries, broader history behavior, sub-object
 recall, and modifier-key selection remain outside the verified SelLast coverage.
