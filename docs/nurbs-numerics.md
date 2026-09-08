@@ -91,6 +91,30 @@ and surface domain checks are not widened to hide that numerical error. Tests
 cover constant coordinates, signed/global weight scales, translated derivatives,
 full-order limits, finite signed images with overflowing offsets and genuine poles.
 
+## Arc-length integration
+
+`nurbs/arc_length` owns accurate full-curve length measurement. It affinely maps
+the knot vector to `[0,1]` before integrating speed with adaptive Gauss–Kronrod
+quadrature, then combines span integrals with compensated summation. The
+absolute tolerance is divided across spans; the relative tolerance remains
+unchanged. Unit-domain curves are borrowed without copying, and other curves
+retain their original controls and weights in the temporary normalized copy.
+The stored curve and its public parameter domain are never changed.
+
+This prevents samples outside translated adjacent-float domains and derivative
+overflow due solely to a tiny parameter scale. Analytic native tests compare a
+quadratic arch against `sqrt(5)/2 + asinh(2)/4` and rational circles against
+`2*pi`, including subnormal single-span domains and extreme multispan scales.
+These are mathematical regressions, not new Rhino oracle measurements.
+
+The [shortness predicate](curve-shortness.md) shares only this checked parameter
+preparation, not its integration rule or acceptance criterion. Distinct knot
+intervals that collapse during normalization cause an error. Extremely disparate
+interior span widths can still exceed floating-point resolution or integration
+budgets. This preparation applies to full NURBS length queries; it does not
+claim to condition every parameter-returning arc-length sampler or partial
+integration path.
+
 ## Concatenation and seam relocation
 
 Matching adjacent endpoint weights requires computing `weight * to / from`.

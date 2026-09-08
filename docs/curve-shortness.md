@@ -23,7 +23,9 @@ independently oracle-audited at the selection boundary.
 
 Domain normalization prevents quadrature samples from rounding outside a
 translated, one-ulp-wide domain and avoids derivative overflow caused solely
-by an extremely small parameter scale. Already normalized curves are borrowed
+by an extremely small parameter scale. Its checked preparation is shared with
+[accurate NURBS length measurement](nurbs-numerics.md#arc-length-integration).
+Already normalized curves are borrowed
 without copying. If normalization collapses any distinct knot interval, the
 predicate reports an error rather than silently dropping part of the curve.
 Extremely disparate interior span widths can still exceed the available

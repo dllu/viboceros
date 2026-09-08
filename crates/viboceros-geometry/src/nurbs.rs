@@ -1,4 +1,5 @@
 use std::ops::RangeInclusive;
+mod arc_length;
 mod decompose;
 mod evaluate;
 mod weights;
@@ -9,8 +10,8 @@ use faer::{Mat, prelude::*};
 
 use crate::{
     AffineTransform3, BoundingBox3, Brep, CircularArc3, Frame3, GeometryError, NurbsSurface,
-    Point3, Polyline3, Real, Tolerance, Vector3, integration::integrate_adaptive,
-    intersection::curve_surface_intersections, require_finite,
+    Point3, Polyline3, Real, Tolerance, Vector3, intersection::curve_surface_intersections,
+    require_finite,
 };
 use crate::{CurveRef, curve::ArcLengthSampler};
 
@@ -1794,37 +1795,6 @@ impl NurbsCurve {
                 .total_cmp(&curve_intersection_event_parameter(*right))
         });
         Ok(events)
-    }
-
-    /// Computes arc length span by span with adaptive Gauss-Kronrod
-    /// integration of the exact first derivative.
-    pub fn length(&self, tolerance: Tolerance) -> Result<Real, GeometryError> {
-        let spans = self.spans().collect::<Vec<_>>();
-        let absolute_per_span = tolerance.absolute() / spans.len() as Real;
-        if absolute_per_span <= 0.0 {
-            return Err(GeometryError::NumericalIntegrationDidNotConverge);
-        }
-        let mut sum = 0.0;
-        let mut correction = 0.0;
-        for (start, end) in spans {
-            let length = integrate_adaptive(
-                start,
-                end,
-                absolute_per_span,
-                tolerance.relative(),
-                |parameter| self.derivative_at(parameter)?.length(),
-            )?;
-            let next = sum + length;
-            if sum.abs() >= length.abs() {
-                correction += (sum - next) + length;
-            } else {
-                correction += (length - next) + sum;
-            }
-            sum = next;
-        }
-        let length = sum + correction;
-        require_finite([length], "NURBS curve length")?;
-        Ok(length)
     }
 
     /// Reverses direction by reversing the controls and negating the full

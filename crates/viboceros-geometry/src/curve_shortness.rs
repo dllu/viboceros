@@ -51,26 +51,7 @@ impl Shortness {
                 Ok(true)
             }
             CurveRef::NurbsCurve(c) => {
-                // Integrate in a dimensionless parameter frame. Sampling a
-                // translated, one-ulp-wide span can otherwise round outside
-                // the domain; tiny widths can also overflow dC/dt even when
-                // both the curve and its length are ordinary finite values.
-                let normalized;
-                let c = if c.domain() == (0.0..=1.0) {
-                    c
-                } else {
-                    normalized = c.try_reparameterized(0.0..=1.0)?;
-                    // Do not silently remove an interval if its relative
-                    // width cannot be represented in the normalized frame.
-                    if c.knots()
-                        .windows(2)
-                        .zip(normalized.knots().windows(2))
-                        .any(|(before, after)| before[0] < before[1] && after[0] >= after[1])
-                    {
-                        return Err(GeometryError::NumericalIntegrationDidNotConverge);
-                    }
-                    &normalized
-                };
+                let c = c.for_arc_length_integration()?;
                 let speed = |t| c.derivative_at(t)?.length();
                 for (start, end) in c.spans() {
                     let coarse = gauss_three(start, end, &speed)?;
