@@ -4,6 +4,105 @@ use viboceros_document::SelectionMode;
 use viboceros_geometry::{Brep, Frame3, NurbsSurface, Point3, TriangleMesh, Vector3};
 
 #[test]
+fn measurement_output_preserves_small_nonzero_geometry() {
+    let mut document = Document::new(Tolerance::try_new(1e-20, 1e-12, 1e-10).unwrap());
+    let registry = CommandRegistry::with_builtins();
+    registry
+        .execute(&mut document, "Line 0,0,0 1e-15,0,0")
+        .unwrap();
+    registry.execute(&mut document, "SelAll").unwrap();
+    let output = registry.execute(&mut document, "Length").unwrap();
+    assert_eq!(
+        output
+            .split_whitespace()
+            .last()
+            .unwrap()
+            .parse::<f64>()
+            .unwrap(),
+        1e-15
+    );
+    registry.execute(&mut document, "Circle 0,0 1e-8").unwrap();
+    let circle = document.objects().last().unwrap();
+    let Geometry::Circle(geometry) = circle.geometry() else {
+        panic!("circle");
+    };
+    let expected_area = geometry.area().unwrap();
+    document
+        .select_object(circle.id(), SelectionMode::Replace)
+        .unwrap();
+    let output = registry.execute(&mut document, "Area").unwrap();
+    assert!(expected_area > 0. && expected_area < 1e-12);
+    assert_eq!(
+        output
+            .split_whitespace()
+            .last()
+            .unwrap()
+            .parse::<f64>()
+            .unwrap(),
+        expected_area
+    );
+
+    let mesh = TriangleMesh::try_new(
+        vec![
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Point3::try_new(1e-5, 0., 0.).unwrap(),
+            Point3::try_new(0., 1e-5, 0.).unwrap(),
+            Point3::try_new(0., 0., 1e-5).unwrap(),
+        ],
+        vec![[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]],
+        document.tolerance(),
+    )
+    .unwrap();
+    let expected_volume = mesh.signed_volume().unwrap();
+    let id = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    let output = registry.execute(&mut document, "Volume").unwrap();
+    assert!(expected_volume > 0. && expected_volume < 1e-12);
+    assert_eq!(
+        output
+            .split_whitespace()
+            .last()
+            .unwrap()
+            .parse::<f64>()
+            .unwrap(),
+        expected_volume
+    );
+}
+
+#[test]
+fn measurement_format_is_compact_and_roundtrips_finite_values() {
+    for value in [
+        0.,
+        -0.,
+        1.,
+        -4.,
+        1e-6,
+        1e12,
+        f64::from_bits(1),
+        f64::MIN_POSITIVE,
+        f64::MAX,
+        -f64::MAX,
+    ] {
+        let text = format_measurement(value);
+        assert_eq!(text.parse::<f64>().unwrap(), value);
+        assert!(text.len() <= 26, "{text}");
+    }
+    assert_eq!(format_measurement(-0.), "0");
+    assert_eq!(format_measurement(4.), "4");
+    assert_eq!(format_measurement(1e-15), "1e-15");
+    let mut state = 51_u64;
+    for _ in 0..10_000 {
+        state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
+        let value = f64::from_bits(state);
+        if value.is_finite() {
+            let text = format_measurement(value);
+            assert_eq!(text.parse::<f64>().unwrap(), value);
+            assert!(text.len() <= 26, "{text}");
+        }
+    }
+}
+
+#[test]
 fn volume_cancels_large_closed_meshes_without_intermediate_overflow() {
     let mut document = Document::default();
     let mesh = TriangleMesh::try_new(
@@ -258,35 +357,35 @@ fn volume_measures_meshes_and_exact_breps_with_stable_signed_accumulation() {
         .unwrap();
     assert_eq!(
         registry.execute(&mut document, "Volume").unwrap(),
-        "Measured 1 closed object(s): total volume 4.000000000000"
+        "Measured 1 closed object(s): total volume 4"
     );
     document
         .select_object(reversed_id, SelectionMode::Replace)
         .unwrap();
     assert_eq!(
         registry.execute(&mut document, "Volume").unwrap(),
-        "Measured 1 closed object(s): total volume -4.000000000000"
+        "Measured 1 closed object(s): total volume -4"
     );
     document
         .select_object(outward_id, SelectionMode::Add)
         .unwrap();
     assert_eq!(
         registry.execute(&mut document, "Volume").unwrap(),
-        "Measured 2 closed object(s): total volume 0.000000000000"
+        "Measured 2 closed object(s): total volume 0"
     );
     document
         .select_object(box_id, SelectionMode::Replace)
         .unwrap();
     assert_eq!(
         registry.execute(&mut document, "Volume").unwrap(),
-        "Measured 1 closed object(s): total volume 24.000000000000"
+        "Measured 1 closed object(s): total volume 24"
     );
     document
         .select_object(reversed_id, SelectionMode::Add)
         .unwrap();
     assert_eq!(
         registry.execute(&mut document, "Volume").unwrap(),
-        "Measured 2 closed object(s): total volume 20.000000000000"
+        "Measured 2 closed object(s): total volume 20"
     );
     assert_eq!(document.undo_label(), history.as_deref());
 

@@ -32,14 +32,22 @@ pub(super) fn run(
     let undo_label = document.undo_label().map(str::to_owned);
     let registry = CommandRegistry::with_builtins();
     let area_message = registry.execute(&mut document, "Area")?;
-    if area_message != format!("Measured 1 object(s): total area {area:.12}") {
+    if area_message
+        .strip_prefix("Measured 1 object(s): total area ")
+        .and_then(|value| value.parse::<f64>().ok())
+        != Some(area)
+    {
         return Err(ProbeError::FixtureInvariant(
             "Area command differs from geometry measurement",
         ));
     }
     if let Some(volume) = volume {
         let message = registry.execute(&mut document, "Volume")?;
-        if !message.ends_with(&format!("{volume:.12}")) {
+        if message
+            .strip_prefix("Measured 1 closed object(s): total volume ")
+            .and_then(|value| value.parse::<f64>().ok())
+            != Some(volume)
+        {
             return Err(ProbeError::FixtureInvariant(
                 "Volume command differs from geometry measurement",
             ));

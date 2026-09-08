@@ -8,6 +8,13 @@ They do not change geometry, selection, or undo/redo history. An empty selection
 unsupported object, invalid measurement, or numerical failure rejects the query
 without reporting a partial total.
 
+Totals use round-trip decimal digits, rather than a fixed twelve decimal places.
+Nonzero magnitudes below `1e-6` or at least `1e12` use scientific notation; zero
+is displayed as `0`. Small valid measurements therefore remain visible, and
+parsing the displayed number recovers the computed binary64 total. Extra digits
+preserve the computed value, not a claim of accuracy beyond the geometry kernel's
+tolerances.
+
 | Command | Supported geometry |
 | --- | --- |
 | Length | Lines, circles, arcs, ellipses, polylines, NURBS curves, and polycurves |

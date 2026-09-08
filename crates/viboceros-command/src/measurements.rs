@@ -7,6 +7,16 @@ use viboceros_geometry::{FiniteSum, GeometryError, Real, Tolerance};
 #[cfg(test)]
 mod tests;
 
+fn format_measurement(value: Real) -> String {
+    if value == 0.0 {
+        "0".to_owned()
+    } else if !(1e-6..1e12).contains(&value.abs()) {
+        format!("{value:e}")
+    } else {
+        value.to_string()
+    }
+}
+
 pub(super) struct LengthCommand;
 
 impl Command for LengthCommand {
@@ -34,9 +44,8 @@ impl Command for LengthCommand {
                     .map_err(CommandError::from)
             },
         )?;
-        Ok(format!(
-            "Measured {count} curve(s): total length {total:.12}"
-        ))
+        let total = format_measurement(total);
+        Ok(format!("Measured {count} curve(s): total length {total}"))
     }
 }
 
@@ -66,9 +75,8 @@ impl Command for AreaCommand {
                 _ => Err(CommandError::UnsupportedAreaGeometry),
             },
         )?;
-        Ok(format!(
-            "Measured {count} object(s): total area {total:.12}"
-        ))
+        let total = format_measurement(total);
+        Ok(format!("Measured {count} object(s): total area {total}"))
     }
 }
 
@@ -103,8 +111,9 @@ impl Command for VolumeCommand {
                     _ => return Err(CommandError::UnsupportedVolumeGeometry),
                 })
             })?;
+        let total = format_measurement(total);
         Ok(format!(
-            "Measured {count} closed object(s): total volume {total:.12}"
+            "Measured {count} closed object(s): total volume {total}"
         ))
     }
 }
