@@ -79,7 +79,7 @@ before applying additive selection and leaves model history unchanged.
 The geometry [shortness module](curve-shortness.md) keeps representation-dependent
 selection integration separate from accuracy-controlled arc-length measurement.
 The read-only [`measurements` command module](commands/measurements.md) owns
-Length, Area, and Volume, with shared streaming compensated aggregation and
+Length, Area, and Volume, with shared streaming exact finite-value aggregation and
 separate nonnegative/signed policies. Its tests live beside the implementation.
 Viewport hit-testing applies the filter before hit priority; clicks/windows use
 the same selection adapter. Prompt choices live outside model history, while

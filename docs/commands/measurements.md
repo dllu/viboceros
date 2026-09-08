@@ -21,10 +21,12 @@ so oppositely oriented objects can cancel. Open meshes/B-reps are rejected for
 volume. Length and area contributions must be nonnegative.
 
 `viboceros-command/measurements` streams selected objects without building a
-temporary selection vector. All three commands share compensated summation;
-non-finite values and totals are errors rather than formatted infinities. The
-accumulator is not arbitrary precision: overflowing intermediate sums remain
-an error even if later signed cancellation could yield a finite result.
+temporary selection vector. All three commands share an allocation-free
+[exact finite-value accumulator](../numerical-sums.md), with one final rounding.
+Overflowing intermediate totals may cancel to a finite result without losing
+small contributions. Non-finite input values or rounded totals are errors rather
+than formatted infinities. This improves aggregation, not the accuracy of each
+underlying geometry measurement.
 
 Tests cover mixed analytic lengths/areas, surface and B-rep area, signed mesh
 and B-rep volumes, small terms amid large contributions, and unchanged selection

@@ -4,6 +4,43 @@ use viboceros_document::SelectionMode;
 use viboceros_geometry::{Brep, Frame3, NurbsSurface, Point3, TriangleMesh, Vector3};
 
 #[test]
+fn volume_cancels_large_closed_meshes_without_intermediate_overflow() {
+    let mut document = Document::default();
+    let mesh = TriangleMesh::try_new(
+        vec![
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Point3::try_new(1e103, 0., 0.).unwrap(),
+            Point3::try_new(0., 1e103, 0.).unwrap(),
+            Point3::try_new(0., 0., 1e103).unwrap(),
+        ],
+        vec![[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]],
+        document.tolerance(),
+    )
+    .unwrap();
+    let expected = mesh.signed_volume().unwrap();
+    assert!(expected > f64::MAX * 0.5);
+    let ids = [mesh.clone(), mesh.clone(), mesh.reversed()]
+        .into_iter()
+        .map(|mesh| document.add_geometry(Geometry::Mesh(mesh)).unwrap())
+        .collect::<Vec<_>>();
+    document
+        .select_objects(ids, SelectionMode::Replace)
+        .unwrap();
+    let output = CommandRegistry::with_builtins()
+        .execute(&mut document, "Volume")
+        .unwrap();
+    assert_eq!(
+        output
+            .split_whitespace()
+            .last()
+            .unwrap()
+            .parse::<f64>()
+            .unwrap(),
+        expected
+    );
+}
+
+#[test]
 fn streaming_aggregation_preserves_small_terms_and_rejects_invalid_values() {
     let mut document = Document::default();
     let mut ids = Vec::new();
@@ -20,6 +57,11 @@ fn streaming_aggregation_preserves_small_terms_and_rejects_invalid_values() {
     for (sign, values, expected) in [
         (MeasurementSign::Nonnegative, [1e16, 1., 1.], 1e16 + 2.),
         (MeasurementSign::Signed, [1e16, 1., -1e16], 1.),
+        (
+            MeasurementSign::Signed,
+            [f64::MAX, f64::MAX, -f64::MAX],
+            f64::MAX,
+        ),
     ] {
         let mut values = values.into_iter();
         assert_eq!(

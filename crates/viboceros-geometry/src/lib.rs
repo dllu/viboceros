@@ -5,6 +5,7 @@
 //! invalid values enter the model.
 
 mod bezier;
+mod binary_accumulator;
 mod bounds;
 mod brep;
 mod catenary;
@@ -26,6 +27,7 @@ mod curve_tween;
 mod edge_surface;
 mod ellipse;
 mod error;
+mod finite_sum;
 mod frame;
 mod integration;
 mod interpolation;
@@ -55,6 +57,7 @@ mod tolerance;
 mod transform;
 mod units;
 mod vector;
+pub use finite_sum::FiniteSum;
 pub use units::{LengthUnitSystem, UnitError};
 
 pub use bezier::MAX_BEZIER_CONTROL_POINTS;

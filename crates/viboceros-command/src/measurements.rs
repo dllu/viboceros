@@ -1,8 +1,8 @@
-//! Read-only selected-object measurements and compensated aggregation.
+//! Read-only selected-object measurements and exact finite-value aggregation.
 
 use super::{Command, CommandError, geometry_curve_ref, require_consumed};
 use viboceros_document::{Document, Geometry};
-use viboceros_geometry::{GeometryError, Real, Tolerance};
+use viboceros_geometry::{FiniteSum, GeometryError, Real, Tolerance};
 
 #[cfg(test)]
 mod tests;
@@ -121,8 +121,7 @@ fn selected_measurement(
     mut measure: impl FnMut(&Geometry, Tolerance) -> Result<Real, CommandError>,
 ) -> Result<(usize, Real), CommandError> {
     let mut count = 0;
-    let mut sum = 0.0;
-    let mut correction = 0.0;
+    let mut sum = FiniteSum::default();
     for object in document.selected_objects() {
         let value = measure(object.geometry(), document.tolerance())?;
         if !value.is_finite() || (matches!(sign, MeasurementSign::Nonnegative) && value < 0.0) {
@@ -131,27 +130,11 @@ fn selected_measurement(
             }
             .into());
         }
-        let next = sum + value;
-        if sum.abs() >= value.abs() {
-            correction += (sum - next) + value;
-        } else {
-            correction += (value - next) + sum;
-        }
-        sum = next;
+        sum.add(value)?;
         count += 1;
     }
     if count == 0 {
         return Err(CommandError::NoObjectsSelected);
     }
-    let total = sum + correction;
-    if !total.is_finite() {
-        return Err(GeometryError::NonFinite {
-            context: match sign {
-                MeasurementSign::Nonnegative => "measurement total",
-                MeasurementSign::Signed => "volume total",
-            },
-        }
-        .into());
-    }
-    Ok((count, total))
+    Ok((count, sum.total()?))
 }
