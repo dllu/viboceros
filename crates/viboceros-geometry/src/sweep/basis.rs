@@ -18,7 +18,7 @@ pub(super) fn rail_basis(sweep: &Sweep1, refit: bool) -> Result<NurbsSurface, Ge
     let sampler = if refit {
         let mut sampler =
             crate::curve::ArcLengthSampler::try_new(native.as_ref(), sweep.tolerance)?;
-        sampler.prepare_repeated_sampling(32)?;
+        sampler.prepare_budgeted_repeated_sampling(32)?;
         stations = sweep
             .sections
             .iter()

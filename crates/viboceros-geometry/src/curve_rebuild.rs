@@ -52,7 +52,7 @@ pub fn try_rebuild_curve(
         point_count.max(degree + 1)
     };
     let mut sampler = ArcLengthSampler::try_new(source, tolerance)?;
-    sampler.prepare_repeated_sampling(32)?;
+    sampler.prepare_budgeted_repeated_sampling(32)?;
     if closed {
         rebuild_closed(&sampler, point_count, degree)
     } else {
@@ -420,7 +420,7 @@ mod tests {
         .unwrap();
         let mut sampler =
             ArcLengthSampler::try_new(CurveRef::NurbsCurve(&source), Tolerance::DEFAULT).unwrap();
-        sampler.prepare_repeated_sampling(32).unwrap();
+        sampler.prepare_budgeted_repeated_sampling(32).unwrap();
         for (index, parameter) in [0.0, 1.0 / 3.0, 1.0, 2.0, 8.0 / 3.0, 3.0]
             .into_iter()
             .enumerate()

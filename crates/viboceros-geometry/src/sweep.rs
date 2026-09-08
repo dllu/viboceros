@@ -213,7 +213,7 @@ impl Sweep1 {
             let mut sampler =
                 crate::curve::ArcLengthSampler::try_new(self.rail.as_ref(), self.tolerance)?;
             if parameters.len() > 16 {
-                sampler.prepare_repeated_sampling(16)?;
+                sampler.prepare_budgeted_repeated_sampling(16)?;
             }
             Some(sampler)
         } else {

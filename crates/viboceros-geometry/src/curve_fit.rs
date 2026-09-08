@@ -53,7 +53,7 @@ pub fn try_fit_curve(
     }
 
     let mut sampler = ArcLengthSampler::try_new(source, numerical_tolerance)?;
-    sampler.prepare_repeated_sampling(32)?;
+    sampler.prepare_budgeted_repeated_sampling(32)?;
     let total_length = sampler.total_length();
     let kinks = sampler.kinks(angle_tolerance_radians)?;
     let mut breaks = sampler

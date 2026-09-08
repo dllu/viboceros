@@ -76,6 +76,13 @@ integration error leaves an existing cache usable. Budget tests exercise limits
 without allocating maximum-size tables, and verify retained sample results
 after rejected replacement requests.
 
+Fitting, rebuilding, refitted tweening, and sweep sampling use budget-aware
+preparation because the cache is optional. They lower the preferred subdivision
+count to fit the aggregate cap; if even two nodes per variable-speed span do
+not fit, they retain uncached integration. Thus cache capacity alone does not
+reject these operations. Genuine numerical integration errors still propagate.
+The strict preparation API remains available for explicit-density requests.
+
 An interval with only two representable floats cannot encode an interior native
 parameter. In such domains sampled geometry remains accurate, but the returned
 parameter rounds to a source-domain value and re-evaluating it can produce a

@@ -99,7 +99,7 @@ struct RefitSample {
 impl<'a> RefitSource<'a> {
     fn try_new(curve: &'a NurbsCurve, tolerance: Tolerance) -> Result<Self, GeometryError> {
         let mut sampler = ArcLengthSampler::try_new(CurveRef::NurbsCurve(curve), tolerance)?;
-        sampler.prepare_repeated_sampling(32)?;
+        sampler.prepare_budgeted_repeated_sampling(32)?;
         let length = sampler.total_length();
         let kinks = sampler
             .kinks(tolerance.angular())?

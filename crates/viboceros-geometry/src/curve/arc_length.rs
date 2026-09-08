@@ -11,6 +11,22 @@ use std::f64::consts::FRAC_PI_2;
 // include both endpoints of every variable-speed span, not just one span.
 const MAX_LOOKUP_NODES: usize = 1_048_576;
 
+fn affordable_lookup_subdivisions(
+    variable_spans: usize,
+    preferred: usize,
+) -> Result<Option<usize>, GeometryError> {
+    if preferred == 0 {
+        return Err(GeometryError::InvalidArcLengthLookupBudget {
+            maximum: MAX_LOOKUP_NODES,
+        });
+    }
+    if variable_spans == 0 {
+        return Ok(None);
+    }
+    let affordable = (MAX_LOOKUP_NODES / variable_spans).saturating_sub(1);
+    Ok((affordable > 0).then_some(preferred.min(affordable)))
+}
+
 fn checked_lookup_nodes_per_span(
     variable_spans: usize,
     subdivisions: usize,
@@ -277,6 +293,21 @@ impl<'a> ArcLengthSampler<'a> {
             tables.push(nodes);
         }
         self.lookup_tables = tables;
+        Ok(())
+    }
+
+    /// Best-effort cache sizing for algorithms whose correctness does not
+    /// depend on caching. Reduce density to fit the aggregate node budget;
+    /// retain uncached integration if even two nodes per span cannot fit.
+    /// Numerical errors still propagate and existing tables remain intact.
+    pub(crate) fn prepare_budgeted_repeated_sampling(
+        &mut self,
+        preferred_subdivisions: usize,
+    ) -> Result<(), GeometryError> {
+        let count = self.spans.iter().filter(|span| span.variable_speed).count();
+        if let Some(subdivisions) = affordable_lookup_subdivisions(count, preferred_subdivisions)? {
+            self.prepare_repeated_sampling(subdivisions)?;
+        }
         Ok(())
     }
 
@@ -651,6 +682,27 @@ fn neumaier_add(sum: &mut Real, correction: &mut Real, value: Real) {
 mod tests {
     use super::*;
     use crate::Vector3;
+
+    #[test]
+    fn optional_cache_density_adapts_without_exceeding_aggregate_budget() {
+        for (spans, preferred, expected) in [
+            (0, 32, None),
+            (1, 32, Some(32)),
+            (MAX_LOOKUP_NODES / 32, 32, Some(31)),
+            (MAX_LOOKUP_NODES / 2, 32, Some(1)),
+            (MAX_LOOKUP_NODES / 2 + 1, 32, None),
+            (usize::MAX, 32, None),
+            (1, usize::MAX, Some(MAX_LOOKUP_NODES - 1)),
+        ] {
+            let actual = affordable_lookup_subdivisions(spans, preferred).unwrap();
+            assert_eq!(actual, expected);
+            if let Some(subdivisions) = actual {
+                checked_lookup_nodes_per_span(spans, subdivisions).unwrap();
+            }
+        }
+        assert!(affordable_lookup_subdivisions(0, 0).is_err());
+        assert!(affordable_lookup_subdivisions(1, 0).is_err());
+    }
 
     #[test]
     fn invalid_lookup_request_preserves_existing_tables() {
