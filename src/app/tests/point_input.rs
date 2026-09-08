@@ -6,6 +6,75 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn interpolation_close_actions_preserve_degree_and_knot_spacing() {
+    for (action, closure) in [("_Close", "Smooth"), ("sHaRp", "Sharp")] {
+        for options in ["Degree=1 Knots=Uniform", "Degree=3 Knots=SqrtChrd"] {
+            let mut app = test_app();
+            enter(&mut app, &format!("InterpCrv {options}"));
+            for input in ["0", "3,0,0", "4,2,1", "0,4,0"] {
+                enter(&mut app, input);
+            }
+            let last = app.last_point;
+            enter(&mut app, action);
+            assert!(app.active_command.is_none());
+            assert!(app.command_input.is_empty());
+            assert_eq!(app.last_point, last);
+            let geometry = app.document.objects().next().unwrap().geometry().clone();
+            let mut reference = test_app();
+            enter(
+                &mut reference,
+                &format!("InterpCrv 0,0,0 3,0,0 4,2,1 0,4,0 {options} Close={closure}"),
+            );
+            assert_eq!(
+                &geometry,
+                reference.document.objects().next().unwrap().geometry()
+            );
+            enter(&mut app, "Undo");
+            assert_eq!(app.document.objects().len(), 0);
+            assert!(!app.document.can_undo());
+            enter(&mut app, "Redo");
+            assert_eq!(&geometry, app.document.objects().next().unwrap().geometry());
+        }
+    }
+}
+
+#[test]
+fn rejected_interpolation_closure_preserves_tangents_points_and_redo() {
+    for action in ["Close", "Sharp"] {
+        let mut app = test_app();
+        for input in [
+            "Point 9,9,9",
+            "Undo",
+            "InterpCrv Knots=Uniform StartTangent=1,2,0 EndTangent=0,1,0",
+            "0",
+            "2,3,0",
+            "4,0,0",
+        ] {
+            enter(&mut app, input);
+        }
+        let active = app.active_command;
+        let points = app.curve_points.clone();
+        let plane = app.drafting_plane;
+        let last = app.last_point;
+        let document = format!("{:?}", app.document);
+        let preview = app.curve_draft_preview().unwrap();
+        enter(&mut app, action);
+        assert_eq!(app.active_command, active);
+        assert_eq!(app.curve_points, points);
+        assert_eq!(app.drafting_plane, plane);
+        assert_eq!(app.last_point, last);
+        assert_eq!(app.command_input, action);
+        assert_eq!(format!("{:?}", app.document), document);
+        enter(&mut app, "");
+        assert!(app.active_command.is_none());
+        assert_eq!(
+            app.document.objects().next().unwrap().geometry(),
+            &Geometry::NurbsCurve((*preview).clone())
+        );
+    }
+}
+
+#[test]
 fn interpolated_draft_options_match_one_line_completion_and_preview() {
     for options in [
         "Degree=1 Knots=Uniform",

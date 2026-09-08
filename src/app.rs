@@ -491,7 +491,7 @@ impl InteractiveCommand {
                 "Curve: pick control points; Close/Sharp closes; Undo removes last point; Enter finishes (Esc cancels)"
             }
             Self::InterpCrv { .. } => {
-                "InterpCrv: pick curve points; Undo removes last point; Enter finishes (Esc cancels)"
+                "InterpCrv: pick curve points; Close/Sharp closes; Undo removes last point; Enter finishes (Esc cancels)"
             }
             Self::Rectangle { first: None } => {
                 "Rectangle: pick the first corner in the viewport (Esc to cancel)"

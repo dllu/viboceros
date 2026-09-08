@@ -78,6 +78,13 @@ impl CurveInterpolationOptions {
         self
     }
 
+    /// Changes only seam topology. Endpoint directions are retained; the
+    /// interpolation constructor validates their compatibility with closure.
+    pub const fn with_closure(mut self, closure: InterpolatedCurveClosure) -> Self {
+        self.closure = closure;
+        self
+    }
+
     pub const fn with_end_tangent(mut self, tangent: Vector3) -> Self {
         self.end_tangent = Some(tangent);
         self

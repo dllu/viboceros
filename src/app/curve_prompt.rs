@@ -49,16 +49,34 @@ impl VibocerosApp {
             }
             return true;
         }
-        if let Some(command @ InteractiveCommand::Curve { degree, .. }) = self.active_command
-            && (option.eq_ignore_ascii_case("Close") || option.eq_ignore_ascii_case("Sharp"))
+        if let Some(command) = self.active_command.filter(|command| {
+            matches!(
+                command,
+                InteractiveCommand::Curve { .. } | InteractiveCommand::InterpCrv { .. }
+            )
+        }) && (option.eq_ignore_ascii_case("Close") || option.eq_ignore_ascii_case("Sharp"))
         {
             self.push_log(format!("> {input}"));
-            let closure = if option.eq_ignore_ascii_case("Sharp") {
-                ControlPointCurveClosure::Sharp
-            } else {
-                ControlPointCurveClosure::Smooth
+            let sharp = option.eq_ignore_ascii_case("Sharp");
+            let closed = match command {
+                InteractiveCommand::Curve { degree, .. } => InteractiveCommand::Curve {
+                    degree,
+                    closure: if sharp {
+                        ControlPointCurveClosure::Sharp
+                    } else {
+                        ControlPointCurveClosure::Smooth
+                    },
+                },
+                InteractiveCommand::InterpCrv { options } => InteractiveCommand::InterpCrv {
+                    options: options.with_closure(if sharp {
+                        viboceros_geometry::InterpolatedCurveClosure::Sharp
+                    } else {
+                        viboceros_geometry::InterpolatedCurveClosure::Smooth
+                    }),
+                },
+                _ => unreachable!("only curve drafts reach closure options"),
             };
-            self.active_command = Some(InteractiveCommand::Curve { degree, closure });
+            self.active_command = Some(closed);
             self.finish_interactive_curve();
             if self.active_command.is_some() {
                 // Closing is an attempted completion, not a persistent option

@@ -44,8 +44,11 @@ In `Curve`, `Close` finishes with smooth closure and `Sharp` finishes with a
 kink, using the same geometry as `Curve ... Close=Smooth|Sharp`. Both require
 at least three control points. Failure retains the points, construction plane,
 degree, and previous closure setting; you can correct the draft or press Enter
-to finish using its original settings. These prompt shortcuts are not yet
-available for `InterpCrv`.
+to finish using its original settings. `InterpCrv` also supports `Close` and
+`Sharp`, preserving its degree and knot-spacing settings. Its interpolation
+constructor determines the required point count. Explicit endpoint tangents
+cannot be combined with closure: a rejected attempt preserves those tangents
+and the open draft so Enter can still finish it.
 
 While collecting `Curve` control points, `Degree=n` and
 `Close=Open|Smooth|Sharp` update the draft settings without finishing or
