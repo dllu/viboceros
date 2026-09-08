@@ -305,10 +305,5 @@ impl CurveSegment3 {
 }
 
 fn validation() -> Tolerance {
-    Tolerance::try_new(
-        Real::MIN_POSITIVE,
-        Tolerance::DEFAULT.relative(),
-        Tolerance::DEFAULT.angular(),
-    )
-    .expect("positive internal tolerance")
+    Tolerance::NUMERICAL_VALIDATION
 }

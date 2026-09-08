@@ -158,7 +158,8 @@ pub fn read_3dm_file(
 }
 
 /// Reads coordinates into target units. The supplied tolerance is expressed
-/// in target units; source geometry is decoded with a converted tolerance.
+/// in target units; B-rep topology matching uses a converted source tolerance.
+/// Defined primitives use numerical validation, not a minimum feature size.
 /// Unitless files retain coordinates. Unset units and unrepresentable scales
 /// are errors. The source file is never modified.
 pub fn read_3dm_file_in_units(
@@ -567,7 +568,7 @@ fn decode_object(
             let line = LineSegment::try_new(
                 point(&coordinates[..3])?,
                 point(&coordinates[3..])?,
-                tolerance,
+                Tolerance::NUMERICAL_VALIDATION,
             )?;
             ThreeDmGeometry::Line(if knots_u.is_empty() {
                 line
@@ -612,7 +613,7 @@ fn decode_object(
                     .map(point)
                     .collect::<Result<Vec<_>, _>>()?,
                 knots_u.to_vec(),
-                tolerance,
+                Tolerance::NUMERICAL_VALIDATION,
             )?)
         }
         OBJECT_NURBS_CURVE
@@ -703,7 +704,11 @@ fn decode_object(
                     }
                 })
                 .collect();
-            ThreeDmGeometry::Mesh(TriangleMesh::try_new_faces(vertices, faces, tolerance)?)
+            ThreeDmGeometry::Mesh(TriangleMesh::try_new_faces(
+                vertices,
+                faces,
+                Tolerance::NUMERICAL_VALIDATION,
+            )?)
         }
         OBJECT_BREP | OBJECT_POLYCURVE | OBJECT_ARC
             if info.degree_u == 0
@@ -1673,7 +1678,7 @@ mod tests {
     }
 
     #[test]
-    fn import_units_convert_tolerance_before_decoding_tiny_geometry() {
+    fn imports_preserve_geometry_below_the_document_modelling_tolerance() {
         let directory = tempfile::tempdir().unwrap();
         let path = directory.path().join("tiny-metres.3dm");
         let source_tolerance = Tolerance::try_new(1e-13, 1e-12, 1e-10).unwrap();
@@ -1694,20 +1699,57 @@ mod tests {
             vec![ThreeDmObject::new(ThreeDmGeometry::Line(line), 0)],
         );
         model.units = LengthUnitSystem::Meters;
+        let points = vec![
+            line.start(),
+            line.end(),
+            Point3::try_new(0.0, 1e-5, 0.0).unwrap(),
+        ];
+        model.objects.push(ThreeDmObject::new(
+            ThreeDmGeometry::Polyline(
+                Polyline3::try_new(points.clone(), source_tolerance).unwrap(),
+            ),
+            0,
+        ));
+        model.objects.push(ThreeDmObject::new(
+            ThreeDmGeometry::Mesh(
+                TriangleMesh::try_new(points, vec![[0, 1, 2]], source_tolerance).unwrap(),
+            ),
+            0,
+        ));
         write_3dm_file(&path, &model).unwrap();
         let target_tolerance = Tolerance::try_new(1e-4, 1e-12, 1e-10).unwrap();
         let raw = read_3dm_file(&path, target_tolerance).unwrap();
-        assert_eq!(raw.unsupported_object_count(), 1);
+        assert_eq!(raw.unsupported_object_count(), 0);
+        assert_eq!(raw.objects.len(), 3);
         let converted =
             read_3dm_file_in_units(&path, &LengthUnitSystem::Millimeters, target_tolerance)
                 .unwrap();
         assert_eq!(converted.units, LengthUnitSystem::Millimeters);
         assert_eq!(converted.unsupported_object_count(), 0);
-        assert_eq!(converted.objects.len(), 1);
+        assert_eq!(converted.objects.len(), 3);
         let ThreeDmGeometry::Line(line) = &converted.objects[0].geometry else {
             panic!("lost line");
         };
         assert!((line.end().x() - 0.01).abs() < 1e-16);
+        // Converted coordinates remain valid even below the target tolerance.
+        let smaller =
+            read_3dm_file_in_units(&path, &LengthUnitSystem::Kilometers, target_tolerance).unwrap();
+        assert_eq!(smaller.unsupported_object_count(), 0);
+        assert_eq!(smaller.objects.len(), 3);
+        let ThreeDmGeometry::Line(line) = &smaller.objects[0].geometry else {
+            panic!("lost small line")
+        };
+        assert!((line.end().x() - 1e-8).abs() < 1e-22);
+        let ThreeDmGeometry::Polyline(polyline) = &smaller.objects[1].geometry else {
+            panic!("lost small polyline")
+        };
+        assert_eq!(polyline.vertices().len(), 3);
+        assert!((polyline.vertices()[1].x() - 1e-8).abs() < 1e-22);
+        let ThreeDmGeometry::Mesh(mesh) = &smaller.objects[2].geometry else {
+            panic!("lost small mesh")
+        };
+        assert_eq!(mesh.faces().len(), 1);
+        assert!((mesh.vertices()[1].x() - 1e-8).abs() < 1e-22);
     }
 
     #[test]

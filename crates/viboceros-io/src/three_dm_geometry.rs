@@ -469,11 +469,7 @@ impl Reader<'_> {
     }
 
     fn segment(&mut self) -> Result<CurveSegment3, GeometryCodecError> {
-        let tolerance = Tolerance::try_new(
-            f64::MIN_POSITIVE,
-            Tolerance::DEFAULT.relative(),
-            Tolerance::DEFAULT.angular(),
-        )?;
+        let tolerance = Tolerance::NUMERICAL_VALIDATION;
         Ok(match self.u8()? {
             1 => {
                 let line = LineSegment::try_new(self.point3()?, self.point3()?, tolerance)?;

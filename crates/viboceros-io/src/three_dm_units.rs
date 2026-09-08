@@ -9,6 +9,13 @@ pub(crate) fn transform_geometry(
     tolerance: viboceros_geometry::Tolerance,
 ) -> Result<crate::ThreeDmGeometry, viboceros_geometry::GeometryError> {
     use crate::ThreeDmGeometry as G;
+    // B-reps carry approximate topology; primitives must not be discarded just
+    // because their valid feature sizes are below the destination model tolerance.
+    let tolerance = if matches!(geometry, G::Brep(_)) {
+        tolerance
+    } else {
+        viboceros_geometry::Tolerance::NUMERICAL_VALIDATION
+    };
     Ok(match geometry {
         G::Point(point) => G::Point(transform.transform_point(*point)?),
         G::PointCloud(cloud) => G::PointCloud(cloud.transformed(transform)?),

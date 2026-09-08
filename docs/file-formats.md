@@ -49,9 +49,11 @@ new I/O models explicitly default to millimetres. The shared
 `LengthUnitSystem` provides validated, checked conversion factors;
 `Document::with_units` initializes explicit document units, and 3DM export
 retains them. Default documents use millimetres. `Import3dm` converts file
-coordinates to document units before editing the document. Its source-space
-validation tolerance is converted too, so valid small features are not
-discarded merely because their numerical coordinates are small in file units.
+coordinates to document units before editing the document. Defined primitives
+use numerical validation rather than a document-dependent minimum feature size,
+both during decoding and conversion; short lines are not reported as unsupported
+merely because they are below the modelling tolerance. Source-space B-rep
+topology-matching tolerance is converted to the source units.
 Unitless files retain coordinates; unset units and unrepresentable conversion
 factors or transformed coordinates are errors. The low-level
 `read_3dm_file` still reads raw file coordinates, while

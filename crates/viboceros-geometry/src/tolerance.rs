@@ -12,6 +12,16 @@ pub struct Tolerance {
 }
 
 impl Tolerance {
+    /// Validation policy for already-defined primitives, not a modelling or
+    /// joining tolerance. Rejects zero/subnormal-size degeneracies without
+    /// imposing a document-dependent minimum feature size. Approximate topology
+    /// and fitting still require a dimensional tolerance from their caller.
+    pub const NUMERICAL_VALIDATION: Self = Self {
+        absolute: Real::MIN_POSITIVE,
+        relative: Self::DEFAULT.relative,
+        angular: Self::DEFAULT.angular,
+    };
+
     /// Conservative defaults for a unit-agnostic new document.
     pub const DEFAULT: Self = Self {
         absolute: 1.0e-9,

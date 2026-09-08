@@ -44,11 +44,7 @@ impl Document {
                             self.tolerance.angular(),
                         )?
                     } else {
-                        Tolerance::try_new(
-                            f64::MIN_POSITIVE,
-                            Tolerance::DEFAULT.relative(),
-                            Tolerance::DEFAULT.angular(),
-                        )?
+                        Tolerance::NUMERICAL_VALIDATION
                     };
                     object.geometry.transformed(transform, tolerance)
                 })
