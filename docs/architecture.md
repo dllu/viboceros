@@ -98,6 +98,9 @@ Length, Area, and Volume, with shared streaming exact finite-value aggregation a
 separate nonnegative/signed policies. Its tests live beside the implementation.
 `curve/area` dispatches enclosed curve area to analytic formulas or the existing
 exact planar-face boundary integrator; temporary topology stays outside the document.
+The app's `viewport/picking` module owns face hit metrics, perspective-correct
+depth interpolation, and mesh/NURBS/B-rep hit evaluation. Screen capture and
+feature priority remain separate from depth ordering among overlapping face hits.
 The app's `viewport/camera` module owns CPU projection/unprojection, drafting
 rays, navigation updates, view depth, and GPU camera matrices. Viewport drawing
 and hit-testing consume these shared methods; camera math remains independent

@@ -3,6 +3,77 @@ use crate::viewport_gpu::readback::{OffscreenRenderer, SIZE};
 use eframe::wgpu;
 
 #[test]
+fn face_click_selection_uses_depth_not_insertion_order() {
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(SIZE as f32));
+    for kind in [
+        ViewKind::Top,
+        ViewKind::Front,
+        ViewKind::Right,
+        ViewKind::Perspective,
+    ] {
+        let mut viewport = Viewport::new(kind);
+        let (right, up, forward) = match kind {
+            ViewKind::Top => (NaVector3::x(), NaVector3::y(), -NaVector3::z()),
+            ViewKind::Front => (NaVector3::x(), NaVector3::z(), NaVector3::y()),
+            ViewKind::Right => (NaVector3::y(), NaVector3::z(), -NaVector3::x()),
+            ViewKind::Perspective => viewport.perspective_basis(),
+        };
+        let origin = if kind.is_parallel() {
+            NaVector3::zeros()
+        } else {
+            -forward * viewport.perspective_camera_distance
+        };
+        let geometry = |depth: Real, representation| {
+            let points = [(-3.0, -2.0), (3.0, -2.0), (3.0, 3.0), (-3.0, 3.0)].map(|(x, y)| {
+                let v = origin + right * x + up * y + forward * depth;
+                Point3::try_new(v.x, v.y, v.z).unwrap()
+            });
+            if representation == 0 {
+                Geometry::Mesh(
+                    TriangleMesh::try_new(
+                        points.to_vec(),
+                        vec![[0, 1, 2], [0, 2, 3]],
+                        Tolerance::DEFAULT,
+                    )
+                    .unwrap(),
+                )
+            } else {
+                let surface = NurbsSurface::try_bilinear(points).unwrap();
+                if representation == 1 {
+                    Geometry::NurbsSurface(surface)
+                } else {
+                    Geometry::Brep(Brep::try_surface_face(surface, Tolerance::DEFAULT).unwrap())
+                }
+            }
+        };
+        for mode in [DisplayMode::Shaded, DisplayMode::Ghosted] {
+            viewport.display_mode = mode;
+            for representation in 0..3 {
+                for front_first in [false, true] {
+                    let mut document = Document::default();
+                    let depths = if front_first {
+                        [10.0, 20.0]
+                    } else {
+                        [20.0, 10.0]
+                    };
+                    let ids = depths.map(|depth| {
+                        document
+                            .add_geometry(geometry(depth, representation))
+                            .unwrap()
+                    });
+                    let expected = ids[usize::from(!front_first)];
+                    assert_eq!(
+                        viewport.pick_object(rect.center(), rect, &document),
+                        Some(expected),
+                        "{kind:?} {mode:?} front_first={front_first} representation={representation}"
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
 #[ignore = "requires a graphics adapter; run explicitly with --ignored --nocapture"]
 fn gpu_depth_and_ghosted_compositing_ignore_object_insertion_order() {
     let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(SIZE as f32));
@@ -104,6 +175,78 @@ fn gpu_depth_and_ghosted_compositing_ignore_object_insertion_order() {
                     }
                 }
             }
+        }
+    }
+}
+
+#[test]
+fn sloped_and_camera_crossing_face_picks_match_independent_rays() {
+    let mut viewport = Viewport::new(ViewKind::Perspective);
+    viewport.display_mode = DisplayMode::Shaded;
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(SIZE as f32));
+    let (right, up, forward) = viewport.perspective_basis();
+    let camera = -forward * viewport.perspective_camera_distance;
+    let focal = viewport.perspective_focal_length_pixels(rect);
+    for first_depths in [[2.0, 20.0, 20.0], [-10.0, 20.0, 20.0]] {
+        let triangles = [first_depths, [8.0; 3]].map(|depths| {
+            let xy = [(-3.0, -2.0), (3.0, -2.0), (0.0, 3.0)];
+            std::array::from_fn(|i| {
+                let v = camera + right * xy[i].0 + up * xy[i].1 + forward * depths[i];
+                Point3::try_new(v.x, v.y, v.z).unwrap()
+            })
+        });
+        for order in [[0, 1], [1, 0]] {
+            let mut document = Document::default();
+            let ids = order.map(|i| {
+                document
+                    .add_geometry(Geometry::Mesh(
+                        TriangleMesh::try_new(
+                            triangles[i].to_vec(),
+                            vec![[0, 1, 2]],
+                            Tolerance::DEFAULT,
+                        )
+                        .unwrap(),
+                    ))
+                    .unwrap()
+            });
+            let mut wins = [0; 2];
+            for y in (0..SIZE).step_by(8) {
+                for x in (0..SIZE).step_by(8) {
+                    let pointer = Pos2::new(x as f32 + 0.5, y as f32 + 0.5);
+                    let direction = forward
+                        + right * ((Real::from(pointer.x) - Real::from(SIZE) / 2.0) / focal)
+                        - up * ((Real::from(pointer.y) - Real::from(SIZE) / 2.0) / focal);
+                    let hits = triangles.map(|triangle| ray_triangle(camera, direction, triangle));
+                    // Keep well inside each covered face and away from edge capture.
+                    if hits
+                        .iter()
+                        .flatten()
+                        .any(|[t, a, b, c]| *t > 0.0 && a.min(*b).min(*c).abs() < 0.03)
+                    {
+                        continue;
+                    }
+                    let depths = hits.map(|hit| {
+                        hit.filter(|[t, a, b, c]| *t > 0.0 && a.min(*b).min(*c) > 0.0)
+                            .map(|hit| hit[0])
+                            .unwrap_or(Real::INFINITY)
+                    });
+                    let winner = usize::from(depths[1] < depths[0]);
+                    if !depths[winner].is_finite() || (depths[0] - depths[1]).abs() < 1e-5 {
+                        continue;
+                    }
+                    let expected = ids[order.iter().position(|i| *i == winner).unwrap()];
+                    assert_eq!(
+                        viewport.pick_object(pointer, rect, &document),
+                        Some(expected),
+                        "depths={first_depths:?}, order={order:?}, pointer={pointer:?}"
+                    );
+                    wins[winner] += 1;
+                }
+            }
+            assert!(
+                wins.iter().all(|count| *count > 0),
+                "each face must win somewhere: {wins:?}"
+            );
         }
     }
 }

@@ -25,6 +25,8 @@ use crate::viewport_gpu::{
 const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
 mod camera;
 mod extents;
+mod picking;
+use picking::{PickHit, signed_area};
 #[cfg(test)]
 mod raster_tests;
 #[cfg(test)]
@@ -599,19 +601,19 @@ impl Viewport {
         document: &Document,
         filter: ObjectSelectionFilter,
     ) -> Option<ObjectId> {
-        let mut nearest: Option<(u8, f32, ObjectId)> = None;
+        let mut nearest: Option<(PickHit, ObjectId)> = None;
         for object in document.objects() {
             if !document.is_object_selectable(object.id()) || !filter.accepts(object.geometry()) {
                 continue;
             }
-            let (priority, distance) = match object.geometry() {
+            let hit = match object.geometry() {
                 Geometry::Point(point) => {
                     let distance = self
                         .project(*point, rect)
                         .map_or(f32::INFINITY, |projected| {
                             point_segment_distance(pointer, projected, projected)
                         });
-                    (0, distance)
+                    PickHit::screen(0, distance)
                 }
                 Geometry::PointCloud(cloud) => {
                     let distance = if self.kind == ViewKind::Top {
@@ -637,7 +639,7 @@ impl Viewport {
                             .map(|projected| (projected - pointer).length())
                             .fold(f32::INFINITY, f32::min)
                     };
-                    (0, distance)
+                    PickHit::screen(0, distance)
                 }
                 Geometry::Line(line) => {
                     let distance = self
@@ -645,18 +647,24 @@ impl Viewport {
                         .map_or(f32::INFINITY, |[start, end]| {
                             point_segment_distance(pointer, start, end)
                         });
-                    (1, distance)
+                    PickHit::screen(1, distance)
                 }
-                Geometry::Circle(circle) => (1, self.circle_pick_distance(pointer, rect, circle)),
-                Geometry::Arc(arc) => (1, self.arc_pick_distance(pointer, rect, arc)),
+                Geometry::Circle(circle) => {
+                    PickHit::screen(1, self.circle_pick_distance(pointer, rect, circle))
+                }
+                Geometry::Arc(arc) => {
+                    PickHit::screen(1, self.arc_pick_distance(pointer, rect, arc))
+                }
                 Geometry::Ellipse(ellipse) => {
-                    (1, self.ellipse_pick_distance(pointer, rect, ellipse))
+                    PickHit::screen(1, self.ellipse_pick_distance(pointer, rect, ellipse))
                 }
                 Geometry::Polyline(polyline) => {
-                    (1, self.polyline_pick_distance(pointer, rect, polyline))
+                    PickHit::screen(1, self.polyline_pick_distance(pointer, rect, polyline))
                 }
-                Geometry::NurbsCurve(curve) => (1, self.nurbs_pick_distance(pointer, rect, curve)),
-                Geometry::PolyCurve(curve) => (
+                Geometry::NurbsCurve(curve) => {
+                    PickHit::screen(1, self.nurbs_pick_distance(pointer, rect, curve))
+                }
+                Geometry::PolyCurve(curve) => PickHit::screen(
                     1,
                     curve
                         .segments()
@@ -665,41 +673,30 @@ impl Viewport {
                             distance.min(self.nurbs_pick_distance(pointer, rect, segment))
                         }),
                 ),
-                Geometry::NurbsSurface(surface) => (
-                    2,
-                    self.nurbs_surface_pick_distance(
-                        pointer,
-                        rect,
-                        surface,
-                        object.attributes().wire_density(),
-                        document.tolerance(),
-                    ),
+                Geometry::NurbsSurface(surface) => self.nurbs_surface_pick(
+                    pointer,
+                    rect,
+                    surface,
+                    object.attributes().wire_density(),
+                    document.tolerance(),
                 ),
-                Geometry::Brep(brep) => (
-                    2,
-                    self.brep_pick_distance(
-                        pointer,
-                        rect,
-                        brep,
-                        object.attributes().wire_density(),
-                        document.tolerance(),
-                    ),
+                Geometry::Brep(brep) => self.brep_pick(
+                    pointer,
+                    rect,
+                    brep,
+                    object.attributes().wire_density(),
+                    document.tolerance(),
                 ),
-                Geometry::Mesh(mesh) => (
-                    2,
-                    self.mesh_pick_distance(pointer, rect, mesh, document.tolerance()),
-                ),
+                Geometry::Mesh(mesh) => self.mesh_pick(pointer, rect, mesh, document.tolerance()),
             };
-            if distance > PICK_CAPTURE_PIXELS {
+            if !hit.distance.is_finite() || hit.distance > PICK_CAPTURE_PIXELS {
                 continue;
             }
-            if nearest.is_none_or(|(best_priority, best_distance, _)| {
-                distance < best_distance || (distance == best_distance && priority < best_priority)
-            }) {
-                nearest = Some((priority, distance, object.id()));
+            if nearest.is_none_or(|(best, _)| hit.is_better_than(best)) {
+                nearest = Some((hit, object.id()));
             }
         }
-        nearest.map(|(_, _, id)| id)
+        nearest.map(|(_, id)| id)
     }
 
     #[cfg(test)]
@@ -1014,95 +1011,6 @@ impl Viewport {
             .filter_map(|segment| self.project_segment(segment.start(), segment.end(), rect))
             .map(|[start, end]| point_segment_distance(pointer, start, end))
             .fold(f32::INFINITY, f32::min)
-    }
-
-    fn mesh_pick_distance(
-        &self,
-        pointer: Pos2,
-        rect: Rect,
-        mesh: &TriangleMesh,
-        tolerance: Tolerance,
-    ) -> f32 {
-        if self.display_mode == DisplayMode::Wireframe {
-            return mesh
-                .wireframe_lines(tolerance)
-                .map(|lines| {
-                    lines
-                        .into_iter()
-                        .filter_map(|line| self.project_segment(line.start(), line.end(), rect))
-                        .map(|[start, end]| point_segment_distance(pointer, start, end))
-                        .fold(f32::INFINITY, f32::min)
-                })
-                .unwrap_or(f32::INFINITY);
-        }
-        let mut nearest = f32::INFINITY;
-        for triangle_index in 0..mesh.triangles().len() {
-            let Some(points) = mesh.triangle_points(triangle_index) else {
-                continue;
-            };
-            for points in self.clip_triangle(points).into_iter().flatten() {
-                let [Some(first), Some(second), Some(third)] =
-                    points.map(|point| self.project(point, rect))
-                else {
-                    continue;
-                };
-                if point_in_triangle(pointer, first, second, third) {
-                    return 0.0;
-                }
-                nearest = nearest
-                    .min(point_segment_distance(pointer, first, second))
-                    .min(point_segment_distance(pointer, second, third))
-                    .min(point_segment_distance(pointer, third, first));
-            }
-        }
-        nearest
-    }
-
-    fn nurbs_surface_pick_distance(
-        &self,
-        pointer: Pos2,
-        rect: Rect,
-        surface: &NurbsSurface,
-        wire_density: i32,
-        tolerance: Tolerance,
-    ) -> f32 {
-        if self.display_mode != DisplayMode::Wireframe
-            && let Ok(mesh) = surface.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)
-        {
-            return self.mesh_pick_distance(pointer, rect, &mesh, tolerance);
-        }
-        surface
-            .wireframe_curves(wire_density)
-            .map(|curves| {
-                curves
-                    .iter()
-                    .map(|curve| self.nurbs_pick_distance(pointer, rect, curve))
-                    .fold(f32::INFINITY, f32::min)
-            })
-            .unwrap_or(f32::INFINITY)
-    }
-
-    fn brep_pick_distance(
-        &self,
-        pointer: Pos2,
-        rect: Rect,
-        brep: &Brep,
-        wire_density: i32,
-        tolerance: Tolerance,
-    ) -> f32 {
-        if self.display_mode != DisplayMode::Wireframe
-            && let Ok(mesh) = brep.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)
-        {
-            return self.mesh_pick_distance(pointer, rect, &mesh, tolerance);
-        }
-        brep.wireframe_curves(wire_density, tolerance)
-            .map(|curves| {
-                curves
-                    .iter()
-                    .map(|curve| self.nurbs_pick_distance(pointer, rect, curve))
-                    .fold(f32::INFINITY, f32::min)
-            })
-            .unwrap_or(f32::INFINITY)
     }
 
     fn paint_grid(&self, painter: &egui::Painter, rect: Rect) {
@@ -1809,12 +1717,6 @@ fn point_segment_distance(point: Pos2, start: Pos2, end: Pos2) -> f32 {
 }
 
 fn point_in_triangle(point: Pos2, first: Pos2, second: Pos2, third: Pos2) -> bool {
-    let signed_area = |start: Pos2, end: Pos2, target: Pos2| {
-        (f64::from(end.x) - f64::from(start.x)).mul_add(
-            f64::from(target.y) - f64::from(start.y),
-            -(f64::from(end.y) - f64::from(start.y)) * (f64::from(target.x) - f64::from(start.x)),
-        )
-    };
     let area = signed_area(first, second, third);
     if !area.is_finite() || area.abs() <= f64::EPSILON {
         return false;
@@ -2276,7 +2178,8 @@ mod tests {
                     if visible_count == 0 {
                         assert!(
                             viewport
-                                .mesh_pick_distance(rect.center(), rect, &mesh, Tolerance::DEFAULT)
+                                .mesh_pick(rect.center(), rect, &mesh, Tolerance::DEFAULT)
+                                .distance
                                 .is_infinite()
                         );
                         continue;
@@ -2290,7 +2193,9 @@ mod tests {
                         .project(Point3::try_new(p.x, p.y, p.z).unwrap(), rect)
                         .unwrap();
                     assert_eq!(
-                        viewport.mesh_pick_distance(pointer, rect, &mesh, Tolerance::DEFAULT),
+                        viewport
+                            .mesh_pick(pointer, rect, &mesh, Tolerance::DEFAULT)
+                            .distance,
                         0.0
                     );
                     assert!(

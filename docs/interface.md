@@ -21,6 +21,16 @@ submission and projection tests. Separate [offscreen GPU tests](gpu-tests.md)
 check actual face and wire pixel coverage on the production renderer. Full
 visibility parity, live Rhino comparisons, and large-coordinate GPU precision
 remain unverified.
+When shaded or ghosted faces overlap under a click, the nearest face at the
+cursor wins instead of whichever object was inserted first. The picking module
+uses screen-space barycentric depth for parallel views and reciprocal-depth
+interpolation for perspective, over the same clipped mesh triangles used for
+face projection. It checks every candidate triangle, including tessellated
+NURBS surfaces and B-reps. Tests cover all four views, both insertion orders,
+all three face representations, and sloped/camera-crossing faces against
+independent ray intersections. Point/curve feature priority and wireframe
+capture remain unchanged; general hidden-point/curve rejection and an
+overlapping-object choice interface are not implemented by this change.
 The compact toolbar contains Undo/Redo, active-viewport view/display selectors,
 Grid Snap, Osnap, and SmartTrack. Modeling commands remain in the command line;
 the toolbar wraps at narrow window widths. Undo/Redo buttons are disabled while
