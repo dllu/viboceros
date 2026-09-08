@@ -35,6 +35,9 @@ the app and match Rhino control points within `1e-9`; the two Rhino solver
 failures remain diagnostics rather than required native rejections. Closed
 interpolation still uses model tolerance for coincidence and seam reconciliation;
 that behavior requires a separate boundary audit.
+An [ordinary three-point closure baseline](interpolation-closure-prompt-measurement.json)
+now matches Rhino's smooth and sharp control points within `1e-9` through app
+completion; this does not establish near-seam coincidence behavior.
 
 During `Polyline`, `Curve`, or `InterpCrv`, type `Undo` to remove the last
 draft point without changing document history or its redo stack. Relative input

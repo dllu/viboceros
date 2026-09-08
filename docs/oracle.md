@@ -30,6 +30,16 @@ the six successful cases and compares control points within `1e-9`; two Rhino
 solver rejections remain diagnostic. Run it with `run_headless.sh rhino`, not
 the native comparison runner. Closed-seam tolerance has not been audited here.
 
+`interpolation_closure_prompt_rhino_only.json` checks ordinary three-point
+closure using `_Close` and `_Sharp _Close`, in that order, in a fresh private
+Rhino session. The [recorded response](interpolation-closure-prompt-measurement.json)
+replays through app completion and matches both sets of control points within
+`1e-9`. This is a baseline, not a near-seam tolerance measurement or a test of
+arbitrary persistent option state. In this Rhino build, `_Sharp` alone toggles
+the option and leaves the point prompt active. Exploratory `_Sharp=_No _Close`
+and `_Sharp=_Yes _Close` both produced the sharp curve; those spellings are not
+used by the retained fixture. Closed prompt probes are restricted to InterpCrv.
+
 Standard geometry/command batches apply the request's absolute, relative, and angular tolerances to
 Rhino's active document and restores its previous settings on success or failure.
 This matters for command macros, which read document settings rather than an API

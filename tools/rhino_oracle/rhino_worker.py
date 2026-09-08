@@ -2683,7 +2683,13 @@ def _control_point_prompt_script(operation, interpolate=False):
     if type(degree) is not int or not 1 <= degree <= 11:
         raise ValueError("invalid control-point prompt degree")
     command = "_InterpCrv _Knots=_Chord" if interpolate else "_Curve"
-    return "%s _Degree=%d _SubDFriendly=_No %s _Enter" % (command, degree, " ".join(points))
+    closure = operation.get("closure", "Open")
+    if not interpolate and closure != "Open":
+        raise ValueError("closure probes require InterpCrv")
+    endings = {"Open": "_Enter", "Smooth": "_Close", "Sharp": "_Sharp _Close"}
+    if closure not in endings:
+        raise ValueError("invalid curve prompt closure")
+    return "%s _Degree=%d _SubDFriendly=_No %s %s" % (command, degree, " ".join(points), endings[closure])
 
 
 def _control_point_prompt(operation, interpolate=False):

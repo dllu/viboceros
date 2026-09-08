@@ -84,6 +84,84 @@ fn enter(app: &mut VibocerosApp, input: &str) {
 }
 
 #[test]
+fn recorded_interpolation_closures_match_prompt_completion() {
+    let request: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/interpolation_closure_prompt_rhino_only.json"
+    ))
+    .unwrap();
+    let response: Value = serde_json::from_str(include_str!(
+        "../../../docs/interpolation-closure-prompt-measurement.json"
+    ))
+    .unwrap();
+    assert_eq!(response["engine"], "rhino");
+    assert_eq!(response["results"].as_array().unwrap().len(), 2);
+    assert_eq!(request["operations"].as_array().unwrap().len(), 2);
+    for operation in request["operations"].as_array().unwrap() {
+        let closure = operation["closure"].as_str().unwrap();
+        assert!(matches!(closure, "Smooth" | "Sharp"));
+        assert_eq!(operation["degree"], 3);
+        assert_eq!(operation["origin"], serde_json::json!([0, 0, 0]));
+        assert_eq!(operation["x_axis"], serde_json::json!([1, 0, 0]));
+        assert_eq!(operation["y_axis"], serde_json::json!([0, 1, 0]));
+        let result = response["results"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|r| r["id"] == operation["id"])
+            .unwrap();
+        let mut app = test_app();
+        app.document.set_tolerance(
+            Tolerance::try_new(
+                request["tolerance"]["absolute"].as_f64().unwrap(),
+                request["tolerance"]["relative"].as_f64().unwrap(),
+                request["tolerance"]["angular"].as_f64().unwrap(),
+            )
+            .unwrap(),
+        );
+        enter(&mut app, "InterpCrv");
+        for point in operation["points"].as_array().unwrap() {
+            enter(&mut app, point.as_str().unwrap());
+        }
+        enter(
+            &mut app,
+            if closure == "Smooth" {
+                "Close"
+            } else {
+                "Sharp"
+            },
+        );
+        assert!(app.active_command.is_none(), "{closure}");
+        assert_eq!(app.document.objects().count(), 1);
+        let Geometry::NurbsCurve(curve) = app.document.objects().next().unwrap().geometry() else {
+            panic!("curve");
+        };
+        assert_eq!(
+            curve.is_closed().unwrap(),
+            result["value"]["closed"].as_bool().unwrap()
+        );
+        assert_eq!(
+            curve.degree(),
+            result["value"]["degree"].as_u64().unwrap() as usize
+        );
+        assert_eq!(curve.is_periodic(), closure == "Smooth");
+        let controls = result["value"]["control_points"].as_array().unwrap();
+        assert_eq!(curve.control_points().len(), controls.len());
+        for (actual, expected) in curve.control_points().iter().zip(controls) {
+            let expected = Point3::try_new(
+                expected[0].as_f64().unwrap(),
+                expected[1].as_f64().unwrap(),
+                expected[2].as_f64().unwrap(),
+            )
+            .unwrap();
+            assert!(
+                actual.point().distance_to(expected).unwrap() <= 1e-9,
+                "{closure}"
+            );
+        }
+    }
+}
+
+#[test]
 fn recorded_rhino_curve_threshold_sequences_match_interactive_completion() {
     let measurement: Value = serde_json::from_str(include_str!(
         "../../../docs/control-point-threshold-measurement.json"

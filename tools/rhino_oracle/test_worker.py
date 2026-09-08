@@ -291,6 +291,13 @@ class RhinoWorkerTests(unittest.TestCase):
                          "_Curve _Degree=3 _SubDFriendly=_No w0,0,0 w0,0,0 w2,3,0 w10,0,0 _Enter")
         self.assertEqual(self.worker._control_point_prompt_script(operation, True),
                          "_InterpCrv _Knots=_Chord _Degree=3 _SubDFriendly=_No w0,0,0 w0,0,0 w2,3,0 w10,0,0 _Enter")
+        for closure, ending in [("Smooth", "_Close"), ("Sharp", "_Sharp _Close")]:
+            self.assertTrue(self.worker._control_point_prompt_script(dict(operation, closure=closure), True).endswith(" " + ending))
+            with self.assertRaises(ValueError):
+                self.worker._control_point_prompt_script(dict(operation, closure=closure))
+        for closure in ["invalid", "Smooth _Delete", "_Close"]:
+            with self.assertRaises(ValueError):
+                self.worker._control_point_prompt_script(dict(operation, closure=closure), True)
         for degree in [0, 12, -1, True, 3.0, "3", "3 _Delete"]:
             with self.subTest(degree=degree), self.assertRaises(ValueError):
                 self.worker._control_point_prompt_script(dict(operation, degree=degree))
