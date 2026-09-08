@@ -98,6 +98,11 @@ syntax, not a claim of Rhino macro compatibility. For example,
 `StartTangent=None EndTangent=None Close=Smooth` clears both constraints and
 changes closure in one atomic update. The same reset values work in one-line
 commands and at draft startup.
+InterpCrv currently has a 256-point solver limit. A 257th typed or picked point
+is rejected without changing the draft, preview, or relative origin; use Undo
+to replace a point or Enter to finish. A sharp closure may require one extra
+repeated seam point within that same limit. This is a Viboceros implementation
+limit, not a measured Rhino restriction.
 Model-space preview geometry is cached by points, construction mode, settings,
 and interpolation tolerance, including
 failed constructions. Camera movement reprojects it without rebuilding the curve;

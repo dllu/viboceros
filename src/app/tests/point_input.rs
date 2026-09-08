@@ -6,6 +6,57 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn interpolation_point_limit_preserves_the_valid_draft_and_allows_replacement() {
+    let maximum = viboceros_geometry::MAX_CURVE_INTERPOLATION_POINTS;
+    for degree in [1, 3] {
+        for typed in [true, false] {
+            let mut app = test_app();
+            for input in ["Point 9,9,9", "Undo"] {
+                enter(&mut app, input);
+            }
+            enter(&mut app, &format!("InterpCrv Degree={degree}"));
+            for index in 0..maximum {
+                assert!(app.accept_drafting_point(point(index as f64, (index % 7) as f64, 0.)));
+            }
+            let active = app.active_command;
+            let points = app.curve_points.clone();
+            let last = app.last_point;
+            let plane = app.drafting_plane;
+            let document = format!("{:?}", app.document);
+            let preview = app.curve_draft_preview().unwrap();
+            if typed {
+                enter(&mut app, "w300,4,0");
+                assert_eq!(app.command_input, "w300,4,0");
+            } else {
+                assert!(!app.accept_drafting_point(point(300., 4., 0.)));
+            }
+            assert_eq!(app.active_command, active);
+            assert_eq!(app.curve_points, points);
+            assert_eq!(app.last_point, last);
+            assert_eq!(app.drafting_plane, plane);
+            assert_eq!(format!("{:?}", app.document), document);
+            assert!(std::sync::Arc::ptr_eq(
+                &preview,
+                &app.curve_draft_preview().unwrap()
+            ));
+            enter(&mut app, "Undo");
+            assert_eq!(app.curve_points.len(), maximum - 1);
+            enter(&mut app, "w300,4,0");
+            assert_eq!(app.curve_points.len(), maximum);
+            assert_eq!(app.last_point, Some(point(300., 4., 0.)));
+            enter(&mut app, "");
+            assert!(app.active_command.is_none());
+            assert_eq!(app.document.objects().len(), 1);
+            assert_eq!(app.document.undo_label(), Some("InterpCrv"));
+            enter(&mut app, "Undo");
+            assert_eq!(app.document.objects().len(), 0);
+            enter(&mut app, "Redo");
+            assert_eq!(app.document.objects().len(), 1);
+        }
+    }
+}
+
+#[test]
 fn zero_interpolation_tangent_updates_are_rejected_without_losing_the_draft() {
     let mut app = test_app();
     for input in [
