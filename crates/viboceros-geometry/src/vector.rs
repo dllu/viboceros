@@ -1,5 +1,7 @@
 use crate::{GeometryError, Real, Tolerance, require_finite};
 
+mod exact_dot;
+
 /// A finite vector in three-dimensional model space.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Vector3(nalgebra::Vector3<Real>);
@@ -45,20 +47,9 @@ impl Vector3 {
         if let Some(direct) = direct_dot(self.to_array(), other.to_array()) {
             return Ok(direct);
         }
-        let left_scale = self.x().abs().max(self.y().abs()).max(self.z().abs());
-        let right_scale = other.x().abs().max(other.y().abs()).max(other.z().abs());
-        if left_scale == 0.0 || right_scale == 0.0 {
-            return Ok(0.0);
-        }
-
-        // Scaling avoids overflowing individual products when large terms
-        // cancel. Trying every association avoids both spurious overflow and
-        // spurious underflow in an otherwise representable three-factor result.
-        let left = self.to_array().map(|value| value / left_scale);
-        let right = other.to_array().map(|value| value / right_scale);
-        let normalized = left[0].mul_add(right[0], left[1].mul_add(right[1], left[2] * right[2]));
-        let magnitude = product_three(normalized.abs(), left_scale, right_scale, "dot product")?;
-        Ok(normalized.signum() * magnitude)
+        let result = exact_dot::dot(self.to_array(), other.to_array());
+        require_finite([result], "dot product")?;
+        Ok(result)
     }
 
     pub fn cross(self, other: Self) -> Result<Self, GeometryError> {
@@ -162,7 +153,8 @@ fn direct_dot(left: [Real; 3], right: [Real; 3]) -> Option<Real> {
     let mut correction = 0.0;
     for (a, b) in left.into_iter().zip(right) {
         let product = a * b;
-        if !product.is_finite() || (product == 0.0 && a != 0.0 && b != 0.0) {
+        // FMA cannot recover product bits below the subnormal quantum.
+        if !product.is_finite() || (product.abs() < Real::MIN_POSITIVE && a != 0.0 && b != 0.0) {
             return None;
         }
         let next = sum + product;
@@ -289,6 +281,38 @@ impl TryFrom<[Real; 3]> for Vector3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn dot_product_preserves_small_remainder_after_overflowing_cancellation() {
+        for huge in [1e200, f64::MAX] {
+            for small in [1.0, 1e-100, f64::from_bits(1)] {
+                for axis in 0..3 {
+                    let mut left = [huge, huge, small];
+                    let mut right = [huge, -huge, 1.0];
+                    left.rotate_left(axis);
+                    right.rotate_left(axis);
+                    let a = Vector3::try_from(left).unwrap();
+                    let b = Vector3::try_from(right).unwrap();
+                    assert_eq!(a.dot(b).unwrap(), small);
+                    assert_eq!(b.dot(a).unwrap(), small);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn dot_product_combines_subnormal_products_before_rounding() {
+        let tiny = Real::from_bits(1);
+        let a = Vector3::try_new(tiny, tiny, tiny).unwrap();
+        let b = Vector3::try_new(0.5, 0.5, 0.5).unwrap();
+        assert_eq!(a.dot(b).unwrap(), Real::from_bits(2));
+        // Each product rounds upward individually; rounding their sum once
+        // produces two units, not three.
+        let b = Vector3::try_new(0.75, 0.75, 0.75).unwrap();
+        assert_eq!(a.dot(b).unwrap(), Real::from_bits(2));
+        let huge = Vector3::try_new(Real::MAX, Real::MAX, Real::MAX).unwrap();
+        assert!(huge.dot(huge).is_err());
+    }
 
     #[test]
     fn dot_product_compensates_product_and_sum_rounding() {

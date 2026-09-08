@@ -15,8 +15,12 @@ rounding input significands before cancellation; exact integer determinants
 with binary-scaled coordinates exercise both ordinary and overflowing products.
 Direct vector dot products compensate both multiplication and summation
 rounding; tests cover exact orthogonality, near-cancelling integer products,
-and small terms between large opposite terms. Extreme-range dot products
-still use a separate scaled fallback, not an exact-arithmetic accumulator.
+and small terms between large opposite terms. Dot products whose individual
+products underflow or overflow, or whose running sum overflows, use an
+allocation-free fixed-size integer accumulator spanning the full binary64
+product range. That fallback rounds only the final sum (nearest, ties to even);
+tests compare it with hardware multiplication and fused multiply-add across
+10,000 deterministic full-range inputs, plus cancellation and rounding boundaries.
 
 | Module | Responsibility |
 | --- | --- |
