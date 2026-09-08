@@ -1160,6 +1160,23 @@ mod tests {
                     assert!(value >= a.min(b) && value <= a.max(b));
                 }
             }
+            for step in 0..=32 {
+                let parameter = step as Real / 32.;
+                let actual = curve.evaluate(parameter).unwrap();
+                for ((value, a), b) in actual
+                    .to_array()
+                    .into_iter()
+                    .zip(points[0].to_array())
+                    .zip(points[1].to_array())
+                {
+                    let scale = a.abs().max(b.abs()).max(1.);
+                    let expected = (1. - parameter).mul_add(a / scale, parameter * (b / scale));
+                    assert!(
+                        (value / scale - expected).abs() <= 8. * f64::EPSILON,
+                        "t={parameter}: {value} vs normalized {expected}"
+                    );
+                }
+            }
             if points[0].distance_to(points[1]).is_err() {
                 assert!(
                     NurbsCurve::try_interpolate_for_command(

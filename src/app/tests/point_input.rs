@@ -6,6 +6,39 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn extreme_uniform_interpolation_survives_typed_preview_completion_and_history() {
+    for points in [
+        ["w-1e308,0,0", "w1e308,0,0"],
+        ["w0,0,0", "w1.7976931348623157e308,1.7976931348623157e308,0"],
+    ] {
+        let mut app = test_app();
+        enter(&mut app, "InterpCrv Knots=Uniform");
+        for input in points {
+            enter(&mut app, input);
+        }
+        assert_eq!(app.curve_points.len(), 2);
+        let endpoints = app.curve_points.clone();
+        let preview = app.curve_draft_preview().unwrap();
+        for parameter in [0., 0.25, 0.5, 0.75, 1.] {
+            assert!(preview.evaluate(parameter).is_ok());
+        }
+        assert_eq!(preview.evaluate(0.).unwrap(), endpoints[0]);
+        assert_eq!(preview.evaluate(1.).unwrap(), endpoints[1]);
+        enter(&mut app, "");
+        assert!(app.active_command.is_none());
+        assert_eq!(app.document.objects().len(), 1);
+        assert_eq!(app.last_point, Some(endpoints[1]));
+        let expected = Geometry::NurbsCurve((*preview).clone());
+        assert_eq!(app.document.objects().next().unwrap().geometry(), &expected);
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().len(), 0);
+        assert!(!app.document.can_undo());
+        enter(&mut app, "Redo");
+        assert_eq!(app.document.objects().next().unwrap().geometry(), &expected);
+    }
+}
+
+#[test]
 fn interpolation_point_limit_preserves_the_valid_draft_and_allows_replacement() {
     let maximum = viboceros_geometry::MAX_CURVE_INTERPOLATION_POINTS;
     for degree in [1, 3] {
