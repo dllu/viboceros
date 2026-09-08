@@ -47,7 +47,10 @@ importing geometry never replaces an existing document's tolerance settings.
 Invalid nonpositive/nonfinite archived tolerances are reported as invalid model
 metadata. Export requires relative tolerance below 1 and angular tolerance at
 most π radians, matching OpenNURBS's valid ranges; unencodable settings fail
-without replacing an existing file. Layout/page tolerances are not preserved.
+before geometry preparation or destination access, without replacing an existing
+file. Native-file tests cover the smallest positive floating-point values,
+maximum finite absolute tolerance, relative tolerance immediately below 1,
+and the inclusive π angular boundary. Layout/page tolerances are not preserved.
 
 There is no graphical tolerance-settings editor yet. `Units` reports these
 settings but continues to leave their numeric values unchanged.

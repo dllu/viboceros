@@ -789,6 +789,15 @@ fn decode_object(
 }
 
 fn validate_model(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
+    // Tolerance already guarantees finite positive components. These extra
+    // OpenNURBS bounds must be checked before preparing geometry or opening a
+    // staging file; the native boundary repeats validation defensively.
+    if model.tolerance.relative() >= 1.0 || model.tolerance.angular() > std::f64::consts::PI {
+        return Err(ThreeDmError::InvalidModel(
+            "3DM requires relative tolerance below 1 and angular tolerance at most pi radians"
+                .into(),
+        ));
+    }
     if model.layers.is_empty() && !model.objects.is_empty() {
         return Err(ThreeDmError::InvalidModel(
             "objects require at least one layer".to_owned(),
@@ -1667,6 +1676,56 @@ mod tests {
             }
         }
         fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn model_tolerance_boundary_values_round_trip_without_normalization() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("tolerance boundaries.3dm");
+        let mut model = sample_model();
+        model.objects.truncate(1);
+        let tiny = f64::from_bits(1);
+        let below_one = f64::from_bits(1.0_f64.to_bits() - 1);
+        for tolerance in [
+            Tolerance::try_new(tiny, tiny, tiny).unwrap(),
+            Tolerance::try_new(f64::MAX, below_one, std::f64::consts::PI).unwrap(),
+            Tolerance::try_new(0.0125, 0.00025, 0.5_f64.to_radians()).unwrap(),
+        ] {
+            model.tolerance = tolerance;
+            let before = model.clone();
+            write_3dm_file(&path, &model).unwrap();
+            assert_eq!(model, before);
+            let decoded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+            assert_eq!(decoded.tolerance, tolerance);
+            assert_eq!(decoded.objects, model.objects);
+            let converted =
+                read_3dm_file_in_units(&path, &LengthUnitSystem::Meters, Tolerance::DEFAULT)
+                    .unwrap();
+            assert_eq!(converted.tolerance, Tolerance::DEFAULT);
+        }
+    }
+
+    #[test]
+    fn invalid_tolerance_is_rejected_before_any_destination_access() {
+        let directory = tempfile::tempdir().unwrap();
+        let missing_parent = directory
+            .path()
+            .join("must not be created")
+            .join("model.3dm");
+        let mut model = sample_model();
+        model.objects.truncate(1);
+        for (relative, angle) in [
+            (1.0, 0.01),
+            (f64::from_bits(1.0_f64.to_bits() + 1), 0.01),
+            (0.01, f64::from_bits(std::f64::consts::PI.to_bits() + 1)),
+        ] {
+            model.tolerance = Tolerance::try_new(0.001, relative, angle).unwrap();
+            assert!(matches!(
+                write_3dm_file(&missing_parent, &model),
+                Err(ThreeDmError::InvalidModel(_))
+            ));
+            assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 0);
+        }
     }
 
     #[test]
