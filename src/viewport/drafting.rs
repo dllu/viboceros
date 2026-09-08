@@ -322,42 +322,53 @@ pub(super) fn clip_drafting_line(
     if !start.is_finite() || !end.is_finite() || !rect.is_finite() || !rect.is_positive() {
         return None;
     }
-    // Subtract in f64: finite f32 screen coordinates can overflow f32 deltas.
-    let origin = [f64::from(start.x), f64::from(start.y)];
-    let direction = [f64::from(end.x) - origin[0], f64::from(end.y) - origin[1]];
-    if direction == [0.0; 2] {
+    let a = [f64::from(start.x), f64::from(start.y)];
+    let b = [f64::from(end.x), f64::from(end.y)];
+    let delta = [b[0] - a[0], b[1] - a[1]];
+    if delta == [0.0; 2] {
         return None;
     }
+    let axis = usize::from(delta[1].abs() > delta[0].abs());
+    let other = 1 - axis;
     let bounds = [
         [f64::from(rect.left()), f64::from(rect.right())],
         [f64::from(rect.top()), f64::from(rect.bottom())],
     ];
-    let (mut low, mut high) = if extend {
-        (f64::NEG_INFINITY, f64::INFINITY)
-    } else {
-        (0.0, 1.0)
-    };
-    for axis in 0..2 {
-        if direction[axis] == 0.0 {
-            if !(bounds[axis][0]..=bounds[axis][1]).contains(&origin[axis]) {
-                return None;
-            }
-        } else {
-            let a = (bounds[axis][0] - origin[axis]) / direction[axis];
-            let b = (bounds[axis][1] - origin[axis]) / direction[axis];
-            low = low.max(a.min(b));
-            high = high.min(a.max(b));
-            if low > high {
-                return None;
-            }
-        }
+    // Clip in a screen coordinate, not a parameter near 0.5 or 1 whose
+    // endpoints can round together for distant anchors. Original f32
+    // coordinate products are exact in f64, retaining a small intercept
+    // when their large products cancel.
+    let slope = delta[other] / delta[axis];
+    let intercept = (a[other] * b[axis] - b[other] * a[axis]) / delta[axis];
+    let [mut low, mut high] = bounds[axis];
+    if !extend {
+        low = low.max(a[axis].min(b[axis]));
+        high = high.min(a[axis].max(b[axis]));
     }
-    Some([low, high].map(|t| {
-        let point: [f32; 2] = std::array::from_fn(|axis| {
-            direction[axis]
-                .mul_add(t, origin[axis])
-                .clamp(bounds[axis][0], bounds[axis][1]) as f32
-        });
+    if slope == 0.0 {
+        if !(bounds[other][0]..=bounds[other][1]).contains(&intercept) {
+            return None;
+        }
+    } else {
+        let first = (bounds[other][0] - intercept) / slope;
+        let second = (bounds[other][1] - intercept) / slope;
+        low = low.max(first.min(second));
+        high = high.min(first.max(second));
+    }
+    if low > high {
+        return None;
+    }
+    let coordinates = if delta[axis] > 0.0 {
+        [low, high]
+    } else {
+        [high, low]
+    };
+    Some(coordinates.map(|coordinate| {
+        let mut point = [0.0; 2];
+        point[axis] = coordinate as f32;
+        point[other] = slope
+            .mul_add(coordinate, intercept)
+            .clamp(bounds[other][0], bounds[other][1]) as f32;
         Pos2::new(point[0], point[1])
     }))
 }

@@ -19,14 +19,30 @@ fn drafting_dash_tessellation_is_bounded_by_the_viewport() {
             clip_drafting_line(p(f32::NAN, 3.), p(2., 3.), rect, extend),
             None
         );
-        for (start, end) in [
-            (p(-f32::MAX, 250.), p(f32::MAX, 250.)),
-            (p(-1e30, -1e30), p(1e30, 1e30)),
-            (p(1e30, 100.), p(0., 100.)),
+        for (start, end, expected) in [
+            (
+                p(-f32::MAX, 250.),
+                p(f32::MAX, 250.),
+                [p(0., 250.), p(800., 250.)],
+            ),
+            (p(-1e30, -1e30), p(1e30, 1e30), [p(0., 0.), p(600., 600.)]),
+            (p(1e30, 100.), p(0., 100.), [p(800., 100.), p(0., 100.)]),
         ] {
-            for endpoint in clip_drafting_line(start, end, rect, extend).unwrap() {
-                assert!(endpoint.is_finite() && rect.contains(endpoint));
-            }
+            assert_eq!(clip_drafting_line(start, end, rect, extend), Some(expected));
+            assert_eq!(
+                clip_drafting_line(end, start, rect, extend),
+                Some([expected[1], expected[0]])
+            );
+            let swap = |point: Pos2| p(point.y, point.x);
+            let swapped_rect = Rect::from_min_max(swap(rect.min), swap(rect.max));
+            assert_eq!(
+                clip_drafting_line(swap(start), swap(end), swapped_rect, extend),
+                Some(expected.map(swap))
+            );
+            assert_eq!(
+                clip_drafting_line(swap(end), swap(start), swapped_rect, extend),
+                Some([swap(expected[1]), swap(expected[0])])
+            );
         }
     }
     assert_eq!(

@@ -102,6 +102,10 @@ The app's `viewport/drafting` module resolves the drafting cursor through the
 shared drafting kernel and draws construction-plane grids, accepted points,
 tracking guides, snap markers, and cursor labels. Guide clipping happens before
 dash tessellation, keeping distant anchors from causing unbounded allocations.
+Clipping uses the line's dominant screen coordinate rather than a normalized
+segment parameter, so distant endpoints do not collapse a visible guide to a
+single point. Exact endpoint tests cover huge horizontal, vertical, and diagonal
+guides, endpoint reversal, and finite-segment versus infinite-line clipping.
 The `viewport/selection` module owns selectable-object filtering, click
 dispatch and curve capture, projected primitives for window/crossing selection,
 and selection-window feedback. The interaction loop delegates selection to this
