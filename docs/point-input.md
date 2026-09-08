@@ -170,6 +170,12 @@ extreme coordinates or a guarantee about GPU rendering at those scales.
 Two-point uniform cubics do not require a representable chord length: their
 domain is `[0,1]` and control points use overflow-safe convex interpolation.
 Chord-based two-point domains still require a finite endpoint distance.
+Uniform knot-interval construction likewise avoids unused chord-length
+calculations. A periodic four-point regression has unrepresentable adjacent
+chords but finite controls and evaluated points; it now completes through typed
+input, cached preview, and undo/redo. Chord-based spacing still rejects that
+fixture. This does not remove genuine chord requirements elsewhere, such as
+automatic open-cubic endpoint handles or degree-one arc-length domains.
 Regression tests check evaluated points across these extreme uniform curves,
 plus typed input, preview creation, completion, and undo/redo. This does not
 establish GPU display accuracy at extreme world-coordinate magnitudes.

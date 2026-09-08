@@ -688,11 +688,14 @@ fn interpolation_intervals(
     let interval_count = points.len() - usize::from(!closed);
     let mut intervals = Vec::with_capacity(interval_count);
     for index in 0..interval_count {
-        let distance = points[index].distance_to(points[(index + 1) % points.len()])?;
         let interval = match spacing {
             CurveKnotSpacing::Uniform => 1.0,
-            CurveKnotSpacing::Chord => distance,
-            CurveKnotSpacing::SquareRootChord => distance.sqrt(),
+            CurveKnotSpacing::Chord => {
+                points[index].distance_to(points[(index + 1) % points.len()])?
+            }
+            CurveKnotSpacing::SquareRootChord => points[index]
+                .distance_to(points[(index + 1) % points.len()])?
+                .sqrt(),
         };
         require_finite([interval], "curve interpolation interval")?;
         if interval <= 0.0 {
@@ -987,6 +990,47 @@ mod tests {
                     assert!((actual.x() - expected.x()).abs() <= 1e-12);
                     assert!((actual.z() - expected.z()).abs() <= 1e-12);
                 }
+            }
+        }
+    }
+
+    #[test]
+    fn uniform_periodic_interpolation_does_not_require_representable_chords() {
+        let a = 9e307;
+        let points = [
+            point(-a, -a, 0.),
+            point(a, -a, 0.),
+            point(a, a, 0.),
+            point(-a, a, 0.),
+        ];
+        for i in 0..4 {
+            assert!(points[i].distance_to(points[(i + 1) % 4]).is_err());
+        }
+        for spacing in [CurveKnotSpacing::Chord, CurveKnotSpacing::SquareRootChord] {
+            assert!(
+                NurbsCurve::try_interpolate_for_command(
+                    &points,
+                    CurveInterpolationOptions::new(3, spacing, InterpolatedCurveClosure::Smooth),
+                    Tolerance::DEFAULT
+                )
+                .is_err()
+            );
+        }
+        let curve = NurbsCurve::try_interpolate_for_command(
+            &points,
+            CurveInterpolationOptions::new(
+                3,
+                CurveKnotSpacing::Uniform,
+                InterpolatedCurveClosure::Smooth,
+            ),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(curve.is_periodic());
+        for (index, expected) in points.iter().enumerate() {
+            let actual = curve.evaluate(index as f64).unwrap();
+            for (a, b) in actual.to_array().into_iter().zip(expected.to_array()) {
+                assert!((a / 9e307 - b / 9e307).abs() <= 16. * f64::EPSILON);
             }
         }
     }

@@ -39,6 +39,38 @@ fn extreme_uniform_interpolation_survives_typed_preview_completion_and_history()
 }
 
 #[test]
+fn uniform_periodic_draft_survives_unrepresentable_chords_and_history() {
+    let mut app = test_app();
+    enter(&mut app, "InterpCrv Knots=Uniform Close=Smooth");
+    for input in [
+        "w-9e307,-9e307,0",
+        "w9e307,-9e307,0",
+        "w9e307,9e307,0",
+        "w-9e307,9e307,0",
+    ] {
+        enter(&mut app, input);
+    }
+    assert_eq!(app.curve_points.len(), 4);
+    let last = app.last_point;
+    let preview = app.curve_draft_preview().unwrap();
+    assert!(preview.is_periodic());
+    for i in 0..=32 {
+        assert!(preview.evaluate(i as f64 / 8.).is_ok());
+    }
+    enter(&mut app, "");
+    assert!(app.active_command.is_none());
+    assert_eq!(app.document.objects().count(), 1);
+    assert_eq!(app.last_point, last);
+    let expected = Geometry::NurbsCurve((*preview).clone());
+    assert_eq!(app.document.objects().next().unwrap().geometry(), &expected);
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().count(), 0);
+    assert!(!app.document.can_undo());
+    enter(&mut app, "Redo");
+    assert_eq!(app.document.objects().next().unwrap().geometry(), &expected);
+}
+
+#[test]
 fn interpolation_point_limit_preserves_the_valid_draft_and_allows_replacement() {
     let maximum = viboceros_geometry::MAX_CURVE_INTERPOLATION_POINTS;
     for degree in [1, 3] {
