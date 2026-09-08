@@ -41,7 +41,7 @@ Rhino control points within `1e-9`; Rhino's responses are identical across those
 tolerances. This corrects both rejection of nearby interior points and unwanted
 seam-point removal. The general-purpose interpolation helper retains its explicit
 tolerance policy.
-The point prompt automatically finishes a closed curve after at least
+The cubic point prompt automatically finishes a closed curve after at least
 two collected points when the next point is within Euclidean distance
 `1.490116119385e-8` of the first (inclusive, independent of model tolerance).
 This is the OpenNURBS decimal `ON_SQRT_EPSILON` constant, not the slightly
@@ -64,6 +64,20 @@ reported as closed by Rhino's coordinate-relative topology test, but remains
 non-periodic. Closed state alone must not drive automatic prompt completion.
 More extreme translations and Rhino's constrained/sharp auto-close behavior
 remain unmeasured; the one-line constructor does not perform this prompt gesture.
+
+Degree-one InterpCrv distinguishes exact and nearby seam inputs. Its
+[six-case audit](interpolation-degree-one-auto-close-measurement.json) checks
+two or three collected points followed by offsets `0`, `1e-8`, and `2e-8`.
+On Enter, two-point returns retain the actual endpoint; with three collected
+points, offsets within the same fixed seam threshold reconcile to the start.
+Preview and completion share this rule without modifying the raw draft points.
+No-Enter probes at `1e-8` for both point counts remained in Rhino's next-point
+prompt (visually checked in the private Xvfb) until the 100-second client timeout.
+[Exact returns](interpolation-degree-one-exact-close-measurement.json), however,
+finish without Enter for both point counts. The cubic near-seam automatic
+completion rule must not be applied unchanged to degree-one drafts.
+The exact degree-one reconciliation boundary and smaller nonzero prompt offsets
+are not fully audited.
 An [ordinary three-point closure baseline](interpolation-closure-prompt-measurement.json)
 now matches Rhino's smooth and sharp control points within `1e-9` through app
 completion.

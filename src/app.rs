@@ -4589,7 +4589,13 @@ impl VibocerosApp {
         let plane = self.drafting_plane;
         let points = std::mem::take(&mut self.curve_points);
         self.active_command = None;
-        let arguments = points
+        let construction_points = match command {
+            InteractiveCommand::InterpCrv { options } => {
+                curve_prompt::interpolation_prompt_points(&points, options)
+            }
+            _ => std::borrow::Cow::Borrowed(points.as_slice()),
+        };
+        let arguments = construction_points
             .iter()
             .copied()
             .map(format_model_point)

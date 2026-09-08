@@ -70,6 +70,19 @@ confirms automatic completion with non-periodic output. Consequently neither
 `PointOnly` ending directly tests completion. The app now auto-closes two-point
 returns with a non-periodic cubic instead of requiring a third collected point.
 
+The [degree-one follow-up](interpolation-degree-one-auto-close-measurement.json)
+records six Enter-completed sequences, all replayed through preview/completion
+with control errors at most `1e-9`. Separate `PointOnly` probes for two and three
+collected points followed by `w1e-8,0,0` both waited until the 100-second client
+timeout. The owned private windows were inspected while live and still showed
+the next-point prompt after accepting that input; these are prompt observations,
+not successful geometry responses. Separate [exact-return probes](interpolation-degree-one-exact-close-measurement.json)
+do complete without Enter for both point counts. Degree-one completion at a
+nearby endpoint therefore differs from completion at exact equality, even when
+its eventual endpoint is reconciled to the start.
+A further no-Enter batch timed out during its first `1e-10` offset; its subsequent
+`2^-32` case was not reached and must not be treated as measured.
+
 Standard geometry/command batches apply the request's absolute, relative, and angular tolerances to
 Rhino's active document and restores its previous settings on success or failure.
 This matters for command macros, which read document settings rather than an API

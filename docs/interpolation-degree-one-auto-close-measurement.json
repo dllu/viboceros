@@ -1,0 +1,351 @@
+{
+  "request": {
+    "protocol_version": 1,
+    "iterations": 1,
+    "tolerance": {
+      "absolute": 0.01,
+      "relative": 1e-12,
+      "angular": 1e-10
+    },
+    "operations": [
+      {
+        "op": "interpolation_point_prompt",
+        "degree": 1,
+        "closure": "Open",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "y_axis": [
+          0,
+          1,
+          0
+        ],
+        "id": "degree1-2-0",
+        "points": [
+          "w0,0,0",
+          "w10,0,0",
+          "w0,0,0"
+        ]
+      },
+      {
+        "op": "interpolation_point_prompt",
+        "degree": 1,
+        "closure": "Open",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "y_axis": [
+          0,
+          1,
+          0
+        ],
+        "id": "degree1-2-1e-8",
+        "points": [
+          "w0,0,0",
+          "w10,0,0",
+          "w1e-8,0,0"
+        ]
+      },
+      {
+        "op": "interpolation_point_prompt",
+        "degree": 1,
+        "closure": "Open",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "y_axis": [
+          0,
+          1,
+          0
+        ],
+        "id": "degree1-2-2e-8",
+        "points": [
+          "w0,0,0",
+          "w10,0,0",
+          "w2e-8,0,0"
+        ]
+      },
+      {
+        "op": "interpolation_point_prompt",
+        "degree": 1,
+        "closure": "Open",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "y_axis": [
+          0,
+          1,
+          0
+        ],
+        "id": "degree1-3-0",
+        "points": [
+          "w0,0,0",
+          "w2,3,0",
+          "w10,0,0",
+          "w0,0,0"
+        ]
+      },
+      {
+        "op": "interpolation_point_prompt",
+        "degree": 1,
+        "closure": "Open",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "y_axis": [
+          0,
+          1,
+          0
+        ],
+        "id": "degree1-3-1e-8",
+        "points": [
+          "w0,0,0",
+          "w2,3,0",
+          "w10,0,0",
+          "w1e-8,0,0"
+        ]
+      },
+      {
+        "op": "interpolation_point_prompt",
+        "degree": 1,
+        "closure": "Open",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "y_axis": [
+          0,
+          1,
+          0
+        ],
+        "id": "degree1-3-2e-8",
+        "points": [
+          "w0,0,0",
+          "w2,3,0",
+          "w10,0,0",
+          "w2e-8,0,0"
+        ]
+      }
+    ]
+  },
+  "response": {
+    "engine": "rhino",
+    "engine_version": "8.32.26160.13001",
+    "iterations": 1,
+    "protocol_version": 1,
+    "results": [
+      {
+        "elapsed_ns": 0,
+        "id": "degree1-2-0",
+        "value": {
+          "closed": false,
+          "control_points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "degree": 1,
+          "periodic": false
+        }
+      },
+      {
+        "elapsed_ns": 0,
+        "id": "degree1-2-1e-8",
+        "value": {
+          "closed": false,
+          "control_points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              1e-8,
+              0,
+              0
+            ]
+          ],
+          "degree": 1,
+          "periodic": false
+        }
+      },
+      {
+        "elapsed_ns": 0,
+        "id": "degree1-2-2e-8",
+        "value": {
+          "closed": false,
+          "control_points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              2e-8,
+              0,
+              0
+            ]
+          ],
+          "degree": 1,
+          "periodic": false
+        }
+      },
+      {
+        "elapsed_ns": 0,
+        "id": "degree1-3-0",
+        "value": {
+          "closed": true,
+          "control_points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2.0000000000000004,
+              3.000000000000001,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "degree": 1,
+          "periodic": false
+        }
+      },
+      {
+        "elapsed_ns": 0,
+        "id": "degree1-3-1e-8",
+        "value": {
+          "closed": true,
+          "control_points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2.0000000000000004,
+              3.000000000000001,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "degree": 1,
+          "periodic": false
+        }
+      },
+      {
+        "elapsed_ns": 0,
+        "id": "degree1-3-2e-8",
+        "value": {
+          "closed": false,
+          "control_points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2.0000000000000004,
+              3.000000000000001,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              2e-8,
+              0,
+              0
+            ]
+          ],
+          "degree": 1,
+          "periodic": false
+        }
+      }
+    ]
+  }
+}

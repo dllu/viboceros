@@ -2,19 +2,44 @@
 
 use super::*;
 
+const INTERPOLATION_SEAM_TOLERANCE: f64 = 1.490116119385e-8;
+
+/// Degree-one prompts remain active near a seam. On completion Rhino reconciles
+/// a near-start endpoint only once there are at least three collected segments.
+pub(super) fn interpolation_prompt_points(
+    points: &[Point3],
+    options: viboceros_geometry::CurveInterpolationOptions,
+) -> std::borrow::Cow<'_, [Point3]> {
+    if options.degree() == 1
+        && options.closure() == viboceros_geometry::InterpolatedCurveClosure::Open
+        && points.len() >= 4
+        && points[0]
+            .distance_to(points[points.len() - 1])
+            .is_ok_and(|d| d <= INTERPOLATION_SEAM_TOLERANCE)
+    {
+        let mut reconciled = points.to_vec();
+        *reconciled.last_mut().unwrap() = points[0];
+        std::borrow::Cow::Owned(reconciled)
+    } else {
+        std::borrow::Cow::Borrowed(points)
+    }
+}
+
 impl VibocerosApp {
     /// A closing point is a completion gesture, not another interpolation point.
-    /// Private Rhino probes establish an inclusive Euclidean ON_SQRT_EPSILON
-    /// threshold (the OpenNURBS decimal constant, not f64::EPSILON.sqrt()).
+    /// Private Rhino cubic probes establish an inclusive ON_SQRT_EPSILON
+    /// distance threshold. Degree-one probes distinguish exact returns from
+    /// nearby points that remain editable until Enter.
     pub(super) fn try_auto_close_interpolation(
         &mut self,
         point: Point3,
         options: viboceros_geometry::CurveInterpolationOptions,
     ) -> Option<bool> {
         if self.curve_points.len() < 2
+            || (options.degree() == 1 && self.curve_points[0] != point)
             || !self.curve_points[0]
                 .distance_to(point)
-                .is_ok_and(|distance| distance <= 1.490116119385e-8)
+                .is_ok_and(|distance| distance <= INTERPOLATION_SEAM_TOLERANCE)
         {
             return None;
         }

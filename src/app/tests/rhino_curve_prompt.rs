@@ -109,7 +109,8 @@ fn replay_interpolation_closures(request: &Value, response: &Value) {
     for operation in request["operations"].as_array().unwrap() {
         let closure = operation["closure"].as_str().unwrap();
         assert!(matches!(closure, "Smooth" | "Sharp" | "Open" | "PointOnly"));
-        assert_eq!(operation["degree"], 3);
+        let degree = operation["degree"].as_u64().unwrap();
+        assert!(matches!(degree, 1 | 3));
         assert_eq!(operation["origin"], serde_json::json!([0, 0, 0]));
         assert_eq!(operation["x_axis"], serde_json::json!([1, 0, 0]));
         assert_eq!(operation["y_axis"], serde_json::json!([0, 1, 0]));
@@ -131,7 +132,7 @@ fn replay_interpolation_closures(request: &Value, response: &Value) {
             )
             .unwrap(),
         );
-        enter(&mut app, "InterpCrv");
+        enter(&mut app, &format!("InterpCrv Degree={degree}"));
         for point in operation["points"].as_array().unwrap() {
             enter(&mut app, point.as_str().unwrap());
         }
@@ -180,7 +181,8 @@ fn replay_interpolation_closures(request: &Value, response: &Value) {
             .unwrap();
             assert!(
                 actual.point().distance_to(expected).unwrap() <= 1e-9,
-                "{closure}"
+                "{}: control mismatch for {closure}",
+                operation["id"]
             );
         }
     }
@@ -229,6 +231,96 @@ fn recorded_translated_auto_closure_distinguishes_closed_from_periodic() {
         3
     );
     replay_interpolation_closures(&measurement["request"], &measurement["response"]);
+}
+
+#[test]
+fn recorded_degree_one_interpolation_seams_match_rhino() {
+    let measurement: Value = serde_json::from_str(include_str!(
+        "../../../docs/interpolation-degree-one-auto-close-measurement.json"
+    ))
+    .unwrap();
+    assert_eq!(
+        measurement["request"]["operations"]
+            .as_array()
+            .unwrap()
+            .len(),
+        6
+    );
+    replay_interpolation_closures(&measurement["request"], &measurement["response"]);
+    for operation in measurement["request"]["operations"].as_array().unwrap() {
+        let mut app = test_app();
+        enter(&mut app, "InterpCrv Degree=1");
+        for point in operation["points"].as_array().unwrap() {
+            enter(&mut app, point.as_str().unwrap());
+        }
+        if operation["points"].as_array().unwrap().last().unwrap() == &operation["points"][0] {
+            assert!(app.active_command.is_none());
+            continue;
+        }
+        assert!(app.active_command.is_some());
+        assert_eq!(app.document.objects().count(), 0);
+        let raw_points = app.curve_points.clone();
+        let preview = app.curve_draft_preview().unwrap();
+        assert_eq!(app.curve_points, raw_points);
+        assert!(std::sync::Arc::ptr_eq(
+            &preview,
+            &app.curve_draft_preview().unwrap()
+        ));
+        enter(&mut app, "");
+        let Geometry::NurbsCurve(curve) = app.document.objects().next().unwrap().geometry() else {
+            panic!("curve");
+        };
+        assert_eq!(curve, preview.as_ref());
+    }
+}
+
+#[test]
+fn recorded_degree_one_exact_seams_finish_without_enter() {
+    let measurement: Value = serde_json::from_str(include_str!(
+        "../../../docs/interpolation-degree-one-exact-close-measurement.json"
+    ))
+    .unwrap();
+    assert_eq!(
+        measurement["request"]["operations"]
+            .as_array()
+            .unwrap()
+            .len(),
+        2
+    );
+    replay_interpolation_closures(&measurement["request"], &measurement["response"]);
+}
+
+#[test]
+fn degree_one_two_point_return_remains_a_draft_and_keeps_the_typed_or_picked_endpoint() {
+    for picked in [false, true] {
+        let mut app = test_app();
+        enter(&mut app, "InterpCrv Degree=1");
+        enter(&mut app, "w0,0,0");
+        enter(&mut app, "w10,0,0");
+        let endpoint = Point3::try_new(1e-8, 0., 0.).unwrap();
+        if picked {
+            assert!(app.accept_drafting_point(endpoint));
+        } else {
+            enter(&mut app, "w1e-8,0,0");
+        }
+        assert!(app.active_command.is_some());
+        assert_eq!(app.curve_points.len(), 3);
+        assert_eq!(app.curve_points[2], endpoint);
+        assert_eq!(app.last_point, Some(endpoint));
+        assert_eq!(app.document.objects().count(), 0);
+        let preview = app.curve_draft_preview().unwrap();
+        enter(&mut app, "");
+        assert!(app.active_command.is_none());
+        let Geometry::NurbsCurve(curve) = app.document.objects().next().unwrap().geometry() else {
+            panic!("curve");
+        };
+        assert_eq!(curve, preview.as_ref());
+        assert_eq!(curve.control_points().last().unwrap().point(), endpoint);
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().count(), 0);
+        enter(&mut app, "Redo");
+        assert_eq!(app.document.objects().count(), 1);
+    }
 }
 
 #[test]

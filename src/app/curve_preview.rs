@@ -44,7 +44,11 @@ impl CurvePreviewCache {
                     )
                 }
                 CurvePreviewSettings::Interpolated(options, tolerance) => {
-                    NurbsCurve::try_interpolate_for_command(points, options, tolerance)
+                    NurbsCurve::try_interpolate_for_command(
+                        &super::curve_prompt::interpolation_prompt_points(points, options),
+                        options,
+                        tolerance,
+                    )
                 }
             }
             .ok()
