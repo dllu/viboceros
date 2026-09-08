@@ -28,3 +28,11 @@ this accumulator for totals; individual geometry integrals retain their existing
 accuracy and failure limits. Other kernel accumulators have not all migrated.
 A command regression sums two enormous closed tetrahedra and one reversed copy,
 whose finite signed total survives an overflowing positive prefix.
+
+The shared limb arithmetic also has direct structural tests: shifted 128-bit
+products are checked against an independent bit-by-bit adder at every word
+offset, using random magnitudes and long carry chains. Signed subtraction
+recovers a single subnormal across long borrow chains up to the sum accumulator's
+high limbs. Both sum and product scales exercise every guard-bit offset, distant
+sticky bits, and even/odd tie rounding. These tests supplement the end-to-end
+numeric comparisons; they do not change the runtime algorithms.

@@ -1,6 +1,9 @@
 //! Fixed-limb exact binary accumulation shared by sums and dot products.
 //! QUANTUM is the negated exponent of accumulator bit zero (at least 1074).
 
+#[cfg(test)]
+mod tests;
+
 pub(crate) fn finish<const N: usize, const QUANTUM: usize>(
     positive: [u64; N],
     negative: [u64; N],
