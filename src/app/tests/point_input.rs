@@ -6,6 +6,71 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn overflowing_endpoint_distances_preserve_typed_and_picked_drafts() {
+    for command in ["Line", "Sphere"] {
+        for typed in [false, true] {
+            let mut app = test_app();
+            enter(&mut app, command);
+            enter(&mut app, "-1e308,0,0");
+            let active = app.active_command;
+            let previous = app.last_point;
+            if typed {
+                enter(&mut app, "1e308,0,0");
+                assert_eq!(app.command_input, "1e308,0,0");
+            } else {
+                assert!(!app.accept_drafting_point(point(1e308, 0.0, 0.0)));
+            }
+            assert_eq!(app.active_command, active, "{command}, typed={typed}");
+            assert_eq!(app.last_point, previous);
+            assert_eq!(app.document.objects().len(), 0);
+            assert!(!app.document.can_undo());
+            if command == "Line" {
+                if typed {
+                    enter(&mut app, "0,0,0");
+                } else {
+                    assert!(app.accept_drafting_point(point(0.0, 0.0, 0.0)));
+                }
+                assert!(app.active_command.is_none());
+                assert_eq!(app.document.objects().len(), 1);
+                assert_eq!(app.document.undo_label(), Some("Line"));
+                assert_eq!(app.last_point, Some(point(0.0, 0.0, 0.0)));
+            }
+        }
+    }
+}
+
+#[test]
+fn typed_and_picked_endpoints_share_the_current_absolute_tolerance() {
+    for command in ["Line", "Sphere"] {
+        for typed in [false, true] {
+            let mut app = test_app();
+            enter(&mut app, "Tolerance Absolute=0.01");
+            enter(&mut app, command);
+            enter(&mut app, "0,0,0");
+            let active = app.active_command;
+            for distance in [0.005, 0.01] {
+                if typed {
+                    enter(&mut app, &format!("{distance},0,0"));
+                } else {
+                    assert!(!app.accept_drafting_point(point(distance, 0.0, 0.0)));
+                }
+                assert_eq!(app.active_command, active);
+                assert_eq!(app.last_point, Some(point(0.0, 0.0, 0.0)));
+                assert_eq!(app.document.objects().len(), 0);
+            }
+            if typed {
+                enter(&mut app, "1,0,0");
+            } else {
+                assert!(app.accept_drafting_point(point(1.0, 0.0, 0.0)));
+            }
+            assert!(app.active_command.is_none());
+            assert_eq!(app.document.objects().len(), 1);
+            assert_eq!(app.document.undo_label(), Some(command));
+        }
+    }
+}
+
+#[test]
 fn typed_points_continue_line_instead_of_cancelling_it() {
     let mut app = test_app();
     for input in ["Line", "1,2,3", "4,6,3"] {

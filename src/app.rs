@@ -2814,8 +2814,11 @@ impl VibocerosApp {
                 );
             }
             InteractiveCommand::Line { start: Some(start) } => {
-                if start.is_near(point, self.document.tolerance()) {
-                    self.push_log("Error: line end must differ from its start".to_owned());
+                if !start
+                    .distance_to(point)
+                    .is_ok_and(|distance| distance > self.document.tolerance().absolute())
+                {
+                    self.push_log("Error: line end must have a finite distance greater than tolerance from its start".to_owned());
                     return false;
                 }
                 self.active_command = None;
@@ -2861,8 +2864,13 @@ impl VibocerosApp {
             InteractiveCommand::Sphere {
                 center: Some(center),
             } => {
-                if center.is_near(point, self.document.tolerance()) {
-                    self.push_log("Error: sphere point must differ from its center".to_owned());
+                if !center
+                    .distance_to(point)
+                    .is_ok_and(|radius| radius > self.document.tolerance().absolute())
+                {
+                    self.push_log(
+                        "Error: sphere radius must be finite and greater than tolerance".to_owned(),
+                    );
                     return false;
                 }
                 self.active_command = None;
@@ -5425,7 +5433,7 @@ mod tests {
             })
         );
         assert_eq!(app.document.objects().len(), 0);
-        assert!(app.command_log.back().unwrap().contains("sphere point"));
+        assert!(app.command_log.back().unwrap().contains("sphere radius"));
 
         app.accept_drafting_point(point(4.0, 2.0, 3.0));
         assert_eq!(app.active_command, None);

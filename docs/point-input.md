@@ -34,6 +34,10 @@ origin. The application remembers its most recent accepted interactive point,
 including after Escape or completion; it does not infer one from a fully
 specified one-line command or imported geometry. A relative entry with no
 remembered point is rejected.
+Line endpoints and sphere radius points must have a finite distance greater
+than the current absolute tolerance. This check applies to both typed and
+picked points, including finite coordinates whose difference overflows; rejected
+endpoints leave the draft and last accepted point intact.
 
 The initial planes are XY for Top/Perspective, XZ for Front (normal -Y),
 and YZ for Right (normal +X). [CPlane](cplane.md) can translate or reorient each
