@@ -111,9 +111,10 @@ The [shortness predicate](curve-shortness.md) shares only this checked parameter
 preparation, not its integration rule or acceptance criterion. Distinct knot
 intervals that collapse during normalization cause an error. Extremely disparate
 interior span widths can still exceed floating-point resolution or integration
-budgets. This preparation applies to full NURBS length queries; it does not
-claim to condition every parameter-returning arc-length sampler or partial
-integration path.
+budgets. [Standalone NURBS arc-length sampling](curve-parameters.md) also uses
+this preparation for its internal partial integration and inversion, retaining
+native public parameters. Composite leaf conditioning and other integration
+paths are not universally covered by this change.
 
 ## Concatenation and seam relocation
 

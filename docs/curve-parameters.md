@@ -50,6 +50,22 @@ a first derivative does not require a representable second derivative.
 Line/arc/circle/polyline spans have direct arc-length inversion, including inside
 polycurves. Rational and elliptical spans use controlled numerical integration.
 
+The `curve/arc_length` module owns span lengths, repeated-query prefix tables,
+distance-to-parameter inversion, and one-sided kink samples. Standalone NURBS
+curves use a checked `[0,1]` integration copy, shared with the preparation for
+[full-curve length](nurbs-numerics.md#arc-length-integration). Points and tangents
+are evaluated in that internal frame; parameters are returned in the original
+native domain. Input native parameters are converted before querying distance.
+Already unit-domain NURBS do not allocate a normalization copy.
+
+An interval with only two representable floats cannot encode an interior native
+parameter. In such domains sampled geometry remains accurate, but the returned
+parameter rounds to a source-domain value and re-evaluating it can produce a
+different point. Native parameter/distance roundtrips are tested on well-resolved
+tiny and huge domains, not promised beyond floating-point resolution. The
+normalization currently applies to standalone NURBS; composite leaf conditioning
+and extreme ellipse parameter scales remain separate work.
+
 Analytic and polyline intervals must have finite positive width. A standalone
 circle needs a representable default circumference interval; an arc may still
 use a larger supporting circle when its own interval is representable. Supporting

@@ -155,6 +155,9 @@ See [curve joining and closure](curve-editing.md) for tested policies and limits
 All seven curve families share [native parameter evaluation](curve-parameters.md),
 including analytic derivatives and parameter-bearing arc-length samples. Circular
 support frames are distinct from complete circles and their native domains.
+The `curve/arc_length` sampler separates span integration, repeated-query tables,
+inversion, and kink detection from the curve dispatch API. Standalone NURBS
+sampling uses an internal normalized frame while retaining native output parameters.
 Native trim, split, closest-point dispatch, and cyclic edits live in `curve_trim`;
 seam, subcurve, and reparameterization commands share the `curve_domain` module.
 The `curve_parameter_map` geometry module supplies exact span-aware correspondence
