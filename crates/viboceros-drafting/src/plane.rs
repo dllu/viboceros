@@ -31,7 +31,17 @@ pub fn snap_to_grid(point: Point3, plane: Frame3, spacing: f64) -> Result<Point3
     validate_capture_radius(spacing)?;
     let [x, y, z] = plane.coordinates_of(point)?;
     let snap = |coordinate: f64| {
-        let value = (coordinate / spacing).round() * spacing;
+        // Avoid an overflowing grid index and a rounded quotient/product.
+        // Compare both distances rather than spacing/2 (which can underflow).
+        let remainder = coordinate % spacing;
+        let distance = remainder.abs();
+        let complement = spacing - distance;
+        let adjustment = if distance >= complement {
+            complement.copysign(coordinate)
+        } else {
+            -remainder
+        };
+        let value = coordinate + adjustment;
         if value == 0.0 { 0.0 } else { value }
     };
     Ok(plane.point_at([snap(x), snap(y), z])?)

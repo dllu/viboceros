@@ -102,6 +102,10 @@ The app's `viewport/drafting` module resolves the drafting cursor through the
 shared drafting kernel and draws construction-plane grids, accepted points,
 tracking guides, snap markers, and cursor labels. Guide clipping happens before
 dash tessellation, keeping distant anchors from causing unbounded allocations.
+The drafting kernel's grid snap uses a signed remainder and a local adjustment,
+avoiding overflowing grid indices for finite coordinates and fine spacing. It
+retains plane elevation, rounds halfway cases away from zero, and rejects a
+genuinely unrepresentable final grid point. The current UI still uses unit spacing.
 Clipping uses the line's dominant screen coordinate rather than a normalized
 segment parameter, so distant endpoints do not collapse a visible guide to a
 single point. Exact endpoint tests cover huge horizontal, vertical, and diagonal

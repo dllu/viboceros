@@ -1,4 +1,44 @@
 use super::*;
+
+#[test]
+fn fine_grid_spacing_does_not_overflow_a_finite_coordinate() {
+    let plane = Frame3::try_from_directions(
+        point(0.0, 0.0, 0.0),
+        Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+        Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    for spacing in [f64::from_bits(1), f64::MIN_POSITIVE, 0.25] {
+        for x in [1.0, 1e200, f64::MAX, -f64::MAX] {
+            let p = point(x, 0.0, 3.0);
+            assert_eq!(snap_to_grid(p, plane, spacing).unwrap(), p);
+        }
+    }
+    for spacing in [0.5, 1.0, 2.0, 8.0] {
+        for index in -65..=65 {
+            let x = f64::from(index) / 4.0;
+            let expected = (x / spacing).round() * spacing;
+            assert_eq!(
+                snap_to_grid(point(x, -x, 3.0), plane, spacing).unwrap(),
+                point(expected, -expected, 3.0)
+            );
+        }
+    }
+    for sign in [-1.0, 1.0] {
+        assert_eq!(
+            snap_to_grid(
+                point(sign * f64::from_bits(5), 0.0, 0.0),
+                plane,
+                f64::from_bits(3)
+            )
+            .unwrap(),
+            point(sign * f64::from_bits(6), 0.0, 0.0)
+        );
+        // The nearest grid point genuinely exceeds the finite model range.
+        assert!(snap_to_grid(point(sign * f64::MAX, 0.0, 0.0), plane, 1e308).is_err());
+    }
+}
 use viboceros_geometry::Tolerance;
 
 fn point(x: f64, y: f64, z: f64) -> Point3 {
