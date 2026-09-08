@@ -394,30 +394,64 @@ fn interpolate_open_cubic(
             .as_vector()
             .scaled(-points[points.len() - 2].distance_to(points[points.len() - 1])? / 3.0)?,
     )?;
+    // Partition of unity makes the system translation invariant. Solve local
+    // offsets so cancellation of a large shared origin cannot dominate the
+    // small right-hand sides of tightly clustered interpolation points.
+    let candidate_origin = points[0];
+    let origin = if points
+        .iter()
+        .copied()
+        .chain([start_handle, end_handle])
+        .all(|point| candidate_origin.vector_to(point).is_ok())
+    {
+        candidate_origin
+    } else {
+        // A valid uniform-parameter curve can span more than MAX in world
+        // coordinates. Do not introduce an unrepresentable translation.
+        Point3::try_new(0., 0., 0.)?
+    };
+    let local_point = |point| Point3::try_from(origin.vector_to(point)?.to_array());
+    let local_points = points
+        .iter()
+        .copied()
+        .map(local_point)
+        .collect::<Result<Vec<_>, _>>()?;
+    let local_start = local_point(start_handle)?;
+    let local_end = local_point(end_handle)?;
     let controls = solve_open_cubic_tridiagonal(
-        points,
+        &local_points,
         &parameters,
         &knots,
         control_count,
-        start_handle,
-        end_handle,
+        local_start,
+        local_end,
     )
     .or_else(|error| {
         // Keep a pivoted fallback for ordinary-size systems, without
         // allocating a dense matrix for large internal interpolation sets.
         if control_count <= MAX_DENSE_INTERPOLATION_CONTROL_POINTS {
             solve_open_cubic_dense(
-                points,
+                &local_points,
                 &parameters,
                 &knots,
                 control_count,
-                start_handle,
-                end_handle,
+                local_start,
+                local_end,
             )
         } else {
             Err(error)
         }
     })?;
+    let mut controls = controls
+        .into_iter()
+        .map(|point| origin.translated(Vector3::try_from(point.to_array())?))
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    // Retain the exact fixed constraints rather than round-tripping their
+    // coordinates through subtraction and addition of the local origin.
+    controls[0] = points[0];
+    controls[1] = start_handle;
+    controls[control_count - 2] = end_handle;
+    controls[control_count - 1] = points[points.len() - 1];
     NurbsCurve::try_new(CUBIC_DEGREE, controls, knots)
 }
 
@@ -1241,6 +1275,132 @@ mod tests {
             curve.evaluate(*curve.domain().end()).unwrap(),
             points[9_999]
         );
+    }
+
+    #[test]
+    fn open_cubic_solver_handles_uneven_spacing_and_translated_coordinates() {
+        for spacing in [
+            CurveKnotSpacing::Uniform,
+            CurveKnotSpacing::Chord,
+            CurveKnotSpacing::SquareRootChord,
+        ] {
+            for (origin, scale) in [
+                (0., 1.),
+                (1e6, 1.),
+                (-1e6, 1.),
+                (1e150, 1e144),
+                (-1e150, 1e144),
+            ] {
+                let points = [0., 1e-9, 1e-6, 0.1, 1., 1.0001, 7., 1000.]
+                    .into_iter()
+                    .map(|x: f64| {
+                        point(
+                            origin + x * scale,
+                            -origin + x.sin() * scale,
+                            origin + (x * 0.7).cos() * scale,
+                        )
+                    })
+                    .collect::<Vec<_>>();
+                let parameters = cumulative_parameters(
+                    &interpolation_intervals(&points, spacing, false).unwrap(),
+                )
+                .unwrap();
+                let options =
+                    CurveInterpolationOptions::new(3, spacing, InterpolatedCurveClosure::Open);
+                let curve =
+                    NurbsCurve::try_interpolate_for_command(&points, options, Tolerance::DEFAULT)
+                        .unwrap();
+                let controls = curve.control_points();
+                let reference_origin = points[0];
+                let local = |point| {
+                    Point3::try_from(reference_origin.vector_to(point).unwrap().to_array()).unwrap()
+                };
+                let local_points = points.iter().copied().map(local).collect::<Vec<_>>();
+                let dense = solve_open_cubic_dense(
+                    &local_points,
+                    &parameters,
+                    curve.knots(),
+                    controls.len(),
+                    local(controls[1].point()),
+                    local(controls[controls.len() - 2].point()),
+                )
+                .unwrap()
+                .into_iter()
+                .map(|point| {
+                    reference_origin
+                        .translated(Vector3::try_from(point.to_array()).unwrap())
+                        .unwrap()
+                })
+                .collect::<Vec<_>>();
+                // Include a rounding allowance for the translated binary64
+                // coordinates, separate from the local model's accuracy bound.
+                let bound = 128. * f64::EPSILON * origin.abs() + 1e-8 * scale;
+                for (actual, reference) in controls.iter().zip(&dense) {
+                    let error = actual.point().distance_to(*reference).unwrap();
+                    assert!(
+                        error <= bound,
+                        "control mismatch: {spacing:?} origin={origin} scale={scale} error={error} bound={bound}"
+                    );
+                }
+                for (&parameter, expected) in parameters.iter().zip(&points) {
+                    let error = curve
+                        .evaluate(parameter)
+                        .unwrap()
+                        .distance_to(*expected)
+                        .unwrap();
+                    assert!(
+                        error <= bound,
+                        "interpolation residual: {spacing:?} origin={origin} scale={scale} error={error} bound={bound}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn translated_collinear_interpolation_keeps_constant_coordinates_exact() {
+        let points = [0., 1e-9, 1e-6, 0.1, 1., 1.0001, 7., 1000.]
+            .into_iter()
+            .map(|x| point(1e6 + x, 1e6, -1e6))
+            .collect::<Vec<_>>();
+        let curve = NurbsCurve::try_interpolate_for_command(
+            &points,
+            CurveInterpolationOptions::default(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for control in curve.control_points() {
+            assert_eq!(control.point().y(), 1e6);
+            assert_eq!(control.point().z(), -1e6);
+        }
+        assert_eq!(curve.control_points().first().unwrap().point(), points[0]);
+        assert_eq!(
+            curve.control_points().last().unwrap().point(),
+            *points.last().unwrap()
+        );
+    }
+
+    #[test]
+    fn uniform_interpolation_does_not_require_representable_first_point_offsets() {
+        let points = [
+            point(-1e308, 0., 0.),
+            point(0., 0., 0.),
+            point(1e308, 0., 0.),
+        ];
+        assert!(points[0].vector_to(points[2]).is_err());
+        let direction = Vector3::try_new(1., 0., 0.).unwrap();
+        let options = CurveInterpolationOptions::new(
+            3,
+            CurveKnotSpacing::Uniform,
+            InterpolatedCurveClosure::Open,
+        )
+        .with_start_tangent(direction)
+        .with_end_tangent(direction);
+        let curve =
+            NurbsCurve::try_interpolate_for_command(&points, options, Tolerance::DEFAULT).unwrap();
+        for (parameter, expected) in [0., 1., 2.].into_iter().zip(points) {
+            assert_eq!(curve.evaluate(parameter).unwrap(), expected);
+        }
     }
 
     #[test]
