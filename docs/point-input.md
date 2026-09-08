@@ -11,6 +11,14 @@ captured construction plane remain available for correction and retry. The
 failed transaction does not leave partial geometry behind. Polyline segments
 with unrepresentable lengths are rejected before a vertex is appended.
 
+The Curve prompt rejects adjacent controls within the model's absolute
+tolerance, although the lower-level NURBS constructor can represent repeated
+controls. A private-Xvfb Rhino 8.32 prompt probe confirmed that exact duplicate
+start/interior controls and a start-point displacement of `1e-10` were skipped:
+all four sequences produced the same three-control-point quadratic curve.
+See the [recorded response](control-point-prompt-measurement.json). This tests
+those cases, not the exact tolerance boundary or every repetition pattern.
+
 During `Polyline`, `Curve`, or `InterpCrv`, type `Undo` to remove the last
 draft point without changing document history or its redo stack. Relative input
 then starts at the last remaining point. Removing every point clears the relative

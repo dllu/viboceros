@@ -285,6 +285,17 @@ class RhinoWorkerTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     self.worker._point_input_script(invalid)
 
+    def test_control_point_prompt_whitelists_coordinates_and_integer_degree(self):
+        operation = {"points": ["w0,0,0", "w0,0,0", "w2,3,0", "w10,0,0"], "degree": 3}
+        self.assertEqual(self.worker._control_point_prompt_script(operation),
+                         "_Curve _Degree=3 _SubDFriendly=_No w0,0,0 w0,0,0 w2,3,0 w10,0,0 _Enter")
+        for degree in [0, 12, -1, True, 3.0, "3", "3 _Delete"]:
+            with self.subTest(degree=degree), self.assertRaises(ValueError):
+                self.worker._control_point_prompt_script(dict(operation, degree=degree))
+        for points in [["0", "_Delete"], ["0", "1,2 _Enter"], ["0"], ["0"] * 257]:
+            with self.subTest(points=points), self.assertRaises(ValueError):
+                self.worker._control_point_prompt_script(dict(operation, points=points))
+
     def test_point_input_probe_restores_plane_selection_and_owned_outputs_on_failure(self):
         for failed in [False, True]:
             with self.subTest(failed=failed):

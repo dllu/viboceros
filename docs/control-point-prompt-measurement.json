@@ -1,0 +1,108 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "ordinary",
+      "value": {
+        "closed": false,
+        "control_points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.0,
+            3.0,
+            0.0
+          ],
+          [
+            10.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "degree": 2
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "repeated-start",
+      "value": {
+        "closed": false,
+        "control_points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.0,
+            3.0,
+            0.0
+          ],
+          [
+            10.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "degree": 2
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "repeated-interior",
+      "value": {
+        "closed": false,
+        "control_points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.0,
+            3.0,
+            0.0
+          ],
+          [
+            10.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "degree": 2
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "near-start",
+      "value": {
+        "closed": false,
+        "control_points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.0,
+            3.0,
+            0.0
+          ],
+          [
+            10.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "degree": 2
+      }
+    }
+  ]
+}

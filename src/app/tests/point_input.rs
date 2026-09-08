@@ -6,6 +6,39 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn curve_prompt_skips_adjacent_points_in_measured_rhino_sequences() {
+    for inputs in [
+        vec!["0", "2,3,0", "10,0,0"],
+        vec!["0", "0", "2,3,0", "10,0,0"],
+        vec!["0", "2,3,0", "2,3,0", "10,0,0"],
+        vec!["0", "0.0000000001,0,0", "2,3,0", "10,0,0"],
+    ] {
+        let mut app = test_app();
+        enter(&mut app, "Curve Degree=3");
+        for input in inputs {
+            enter(&mut app, input);
+        }
+        let points = vec![point(0., 0., 0.), point(2., 3., 0.), point(10., 0., 0.)];
+        assert_eq!(app.curve_points, points);
+        enter(&mut app, "");
+        let Geometry::NurbsCurve(curve) = app.document.objects().next().unwrap().geometry() else {
+            panic!("curve");
+        };
+        assert_eq!(curve.degree(), 2);
+        assert!(!curve.is_closed().unwrap());
+        assert_eq!(
+            curve,
+            &NurbsCurve::try_control_point_curve_with_closure(
+                3,
+                points,
+                ControlPointCurveClosure::Open
+            )
+            .unwrap()
+        );
+    }
+}
+
+#[test]
 fn interpolated_preview_matches_completion_and_reuses_unchanged_geometry() {
     let mut app = test_app();
     for input in ["Point 9,9,9", "Undo", "InterpCrv", "0"] {

@@ -6,6 +6,13 @@ The versioned Python oracle API runs identical JSON geometry and document-state
 batches in a native release build of Viboceros and Rhino 8, recursively checks
 results, and reports per-operation timings.
 
+`control_point_prompt_rhino_only.json` is a diagnostic exception: it exercises
+Rhino's Curve point prompt and records resulting control points, rather than
+running the geometry constructor. Run it with `run_headless.sh rhino
+tools/rhino_oracle/fixtures/control_point_prompt_rhino_only.json --timeout 300`;
+the native oracle does not implement this operation. Its [recorded response](control-point-prompt-measurement.json)
+checks adjacent-point rejection; see [typed point input](point-input.md).
+
 Standard geometry/command batches apply the request's absolute, relative, and angular tolerances to
 Rhino's active document and restores its previous settings on success or failure.
 This matters for command macros, which read document settings rather than an API

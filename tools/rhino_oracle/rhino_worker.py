@@ -2676,6 +2676,26 @@ def _point_input(operation):
     return _in_construction_plane(operation, script, None)
 
 
+def _control_point_prompt_script(operation):
+    points = operation["points"]
+    _point_input_script(points)  # Reuse the coordinate-only macro whitelist.
+    degree = operation.get("degree", 3)
+    if type(degree) is not int or not 1 <= degree <= 11:
+        raise ValueError("invalid control-point prompt degree")
+    return "_Curve _Degree=%d _SubDFriendly=_No %s _Enter" % (degree, " ".join(points))
+
+
+def _control_point_prompt(operation):
+    def record(geometry):
+        curve = geometry.ToNurbsCurve()
+        try:
+            return {"degree": curve.Degree, "closed": curve.IsClosed,
+                    "control_points": [_xyz(cp.Location) for cp in curve.Points]}
+        finally:
+            curve.Dispose()
+    return _in_construction_plane(operation, _control_point_prompt_script(operation), record)
+
+
 def _in_construction_plane(operation, script, record):
     document = Rhino.RhinoDoc.ActiveDoc
     viewport = document.Views.ActiveView.ActiveViewport
@@ -3961,6 +3981,8 @@ def _execute(operation, iterations, tolerance):
         return _in_construction_plane(operation, _plane_primitive_script(operation), lambda g: _plane_primitive_record(g, operation.get("raw_representation", False), operation["primitive"]))
     if kind == "point_input":
         return _point_input(operation)
+    if kind == "control_point_prompt":
+        return _control_point_prompt(operation)
     if kind == "sweep1":
         return _sweep1(operation, iterations, tolerance)
     if kind == "curve_frames":
