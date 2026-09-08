@@ -7,6 +7,59 @@ mod tests {
     use super::*;
 
     #[test]
+    fn attribute_patterns_require_distinct_opening_and_closing_quotes() {
+        for (arguments, expected) in [
+            (vec!["*part?"], "*part?"),
+            (vec!["two", "words"], "two words"),
+            (vec!["\"two", "words\""], "two words"),
+            (vec!["\"\""], ""),
+            (vec!["\"部品\""], "部品"),
+        ] {
+            assert_eq!(
+                parse_attribute_pattern(&arguments, "usage").unwrap(),
+                expected
+            );
+        }
+        for arguments in [vec![], vec!["\""], vec!["\"part"], vec!["part\""]] {
+            assert!(matches!(
+                parse_attribute_pattern(&arguments, "usage"),
+                Err(CommandError::Usage("usage"))
+            ));
+        }
+    }
+
+    #[test]
+    fn malformed_attribute_patterns_preserve_selection_and_history() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 0,0,0").unwrap();
+        registry.execute(&mut document, "Point 1,0,0").unwrap();
+        registry.execute(&mut document, "Undo").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let original = document.objects().cloned().collect::<Vec<_>>();
+        let selected = document.selected_object_ids().collect::<Vec<_>>();
+        let undo = document.undo_label().map(str::to_owned);
+        let redo = document.redo_label().map(str::to_owned);
+        assert!(!selected.is_empty() && undo.is_some() && redo.is_some());
+        for command in ["SelName", "SelLayer", "SelGroup"] {
+            for pattern in ["", "\"", "\"part", "part\""] {
+                let input = format!("{command} {pattern}");
+                assert!(
+                    matches!(
+                        registry.execute(&mut document, &input),
+                        Err(CommandError::Usage(_))
+                    ),
+                    "{input}"
+                );
+                assert_eq!(document.objects().cloned().collect::<Vec<_>>(), original);
+                assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), selected);
+                assert_eq!(document.undo_label(), undo.as_deref());
+                assert_eq!(document.redo_label(), redo.as_deref());
+            }
+        }
+    }
+
+    #[test]
     fn selection_commands_preserve_geometry_and_both_history_stacks() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -289,7 +342,7 @@ fn parse_attribute_pattern(
     let pattern = joined.trim();
     let starts_quoted = pattern.starts_with('"');
     let ends_quoted = pattern.ends_with('"');
-    if starts_quoted != ends_quoted {
+    if starts_quoted != ends_quoted || (starts_quoted && pattern.len() < 2) {
         return Err(CommandError::Usage(usage));
     }
     Ok(if starts_quoted && pattern.len() >= 2 {
