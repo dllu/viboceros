@@ -51,7 +51,7 @@ impl Shortness {
                 Ok(true)
             }
             CurveRef::NurbsCurve(c) => {
-                let c = c.for_arc_length_integration()?;
+                let c = c.for_integration()?;
                 let speed = |t| c.derivative_at(t)?.length();
                 for (start, end) in c.spans() {
                     let coarse = gauss_three(start, end, &speed)?;

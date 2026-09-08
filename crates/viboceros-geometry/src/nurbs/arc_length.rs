@@ -1,39 +1,14 @@
-//! Arc-length measurement and dimensionless integration preparation.
-
-use std::borrow::Cow;
+//! Accuracy-controlled arc-length measurement in a checked integration frame.
 
 use crate::{
     GeometryError, NurbsCurve, Real, Tolerance, integration::integrate_adaptive, require_finite,
 };
 
 impl NurbsCurve {
-    /// Borrows unit-domain curves, otherwise maps their full knot vector to
-    /// a dimensionless frame without changing controls or weights. This
-    /// avoids parameter-scale derivative overflow and sampling outside narrow
-    /// translated domains. It does not fix arbitrarily ill-conditioned
-    /// relative interior span widths.
-    pub(crate) fn for_arc_length_integration(&self) -> Result<Cow<'_, Self>, GeometryError> {
-        if self.domain() == (0.0..=1.0) {
-            return Ok(Cow::Borrowed(self));
-        }
-        let normalized = self.try_reparameterized(0.0..=1.0)?;
-        // Never silently remove an interval whose relative width cannot be
-        // represented in the normalized frame, including exterior knots.
-        if self
-            .knots()
-            .windows(2)
-            .zip(normalized.knots().windows(2))
-            .any(|(before, after)| before[0] < before[1] && after[0] >= after[1])
-        {
-            return Err(GeometryError::NumericalIntegrationDidNotConverge);
-        }
-        Ok(Cow::Owned(normalized))
-    }
-
     /// Computes arc length span by span with adaptive Gauss-Kronrod
     /// integration of the exact first derivative in a normalized domain.
     pub fn length(&self, tolerance: Tolerance) -> Result<Real, GeometryError> {
-        let curve = self.for_arc_length_integration()?;
+        let curve = self.for_integration()?;
         let absolute_per_span = tolerance.absolute() / curve.spans().count() as Real;
         if absolute_per_span <= 0.0 {
             return Err(GeometryError::NumericalIntegrationDidNotConverge);
@@ -66,6 +41,7 @@ impl NurbsCurve {
 mod tests {
     use super::*;
     use crate::{Circle3, Point3, Vector3};
+    use std::borrow::Cow;
 
     #[test]
     fn rational_circle_length_survives_extreme_multispan_domains() {
@@ -94,12 +70,12 @@ mod tests {
                 (actual - std::f64::consts::TAU).abs() < 1e-11,
                 "{domain:?}: {actual}"
             );
-            let normalized = mapped.for_arc_length_integration().unwrap();
+            let normalized = mapped.for_integration().unwrap();
             assert_eq!(normalized.control_points(), mapped.control_points());
             assert_eq!(normalized.spans().count(), mapped.spans().count());
             assert!(matches!(normalized, Cow::Owned(_)));
             assert!(matches!(
-                normalized.for_arc_length_integration().unwrap(),
+                normalized.for_integration().unwrap(),
                 Cow::Borrowed(_)
             ));
         }

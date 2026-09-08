@@ -93,8 +93,9 @@ full-order limits, finite signed images with overflowing offsets and genuine pol
 
 ## Arc-length integration
 
-`nurbs/arc_length` owns accurate full-curve length measurement. It affinely maps
-the knot vector to `[0,1]` before integrating speed with adaptive Gauss–Kronrod
+`nurbs/arc_length` owns accurate full-curve length measurement. The shared
+`nurbs/integration_frame` module affinely maps the knot vector to `[0,1]`
+before integrating speed with adaptive Gauss–Kronrod
 quadrature, then combines span integrals with compensated summation. The
 absolute tolerance is divided across spans; the relative tolerance remains
 unchanged. Unit-domain curves are borrowed without copying, and other curves
@@ -115,6 +116,13 @@ budgets. [Standalone NURBS arc-length sampling](curve-parameters.md) also uses
 this preparation for its internal partial integration and inversion, retaining
 native public parameters. Composite leaf conditioning and other integration
 paths are not universally covered by this change.
+
+Enclosed NURBS curve-area queries also prepare this frame before constructing
+their temporary planar face. A closed cubic with exact area `3/20` is tested
+on adjacent-float, subnormal, and overflowing-width finite-endpoint domains,
+in both directions; rational multispan circles receive separate scale tests.
+The source curve is unchanged. This does not normalize every B-rep boundary or
+guarantee that polycurve-to-NURBS conversion succeeds for arbitrary leaf domains.
 
 ## Concatenation and seam relocation
 

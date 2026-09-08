@@ -12,9 +12,12 @@ impl CurveRef<'_> {
             Self::Ellipse(curve) => curve.area(),
             Self::Polyline(curve) => curve.planar_area(tolerance),
             Self::Line(_) => Err(GeometryError::InvalidPlanarFaceBoundary),
-            Self::NurbsCurve(curve) => Brep::try_planar_face(curve, tolerance)?.area(tolerance),
+            Self::NurbsCurve(curve) => {
+                let normalized = curve.for_integration()?;
+                Brep::try_planar_face(&normalized, tolerance)?.area(tolerance)
+            }
             Self::Arc(_) | Self::PolyCurve(_) => {
-                Brep::try_planar_face(&self.to_nurbs()?, tolerance)?.area(tolerance)
+                CurveRef::NurbsCurve(&self.to_nurbs()?).planar_area(tolerance)
             }
         }
     }
@@ -32,6 +35,36 @@ mod tests {
     }
 
     #[test]
+    fn closed_cubic_area_survives_extreme_affine_parameter_domains() {
+        let curve = NurbsCurve::try_new(
+            3,
+            vec![
+                point(0., 0., 0.),
+                point(1., 0., 0.),
+                point(0., 1., 0.),
+                point(0., 0., 0.),
+            ],
+            vec![0., 0., 0., 0., 1., 1., 1., 1.],
+        )
+        .unwrap();
+        for domain in [
+            0.0..=1.0,
+            1.0..=f64::from_bits(1_f64.to_bits() + 1),
+            0.0..=f64::from_bits(1),
+            -f64::MAX..=f64::MAX,
+        ] {
+            let mapped = curve.try_reparameterized(domain.clone()).unwrap();
+            for mapped in [mapped.clone(), mapped.reversed().unwrap()] {
+                let area = CurveRef::NurbsCurve(&mapped)
+                    .planar_area(Tolerance::DEFAULT)
+                    .unwrap_or_else(|error| panic!("{domain:?}: {error}"));
+                // x=3t(1-t)^2, y=3t^2(1-t); half integral(x dy-y dx)=3/20.
+                assert!((area - 0.15).abs() < 1e-12, "{domain:?}: {area}");
+            }
+        }
+    }
+
+    #[test]
     fn rational_circle_area_matches_analytic_area_in_both_directions() {
         let circle = Circle3::try_new(
             point(1e6, -2e6, 3e6),
@@ -41,11 +74,19 @@ mod tests {
         )
         .unwrap();
         let curve = circle.to_nurbs().unwrap();
-        for curve in [curve.clone(), curve.reversed().unwrap()] {
-            let actual = CurveRef::NurbsCurve(&curve)
-                .planar_area(Tolerance::DEFAULT)
-                .unwrap();
-            assert!((actual - 4. * std::f64::consts::PI).abs() < 1e-8);
+        for domain in [
+            0.0..=1.0,
+            0.0..=1e-200,
+            -f64::MAX..=f64::MAX,
+            1.0..=f64::from_bits(1_f64.to_bits() + 16),
+        ] {
+            let curve = curve.try_reparameterized(domain).unwrap();
+            for curve in [curve.clone(), curve.reversed().unwrap()] {
+                let actual = CurveRef::NurbsCurve(&curve)
+                    .planar_area(Tolerance::DEFAULT)
+                    .unwrap();
+                assert!((actual - 4. * std::f64::consts::PI).abs() < 1e-8);
+            }
         }
     }
 

@@ -25,7 +25,10 @@ NURBS/B-rep measurements use the geometry kernel's accuracy-controlled routines,
 not viewport tessellation. General curve area uses `CurveRef::planar_area`,
 which constructs a temporary validated planar face retaining the exact rational
 boundary. This face is never added to the document. Open, nonplanar, or invalid
-general boundaries are rejected; self-intersecting winding-area semantics are
+general boundaries are rejected. A checked unit-domain copy prevents failures
+caused solely by extreme NURBS parameter scales; controls, weights, and the
+stored source remain unchanged. Collapsed knot intervals are not silently lost.
+Self-intersecting winding-area semantics are
 not established. Separate selected curves contribute separate areas, not holes
 in one region. A lower-overhead standalone boundary-integral path remains future
 work. Volume is signed: reversing orientation reverses its contribution,

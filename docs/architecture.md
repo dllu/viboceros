@@ -171,8 +171,9 @@ with rational representations; the `curve_cut` command module uses it for
 NURBS differential evaluation and homogeneous weight matching have separate
 `nurbs/evaluate` and `nurbs/weights` modules. See [rational numerical policy](nurbs-numerics.md)
 for local-coordinate evaluation, degree-one acceleration, and scale-safe seam joins.
-`nurbs/arc_length` owns accuracy-controlled full-curve integration and checked
-dimensionless parameter preparation, also used by the separate shortness predicate.
+`nurbs/arc_length` owns accuracy-controlled full-curve length integration.
+`nurbs/integration_frame` supplies checked dimensionless parameter preparation
+shared by length, sampling, shortness, and enclosed curve-area queries.
 `nurbs/weights/end_weights` owns projective endpoint normalization and
 piecewise-Bezier end-weight changes, including near-equal and extreme gauges.
 Loft and Sweep share its geometry-preserving normalizer; explicit common-profile

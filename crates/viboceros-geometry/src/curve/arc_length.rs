@@ -83,7 +83,7 @@ impl<'a> ArcLengthSampler<'a> {
     ) -> Result<Self, GeometryError> {
         let normalized = match curve {
             CurveRef::NurbsCurve(c) if c.domain() != (0.0..=1.0) => {
-                Some(c.for_arc_length_integration()?.into_owned())
+                Some(c.for_integration()?.into_owned())
             }
             _ => None,
         };

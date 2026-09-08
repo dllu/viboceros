@@ -2,6 +2,7 @@ use std::ops::RangeInclusive;
 mod arc_length;
 mod decompose;
 mod evaluate;
+mod integration_frame;
 mod weights;
 use weights::change_bezier_end_weights;
 pub(crate) use weights::rescale_controls;
