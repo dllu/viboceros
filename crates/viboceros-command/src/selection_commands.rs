@@ -7,6 +7,43 @@ mod tests {
     use super::*;
 
     #[test]
+    fn attribute_selection_preserves_internal_name_whitespace() {
+        let registry = CommandRegistry::with_builtins();
+        for name in ["Part  A", "Part\tA", "部品\u{2003}A"] {
+            let collapsed = name.split_whitespace().collect::<Vec<_>>().join(" ");
+            let mut document = Document::default();
+            let mut ids = Vec::new();
+            for (index, name) in [name, collapsed.as_str()].into_iter().enumerate() {
+                let layer = document.add_layer(name, ColorRgb::new(1, 2, 3)).unwrap();
+                let id = document
+                    .add_geometry_with_attributes(
+                        Geometry::Point(Point3::try_new(index as f64, 0.0, 0.0).unwrap()),
+                        ObjectAttributes::on_layer(layer).with_name(name),
+                    )
+                    .unwrap();
+                document.add_group(Some(name.to_owned()), [id]).unwrap();
+                ids.push(id);
+            }
+            let original = document.objects().cloned().collect::<Vec<_>>();
+            let undo = document.undo_label().map(str::to_owned);
+            for command in ["SelName", "SelLayer", "SelGroup"] {
+                for argument in [name.to_owned(), format!("\"{name}\"")] {
+                    document.clear_selection();
+                    let input = format!("  _{command}\t {argument}  ");
+                    registry.execute(&mut document, &input).unwrap();
+                    assert_eq!(
+                        document.selected_object_ids().collect::<Vec<_>>(),
+                        [ids[0]],
+                        "{input:?}"
+                    );
+                    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), original);
+                    assert_eq!(document.undo_label(), undo.as_deref());
+                }
+            }
+        }
+    }
+
+    #[test]
     fn attribute_patterns_require_distinct_opening_and_closing_quotes() {
         for (arguments, expected) in [
             (vec!["*part?"], "*part?"),
@@ -239,6 +276,10 @@ impl Command for SelNameCommand {
         "SelName"
     }
 
+    fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
+        Ok(attribute_pattern_arguments(input))
+    }
+
     fn records_history(&self) -> bool {
         false
     }
@@ -281,6 +322,10 @@ impl Command for SelLayerCommand {
         "SelLayer"
     }
 
+    fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
+        Ok(attribute_pattern_arguments(input))
+    }
+
     fn records_history(&self) -> bool {
         false
     }
@@ -297,6 +342,10 @@ pub(super) struct SelGroupCommand;
 impl Command for SelGroupCommand {
     fn name(&self) -> &'static str {
         "SelGroup"
+    }
+
+    fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
+        Ok(attribute_pattern_arguments(input))
     }
 
     fn records_history(&self) -> bool {
@@ -328,6 +377,17 @@ impl Command for SelectDuplicateCommand {
         require_consumed(arguments, 0, self.name)?;
         let count = document.select_duplicate_objects(self.include_originals)?;
         Ok(format!("Selected {count} object(s)"))
+    }
+}
+
+// These commands take one name/pattern, not a sequence of whitespace-delimited
+// options. Keep its internal whitespace so imported names remain addressable.
+fn attribute_pattern_arguments(input: &str) -> Vec<&str> {
+    let input = input.trim();
+    if input.is_empty() {
+        Vec::new()
+    } else {
+        vec![input]
     }
 }
 

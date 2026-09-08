@@ -77,9 +77,10 @@ It remembers `DeselectOthersBeforeSelect=Yes|No` per registry. See
 `SelName` and `SelLayer` add case-insensitive `*`/`?` wildcard matches without
 expanding overlapping groups; `SelName ""` selects unnamed objects. `SelGroup`
 uses Rhino's exact, case-sensitive group names. These three commands accept
-multiword patterns with optional enclosing double quotes; an unmatched enclosing
-quote (including a lone `"`) is a usage error before selection changes.
-Matching hidden or locked layers
+multiword patterns with optional enclosing double quotes, preserving internal
+whitespace (including repeated spaces and tabs) in both forms. Whitespace outside
+the argument is ignored. An unmatched enclosing quote (including a lone `"`)
+is a usage error before selection changes. Matching hidden or locked layers
 with `SelLayer` makes those layers visible and unlocked outside undo history,
 while object-level hidden and locked states remain untouched.
 
