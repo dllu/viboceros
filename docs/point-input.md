@@ -41,19 +41,29 @@ Rhino control points within `1e-9`; Rhino's responses are identical across those
 tolerances. This corrects both rejection of nearby interior points and unwanted
 seam-point removal. The general-purpose interpolation helper retains its explicit
 tolerance policy.
-The point prompt automatically finishes a smooth closed curve after at least
-three collected points when the next point is within Euclidean distance
+The point prompt automatically finishes a closed curve after at least
+two collected points when the next point is within Euclidean distance
 `1.490116119385e-8` of the first (inclusive, independent of model tolerance).
 This is the OpenNURBS decimal `ON_SQRT_EPSILON` constant, not the slightly
 different square root of binary64 epsilon. The closing gesture is not appended
-as another interpolation point. Sharp settings are retained; incompatible
+as another interpolation point. For cubics, two collected points produce a
+non-periodic curve; three or more produce smooth periodic closure by default.
+Sharp settings are retained; incompatible
 tangent constraints leave the original draft intact on failure.
 The [18-case seam audit](interpolation-auto-close-measurement.json) checks
 ordinary, exact-boundary, and diagonal offsets near the world origin, and an
 exact seam with no final Enter. Typed and picked completion, undo/redo, and
-failed-completion recovery have separate app tests. Large translated coordinates,
-two-point closure, and Rhino's constrained/sharp auto-close behavior remain
-unmeasured; the one-line constructor does not perform this prompt gesture.
+failed-completion recovery have separate app tests.
+A [13-case translated follow-up](interpolation-translated-auto-close-measurement.json)
+checks offsets `0`, `1e-8`, `2e-8`, and `1e-6` at X origins `0` and `±1e6`,
+plus a return to the start after only two collected points. All control points
+match within `1e-9`. A separate [no-Enter probe](interpolation-two-point-auto-close-measurement.json)
+confirms that the two-point return finishes automatically, despite producing a
+non-periodic result. At `±1e6`, a `2e-8` endpoint gap is also
+reported as closed by Rhino's coordinate-relative topology test, but remains
+non-periodic. Closed state alone must not drive automatic prompt completion.
+More extreme translations and Rhino's constrained/sharp auto-close behavior
+remain unmeasured; the one-line constructor does not perform this prompt gesture.
 An [ordinary three-point closure baseline](interpolation-closure-prompt-measurement.json)
 now matches Rhino's smooth and sharp control points within `1e-9` through app
 completion.

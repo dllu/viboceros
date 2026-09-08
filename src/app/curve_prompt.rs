@@ -11,7 +11,7 @@ impl VibocerosApp {
         point: Point3,
         options: viboceros_geometry::CurveInterpolationOptions,
     ) -> Option<bool> {
-        if self.curve_points.len() < 3
+        if self.curve_points.len() < 2
             || !self.curve_points[0]
                 .distance_to(point)
                 .is_ok_and(|distance| distance <= 1.490116119385e-8)
@@ -19,7 +19,9 @@ impl VibocerosApp {
             return None;
         }
         let original = self.active_command;
-        let closure = if options.closure() == viboceros_geometry::InterpolatedCurveClosure::Sharp {
+        let closure = if self.curve_points.len() == 2
+            || options.closure() == viboceros_geometry::InterpolatedCurveClosure::Sharp
+        {
             viboceros_geometry::InterpolatedCurveClosure::Sharp
         } else {
             viboceros_geometry::InterpolatedCurveClosure::Smooth

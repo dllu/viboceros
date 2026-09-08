@@ -2698,8 +2698,11 @@ def _control_point_prompt(operation, interpolate=False):
     def record(geometry):
         curve = geometry.ToNurbsCurve()
         try:
-            return {"degree": curve.Degree, "closed": curve.IsClosed,
-                    "control_points": [_xyz(cp.Location) for cp in curve.Points]}
+            value = {"degree": curve.Degree, "closed": curve.IsClosed,
+                     "control_points": [_xyz(cp.Location) for cp in curve.Points]}
+            if interpolate:
+                value["periodic"] = curve.IsPeriodic
+            return value
         finally:
             curve.Dispose()
     try:

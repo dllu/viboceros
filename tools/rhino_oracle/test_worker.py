@@ -315,6 +315,21 @@ class RhinoWorkerTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "unexpected record failure"):
                 self.worker._control_point_prompt(operation, True)
 
+    def test_interpolation_prompt_records_periodicity_separately_from_closed_state(self):
+        for periodic in [False, True]:
+            disposed = Mock()
+            curve = SimpleNamespace(Degree=3, IsClosed=True, IsPeriodic=periodic,
+                                    Points=[], Dispose=disposed)
+            geometry = SimpleNamespace(ToNurbsCurve=lambda: curve)
+            def in_plane(operation, script, record):
+                return record(geometry), 0
+            with patch.object(self.worker, "_in_construction_plane", side_effect=in_plane):
+                value, elapsed = self.worker._control_point_prompt({"points": ["0", "1,0,0"]}, True)
+            self.assertTrue(value["closed"])
+            self.assertEqual(value["periodic"], periodic)
+            self.assertEqual(elapsed, 0)
+            disposed.assert_called_once_with()
+
     def test_point_input_probe_restores_plane_selection_and_owned_outputs_on_failure(self):
         for failed in [False, True]:
             with self.subTest(failed=failed):

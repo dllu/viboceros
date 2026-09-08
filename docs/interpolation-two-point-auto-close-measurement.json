@@ -1,0 +1,83 @@
+{
+  "request": {
+    "protocol_version": 1,
+    "iterations": 1,
+    "tolerance": {
+      "absolute": 0.01,
+      "relative": 1e-12,
+      "angular": 1e-10
+    },
+    "operations": [
+      {
+        "op": "interpolation_point_prompt",
+        "degree": 3,
+        "closure": "PointOnly",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "y_axis": [
+          0,
+          1,
+          0
+        ],
+        "id": "two-points",
+        "points": [
+          "w0,0,0",
+          "w10,0,0",
+          "w0,0,0"
+        ]
+      }
+    ]
+  },
+  "response": {
+    "engine": "rhino",
+    "engine_version": "8.32.26160.13001",
+    "iterations": 1,
+    "protocol_version": 1,
+    "results": [
+      {
+        "elapsed_ns": 0,
+        "id": "two-points",
+        "value": {
+          "closed": true,
+          "control_points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              3.3333333333333335,
+              0,
+              0
+            ],
+            [
+              16.666666666666664,
+              0,
+              0
+            ],
+            [
+              3.3333333333333335,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "degree": 3,
+          "periodic": false
+        }
+      }
+    ]
+  }
+}

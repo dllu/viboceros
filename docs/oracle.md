@@ -57,6 +57,19 @@ probe suspected automatic completion; non-closing input may wait until the
 client timeout. App regressions replay every measured geometry and distinguish
 automatic completion from the cases that still require Enter.
 
+The [translated follow-up](interpolation-translated-auto-close-measurement.json)
+records `periodic` separately from `closed` for 13 cases. At X=`±1e6`, curves
+with endpoint gaps of `2e-8` are closed under Rhino's coordinate-relative
+topology test but are not periodic; a two-point return also produces a closed,
+non-periodic result. App replay must not infer periodicity from closed state.
+New InterpCrv prompt measurements include both properties; older responses
+still check their recorded control geometry without inventing periodicity data.
+A [two-point no-Enter probe](interpolation-two-point-auto-close-measurement.json)
+confirms automatic completion with non-periodic output. Consequently neither
+`closed` nor `periodic` alone establishes when the point prompt finished; the
+`PointOnly` ending directly tests completion. The app now auto-closes two-point
+returns with a non-periodic cubic instead of requiring a third collected point.
+
 Standard geometry/command batches apply the request's absolute, relative, and angular tolerances to
 Rhino's active document and restores its previous settings on success or failure.
 This matters for command macros, which read document settings rather than an API

@@ -119,6 +119,9 @@ fn replay_interpolation_closures(request: &Value, response: &Value) {
             .iter()
             .find(|r| r["id"] == operation["id"])
             .unwrap();
+        // Closed endpoint status does not imply periodicity or a prompt gesture.
+        // Older fixtures verify geometry without recording this property.
+        let periodic = result["value"]["periodic"].as_bool();
         let mut app = test_app();
         app.document.set_tolerance(
             Tolerance::try_new(
@@ -133,12 +136,8 @@ fn replay_interpolation_closures(request: &Value, response: &Value) {
             enter(&mut app, point.as_str().unwrap());
         }
         if matches!(closure, "Open" | "PointOnly") {
-            assert_eq!(
-                app.active_command.is_none(),
-                result["value"]["closed"].as_bool().unwrap(),
-                "{}",
-                operation["id"]
-            );
+            // Only PointOnly measures completion without Enter; neither closed
+            // state nor periodicity alone records when Rhino's prompt finished.
             if app.active_command.is_some() && closure == "Open" {
                 enter(&mut app, "");
             }
@@ -165,10 +164,11 @@ fn replay_interpolation_closures(request: &Value, response: &Value) {
             curve.degree(),
             result["value"]["degree"].as_u64().unwrap() as usize
         );
-        assert_eq!(
-            curve.is_periodic(),
-            closure != "Sharp" && result["value"]["closed"].as_bool().unwrap()
-        );
+        if let Some(periodic) = periodic {
+            assert_eq!(curve.is_periodic(), periodic);
+        } else if matches!(closure, "Smooth" | "Sharp") {
+            assert_eq!(curve.is_periodic(), closure == "Smooth");
+        }
         let controls = result["value"]["control_points"].as_array().unwrap();
         assert_eq!(curve.control_points().len(), controls.len());
         for (actual, expected) in curve.control_points().iter().zip(controls) {
@@ -204,6 +204,55 @@ fn recorded_interpolation_auto_closure_matches_boundary_and_finishes_without_ent
     for batch in batches {
         replay_interpolation_closures(&batch["request"], &batch["response"]);
     }
+}
+
+#[test]
+fn recorded_translated_auto_closure_distinguishes_closed_from_periodic() {
+    let measurement: Value = serde_json::from_str(include_str!(
+        "../../../docs/interpolation-translated-auto-close-measurement.json"
+    ))
+    .unwrap();
+    assert_eq!(
+        measurement["request"]["operations"]
+            .as_array()
+            .unwrap()
+            .len(),
+        13
+    );
+    let results = measurement["response"]["results"].as_array().unwrap();
+    assert!(results.iter().all(|r| r["value"]["periodic"].is_boolean()));
+    assert_eq!(
+        results
+            .iter()
+            .filter(|r| r["value"]["closed"] == true && r["value"]["periodic"] == false)
+            .count(),
+        3
+    );
+    replay_interpolation_closures(&measurement["request"], &measurement["response"]);
+}
+
+#[test]
+fn recorded_two_point_return_finishes_automatically_without_periodicity() {
+    let measurement: Value = serde_json::from_str(include_str!(
+        "../../../docs/interpolation-two-point-auto-close-measurement.json"
+    ))
+    .unwrap();
+    assert_eq!(
+        measurement["request"]["operations"]
+            .as_array()
+            .unwrap()
+            .len(),
+        1
+    );
+    assert_eq!(
+        measurement["request"]["operations"][0]["closure"],
+        "PointOnly"
+    );
+    assert_eq!(
+        measurement["response"]["results"][0]["value"]["periodic"],
+        false
+    );
+    replay_interpolation_closures(&measurement["request"], &measurement["response"]);
 }
 
 #[test]
