@@ -121,6 +121,40 @@ pub enum UnitError {
 }
 
 impl LengthUnitSystem {
+    /// Human-readable model-unit name; custom names are retained verbatim.
+    /// UI callers should bound or truncate untrusted custom names as needed.
+    pub fn name(&self) -> &str {
+        match self {
+            Self::None => "Unitless",
+            Self::Microns => "Microns",
+            Self::Millimeters => "Millimetres",
+            Self::Centimeters => "Centimetres",
+            Self::Meters => "Metres",
+            Self::Kilometers => "Kilometres",
+            Self::Microinches => "Microinches",
+            Self::Mils => "Mils",
+            Self::Inches => "Inches",
+            Self::Feet => "Feet",
+            Self::Miles => "Miles",
+            Self::Angstroms => "Angstroms",
+            Self::Nanometers => "Nanometres",
+            Self::Decimeters => "Decimetres",
+            Self::Dekameters => "Dekametres",
+            Self::Hectometers => "Hectometres",
+            Self::Megameters => "Megametres",
+            Self::Gigameters => "Gigametres",
+            Self::Yards => "Yards",
+            Self::PrinterPoints => "Printer points",
+            Self::PrinterPicas => "Printer picas",
+            Self::NauticalMiles => "Nautical miles",
+            Self::AstronomicalUnits => "Astronomical units",
+            Self::LightYears => "Light years",
+            Self::Parsecs => "Parsecs",
+            Self::Unset => "Unset units",
+            Self::Custom { name, .. } => name,
+        }
+    }
+
     pub fn validate(&self) -> Result<(), UnitError> {
         if let Self::Custom {
             name,

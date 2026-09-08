@@ -284,7 +284,9 @@ fn label_position(shapes: &[egui::epaint::ClippedShape], label: &str) -> egui::P
     fn find(shape: &egui::Shape, label: &str) -> Option<egui::Pos2> {
         match shape {
             egui::Shape::Text(text) if text.galley.text() == label => {
-                Some(text.pos + text.galley.rect.center().to_vec2())
+                // Wrapped horizontal labels include leading indentation in
+                // their layout rect. Aim at the painted glyphs, not that rect.
+                Some(text.pos + text.galley.mesh_bounds.center().to_vec2())
             }
             egui::Shape::Vec(shapes) => shapes.iter().find_map(|shape| find(shape, label)),
             _ => None,
@@ -336,6 +338,7 @@ fn interface_toolbar_is_compact_and_wraps_on_narrow_windows() {
             "Grid Snap",
             "Osnap",
             "SmartTrack",
+            "Millimetres",
             "Wireframe",
             "Top",
             "?",
@@ -359,7 +362,14 @@ fn interface_toolbar_clicks_preserve_partial_input_and_disable_model_undo_during
     }
     app.command_input = "r1,".into();
     let pending = app.active_command;
-    for label in ["Undo", "Grid Snap", "Osnap", "SmartTrack", "?"] {
+    for label in [
+        "Undo",
+        "Grid Snap",
+        "Osnap",
+        "SmartTrack",
+        "Millimetres",
+        "?",
+    ] {
         frame(&context, &mut app, 1000.0, vec![])
             .1
             .drop_without_applying_deltas();

@@ -4,6 +4,11 @@ New documents use millimetres. `Document::with_units` creates an empty document
 with explicit `LengthUnitSystem` metadata. Custom scales must be finite and
 positive and custom names cannot contain NUL bytes.
 
+The toolbar shows the current model units. Hover over the indicator for absolute,
+relative, and angular tolerances, plus the custom scale or an unknown/unitless
+warning where applicable. The indicator is read-only and remains available
+during drafting. Long custom names are abbreviated to keep the toolbar compact.
+
 `Document::set_units(units, rescale)` changes an existing document as one
 undoable setting edit:
 
