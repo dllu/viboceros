@@ -6,7 +6,7 @@ use crate::{
     integration::integrate_adaptive, parameter::scaled_ratio, require_finite,
 };
 mod spans;
-use spans::{LinearSpan, raw_spans};
+use spans::{LinearSpan, RawSpan, raw_spans};
 
 #[cfg(test)]
 mod tests;
@@ -105,7 +105,14 @@ impl<'a> ArcLengthSampler<'a> {
         let mut spans = Vec::with_capacity(raw_spans.len());
         let mut sum = 0.0;
         let mut correction = 0.0;
-        for (start, end, length, variable_speed, linear) in raw_spans {
+        for RawSpan {
+            start,
+            end,
+            length,
+            variable_speed,
+            linear,
+        } in raw_spans
+        {
             require_finite([start, end, length], "curve arc-length span")?;
             if start >= end || length < 0.0 {
                 return Err(GeometryError::NumericalIntegrationDidNotConverge);
@@ -480,7 +487,7 @@ impl<'a> ArcLengthSampler<'a> {
                 };
                 (curve.segments()[segment].as_ref(), None)
             }
-            LinearSpan::CompositePolyline(segment, edge) => {
+            LinearSpan::CompositePolyline { segment, edge } => {
                 let CurveRef::PolyCurve(curve) = self.curve() else {
                     unreachable!()
                 };

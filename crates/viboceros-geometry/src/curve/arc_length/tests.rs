@@ -2,6 +2,65 @@ use super::*;
 use crate::{NurbsCurve, Vector3};
 
 #[test]
+fn composite_span_records_keep_leaf_and_edge_indices_distinct() {
+    use crate::{CurveSegment3, LineSegment, PolyCurve3, Polyline3};
+    let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+    let prefix = LineSegment::try_new(p(-1., 0.), p(0., 0.), Tolerance::DEFAULT).unwrap();
+    let leaf =
+        Polyline3::try_new(vec![p(0., 0.), p(1., 0.), p(1., 1.)], Tolerance::DEFAULT).unwrap();
+    let curve = PolyCurve3::try_with_segment_domains(
+        vec![CurveSegment3::Line(prefix), CurveSegment3::Polyline(leaf)],
+        vec![0., 1., 3.],
+    )
+    .unwrap();
+    let spans = raw_spans(CurveRef::PolyCurve(&curve), Tolerance::DEFAULT).unwrap();
+    assert_eq!(spans.len(), 3);
+    for (index, span) in spans.iter().enumerate() {
+        assert_eq!(
+            (span.start, span.end, span.length),
+            (index as Real, index as Real + 1., 1.)
+        );
+        assert!(!span.variable_speed);
+    }
+    assert!(matches!(
+        spans[0].linear,
+        Some(LinearSpan::CompositeLine(0))
+    ));
+    assert!(matches!(
+        spans[1].linear,
+        Some(LinearSpan::CompositePolyline {
+            segment: 1,
+            edge: 0
+        })
+    ));
+    assert!(matches!(
+        spans[2].linear,
+        Some(LinearSpan::CompositePolyline {
+            segment: 1,
+            edge: 1
+        })
+    ));
+    let sampler =
+        ArcLengthSampler::try_new(CurveRef::PolyCurve(&curve), Tolerance::DEFAULT).unwrap();
+    assert!(
+        sampler
+            .point_at_distance(1.25)
+            .unwrap()
+            .distance_to(p(0.25, 0.))
+            .unwrap()
+            < 1e-14
+    );
+    assert!(
+        sampler
+            .point_at_distance(2.25)
+            .unwrap()
+            .distance_to(p(1., 0.25))
+            .unwrap()
+            < 1e-14
+    );
+}
+
+#[test]
 fn exact_endpoint_survives_a_final_span_below_total_length_resolution() {
     use crate::{CurveSegment3, PolyCurve3, Polyline3};
     let vertices = [[0., 0., 0.], [1e16, 0., 0.], [1e16, 1., 0.]]

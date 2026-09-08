@@ -11,44 +11,50 @@ pub(super) enum LinearSpan {
     Line,
     Polyline(usize),
     CompositeLine(usize),
-    CompositePolyline(usize, usize),
+    CompositePolyline { segment: usize, edge: usize },
 }
 
-pub(super) type RawSpan = (Real, Real, Real, bool, Option<LinearSpan>);
+pub(super) struct RawSpan {
+    pub(super) start: Real,
+    pub(super) end: Real,
+    pub(super) length: Real,
+    pub(super) variable_speed: bool,
+    pub(super) linear: Option<LinearSpan>,
+}
 
 pub(super) fn raw_spans(
     curve: CurveRef<'_>,
     tolerance: Tolerance,
 ) -> Result<Vec<RawSpan>, GeometryError> {
     Ok(match curve {
-        CurveRef::Line(line) => vec![(
-            *line.domain().start(),
-            *line.domain().end(),
-            line.length()?,
-            false,
-            Some(LinearSpan::Line),
-        )],
+        CurveRef::Line(line) => vec![RawSpan {
+            start: *line.domain().start(),
+            end: *line.domain().end(),
+            length: line.length()?,
+            variable_speed: false,
+            linear: Some(LinearSpan::Line),
+        }],
         CurveRef::Circle(circle) => {
             let quadrant_length = circle.length()? * 0.25;
             (0..4)
                 .map(|quadrant| {
-                    Ok((
-                        curve.parameter_at(quadrant as Real * 0.25)?,
-                        curve.parameter_at((quadrant + 1) as Real * 0.25)?,
-                        quadrant_length,
-                        false,
-                        None,
-                    ))
+                    Ok(RawSpan {
+                        start: curve.parameter_at(quadrant as Real * 0.25)?,
+                        end: curve.parameter_at((quadrant + 1) as Real * 0.25)?,
+                        length: quadrant_length,
+                        variable_speed: false,
+                        linear: None,
+                    })
                 })
                 .collect::<Result<Vec<_>, GeometryError>>()?
         }
-        CurveRef::Arc(arc) => vec![(
-            *arc.domain().start(),
-            *arc.domain().end(),
-            arc.length()?,
-            false,
-            None,
-        )],
+        CurveRef::Arc(arc) => vec![RawSpan {
+            start: *arc.domain().start(),
+            end: *arc.domain().end(),
+            length: arc.length()?,
+            variable_speed: false,
+            linear: None,
+        }],
         CurveRef::Ellipse(ellipse) => {
             let quadrant_length = integrate_speed(0.0, FRAC_PI_2, tolerance, |angle| {
                 let (sine, cosine) = angle.sin_cos();
@@ -58,13 +64,13 @@ pub(super) fn raw_spans(
             })?;
             (0..4)
                 .map(|quadrant| {
-                    Ok((
-                        curve.parameter_at(quadrant as Real * 0.25)?,
-                        curve.parameter_at((quadrant + 1) as Real * 0.25)?,
-                        quadrant_length,
-                        true,
-                        None,
-                    ))
+                    Ok(RawSpan {
+                        start: curve.parameter_at(quadrant as Real * 0.25)?,
+                        end: curve.parameter_at((quadrant + 1) as Real * 0.25)?,
+                        length: quadrant_length,
+                        variable_speed: true,
+                        linear: None,
+                    })
                 })
                 .collect::<Result<Vec<_>, GeometryError>>()?
         }
@@ -72,13 +78,13 @@ pub(super) fn raw_spans(
             .segments()
             .enumerate()
             .map(|(index, segment)| {
-                Ok((
-                    polyline.parameters()[index],
-                    polyline.parameters()[index + 1],
-                    segment.length()?,
-                    false,
-                    Some(LinearSpan::Polyline(index)),
-                ))
+                Ok(RawSpan {
+                    start: polyline.parameters()[index],
+                    end: polyline.parameters()[index + 1],
+                    length: segment.length()?,
+                    variable_speed: false,
+                    linear: Some(LinearSpan::Polyline(index)),
+                })
             })
             .collect::<Result<Vec<_>, GeometryError>>()?,
         CurveRef::NurbsCurve(curve) => curve
@@ -87,28 +93,32 @@ pub(super) fn raw_spans(
                 let length = integrate_speed(start, end, tolerance, |parameter| {
                     curve.derivative_at(parameter)?.length()
                 })?;
-                Ok((start, end, length, true, None))
+                Ok(RawSpan {
+                    start,
+                    end,
+                    length,
+                    variable_speed: true,
+                    linear: None,
+                })
             })
             .collect::<Result<Vec<_>, GeometryError>>()?,
         CurveRef::PolyCurve(curve) => {
             let mut spans = Vec::new();
             for (index, segment) in curve.segments().iter().enumerate() {
-                for (start, end, length, variable_speed, linear) in
-                    raw_spans(segment.as_ref(), tolerance)?
-                {
-                    spans.push((
-                        curve.polycurve_parameter(index, start)?,
-                        curve.polycurve_parameter(index, end)?,
-                        length,
-                        variable_speed,
-                        linear.map(|linear| match linear {
+                for span in raw_spans(segment.as_ref(), tolerance)? {
+                    spans.push(RawSpan {
+                        start: curve.polycurve_parameter(index, span.start)?,
+                        end: curve.polycurve_parameter(index, span.end)?,
+                        linear: span.linear.map(|linear| match linear {
                             LinearSpan::Line => LinearSpan::CompositeLine(index),
-                            LinearSpan::Polyline(edge) => {
-                                LinearSpan::CompositePolyline(index, edge)
-                            }
+                            LinearSpan::Polyline(edge) => LinearSpan::CompositePolyline {
+                                segment: index,
+                                edge,
+                            },
                             _ => unreachable!("polycurve leaves are not nested composites"),
                         }),
-                    ));
+                        ..span
+                    });
                 }
             }
             spans
