@@ -76,6 +76,8 @@ options to the separate [app object-prompt adapter](object-selection.md).
 The independent `geometry_selection` command module owns document-wide type,
 topology, planarity, and short-curve selectors. It preflights eligible matches
 before applying additive selection and leaves model history unchanged.
+The geometry [shortness module](curve-shortness.md) keeps representation-dependent
+selection integration separate from accuracy-controlled arc-length measurement.
 Viewport hit-testing applies the filter before hit priority; clicks/windows use
 the same selection adapter. Prompt choices live outside model history, while
 finishing uses the registry's normal transaction lifecycle with explicit

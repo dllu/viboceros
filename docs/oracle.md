@@ -14,14 +14,14 @@ The [circle follow-up](short-curve-circle-measurement.json) records 15 analytic
 circles and 15 rational NURBS circles. `curve_kind` explicitly chooses the source
 representation; optional `inspect` records `GetLength`, `IsShort(limit)`, and
 `IsShort(limit × 1.000001)` without changing the command under test.
-All analytic cases replay successfully. NURBS results remain diagnostics:
+All analytic and NURBS cases now replay successfully. The original mismatch was:
 for nominal length `0.999999`, Rhino reports length `0.9999990022994623`, yet
 both shortness queries return false and the command leaves it unselected.
-The native length-based predicate selects it. This is evidence of a predicate
-difference, not grounds for adjusting NURBS geometry or adding a circle-specific
-selection offset. Rhino documents [IsShort](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_Geometry_Curve_IsShort.htm)
-as a faster alternative to calculating length; its near-boundary algorithm
-requires a separate independent implementation audit.
+The previous native length-based predicate selected it. A separate
+[adaptive shortness predicate](curve-shortness.md) now reproduces the observed
+selection without changing NURBS geometry or accurate length measurement.
+Rhino documents [IsShort](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_Geometry_Curve_IsShort.htm)
+as a faster alternative to calculating length.
 
 The [representation follow-up](short-curve-representation-measurement.json)
 adds 66 classifications: midpoint knot refinement at levels 0, 1, 2, and 4;
@@ -33,8 +33,10 @@ three-point Gauss–Legendre estimate explains the coarse-circle rejection but
 fails on the arch, where it underestimates length and would accept cases that
 Rhino rejects. It is therefore not implemented as a replacement predicate.
 The records also include control counts and polygon lengths, separately from
-Rhino's integrated lengths and shortness results. This diagnostic remains an
-open compatibility investigation, not a passing native comparison suite.
+Rhino's integrated lengths and shortness results. Adaptive three-point
+integration with early rejection, rather than a single fixed estimate,
+now passes all 66 classifications. Broader curve families, extreme shortness
+thresholds, and polycurve-specific boundary behavior still need oracle coverage.
 
 The versioned Python oracle API runs identical JSON geometry and document-state
 batches in a native release build of Viboceros and Rhino 8, recursively checks

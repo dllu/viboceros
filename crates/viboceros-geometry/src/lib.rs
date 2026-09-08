@@ -19,6 +19,7 @@ mod curve_join;
 mod curve_parameter_map;
 mod curve_rebuild;
 mod curve_segment;
+mod curve_shortness;
 mod curve_through;
 mod curve_trim;
 mod curve_tween;

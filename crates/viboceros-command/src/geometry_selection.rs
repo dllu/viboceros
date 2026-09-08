@@ -147,14 +147,17 @@ impl Command for SelShortCurveCommand {
         // boundary but not the next float (see the retained line probes).
         // Above MAX every representable length is eligible; keep a finite cap.
         let comparison_limit = (maximum_length * 1.000001).min(Real::MAX);
-        let tolerance = document.tolerance();
         let matches = document
             .objects()
             .filter(|object| document.is_object_selectable(object.id()))
             .filter_map(|object| {
                 geometry_curve_ref(object.geometry()).map(|curve| (object.id(), curve))
             })
-            .map(|(id, curve)| Ok((curve.length(tolerance)? <= comparison_limit).then_some(id)))
+            .map(|(id, curve)| {
+                Ok(curve
+                    .is_short_for_selection(comparison_limit)?
+                    .then_some(id))
+            })
             .collect::<Result<Vec<Option<ObjectId>>, GeometryError>>()?
             .into_iter()
             .flatten()
@@ -173,6 +176,115 @@ mod tests {
     use serde_json::Value;
 
     #[test]
+    fn nonlinear_short_selection_matches_recorded_rhino_representations() {
+        let registry = CommandRegistry::with_builtins();
+        let mut checked = 0;
+        for input in [
+            include_str!("../../../docs/short-curve-circle-measurement.json"),
+            include_str!("../../../docs/short-curve-representation-measurement.json"),
+        ] {
+            let measurement: Value = serde_json::from_str(input).unwrap();
+            for batch in measurement["batches"].as_array().unwrap() {
+                assert_eq!(batch["response"]["engine"], "rhino");
+                for operation in batch["request"]["operations"].as_array().unwrap() {
+                    let mut document = Document::default();
+                    let t = &batch["request"]["tolerance"];
+                    document.set_tolerance(
+                        Tolerance::try_new(
+                            t["absolute"].as_f64().unwrap(),
+                            t["relative"].as_f64().unwrap(),
+                            t["angular"].as_f64().unwrap(),
+                        )
+                        .unwrap(),
+                    );
+                    for (i, length) in operation["lengths"].as_array().unwrap().iter().enumerate() {
+                        let length = length.as_f64().unwrap();
+                        let kind = operation["curve_kind"].as_str().unwrap();
+                        let mut curve = if kind == "bezier_arch" {
+                            let scale =
+                                length / (0.5 * 5_f64.sqrt() + 0.25 * (2_f64 + 5_f64.sqrt()).ln());
+                            NurbsCurve::try_new(
+                                2,
+                                vec![
+                                    Point3::try_new(0., i as f64, 0.).unwrap(),
+                                    Point3::try_new(0.5 * scale, i as f64 + scale, 0.).unwrap(),
+                                    Point3::try_new(scale, i as f64, 0.).unwrap(),
+                                ],
+                                vec![0., 0., 0., 1., 1., 1.],
+                            )
+                            .unwrap()
+                        } else {
+                            assert!(matches!(kind, "circle" | "nurbs_circle"));
+                            let circle = Circle3::try_new(
+                                Point3::try_new(0., i as f64, 0.).unwrap(),
+                                length / std::f64::consts::TAU,
+                                Vector3::try_new(0., 0., 1.)
+                                    .unwrap()
+                                    .normalized_nonzero()
+                                    .unwrap(),
+                                document.tolerance(),
+                            )
+                            .unwrap();
+                            if kind == "circle" {
+                                document.add_geometry(Geometry::Circle(circle)).unwrap();
+                                continue;
+                            }
+                            circle.to_nurbs().unwrap()
+                        };
+                        curve = curve
+                            .try_change_degree(
+                                operation["degree"].as_u64().unwrap_or(2) as usize,
+                                false,
+                            )
+                            .unwrap();
+                        for _ in 0..operation["refinement"].as_u64().unwrap_or(0) {
+                            let midpoints = curve
+                                .spans()
+                                .map(|(a, b)| a + (b - a) * 0.5)
+                                .collect::<Vec<_>>();
+                            for midpoint in midpoints {
+                                curve = curve.try_insert_knot(midpoint, 1).unwrap();
+                            }
+                        }
+                        document.add_geometry(Geometry::NurbsCurve(curve)).unwrap();
+                    }
+                    let ids = document.objects().map(|o| o.id()).collect::<Vec<_>>();
+                    registry
+                        .execute(
+                            &mut document,
+                            &format!(
+                                "SelShortCrv {}",
+                                operation["maximum_length"].as_f64().unwrap()
+                            ),
+                        )
+                        .unwrap();
+                    let selected = document.selected_object_ids().collect::<BTreeSet<_>>();
+                    let actual = ids
+                        .iter()
+                        .enumerate()
+                        .filter_map(|(i, id)| selected.contains(id).then_some(i))
+                        .collect::<Vec<_>>();
+                    let result = batch["response"]["results"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .find(|r| r["id"] == operation["id"])
+                        .unwrap();
+                    let expected = result["value"]["selected"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .map(|i| i.as_u64().unwrap() as usize)
+                        .collect::<Vec<_>>();
+                    assert_eq!(actual, expected, "{}", operation["id"]);
+                    checked += ids.len();
+                }
+            }
+        }
+        assert_eq!(checked, 96);
+    }
+
+    #[test]
     fn analytic_circle_selection_matches_recorded_rhino_cases() {
         let measurement: Value = serde_json::from_str(include_str!(
             "../../../docs/short-curve-circle-measurement.json"
@@ -182,8 +294,8 @@ mod tests {
         let mut checked = 0;
         for batch in measurement["batches"].as_array().unwrap() {
             assert_eq!(batch["response"]["engine"], "rhino");
-            // The companion rational-circle records are diagnostics for an
-            // unresolved IsShort predicate difference, not passing references.
+            // The companion rational cases are replayed by the broader
+            // representation test above; keep this analytic regression focused.
             let operation = batch["request"]["operations"]
                 .as_array()
                 .unwrap()
