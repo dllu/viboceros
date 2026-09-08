@@ -10,6 +10,19 @@ its temporary lines. This is a Rhino-only probe; command tests replay its
 measurements. The measured relative `1e-6` allowance is more specific than the
 [help page's “less than” description](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelShortCrv).
 
+The [circle follow-up](short-curve-circle-measurement.json) records 15 analytic
+circles and 15 rational NURBS circles. `curve_kind` explicitly chooses the source
+representation; optional `inspect` records `GetLength`, `IsShort(limit)`, and
+`IsShort(limit × 1.000001)` without changing the command under test.
+All analytic cases replay successfully. NURBS results remain diagnostics:
+for nominal length `0.999999`, Rhino reports length `0.9999990022994623`, yet
+both shortness queries return false and the command leaves it unselected.
+The native length-based predicate selects it. This is evidence of a predicate
+difference, not grounds for adjusting NURBS geometry or adding a circle-specific
+selection offset. Rhino documents [IsShort](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_Geometry_Curve_IsShort.htm)
+as a faster alternative to calculating length; its near-boundary algorithm
+requires a separate independent implementation audit.
+
 The versioned Python oracle API runs identical JSON geometry and document-state
 batches in a native release build of Viboceros and Rhino 8, recursively checks
 results, and reports per-operation timings.

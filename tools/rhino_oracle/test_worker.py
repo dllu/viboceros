@@ -331,6 +331,9 @@ class RhinoWorkerTests(unittest.TestCase):
             disposed.assert_called_once_with()
 
     def test_short_curve_probe_rejects_invalid_inputs_before_document_changes(self):
+        for options in [{"curve_kind": "unknown"}, {"curve_kind": "circle _Delete"}, {"inspect": "yes"}, {"inspect": 1}]:
+            with self.subTest(options=options), self.assertRaises(ValueError):
+                self.worker._short_curve_selection(dict({"lengths": [1.0], "maximum_length": 1.0}, **options))
         for maximum in [0, -1, float("nan"), float("inf"), True, "1 _Delete"]:
             with self.subTest(maximum=maximum), self.assertRaises(ValueError):
                 self.worker._short_curve_selection({"lengths": [1.0], "maximum_length": maximum})

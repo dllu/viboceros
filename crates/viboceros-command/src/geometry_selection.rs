@@ -173,6 +173,79 @@ mod tests {
     use serde_json::Value;
 
     #[test]
+    fn analytic_circle_selection_matches_recorded_rhino_cases() {
+        let measurement: Value = serde_json::from_str(include_str!(
+            "../../../docs/short-curve-circle-measurement.json"
+        ))
+        .unwrap();
+        let registry = CommandRegistry::with_builtins();
+        let mut checked = 0;
+        for batch in measurement["batches"].as_array().unwrap() {
+            assert_eq!(batch["response"]["engine"], "rhino");
+            // The companion rational-circle records are diagnostics for an
+            // unresolved IsShort predicate difference, not passing references.
+            let operation = batch["request"]["operations"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|op| op["curve_kind"] == "circle")
+                .unwrap();
+            let expected = batch["response"]["results"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|r| r["id"] == operation["id"])
+                .unwrap();
+            let mut document = Document::default();
+            let tolerance = &batch["request"]["tolerance"];
+            document.set_tolerance(
+                Tolerance::try_new(
+                    tolerance["absolute"].as_f64().unwrap(),
+                    tolerance["relative"].as_f64().unwrap(),
+                    tolerance["angular"].as_f64().unwrap(),
+                )
+                .unwrap(),
+            );
+            for (i, length) in operation["lengths"].as_array().unwrap().iter().enumerate() {
+                registry
+                    .execute(
+                        &mut document,
+                        &format!(
+                            "Circle 0,{i},0 {}",
+                            length.as_f64().unwrap() / std::f64::consts::TAU
+                        ),
+                    )
+                    .unwrap();
+            }
+            let ids = document.objects().map(|o| o.id()).collect::<Vec<_>>();
+            registry
+                .execute(
+                    &mut document,
+                    &format!(
+                        "SelShortCrv {}",
+                        operation["maximum_length"].as_f64().unwrap()
+                    ),
+                )
+                .unwrap();
+            let selected = document.selected_object_ids().collect::<BTreeSet<_>>();
+            let actual = ids
+                .iter()
+                .enumerate()
+                .filter_map(|(i, id)| selected.contains(id).then_some(i))
+                .collect::<Vec<_>>();
+            let expected = expected["value"]["selected"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|i| i.as_u64().unwrap() as usize)
+                .collect::<Vec<_>>();
+            assert_eq!(actual, expected);
+            checked += ids.len();
+        }
+        assert_eq!(checked, 15);
+    }
+
+    #[test]
     fn short_curve_selection_matches_recorded_rhino_boundaries() {
         let measurement: Value = serde_json::from_str(include_str!(
             "../../../docs/short-curve-selection-measurement.json"

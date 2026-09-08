@@ -2678,6 +2678,11 @@ def _point_input(operation):
 
 def _short_curve_selection(operation):
     lengths = operation["lengths"]
+    curve_kind = operation.get("curve_kind", "line")
+    if type(operation.get("inspect", False)) is not bool:
+        raise ValueError("invalid short-curve inspection flag")
+    if curve_kind not in ("line", "circle", "nurbs_circle"):
+        raise ValueError("unsupported short-curve fixture geometry")
     if (type(operation["maximum_length"]) not in (int, float)
             or not isinstance(lengths, list)
             or any(type(value) not in (int, float) for value in lengths)):
@@ -2694,20 +2699,32 @@ def _short_curve_selection(operation):
     document = Rhino.RhinoDoc.ActiveDoc
     selected = [obj.Id for obj in document.Objects.GetSelectedObjects(False, False)]
     ids = []
+    measurements = []
     try:
         document.Objects.UnselectAll()
         for index, length in enumerate(lengths):
-            curve = Rhino.Geometry.LineCurve(_point([0, index, 0]), _point([length, index, 0]))
+            if curve_kind == "line":
+                curve = Rhino.Geometry.LineCurve(_point([0, index, 0]), _point([length, index, 0]))
+            else:
+                circle = Rhino.Geometry.Circle(_point([0, index, 0]), length / (2.0 * math.pi))
+                curve = circle.ToNurbsCurve() if curve_kind == "nurbs_circle" else Rhino.Geometry.ArcCurve(circle)
             try:
                 object_id = document.Objects.AddCurve(curve)
                 if object_id == System.Guid.Empty:
                     raise ValueError("could not add short-curve fixture")
                 ids.append(object_id)
+                if operation.get("inspect", False):
+                    measurements.append({"length": curve.GetLength(),
+                                         "is_short": curve.IsShort(maximum),
+                                         "is_short_with_allowance": curve.IsShort(maximum * 1.000001)})
             finally:
                 curve.Dispose()
         if not Rhino.RhinoApp.RunScript("_SelShortCrv %.17g" % maximum, False):
             raise ValueError("short-curve command failed")
-        return {"selected": [i for i, key in enumerate(ids) if document.Objects.FindId(key).IsSelected(False)]}, 0
+        value = {"selected": [i for i, key in enumerate(ids) if document.Objects.FindId(key).IsSelected(False)]}
+        if operation.get("inspect", False):
+            value["measurements"] = measurements
+        return value, 0
     finally:
         Rhino.RhinoApp.RunScript("!", False)
         for key in ids:

@@ -1,0 +1,239 @@
+{
+  "batches": [
+    {
+      "request": {
+        "protocol_version": 1,
+        "iterations": 1,
+        "tolerance": {
+          "absolute": 0.01,
+          "relative": 1e-12,
+          "angular": 1e-10
+        },
+        "operations": [
+          {
+            "op": "short_curve_selection",
+            "id": "circle",
+            "curve_kind": "circle",
+            "maximum_length": 1,
+            "lengths": [
+              0.999,
+              1,
+              1.0000005,
+              1.000001,
+              1.0000011,
+              1.000002,
+              1.001
+            ]
+          },
+          {
+            "op": "short_curve_selection",
+            "id": "nurbs_circle",
+            "curve_kind": "nurbs_circle",
+            "maximum_length": 1,
+            "lengths": [
+              0.999,
+              1,
+              1.0000005,
+              1.000001,
+              1.0000011,
+              1.000002,
+              1.001
+            ]
+          }
+        ]
+      },
+      "response": {
+        "engine": "rhino",
+        "engine_version": "8.32.26160.13001",
+        "iterations": 1,
+        "protocol_version": 1,
+        "results": [
+          {
+            "elapsed_ns": 0,
+            "id": "circle",
+            "value": {
+              "selected": [
+                0,
+                1,
+                2,
+                3
+              ]
+            }
+          },
+          {
+            "elapsed_ns": 0,
+            "id": "nurbs_circle",
+            "value": {
+              "selected": [
+                0
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "protocol_version": 1,
+        "iterations": 1,
+        "tolerance": {
+          "absolute": 0.01,
+          "relative": 1e-12,
+          "angular": 1e-10
+        },
+        "operations": [
+          {
+            "op": "short_curve_selection",
+            "id": "circle",
+            "curve_kind": "circle",
+            "inspect": true,
+            "maximum_length": 1,
+            "lengths": [
+              0.999,
+              0.999999,
+              0.9999999,
+              1,
+              1.0000001,
+              1.0000005,
+              1.000001,
+              1.000002
+            ]
+          },
+          {
+            "op": "short_curve_selection",
+            "id": "nurbs_circle",
+            "curve_kind": "nurbs_circle",
+            "inspect": true,
+            "maximum_length": 1,
+            "lengths": [
+              0.999,
+              0.999999,
+              0.9999999,
+              1,
+              1.0000001,
+              1.0000005,
+              1.000001,
+              1.000002
+            ]
+          }
+        ]
+      },
+      "response": {
+        "engine": "rhino",
+        "engine_version": "8.32.26160.13001",
+        "iterations": 1,
+        "protocol_version": 1,
+        "results": [
+          {
+            "elapsed_ns": 0,
+            "id": "circle",
+            "value": {
+              "measurements": [
+                {
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.999
+                },
+                {
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9999989999999999
+                },
+                {
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9999999
+                },
+                {
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 1
+                },
+                {
+                  "is_short": false,
+                  "is_short_with_allowance": true,
+                  "length": 1.0000001
+                },
+                {
+                  "is_short": false,
+                  "is_short_with_allowance": true,
+                  "length": 1.0000005
+                },
+                {
+                  "is_short": false,
+                  "is_short_with_allowance": true,
+                  "length": 1.000001
+                },
+                {
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.000002
+                }
+              ],
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ]
+            }
+          },
+          {
+            "elapsed_ns": 0,
+            "id": "nurbs_circle",
+            "value": {
+              "measurements": [
+                {
+                  "is_short": true,
+                  "is_short_with_allowance": true,
+                  "length": 0.9990000022971648
+                },
+                {
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 0.9999990022994623
+                },
+                {
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 0.999999902299464
+                },
+                {
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0000000022994642
+                },
+                {
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.000000102299465
+                },
+                {
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.000000502299466
+                },
+                {
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0000010022994679
+                },
+                {
+                  "is_short": false,
+                  "is_short_with_allowance": false,
+                  "length": 1.0000020022994682
+                }
+              ],
+              "selected": [
+                0
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
