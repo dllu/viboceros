@@ -8115,6 +8115,54 @@ mod tests {
     }
 
     #[test]
+    fn viewport_group_pick_moves_locked_peer_without_following_its_other_group() {
+        let mut app = test_app();
+        let ids = (0..3)
+            .map(|i| {
+                app.document
+                    .add_geometry(Geometry::Point(point(i as f64, 0.0, 0.0)))
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        app.document.add_group(None, [ids[0], ids[1]]).unwrap();
+        app.document.add_group(None, [ids[1], ids[2]]).unwrap();
+        app.document.set_objects_locked([ids[1]], true).unwrap();
+        app.apply_selection_click(SelectionClick {
+            object_id: Some(ids[0]),
+            mode: viboceros_document::SelectionMode::Replace,
+        });
+        assert_eq!(
+            app.document.selected_object_ids().collect::<Vec<_>>(),
+            ids[..2]
+        );
+        app.execute_command("Move 0,0,0 0,1,0");
+        for (i, id) in ids.iter().enumerate() {
+            assert_eq!(
+                app.document.object(*id).unwrap().geometry(),
+                &Geometry::Point(point(i as f64, if i < 2 { 1.0 } else { 0.0 }, 0.0))
+            );
+        }
+        assert!(
+            app.document
+                .object(ids[1])
+                .unwrap()
+                .attributes()
+                .is_locked()
+        );
+        assert_eq!(app.document.undo_label(), Some("Move"));
+        app.execute_command("Undo");
+        assert_eq!(
+            app.document.selected_object_ids().collect::<Vec<_>>(),
+            ids[..2]
+        );
+        app.execute_command("Redo");
+        assert_eq!(
+            app.document.object(ids[1]).unwrap().geometry(),
+            &Geometry::Point(point(1.0, 1.0, 0.0))
+        );
+    }
+
+    #[test]
     fn viewport_clicks_select_and_empty_clicks_clear() {
         let mut app = test_app();
         let object = app

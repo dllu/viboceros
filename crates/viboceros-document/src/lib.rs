@@ -456,7 +456,7 @@ impl Document {
         self.selection_order = transaction.selection_order_before;
         self.previous_selection = transaction.previous_selection_before;
         self.previous_selection_order = transaction.previous_selection_order_before;
-        self.prune_selection();
+        self.prune_selection_after_history();
         result?;
         Ok(changed)
     }
@@ -495,7 +495,7 @@ impl Document {
         let label = entry.label.clone();
         self.update_last_changed_objects(&entry.object_ids);
         self.history.redo.push(entry);
-        self.prune_selection();
+        self.prune_selection_after_history();
         Ok(Some(label))
     }
 
@@ -517,7 +517,7 @@ impl Document {
         let label = entry.label.clone();
         self.update_last_changed_objects(&entry.object_ids);
         self.push_replayed_undo(entry);
-        self.prune_selection();
+        self.prune_selection_after_history();
         Ok(Some(label))
     }
 
@@ -774,8 +774,9 @@ impl Document {
         self.select_objects([id], mode)
     }
 
-    /// Selects complete selectable group clusters as one atomic selection
-    /// action. Every requested id is validated before the selection changes.
+    /// Selects each seed's last group membership as one atomic selection
+    /// action, without recursively expanding peers' other memberships.
+    /// Every requested id is validated before the selection changes.
     pub fn select_objects(
         &mut self,
         ids: impl IntoIterator<Item = ObjectId>,
@@ -1272,15 +1273,7 @@ impl Document {
             let Some(geometry) = replacements.get(&object.id) else {
                 continue;
             };
-            if object.attributes.locked {
-                return Err(DocumentError::ObjectLocked(object.id));
-            }
-            let layer = self
-                .layer(object.attributes.layer_id)
-                .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
-            if layer.locked {
-                return Err(DocumentError::LayerLocked(layer.id));
-            }
+            self.ensure_object_editable(object)?;
             if &object.geometry == geometry {
                 continue;
             }
@@ -1355,15 +1348,7 @@ impl Document {
             if !ids.contains(&object.id) {
                 continue;
             }
-            if object.attributes.locked {
-                return Err(DocumentError::ObjectLocked(object.id));
-            }
-            let layer = self
-                .layer(object.attributes.layer_id)
-                .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
-            if layer.locked {
-                return Err(DocumentError::LayerLocked(layer.id));
-            }
+            self.ensure_object_editable(object)?;
             sources.push(index);
         }
         if sources.is_empty() {
@@ -1409,15 +1394,7 @@ impl Document {
             if !ids.contains(&object.id) {
                 continue;
             }
-            if object.attributes.locked {
-                return Err(DocumentError::ObjectLocked(object.id));
-            }
-            let layer = self
-                .layer(object.attributes.layer_id)
-                .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
-            if layer.locked {
-                return Err(DocumentError::LayerLocked(layer.id));
-            }
+            self.ensure_object_editable(object)?;
             sources.push(index);
             staged.push((index, object.geometry.morphed(morph, self.tolerance)?));
         }
@@ -1465,15 +1442,7 @@ impl Document {
             let Some((rank, geometry)) = copies.get(&object.id) else {
                 continue;
             };
-            if object.attributes.locked {
-                return Err(DocumentError::ObjectLocked(object.id));
-            }
-            let layer = self
-                .layer(object.attributes.layer_id)
-                .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
-            if layer.locked {
-                return Err(DocumentError::LayerLocked(layer.id));
-            }
+            self.ensure_object_editable(object)?;
             staged.push((index, *rank, geometry.clone()));
         }
         if staged.is_empty() {
@@ -1855,15 +1824,7 @@ impl Document {
             if !ids.contains(&object.id) {
                 continue;
             }
-            if object.attributes.locked {
-                return Err(DocumentError::ObjectLocked(object.id));
-            }
-            let layer = self
-                .layer(object.attributes.layer_id)
-                .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
-            if layer.locked {
-                return Err(DocumentError::LayerLocked(layer.id));
-            }
+            self.ensure_object_editable(object)?;
             let before = object.clone();
             let mut after = before.clone();
             change(&mut after);
@@ -1934,15 +1895,7 @@ impl Document {
             if !ids.contains(&object.id) {
                 continue;
             }
-            if object.attributes.locked {
-                return Err(DocumentError::ObjectLocked(object.id));
-            }
-            let layer = self
-                .layer(object.attributes.layer_id)
-                .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
-            if layer.locked {
-                return Err(DocumentError::LayerLocked(layer.id));
-            }
+            self.ensure_object_editable(object)?;
             let mut transformed = object.clone();
             transformed.geometry = object.geometry.transformed(transform, self.tolerance)?;
             staged.push((index, object.clone(), transformed));
@@ -2985,7 +2938,7 @@ mod tests {
     }
 
     #[test]
-    fn selection_expands_connected_groups_and_skips_locked_members() {
+    fn selection_expands_only_the_picked_group_including_locked_members() {
         let mut document = Document::default();
         let default = document.current_layer_id();
         let first = document
@@ -3017,8 +2970,8 @@ mod tests {
             2
         );
         assert!(document.is_selected(first));
-        assert!(!document.is_selected(bridge));
-        assert!(document.is_selected(last));
+        assert!(document.is_selected(bridge));
+        assert!(!document.is_selected(last));
 
         assert_eq!(
             document

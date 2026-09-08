@@ -42,6 +42,7 @@ mod conversion;
 mod conversion_session;
 mod distribute;
 mod group_memberships;
+mod group_picking;
 mod object_source;
 mod plane_arrays;
 mod trimmed_brep;
@@ -169,6 +170,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: group_memberships::GroupMembershipFixture,
+    },
+    GroupPicking {
+        id: String,
+        #[serde(flatten)]
+        fixture: group_picking::GroupPickingFixture,
     },
     BezierConversion {
         id: String,
@@ -1528,6 +1534,7 @@ impl Operation {
             | Self::BoundingBoxCommand { id, .. }
             | Self::Distribute { id, .. }
             | Self::GroupMemberships { id, .. }
+            | Self::GroupPicking { id, .. }
             | Self::BezierConversion { id, .. }
             | Self::NurbsConversion { id, .. }
             | Self::MeshNurbsConversion { id, .. }
@@ -1810,10 +1817,33 @@ fn validate_request(request: &ProbeRequest) -> Result<(), ProbeError> {
     if !(1..=MAX_ITERATIONS).contains(&request.iterations) {
         return Err(ProbeError::InvalidIterations(request.iterations));
     }
+    if request
+        .operations
+        .iter()
+        .any(|operation| matches!(operation, Operation::GroupPicking { .. }))
+        && (request.iterations != 1
+            || request.operations.len() > 128
+            || request
+                .operations
+                .iter()
+                .any(|operation| !matches!(operation, Operation::GroupPicking { .. })))
+    {
+        return Err(ProbeError::FixtureInvariant(
+            "group picking requires a dedicated one-iteration batch of at most 128 cases",
+        ));
+    }
     let mut ids = BTreeSet::new();
     for operation in &request.operations {
         let id = operation.id();
         if id.trim().is_empty() || !ids.insert(id) {
+            return Err(ProbeError::InvalidOperationId(id.to_owned()));
+        }
+        if matches!(operation, Operation::GroupPicking { .. })
+            && (id.len() > 100
+                || !id
+                    .bytes()
+                    .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-')))
+        {
             return Err(ProbeError::InvalidOperationId(id.to_owned()));
         }
         if let Operation::NurbsCurveShortFilter { maximum_length, .. } = operation
@@ -1877,6 +1907,7 @@ fn execute(
         Operation::BoundingBoxCommand { fixture, .. } => bounding_box::run(fixture, tolerance)?,
         Operation::Distribute { fixture, .. } => distribute::run(fixture, tolerance)?,
         Operation::GroupMemberships { fixture, .. } => group_memberships::run(fixture, tolerance)?,
+        Operation::GroupPicking { fixture, .. } => group_picking::run(fixture, tolerance)?,
         Operation::BezierConversion { fixture, .. } => conversion::run(fixture, tolerance)?,
         Operation::NurbsConversion { fixture, .. } => {
             conversion_session::run_nurbs(fixture, tolerance)?

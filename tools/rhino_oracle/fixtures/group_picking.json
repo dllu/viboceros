@@ -1,0 +1,815 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "group_picking",
+      "id": "chain-False-0",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "reverse_bridge": false
+    },
+    {
+      "op": "group_picking",
+      "id": "chain-False-1",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "reverse_bridge": false
+    },
+    {
+      "op": "group_picking",
+      "id": "chain-False-2",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "reverse_bridge": false
+    },
+    {
+      "op": "group_picking",
+      "id": "chain-True-0",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "reverse_bridge": true
+    },
+    {
+      "op": "group_picking",
+      "id": "chain-True-1",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "reverse_bridge": true
+    },
+    {
+      "op": "group_picking",
+      "id": "chain-True-2",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "reverse_bridge": true
+    },
+    {
+      "op": "group_picking",
+      "id": "locked-0",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "locked": [
+        1
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "locked-2",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "locked": [
+        1
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "hidden-0",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "hidden": [
+        1
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "hidden-2",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "hidden": [
+        1
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "layer-locked-0",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "layer_mode": "locked"
+    },
+    {
+      "op": "group_picking",
+      "id": "layer-locked-1",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "layer_mode": "locked"
+    },
+    {
+      "op": "group_picking",
+      "id": "layer-locked-2",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "layer_mode": "locked"
+    },
+    {
+      "op": "group_picking",
+      "id": "locked-seed",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "locked": [
+        1
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "layer-hidden-0",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "layer_mode": "hidden"
+    },
+    {
+      "op": "group_picking",
+      "id": "layer-hidden-1",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "layer_mode": "hidden"
+    },
+    {
+      "op": "group_picking",
+      "id": "layer-hidden-2",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "layer_mode": "hidden"
+    },
+    {
+      "op": "group_picking",
+      "id": "hidden-seed",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "hidden": [
+        1
+      ]
+    },
+    {
+      "op": "group_picking",
+      "id": "chain-False-0-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "reverse_bridge": false,
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "chain-False-1-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "reverse_bridge": false,
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "chain-False-2-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "reverse_bridge": false,
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "chain-True-0-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "reverse_bridge": true,
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "chain-True-1-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "reverse_bridge": true,
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "chain-True-2-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "reverse_bridge": true,
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "locked-0-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "locked": [
+        1
+      ],
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "locked-2-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "locked": [
+        1
+      ],
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "hidden-0-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "hidden": [
+        1
+      ],
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "hidden-2-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "hidden": [
+        1
+      ],
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "layer-locked-0-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "layer_mode": "locked",
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "layer-locked-1-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "layer_mode": "locked",
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "layer-locked-2-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "layer_mode": "locked",
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "locked-seed-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "locked": [
+        1
+      ],
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "layer-hidden-0-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "layer_mode": "hidden",
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "layer-hidden-1-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "layer_mode": "hidden",
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "layer-hidden-2-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "layer_mode": "hidden",
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "hidden-seed-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "hidden": [
+        1
+      ],
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "ungrouped-0",
+      "groups": [],
+      "seed": 0
+    },
+    {
+      "op": "group_picking",
+      "id": "ungrouped-1",
+      "groups": [],
+      "seed": 1
+    },
+    {
+      "op": "group_picking",
+      "id": "ungrouped-2",
+      "groups": [],
+      "seed": 2
+    },
+    {
+      "op": "group_picking",
+      "id": "empty-0",
+      "groups": [
+        []
+      ],
+      "seed": 0
+    },
+    {
+      "op": "group_picking",
+      "id": "empty-1",
+      "groups": [
+        []
+      ],
+      "seed": 1
+    },
+    {
+      "op": "group_picking",
+      "id": "empty-2",
+      "groups": [
+        []
+      ],
+      "seed": 2
+    },
+    {
+      "op": "group_picking",
+      "id": "nested-0",
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0
+    },
+    {
+      "op": "group_picking",
+      "id": "nested-1",
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1
+    },
+    {
+      "op": "group_picking",
+      "id": "nested-2",
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2
+    },
+    {
+      "op": "group_picking",
+      "id": "reverse-table-0",
+      "groups": [
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 0
+    },
+    {
+      "op": "group_picking",
+      "id": "reverse-table-1",
+      "groups": [
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 1
+    },
+    {
+      "op": "group_picking",
+      "id": "reverse-table-2",
+      "groups": [
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 2
+    },
+    {
+      "op": "group_picking",
+      "id": "reverse-ungrouped",
+      "groups": [],
+      "seed": 0,
+      "reverse_bridge": true
+    },
+    {
+      "op": "group_picking",
+      "id": "reverse-empty",
+      "groups": [
+        []
+      ],
+      "seed": 1,
+      "reverse_bridge": true
+    },
+    {
+      "op": "group_picking",
+      "id": "object-locked-layer-hidden-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "locked": [
+        1
+      ],
+      "layer_mode": "hidden",
+      "move": true
+    },
+    {
+      "op": "group_picking",
+      "id": "object-hidden-layer-locked-move",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "hidden": [
+        1
+      ],
+      "layer_mode": "locked",
+      "move": true
+    }
+  ]
+}

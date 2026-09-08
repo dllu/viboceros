@@ -6,11 +6,19 @@ The versioned Python oracle API runs identical JSON geometry and document-state
 batches in a native release build of Viboceros and Rhino 8, recursively checks
 results, and reports per-operation timings.
 
-Each batch applies the request's absolute, relative, and angular tolerances to
+Standard geometry/command batches apply the request's absolute, relative, and angular tolerances to
 Rhino's active document and restores its previous settings on success or failure.
 This matters for command macros, which read document settings rather than an API
 tolerance argument. See [Rhino's document tolerance API](https://developer.rhino3d.com/api/rhinocommon/rhino.rhinodoc/modelabsolutetolerance).
 Older command comparisons made before this synchronization need revalidation.
+
+`group_picking.json` is a dedicated, untimed three-line fixture: an idle-event
+worker returns control to Rhino's normal UI loop, then the host clicks projected
+line locations in the newly owned window and acknowledges each click atomically.
+No Enter or selection command substitutes for a mouse pick. Its 52 exact checks
+cover ordered group selection, hidden/locked peers and layers, and subsequent
+Move commands. Run it as a separate batch with `run_headless.sh` (one iteration);
+it cannot be mixed with synchronous geometry operations. See [groups](groups.md).
 
 `point_input.json` compares 19 [typed-coordinate sequences](point-input.md)
 against Rhino's actual Polyline prompt in world, Front, Right, shifted, and

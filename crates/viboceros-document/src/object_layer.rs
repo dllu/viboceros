@@ -126,15 +126,7 @@ impl Document {
             if !ids.contains(&object.id) {
                 continue;
             }
-            if object.attributes.locked {
-                return Err(DocumentError::ObjectLocked(object.id));
-            }
-            let layer = self
-                .layer(object.attributes.layer_id)
-                .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
-            if layer.locked {
-                return Err(DocumentError::LayerLocked(layer.id));
-            }
+            self.ensure_object_editable(object)?;
             staged.push((index, object.clone()));
         }
         Ok(staged)

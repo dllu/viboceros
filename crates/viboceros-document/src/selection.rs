@@ -1,7 +1,28 @@
-//! Ephemeral indices keep group traversal independent of document/history edits.
+//! Group-aware picking uses each seed's last ordered membership, not graph closure.
 use super::*;
 
 impl Document {
+    /// Hidden/locked members can enter the selection through a selectable
+    /// group peer. Rhino allows editing that selected set without unlocking it.
+    pub(super) fn ensure_object_editable(&self, object: &Object) -> Result<(), DocumentError> {
+        if object.attributes.locked && !self.is_selected(object.id) {
+            return Err(DocumentError::ObjectLocked(object.id));
+        }
+        let layer = self
+            .layer(object.attributes.layer_id)
+            .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
+        if layer.locked && !self.is_selected(object.id) {
+            return Err(DocumentError::LayerLocked(layer.id));
+        }
+        Ok(())
+    }
+
+    pub(super) fn prune_selection_after_history(&mut self) {
+        let allowed = self.selectable_clusters(self.selection.iter().copied());
+        let next = self.selection.intersection(&allowed).copied().collect();
+        self.update_selection(next);
+    }
+
     pub(super) fn selectable_clusters(
         &self,
         ids: impl IntoIterator<Item = ObjectId>,
@@ -13,55 +34,46 @@ impl Document {
         if self.groups.is_empty() {
             return ids.filter(|id| self.is_object_selectable(*id)).collect();
         }
-        // Avoid a linear object and layer lookup for every member or seed.
         let layers = self
             .layers
             .iter()
             .filter(|layer| layer.visible && !layer.locked)
             .map(|layer| layer.id)
             .collect::<BTreeSet<_>>();
-        let selectable = self
+        let objects = self
             .objects
             .iter()
-            .filter(|object| {
-                let attributes = object.attributes();
-                attributes.visible && !attributes.locked && layers.contains(&attributes.layer_id)
-            })
-            .map(|object| object.id)
-            .collect::<BTreeSet<_>>();
-        let mut connected = ids
-            .filter(|id| selectable.contains(id))
-            .collect::<BTreeSet<_>>();
-        if connected.is_empty() {
-            return connected;
-        }
-
-        let mut memberships: BTreeMap<ObjectId, Vec<usize>> = BTreeMap::new();
-        for (index, group) in self.groups.iter().enumerate() {
-            for member in &group.members {
-                memberships.entry(*member).or_default().push(index);
-            }
-        }
-        let mut pending = connected.iter().copied().collect::<Vec<_>>();
-        let mut visited_groups = vec![false; self.groups.len()];
-        while let Some(id) = pending.pop() {
-            if let Some(groups) = memberships.get(&id) {
-                for &index in groups {
-                    if std::mem::replace(&mut visited_groups[index], true) {
-                        continue;
-                    }
-                    for &member in &self.groups[index].members {
-                        if connected.insert(member) {
-                            pending.push(member);
-                        }
-                    }
+            .map(|object| (object.id, object))
+            .collect::<BTreeMap<_, _>>();
+        let selectable = |object: &Object| {
+            let attributes = object.attributes();
+            attributes.visible && !attributes.locked && layers.contains(&attributes.layer_id)
+        };
+        let mut targets = BTreeSet::new();
+        let mut groups = BTreeSet::new();
+        for id in ids {
+            if let Some(object) = objects.get(&id).filter(|object| selectable(object)) {
+                targets.insert(id);
+                if let Some(group) = object.top_group() {
+                    groups.insert(group);
                 }
             }
         }
-        // Nonselectable seeds cannot start a traversal, but nonselectable
-        // members remain bridges. Filter only after visiting the component.
-        connected.retain(|id| selectable.contains(id));
-        connected
+        // Expand only original seeds' groups, never reached peers' memberships.
+        for group in self
+            .groups
+            .iter()
+            .filter(|group| groups.contains(&group.id))
+        {
+            targets.extend(
+                group
+                    .members
+                    .iter()
+                    .copied()
+                    .filter(|id| objects.contains_key(id)),
+            );
+        }
+        targets
     }
 }
 
@@ -69,32 +81,8 @@ impl Document {
 mod tests {
     use super::*;
 
-    // Deliberately independent, slow fixed-point definition of the policy.
-    fn reference(document: &Document, seeds: &[ObjectId]) -> BTreeSet<ObjectId> {
-        let mut reached = seeds
-            .iter()
-            .copied()
-            .filter(|id| document.is_object_selectable(*id))
-            .collect::<BTreeSet<_>>();
-        loop {
-            let before = reached.len();
-            for group in &document.groups {
-                if group.members.iter().any(|id| reached.contains(id)) {
-                    reached.extend(group.members.iter().copied());
-                }
-            }
-            if before == reached.len() {
-                break;
-            }
-        }
-        reached.retain(|id| document.is_object_selectable(*id));
-        reached
-    }
-
-    #[test]
-    fn exhaustive_three_object_hypergraphs_match_fixed_point_policy() {
-        let mut document = Document::default();
-        let ids = (0..3)
+    fn points(document: &mut Document, count: usize) -> Vec<ObjectId> {
+        (0..count)
             .map(|i| {
                 document
                     .add_geometry(Geometry::Point(
@@ -102,9 +90,83 @@ mod tests {
                     ))
                     .unwrap()
             })
-            .collect::<Vec<_>>();
+            .collect()
+    }
+
+    #[test]
+    fn overlapping_group_picks_match_rhino_move_mouse_probes() {
+        let mut document = Document::default();
+        let ids = points(&mut document, 3);
+        let first = document.add_group(None, [ids[0], ids[1]]).unwrap();
+        let second = document.add_group(None, [ids[1], ids[2]]).unwrap();
+        for (reverse, expected) in [
+            (false, [[0, 1], [1, 2], [1, 2]]),
+            (true, [[0, 1], [0, 1], [1, 2]]),
+        ] {
+            document
+                .set_object_group_memberships(
+                    ids[1],
+                    if reverse {
+                        [second, first]
+                    } else {
+                        [first, second]
+                    },
+                )
+                .unwrap();
+            for (seed, expected) in expected.into_iter().enumerate() {
+                document.clear_selection();
+                document
+                    .select_object(ids[seed], SelectionMode::Replace)
+                    .unwrap();
+                assert_eq!(
+                    document.selected_object_ids().collect::<Vec<_>>(),
+                    expected.map(|i| ids[i])
+                );
+                document.groups.reverse();
+                assert_eq!(
+                    document.selectable_clusters([ids[seed]]),
+                    BTreeSet::from(expected.map(|i| ids[i]))
+                );
+            }
+        }
+        document
+            .select_objects([ids[0], ids[2]], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(document.selection, ids.iter().copied().collect());
+        document
+            .select_object(ids[0], SelectionMode::Remove)
+            .unwrap();
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [ids[2]]);
+    }
+
+    // Simple seed-by-seed reference, deliberately without shared indices.
+    fn reference(document: &Document, seeds: &[ObjectId]) -> BTreeSet<ObjectId> {
+        let mut targets = BTreeSet::new();
+        for &seed in seeds {
+            if !document.is_object_selectable(seed) {
+                continue;
+            }
+            targets.insert(seed);
+            if let Some(group) = document.object(seed).unwrap().top_group() {
+                targets.extend(
+                    document
+                        .group(group)
+                        .unwrap()
+                        .members
+                        .iter()
+                        .copied()
+                        .filter(|id| document.object(*id).is_some()),
+                );
+            }
+        }
+        targets
+    }
+
+    #[test]
+    fn exhaustive_three_object_group_tables_match_seed_local_policy() {
+        let mut document = Document::default();
+        let ids = points(&mut document, 3);
         let missing = ObjectId::new();
-        // All combinations of the seven nonempty subsets as group definitions.
         for graph in 0..128 {
             document.groups.clear();
             for members in 1..8 {
@@ -121,94 +183,125 @@ mod tests {
                     });
                 }
             }
-            for object in &mut document.objects {
-                object.group_ids = document
-                    .groups
-                    .iter()
-                    .filter(|group| group.members.contains(&object.id))
-                    .map(|group| group.id)
-                    .collect();
-            }
-            for eligibility in 0..8 {
+            for order in 0..8 {
                 for (i, object) in document.objects.iter_mut().enumerate() {
-                    object.attributes.locked = eligibility & (1 << i) == 0;
-                }
-                for seeds in 0..8 {
-                    let mut seeds = ids
+                    object.group_ids = document
+                        .groups
                         .iter()
-                        .enumerate()
-                        .filter(|(i, _)| seeds & (1 << i) != 0)
-                        .map(|(_, id)| *id)
-                        .collect::<Vec<_>>();
-                    let expected = reference(&document, &seeds);
-                    seeds.extend(seeds.clone());
-                    seeds.push(missing);
-                    assert_eq!(document.selectable_clusters(seeds.clone()), expected);
-                    document.groups.reverse();
-                    assert_eq!(document.selectable_clusters(seeds), expected);
+                        .filter(|group| group.members.contains(&object.id))
+                        .map(|group| group.id)
+                        .collect();
+                    if order & (1 << i) != 0 {
+                        object.group_ids.reverse();
+                    }
+                }
+                for eligibility in 0..8 {
+                    for (i, object) in document.objects.iter_mut().enumerate() {
+                        object.attributes.locked = eligibility & (1 << i) == 0;
+                    }
+                    for seeds in 0..8 {
+                        let mut seeds = ids
+                            .iter()
+                            .enumerate()
+                            .filter(|(i, _)| seeds & (1 << i) != 0)
+                            .map(|(_, id)| *id)
+                            .collect::<Vec<_>>();
+                        let expected = reference(&document, &seeds);
+                        seeds.extend(seeds.clone());
+                        seeds.push(missing);
+                        assert_eq!(document.selectable_clusters(seeds.clone()), expected);
+                        document.groups.reverse();
+                        assert_eq!(document.selectable_clusters(seeds), expected);
+                    }
                 }
             }
         }
     }
 
     #[test]
-    fn hidden_objects_and_layers_bridge_but_cannot_seed_selection() {
+    fn long_chain_does_not_propagate_beyond_the_seed_group() {
         let mut document = Document::default();
-        let first = document
-            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
-            .unwrap();
-        let bridge = document
-            .add_geometry(Geometry::Point(Point3::try_new(1.0, 0.0, 0.0).unwrap()))
-            .unwrap();
-        let last = document
-            .add_geometry(Geometry::Point(Point3::try_new(2.0, 0.0, 0.0).unwrap()))
-            .unwrap();
-        document.add_group(None, [first, bridge]).unwrap();
-        document.add_group(None, [bridge, last]).unwrap();
-        let layer = document
-            .add_layer("Bridge", ColorRgb::new(1, 2, 3))
-            .unwrap();
-        document.objects[1].attributes.layer_id = layer;
-        for mode in 0..4 {
-            document.objects[1].attributes.visible = mode != 0;
-            document.objects[1].attributes.locked = mode == 1;
-            document.layers[1].visible = mode != 2;
-            document.layers[1].locked = mode == 3;
-            assert_eq!(
-                document.selectable_clusters([first]),
-                BTreeSet::from([first, last])
-            );
-            assert!(document.selectable_clusters([bridge]).is_empty());
-        }
-    }
-
-    #[test]
-    #[ignore = "manual release-mode traversal benchmark; no timing threshold"]
-    fn reverse_chain_traversal_benchmark() {
-        let mut document = Document::default();
-        let ids = (0..1024)
-            .map(|i| {
-                document
-                    .add_geometry(Geometry::Point(
-                        Point3::try_new(i as f64, 0.0, 0.0).unwrap(),
-                    ))
-                    .unwrap()
-            })
-            .collect::<Vec<_>>();
+        let ids = points(&mut document, 1024);
         for pair in ids.windows(2).rev() {
             document.add_group(None, pair.iter().copied()).unwrap();
         }
-        let start = std::time::Instant::now();
-        let expected = reference(&document, &ids[..1]);
-        let reference_time = start.elapsed();
-        let start = std::time::Instant::now();
-        let actual = document.selectable_clusters([ids[0]]);
-        let traversal_time = start.elapsed();
-        assert_eq!(actual, expected);
-        assert_eq!(actual.len(), ids.len());
-        assert_eq!(document.selectable_clusters(ids), actual);
-        eprintln!(
-            "1024-object reverse chain: fixed point {reference_time:?}, traversal {traversal_time:?}"
+        assert_eq!(
+            document.selectable_clusters([ids[0]]),
+            BTreeSet::from([ids[0], ids[1]])
         );
+        assert_eq!(
+            document.selectable_clusters(ids.iter().copied()),
+            ids.into_iter().collect()
+        );
+    }
+
+    #[test]
+    fn grouped_hidden_and_locked_members_are_selected_and_editable_without_unlocking() {
+        for locked in [false, true] {
+            let mut document = Document::default();
+            let ids = points(&mut document, 3);
+            document.add_group(None, [ids[0], ids[1]]).unwrap();
+            document.add_group(None, [ids[1], ids[2]]).unwrap();
+            if locked {
+                document.set_objects_locked([ids[1]], true).unwrap();
+            } else {
+                document.set_objects_visibility([ids[1]], false).unwrap();
+            }
+            assert_eq!(
+                document.select_object(ids[1], SelectionMode::Replace),
+                Err(DocumentError::ObjectNotSelectable(ids[1]))
+            );
+            let transform = AffineTransform3::from_translation(
+                viboceros_geometry::Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            );
+            if locked {
+                assert_eq!(
+                    document.transform_objects([ids[1]], transform),
+                    Err(DocumentError::ObjectLocked(ids[1]))
+                );
+            }
+            document
+                .select_object(ids[0], SelectionMode::Replace)
+                .unwrap();
+            assert_eq!(document.selection, BTreeSet::from([ids[0], ids[1]]));
+            let before = document.objects.clone();
+            document
+                .transform_objects([ids[0], ids[1]], transform)
+                .unwrap();
+            assert_eq!(document.objects[1].attributes, before[1].attributes);
+            assert_eq!(document.objects[2], before[2]);
+            document.undo().unwrap();
+            assert_eq!(document.objects, before);
+            assert_eq!(document.selection, BTreeSet::from([ids[0], ids[1]]));
+            document.redo().unwrap();
+            assert_eq!(document.selection, BTreeSet::from([ids[0], ids[1]]));
+            document.begin_transaction("rollback grouped edit").unwrap();
+            document
+                .transform_objects([ids[0], ids[1]], transform)
+                .unwrap();
+            document.rollback_transaction().unwrap();
+            assert_eq!(document.selection, BTreeSet::from([ids[0], ids[1]]));
+            document.clear_selection();
+            if locked {
+                assert_eq!(
+                    document.transform_objects([ids[1]], transform),
+                    Err(DocumentError::ObjectLocked(ids[1]))
+                );
+            }
+            document
+                .select_object(ids[0], SelectionMode::Replace)
+                .unwrap();
+            let destination = document
+                .add_layer("Destination", ColorRgb::new(1, 2, 3))
+                .unwrap();
+            document
+                .set_objects_layer([ids[0], ids[1]], destination)
+                .unwrap();
+            assert_eq!(
+                document.object(ids[1]).unwrap().attributes.layer_id,
+                destination
+            );
+            assert_eq!(document.object(ids[1]).unwrap().attributes.locked, locked);
+        }
     }
 }

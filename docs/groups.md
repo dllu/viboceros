@@ -48,21 +48,26 @@ geometry copies. Group creation/removal, membership changes, object deletion,
 geometry changes, and clear-document operations compose in the same transaction.
 Undo/redo and rollback restore exact membership order and both indices.
 
-Group-aware selection builds temporary membership and eligibility indices, then
-visits each reached object and group once across all seeds. It does not rescan
-the group table to a fixed point for each seed. Hidden or locked members can
-connect groups but cannot seed selection or appear in the result. This preserves
-the existing native connected-component policy; exhaustive three-object
-hypergraph tests verify it against an independent fixed-point implementation.
-This policy is not a new claim of Rhino mouse-picking parity. Selection action
-ordering and history remain handled by the document's shared selection update.
+Group-aware picking expands only each picked object's **last membership**.
+With groups `[A, B]` and `[B, C]`, picking A selects A/B; picking B or C
+selects B/C. Reversing B's membership list changes B's pick to A/B, without
+changing the other picks. Members' other groups do not recursively expand.
+The former connected-component implementation and its performance benchmark
+were removed because they modeled the wrong selection policy.
 
-A manual release-mode benchmark checks exact results on a 1,024-object reverse
-chain, without a machine-dependent timing assertion:
+A hidden or locked object cannot be picked directly, but is included when a
+selectable peer's top group contains it. This also applies to hidden or locked
+layers. Selected locked members can be edited without unlocking them; Move
+preserves those visibility/lock states. Direct edits of unselected locked objects remain
+rejected. History pruning retains already-selected members reached through a
+selectable peer, without adding new objects. Explicit visibility/lock edits
+still prune the selection.
 
-```sh
-cargo test -p viboceros-document --release reverse_chain_traversal_benchmark -- --ignored --nocapture
-```
+Temporary object/layer indices and a deduplicated set of picked group IDs keep
+each selected group from being expanded repeatedly. Native tests exercise all
+three-object group tables, independent membership reversals, seed/eligibility
+combinations, a 1,024-object chain, selection action ordering, and grouped edits
+through undo/redo and rollback.
 
 3DM import first creates the complete group table, including empty definitions,
 then assigns each object's file-ordered memberships. Export writes that order
@@ -96,6 +101,22 @@ Consequently these comparisons verify naming style and relative group mapping,
 not absolute counters in a reused Rhino document.
 
 ## Verification and limits
+
+The 52 `group_picking.json` cases use actual idle-viewport mouse clicks in an
+owned private Rhino window, rather than SelID or preselecting through the API.
+They cover overlapping/reordered/nested/empty groups, hidden/locked objects and
+layers, and Move after picking. Selection, object modes, layer flags, and moved
+coordinates match exactly. The recorded Rhino output is retained under
+`tools/rhino_oracle/observations/` and checked by native tests. Separate public
+GetObject and command-first Move mouse probes confirmed the overlapping-group
+and object-mode cases. This does not establish every command's selection filter,
+modifier-key behavior, or window/crossing selection semantics.
+
+Reproduce the idle-click comparisons on a private display:
+
+```sh
+tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/group_picking.json --timeout 300
+```
 
 The 56 `group_memberships.json` comparisons record every step's ordered memberships,
 reverse member lists (including empty definitions), source identity, names,

@@ -149,6 +149,12 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
+        interaction = None
+        if any(operation.get("op") == "group_picking" for operation in request.get("operations", [])):
+            from .group_picking import IdlePicker, validate_request
+            validate_request(request)
+            worker_source = Path(__file__).with_name("group_picking_worker.py")
+            interaction = IdlePicker()
         if not worker_source.is_file():
             raise OracleError(f"Rhino worker not found: {worker_source}")
 
@@ -208,6 +214,8 @@ class OracleClient:
                                 candidate, macro, self.repo_root, min(10.0, timeout)
                             )
                             fallback_sent = True
+                    if interaction is not None:
+                        interaction(job_path, owned_pids)
                     time.sleep(0.05)
                 if not response_path.is_file():
                     details = _command_output(completed)
