@@ -175,8 +175,9 @@ validated shared-topology B-reps with exact rational parameter-space trims,
 validated mixed triangle/quad polygon meshes, layers, groups, and bounded
 undo/redo.
 Native point clouds preserve point order and duplicates, cache finite bounds,
-and use a balanced XY spatial index for snapping and picking.
-Top-view cloud picking queries this index with a separate camera origin and
+and use a balanced XY spatial index plus lazily initialized XZ/YZ indexes for
+[parallel-view picking](point-cloud-picking.md). Top/Front/Right cloud picking
+queries these indexes with a separate camera origin and
 local cursor offset. Distances are evaluated as `(point - origin) - offset`,
 avoiding loss of cursor precision when forming an absolute world query. Grid
 tests compare indexed results with local-coordinate exhaustive searches at
