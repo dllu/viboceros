@@ -48,6 +48,43 @@ fn step_export_converts_document_units_without_editing_document_or_history() {
         Tolerance::DEFAULT
     ));
 }
+
+#[test]
+fn step_export_and_import_preserve_physical_size_in_a_nonmetric_document() {
+    let path = TemporaryFile::with_extension("step");
+    let registry = CommandRegistry::with_builtins();
+    let mut source = Document::with_units(Tolerance::DEFAULT, LengthUnitSystem::Inches).unwrap();
+    let mesh = TriangleMesh::try_new(
+        vec![
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+        ],
+        vec![[0, 1, 2]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    source.add_geometry(Geometry::Mesh(mesh)).unwrap();
+    registry
+        .execute(&mut source, &format!("ExportStep {}", path.0.display()))
+        .unwrap();
+    let mut target = Document::with_units(Tolerance::DEFAULT, LengthUnitSystem::Inches).unwrap();
+    registry
+        .execute(&mut target, &format!("ImportStep {}", path.0.display()))
+        .unwrap();
+    let Geometry::Mesh(mesh) = target.objects().next().unwrap().geometry() else {
+        panic!("lost mesh");
+    };
+    assert!(
+        mesh.bounds()
+            .max()
+            .is_near(Point3::try_new(1.0, 2.0, 0.0).unwrap(), Tolerance::DEFAULT)
+    );
+    registry.execute(&mut target, "Undo").unwrap();
+    assert_eq!(target.objects().len(), 0);
+    registry.execute(&mut target, "Redo").unwrap();
+    assert_eq!(target.objects().len(), 1);
+}
 impl Drop for TemporaryFile {
     fn drop(&mut self) {
         let _ = std::fs::remove_file(&self.0);

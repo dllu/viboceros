@@ -159,6 +159,80 @@ fn cube_step() -> String {
 }
 
 #[test]
+fn imports_si_length_units_into_target_coordinates() {
+    let metres = cube_step().replace("SI_UNIT(.MILLI.,.METRE.)", "SI_UNIT($,.METRE.)");
+    let imported = read_step_in_units(
+        Cursor::new(metres),
+        &LengthUnitSystem::Millimeters,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    assert_eq!(imported.objects.len(), 1);
+    let bounds = imported.objects[0].mesh.bounds();
+    assert!(bounds.min().is_near(
+        Point3::try_new(-1000.0, -2000.0, -3000.0).unwrap(),
+        Tolerance::DEFAULT
+    ));
+    assert!(bounds.max().is_near(
+        Point3::try_new(4000.0, 5000.0, 6000.0).unwrap(),
+        Tolerance::DEFAULT
+    ));
+    let imported = read_step_in_units(
+        Cursor::new(cube_step()),
+        &LengthUnitSystem::Centimeters,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    assert!(
+        imported.objects[0]
+            .mesh
+            .bounds()
+            .max()
+            .is_near(Point3::try_new(0.4, 0.5, 0.6).unwrap(), Tolerance::DEFAULT)
+    );
+}
+
+#[test]
+fn imports_conversion_based_length_units_by_factor_not_name() {
+    let text = cube_step().replace(
+        "#12 = ( LENGTH_UNIT() NAMED_UNIT(*) SI_UNIT(.MILLI.,.METRE.) );",
+        "#12 = ( CONVERSION_BASED_UNIT('arbitrary name',#900001) LENGTH_UNIT() NAMED_UNIT(#900002) );\n#900001 = LENGTH_MEASURE_WITH_UNIT(LENGTH_MEASURE(0.0254),#900003);\n#900002 = DIMENSIONAL_EXPONENTS(1.,0.,0.,0.,0.,0.,0.);\n#900003 = (LENGTH_UNIT() NAMED_UNIT(*) SI_UNIT($,.METRE.));",
+    );
+    assert!(text.contains("arbitrary name"));
+    let imported = read_step_in_units(
+        Cursor::new(text),
+        &LengthUnitSystem::Millimeters,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    assert_eq!(imported.objects.len(), 1);
+    assert!(imported.objects[0].mesh.bounds().min().is_near(
+        Point3::try_new(-25.4, -50.8, -76.2).unwrap(),
+        Tolerance::DEFAULT
+    ));
+    assert!(imported.objects[0].mesh.bounds().max().is_near(
+        Point3::try_new(101.6, 127.0, 152.4).unwrap(),
+        Tolerance::DEFAULT
+    ));
+}
+
+#[test]
+fn rejects_missing_mixed_and_cyclic_step_units() {
+    let cube = cube_step();
+    for text in [
+        cube.replace("GLOBAL_UNIT_ASSIGNED_CONTEXT", "UNSUPPORTED_UNIT_CONTEXT"),
+        cube.replace("SI_UNIT(.MILLI.,.METRE.)", "CONVERSION_BASED_UNIT('cycle',#900001)").replace("#13 =", "#900001 = LENGTH_MEASURE_WITH_UNIT(LENGTH_MEASURE(1.),#12);\n#13 ="),
+        cube.replace("#13 =", "#900001 = (LENGTH_UNIT() NAMED_UNIT(*) SI_UNIT($,.METRE.));\n#900002 = GLOBAL_UNIT_ASSIGNED_CONTEXT((#900001));\n#13 ="),
+        cube.replace("SI_UNIT(.MILLI.,.METRE.)", "SI_UNIT(.UNKNOWN.,.METRE.)"),
+        cube.replace("SI_UNIT($,.RADIAN.)", "SI_UNIT(.MILLI.,.RADIAN.)"),
+        cube.replace("GLOBAL_UNIT_ASSIGNED_CONTEXT((#12, #13, #14))", "GLOBAL_UNIT_ASSIGNED_CONTEXT((#12, #12, #13, #14))"),
+    ] {
+        assert_ne!(text, cube, "fixture mutation did not apply");
+        assert!(matches!(read_step_in_units(Cursor::new(text), &LengthUnitSystem::Millimeters, Tolerance::DEFAULT), Err(StepError::InvalidLengthUnits(_))));
+    }
+}
+
+#[test]
 fn imports_an_analytic_step_solid_as_a_validated_mesh() {
     let model = read_step(Cursor::new(cube_step()), Tolerance::DEFAULT).unwrap();
 

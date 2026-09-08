@@ -1,6 +1,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::io::{Read, Write};
 use std::path::Path;
+mod units;
 
 use monstertruck::core::cgmath64::{Matrix4, SquareMatrix, Transform};
 use monstertruck::meshing::prelude::{
@@ -86,6 +87,9 @@ pub enum StepError {
     #[error("STEP export requires physical length units; the source is unitless")]
     UnitlessExport,
 
+    #[error("invalid or unsupported STEP length units: {0}")]
+    InvalidLengthUnits(String),
+
     #[error("STEP assembly contains an invalid transform: {0}")]
     InvalidAssemblyTransform(String),
 
@@ -117,6 +121,64 @@ pub fn read_step_file(
     tolerance: Tolerance,
 ) -> Result<StepImport, StepError> {
     read_step(std::fs::File::open(path)?, tolerance)
+}
+
+/// Imports a uniform-unit STEP file into explicit target units. Mixed-unit
+/// contexts are rejected until per-representation assembly scaling is supported.
+pub fn read_step_in_units<R: Read>(
+    mut reader: R,
+    target: &LengthUnitSystem,
+    tolerance: Tolerance,
+) -> Result<StepImport, StepError> {
+    use monstertruck::step::load::step_p21::parser;
+    let mut bytes = Vec::new();
+    reader.read_to_end(&mut bytes)?;
+    let text = match std::str::from_utf8(&bytes) {
+        Ok(text) => std::borrow::Cow::Borrowed(text),
+        Err(_) => {
+            std::borrow::Cow::Owned(bytes.iter().map(|byte| *byte as char).collect::<String>())
+        }
+    };
+    let exchange = parser::parse(&text).map_err(LoadError::from)?;
+    if exchange.data.len() != 1 {
+        return Err(StepError::InvalidLengthUnits(
+            "expected exactly one data section".into(),
+        ));
+    }
+    let data = &exchange.data[0];
+    let source = LengthUnitSystem::Custom {
+        name: "STEP file units".into(),
+        meters_per_unit: units::uniform_meters_per_unit(data)?,
+    };
+    let scale = source.scale_to(target)?;
+    let source_tolerance = Tolerance::try_new(
+        tolerance.absolute() / scale,
+        tolerance.relative(),
+        tolerance.angular(),
+    )?;
+    let table = Table::from_data_section(data);
+    // The table owns its geometry. Do not retain a second parsed copy of a
+    // potentially large STEP file while tessellating its shapes.
+    drop(exchange);
+    drop(text);
+    drop(bytes);
+    let mut imported = import_table(&table, source_tolerance)?;
+    if scale != 1.0 {
+        let transform =
+            AffineTransform3::try_uniform_scale(Point3::try_new(0.0, 0.0, 0.0)?, scale)?;
+        for object in &mut imported.objects {
+            object.mesh = object.mesh.transformed(transform, tolerance)?;
+        }
+    }
+    Ok(imported)
+}
+
+pub fn read_step_file_in_units(
+    path: impl AsRef<Path>,
+    target: &LengthUnitSystem,
+    tolerance: Tolerance,
+) -> Result<StepImport, StepError> {
+    read_step_in_units(std::fs::File::open(path)?, target, tolerance)
 }
 
 /// Writes validated triangle meshes as STEP shell-based surface models. Mesh

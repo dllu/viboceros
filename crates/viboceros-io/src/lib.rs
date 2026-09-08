@@ -11,8 +11,9 @@ pub use viboceros_geometry::LengthUnitSystem;
 mod three_dm_rational_tests;
 
 pub use step::{
-    StepError, StepImport, StepImportReport, StepObject, read_step, read_step_file, write_step,
-    write_step_file, write_step_file_in_units, write_step_in_units,
+    StepError, StepImport, StepImportReport, StepObject, read_step, read_step_file,
+    read_step_file_in_units, read_step_in_units, write_step, write_step_file,
+    write_step_file_in_units, write_step_in_units,
 };
 pub use stl::{StlError, StlFormat, read_stl, read_stl_file, write_stl, write_stl_file};
 pub use three_dm::{

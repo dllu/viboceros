@@ -82,6 +82,12 @@ surface and solid modelling are not implemented yet.
 Assembly regression tests include repeated parts beneath a translated,
 rotated parent, with expected corner coordinates checked independently of
 the importer's matrix arithmetic. These are generated STEP fixtures, not
-Rhino parity measurements. STEP import unit conversion is not implemented:
-coordinate values are currently imported in file units, so import into a
-document using different units does not yet preserve physical size.
+Rhino parity measurements. `ImportStep` resolves SI prefixes and
+conversion-based length units (including nested conversion factors), then
+converts coordinates and validation tolerances into document units. This
+currently requires a single data section with uniform length units across
+contexts. Missing, mixed, cyclic, or unsupported unit definitions and
+non-radian angular contexts are rejected before document edits. Mixed-unit
+assembly conversion remains unimplemented. The low-level `read_step` and
+`read_step_file` APIs retain raw file coordinates; their `_in_units`
+counterparts perform checked conversion.

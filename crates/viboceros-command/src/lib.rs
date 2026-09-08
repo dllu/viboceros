@@ -99,13 +99,13 @@ use viboceros_geometry::{
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
-    ThreeDmGroup, ThreeDmLayer, ThreeDmModel, ThreeDmObject, read_step_file, read_stl_file,
-    write_3dm_file, write_stl_file,
+    ThreeDmGroup, ThreeDmLayer, ThreeDmModel, ThreeDmObject, read_stl_file, write_3dm_file,
+    write_stl_file,
 };
 
 const SURFACE_EXPORT_SAMPLES_PER_SPAN: usize = 16;
 #[cfg(test)]
-use viboceros_io::read_3dm_file;
+use viboceros_io::{read_3dm_file, read_step_file};
 #[cfg(test)]
 mod unit_import_tests;
 const MAX_EXTRACTED_POINTS: usize = 1_000_000;
@@ -18433,7 +18433,8 @@ impl Command for ImportStepCommand {
             return Err(CommandError::Usage("ImportStep path"));
         }
         let path = arguments.join(" ");
-        let import = read_step_file(&path, document.tolerance())?;
+        let import =
+            viboceros_io::read_step_file_in_units(&path, document.units(), document.tolerance())?;
         let object_count = import.objects.len();
         let triangle_count = import
             .objects
