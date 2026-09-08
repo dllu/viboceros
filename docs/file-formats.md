@@ -91,3 +91,6 @@ non-radian angular contexts are rejected before document edits. Mixed-unit
 assembly conversion remains unimplemented. The low-level `read_step` and
 `read_step_file` APIs retain raw file coordinates; their `_in_units`
 counterparts perform checked conversion.
+Both reader paths reject zero or multiple data sections explicitly rather
+than panicking or silently ignoring later sections. UTF-8 decoding retains
+the Latin-1 fallback for legacy raw header bytes.

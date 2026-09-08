@@ -2,6 +2,60 @@ use std::io::Cursor;
 
 use super::*;
 
+#[test]
+fn unsupported_data_section_counts_return_errors_in_both_readers() {
+    let cube = cube_step();
+    let empty = format!("{}END-ISO-10303-21;", cube.split("DATA;").next().unwrap());
+    let multiple = cube.replace("END-ISO-10303-21;", "DATA;\nENDSEC;\nEND-ISO-10303-21;");
+    for (text, count) in [(empty, 0), (multiple, 2)] {
+        let parsed = monstertruck::step::load::step_p21::parser::parse(&text).unwrap();
+        assert_eq!(parsed.data.len(), count);
+        assert!(
+            matches!(read_step(Cursor::new(&text), Tolerance::DEFAULT), Err(StepError::UnsupportedDataSections { count: actual }) if actual == count)
+        );
+        assert!(matches!(
+            read_step_in_units(
+                Cursor::new(&text),
+                &LengthUnitSystem::Millimeters,
+                Tolerance::DEFAULT
+            ), Err(StepError::UnsupportedDataSections { count: actual }) if actual == count));
+    }
+}
+
+#[test]
+fn both_step_readers_preserve_geometry_with_legacy_header_bytes() {
+    let mut bytes = cube_step().into_bytes();
+    let marker = b"Viboceros test";
+    let index = bytes
+        .windows(marker.len())
+        .position(|window| window == marker)
+        .unwrap();
+    bytes[index] = 0xe9;
+    assert!(std::str::from_utf8(&bytes).is_err());
+    for imported in [
+        read_step(Cursor::new(&bytes), Tolerance::DEFAULT).unwrap(),
+        read_step_in_units(
+            Cursor::new(&bytes),
+            &LengthUnitSystem::Millimeters,
+            Tolerance::DEFAULT,
+        )
+        .unwrap(),
+    ] {
+        assert_eq!(imported.objects.len(), 1);
+        assert_eq!(imported.objects[0].mesh.triangles().len(), 12);
+        let bounds = imported.objects[0].mesh.bounds();
+        assert!(bounds.min().is_near(
+            Point3::try_new(-1.0, -2.0, -3.0).unwrap(),
+            Tolerance::DEFAULT
+        ));
+        assert!(
+            bounds
+                .max()
+                .is_near(Point3::try_new(4.0, 5.0, 6.0).unwrap(), Tolerance::DEFAULT)
+        );
+    }
+}
+
 fn unit_test_mesh() -> TriangleMesh {
     TriangleMesh::try_new(
         vec![

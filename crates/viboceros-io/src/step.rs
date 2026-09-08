@@ -90,6 +90,9 @@ pub enum StepError {
     #[error("invalid or unsupported STEP length units: {0}")]
     InvalidLengthUnits(String),
 
+    #[error("STEP import requires exactly one data section; found {count}")]
+    UnsupportedDataSections { count: usize },
+
     #[error("STEP assembly contains an invalid transform: {0}")]
     InvalidAssemblyTransform(String),
 
@@ -109,10 +112,10 @@ pub enum StepError {
     NoMeshesToWrite,
 }
 
-pub fn read_step<R: Read>(mut reader: R, tolerance: Tolerance) -> Result<StepImport, StepError> {
-    let mut bytes = Vec::new();
-    reader.read_to_end(&mut bytes)?;
-    let table = Table::from_step_bytes(&bytes)?;
+pub fn read_step<R: Read>(reader: R, tolerance: Tolerance) -> Result<StepImport, StepError> {
+    let data = read_data_section(reader)?;
+    let table = Table::from_data_section(&data);
+    drop(data);
     import_table(&table, tolerance)
 }
 
@@ -123,13 +126,10 @@ pub fn read_step_file(
     read_step(std::fs::File::open(path)?, tolerance)
 }
 
-/// Imports a uniform-unit STEP file into explicit target units. Mixed-unit
-/// contexts are rejected until per-representation assembly scaling is supported.
-pub fn read_step_in_units<R: Read>(
+// Share structural validation and UTF-8/Latin-1 decoding between both readers.
+fn read_data_section<R: Read>(
     mut reader: R,
-    target: &LengthUnitSystem,
-    tolerance: Tolerance,
-) -> Result<StepImport, StepError> {
+) -> Result<monstertruck::step::load::step_p21::ast::DataSection, StepError> {
     use monstertruck::step::load::step_p21::parser;
     let mut bytes = Vec::new();
     reader.read_to_end(&mut bytes)?;
@@ -139,16 +139,26 @@ pub fn read_step_in_units<R: Read>(
             std::borrow::Cow::Owned(bytes.iter().map(|byte| *byte as char).collect::<String>())
         }
     };
-    let exchange = parser::parse(&text).map_err(LoadError::from)?;
+    let mut exchange = parser::parse(&text).map_err(LoadError::from)?;
     if exchange.data.len() != 1 {
-        return Err(StepError::InvalidLengthUnits(
-            "expected exactly one data section".into(),
-        ));
+        return Err(StepError::UnsupportedDataSections {
+            count: exchange.data.len(),
+        });
     }
-    let data = &exchange.data[0];
+    Ok(exchange.data.pop().expect("checked single data section"))
+}
+
+/// Imports a uniform-unit STEP file into explicit target units. Mixed-unit
+/// contexts are rejected until per-representation assembly scaling is supported.
+pub fn read_step_in_units<R: Read>(
+    reader: R,
+    target: &LengthUnitSystem,
+    tolerance: Tolerance,
+) -> Result<StepImport, StepError> {
+    let data = read_data_section(reader)?;
     let source = LengthUnitSystem::Custom {
         name: "STEP file units".into(),
-        meters_per_unit: units::uniform_meters_per_unit(data)?,
+        meters_per_unit: units::uniform_meters_per_unit(&data)?,
     };
     let scale = source.scale_to(target)?;
     let source_tolerance = Tolerance::try_new(
@@ -156,12 +166,10 @@ pub fn read_step_in_units<R: Read>(
         tolerance.relative(),
         tolerance.angular(),
     )?;
-    let table = Table::from_data_section(data);
+    let table = Table::from_data_section(&data);
     // The table owns its geometry. Do not retain a second parsed copy of a
     // potentially large STEP file while tessellating its shapes.
-    drop(exchange);
-    drop(text);
-    drop(bytes);
+    drop(data);
     let mut imported = import_table(&table, source_tolerance)?;
     if scale != 1.0 {
         let transform =
