@@ -90,6 +90,8 @@ explicitly rejected rather than interpreted as a point.
 `viboceros-drafting/point_input` owns parsing and frame resolution;
 `app/point_input` routes typed and picked points through one validation path;
 `app/curve_prompt` handles draft-only options separately from document commands.
+`viboceros-command/curve_options` owns Curve degree and closure value parsing
+for one-line execution, draft startup, and in-prompt setting changes.
 Angle reduction preserves tiny negative angles and exact quadrants. Tests cover
 large magnitudes, full floating-point precision, invalid input, relative origins,
 construction planes, command replacement, cancellation, and undo.

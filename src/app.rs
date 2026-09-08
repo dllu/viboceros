@@ -6,8 +6,9 @@ use viboceros_command::{
     DEFAULT_MESH_CYLINDER_FACE_COUNT, DEFAULT_MESH_ELLIPSOID_FACE_COUNT,
     DEFAULT_MESH_PLANE_FACE_COUNT, DEFAULT_MESH_SPHERE_FACE_COUNT,
     DEFAULT_MESH_SPHERE_SUBDIVISIONS, DEFAULT_MESH_TORUS_FACE_COUNT,
-    DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT, DistributionSettings, MAX_CURVE_COMMAND_DEGREE,
-    MAX_MESH_SPHERE_QUAD_SUBDIVISIONS, MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS,
+    DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT, DistributionSettings,
+    MAX_MESH_SPHERE_QUAD_SUBDIVISIONS, MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS, parse_curve_closure,
+    parse_curve_degree,
 };
 use viboceros_document::{Document, DocumentError, suggested_layer_color};
 use viboceros_geometry::{
@@ -1791,24 +1792,16 @@ impl VibocerosApp {
                 let name = name.trim_start_matches(['_', '-']);
                 let value = value.trim_start_matches('_');
                 if name.eq_ignore_ascii_case("Degree") && !degree_seen {
-                    let Ok(parsed) = value.parse::<usize>() else {
+                    let Ok(parsed) = parse_curve_degree(value) else {
                         return false;
                     };
-                    degree = parsed.clamp(1, MAX_CURVE_COMMAND_DEGREE);
+                    degree = parsed;
                     degree_seen = true;
                 } else if name.eq_ignore_ascii_case("Close") && !close_seen {
-                    closure =
-                        if value.eq_ignore_ascii_case("Open") || value.eq_ignore_ascii_case("No") {
-                            ControlPointCurveClosure::Open
-                        } else if value.eq_ignore_ascii_case("Smooth")
-                            || value.eq_ignore_ascii_case("Yes")
-                        {
-                            ControlPointCurveClosure::Smooth
-                        } else if value.eq_ignore_ascii_case("Sharp") {
-                            ControlPointCurveClosure::Sharp
-                        } else {
-                            return false;
-                        };
+                    let Ok(parsed) = parse_curve_closure(value) else {
+                        return false;
+                    };
+                    closure = parsed;
                     close_seen = true;
                 } else {
                     return false;

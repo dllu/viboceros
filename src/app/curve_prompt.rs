@@ -8,29 +8,14 @@ impl VibocerosApp {
         if let Some(InteractiveCommand::Curve { degree, closure }) = self.active_command
             && let Some((name, value)) = option.split_once('=')
         {
-            let value = value.trim_start_matches('_');
             let updated = if name.eq_ignore_ascii_case("Degree") {
-                value
-                    .parse::<usize>()
+                parse_curve_degree(value)
                     .ok()
-                    .map(|degree| InteractiveCommand::Curve {
-                        degree: degree.clamp(1, MAX_CURVE_COMMAND_DEGREE),
-                        closure,
-                    })
+                    .map(|degree| InteractiveCommand::Curve { degree, closure })
             } else if name.eq_ignore_ascii_case("Close") {
-                let closure = if value.eq_ignore_ascii_case("Open")
-                    || value.eq_ignore_ascii_case("No")
-                {
-                    Some(ControlPointCurveClosure::Open)
-                } else if value.eq_ignore_ascii_case("Smooth") || value.eq_ignore_ascii_case("Yes")
-                {
-                    Some(ControlPointCurveClosure::Smooth)
-                } else if value.eq_ignore_ascii_case("Sharp") {
-                    Some(ControlPointCurveClosure::Sharp)
-                } else {
-                    None
-                };
-                closure.map(|closure| InteractiveCommand::Curve { degree, closure })
+                parse_curve_closure(value)
+                    .ok()
+                    .map(|closure| InteractiveCommand::Curve { degree, closure })
             } else {
                 return false;
             };

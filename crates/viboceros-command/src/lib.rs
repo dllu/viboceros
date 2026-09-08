@@ -1,8 +1,10 @@
 //! Extensible command registry and the first model-editing commands.
 
 mod arrays;
+mod curve_options;
 mod interchange;
 mod model_tolerance;
+pub use curve_options::{parse_curve_closure, parse_curve_degree};
 mod model_units;
 use interchange::{
     ExportStepCommand, ExportStlCommand, ExportThreeDmCommand, ImportStepCommand, ImportStlCommand,
@@ -1124,24 +1126,10 @@ impl Command for CurveCommand {
             if let Some((name, value)) = argument.split_once('=') {
                 let value = value.trim_start_matches('_');
                 if option_name_eq(name, "Degree") && !degree_seen {
-                    requested_degree = value
-                        .parse::<usize>()
-                        .map_err(|_| CommandError::InvalidInteger(value.to_owned()))?
-                        .clamp(1, MAX_CURVE_COMMAND_DEGREE);
+                    requested_degree = parse_curve_degree(value)?;
                     degree_seen = true;
                 } else if option_name_eq(name, "Close") && !close_seen {
-                    closure =
-                        if value.eq_ignore_ascii_case("Open") || value.eq_ignore_ascii_case("No") {
-                            ControlPointCurveClosure::Open
-                        } else if value.eq_ignore_ascii_case("Smooth")
-                            || value.eq_ignore_ascii_case("Yes")
-                        {
-                            ControlPointCurveClosure::Smooth
-                        } else if value.eq_ignore_ascii_case("Sharp") {
-                            ControlPointCurveClosure::Sharp
-                        } else {
-                            return Err(CommandError::Usage(CURVE_USAGE));
-                        };
+                    closure = parse_curve_closure(value)?;
                     close_seen = true;
                 } else {
                     return Err(CommandError::Usage(CURVE_USAGE));
