@@ -7,7 +7,8 @@ Its threshold includes a relative `1e-6` allowance. Analytic lines, arcs,
 circles, and polylines use direct length formulas. NURBS use a separate,
 representation-dependent predicate in `viboceros-geometry/curve_shortness`:
 
-1. Visit nonempty parameter spans in order.
+1. Affinely normalize the parameter domain to `[0, 1]`, then visit nonempty
+   parameter spans in order. Control points and weights are unchanged.
 2. Estimate the next interval with three-point Gauss–Legendre integration.
 3. Reject immediately if that estimate exceeds the remaining length budget.
 4. Otherwise compare it with two half-interval estimates. Accept their sum when
@@ -19,6 +20,17 @@ before selection is changed. Scaled quadrature products avoid avoidable overflow
 and underflow. Ellipses use their rational representation; polycurves share the
 remaining budget across their segments. Those two dispatch paths are not yet
 independently oracle-audited at the selection boundary.
+
+Domain normalization prevents quadrature samples from rounding outside a
+translated, one-ulp-wide domain and avoids derivative overflow caused solely
+by an extremely small parameter scale. Already normalized curves are borrowed
+without copying. If normalization collapses any distinct knot interval, the
+predicate reports an error rather than silently dropping part of the curve.
+Extremely disparate interior span widths can still exceed the available
+floating-point resolution or refinement budget; normalization does not promise
+unlimited parameter conditioning. Native regressions cover adjacent-float and
+subnormal single-span domains and extreme rational multispan domain scaling;
+these extreme-domain cases are not Rhino oracle measurements.
 
 This is an independently implemented approximation model, not a claim about
 Rhino's proprietary implementation. It matches 136 retained classifications:

@@ -51,6 +51,26 @@ impl Shortness {
                 Ok(true)
             }
             CurveRef::NurbsCurve(c) => {
+                // Integrate in a dimensionless parameter frame. Sampling a
+                // translated, one-ulp-wide span can otherwise round outside
+                // the domain; tiny widths can also overflow dC/dt even when
+                // both the curve and its length are ordinary finite values.
+                let normalized;
+                let c = if c.domain() == (0.0..=1.0) {
+                    c
+                } else {
+                    normalized = c.try_reparameterized(0.0..=1.0)?;
+                    // Do not silently remove an interval if its relative
+                    // width cannot be represented in the normalized frame.
+                    if c.knots()
+                        .windows(2)
+                        .zip(normalized.knots().windows(2))
+                        .any(|(before, after)| before[0] < before[1] && after[0] >= after[1])
+                    {
+                        return Err(GeometryError::NumericalIntegrationDidNotConverge);
+                    }
+                    &normalized
+                };
                 let speed = |t| c.derivative_at(t)?.length();
                 for (start, end) in c.spans() {
                     let coarse = gauss_three(start, end, &speed)?;
@@ -128,6 +148,96 @@ fn gauss_three(
 mod tests {
     use super::*;
     use crate::{Circle3, Point3, Tolerance, Vector3};
+
+    #[test]
+    fn shortness_survives_extreme_affine_parameter_domains() {
+        let curve = crate::NurbsCurve::try_new(
+            2,
+            vec![
+                Point3::try_new(0., 0., 0.).unwrap(),
+                Point3::try_new(0.5, 1., 0.).unwrap(),
+                Point3::try_new(1., 0., 0.).unwrap(),
+            ],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        for domain in [
+            0.0..=1.0,
+            1.0..=f64::from_bits(1.0_f64.to_bits() + 1),
+            0.0..=f64::from_bits(1),
+            -f64::MAX..=f64::MAX,
+            1e100..=f64::from_bits(1e100_f64.to_bits() + 1),
+        ] {
+            let mapped = curve.try_reparameterized(domain.clone()).unwrap();
+            // The arch has exact length sqrt(5)/2 + asinh(2)/4,
+            // approximately 1.47894; these thresholds avoid its boundary.
+            for (maximum, expected) in [(1., false), (1.4, false), (1.5, true), (2., true)] {
+                assert_eq!(
+                    CurveRef::NurbsCurve(&mapped).is_short_for_selection(maximum),
+                    Ok(expected),
+                    "domain {domain:?}, threshold {maximum}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn rational_multispan_shortness_survives_domain_scaling() {
+        let circle = Circle3::try_new(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            0.99999 / std::f64::consts::TAU,
+            Vector3::try_new(0., 0., 1.)
+                .unwrap()
+                .normalized_nonzero()
+                .unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let curve = circle.to_nurbs().unwrap();
+        for domain in [
+            0.0..=1e-200,
+            0.0..=1e200,
+            -f64::MAX..=f64::MAX,
+            100.0..=104.0,
+        ] {
+            let mapped = curve.try_reparameterized(domain.clone()).unwrap();
+            assert_eq!(mapped.spans().count(), curve.spans().count());
+            // The coarse rational representation deliberately rejects at 1
+            // (as in the retained Rhino record), despite true length < 1.
+            for (maximum, expected) in [(0.99, false), (1., false), (1.01, true), (2., true)] {
+                assert_eq!(
+                    CurveRef::NurbsCurve(&mapped).is_short_for_selection(maximum),
+                    Ok(expected),
+                    "domain {domain:?}, threshold {maximum}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn normalization_must_not_silently_discard_a_span() {
+        let curve = crate::NurbsCurve::try_new(
+            1,
+            (0..4)
+                .map(|i| Point3::try_new(i as f64, 0., 0.).unwrap())
+                .collect(),
+            vec![
+                -f64::MAX,
+                -f64::MAX,
+                0.,
+                f64::from_bits(1),
+                f64::MAX,
+                f64::MAX,
+            ],
+        )
+        .unwrap();
+        assert_eq!(curve.spans().count(), 3);
+        assert!(
+            CurveRef::NurbsCurve(&curve)
+                .is_short_for_selection(10.)
+                .is_err()
+        );
+    }
 
     #[test]
     fn quadrature_preserves_constant_speeds_across_extreme_scales() {

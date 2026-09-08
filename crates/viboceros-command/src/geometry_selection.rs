@@ -176,6 +176,47 @@ mod tests {
     use serde_json::Value;
 
     #[test]
+    fn short_selection_integration_failure_preserves_selection_and_history() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 9,9").unwrap();
+        let selected = document.objects().next().unwrap().id();
+        registry.execute(&mut document, "Line 0,0 1,0").unwrap();
+        // A valid curve whose tiny interior span cannot survive conversion
+        // to a dimensionless parameter domain. A previously eligible line
+        // must not become selected when the later curve fails preflight.
+        let curve = NurbsCurve::try_new(
+            1,
+            (0..4)
+                .map(|i| Point3::try_new(i as f64, 0., 0.).unwrap())
+                .collect(),
+            vec![
+                -f64::MAX,
+                -f64::MAX,
+                0.,
+                f64::from_bits(1),
+                f64::MAX,
+                f64::MAX,
+            ],
+        )
+        .unwrap();
+        document.add_geometry(Geometry::NurbsCurve(curve)).unwrap();
+        document
+            .select_object(selected, SelectionMode::Replace)
+            .unwrap();
+        let undo = document.undo_label().map(str::to_owned);
+        let redo = document.redo_label().map(str::to_owned);
+        assert!(registry.execute(&mut document, "SelShortCrv 10").is_err());
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            vec![selected]
+        );
+        assert_eq!(document.objects().count(), 3);
+        assert_eq!(document.undo_label(), undo.as_deref());
+        assert_eq!(document.redo_label(), redo.as_deref());
+    }
+
+    #[test]
     fn nonlinear_short_selection_matches_recorded_rhino_representations() {
         let registry = CommandRegistry::with_builtins();
         let mut checked = 0;
