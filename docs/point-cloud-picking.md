@@ -10,6 +10,13 @@ point coordinates. This trades first-use build time and retained index memory
 for faster repeated queries. Callers that only query XY pay neither additional
 index's construction or node-storage cost.
 
+Cloning a cloud shares one immutable `Arc` data block instead of copying points
+and index nodes. Lazy indexes initialized through any clone are available to all
+clones of that data. Equality has a constant-time shared-storage fast path and
+otherwise compares ordered points. Transformations create fresh data and fresh
+indexes, leaving the original and its snapshots unchanged. The borrowed point
+slice API and interchange representation are unchanged.
+
 `PointCloudProjection` selects XY, XZ, or YZ for
 `PointCloud3::nearest_projected_relative`. Queries keep the camera origin and
 local cursor offset separate, evaluate distances in the selected model-space
@@ -34,7 +41,9 @@ and translated pixel-capture boundaries in all three parallel views.
 Lifecycle tests query clones made before and after cache initialization, retain
 source-cloud query results after transformation, and verify transformed indexes
 against transformed points. Four synchronized workers also exercise concurrent
-first use and reuse of the same published XZ/YZ node buffers.
+first use through separate clones and reuse of the same published XZ/YZ node
+buffers. A storage-sharing regression checks pointer reuse and queries a clone
+after its source handle has been dropped.
 Drafting tests compare axis-aligned snaps with the generic projected search over
 mixed point/cloud/line scenes in all planes, including large signed translations,
 locked targets, capture radii, and ties. Viewport tests check both points and

@@ -1,5 +1,5 @@
 use std::cmp::Ordering;
-use std::sync::OnceLock;
+use std::sync::{Arc, OnceLock};
 
 use crate::{AffineTransform3, BoundingBox3, GeometryError, Point3, Real};
 
@@ -21,7 +21,7 @@ impl PointCloudProjection {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 struct ProjectedIndex {
     nodes: Vec<ProjectedNode>,
     root: usize,
@@ -33,8 +33,15 @@ struct ProjectedIndex {
 /// The stored order is significant, matching Rhino point clouds and 3DM
 /// archives. A balanced XY k-d tree is built immediately; XZ/YZ indexes are
 /// initialized on demand and reused for axis-aligned viewport queries.
+/// Clones share immutable point storage and all projection caches; transforms
+/// construct a new data block rather than modifying shared geometry.
 #[derive(Clone, Debug)]
 pub struct PointCloud3 {
+    data: Arc<PointCloudData>,
+}
+
+#[derive(Debug)]
+struct PointCloudData {
     points: Vec<Point3>,
     bounds: BoundingBox3,
     xy: ProjectedIndex,
@@ -58,27 +65,30 @@ impl PointCloud3 {
         let bounds = BoundingBox3::from_points(points.iter().copied())?;
         let xy = ProjectedIndex::new(&points, PointCloudProjection::Xy);
         Ok(Self {
-            points,
-            bounds,
-            xy,
-            xz: OnceLock::new(),
-            yz: OnceLock::new(),
+            data: Arc::new(PointCloudData {
+                points,
+                bounds,
+                xy,
+                xz: OnceLock::new(),
+                yz: OnceLock::new(),
+            }),
         })
     }
 
     #[inline]
     pub fn points(&self) -> &[Point3] {
-        &self.points
+        &self.data.points
     }
 
     #[inline]
-    pub const fn bounds(&self) -> BoundingBox3 {
-        self.bounds
+    pub fn bounds(&self) -> BoundingBox3 {
+        self.data.bounds
     }
 
     pub fn transformed(&self, transform: AffineTransform3) -> Result<Self, GeometryError> {
         Self::try_new(
-            self.points
+            self.data
+                .points
                 .iter()
                 .map(|point| transform.transform_point(*point))
                 .collect::<Result<Vec<_>, _>>()?,
@@ -126,24 +136,27 @@ impl PointCloud3 {
             });
         }
         let index = match projection {
-            PointCloudProjection::Xy => &self.xy,
+            PointCloudProjection::Xy => &self.data.xy,
             PointCloudProjection::Xz => self
+                .data
                 .xz
-                .get_or_init(|| ProjectedIndex::new(&self.points, projection)),
+                .get_or_init(|| ProjectedIndex::new(&self.data.points, projection)),
             PointCloudProjection::Yz => self
+                .data
                 .yz
-                .get_or_init(|| ProjectedIndex::new(&self.points, projection)),
+                .get_or_init(|| ProjectedIndex::new(&self.data.points, projection)),
         };
         let mut best = None;
         index.nearest_from(
             index.root,
-            &self.points,
+            &self.data.points,
             origin,
             offset,
             maximum_distance,
             &mut best,
         );
-        Ok(best.map(|(distance, point_index)| (point_index, self.points[point_index], distance)))
+        Ok(best
+            .map(|(distance, point_index)| (point_index, self.data.points[point_index], distance)))
     }
 }
 
@@ -201,7 +214,7 @@ impl ProjectedIndex {
 
 impl PartialEq for PointCloud3 {
     fn eq(&self, other: &Self) -> bool {
-        self.points == other.points
+        Arc::ptr_eq(&self.data, &other.data) || self.data.points == other.data.points
     }
 }
 
@@ -322,23 +335,23 @@ mod tests {
     #[test]
     fn additional_projection_indexes_are_lazy_and_reused() {
         let cloud = PointCloud3::try_new(vec![point(0.0, 1.0, 2.0), point(3.0, 4.0, 5.0)]).unwrap();
-        assert!(cloud.xz.get().is_none() && cloud.yz.get().is_none());
+        assert!(cloud.data.xz.get().is_none() && cloud.data.yz.get().is_none());
         let origin = point(0.0, 0.0, 0.0);
         assert!(
             cloud
                 .nearest_projected_relative(PointCloudProjection::Xz, origin, [Real::NAN, 0.0], 1.0)
                 .is_err()
         );
-        assert!(cloud.xz.get().is_none());
+        assert!(cloud.data.xz.get().is_none());
         cloud
             .nearest_projected_relative(PointCloudProjection::Xz, origin, [0.0; 2], 10.0)
             .unwrap();
-        let allocation = cloud.xz.get().unwrap().nodes.as_ptr();
-        assert!(cloud.yz.get().is_none());
+        let allocation = cloud.data.xz.get().unwrap().nodes.as_ptr();
+        assert!(cloud.data.yz.get().is_none());
         cloud
             .nearest_projected_relative(PointCloudProjection::Xz, origin, [1.0; 2], 10.0)
             .unwrap();
-        assert_eq!(cloud.xz.get().unwrap().nodes.as_ptr(), allocation);
+        assert_eq!(cloud.data.xz.get().unwrap().nodes.as_ptr(), allocation);
         assert_eq!(cloud.clone(), cloud);
     }
 
@@ -371,6 +384,38 @@ mod tests {
     }
 
     #[test]
+    fn clones_reuse_point_storage_and_lazy_projection_indexes() {
+        let cloud = PointCloud3::try_new(vec![point(0.0, 1.0, 2.0), point(3.0, 4.0, 5.0)]).unwrap();
+        let cloned = cloud.clone();
+        assert_eq!(cloud.points().as_ptr(), cloned.points().as_ptr());
+        assert!(cloud.data.xz.get().is_none());
+        cloned
+            .nearest_projected_relative(
+                PointCloudProjection::Xz,
+                point(3.0, 4.0, 5.0),
+                [0.0; 2],
+                0.0,
+            )
+            .unwrap();
+        assert_eq!(
+            cloud.data.xz.get().unwrap().nodes.as_ptr(),
+            cloned.data.xz.get().unwrap().nodes.as_ptr()
+        );
+        drop(cloud);
+        assert_eq!(
+            cloned
+                .nearest_projected_relative(
+                    PointCloudProjection::Xz,
+                    point(3.0, 4.0, 5.0),
+                    [0.0; 2],
+                    0.0
+                )
+                .unwrap(),
+            Some((1, point(3.0, 4.0, 5.0), 0.0))
+        );
+    }
+
+    #[test]
     fn concurrent_projection_queries_publish_and_reuse_one_index_per_plane() {
         let cloud = PointCloud3::try_new(
             (0..1024)
@@ -382,7 +427,7 @@ mod tests {
         let allocations = std::thread::scope(|scope| {
             let handles: Vec<_> = (0..4)
                 .map(|worker| {
-                    let cloud = &cloud;
+                    let cloud = cloud.clone();
                     let barrier = &barrier;
                     scope.spawn(move || {
                         let projection = if worker % 2 == 0 {
@@ -393,7 +438,7 @@ mod tests {
                         barrier.wait();
                         for query in 0..128 {
                             let index = (query * 31 + worker) % 1024;
-                            let p = cloud.points[index];
+                            let p = cloud.data.points[index];
                             assert_eq!(
                                 cloud
                                     .nearest_projected_relative(projection, p, [0.0; 2], 0.0)
@@ -402,9 +447,9 @@ mod tests {
                             );
                         }
                         let cache = if worker % 2 == 0 {
-                            &cloud.xz
+                            &cloud.data.xz
                         } else {
-                            &cloud.yz
+                            &cloud.data.yz
                         };
                         cache.get().unwrap().nodes.as_ptr() as usize
                     })
@@ -417,8 +462,14 @@ mod tests {
         });
         assert_eq!(allocations[0], allocations[2]);
         assert_eq!(allocations[1], allocations[3]);
-        assert_eq!(cloud.xz.get().unwrap().nodes.len(), cloud.points.len());
-        assert_eq!(cloud.yz.get().unwrap().nodes.len(), cloud.points.len());
+        assert_eq!(
+            cloud.data.xz.get().unwrap().nodes.len(),
+            cloud.data.points.len()
+        );
+        assert_eq!(
+            cloud.data.yz.get().unwrap().nodes.len(),
+            cloud.data.points.len()
+        );
     }
 
     #[test]
@@ -591,7 +642,7 @@ mod tests {
             transformed.points(),
             [point(10.0, -2.0, 1.0), point(12.0, 1.0, 5.0)]
         );
-        assert!(transformed.xz.get().is_none() && transformed.yz.get().is_none());
+        assert!(transformed.data.xz.get().is_none() && transformed.data.yz.get().is_none());
         for projection in [
             PointCloudProjection::Xy,
             PointCloudProjection::Xz,
