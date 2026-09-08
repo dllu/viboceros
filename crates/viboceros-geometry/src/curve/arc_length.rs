@@ -89,6 +89,10 @@ impl<'a> ArcLengthSampler<'a> {
                 std::borrow::Cow::Borrowed(_) => None,
                 std::borrow::Cow::Owned(c) => Some(Curve3::PolyCurve(c)),
             },
+            CurveRef::Polyline(c) => match c.for_integration()? {
+                std::borrow::Cow::Borrowed(_) => None,
+                std::borrow::Cow::Owned(c) => Some(Curve3::Polyline(c)),
+            },
             _ => None,
         };
         let integration_curve = normalized.as_ref().map(Curve3::as_ref).unwrap_or(curve);
@@ -849,6 +853,58 @@ mod tests {
         for invalid in [f64::NAN, f64::INFINITY] {
             assert!(sampler.distance_at_parameter(invalid).is_err());
             assert!(sampler.sample_at_distance(invalid).is_err());
+        }
+    }
+
+    #[test]
+    fn polyline_division_preserves_points_on_narrow_parameter_domains() {
+        use crate::{CurveSegment3, PolyCurve3, Polyline3};
+        let vertices = [[0., 0., 0.], [1., 0., 0.], [1., 1., 0.]]
+            .map(|p| Point3::try_from(p).unwrap())
+            .to_vec();
+        for parameters in [
+            vec![0., f64::from_bits(1), f64::from_bits(2)],
+            vec![
+                1.,
+                f64::from_bits(1_f64.to_bits() + 1),
+                f64::from_bits(1_f64.to_bits() + 2),
+            ],
+            vec![-1e200, 0., 1e200],
+        ] {
+            let curve = Polyline3::try_with_parameters(
+                vertices.clone(),
+                parameters.clone(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            let actual = CurveRef::Polyline(&curve)
+                .sample_equal_length_points(4, true, Tolerance::DEFAULT)
+                .unwrap();
+            let expected = [
+                [0., 0., 0.],
+                [0.5, 0., 0.],
+                [1., 0., 0.],
+                [1., 0.5, 0.],
+                [1., 1., 0.],
+            ]
+            .map(|p| Point3::try_from(p).unwrap());
+            assert_eq!(actual, expected, "{parameters:?}");
+            let composite = PolyCurve3::try_with_segment_domains(
+                vec![CurveSegment3::Polyline(curve.clone())],
+                vec![0., 1.],
+            )
+            .unwrap();
+            assert_eq!(
+                CurveRef::PolyCurve(&composite)
+                    .sample_equal_length_points(4, true, Tolerance::DEFAULT)
+                    .unwrap(),
+                expected
+            );
+            let sampler =
+                ArcLengthSampler::try_new(CurveRef::Polyline(&curve), Tolerance::DEFAULT).unwrap();
+            assert_eq!(sampler.parameter_at_distance(1.).unwrap(), parameters[1]);
+            assert_eq!(sampler.distance_at_parameter(parameters[1]).unwrap(), 1.);
+            assert_eq!(sampler.kinks(0.1).unwrap().len(), 1);
         }
     }
 

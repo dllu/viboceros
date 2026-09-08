@@ -5,13 +5,15 @@ use crate::{CurveSegment3, GeometryError, parameter::map_parameter};
 use std::borrow::Cow;
 
 impl PolyCurve3 {
-    /// Normalizes the outer domain and independent NURBS leaf domains. Native
+    /// Normalizes the outer domain and NURBS/polyline leaf domains. Native
     /// analytic segments keep their parameterization. Stored geometry is never
     /// modified, and unrepresentable distinct intervals remain errors.
     pub(crate) fn for_integration(&self) -> Result<Cow<'_, Self>, GeometryError> {
         let needs_copy = self.domain() != (0.0..=1.0)
-            || self.segments().iter().any(|segment| {
-                matches!(segment, CurveSegment3::NurbsCurve(c) if c.domain() != (0.0..=1.0))
+            || self.segments().iter().any(|segment| match segment {
+                CurveSegment3::NurbsCurve(c) => c.domain() != (0.0..=1.0),
+                CurveSegment3::Polyline(c) => c.domain() != (0.0..=1.0),
+                _ => false,
             });
         if !needs_copy {
             return Ok(Cow::Borrowed(self));
@@ -34,6 +36,9 @@ impl PolyCurve3 {
                 Ok(match segment {
                     CurveSegment3::NurbsCurve(c) => {
                         CurveSegment3::NurbsCurve(c.for_integration()?.into_owned())
+                    }
+                    CurveSegment3::Polyline(c) => {
+                        CurveSegment3::Polyline(c.for_integration()?.into_owned())
                     }
                     _ => segment.clone(),
                 })

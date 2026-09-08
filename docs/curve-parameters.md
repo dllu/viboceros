@@ -58,9 +58,16 @@ are evaluated in that internal frame; parameters are returned in the original
 native domain. Input native parameters are converted before querying distance.
 Already unit-domain NURBS do not allocate a normalization copy.
 
+Standalone polylines also use a temporary `[0,1]` frame for distance sampling.
+Their vertices are copied exactly, without revalidating short segments against
+a different model tolerance. This prevents intermediate division points from
+rounding to segment endpoints solely because the original domain is subnormal
+or narrowly translated. Tests use exact L-shaped midpoints, native corner
+parameters, and both standalone and composite polylines.
+
 Polycurve sampling likewise normalizes the outer domain before mapping leaf
 spans into it. Shared `polycurve/integration_frame` preparation also normalizes
-each NURBS leaf using the checked NURBS frame. The temporary copy retains native
+each NURBS or polyline leaf using its checked frame. The temporary copy retains native
 segment classes, controls, weights, and independent parameterizations; it does
 not merge them into one NURBS or edit junction endpoints. Already prepared
 composites are borrowed without allocating another copy.
@@ -110,8 +117,9 @@ parameter. In such domains sampled geometry remains accurate, but the returned
 parameter rounds to a source-domain value and re-evaluating it can produce a
 different point. Native parameter/distance roundtrips are tested on well-resolved
 tiny and huge domains, not promised beyond floating-point resolution. The
-normalization applies to standalone NURBS, polycurve outer domains, and NURBS
-leaves; extreme analytic leaf and ellipse parameter scales remain separate work.
+normalization applies to standalone NURBS/polylines, polycurve outer domains,
+and NURBS/polyline leaves. Extremely disparate relative span sizes remain
+unresolved, as do extreme analytic leaf and ellipse parameter scales.
 
 Analytic and polyline intervals must have finite positive width. A standalone
 circle needs a representable default circumference interval; an arc may still

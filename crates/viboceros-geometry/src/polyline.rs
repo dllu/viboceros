@@ -1,6 +1,8 @@
 use std::collections::{BTreeMap, HashMap};
 use std::f64::consts::TAU;
 
+mod integration_frame;
+
 use crate::{
     AffineTransform3, BoundingBox3, Circle3, GeometryError, LineSegment, NurbsCurve, Point3, Real,
     Tolerance, UnitVector3, Vector3, require_finite, vector::product_three,
