@@ -20,7 +20,7 @@ impl CurveRef<'_> {
                 // Normalize before promotion: mapping a multi-span leaf into
                 // a poorly resolved outer domain can collapse knots, even
                 // though the composite retains that leaf's full geometry.
-                let normalized = curve.try_reparameterized(0.0..=1.0)?;
+                let normalized = curve.for_integration()?;
                 CurveRef::NurbsCurve(&normalized.to_nurbs()?).planar_area(tolerance)
             }
             Self::Arc(_) => CurveRef::NurbsCurve(&self.to_nurbs()?).planar_area(tolerance),

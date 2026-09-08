@@ -85,9 +85,10 @@ impl<'a> ArcLengthSampler<'a> {
             CurveRef::NurbsCurve(c) if c.domain() != (0.0..=1.0) => {
                 Some(Curve3::NurbsCurve(c.for_integration()?.into_owned()))
             }
-            CurveRef::PolyCurve(c) if c.domain() != (0.0..=1.0) => {
-                Some(Curve3::PolyCurve(c.try_reparameterized(0.0..=1.0)?))
-            }
+            CurveRef::PolyCurve(c) => match c.for_integration()? {
+                std::borrow::Cow::Borrowed(_) => None,
+                std::borrow::Cow::Owned(c) => Some(Curve3::PolyCurve(c)),
+            },
             _ => None,
         };
         let integration_curve = normalized.as_ref().map(Curve3::as_ref).unwrap_or(curve);
@@ -959,6 +960,51 @@ mod tests {
                 );
             }
             assert_eq!(curve, original);
+        }
+    }
+
+    #[test]
+    fn polycurve_sampling_conditions_independent_nurbs_leaf_domains() {
+        use crate::{CurveSegment3, PolyCurve3};
+        let arch = NurbsCurve::try_new(
+            2,
+            vec![
+                Point3::try_new(0., 0., 0.).unwrap(),
+                Point3::try_new(0.5, 1., 0.).unwrap(),
+                Point3::try_new(1., 0., 0.).unwrap(),
+            ],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        let tolerance = Tolerance::try_new(1e-12, 1e-12, 1e-10).unwrap();
+        let reference = CurveRef::NurbsCurve(&arch)
+            .sample_equal_length_points(8, true, tolerance)
+            .unwrap();
+        for domain in [
+            1.0..=f64::from_bits(1_f64.to_bits() + 1),
+            0.0..=f64::from_bits(1),
+            0.0..=1e-200,
+            0.0..=1e200,
+        ] {
+            let curve = PolyCurve3::try_with_segment_domains(
+                vec![CurveSegment3::NurbsCurve(
+                    arch.try_reparameterized(domain.clone()).unwrap(),
+                )],
+                vec![0., 1.],
+            )
+            .unwrap();
+            let mut sampler = ArcLengthSampler::try_new(CurveRef::PolyCurve(&curve), tolerance)
+                .unwrap_or_else(|error| panic!("{domain:?}: {error}"));
+            sampler.prepare_repeated_sampling(16).unwrap();
+            for (i, expected) in reference.iter().enumerate() {
+                let distance = sampler.total_length() * (i as f64 / 8.);
+                let sample = sampler.sample_at_distance(distance).unwrap();
+                assert!(sample.point().distance_to(*expected).unwrap() < 1e-10);
+                assert!(
+                    (sampler.distance_at_parameter(sample.parameter()).unwrap() - distance).abs()
+                        < 1e-10
+                );
+            }
         }
     }
 

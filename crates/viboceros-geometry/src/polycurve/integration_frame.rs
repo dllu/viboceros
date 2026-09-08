@@ -1,0 +1,81 @@
+//! Temporary parameter conditioning without merging or changing leaf geometry.
+
+use super::PolyCurve3;
+use crate::{CurveSegment3, GeometryError, parameter::map_parameter};
+use std::borrow::Cow;
+
+impl PolyCurve3 {
+    /// Normalizes the outer domain and independent NURBS leaf domains. Native
+    /// analytic segments keep their parameterization. Stored geometry is never
+    /// modified, and unrepresentable distinct intervals remain errors.
+    pub(crate) fn for_integration(&self) -> Result<Cow<'_, Self>, GeometryError> {
+        let needs_copy = self.domain() != (0.0..=1.0)
+            || self.segments().iter().any(|segment| {
+                matches!(segment, CurveSegment3::NurbsCurve(c) if c.domain() != (0.0..=1.0))
+            });
+        if !needs_copy {
+            return Ok(Cow::Borrowed(self));
+        }
+        let segments = self
+            .segments()
+            .iter()
+            .map(|segment| {
+                Ok(match segment {
+                    CurveSegment3::NurbsCurve(c) => {
+                        CurveSegment3::NurbsCurve(c.for_integration()?.into_owned())
+                    }
+                    _ => segment.clone(),
+                })
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        let parameters = self
+            .parameters
+            .iter()
+            .map(|&parameter| map_parameter(parameter, self.domain(), 0.0..=1.0))
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(Cow::Owned(Self::try_with_segment_domains(
+            segments, parameters,
+        )?))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{NurbsCurve, Point3};
+
+    #[test]
+    fn integration_copy_preserves_controls_weights_breaks_and_source() {
+        let leaf = NurbsCurve::try_new(
+            2,
+            vec![
+                Point3::try_new(0., 0., 0.).unwrap(),
+                Point3::try_new(0.5, 1., 0.).unwrap(),
+                Point3::try_new(1., 0., 0.).unwrap(),
+            ],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap()
+        .try_reparameterized(1.0..=f64::from_bits(1_f64.to_bits() + 1))
+        .unwrap();
+        let source = PolyCurve3::try_with_segment_domains(
+            vec![CurveSegment3::NurbsCurve(leaf.clone())],
+            vec![-10., 10.],
+        )
+        .unwrap();
+        let original = source.clone();
+        let normalized = source.for_integration().unwrap();
+        assert!(matches!(normalized, Cow::Owned(_)));
+        assert_eq!(normalized.parameters, vec![0., 1.]);
+        let CurveSegment3::NurbsCurve(curve) = &normalized.segments()[0] else {
+            panic!("leaf class changed")
+        };
+        assert_eq!(curve.control_points(), leaf.control_points());
+        assert_eq!(curve.knots(), &[0., 0., 0., 1., 1., 1.]);
+        assert_eq!(source, original);
+        assert!(matches!(
+            normalized.for_integration().unwrap(),
+            Cow::Borrowed(_)
+        ));
+    }
+}

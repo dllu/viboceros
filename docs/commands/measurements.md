@@ -30,7 +30,9 @@ caused solely by extreme NURBS parameter scales; controls, weights, and the
 stored source remain unchanged. Polycurve outer domains are normalized before
 NURBS conversion, so a leaf's internal knots are not first squeezed into an
 outer interval with too few representable values. This also leaves the stored
-composite and its independent leaf domains unchanged. Collapsed knot intervals
+composite and its independent leaf domains unchanged. The shared polycurve
+integration frame also normalizes temporary NURBS leaves before conversion.
+Collapsed knot intervals
 are not silently lost; normalization does not guarantee that every possible
 relative span size or extreme leaf domain can be converted.
 Self-intersecting winding-area semantics are

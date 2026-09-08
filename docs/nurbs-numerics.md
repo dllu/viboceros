@@ -114,8 +114,9 @@ intervals that collapse during normalization cause an error. Extremely disparate
 interior span widths can still exceed floating-point resolution or integration
 budgets. [Standalone NURBS arc-length sampling](curve-parameters.md) also uses
 this preparation for its internal partial integration and inversion, retaining
-native public parameters. Composite leaf conditioning and other integration
-paths are not universally covered by this change.
+native public parameters. Polycurve area and sampling use a shared composite
+frame that applies this same checked preparation to NURBS leaves as well as
+normalizing the outer domain. Other integration paths are not universally covered.
 
 Enclosed NURBS curve-area queries also prepare this frame before constructing
 their temporary planar face. A closed cubic with exact area `3/20` is tested

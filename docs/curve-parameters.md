@@ -59,14 +59,18 @@ native domain. Input native parameters are converted before querying distance.
 Already unit-domain NURBS do not allocate a normalization copy.
 
 Polycurve sampling likewise normalizes the outer domain before mapping leaf
-spans into it. The temporary copy retains native segment classes and independent
-leaf domains; it does not merge them into one NURBS or edit junction endpoints.
+spans into it. Shared `polycurve/integration_frame` preparation also normalizes
+each NURBS leaf using the checked NURBS frame. The temporary copy retains native
+segment classes, controls, weights, and independent parameterizations; it does
+not merge them into one NURBS or edit junction endpoints. Already prepared
+composites are borrowed without allocating another copy.
 This prevents a valid multi-span leaf from disappearing into an outer interval
 with no representable interior parameter. Cached and uncached circle samples
 are checked against analytic points, and piecewise-line corner tests verify
-one-sided tangents and native junction parameters. This conditions the outer
-domain only: extreme leaf domains and unrepresentable relative span sizes
-remain separate limitations.
+one-sided tangents and native junction parameters. Arch regressions additionally
+cover adjacent-float, subnormal, tiny, and huge independent NURBS leaf domains.
+Unrepresentable relative span sizes and extreme analytic leaf domains remain
+separate limitations.
 
 Repeated-query tables can integrate to a slightly different total than the
 original span estimate. Both query directions use the original span's distance
@@ -98,8 +102,8 @@ parameter. In such domains sampled geometry remains accurate, but the returned
 parameter rounds to a source-domain value and re-evaluating it can produce a
 different point. Native parameter/distance roundtrips are tested on well-resolved
 tiny and huge domains, not promised beyond floating-point resolution. The
-normalization applies to standalone NURBS and polycurve outer domains; leaf conditioning
-and extreme ellipse parameter scales remain separate work.
+normalization applies to standalone NURBS, polycurve outer domains, and NURBS
+leaves; extreme analytic leaf and ellipse parameter scales remain separate work.
 
 Analytic and polyline intervals must have finite positive width. A standalone
 circle needs a representable default circumference interval; an arc may still

@@ -8,6 +8,7 @@ use crate::{
     Point3, Polyline3, Real, Tolerance, Vector3, nurbs::curve_points_coincident, require_finite,
 };
 
+mod integration_frame;
 #[cfg(test)]
 mod tests;
 
