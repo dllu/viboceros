@@ -116,11 +116,31 @@ pub fn nearest_object_snap(
     cursor: Point3,
     capture_radius: Real,
 ) -> Result<Option<ObjectSnap>, DraftingError> {
+    nearest_object_snap_relative(document, cursor, [0.0; 2], capture_radius)
+}
+
+/// Finds XY feature snaps using `(candidate - origin) - cursor_offset`.
+/// The separate local offset retains cursor precision at large world origins.
+/// Radius and returned distance are in model units; point clouds retain their
+/// indexed search, and visibility, locking, and tie rules match [`nearest_object_snap`].
+pub fn nearest_object_snap_relative(
+    document: &Document,
+    origin: Point3,
+    cursor_offset: [Real; 2],
+    capture_radius: Real,
+) -> Result<Option<ObjectSnap>, DraftingError> {
     validate_capture_radius(capture_radius)?;
+    if cursor_offset.iter().any(|value| !value.is_finite()) {
+        return Err(GeometryError::NonFinite {
+            context: "object snap cursor offset",
+        }
+        .into());
+    }
     nearest_object_snap_with_metric(
         document,
         &XySnapMetric {
-            cursor,
+            origin,
+            cursor_offset,
             capture_radius,
         },
     )
@@ -153,7 +173,8 @@ trait SnapMetric {
 }
 
 struct XySnapMetric {
-    cursor: Point3,
+    origin: Point3,
+    cursor_offset: [Real; 2],
     capture_radius: Real,
 }
 
@@ -163,13 +184,14 @@ impl SnapMetric for XySnapMetric {
     }
 
     fn distance(&self, point: Point3) -> Option<Real> {
-        let distance = (point.x() - self.cursor.x()).hypot(point.y() - self.cursor.y());
+        let distance = ((point.x() - self.origin.x()) - self.cursor_offset[0])
+            .hypot((point.y() - self.origin.y()) - self.cursor_offset[1]);
         distance.is_finite().then_some(distance)
     }
 
     fn nearest_point_cloud(&self, cloud: &PointCloud3) -> Result<Option<Point3>, GeometryError> {
         Ok(cloud
-            .nearest_xy(self.cursor, self.capture_radius)?
+            .nearest_xy_relative(self.origin, self.cursor_offset, self.capture_radius)?
             .map(|(_, point, _)| point))
     }
 }
@@ -602,6 +624,61 @@ mod tests {
         assert_eq!(snap.kind(), ObjectSnapKind::Point);
         assert_eq!(snap.object_id(), point_id);
         assert_eq!(snap.point().z(), 5.0);
+    }
+
+    #[test]
+    fn relative_xy_snaps_match_explicit_local_projection() {
+        for translation in [0.0, 2.0_f64.powi(52), -2.0_f64.powi(52)] {
+            let origin = point(translation, translation, 0.0);
+            let local = |x, y| point(translation + x, translation + y, 3.0);
+            let mut document = Document::default();
+            document
+                .add_geometry(Geometry::Line(
+                    LineSegment::try_new(local(-2.0, 0.0), local(2.0, 0.0), Tolerance::DEFAULT)
+                        .unwrap(),
+                ))
+                .unwrap();
+            document
+                .add_geometry(Geometry::PointCloud(
+                    PointCloud3::try_new(vec![local(0.0, 1.0), local(1.0, 0.0), local(0.0, -1.0)])
+                        .unwrap(),
+                ))
+                .unwrap();
+            let locked = document
+                .add_geometry(Geometry::Point(local(-1.0, 0.0)))
+                .unwrap();
+            document.set_objects_locked([locked], true).unwrap();
+            for x in -12..=12 {
+                for y in -8..=8 {
+                    let offset = [Real::from(x) / 4.0, Real::from(y) / 4.0];
+                    for radius in [0.25, 0.5, 1.0] {
+                        let expected =
+                            nearest_object_snap_projected(&document, offset, radius, |p| {
+                                Some([p.x() - translation, p.y() - translation])
+                            })
+                            .unwrap();
+                        assert_eq!(
+                            nearest_object_snap_relative(&document, origin, offset, radius)
+                                .unwrap(),
+                            expected
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn relative_xy_snap_validates_offsets_even_without_objects() {
+        let document = Document::default();
+        for invalid in [Real::NAN, Real::INFINITY, Real::NEG_INFINITY] {
+            for offset in [[invalid, 0.0], [0.0, invalid]] {
+                assert!(
+                    nearest_object_snap_relative(&document, point(0.0, 0.0, 0.0), offset, 1.0)
+                        .is_err()
+                );
+            }
+        }
     }
 
     #[test]

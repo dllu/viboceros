@@ -309,6 +309,9 @@ impl Viewport {
         Some(Pos2::new(x as f32, y as f32))
     }
 
+    // Coordinate-plane reference used by projection tests. Interactive drafting
+    // uses unproject_drafting_plane; camera-space capture needs no world cursor.
+    #[cfg(test)]
     pub(super) fn unproject(&self, position: Pos2, rect: Rect, elevation: Real) -> Option<Point3> {
         let origin = self.world_origin(rect);
         match self.kind {

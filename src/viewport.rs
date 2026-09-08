@@ -9,7 +9,8 @@ use viboceros_command::ObjectSelectionFilter;
 use viboceros_command::construction_plane::{ConstructionPlaneState, WorldPlane};
 use viboceros_document::{ColorRgb, Document, Geometry, ObjectAttributes, ObjectId, SelectionMode};
 use viboceros_drafting::{
-    ObjectSnap, OrthogonalTrack, TrackAxis, nearest_object_snap, nearest_object_snap_projected,
+    ObjectSnap, OrthogonalTrack, TrackAxis, nearest_object_snap_projected,
+    nearest_object_snap_relative,
 };
 use viboceros_geometry::{
     Brep, Circle3, CircularArc3, CurveSegment3, Ellipse3, GeometryError, NurbsCurve, NurbsSurface,
@@ -414,15 +415,23 @@ impl Viewport {
         // when the construction plane is edge-on or behind the camera.
         let object_snap = if input.osnap {
             if self.kind == ViewKind::Top {
-                self.unproject(pointer, rect, 0.0).and_then(|query| {
-                    nearest_object_snap(
-                        document,
-                        query,
-                        Real::from(OSNAP_CAPTURE_PIXELS) / Real::from(self.pixels_per_unit),
-                    )
+                let origin = self.world_origin(rect);
+                let scale = Real::from(self.pixels_per_unit);
+                Point3::try_new(self.target.x, self.target.y, 0.0)
                     .ok()
-                    .flatten()
-                })
+                    .and_then(|target| {
+                        nearest_object_snap_relative(
+                            document,
+                            target,
+                            [
+                                (Real::from(pointer.x) - Real::from(origin.x)) / scale,
+                                (Real::from(origin.y) - Real::from(pointer.y)) / scale,
+                            ],
+                            Real::from(OSNAP_CAPTURE_PIXELS) / scale,
+                        )
+                        .ok()
+                        .flatten()
+                    })
             } else {
                 nearest_object_snap_projected(
                     document,
@@ -2725,6 +2734,41 @@ mod tests {
         assert_eq!(viewport.pick_object(center, rect, &document), Some(mesh_id));
         let locked = viewport.project(point(4.0, 0.0, 0.0), rect).unwrap();
         assert_eq!(viewport.pick_object(locked, rect, &document), None);
+    }
+
+    #[test]
+    fn translated_top_osnap_respects_pixel_capture_radius() {
+        let mut view = Viewport::new(ViewKind::Top);
+        view.target.x = 2.0_f64.powi(54);
+        let target = point(view.target.x, 0.0, 0.0);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        for geometry in [
+            Geometry::Point(target),
+            Geometry::PointCloud(PointCloud3::try_new(vec![target]).unwrap()),
+        ] {
+            let mut document = Document::default();
+            document.add_geometry(geometry).unwrap();
+            let projected = view.project(target, rect).unwrap();
+            for offset in [0.0, 11.0, 12.0, 13.0, 20.0] {
+                let cursor = view
+                    .drafting_cursor(
+                        projected + Vec2::new(offset, 0.0),
+                        rect,
+                        &document,
+                        DraftingInput {
+                            active: true,
+                            osnap: true,
+                            ..Default::default()
+                        },
+                    )
+                    .unwrap();
+                assert_eq!(
+                    cursor.object_snap.is_some(),
+                    offset <= OSNAP_CAPTURE_PIXELS,
+                    "offset={offset}"
+                );
+            }
+        }
     }
 
     #[test]

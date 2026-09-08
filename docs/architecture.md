@@ -218,6 +218,10 @@ local cursor offset. Distances are evaluated as `(point - origin) - offset`,
 avoiding loss of cursor precision when forming an absolute world query. Grid
 tests compare indexed results with local-coordinate exhaustive searches at
 zero and large signed translations, including radius boundaries and ties.
+Top-view object snapping uses the same relative-coordinate metric for every
+feature and retains the indexed cloud search. Tests compare snap results with
+an explicit local projection across translated point, cloud, and line scenes,
+including locked targets, and check the viewport's pixel capture boundary.
 
 Implementation is incomplete. General surface/surface
 intersections, editable STEP B-reps,
