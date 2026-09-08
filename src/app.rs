@@ -1109,6 +1109,10 @@ impl VibocerosApp {
     }
 
     fn execute_command(&mut self, input: &str) {
+        self.try_execute_command(input);
+    }
+
+    fn try_execute_command(&mut self, input: &str) -> bool {
         let active_plane = self.viewports[self.active_viewport].construction_plane();
         // Scale2D uses the viewport where the scale factor is supplied, not
         // the one where its center/reference was picked.
@@ -1137,8 +1141,12 @@ impl VibocerosApp {
                     // Observe the document so Undo/Redo follow the same rule.
                     self.last_point = None;
                 }
+                true
             }
-            Err(error) => self.push_log(format!("Error: {error}")),
+            Err(error) => {
+                self.push_log(format!("Error: {error}"));
+                false
+            }
         }
     }
 
@@ -3125,9 +3133,14 @@ impl VibocerosApp {
             }
             InteractiveCommand::Polyline => {
                 if let Some(previous) = self.curve_points.last()
-                    && previous.is_near(point, self.document.tolerance())
+                    && !previous
+                        .distance_to(point)
+                        .is_ok_and(|length| length > self.document.tolerance().absolute())
                 {
-                    self.push_log("Error: adjacent polyline vertices must differ".to_owned());
+                    self.push_log(
+                        "Error: polyline segment length must be finite and greater than tolerance"
+                            .to_owned(),
+                    );
                     return false;
                 }
                 self.curve_points.push(point);
@@ -4555,10 +4568,12 @@ impl VibocerosApp {
             ));
             return;
         }
+        let plane = self.drafting_plane;
         let points = std::mem::take(&mut self.curve_points);
         self.active_command = None;
         let arguments = points
-            .into_iter()
+            .iter()
+            .copied()
             .map(format_model_point)
             .collect::<Vec<_>>()
             .join(" ");
@@ -4573,7 +4588,13 @@ impl VibocerosApp {
             }
             _ => format!("{} {arguments}", command.name()),
         };
-        self.execute_command(&input);
+        if !self.try_execute_command(&input) {
+            // Command transactions restore the document on failure; restore
+            // the independent UI draft too so Enter does not discard work.
+            self.active_command = Some(command);
+            self.curve_points = points;
+            self.drafting_plane = plane;
+        }
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {

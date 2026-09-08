@@ -6,6 +6,59 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn failed_curve_completion_retains_the_draft_for_correction() {
+    let mut app = test_app();
+    enter(&mut app, "Point 9,9,9");
+    enter(&mut app, "Undo");
+    assert!(app.document.can_redo());
+    for input in ["Curve Close=Sharp", "0,0,0", "1,0,0", "0,0,0"] {
+        enter(&mut app, input);
+    }
+    let active = app.active_command;
+    let points = app.curve_points.clone();
+    let plane = app.drafting_plane;
+    let previous = app.last_point;
+    let document = format!("{:?}", app.document);
+    enter(&mut app, "");
+    assert_eq!(app.active_command, active);
+    assert_eq!(app.curve_points, points);
+    assert_eq!(app.drafting_plane, plane);
+    assert_eq!(app.last_point, previous);
+    assert_eq!(format!("{:?}", app.document), document);
+    assert!(app.document.can_redo());
+    enter(&mut app, "0,1,0");
+    enter(&mut app, "");
+    assert!(app.active_command.is_none());
+    assert!(app.curve_points.is_empty());
+    assert_eq!(app.document.objects().len(), 1);
+    assert_eq!(app.document.undo_label(), Some("Curve"));
+}
+
+#[test]
+fn polyline_rejects_overflowing_segments_before_appending_vertices() {
+    for typed in [false, true] {
+        let mut app = test_app();
+        enter(&mut app, "Polyline");
+        enter(&mut app, "-1e308,0,0");
+        let active = app.active_command;
+        let points = app.curve_points.clone();
+        if typed {
+            enter(&mut app, "1e308,0,0");
+            assert_eq!(app.command_input, "1e308,0,0");
+        } else {
+            assert!(!app.accept_drafting_point(point(1e308, 0.0, 0.0)));
+        }
+        assert_eq!(app.active_command, active);
+        assert_eq!(app.curve_points, points);
+        assert_eq!(app.last_point, Some(point(-1e308, 0.0, 0.0)));
+        enter(&mut app, "0,0,0");
+        enter(&mut app, "");
+        assert_eq!(app.document.objects().len(), 1);
+        assert_eq!(app.document.undo_label(), Some("Polyline"));
+    }
+}
+
+#[test]
 fn overflowing_endpoint_distances_preserve_typed_and_picked_drafts() {
     for command in ["Line", "Sphere"] {
         for typed in [false, true] {

@@ -6,6 +6,10 @@ Start a drafting command such as `Line`, then type a point at each prompt.
 Mouse picks and typed coordinates can be mixed. Enter finishes collected-point
 commands such as `Polyline`; Escape discards the unfinished geometry. Successful
 completion uses the existing command transaction and is one undo step.
+If a collected-point command fails on completion, its points, prompt, and
+captured construction plane remain available for correction and retry. The
+failed transaction does not leave partial geometry behind. Polyline segments
+with unrepresentable lengths are rejected before a vertex is appended.
 
 The supported forms follow [Rhino's coordinate-entry documentation](https://docs.mcneel.com/rhino/8mac/help/en-us/user_interface/accurate_modeling.htm):
 
