@@ -91,6 +91,13 @@ impl Vector3 {
             return Self::try_new(direct[0].unwrap(), direct[1].unwrap(), direct[2].unwrap());
         }
 
+        // Binary scaling preserves significands before near-cancelling products
+        // are subtracted. Dividing by arbitrary maxima would round the inputs
+        // first, losing accuracy even with a compensated determinant.
+        let left_scale =
+            Real::from_bits(left_scale.to_bits() & 0x7ff0_0000_0000_0000).max(Real::MIN_POSITIVE);
+        let right_scale =
+            Real::from_bits(right_scale.to_bits() & 0x7ff0_0000_0000_0000).max(Real::MIN_POSITIVE);
         let left = self.to_array().map(|value| value / left_scale);
         let right = other.to_array().map(|value| value / right_scale);
         let normalized = [
@@ -268,6 +275,30 @@ impl TryFrom<[Real; 3]> for Vector3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn scaled_integer_determinants_keep_exact_near_cancellation() {
+        for n in [1_i64 << 26, 1_i64 << 27] {
+            for (left_exponent, right_exponent) in
+                [(0, 0), (-500, -500), (-500, 500), (400, 400), (500, 500)]
+            {
+                let left_scale = 2.0_f64.powi(left_exponent);
+                let right_scale = 2.0_f64.powi(right_exponent);
+                let a = Vector3::try_new(n as f64 * left_scale, (n - 1) as f64 * left_scale, 0.0)
+                    .unwrap();
+                let b = Vector3::try_new((n + 1) as f64 * right_scale, n as f64 * right_scale, 0.0)
+                    .unwrap();
+                // Integer determinant n*n - (n-1)*(n+1) is exactly one.
+                let expected = 2.0_f64.powi(left_exponent + right_exponent);
+                assert_eq!(
+                    a.cross(b).unwrap().z(),
+                    expected,
+                    "n={n}, scales={left_exponent},{right_exponent}"
+                );
+                assert_eq!(b.cross(a).unwrap().z(), -expected);
+            }
+        }
+    }
 
     #[test]
     fn overflow_fallback_preserves_other_representable_cross_components() {

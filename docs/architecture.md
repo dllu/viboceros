@@ -10,7 +10,9 @@ Vector cross products use compensated two-product determinants. Overflow
 recovery is component-local: already-representable components are retained
 instead of being recomputed from globally normalized vectors. Regression tests
 cover cancellation, exact parallelism, disparate magnitudes, axis permutations,
-and genuine result overflow.
+and genuine result overflow. The fallback uses power-of-two scaling to avoid
+rounding input significands before cancellation; exact integer determinants
+with binary-scaled coordinates exercise both ordinary and overflowing products.
 
 | Module | Responsibility |
 | --- | --- |
