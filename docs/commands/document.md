@@ -31,6 +31,11 @@ Hidden and locked objects are skipped before evaluating geometry predicates.
 Selection changes are committed only after every predicate succeeds; a late
 numerical failure preserves preselection, geometry, and undo/redo history.
 
+Basic, previous/last-action, attribute, and duplicate selectors live in the
+`selection_commands` module, separate from geometry predicates and interactive
+picking. Their shared regression checks unchanged geometry/history and replays
+redo and undo after the selection sequence to verify the retained edit history.
+
 `SelNonManifold` adds selectable meshes and B-reps with edges used by more than
 two faces. Open boundaries alone do not qualify. Geometry, visibility, locking,
 and undo/redo history remain unchanged. Tests cover a tetrahedron with an extra
