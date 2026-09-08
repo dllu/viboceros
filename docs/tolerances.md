@@ -2,6 +2,27 @@
 
 [Architecture](architecture.md) · [Document units](units.md)
 
+## Command line
+
+```text
+Tolerance
+Tolerance Absolute=0.01 Relative=0.0001 AngleDegrees=1
+Tolerance AngleRadians=0.001
+Undo
+```
+
+`Tolerance` reports the current settings. Named options may appear in any order;
+omitted settings retain their values. Option names are case-insensitive.
+`AngleDegrees` and `AngleRadians` are mutually exclusive, and duplicate or
+unknown options are errors. Every value must be finite and positive, including
+the stored radians after converting degrees. A complete proposal is validated
+before any change is recorded. Reports always label the stored angle as radians.
+
+This is an explicit Viboceros CLI workflow, not Rhino macro-syntax parity.
+Relative tolerance remains available as part of the geometry kernel's policy.
+
+## Document API
+
 `Document::set_tolerance(tolerance)` changes the validated absolute, relative,
 and angular tolerance policy as one undoable settings edit. Construct the value
 with `Tolerance::try_new(absolute, relative, angular_radians)`; all three values
@@ -19,6 +40,6 @@ tracking are unchanged. In particular, increasing absolute tolerance does not
 delete existing features smaller than the new tolerance or rewrite stored
 B-rep vertex/edge tolerances. Subsequent operations use the new document policy.
 
-This is currently a Rust document API. A tolerance-settings command/editor and
-full tolerance persistence in 3DM are not implemented by this change. `Units`
+There is no graphical tolerance-settings editor yet, and full tolerance
+persistence in 3DM remains unfinished. `Units`
 reports these settings but continues to leave their numeric values unchanged.

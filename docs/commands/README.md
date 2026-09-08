@@ -19,6 +19,7 @@ Rhino's complete command set is still a work in progress.
 - [Extraction, measurement, and intersections](editing.md)
 - [Selection, attributes, layers, and groups](document.md)
 - [Model units](units.md)
+- [Model tolerances](../tolerances.md)
 - [Display modes and drafting controls](interface.md)
 - [Construction-plane editing](../cplane.md)
 

@@ -7,6 +7,23 @@ fn enter(app: &mut VibocerosApp, command: &str) {
 }
 
 #[test]
+fn tolerance_command_updates_settings_through_application_history() {
+    let mut app = test_app();
+    let initial = app.document.tolerance();
+    enter(&mut app, "Tolerance Absolute=0.01 AngleDegrees=1");
+    assert_eq!(app.document.tolerance().absolute(), 0.01);
+    assert_eq!(app.document.tolerance().angular(), 1.0_f64.to_radians());
+    assert_eq!(app.document.tolerance().relative(), initial.relative());
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.tolerance(), initial);
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "Tolerance");
+    assert_eq!(format!("{:?}", app.document), before);
+    enter(&mut app, "Redo");
+    assert_eq!(app.document.tolerance().absolute(), 0.01);
+}
+
+#[test]
 fn units_command_routes_through_the_application_and_preserves_query_redo() {
     use viboceros_geometry::LengthUnitSystem;
     let mut app = test_app();
