@@ -639,9 +639,8 @@ impl Viewport {
                 }
                 Geometry::Line(line) => {
                     let distance = self
-                        .project(line.start(), rect)
-                        .zip(self.project(line.end(), rect))
-                        .map_or(f32::INFINITY, |(start, end)| {
+                        .project_segment(line.start(), line.end(), rect)
+                        .map_or(f32::INFINITY, |[start, end]| {
                             point_segment_distance(pointer, start, end)
                         });
                     (1, distance)
@@ -762,10 +761,13 @@ impl Viewport {
                     projected.add_point(self.project(*point, viewport_rect));
                 }
             }
-            Geometry::Line(line) => projected.add_segment(
-                self.project(line.start(), viewport_rect),
-                self.project(line.end(), viewport_rect),
-            ),
+            Geometry::Line(line) => {
+                if let Some([start, end]) =
+                    self.project_segment(line.start(), line.end(), viewport_rect)
+                {
+                    projected.add_segment(Some(start), Some(end));
+                }
+            }
             Geometry::Circle(circle) => self.add_projected_parametric_curve(
                 &mut projected,
                 viewport_rect,
@@ -786,10 +788,11 @@ impl Viewport {
             ),
             Geometry::Polyline(polyline) => {
                 for segment in polyline.segments() {
-                    projected.add_segment(
-                        self.project(segment.start(), viewport_rect),
-                        self.project(segment.end(), viewport_rect),
-                    );
+                    if let Some([start, end]) =
+                        self.project_segment(segment.start(), segment.end(), viewport_rect)
+                    {
+                        projected.add_segment(Some(start), Some(end));
+                    }
                 }
             }
             Geometry::NurbsCurve(curve) => {
@@ -844,10 +847,12 @@ impl Viewport {
     ) {
         let mut previous = None;
         for sample in 0..=samples {
-            let point = evaluate(sample as Real / samples as Real)
-                .ok()
-                .and_then(|point| self.project(point, rect));
-            projected.add_segment(previous, point);
+            let point = evaluate(sample as Real / samples as Real).ok();
+            if let (Some(start), Some(end)) = (previous, point)
+                && let Some([start, end]) = self.project_segment(start, end, rect)
+            {
+                projected.add_segment(Some(start), Some(end));
+            }
             previous = point;
         }
     }
@@ -868,11 +873,12 @@ impl Viewport {
                 if sample == samples && span_end < domain_end {
                     parameter = span_end.next_down().max(span_start);
                 }
-                let point = curve
-                    .evaluate(parameter)
-                    .ok()
-                    .and_then(|point| self.project(point, rect));
-                projected.add_segment(previous, point);
+                let point = curve.evaluate(parameter).ok();
+                if let (Some(start), Some(end)) = (previous, point)
+                    && let Some([start, end]) = self.project_segment(start, end, rect)
+                {
+                    projected.add_segment(Some(start), Some(end));
+                }
                 previous = point;
             }
         }
@@ -891,10 +897,9 @@ impl Viewport {
         }
         if let Ok(lines) = mesh.wireframe_lines(tolerance) {
             for line in lines {
-                projected.add_segment(
-                    self.project(line.start(), rect),
-                    self.project(line.end(), rect),
-                );
+                if let Some([start, end]) = self.project_segment(line.start(), line.end(), rect) {
+                    projected.add_segment(Some(start), Some(end));
+                }
             }
         }
         if include_faces {
@@ -949,11 +954,10 @@ impl Viewport {
                 if sample == samples && span_end < domain_end {
                     parameter = span_end.next_down().max(span_start);
                 }
-                let projected = curve
-                    .evaluate(parameter)
-                    .ok()
-                    .and_then(|point| self.project(point, rect));
-                if let (Some(start), Some(end)) = (previous, projected) {
+                let projected = curve.evaluate(parameter).ok();
+                if let (Some(start), Some(end)) = (previous, projected)
+                    && let Some([start, end]) = self.project_segment(start, end, rect)
+                {
                     nearest = nearest.min(point_segment_distance(pointer, start, end));
                 }
                 previous = projected;
@@ -989,10 +993,10 @@ impl Viewport {
         let mut nearest = f32::INFINITY;
         let mut previous = None;
         for sample in 0..=samples {
-            let projected = evaluate(sample as Real / samples as Real)
-                .ok()
-                .and_then(|point| self.project(point, rect));
-            if let (Some(start), Some(end)) = (previous, projected) {
+            let projected = evaluate(sample as Real / samples as Real).ok();
+            if let (Some(start), Some(end)) = (previous, projected)
+                && let Some([start, end]) = self.project_segment(start, end, rect)
+            {
                 nearest = nearest.min(point_segment_distance(pointer, start, end));
             }
             previous = projected;
@@ -1003,11 +1007,8 @@ impl Viewport {
     fn polyline_pick_distance(&self, pointer: Pos2, rect: Rect, polyline: &Polyline3) -> f32 {
         polyline
             .segments()
-            .filter_map(|segment| {
-                self.project(segment.start(), rect)
-                    .zip(self.project(segment.end(), rect))
-            })
-            .map(|(start, end)| point_segment_distance(pointer, start, end))
+            .filter_map(|segment| self.project_segment(segment.start(), segment.end(), rect))
+            .map(|[start, end]| point_segment_distance(pointer, start, end))
             .fold(f32::INFINITY, f32::min)
     }
 
@@ -1024,11 +1025,8 @@ impl Viewport {
                 .map(|lines| {
                     lines
                         .into_iter()
-                        .filter_map(|line| {
-                            self.project(line.start(), rect)
-                                .zip(self.project(line.end(), rect))
-                        })
-                        .map(|(start, end)| point_segment_distance(pointer, start, end))
+                        .filter_map(|line| self.project_segment(line.start(), line.end(), rect))
+                        .map(|[start, end]| point_segment_distance(pointer, start, end))
                         .fold(f32::INFINITY, f32::min)
                 })
                 .unwrap_or(f32::INFINITY);
@@ -1350,6 +1348,9 @@ impl Viewport {
         width: f32,
         color: Color32,
     ) {
+        let Some([start, end]) = self.clip_segment(start, end) else {
+            return;
+        };
         if self.project(start, rect).is_none() || self.project(end, rect).is_none() {
             return;
         }
@@ -2145,6 +2146,59 @@ mod tests {
             document,
             vec![egui::Event::PointerMoved(end), pointer_event(end, false)],
         )
+    }
+
+    #[test]
+    fn camera_crossing_lines_remain_visible_and_pickable() {
+        let viewport = Viewport::new(ViewKind::Perspective);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let (right, _, forward) = viewport.perspective_basis();
+        let camera = viewport.target - forward * viewport.perspective_camera_distance;
+        let to_point = |v: NaVector3<Real>| Point3::try_new(v.x, v.y, v.z).unwrap();
+        let start = to_point(camera - forward * 10.0 + right * 2.0);
+        let end = to_point(camera + forward * 20.0 - right * 2.0);
+        let visible = to_point(camera + forward * 12.5 - right);
+        let pointer = viewport.project(visible, rect).unwrap();
+        assert!(viewport.project(start, rect).is_none());
+        for points in [[start, end], [end, start]] {
+            let line =
+                viboceros_geometry::LineSegment::try_new(points[0], points[1], Tolerance::DEFAULT)
+                    .unwrap();
+            for geometry in [
+                Geometry::Line(line),
+                Geometry::NurbsCurve(line.to_nurbs().unwrap()),
+                Geometry::Polyline(
+                    Polyline3::try_new(points.to_vec(), Tolerance::DEFAULT).unwrap(),
+                ),
+            ] {
+                let mut document = Document::default();
+                let id = document.add_geometry(geometry).unwrap();
+                assert_eq!(viewport.pick_object(pointer, rect, &document), Some(id));
+                let object = document.object(id).unwrap();
+                let projected = viewport.projected_primitives(
+                    object.geometry(),
+                    object.attributes(),
+                    rect,
+                    Tolerance::DEFAULT,
+                );
+                assert!(
+                    projected.is_crossed_by(Rect::from_center_size(pointer, Vec2::splat(10.0)))
+                );
+            }
+            let mut scene = GpuSceneBuilder::new();
+            viewport.add_gpu_line(&mut scene, rect, points[0], points[1], 1.0, Color32::BLACK);
+            assert_eq!(scene.lines.len(), 1);
+            let clipped = viewport.clip_segment(points[0], points[1]).unwrap();
+            assert!(clipped.iter().all(|p| viewport.view_depth(*p) > 0.0));
+        }
+        let behind = to_point(camera - forward * 20.0);
+        assert_eq!(viewport.clip_segment(visible, end), Some([visible, end]));
+        let parallel = Viewport::new(ViewKind::Top);
+        assert_eq!(parallel.clip_segment(start, behind), Some([start, behind]));
+        assert!(viewport.project_segment(start, behind, rect).is_none());
+        let mut scene = GpuSceneBuilder::new();
+        viewport.add_gpu_line(&mut scene, rect, start, behind, 1.0, Color32::BLACK);
+        assert!(scene.lines.is_empty());
     }
 
     #[test]

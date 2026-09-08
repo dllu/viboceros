@@ -4,6 +4,14 @@
 
 The application opens with Top, Perspective, Front, and Right viewports.
 Each supports wireframe, shaded, and ghosted display, with independent navigation.
+Perspective wire segments crossing the camera plane are clipped before GPU
+submission and click/crossing-selection projection, rather than disappearing
+because one endpoint is behind the camera. The shared path covers lines,
+polylines, sampled curves, and mesh wires. A scale-aware rounding guard keeps
+reconstructed endpoints in front of the GPU near-plane floor; source geometry
+is not modified. Regressions exercise both endpoint orders, line/polyline/NURBS
+picking, crossing selection, and GPU submission. Triangle-face near-plane
+clipping and full Rhino visibility parity remain unverified.
 The compact toolbar contains Undo/Redo, active-viewport view/display selectors,
 Grid Snap, Osnap, and SmartTrack. Modeling commands remain in the command line;
 the toolbar wraps at narrow window widths. Undo/Redo buttons are disabled while

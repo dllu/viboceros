@@ -4,6 +4,63 @@ use super::*;
 use nalgebra::Matrix4 as NaMatrix4;
 
 impl Viewport {
+    fn perspective_near_floor(&self) -> Real {
+        (self.perspective_camera_distance * 1e-6).max(1e-6)
+    }
+
+    /// Clip the invisible part of a perspective segment before projecting its
+    /// endpoints. The guard covers rounding when reconstructing a model point
+    /// close to the camera plane; it is not a model-space geometry edit.
+    pub(super) fn clip_segment(&self, start: Point3, end: Point3) -> Option<[Point3; 2]> {
+        if self.kind.is_parallel() {
+            return Some([start, end]);
+        }
+        let depths = [self.view_depth(start), self.view_depth(end)];
+        if depths.iter().any(|depth| !depth.is_finite()) {
+            return None;
+        }
+        let scale = start
+            .to_array()
+            .into_iter()
+            .chain(end.to_array())
+            .chain(self.target.iter().copied())
+            .fold(self.perspective_camera_distance.max(1.0), |scale, value| {
+                scale.max(value.abs())
+            });
+        let near = self.perspective_near_floor() + 64.0 * Real::EPSILON * scale;
+        if depths.iter().all(|depth| *depth < near) {
+            return None;
+        }
+        if depths.iter().all(|depth| *depth >= near) {
+            return Some([start, end]);
+        }
+        let fraction = (near - depths[0]) / (depths[1] - depths[0]);
+        if !fraction.is_finite() {
+            return None;
+        }
+        let a = start.to_array();
+        let b = end.to_array();
+        let clipped = Point3::try_from(std::array::from_fn(|axis| {
+            (1.0 - fraction).mul_add(a[axis], fraction * b[axis])
+        }))
+        .ok()?;
+        Some(if depths[0] < near {
+            [clipped, end]
+        } else {
+            [start, clipped]
+        })
+    }
+
+    pub(super) fn project_segment(
+        &self,
+        start: Point3,
+        end: Point3,
+        rect: Rect,
+    ) -> Option<[Pos2; 2]> {
+        let [start, end] = self.clip_segment(start, end)?;
+        Some([self.project(start, rect)?, self.project(end, rect)?])
+    }
+
     pub(super) fn unproject_drafting_plane(
         &self,
         pointer: Pos2,
@@ -268,9 +325,7 @@ impl Viewport {
                     self.perspective_camera_distance * 0.5,
                     self.perspective_camera_distance * 1.5,
                 ));
-                let near = (minimum_depth * 0.5)
-                    .max(self.perspective_camera_distance * 1.0e-6)
-                    .max(1.0e-6);
+                let near = (minimum_depth * 0.5).max(self.perspective_near_floor());
                 let far = (maximum_depth * 1.5)
                     .max(self.perspective_camera_distance * 2.0)
                     .max(near + 1.0);
