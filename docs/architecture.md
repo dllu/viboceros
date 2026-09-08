@@ -98,7 +98,11 @@ Length, Area, and Volume, with shared streaming exact finite-value aggregation a
 separate nonnegative/signed policies. Its tests live beside the implementation.
 `curve/area` dispatches enclosed curve area to analytic formulas or the existing
 exact planar-face boundary integrator; temporary topology stays outside the document.
-The app's `viewport/selection` module owns selectable-object filtering, click
+The app's `viewport/drafting` module resolves the drafting cursor through the
+shared drafting kernel and draws construction-plane grids, accepted points,
+tracking guides, snap markers, and cursor labels. Guide clipping happens before
+dash tessellation, keeping distant anchors from causing unbounded allocations.
+The `viewport/selection` module owns selectable-object filtering, click
 dispatch and curve capture, projected primitives for window/crossing selection,
 and selection-window feedback. The interaction loop delegates selection to this
 module; projected curve segments are also reused for drafting previews.
