@@ -103,6 +103,8 @@ is rejected without changing the draft, preview, or relative origin; use Undo
 to replace a point or Enter to finish. A sharp closure may require one extra
 repeated seam point within that same limit. This is a Viboceros implementation
 limit, not a measured Rhino restriction.
+Open cubic interpolation uses a linear-memory tridiagonal solve, with a pivoted
+dense fallback for ordinary-size systems that the fast path cannot solve.
 Model-space preview geometry is cached by points, construction mode, settings,
 and interpolation tolerance, including
 failed constructions. Camera movement reprojects it without rebuilding the curve;

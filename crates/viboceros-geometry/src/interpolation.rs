@@ -394,25 +394,30 @@ fn interpolate_open_cubic(
             .as_vector()
             .scaled(-points[points.len() - 2].distance_to(points[points.len() - 1])? / 3.0)?,
     )?;
-    let controls = if control_count <= MAX_DENSE_INTERPOLATION_CONTROL_POINTS {
-        solve_open_cubic_dense(
-            points,
-            &parameters,
-            &knots,
-            control_count,
-            start_handle,
-            end_handle,
-        )?
-    } else {
-        solve_open_cubic_tridiagonal(
-            points,
-            &parameters,
-            &knots,
-            control_count,
-            start_handle,
-            end_handle,
-        )?
-    };
+    let controls = solve_open_cubic_tridiagonal(
+        points,
+        &parameters,
+        &knots,
+        control_count,
+        start_handle,
+        end_handle,
+    )
+    .or_else(|error| {
+        // Keep a pivoted fallback for ordinary-size systems, without
+        // allocating a dense matrix for large internal interpolation sets.
+        if control_count <= MAX_DENSE_INTERPOLATION_CONTROL_POINTS {
+            solve_open_cubic_dense(
+                points,
+                &parameters,
+                &knots,
+                control_count,
+                start_handle,
+                end_handle,
+            )
+        } else {
+            Err(error)
+        }
+    })?;
     NurbsCurve::try_new(CUBIC_DEGREE, controls, knots)
 }
 
@@ -1137,6 +1142,78 @@ mod tests {
                     < 2.0e-12,
                 "interpolation missed point {index}"
             );
+        }
+    }
+
+    #[test]
+    fn tridiagonal_matches_pivoted_dense_controls_across_sizes_spacing_and_scales() {
+        for count in [3, 8, 32, 128, 256] {
+            for spacing in [
+                CurveKnotSpacing::Uniform,
+                CurveKnotSpacing::Chord,
+                CurveKnotSpacing::SquareRootChord,
+            ] {
+                for scale in [1e-100, 1., 1e100] {
+                    let points = (0..count)
+                        .map(|i| {
+                            let x = i as f64 * 0.1;
+                            point(x * scale, x.sin() * scale, (x * 0.7).cos() * scale)
+                        })
+                        .collect::<Vec<_>>();
+                    let parameters = cumulative_parameters(
+                        &interpolation_intervals(&points, spacing, false).unwrap(),
+                    )
+                    .unwrap();
+                    let control_count = count + 2;
+                    let mut knots = vec![parameters[0]; 4];
+                    knots.extend_from_slice(&parameters[1..count - 1]);
+                    knots.extend([parameters[count - 1]; 4]);
+                    // Fixed endpoint handles exercise the same reduced system
+                    // used for automatic and user-specified tangent directions.
+                    let start = points[0]
+                        .translated(Vector3::try_new(scale * 0.03, scale * 0.02, 0.).unwrap())
+                        .unwrap();
+                    let end = points[count - 1]
+                        .translated(Vector3::try_new(-scale * 0.02, scale * 0.01, 0.).unwrap())
+                        .unwrap();
+                    let dense = solve_open_cubic_dense(
+                        &points,
+                        &parameters,
+                        &knots,
+                        control_count,
+                        start,
+                        end,
+                    )
+                    .unwrap();
+                    let sparse = solve_open_cubic_tridiagonal(
+                        &points,
+                        &parameters,
+                        &knots,
+                        control_count,
+                        start,
+                        end,
+                    )
+                    .unwrap();
+                    for (a, b) in dense.iter().zip(&sparse) {
+                        assert!(
+                            a.distance_to(*b).unwrap() / scale <= 1e-10,
+                            "{count} {spacing:?} {scale}"
+                        );
+                    }
+                    let curve = NurbsCurve::try_new(3, sparse, knots).unwrap();
+                    for (&parameter, expected) in parameters.iter().zip(&points) {
+                        assert!(
+                            curve
+                                .evaluate(parameter)
+                                .unwrap()
+                                .distance_to(*expected)
+                                .unwrap()
+                                / scale
+                                <= 1e-10
+                        );
+                    }
+                }
+            }
         }
     }
 
