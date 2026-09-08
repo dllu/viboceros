@@ -65,13 +65,17 @@ rounding to segment endpoints solely because the original domain is subnormal
 or narrowly translated. Tests use exact L-shaped midpoints, native corner
 parameters, and both standalone and composite polylines.
 
-Standalone polyline point/tangent sampling evaluates each segment directly from
+Line and polyline point/tangent sampling evaluates each linear span directly from
 its local distance fraction. It does not re-evaluate a rounded native parameter,
 so a unit-length segment with a one-subnormal-wide parameter interval can still
 produce its exact quarter, midpoint, and three-quarter points. Exact junctions
 use outgoing tangents. Returned parameters still obey floating-point resolution
-limits. This direct local path does not yet cover polyline leaves inside
-composites; those retain the normalized-frame path described below.
+limits. Span metadata retains source-segment indices, allowing the same direct
+path for line and polyline leaves inside composites without copying endpoints
+into every span. Regressions check both composite representations of the same
+L-shaped path, including interior points on both legs and outgoing corner tangents.
+This does not eliminate normalization failures when distinct outer breaks or
+mapped leaf spans collapse entirely; nonlinear spans still use numerical inversion.
 
 Polycurve sampling likewise normalizes the outer domain before mapping leaf
 spans into it. Shared `polycurve/integration_frame` preparation also normalizes

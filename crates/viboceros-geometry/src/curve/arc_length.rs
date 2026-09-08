@@ -43,6 +43,16 @@ fn checked_lookup_nodes_per_span(
 }
 
 #[derive(Clone, Copy, Debug)]
+enum LinearSpan {
+    Line,
+    Polyline(usize),
+    CompositeLine(usize),
+    CompositePolyline(usize, usize),
+}
+
+type RawSpan = (Real, Real, Real, bool, Option<LinearSpan>);
+
+#[derive(Clone, Copy, Debug)]
 struct ParameterSpan {
     start: Real,
     end: Real,
@@ -50,6 +60,7 @@ struct ParameterSpan {
     cumulative_start: Real,
     cumulative_end: Real,
     variable_speed: bool,
+    linear: Option<LinearSpan>,
 }
 
 pub(crate) struct ArcLengthSampler<'a> {
@@ -100,7 +111,7 @@ impl<'a> ArcLengthSampler<'a> {
         let mut spans = Vec::with_capacity(raw_spans.len());
         let mut sum = 0.0;
         let mut correction = 0.0;
-        for (start, end, length, variable_speed) in raw_spans {
+        for (start, end, length, variable_speed, linear) in raw_spans {
             require_finite([start, end, length], "curve arc-length span")?;
             if start >= end || length < 0.0 {
                 return Err(GeometryError::NumericalIntegrationDidNotConverge);
@@ -118,6 +129,7 @@ impl<'a> ArcLengthSampler<'a> {
                 cumulative_start,
                 cumulative_end,
                 variable_speed,
+                linear,
             });
         }
         let total_length = sum + correction;
@@ -380,7 +392,7 @@ impl<'a> ArcLengthSampler<'a> {
         fractional_tolerance: Option<Real>,
     ) -> Result<Point3, GeometryError> {
         let parameter = self.parameter_at_distance_impl(distance, fractional_tolerance)?;
-        if let Some((line, fraction)) = self.polyline_distance_location(distance) {
+        if let Some((line, fraction)) = self.linear_distance_location(distance) {
             return line.point_at(fraction);
         }
         if distance == self.total_length {
@@ -442,7 +454,7 @@ impl<'a> ArcLengthSampler<'a> {
 
     pub(crate) fn sample_at_distance(&self, distance: Real) -> Result<CurveSample, GeometryError> {
         let parameter = self.parameter_at_distance_impl(distance, None)?;
-        let mut sample = if let Some((line, fraction)) = self.polyline_distance_location(distance) {
+        let mut sample = if let Some((line, fraction)) = self.linear_distance_location(distance) {
             CurveRef::Line(&line).evaluate_with_tangent(fraction)?
         } else {
             self.curve().evaluate_with_tangent(parameter)?
@@ -457,22 +469,38 @@ impl<'a> ArcLengthSampler<'a> {
     // Distance has already been validated. Sample linear geometry from its
     // local distance fraction, never from a rounded native parameter. At an
     // exact junction use the outgoing segment, matching right-sided tangents.
-    fn polyline_distance_location(&self, distance: Real) -> Option<(crate::LineSegment, Real)> {
-        let CurveRef::Polyline(curve) = self.curve() else {
-            return None;
-        };
+    fn linear_distance_location(&self, distance: Real) -> Option<(crate::LineSegment, Real)> {
         let index = self
             .spans
             .partition_point(|span| span.cumulative_end <= distance)
             .min(self.spans.len() - 1);
         let span = self.spans[index];
+        let (curve, edge) = match span.linear? {
+            LinearSpan::Line => (self.curve(), None),
+            LinearSpan::Polyline(edge) => (self.curve(), Some(edge)),
+            LinearSpan::CompositeLine(segment) => {
+                let CurveRef::PolyCurve(curve) = self.curve() else {
+                    unreachable!()
+                };
+                (curve.segments()[segment].as_ref(), None)
+            }
+            LinearSpan::CompositePolyline(segment, edge) => {
+                let CurveRef::PolyCurve(curve) = self.curve() else {
+                    unreachable!()
+                };
+                (curve.segments()[segment].as_ref(), Some(edge))
+            }
+        };
+        let (start, end) = match (curve, edge) {
+            (CurveRef::Line(line), None) => (line.start(), line.end()),
+            (CurveRef::Polyline(curve), Some(edge)) => {
+                (curve.vertices()[edge], curve.vertices()[edge + 1])
+            }
+            _ => unreachable!("linear span metadata matches its source geometry"),
+        };
         let fraction = ((distance - span.cumulative_start) / span.length).clamp(0.0, 1.0);
         Some((
-            crate::LineSegment::from_validated(
-                curve.vertices()[index],
-                curve.vertices()[index + 1],
-                [0.0, 1.0],
-            ),
+            crate::LineSegment::from_validated(start, end, [0.0, 1.0]),
             fraction,
         ))
     }
@@ -581,16 +609,14 @@ impl<'a> ArcLengthSampler<'a> {
     }
 }
 
-fn raw_spans(
-    curve: CurveRef<'_>,
-    tolerance: Tolerance,
-) -> Result<Vec<(Real, Real, Real, bool)>, GeometryError> {
+fn raw_spans(curve: CurveRef<'_>, tolerance: Tolerance) -> Result<Vec<RawSpan>, GeometryError> {
     Ok(match curve {
         CurveRef::Line(line) => vec![(
             *line.domain().start(),
             *line.domain().end(),
             line.length()?,
             false,
+            Some(LinearSpan::Line),
         )],
         CurveRef::Circle(circle) => {
             let quadrant_length = circle.length()? * 0.25;
@@ -601,6 +627,7 @@ fn raw_spans(
                         curve.parameter_at((quadrant + 1) as Real * 0.25)?,
                         quadrant_length,
                         false,
+                        None,
                     ))
                 })
                 .collect::<Result<Vec<_>, GeometryError>>()?
@@ -610,6 +637,7 @@ fn raw_spans(
             *arc.domain().end(),
             arc.length()?,
             false,
+            None,
         )],
         CurveRef::Ellipse(ellipse) => {
             let quadrant_length = integrate_speed(0.0, FRAC_PI_2, tolerance, |angle| {
@@ -625,6 +653,7 @@ fn raw_spans(
                         curve.parameter_at((quadrant + 1) as Real * 0.25)?,
                         quadrant_length,
                         true,
+                        None,
                     ))
                 })
                 .collect::<Result<Vec<_>, GeometryError>>()?
@@ -638,6 +667,7 @@ fn raw_spans(
                     polyline.parameters()[index + 1],
                     segment.length()?,
                     false,
+                    Some(LinearSpan::Polyline(index)),
                 ))
             })
             .collect::<Result<Vec<_>, GeometryError>>()?,
@@ -647,19 +677,27 @@ fn raw_spans(
                 let length = integrate_speed(start, end, tolerance, |parameter| {
                     curve.derivative_at(parameter)?.length()
                 })?;
-                Ok((start, end, length, true))
+                Ok((start, end, length, true, None))
             })
             .collect::<Result<Vec<_>, GeometryError>>()?,
         CurveRef::PolyCurve(curve) => {
             let mut spans = Vec::new();
             for (index, segment) in curve.segments().iter().enumerate() {
-                for (start, end, length, variable_speed) in raw_spans(segment.as_ref(), tolerance)?
+                for (start, end, length, variable_speed, linear) in
+                    raw_spans(segment.as_ref(), tolerance)?
                 {
                     spans.push((
                         curve.polycurve_parameter(index, start)?,
                         curve.polycurve_parameter(index, end)?,
                         length,
                         variable_speed,
+                        linear.map(|linear| match linear {
+                            LinearSpan::Line => LinearSpan::CompositeLine(index),
+                            LinearSpan::Polyline(edge) => {
+                                LinearSpan::CompositePolyline(index, edge)
+                            }
+                            _ => unreachable!("polycurve leaves are not nested composites"),
+                        }),
                     ));
                 }
             }
@@ -883,6 +921,52 @@ mod tests {
         for invalid in [f64::NAN, f64::INFINITY] {
             assert!(sampler.distance_at_parameter(invalid).is_err());
             assert!(sampler.sample_at_distance(invalid).is_err());
+        }
+    }
+
+    #[test]
+    fn composite_linear_samples_preserve_tiny_leaf_intervals() {
+        use crate::{CurveSegment3, PolyCurve3, Polyline3};
+        let leaf = Polyline3::try_with_parameters(
+            [[0., 0., 0.], [1., 0., 0.], [1., 1., 0.]]
+                .map(|p| Point3::try_from(p).unwrap())
+                .to_vec(),
+            vec![0., f64::from_bits(1), 1.],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let lines = PolyCurve3::try_with_segment_domains(
+            leaf.segments().map(CurveSegment3::Line).collect::<Vec<_>>(),
+            vec![0., f64::from_bits(1), 1.],
+        )
+        .unwrap();
+        let composite =
+            PolyCurve3::try_with_segment_domains(vec![CurveSegment3::Polyline(leaf)], vec![0., 1.])
+                .unwrap();
+        for curve in [lines, composite] {
+            let sampler =
+                ArcLengthSampler::try_new(CurveRef::PolyCurve(&curve), Tolerance::DEFAULT).unwrap();
+            for distance in [0.25, 0.5, 0.75, 1.25, 1.5, 1.75] {
+                let expected = if distance < 1. {
+                    Point3::try_new(distance, 0., 0.).unwrap()
+                } else {
+                    Point3::try_new(1., distance - 1., 0.).unwrap()
+                };
+                assert_eq!(sampler.point_at_distance(distance).unwrap(), expected);
+                assert_eq!(
+                    sampler.sample_at_distance(distance).unwrap().point(),
+                    expected
+                );
+            }
+            assert_eq!(
+                sampler
+                    .sample_at_distance(1.)
+                    .unwrap()
+                    .tangent()
+                    .as_vector()
+                    .to_array(),
+                [0., 1., 0.]
+            );
         }
     }
 
