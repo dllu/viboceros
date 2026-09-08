@@ -3,10 +3,33 @@
 use super::{Pos2, Real, Rect};
 
 pub(super) fn signed_area(start: Pos2, end: Pos2, target: Pos2) -> Real {
-    (Real::from(end.x) - Real::from(start.x)).mul_add(
-        Real::from(target.y) - Real::from(start.y),
-        -(Real::from(end.y) - Real::from(start.y)) * (Real::from(target.x) - Real::from(start.x)),
-    )
+    if !start.is_finite() || !end.is_finite() || !target.is_finite() {
+        return Real::NAN;
+    }
+    let [ax, ay] = [Real::from(start.x), Real::from(start.y)];
+    let [bx, by] = [Real::from(end.x), Real::from(end.y)];
+    let [px, py] = [Real::from(target.x), Real::from(target.y)];
+    // Each product of original f32 coordinates is exact in f64. An
+    // error-free expansion retains small terms through cancellation.
+    let mut partials = [0.0; 6];
+    let mut length = 0;
+    for mut term in [ax * by, -ay * bx, bx * py, -by * px, px * ay, -py * ax] {
+        let mut count = 0;
+        for i in 0..length {
+            let value = partials[i];
+            let sum = term + value;
+            let virtual_value = sum - term;
+            let error = (term - (sum - virtual_value)) + (value - virtual_value);
+            if error != 0.0 {
+                partials[count] = error;
+                count += 1;
+            }
+            term = sum;
+        }
+        partials[count] = term;
+        length = count + 1;
+    }
+    partials[..length].iter().sum()
 }
 
 pub(super) fn segment_intersects_rect(start: Pos2, end: Pos2, rect: Rect) -> bool {
@@ -107,27 +130,7 @@ pub(super) fn point_segment_distance(point: Pos2, start: Pos2, end: Pos2) -> f32
     } else if (px - bx).mul_add(dx, (py - by) * dy) >= 0.0 {
         (px - bx).hypot(py - by)
     } else {
-        // Each product of original f32 coordinates is exact in f64. An
-        // error-free expansion retains small terms through cancellation.
-        let mut partials = [0.0; 6];
-        let mut length = 0;
-        for mut term in [ax * by, -ay * bx, bx * py, -by * px, px * ay, -py * ax] {
-            let mut count = 0;
-            for i in 0..length {
-                let value = partials[i];
-                let sum = term + value;
-                let virtual_value = sum - term;
-                let error = (term - (sum - virtual_value)) + (value - virtual_value);
-                if error != 0.0 {
-                    partials[count] = error;
-                    count += 1;
-                }
-                term = sum;
-            }
-            partials[count] = term;
-            length = count + 1;
-        }
-        partials[..length].iter().sum::<Real>().abs() / dx.hypot(dy)
+        signed_area(start, end, point).abs() / dx.hypot(dy)
     };
     if distance.is_finite() && distance <= Real::from(f32::MAX) {
         distance as f32
@@ -153,6 +156,66 @@ pub(super) fn point_in_triangle(point: Pos2, first: Pos2, second: Pos2, third: P
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn screen_determinants_agree_with_exact_accumulation() {
+        let mut state = 0x8172_93a5_u32;
+        let mut coordinate = || {
+            state ^= state << 13;
+            state ^= state >> 17;
+            state ^= state << 5;
+            let bits = if state & 0x7f80_0000 == 0x7f80_0000 {
+                state ^ 0x0080_0000
+            } else {
+                state
+            };
+            f32::from_bits(bits)
+        };
+        for _ in 0..5000 {
+            let [a, b, p] = std::array::from_fn(|_| Pos2::new(coordinate(), coordinate()));
+            let [ax, ay, bx, by, px, py] = [a.x, a.y, b.x, b.y, p.x, p.y].map(Real::from);
+            let mut exact = viboceros_geometry::FiniteSum::default();
+            for term in [ax * by, -ay * bx, bx * py, -by * px, px * ay, -py * ax] {
+                exact.add(term).unwrap();
+            }
+            let expected = exact.total().unwrap();
+            let actual = signed_area(a, b, p);
+            assert!(
+                actual == expected
+                    || actual == expected.next_up()
+                    || actual == expected.next_down(),
+                "actual={actual:e}, expected={expected:e}, a={a:?}, b={b:?}, p={p:?}"
+            );
+            assert_eq!(actual == 0.0, expected == 0.0);
+            if expected != 0.0 {
+                assert_eq!(actual.is_sign_negative(), expected.is_sign_negative());
+            }
+        }
+    }
+
+    #[test]
+    fn long_triangle_retains_area_and_distinguishes_sides_of_its_edge() {
+        for scale in [1e20, f32::MAX] {
+            let a = Pos2::new(-scale, -scale);
+            let b = Pos2::new(scale, scale);
+            let c = Pos2::new(0.0, 1000.0);
+            let inside = Pos2::new(400.0, 401.0);
+            let outside = Pos2::new(400.0, 399.0);
+            assert_eq!(signed_area(a, b, inside), 2.0 * Real::from(scale));
+            assert_eq!(signed_area(a, b, outside), -2.0 * Real::from(scale));
+            for [first, second, third] in [
+                [a, b, c],
+                [b, c, a],
+                [c, a, b],
+                [b, a, c],
+                [c, b, a],
+                [a, c, b],
+            ] {
+                assert!(point_in_triangle(inside, first, second, third));
+                assert!(!point_in_triangle(outside, first, second, third));
+            }
+        }
+    }
 
     #[test]
     fn long_segment_capture_measures_perpendicular_distance() {

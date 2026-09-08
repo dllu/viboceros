@@ -125,6 +125,10 @@ Segment click distances use separate endpoint dot tests and a perpendicular
 determinant, rather than reconstructing a nearest point from a rounded parameter.
 A fixed-size, allocation-free expansion preserves cancelling coordinate products.
 Tests check 15,625 integer-reference distances and long-segment document capture.
+The same determinant is used by triangle containment and face-depth weights.
+Tests retain the area and distinguish both sides of long triangle edges in all
+vertex orders; 5,000 finite-coordinate cases check determinant signs and values
+against the geometry kernel's exact accumulator (within one f64 ULP).
 Constant-depth faces retain their exact depth rather than accumulating rounded
 barycentric products. Parallel interpolated depths are bounded by vertex depths;
 a scaled, renormalized fallback handles overflowing products at captured edges.
