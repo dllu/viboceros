@@ -9,6 +9,8 @@ mod object_geometry;
 mod object_layer;
 mod object_lookup;
 mod object_order;
+mod object_properties;
+use object_properties::ObjectProperties;
 mod selection;
 mod settings;
 mod units;
@@ -1658,7 +1660,7 @@ impl Document {
         &mut self,
         ids: impl IntoIterator<Item = ObjectId>,
         label: &'static str,
-        change: impl Fn(&mut Object),
+        change: impl Fn(&mut ObjectProperties),
     ) -> Result<usize, DocumentError> {
         let mut remaining = ids.into_iter().collect::<BTreeSet<_>>();
         if remaining.is_empty() {
@@ -1669,7 +1671,7 @@ impl Document {
             if !remaining.remove(&object.id) {
                 continue;
             }
-            let before = object.clone();
+            let before = ObjectProperties::from(object);
             let mut after = before.clone();
             change(&mut after);
             if before != after {
@@ -1693,10 +1695,10 @@ impl Document {
         }
         for (index, before, after) in staged {
             let id = before.id;
-            self.objects[index] = after.clone();
+            after.apply_to(&mut self.objects[index]);
             self.record_edit(
                 label,
-                Edit::ObjectChanged {
+                Edit::ObjectPropertiesChanged {
                     id,
                     selected: self.is_selected(id),
                     states: Box::new([before, after]),
@@ -1714,14 +1716,14 @@ impl Document {
         &mut self,
         ids: impl IntoIterator<Item = ObjectId>,
         label: &'static str,
-        change: impl Fn(&mut Object),
+        change: impl Fn(&mut ObjectProperties),
     ) -> Result<usize, DocumentError> {
         let indices = self.resolve_object_indices(ids)?;
         let mut staged = Vec::with_capacity(indices.len());
         for index in indices {
             let object = &self.objects[index];
             self.ensure_object_editable(object)?;
-            let before = object.clone();
+            let before = ObjectProperties::from(object);
             let mut after = before.clone();
             change(&mut after);
             if before != after {
@@ -1739,10 +1741,10 @@ impl Document {
         }
         for (index, before, after) in staged {
             let id = before.id;
-            self.objects[index] = after.clone();
+            after.apply_to(&mut self.objects[index]);
             self.record_edit(
                 label,
-                Edit::ObjectChanged {
+                Edit::ObjectPropertiesChanged {
                     id,
                     selected: self.is_selected(id),
                     states: Box::new([before, after]),
@@ -1788,6 +1790,7 @@ impl Document {
             Edit::ObjectInserted { id, .. }
             | Edit::ObjectRemoved { id, .. }
             | Edit::ObjectChanged { id, .. }
+            | Edit::ObjectPropertiesChanged { id, .. }
             | Edit::ObjectGroupsChanged { id, .. } => Some(*id),
             _ => None,
         }
@@ -1811,6 +1814,7 @@ impl Document {
             Edit::ObjectInserted { .. }
             | Edit::ObjectRemoved { .. }
             | Edit::ObjectChanged { .. }
+            | Edit::ObjectPropertiesChanged { .. }
             | Edit::LayerInserted { .. }
             | Edit::LayerRemoved { .. }
             | Edit::LayerChanged { .. }

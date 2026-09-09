@@ -63,6 +63,11 @@ pub(super) enum Edit {
         /// Keep large before/after snapshots out of every small history edit.
         states: Box<[Object; 2]>,
     },
+    ObjectPropertiesChanged {
+        id: ObjectId,
+        selected: bool,
+        states: Box<[super::ObjectProperties; 2]>,
+    },
     ObjectsMovedToEnd {
         moved: Vec<(usize, ObjectId)>,
         object_count: usize,
@@ -149,6 +154,14 @@ impl Edit {
                 selected,
             } => {
                 replace_object(document, *id, &states[1], &states[0])?;
+                exchange_selection(document, *id, selected, true);
+            }
+            Self::ObjectPropertiesChanged {
+                id,
+                states,
+                selected,
+            } => {
+                super::object_properties::replace(document, *id, &states[1], &states[0])?;
                 exchange_selection(document, *id, selected, true);
             }
             Self::ObjectsMovedToEnd {
@@ -239,6 +252,14 @@ impl Edit {
                 selected,
             } => {
                 replace_object(document, *id, &states[0], &states[1])?;
+                exchange_selection(document, *id, selected, true);
+            }
+            Self::ObjectPropertiesChanged {
+                id,
+                states,
+                selected,
+            } => {
+                super::object_properties::replace(document, *id, &states[0], &states[1])?;
                 exchange_selection(document, *id, selected, true);
             }
             Self::ObjectsMovedToEnd {

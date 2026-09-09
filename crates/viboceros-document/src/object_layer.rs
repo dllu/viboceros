@@ -30,13 +30,14 @@ impl Document {
             self.begin_transaction("Set object layer")?;
         }
         for index in staged {
-            let mut after = self.objects[index].clone();
+            let before = super::ObjectProperties::from(&self.objects[index]);
+            let mut after = before.clone();
             after.attributes.layer_id = layer_id;
             let id = after.id;
-            let before = std::mem::replace(&mut self.objects[index], after.clone());
+            after.apply_to(&mut self.objects[index]);
             self.record_edit(
                 "Set object layer",
-                Edit::ObjectChanged {
+                Edit::ObjectPropertiesChanged {
                     id,
                     selected: self.is_selected(id),
                     states: Box::new([before, after]),

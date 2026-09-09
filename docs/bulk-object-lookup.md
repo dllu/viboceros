@@ -81,8 +81,8 @@ Layer copies also preflight memberships of the sources that will actually be
 copied and reserve object capacity before opening a transaction. Corrupt
 memberships on a later source must leave the document and any caller-owned
 transaction unchanged. Same-layer sources remain skipped after editability
-validation. Layer moves stage only indices, then move old objects into history
-instead of cloning a separate old state during staging.
+validation. Layer moves stage only indices and record geometry-free property
+history, leaving the original geometry allocation untouched during edit and replay.
 
 The 20,000-point debug diagnostic measured layer reassignment at about 1.13 s
 before consolidation and 83 ms afterward; copy-to-layer went from 1.18 s to

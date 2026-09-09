@@ -23,6 +23,22 @@ whole-mesh selection. The document kernel stores a selection bit with each
 object edit and exchanges only that object's bit on replay; it does not clone
 the whole document selection for each edit.
 
+## Property history
+
+The document's `object_properties` module snapshots only object identity,
+attributes, and isolation mode for name, color, visibility, locking, isolation,
+and layer-assignment edits. These edits never clone or replace geometry or
+group memberships, including during Undo/Redo and rollback. Replay validates
+the expected property state and retains the same selection-exchange behavior
+as geometry edits. Missing objects, mismatched identities, and unexpected
+properties are errors before mutation.
+
+Native tests verify exact object restoration and unchanged backing allocation
+of a 10,000-vertex polyline through name, color, visibility, lock, and layer
+changes, standalone or in caller transactions. They also check invalid replay
+is read-only. Geometry edits retain their separate whole-object history states;
+this does not change their allocation or replay costs.
+
 ## Verification
 
 `undo_selection.json` runs 10 actual Rhino command traces after the setup script

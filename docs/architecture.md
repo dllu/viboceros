@@ -38,6 +38,8 @@ and copy/group transactions with the other transform commands.
 The document's independent `groups` module owns ordered object memberships and
 their reverse member index. Lightweight membership history records preserve
 order without cloning geometry; see [group invariants](groups.md).
+The `object_properties` module keeps attribute and isolation history separate
+from geometry; see [property history](history-selection.md#property-history).
 The [batch-deletion module](batch-deletion.md) moves removed objects into compact
 history records and restores table order without repeated vector insertions.
 The [ordered selection iterator](selection-iteration.md) shares efficient,
