@@ -37,6 +37,21 @@ The same 20,000-object diagnostic separately times direct selection setup:
 about 2.09 s before batched validation and 40 ms afterward. This measurement does
 not cover every attribute-based selection command.
 
+## Object-table selection filters
+
+Select-all, inversion, name-pattern selection, and display-color selection
+check the object already borrowed from the table instead of looking its ID up
+again. They share the same selectability predicate as ID-based callers, retaining
+object/layer visibility and locking rules. Name selection still does not expand
+groups, and display-color selection still excludes grouped objects.
+
+The 20,000-object, single-layer diagnostic measured select-all at about 1.05 s
+before this change and 24 ms afterward; wildcard name selection went from about
+1.05 s to 44 ms. These are native debug/test-build timings, not Rhino comparisons.
+Layer lookups remain, and ID-only selection filters are not covered by this
+optimization. Regression coverage checks exact selection order and unchanged
+objects, layers, groups, and undo label across the four filters.
+
 ## Iteration checks and timing
 
 Tests check both sides of the crossover, reversed and sparse pick order, removal

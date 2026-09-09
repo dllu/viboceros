@@ -161,6 +161,64 @@ mod tests {
     use super::*;
 
     #[test]
+    fn table_filters_preserve_visibility_color_group_and_name_policy() {
+        let mut document = Document::default();
+        let hidden = document.add_layer("hidden", ColorRgb::BLACK).unwrap();
+        let locked = document.add_layer("locked", ColorRgb::BLACK).unwrap();
+        document.set_layer_visibility(hidden, false).unwrap();
+        document.set_layer_locked(locked, true).unwrap();
+        let red = ColorRgb::new(255, 0, 0);
+        let blue = ColorRgb::new(0, 0, 255);
+        let ids = (0..8)
+            .map(|i| {
+                document
+                    .add_geometry_with_attributes(
+                        Geometry::Point(Point3::try_new(i as f64, 0., 0.).unwrap()),
+                        ObjectAttributes::on_layer(document.current_layer_id())
+                            .with_name(if i == 5 || i == 7 { "miss" } else { "hit" })
+                            .with_object_color(if i == 5 { blue } else { red }),
+                    )
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        document.objects[1].attributes.visible = false;
+        document.objects[2].attributes.locked = true;
+        document.objects[3].attributes.layer_id = hidden;
+        document.objects[4].attributes.layer_id = locked;
+        document.add_group(None, [ids[6], ids[7]]).unwrap();
+        let objects = document.objects.clone();
+        let layers = document.layers.clone();
+        let groups = document.groups.clone();
+        let undo = document.undo_label().map(str::to_owned);
+        assert_eq!(document.select_all(), 4);
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            [ids[0], ids[5], ids[6], ids[7]]
+        );
+        document
+            .select_objects_direct([ids[0]], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(document.invert_selection(), 3);
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            [ids[5], ids[6], ids[7]]
+        );
+        document.clear_selection();
+        assert_eq!(document.select_objects_by_name_pattern("H?T"), 2);
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            [ids[0], ids[6]]
+        );
+        document.clear_selection();
+        assert_eq!(document.select_objects_by_display_color(red).unwrap(), 1);
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [ids[0]]);
+        assert_eq!(document.objects, objects);
+        assert_eq!(document.layers, layers);
+        assert_eq!(document.groups, groups);
+        assert_eq!(document.undo_label(), undo.as_deref());
+    }
+
+    #[test]
     fn batched_seed_validation_matches_independent_per_id_checks() {
         let mut document = Document::default();
         let ids = points(&mut document, 64);
@@ -335,6 +393,14 @@ mod tests {
         assert_eq!(actual, ids);
         eprintln!("20k selected objects, ordered iteration: {elapsed:?}");
         eprintln!("20k objects, direct selection: {selection_elapsed:?}");
+        document.clear_selection();
+        let start = std::time::Instant::now();
+        assert_eq!(document.select_all(), ids.len());
+        eprintln!("20k objects, select all: {:?}", start.elapsed());
+        document.clear_selection();
+        let start = std::time::Instant::now();
+        assert_eq!(document.select_objects_by_name_pattern("*"), ids.len());
+        eprintln!("20k objects, wildcard selection: {:?}", start.elapsed());
     }
 
     fn points(document: &mut Document, count: usize) -> Vec<ObjectId> {

@@ -686,9 +686,11 @@ impl Document {
     }
 
     pub fn is_object_selectable(&self, id: ObjectId) -> bool {
-        let Some(object) = self.object(id) else {
-            return false;
-        };
+        self.object(id)
+            .is_some_and(|object| self.object_is_selectable(object))
+    }
+
+    fn object_is_selectable(&self, object: &Object) -> bool {
         let attributes = object.attributes();
         attributes.visible
             && !attributes.locked
@@ -726,7 +728,7 @@ impl Document {
         let selection = self
             .objects
             .iter()
-            .filter(|object| self.is_object_selectable(object.id))
+            .filter(|object| self.object_is_selectable(object))
             .map(|object| object.id)
             .collect();
         self.update_selection(selection)
@@ -737,7 +739,7 @@ impl Document {
             .objects
             .iter()
             .filter(|object| {
-                self.is_object_selectable(object.id) && !self.selection.contains(&object.id)
+                self.object_is_selectable(object) && !self.selection.contains(&object.id)
             })
             .map(|object| object.id)
             .collect();
@@ -787,7 +789,7 @@ impl Document {
         let matches = self
             .objects
             .iter()
-            .filter(|object| self.is_object_selectable(object.id))
+            .filter(|object| self.object_is_selectable(object))
             .filter(|object| pattern.matches(object.attributes.name.as_deref().unwrap_or_default()))
             .map(|object| object.id)
             .collect();
@@ -807,7 +809,7 @@ impl Document {
             .collect::<BTreeSet<_>>();
         let mut matches = BTreeSet::new();
         for object in &self.objects {
-            if grouped_objects.contains(&object.id) || !self.is_object_selectable(object.id) {
+            if grouped_objects.contains(&object.id) || !self.object_is_selectable(object) {
                 continue;
             }
             let layer = self
