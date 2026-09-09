@@ -211,7 +211,9 @@ impl Document {
                     );
                 }
             }
-            if assign_memberships {
+            // These are freshly inserted, ungrouped copies. Empty source
+            // memberships need no transition or per-copy object-table search.
+            if assign_memberships && !groups.is_empty() {
                 self.set_object_group_memberships(copy, groups.iter().map(|id| mapped[id]))?;
             }
         }

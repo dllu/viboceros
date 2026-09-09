@@ -6,6 +6,7 @@ mod groups;
 mod history;
 mod object_deletion;
 mod object_layer;
+mod object_lookup;
 mod object_order;
 mod selection;
 mod settings;
@@ -1235,15 +1236,12 @@ impl Document {
         replacements: impl IntoIterator<Item = (ObjectId, Geometry)>,
     ) -> Result<usize, DocumentError> {
         let replacements = replacements.into_iter().collect::<BTreeMap<_, _>>();
-        if let Some(missing) = replacements.keys().find(|id| self.object(**id).is_none()) {
-            return Err(DocumentError::ObjectNotFound(*missing));
-        }
+        let indices = self.resolve_object_indices(replacements.keys().copied())?;
 
         let mut staged = Vec::with_capacity(replacements.len());
-        for (index, object) in self.objects.iter().enumerate() {
-            let Some(geometry) = replacements.get(&object.id) else {
-                continue;
-            };
+        for index in indices {
+            let object = &self.objects[index];
+            let geometry = &replacements[&object.id];
             self.ensure_object_editable(object)?;
             if &object.geometry == geometry {
                 continue;
@@ -1311,17 +1309,9 @@ impl Document {
         if transforms.is_empty() {
             return Ok(Vec::new());
         }
-        let ids = ids.into_iter().collect::<BTreeSet<_>>();
-        if let Some(missing) = ids.iter().find(|id| self.object(**id).is_none()) {
-            return Err(DocumentError::ObjectNotFound(*missing));
-        }
-        let mut sources = Vec::with_capacity(ids.len());
-        for (index, object) in self.objects.iter().enumerate() {
-            if !ids.contains(&object.id) {
-                continue;
-            }
-            self.ensure_object_editable(object)?;
-            sources.push(index);
+        let sources = self.resolve_object_indices(ids)?;
+        for index in &sources {
+            self.ensure_object_editable(&self.objects[*index])?;
         }
         if sources.is_empty() {
             return Ok(Vec::new());
@@ -1356,18 +1346,11 @@ impl Document {
         ids: impl IntoIterator<Item = ObjectId>,
         morph: &(impl PointMorph + ?Sized),
     ) -> Result<Vec<ObjectId>, DocumentError> {
-        let ids = ids.into_iter().collect::<BTreeSet<_>>();
-        if let Some(missing) = ids.iter().find(|id| self.object(**id).is_none()) {
-            return Err(DocumentError::ObjectNotFound(*missing));
-        }
-        let mut sources = Vec::with_capacity(ids.len());
-        let mut staged = Vec::with_capacity(ids.len());
-        for (index, object) in self.objects.iter().enumerate() {
-            if !ids.contains(&object.id) {
-                continue;
-            }
+        let sources = self.resolve_object_indices(ids)?;
+        let mut staged = Vec::with_capacity(sources.len());
+        for &index in &sources {
+            let object = &self.objects[index];
             self.ensure_object_editable(object)?;
-            sources.push(index);
             staged.push((index, object.geometry.morphed(morph, self.tolerance)?));
         }
         if sources.is_empty() {
@@ -1405,15 +1388,12 @@ impl Document {
             .enumerate()
             .map(|(rank, (id, geometry))| (id, (rank, geometry)))
             .collect::<BTreeMap<_, _>>();
-        if let Some(missing) = copies.keys().find(|id| self.object(**id).is_none()) {
-            return Err(DocumentError::ObjectNotFound(*missing));
-        }
+        let indices = self.resolve_object_indices(copies.keys().copied())?;
 
         let mut staged = Vec::with_capacity(copies.len());
-        for (index, object) in self.objects.iter().enumerate() {
-            let Some((rank, geometry)) = copies.get(&object.id) else {
-                continue;
-            };
+        for index in indices {
+            let object = &self.objects[index];
+            let (rank, geometry) = &copies[&object.id];
             self.ensure_object_editable(object)?;
             staged.push((index, *rank, geometry.clone()));
         }
@@ -1476,14 +1456,10 @@ impl Document {
         ids: impl IntoIterator<Item = ObjectId>,
         morph: &(impl PointMorph + ?Sized),
     ) -> Result<usize, DocumentError> {
-        let ids = ids.into_iter().collect::<BTreeSet<_>>();
-        if let Some(missing) = ids.iter().find(|id| self.object(**id).is_none()) {
-            return Err(DocumentError::ObjectNotFound(*missing));
-        }
-        let replacements = self
-            .objects
-            .iter()
-            .filter(|object| ids.contains(&object.id))
+        let indices = self.resolve_object_indices(ids)?;
+        let replacements = indices
+            .into_iter()
+            .map(|index| &self.objects[index])
             .map(|object| Ok((object.id, object.geometry.morphed(morph, self.tolerance)?)))
             .collect::<Result<Vec<_>, DocumentError>>()?;
         self.replace_object_geometries(replacements)
@@ -1788,19 +1764,10 @@ impl Document {
         label: &'static str,
         change: impl Fn(&mut Object),
     ) -> Result<usize, DocumentError> {
-        let ids = ids.into_iter().collect::<BTreeSet<_>>();
-        if ids.is_empty() {
-            return Ok(0);
-        }
-        if let Some(missing) = ids.iter().find(|id| self.object(**id).is_none()) {
-            return Err(DocumentError::ObjectNotFound(*missing));
-        }
-
-        let mut staged = Vec::with_capacity(ids.len());
-        for (index, object) in self.objects.iter().enumerate() {
-            if !ids.contains(&object.id) {
-                continue;
-            }
+        let indices = self.resolve_object_indices(ids)?;
+        let mut staged = Vec::with_capacity(indices.len());
+        for index in indices {
+            let object = &self.objects[index];
             self.ensure_object_editable(object)?;
             let before = object.clone();
             let mut after = before.clone();
@@ -1863,16 +1830,10 @@ impl Document {
         ids: impl IntoIterator<Item = ObjectId>,
         transform: AffineTransform3,
     ) -> Result<Vec<(usize, Object, Object)>, DocumentError> {
-        let ids: BTreeSet<_> = ids.into_iter().collect();
-        if let Some(missing) = ids.iter().find(|id| self.object(**id).is_none()) {
-            return Err(DocumentError::ObjectNotFound(*missing));
-        }
-
-        let mut staged = Vec::with_capacity(ids.len());
-        for (index, object) in self.objects.iter().enumerate() {
-            if !ids.contains(&object.id) {
-                continue;
-            }
+        let indices = self.resolve_object_indices(ids)?;
+        let mut staged = Vec::with_capacity(indices.len());
+        for index in indices {
+            let object = &self.objects[index];
             self.ensure_object_editable(object)?;
             let mut transformed = object.clone();
             transformed.geometry = object.geometry.transformed(transform, self.tolerance)?;

@@ -56,6 +56,8 @@ The [batch-deletion module](batch-deletion.md) moves removed objects into compac
 history records and restores table order without repeated vector insertions.
 The [ordered selection iterator](selection-iteration.md) shares efficient,
 read-only selected-object lookup across commands without cloning geometry.
+The [bulk object resolver](bulk-object-lookup.md) shares temporary table indices
+and missing-ID validation across transforms, copies, and editable attributes.
 The independent [arrays module](plane-arrays.md) owns rectangular, linear, and
 polar layout. Its geometry extents use tolerance-controlled
 [curve](curve-bounds.md), [surface](surface-bounds.md), and
