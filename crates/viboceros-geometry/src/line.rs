@@ -63,12 +63,20 @@ impl LineSegment {
             return Ok(self.end);
         }
         let delta = self.start.vector_to(self.end)?;
+        // Anchor interpolation at the nearer endpoint. The end-start
+        // subtraction can round away a small start coordinate; adding that
+        // coordinate back near t=1 must not round an interior point onto end.
+        let (anchor, parameter) = if parameter > 0.5 && parameter < 1. {
+            (self.end, parameter - 1.)
+        } else {
+            (self.start, parameter)
+        };
         // Round the offset and translation together: extrapolation can have
         // a finite result even when the offset alone exceeds binary64 range.
         Point3::try_new(
-            delta.x().mul_add(parameter, self.start.x()),
-            delta.y().mul_add(parameter, self.start.y()),
-            delta.z().mul_add(parameter, self.start.z()),
+            delta.x().mul_add(parameter, anchor.x()),
+            delta.y().mul_add(parameter, anchor.y()),
+            delta.z().mul_add(parameter, anchor.z()),
         )
     }
 
@@ -169,6 +177,18 @@ mod tests {
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn interpolation_near_end_does_not_round_onto_the_endpoint() {
+        let end = 2_f64.powi(54);
+        let parameter = 1. - 2_f64.powi(-53);
+        let line = LineSegment::try_new(point(1., 0., 0.), point(end, 0., 0.), Tolerance::DEFAULT)
+            .unwrap();
+        // Exact value: 2^54 - 2 + 2^-53, which rounds to 2^54 - 2.
+        let expected = point(end - 2., 0., 0.);
+        assert_eq!(line.point_at(parameter).unwrap(), expected);
+        assert_eq!(line.reversed().point_at(1. - parameter).unwrap(), expected);
     }
 
     #[test]

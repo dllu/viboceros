@@ -30,6 +30,9 @@ overflows. Exact-power-of-two regression cases cover both signs, all coordinate
 axes, reversed endpoints, nonfinite parameters, and true result overflow.
 This addresses intermediate arithmetic range, not a relaxation of finite-point
 or nondegenerate-line validation.
+Within the segment, interpolation anchors at the nearer endpoint so a rounded
+endpoint difference cannot spuriously move a near-end sample onto the endpoint.
+An exact binary regression checks the result and its reversed-line equivalent.
 Line closest-point projection also falls back to a six-product exact sum when
 the target displacement or dot product overflows. Perpendicular extreme-range
 coordinates no longer prevent a valid interior result; an unbounded signed
