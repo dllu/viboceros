@@ -62,6 +62,16 @@ that displacement, still rejects it. Tests compare an extreme-range rotated
 frame with a power-of-two-scaled ordinary case and check genuine overflow and
 nonfinite input rejection.
 
+Affine point transforms use the same four-term sum, including translation before
+rounding the linear result. Exact binary tests cover a doubled coordinate whose
+overflow is cancelled by translation, plus normal and subnormal residuals after
+large-term cancellation. Vector transforms omit translation and continue to
+reject genuinely unrepresentable displacements.
+Centered maps still store rounded matrix and translation coefficients. Their
+intended fixed points are not guaranteed bit-exact; the directional-scale test
+uses a tight binary64 error bound rather than relying on intermediate rounding
+to cancel coefficient error.
+
 ## Line interpolation and extrapolation
 
 Line evaluation fuses coordinate scaling and translation, retaining finite

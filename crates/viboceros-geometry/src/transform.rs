@@ -5,8 +5,8 @@ use crate::{Frame3, GeometryError, Plane, Point3, Real, UnitVector3, Vector3, re
 /// A finite affine map from three-dimensional model space to itself.
 ///
 /// The linear part is stored with nalgebra, while application uses the
-/// kernel's scaled dot product to avoid spurious intermediate overflow when
-/// large products cancel to a representable coordinate.
+/// kernel's compensated dot products and exact fallbacks. Point application
+/// includes translation in each sum, before rounding or overflow validation.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct AffineTransform3 {
     linear: Matrix3<Real>,
@@ -271,14 +271,11 @@ impl AffineTransform3 {
     }
 
     pub fn transform_point(self, point: Point3) -> Result<Point3, GeometryError> {
-        let linear = self.linear_coordinates(Vector3::try_from(point.to_array())?)?;
-        let transformed = [
-            linear[0] + self.translation.x(),
-            linear[1] + self.translation.y(),
-            linear[2] + self.translation.z(),
-        ];
-        require_finite(transformed, "transformed point")?;
-        Point3::try_from(transformed)
+        let point = Vector3::try_from(point.to_array())?;
+        let rows = self.linear_rows();
+        let translation = self.translation.to_array();
+        let component = |i| point.dot_with_offset(Vector3::try_from(rows[i])?, translation[i]);
+        Point3::try_new(component(0)?, component(1)?, component(2)?)
     }
 
     pub fn transform_vector(self, vector: Vector3) -> Result<Vector3, GeometryError> {
@@ -445,6 +442,38 @@ mod tests {
     }
 
     #[test]
+    fn point_transform_includes_translation_before_rounding_or_overflow() {
+        let huge = 2_f64.powi(1023);
+        let transform = AffineTransform3::try_new(
+            [[2., 0., 0.], [0., 1., 0.], [0., 0., 1.]],
+            Vector3::try_new(-huge, 0., 0.).unwrap(),
+        )
+        .unwrap();
+        assert_eq!(
+            transform.transform_point(point(huge, 2., 3.)).unwrap(),
+            point(huge, 2., 3.)
+        );
+        assert!(
+            transform
+                .transform_vector(Vector3::try_new(huge, 2., 3.).unwrap())
+                .is_err()
+        );
+        let cancellation = AffineTransform3::try_new(
+            [[1., 1., 0.], [0., 1., 0.], [0., 0., 1.]],
+            Vector3::try_new(-huge, 0., 0.).unwrap(),
+        )
+        .unwrap();
+        for small in [1., -1., Real::MIN_POSITIVE, Real::from_bits(1)] {
+            assert_eq!(
+                cancellation
+                    .transform_point(point(huge, small, 0.))
+                    .unwrap(),
+                point(small, small, 0.)
+            );
+        }
+    }
+
+    #[test]
     fn scaled_dot_product_preserves_large_cancellation() {
         let transform = AffineTransform3::try_new(
             [[1.0, 1.0, -1.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
@@ -501,7 +530,17 @@ mod tests {
 
         let direction = UnitVector3::try_new(1.0, 1.0, 0.0, Tolerance::DEFAULT).unwrap();
         let directional = AffineTransform3::try_directional_scale(center, direction, 3.0).unwrap();
-        assert_eq!(directional.transform_point(center).unwrap(), center);
+        // Direction normalization and the stored translation are rounded.
+        // Applying their affine coefficients with one compensated sum need
+        // not reproduce the center bit-for-bit (two-stage rounding hid this).
+        assert!(
+            directional
+                .transform_point(center)
+                .unwrap()
+                .distance_to(center)
+                .unwrap()
+                <= 4. * Real::EPSILON
+        );
         assert!(
             directional
                 .transform_point(point(2.0, 3.0, 4.0))
