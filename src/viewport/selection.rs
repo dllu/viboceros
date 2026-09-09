@@ -204,8 +204,7 @@ impl Viewport {
         filter: ObjectSelectionFilter,
     ) -> Vec<ObjectId> {
         document
-            .objects()
-            .filter(|object| document.is_object_selectable(object.id()))
+            .selectable_objects()
             .filter(|object| filter.accepts_object(object))
             .filter_map(|object| {
                 let primitives = self.projected_primitives(

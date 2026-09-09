@@ -20,6 +20,15 @@ cache to invalidate. PointCloud command-first creation uses this shared path.
 
 ## Building explicit selections
 
+`Document::selectable_objects` is a separate, borrowed object-table-order
+iterator. It filters object and layer visibility/locking without expanding
+groups or looking up each object's ID again. Window selection, `Group all`, and
+named-group filtering use it; duplicate and layer selection likewise reuse
+their existing object records. Layer lookup remains linear in the layer table;
+this removes repeated object-table scans, not every possible selection cost.
+A native test covers all 16 combinations of object/layer visibility and locking,
+read-only traversal, and named-group selection without hidden/locked peers.
+
 `select_objects` and `select_objects_direct` share seed validation. Large
 requests scan the object table once, using a set of remaining requested IDs
 and a cached set of selectable layers. Small requests retain direct checks.

@@ -691,6 +691,14 @@ impl Document {
             .is_some_and(|object| self.object_is_selectable(object))
     }
 
+    /// Ordinary selectable objects in document order, without expanding groups.
+    /// Reuses each object-table record instead of resolving its ID again.
+    pub fn selectable_objects(&self) -> impl Iterator<Item = &Object> {
+        self.objects
+            .iter()
+            .filter(|object| self.object_is_selectable(object))
+    }
+
     fn object_is_selectable(&self, object: &Object) -> bool {
         let attributes = object.attributes();
         attributes.visible
@@ -828,11 +836,13 @@ impl Document {
     pub fn select_group_objects_by_name(&mut self, name: &str) -> usize {
         let matches = self
             .group_by_name(name)
-            .map(|group| group.members.clone())
-            .unwrap_or_default()
-            .into_iter()
-            .filter(|id| self.is_object_selectable(*id))
-            .collect();
+            .map(|group| {
+                self.selectable_objects()
+                    .filter(|object| group.members.contains(&object.id))
+                    .map(|object| object.id)
+                    .collect()
+            })
+            .unwrap_or_default();
         self.apply_selection_mode(matches, SelectionMode::Add)
     }
 
@@ -848,7 +858,7 @@ impl Document {
     ) -> Result<usize, DocumentError> {
         let mut candidate_buckets = BTreeMap::<DuplicateGeometryFamily, Vec<usize>>::new();
         for (index, object) in self.objects.iter().enumerate() {
-            if self.is_object_selectable(object.id) {
+            if self.object_is_selectable(object) {
                 candidate_buckets
                     .entry(object.geometry.duplicate_family())
                     .or_default()
@@ -925,8 +935,7 @@ impl Document {
             .objects
             .iter()
             .filter(|object| {
-                layer_ids.contains(&object.attributes.layer_id)
-                    && self.is_object_selectable(object.id)
+                layer_ids.contains(&object.attributes.layer_id) && self.object_is_selectable(object)
             })
             .map(|object| object.id)
             .collect();

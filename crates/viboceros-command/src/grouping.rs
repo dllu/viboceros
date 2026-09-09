@@ -69,8 +69,7 @@ impl Command for GroupCommand {
         };
         let members: Vec<_> = if all {
             document
-                .objects()
-                .filter(|object| document.is_object_selectable(object.id()))
+                .selectable_objects()
                 .map(|object| object.id())
                 .collect()
         } else {

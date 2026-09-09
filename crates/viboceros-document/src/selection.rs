@@ -168,6 +168,52 @@ mod tests {
     use super::*;
 
     #[test]
+    fn selectable_iteration_obeys_object_and_layer_modes_without_group_expansion() {
+        let mut document = Document::default();
+        let mut expected = Vec::new();
+        let mut ids = Vec::new();
+        for layer_mode in 0..4 {
+            let layer = document
+                .add_layer(format!("Layer-{layer_mode}"), ColorRgb::BLACK)
+                .unwrap();
+            for object_mode in 0..4 {
+                let id = document
+                    .add_geometry(Geometry::Point(
+                        Point3::try_new(layer_mode as f64, object_mode as f64, 0.).unwrap(),
+                    ))
+                    .unwrap();
+                let object = document.objects.last_mut().unwrap();
+                object.attributes.layer_id = layer;
+                object.attributes.visible = object_mode & 1 == 0;
+                object.attributes.locked = object_mode & 2 != 0;
+                if layer_mode == 0 && object_mode == 0 {
+                    expected.push(id);
+                }
+                ids.push(id);
+            }
+            let record = document
+                .layers
+                .iter_mut()
+                .find(|record| record.id == layer)
+                .unwrap();
+            record.visible = layer_mode & 1 == 0;
+            record.locked = layer_mode & 2 != 0;
+        }
+        document.add_group(Some("All".into()), ids).unwrap();
+        let before = format!("{document:?}");
+        assert_eq!(
+            document
+                .selectable_objects()
+                .map(Object::id)
+                .collect::<Vec<_>>(),
+            expected
+        );
+        assert_eq!(format!("{document:?}"), before);
+        assert_eq!(document.select_group_objects_by_name("All"), expected.len());
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), expected);
+    }
+
+    #[test]
     fn batch_pruning_matches_per_object_policy_and_preserves_other_state() {
         let mut fixture = Document::default();
         let ids = points(&mut fixture, 64);
