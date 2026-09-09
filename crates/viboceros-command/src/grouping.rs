@@ -1,6 +1,29 @@
 //! Group commands share ordered, transactional document membership edits.
 use super::*;
 
+pub(super) struct AddToGroupCommand;
+
+impl Command for AddToGroupCommand {
+    fn name(&self) -> &'static str {
+        "AddToGroup"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if arguments.is_empty() {
+            return Err(CommandError::Usage("AddToGroup group-name"));
+        }
+        let name = arguments.join(" ");
+        let group = document
+            .group_by_name(&name)
+            .map(|group| group.id())
+            .ok_or_else(|| CommandError::NamedGroupNotFound(name.clone()))?;
+        let members = selected_ids(document)?;
+        let count = document.add_group_members(group, members)?;
+        document.clear_selection();
+        Ok(format!("Added {count} object(s) to group '{name}'"))
+    }
+}
+
 pub(super) struct GroupCommand;
 
 impl Command for GroupCommand {
@@ -100,4 +123,76 @@ fn ungroup_selected(document: &mut Document, all: bool) -> Result<String, Comman
             " at the top level"
         }
     ))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn add_to_group_named_target_preserves_order_and_history_and_clears_selection() {
+        let mut document = Document::default();
+        let ids = (0..3)
+            .map(|i| {
+                document
+                    .add_geometry(Geometry::Point(Point3::try_new(i as f64, 0., 0.).unwrap()))
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        let target = document
+            .add_group(Some("Target assembly".into()), [ids[0]])
+            .unwrap();
+        let old = document
+            .add_group(Some("old".into()), [ids[1], ids[2]])
+            .unwrap();
+        document
+            .select_objects_direct([ids[1]], SelectionMode::Replace)
+            .unwrap();
+        let objects = document.objects().cloned().collect::<Vec<_>>();
+        let groups = document.groups().cloned().collect::<Vec<_>>();
+        let registry = CommandRegistry::with_builtins();
+        registry
+            .execute(&mut document, "AddToGroup Target assembly")
+            .unwrap();
+        assert_eq!(document.object(ids[1]).unwrap().group_ids(), [old, target]);
+        assert_eq!(document.object(ids[2]).unwrap().group_ids(), [old]);
+        assert_eq!(document.selected_object_count(), 0);
+        assert_eq!(document.undo_label(), Some("AddToGroup"));
+        let after = format!("{:?}", document.objects().cloned().collect::<Vec<_>>());
+        document
+            .select_objects_direct([ids[1]], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "AddToGroup Target assembly")
+            .unwrap();
+        document.undo().unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), objects);
+        assert_eq!(document.groups().cloned().collect::<Vec<_>>(), groups);
+        document.redo().unwrap();
+        assert_eq!(
+            format!("{:?}", document.objects().cloned().collect::<Vec<_>>()),
+            after
+        );
+    }
+
+    #[test]
+    fn add_to_group_rejects_missing_targets_or_selection_without_edits() {
+        let mut document = Document::default();
+        document.add_empty_group(Some("Target".into())).unwrap();
+        document
+            .add_geometry(Geometry::Point(Point3::try_new(0., 0., 0.).unwrap()))
+            .unwrap();
+        document.undo().unwrap();
+        let registry = CommandRegistry::with_builtins();
+        for command in [
+            "AddToGroup",
+            "AddToGroup missing",
+            "AddToGroup target",
+            "AddToGroup Target",
+        ] {
+            let before = format!("{document:?}");
+            assert!(registry.execute(&mut document, command).is_err());
+            assert_eq!(format!("{document:?}"), before);
+        }
+    }
 }

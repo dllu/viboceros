@@ -1,5 +1,25 @@
 use super::*;
 
+#[test]
+fn add_to_group_named_targets_match_recorded_rhino() {
+    let request: ProbeRequest = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/add_to_group.json"
+    ))
+    .unwrap();
+    let observed: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/add_to_group.json"
+    ))
+    .unwrap();
+    let actual = run_request(&request).unwrap();
+    let expected = observed["results"].as_array().unwrap();
+    assert_eq!(expected.len(), 3);
+    assert_eq!(actual.results.len(), expected.len());
+    for (actual, expected) in actual.results.iter().zip(expected) {
+        assert_eq!(actual.id, expected["id"]);
+        assert_eq!(actual.value, expected["value"], "{}", actual.id);
+    }
+}
+
 const FIXTURE: &str =
     include_str!("../../../../tools/rhino_oracle/fixtures/group_memberships.json");
 

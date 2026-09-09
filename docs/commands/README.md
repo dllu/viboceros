@@ -169,6 +169,7 @@ ExtrudeCrvAlongCrv PathName=Rail DeleteInput=No
 Revolve 0,0,0 0,0,1 270 StartAngle=0 DeleteInput=No
 Group Assembly
 Group All Everything
+AddToGroup Assembly
 SetObjectName "Fastener Part" AppendCounter=Yes
 SetObjectColor 12,34,56
 SetObjectColor ByLayer

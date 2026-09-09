@@ -1,0 +1,754 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "partial-and-repeat",
+      "value": {
+        "states": [
+          {
+            "groups": [
+              {
+                "members": [
+                  0
+                ],
+                "name": "Group-0"
+              },
+              {
+                "members": [
+                  1,
+                  2
+                ],
+                "name": "Group-1"
+              }
+            ],
+            "objects": [
+              {
+                "domain": null,
+                "groups": [
+                  "Group-0"
+                ],
+                "name": "0",
+                "points": [
+                  [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 0
+              },
+              {
+                "domain": null,
+                "groups": [
+                  "Group-1"
+                ],
+                "name": "1",
+                "points": [
+                  [
+                    1.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 1
+              },
+              {
+                "domain": null,
+                "groups": [
+                  "Group-1"
+                ],
+                "name": "2",
+                "points": [
+                  [
+                    2.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 2
+              }
+            ]
+          },
+          {
+            "groups": [
+              {
+                "members": [
+                  0
+                ],
+                "name": "Group-0"
+              },
+              {
+                "members": [
+                  1,
+                  2
+                ],
+                "name": "Group-1"
+              }
+            ],
+            "objects": [
+              {
+                "domain": null,
+                "groups": [
+                  "Group-0"
+                ],
+                "name": "0",
+                "points": [
+                  [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 0
+              },
+              {
+                "domain": null,
+                "groups": [
+                  "Group-1"
+                ],
+                "name": "1",
+                "points": [
+                  [
+                    1.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": true,
+                "source": 1
+              },
+              {
+                "domain": null,
+                "groups": [
+                  "Group-1"
+                ],
+                "name": "2",
+                "points": [
+                  [
+                    2.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 2
+              }
+            ]
+          },
+          {
+            "groups": [
+              {
+                "members": [
+                  0,
+                  1
+                ],
+                "name": "Group-0"
+              },
+              {
+                "members": [
+                  1,
+                  2
+                ],
+                "name": "Group-1"
+              }
+            ],
+            "objects": [
+              {
+                "domain": null,
+                "groups": [
+                  "Group-0"
+                ],
+                "name": "0",
+                "points": [
+                  [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 0
+              },
+              {
+                "domain": null,
+                "groups": [
+                  "Group-1",
+                  "Group-0"
+                ],
+                "name": "1",
+                "points": [
+                  [
+                    1.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 1
+              },
+              {
+                "domain": null,
+                "groups": [
+                  "Group-1"
+                ],
+                "name": "2",
+                "points": [
+                  [
+                    2.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 2
+              }
+            ]
+          },
+          {
+            "groups": [
+              {
+                "members": [
+                  0,
+                  1
+                ],
+                "name": "Group-0"
+              },
+              {
+                "members": [
+                  1,
+                  2
+                ],
+                "name": "Group-1"
+              }
+            ],
+            "objects": [
+              {
+                "domain": null,
+                "groups": [
+                  "Group-0"
+                ],
+                "name": "0",
+                "points": [
+                  [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 0
+              },
+              {
+                "domain": null,
+                "groups": [
+                  "Group-1",
+                  "Group-0"
+                ],
+                "name": "1",
+                "points": [
+                  [
+                    1.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": true,
+                "source": 1
+              },
+              {
+                "domain": null,
+                "groups": [
+                  "Group-1"
+                ],
+                "name": "2",
+                "points": [
+                  [
+                    2.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 2
+              }
+            ]
+          },
+          {
+            "groups": [
+              {
+                "members": [
+                  0,
+                  1
+                ],
+                "name": "Group-0"
+              },
+              {
+                "members": [
+                  1,
+                  2
+                ],
+                "name": "Group-1"
+              }
+            ],
+            "objects": [
+              {
+                "domain": null,
+                "groups": [
+                  "Group-0"
+                ],
+                "name": "0",
+                "points": [
+                  [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 0
+              },
+              {
+                "domain": null,
+                "groups": [
+                  "Group-1",
+                  "Group-0"
+                ],
+                "name": "1",
+                "points": [
+                  [
+                    1.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 1
+              },
+              {
+                "domain": null,
+                "groups": [
+                  "Group-1"
+                ],
+                "name": "2",
+                "points": [
+                  [
+                    2.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 2
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "existing-members",
+      "value": {
+        "states": [
+          {
+            "groups": [
+              {
+                "members": [
+                  0,
+                  1
+                ],
+                "name": "Group-0"
+              },
+              {
+                "members": [
+                  1,
+                  2
+                ],
+                "name": "Group-1"
+              }
+            ],
+            "objects": [
+              {
+                "domain": null,
+                "groups": [
+                  "Group-0"
+                ],
+                "name": "0",
+                "points": [
+                  [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 0
+              },
+              {
+                "domain": null,
+                "groups": [
+                  "Group-0",
+                  "Group-1"
+                ],
+                "name": "1",
+                "points": [
+                  [
+                    1.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 1
+              },
+              {
+                "domain": null,
+                "groups": [
+                  "Group-1"
+                ],
+                "name": "2",
+                "points": [
+                  [
+                    2.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 2
+              }
+            ]
+          },
+          {
+            "groups": [
+              {
+                "members": [
+                  0,
+                  1
+                ],
+                "name": "Group-0"
+              },
+              {
+                "members": [
+                  1,
+                  2
+                ],
+                "name": "Group-1"
+              }
+            ],
+            "objects": [
+              {
+                "domain": null,
+                "groups": [
+                  "Group-0"
+                ],
+                "name": "0",
+                "points": [
+                  [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": true,
+                "source": 0
+              },
+              {
+                "domain": null,
+                "groups": [
+                  "Group-0",
+                  "Group-1"
+                ],
+                "name": "1",
+                "points": [
+                  [
+                    1.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": true,
+                "source": 1
+              },
+              {
+                "domain": null,
+                "groups": [
+                  "Group-1"
+                ],
+                "name": "2",
+                "points": [
+                  [
+                    2.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 2
+              }
+            ]
+          },
+          {
+            "groups": [
+              {
+                "members": [
+                  0,
+                  1
+                ],
+                "name": "Group-0"
+              },
+              {
+                "members": [
+                  1,
+                  2
+                ],
+                "name": "Group-1"
+              }
+            ],
+            "objects": [
+              {
+                "domain": null,
+                "groups": [
+                  "Group-0"
+                ],
+                "name": "0",
+                "points": [
+                  [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 0
+              },
+              {
+                "domain": null,
+                "groups": [
+                  "Group-0",
+                  "Group-1"
+                ],
+                "name": "1",
+                "points": [
+                  [
+                    1.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 1
+              },
+              {
+                "domain": null,
+                "groups": [
+                  "Group-1"
+                ],
+                "name": "2",
+                "points": [
+                  [
+                    2.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 2
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "empty-target",
+      "value": {
+        "states": [
+          {
+            "groups": [
+              {
+                "members": [],
+                "name": "Group-0"
+              },
+              {
+                "members": [
+                  0
+                ],
+                "name": "Group-1"
+              }
+            ],
+            "objects": [
+              {
+                "domain": null,
+                "groups": [
+                  "Group-1"
+                ],
+                "name": "0",
+                "points": [
+                  [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 0
+              },
+              {
+                "domain": null,
+                "groups": [],
+                "name": "1",
+                "points": [
+                  [
+                    1.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 1
+              }
+            ]
+          },
+          {
+            "groups": [
+              {
+                "members": [],
+                "name": "Group-0"
+              },
+              {
+                "members": [
+                  0
+                ],
+                "name": "Group-1"
+              }
+            ],
+            "objects": [
+              {
+                "domain": null,
+                "groups": [
+                  "Group-1"
+                ],
+                "name": "0",
+                "points": [
+                  [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": true,
+                "source": 0
+              },
+              {
+                "domain": null,
+                "groups": [],
+                "name": "1",
+                "points": [
+                  [
+                    1.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": true,
+                "source": 1
+              }
+            ]
+          },
+          {
+            "groups": [
+              {
+                "members": [
+                  0,
+                  1
+                ],
+                "name": "Group-0"
+              },
+              {
+                "members": [
+                  0
+                ],
+                "name": "Group-1"
+              }
+            ],
+            "objects": [
+              {
+                "domain": null,
+                "groups": [
+                  "Group-1",
+                  "Group-0"
+                ],
+                "name": "0",
+                "points": [
+                  [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 0
+              },
+              {
+                "domain": null,
+                "groups": [
+                  "Group-0"
+                ],
+                "name": "1",
+                "points": [
+                  [
+                    1.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "retained": true,
+                "selected": false,
+                "source": 1
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

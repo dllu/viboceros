@@ -17,6 +17,7 @@ pub struct GroupMembershipFixture {
 pub enum Step {
     Set { object: usize, groups: Vec<usize> },
     Add { group: usize, objects: Vec<usize> },
+    AddToGroup { group: usize },
     DeleteGroup { group: usize },
     Select { objects: Vec<usize> },
     RecallPrevious { deselect_others: Option<bool> },
@@ -93,6 +94,9 @@ pub(super) fn run(
     let mut states = vec![record(&document, &ids, &sources)?];
     for step in &f.steps {
         match step {
+            Step::AddToGroup { group } => {
+                registry.execute(&mut document, &format!("AddToGroup Group-{group}"))?;
+            }
             Step::Set { object, groups } => {
                 document
                     .set_object_group_memberships(object_ids(&[*object])?[0], group_ids(groups)?)?;
@@ -182,6 +186,11 @@ fn validate(f: &GroupMembershipFixture) -> Result<(), ProbeError> {
     let mut live = (0..f.groups.len()).collect::<BTreeSet<_>>();
     for step in &f.steps {
         match step {
+            Step::AddToGroup { group } => {
+                if !live.contains(group) {
+                    return Err(invalid());
+                }
+            }
             Step::Set { object, groups } => {
                 indices(&[*object], f.sources.len(), true)?;
                 indices(groups, f.groups.len(), true)?;

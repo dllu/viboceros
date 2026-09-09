@@ -3690,6 +3690,9 @@ def _group_memberships(operation, tolerance):
             indices([step["group"]], len(groups))
             indices(step["objects"], len(definitions), False)
             if step["group"] not in live_groups: raise ValueError("deleted membership group")
+        elif kind == "add_to_group":
+            indices([step["group"]], len(groups))
+            if step["group"] not in live_groups: raise ValueError("deleted membership group")
         elif kind == "delete_group":
             indices([step["group"]], len(groups))
             if step["group"] not in live_groups: raise ValueError("deleted membership group")
@@ -3797,6 +3800,10 @@ def _group_memberships(operation, tolerance):
                     if any(document.Objects.FindId(ids[i]) is None for i in step["objects"]): raise ValueError("group source no longer exists")
                     document.Objects.UnselectAll()
                     for i in step["objects"]: document.Objects.Select(ids[i])
+                elif kind == "add_to_group":
+                    selected = [obj for obj in objects() if obj.Id not in before and obj.IsSelected(False)]
+                    if not selected: raise ValueError("add to group requires completed preselection")
+                    _run_surface_script("_AddToGroup Group-%d _Enter" % step["group"], True)
                 elif kind == "recall_previous":
                     script = "_SelPrev" if step.get("deselect_others") is None else "_-SelPrev _DeselectOthersBeforeSelect=_%s _Enter" % ("Yes" if step["deselect_others"] else "No")
                     _run_surface_script(script, True)

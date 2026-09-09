@@ -1,0 +1,9 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"id":"partial-and-repeat", "op":"group_memberships", "sources":[{"type":"point","point":[0,0,0]},{"type":"point","point":[1,0,0]},{"type":"point","point":[2,0,0]}], "groups":[[0],[1,2]], "steps":[{"kind":"select","objects":[1]},{"kind":"add_to_group","group":0},{"kind":"select","objects":[1]},{"kind":"add_to_group","group":0}]},
+    {"id":"existing-members", "op":"group_memberships", "sources":[{"type":"point","point":[0,0,0]},{"type":"point","point":[1,0,0]},{"type":"point","point":[2,0,0]}], "groups":[[0,1],[1,2]], "steps":[{"kind":"select","objects":[0,1]},{"kind":"add_to_group","group":0}]},
+    {"id":"empty-target", "op":"group_memberships", "sources":[{"type":"point","point":[0,0,0]},{"type":"point","point":[1,0,0]}], "groups":[[],[0]], "steps":[{"kind":"select","objects":[0,1]},{"kind":"add_to_group","group":0}]}
+  ]
+}

@@ -18,6 +18,9 @@ class GroupMembershipWorkerTests(unittest.TestCase):
                    dict(steps=[dict(kind="select", objects=[0, 0])]),
                    dict(steps=[dict(kind="set", object=0, groups=[0, 0])]),
                    dict(steps=[dict(kind="add", group=1, objects=[0])]),
+                   dict(steps=[dict(kind="add_to_group", group=True)]),
+                   dict(steps=[dict(kind="add_to_group", group=1)]),
+                   dict(steps=[dict(kind="delete_group", group=0), dict(kind="add_to_group", group=0)]),
                    dict(steps=[dict(kind="command", name="Copy _Delete")]),
                    dict(steps=[dict(kind="select", objects=[])] * 65)]
         for step in [dict(kind="set", object=0, groups=[0]), dict(kind="add", group=0, objects=[0]),
@@ -42,12 +45,12 @@ class GroupMembershipWorkerTests(unittest.TestCase):
         self.document.Groups.Add.assert_not_called()
 
     def test_missing_sources_and_incomplete_preselection_never_run_commands(self):
-        for failure in ["missing-set", "missing-add", "missing-select", "unselected", "ungroup-empty", "distribute-two"]:
+        for failure in ["missing-set", "missing-add", "missing-select", "unselected", "ungroup-empty", "distribute-two", "add-to-group-unselected"]:
             with self.subTest(failure=failure):
                 self.exercise(failure)
 
     def test_command_macros_complete_the_observed_prompts(self):
-        for command in ["Copy", "Array", "ArrayLinear", "ArrayPolar", "Explode", "ConvertToBeziers", "Ungroup", "UngroupAll"]:
+        for command in ["Copy", "Array", "ArrayLinear", "ArrayPolar", "Explode", "ConvertToBeziers", "Ungroup", "UngroupAll", "AddToGroup"]:
             with self.subTest(command=command): self.exercise(None, command)
 
     def test_nameless_output_provenance_is_only_inferred_for_a_single_source(self):
@@ -141,6 +144,7 @@ class GroupMembershipWorkerTests(unittest.TestCase):
         self.worker.System = SimpleNamespace(Guid=SimpleNamespace(Empty="empty"))
         def run(script, verify):
             self.assertEqual(script, {"Copy":"_Copy w0,0,0 w10,0,0 _Enter",
+                "AddToGroup":"_AddToGroup Group-0 _Enter",
                 "Array":"_-Array _Mode=_UnitCell 2 1 1 10 _Enter",
                 "ArrayPolar":"_-ArrayPolar w0,0,0 2 _Rotate=_Yes _ZOffset 0 180 _Enter",
                 "ArrayLinear":"_ArrayLinear 2 w0,0,0 w10,0,0", "Explode":"_Explode",
@@ -163,6 +167,8 @@ class GroupMembershipWorkerTests(unittest.TestCase):
         add_step = dict(kind="add", group=0, objects=[0, 0])
         select_step = dict(kind="select", objects=[0] if nameless and failure is None else [0, 1])
         steps = [set_step, add_step, select_step, dict(kind="command", name=command)]
+        if command == "AddToGroup": steps[-1] = dict(kind="add_to_group", group=0)
+        if failure == "add-to-group-unselected": steps = [dict(kind="add_to_group", group=0)]
         if failure == "missing-add": steps = [add_step]
         if failure == "missing-select": steps = [select_step]
         if failure == "unselected": steps = [dict(kind="command", name="Copy")]

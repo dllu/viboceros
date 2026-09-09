@@ -6,6 +6,7 @@
 Group Assembly
 Ungroup
 UngroupAll
+AddToGroup Assembly
 ```
 
 `Group` appends a new membership to each selected object. An object's top group
@@ -32,6 +33,22 @@ all of its memberships; `Ungroup all` deletes every definition in the document.
 The last form is distinct from the selection-scoped `UngroupAll` command. The
 groups pane uses the named deletion form. These extensions are not claims about
 Rhino command syntax.
+
+`AddToGroup group-name` adds preselected objects to an existing named group.
+Names can contain spaces and are case-sensitive. Only selected objects are
+modified; unselected peers are not pulled into the target. New memberships
+append, existing memberships keep their positions, and selection is cleared
+even for an all-existing no-op. Empty group definitions are valid targets.
+Missing names, missing groups, or empty selection produce an error without edits.
+This implements the named-target, preselection path; bare-command object/group
+mouse prompts are not implemented yet. Native Undo/Redo is one transaction for
+actual additions; a membership no-op creates no history entry.
+
+Three private Rhino `AddToGroup` probes verify partial selection of a group,
+repeat/all-existing additions, and an empty target. The complete ordered
+memberships, reverse group index, retained geometry, names, and selection match
+the saved observations in `add_to_group.json`; native and independent Python
+tests replay/check them. These probes do not claim Rhino outer Undo/Redo parity.
 
 ## Model and transactions
 
