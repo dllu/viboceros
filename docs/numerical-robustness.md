@@ -55,6 +55,13 @@ component overflows; an axis-aligned frame with a truly overflowing local
 coordinate still returns an error. Frame tests also cover reversed origins and
 small origin contributions retained after cancellation.
 
+The reverse frame mapping includes the origin in each compensated/exact
+four-term coordinate sum. It can therefore recover a finite world point when
+the displacement alone overflows; `vector_at`, which has no origin to cancel
+that displacement, still rejects it. Tests compare an extreme-range rotated
+frame with a power-of-two-scaled ordinary case and check genuine overflow and
+nonfinite input rejection.
+
 ## Line interpolation and extrapolation
 
 Line evaluation fuses coordinate scaling and translation, retaining finite

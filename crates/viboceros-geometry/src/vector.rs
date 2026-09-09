@@ -52,6 +52,17 @@ impl Vector3 {
         Ok(result)
     }
 
+    /// Includes translation in the compensated/exact sum rather than rounding
+    /// or rejecting the dot product before adding a cancelling offset.
+    pub(crate) fn dot_with_offset(self, other: Self, offset: Real) -> Result<Real, GeometryError> {
+        require_finite([offset], "dot product offset")?;
+        let left = [self.x(), self.y(), self.z(), offset];
+        let right = [other.x(), other.y(), other.z(), 1.];
+        let value = direct_dot(left, right).unwrap_or_else(|| exact_dot::dot(left, right));
+        require_finite([value], "translated dot product")?;
+        Ok(value)
+    }
+
     /// Projection of a point difference without requiring the displacement
     /// itself to be representable. May return signed infinity for callers that
     /// clamp to a finite interval; all input coordinates are validated finite.
@@ -160,7 +171,7 @@ fn product_needs_exact_underflow_recovery(product: Real, a: Real, b: Real) -> bo
     product.abs() <= MIN_COMPENSATED_PRODUCT && a != 0.0 && b != 0.0
 }
 
-fn direct_dot(left: [Real; 3], right: [Real; 3]) -> Option<Real> {
+fn direct_dot<const N: usize>(left: [Real; N], right: [Real; N]) -> Option<Real> {
     let mut sum: Real = 0.0;
     let mut correction = 0.0;
     for (a, b) in left.into_iter().zip(right) {
@@ -302,6 +313,17 @@ impl TryFrom<[Real; 3]> for Vector3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn translated_dot_retains_small_terms_before_origin_cancellation() {
+        for large in [2_f64.powi(54), 2_f64.powi(500), 2_f64.powi(1023)] {
+            for small in [1., -1., f64::MIN_POSITIVE, f64::from_bits(1)] {
+                let left = Vector3::try_new(large, small, 0.).unwrap();
+                let right = Vector3::try_new(1., 1., 0.).unwrap();
+                assert_eq!(left.dot_with_offset(right, -large).unwrap(), small);
+            }
+        }
+    }
 
     #[test]
     fn dot_product_keeps_low_bits_of_normal_products_near_underflow() {

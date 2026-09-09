@@ -170,7 +170,16 @@ impl Frame3 {
 
     /// Evaluates finite local coordinates without forming huge world-space axes.
     pub fn point_at(self, coordinates: [f64; 3]) -> Result<Point3, GeometryError> {
-        self.origin.translated(self.vector_at(coordinates)?)
+        let coordinates = Vector3::try_from(coordinates)?;
+        let axes = self.axes().map(|axis| axis.as_vector().to_array());
+        let origin = self.origin.to_array();
+        let component = |i| {
+            coordinates.dot_with_offset(
+                Vector3::try_new(axes[0][i], axes[1][i], axes[2][i])?,
+                origin[i],
+            )
+        };
+        Point3::try_new(component(0)?, component(1)?, component(2)?)
     }
 
     /// Maps a local displacement into world space, independent of the origin.
@@ -185,6 +194,37 @@ impl Frame3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn frame_point_evaluation_combines_translation_before_overflow_validation() {
+        let scale = 2_f64.powi(1023);
+        let frame = Frame3::try_from_x_and_normal(
+            point(-scale, 0., 0.),
+            Vector3::try_new(1., -1., 0.).unwrap(),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let coordinates = [1.5 * scale, 1.5 * scale, 0.];
+        assert!(frame.vector_at(coordinates).is_err());
+        let evaluated = frame.point_at(coordinates).unwrap();
+        let small = frame
+            .with_origin(point(-1., 0., 0.))
+            .point_at([1.5, 1.5, 0.])
+            .unwrap();
+        for (actual, expected) in evaluated.to_array().into_iter().zip(small.to_array()) {
+            assert!((actual / scale - expected).abs() <= 4. * f64::EPSILON);
+        }
+        assert!(
+            frame
+                .with_origin(point(0., 0., 0.))
+                .point_at(coordinates)
+                .is_err()
+        );
+        for invalid in [f64::NAN, f64::INFINITY, f64::NEG_INFINITY] {
+            assert!(frame.point_at([invalid, 0., 0.]).is_err());
+        }
+    }
 
     #[test]
     fn frame_coordinates_do_not_require_a_representable_world_displacement() {
