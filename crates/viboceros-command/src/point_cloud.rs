@@ -72,20 +72,10 @@ fn convert(
         return Err(CommandError::PointCloudEditingUnsupported);
     }
     let inputs = if postselected {
-        let ranks = document
-            .selected_object_ids()
-            .enumerate()
-            .map(|(rank, id)| (id, rank))
-            .collect::<BTreeMap<_, _>>();
-        let mut inputs = document
-            .objects()
-            .filter(|o| {
-                ranks.contains_key(&o.id())
-                    && ObjectSelectionFilter::PointCloudSources.accepts(o.geometry())
-            })
-            .collect::<Vec<_>>();
-        inputs.sort_unstable_by_key(|o| ranks[&o.id()]);
-        inputs
+        document
+            .selected_objects()
+            .filter(|o| ObjectSelectionFilter::PointCloudSources.accepts(o.geometry()))
+            .collect::<Vec<_>>()
     } else {
         // The document already supplies preselection order: no rank map or
         // sorting of the whole document is needed for large point sets.

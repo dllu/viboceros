@@ -1,5 +1,9 @@
 //! Group-aware picking uses each seed's last ordered membership, not graph closure.
 use super::*;
+mod objects;
+pub(super) fn selected_objects(document: &Document) -> impl Iterator<Item = &Object> {
+    objects::SelectedObjects::new(document)
+}
 
 impl Document {
     pub(super) fn previous_selection_targets(&self) -> BTreeSet<ObjectId> {
@@ -114,6 +118,34 @@ impl Document {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    #[ignore = "manual large selection iteration timing"]
+    fn benchmark_ordered_selection_iteration() {
+        let mut document = Document::default();
+        document.begin_transaction("fixture").unwrap();
+        let ids = (0..20_000)
+            .map(|i| {
+                document
+                    .add_geometry(Geometry::Point(
+                        Point3::try_new(i as f64, 0.0, 0.0).unwrap(),
+                    ))
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        document.commit_transaction().unwrap();
+        document
+            .select_objects_direct(ids.iter().copied(), SelectionMode::Replace)
+            .unwrap();
+        let start = std::time::Instant::now();
+        let actual = document
+            .selected_objects()
+            .map(|o| o.id())
+            .collect::<Vec<_>>();
+        let elapsed = start.elapsed();
+        assert_eq!(actual, ids);
+        eprintln!("20k selected objects, ordered iteration: {elapsed:?}");
+    }
 
     fn points(document: &mut Document, count: usize) -> Vec<ObjectId> {
         (0..count)

@@ -54,6 +54,8 @@ their reverse member index. Lightweight membership history records preserve
 order without cloning geometry; see [group invariants](groups.md).
 The [batch-deletion module](batch-deletion.md) moves removed objects into compact
 history records and restores table order without repeated vector insertions.
+The [ordered selection iterator](selection-iteration.md) shares efficient,
+read-only selected-object lookup across commands without cloning geometry.
 The independent [arrays module](plane-arrays.md) owns rectangular, linear, and
 polar layout. Its geometry extents use tolerance-controlled
 [curve](curve-bounds.md), [surface](surface-bounds.md), and

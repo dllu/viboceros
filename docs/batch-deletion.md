@@ -23,7 +23,8 @@ selection and its memories. Pure deletion retains the existing SelLast policy.
 
 `Delete` and `PointCloud` use this path. Ungrouped selection validation also scans
 the object table instead of performing one linear object lookup per restored ID.
-PointCloud command-first ordering uses a selection-rank map and a table scan.
+PointCloud command-first ordering now uses the shared
+[ordered selection iterator](selection-iteration.md).
 
 ## Checks and timing
 

@@ -705,9 +705,7 @@ impl Document {
 
     /// Iterates selected objects in the same order as [`Self::selected_object_ids`].
     pub fn selected_objects(&self) -> impl Iterator<Item = &Object> {
-        self.selection_order
-            .iter()
-            .filter_map(|id| self.object(*id))
+        selection::selected_objects(self)
     }
 
     pub fn selected_object_count(&self) -> usize {
