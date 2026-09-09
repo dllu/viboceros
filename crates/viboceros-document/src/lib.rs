@@ -1881,16 +1881,6 @@ impl Document {
         Ok(staged)
     }
 
-    fn prune_selection(&mut self) {
-        let selection = self
-            .selection
-            .iter()
-            .copied()
-            .filter(|id| self.is_object_selectable(*id))
-            .collect();
-        self.update_selection(selection);
-    }
-
     fn record_layer_change(&mut self, label: &'static str, index: usize, before: Layer) {
         let after = self.layers[index].clone();
         let id = after.id;

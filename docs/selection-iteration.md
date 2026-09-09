@@ -52,6 +52,24 @@ Layer lookups remain, and ID-only selection filters are not covered by this
 optimization. Regression coverage checks exact selection order and unchanged
 objects, layers, groups, and undo label across the four filters.
 
+## Selection cleanup after edits
+
+Layer visibility/locking, object attribute changes, and copy completion use the
+shared batched recorded-object filter to prune selection. It scans the object
+table once with a cached set of selectable layers, instead of resolving every
+selected ID separately. An empty selection returns immediately. Cleanup retains
+the surviving pick order and updates previous-selection memories through the
+usual selection updater. It does not expand groups; history replay retains its
+separate group-aware policy.
+
+Tests compare the complete document state against independent per-ID filtering
+for varied selection sizes/order and hidden/locked objects/layers, including
+grouped objects, redo, previous-selection memories, and repeated cleanup. Layer
+visibility and locking tests also check transaction rollback restores selection
+order and memories. In the debug diagnostic, hiding the layer containing half of
+20,000 selected points took about 1.07 s before batching and 55 ms afterward.
+This measures the document operation, not GUI redraw or Rhino performance.
+
 ## Iteration checks and timing
 
 Tests check both sides of the crossover, reversed and sparse pick order, removal

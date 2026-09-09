@@ -6,6 +6,13 @@ pub(super) fn selected_objects(document: &Document) -> impl Iterator<Item = &Obj
 }
 
 impl Document {
+    /// Attribute/layer changes prune individual objects, without group expansion.
+    /// History replay has a separate group-aware cleanup policy below.
+    pub(super) fn prune_selection(&mut self) {
+        let selection = self.selectable_recorded_objects(&self.selection);
+        self.update_selection(selection);
+    }
+
     /// Validate the complete request before expanding groups or mutating selection.
     /// Missing IDs take precedence over unselectable seeds, in sorted-ID order.
     pub(super) fn validate_selection_seeds(
@@ -159,6 +166,105 @@ impl Document {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn batch_pruning_matches_per_object_policy_and_preserves_other_state() {
+        let mut fixture = Document::default();
+        let ids = points(&mut fixture, 64);
+        let hidden = fixture.add_layer("hidden", ColorRgb::BLACK).unwrap();
+        let locked = fixture.add_layer("locked", ColorRgb::BLACK).unwrap();
+        fixture.set_layer_visibility(hidden, false).unwrap();
+        fixture.set_layer_locked(locked, true).unwrap();
+        fixture.add_group(None, ids.iter().copied()).unwrap();
+        // Seed redo and selection memories independently of the tested cleanup.
+        fixture
+            .add_geometry(Geometry::Point(Point3::try_new(0., 0., 0.).unwrap()))
+            .unwrap();
+        fixture.undo().unwrap();
+        for count in [0, 1, 16, 17, 32, 64] {
+            for offset in [0, 7, 19] {
+                let mut document = fixture.clone();
+                for index in (0..count).rev() {
+                    let id = ids[(offset + index) % ids.len()];
+                    document
+                        .select_objects_direct([id], SelectionMode::Add)
+                        .unwrap();
+                }
+                document.previous_selection = ids[..3].iter().copied().collect();
+                document.previous_selection_order = ids[..3].to_vec();
+                for (i, object) in document.objects.iter_mut().enumerate() {
+                    match i % 5 {
+                        0 => object.attributes.visible = false,
+                        1 => object.attributes.locked = true,
+                        2 => object.attributes.layer_id = hidden,
+                        3 => object.attributes.layer_id = locked,
+                        _ => {}
+                    }
+                }
+                let mut reference = document.clone();
+                let expected = reference
+                    .selection
+                    .iter()
+                    .copied()
+                    .filter(|id| reference.is_object_selectable(*id))
+                    .collect();
+                reference.update_selection(expected);
+                document.prune_selection();
+                assert_eq!(
+                    format!("{document:?}"),
+                    format!("{reference:?}"),
+                    "count={count}, offset={offset}"
+                );
+                let once = format!("{document:?}");
+                document.prune_selection();
+                assert_eq!(format!("{document:?}"), once, "cleanup is idempotent");
+            }
+        }
+    }
+
+    #[test]
+    fn layer_pruning_keeps_pick_order_and_rolls_back_selection_memories() {
+        for lock in [false, true] {
+            let mut document = Document::default();
+            let layer = document.add_layer("target", ColorRgb::BLACK).unwrap();
+            let ids = points(&mut document, 40);
+            for object in document.objects.iter_mut().step_by(2) {
+                object.attributes.layer_id = layer;
+            }
+            for id in ids.iter().rev() {
+                document
+                    .select_objects_direct([*id], SelectionMode::Add)
+                    .unwrap();
+            }
+            let before = document.clone();
+            document.begin_transaction("layer change").unwrap();
+            if lock {
+                document.set_layer_locked(layer, true).unwrap();
+            } else {
+                document.set_layer_visibility(layer, false).unwrap();
+            }
+            assert_eq!(
+                document.selected_object_ids().collect::<Vec<_>>(),
+                ids.iter()
+                    .skip(1)
+                    .step_by(2)
+                    .rev()
+                    .copied()
+                    .collect::<Vec<_>>()
+            );
+            assert_eq!(document.previous_selection_order, before.selection_order);
+            document.rollback_transaction().unwrap();
+            assert_eq!(document.layers, before.layers);
+            assert_eq!(document.objects, before.objects);
+            assert_eq!(document.selection_order, before.selection_order);
+            assert_eq!(document.selection, before.selection);
+            assert_eq!(document.previous_selection, before.previous_selection);
+            assert_eq!(
+                document.previous_selection_order,
+                before.previous_selection_order
+            );
+        }
+    }
 
     #[test]
     fn table_filters_preserve_visibility_color_group_and_name_policy() {
@@ -401,6 +507,22 @@ mod tests {
         let start = std::time::Instant::now();
         assert_eq!(document.select_objects_by_name_pattern("*"), ids.len());
         eprintln!("20k objects, wildcard selection: {:?}", start.elapsed());
+        let layer = document
+            .add_layer("prune benchmark", ColorRgb::BLACK)
+            .unwrap();
+        for object in document.objects.iter_mut().step_by(2) {
+            object.attributes.layer_id = layer;
+        }
+        let start = std::time::Instant::now();
+        document.set_layer_visibility(layer, false).unwrap();
+        eprintln!(
+            "20k selected objects, hide half by layer: {:?}",
+            start.elapsed()
+        );
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            ids.iter().skip(1).step_by(2).copied().collect::<Vec<_>>()
+        );
     }
 
     fn points(document: &mut Document, count: usize) -> Vec<ObjectId> {
