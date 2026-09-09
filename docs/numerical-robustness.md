@@ -126,6 +126,9 @@ subnormal quantum, where an FMA residual could itself round to zero. Exact
 products are retained, including identity scaling and the largest finite result.
 Tests cover subnormal underflow and 10,000 mantissa pairs at three binary scales
 against independent FMA residuals in their representable range.
+Subnormal tests instead use exact integer ceiling in units of the smallest
+subnormal, covering every scale `n/256` from zero to one, small bit patterns,
+and values adjacent to the normal/subnormal boundary in both operand orders.
 This arithmetic and its regression tests live in the independent
 [`brep/tolerance` module](../crates/viboceros-geometry/src/brep/tolerance.rs),
 separate from topology construction and validation.

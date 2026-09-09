@@ -53,6 +53,40 @@ mod tests {
     use super::*;
 
     #[test]
+    fn subnormal_products_match_integer_ceiling_in_both_operand_orders() {
+        // Below 2*MIN_POSITIVE, consecutive bit patterns are integer multiples
+        // of the smallest subnormal. Multiplying by n/256 therefore has an
+        // independent exact oracle: ceil(bits*n/256) in that same quantum.
+        let values = (0_u64..=512).chain([
+            (1 << 40) - 1,
+            1 << 40,
+            (1 << 40) + 1,
+            (1 << 52) - 1,
+            1 << 52,
+            (1 << 52) + 1,
+            (1 << 53) - 1,
+        ]);
+        for bits in values {
+            let value = Real::from_bits(bits);
+            for numerator in 0_u64..=256 {
+                let scale = numerator as Real / 256.;
+                let expected_bits = (u128::from(bits) * u128::from(numerator)).div_ceil(256) as u64;
+                let expected = Real::from_bits(expected_bits);
+                assert_eq!(
+                    scaled_tolerance(value, scale).unwrap(),
+                    expected,
+                    "bits={bits}, n={numerator}"
+                );
+                assert_eq!(
+                    scaled_tolerance(scale, value).unwrap(),
+                    expected,
+                    "reversed: bits={bits}, n={numerator}"
+                );
+            }
+        }
+    }
+
+    #[test]
     fn transformed_component_tolerances_round_outward_without_inflating_exact_products() {
         let tiny = Real::from_bits(1);
         assert_eq!(scaled_tolerance(tiny, 0.5).unwrap(), tiny);
