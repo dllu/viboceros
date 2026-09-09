@@ -35,6 +35,10 @@ the target displacement or dot product overflows. Perpendicular extreme-range
 coordinates no longer prevent a valid interior result; an unbounded signed
 projection clamps to the appropriate finite segment endpoint. Independent
 integer sums test the extended accumulator alongside axis/reversal cases.
+Plane signed distances share this point-difference projection, but reject a
+truly unrepresentable result instead of clamping it. Tests distinguish finite
+normal distance from overflowing tangential displacement, including oblique
+cancellation, opposite normal signs, and reversed point/origin roles.
 
 | Module | Responsibility |
 | --- | --- |

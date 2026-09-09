@@ -26,7 +26,12 @@ impl Plane {
     }
 
     pub fn signed_distance_to(self, point: Point3) -> Result<Real, GeometryError> {
-        self.origin.vector_to(point)?.dot(self.normal.as_vector())
+        let distance = self
+            .normal
+            .as_vector()
+            .dot_point_difference(point, self.origin);
+        crate::require_finite([distance], "plane signed distance")?;
+        Ok(distance)
     }
 
     fn equation_constant(self) -> Result<Real, GeometryError> {
@@ -75,6 +80,46 @@ mod tests {
             origin,
             UnitVector3::try_new(normal[0], normal[1], normal[2], Tolerance::DEFAULT).unwrap(),
         )
+    }
+
+    #[test]
+    fn signed_distance_survives_unrepresentable_tangential_displacements() {
+        let huge = 2_f64.powi(1023);
+        for axis in 0..3 {
+            for sign in [-1., 1.] {
+                let mut origin = [-huge; 3];
+                let mut target = [huge; 3];
+                let mut normal = [0.; 3];
+                origin[axis] = 2.;
+                target[axis] = 5.;
+                normal[axis] = sign;
+                let make = |v: [Real; 3]| Point3::try_new(v[0], v[1], v[2]).unwrap();
+                let plane = axis_plane(make(origin), normal);
+                assert_eq!(plane.signed_distance_to(make(target)).unwrap(), sign * 3.);
+                let reverse = axis_plane(make(target), normal);
+                assert_eq!(
+                    reverse.signed_distance_to(make(origin)).unwrap(),
+                    -sign * 3.
+                );
+                origin[axis] = -huge;
+                target[axis] = huge;
+                assert!(
+                    axis_plane(make(origin), normal)
+                        .signed_distance_to(make(target))
+                        .is_err()
+                );
+            }
+        }
+        // Both nonzero displacement components overflow, but the exact
+        // six-product sum cancels before conversion to binary64.
+        let origin = Point3::try_new(-huge, huge, 0.).unwrap();
+        let target = Point3::try_new(huge, -huge, 0.).unwrap();
+        assert_eq!(
+            axis_plane(origin, [1., 1., 0.])
+                .signed_distance_to(target)
+                .unwrap(),
+            0.
+        );
     }
 
     #[test]
