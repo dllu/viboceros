@@ -46,6 +46,9 @@ The [ordered selection iterator](selection-iteration.md) shares efficient,
 read-only selected-object lookup across commands without cloning geometry.
 The [bulk object resolver](bulk-object-lookup.md) shares temporary table indices
 and missing-ID validation across transforms, copies, and editable attributes.
+The `object_copy` module owns affine arrays, morph copies, and replacement
+geometry copies, including their group policies and shared instance commit.
+Layer transfers remain in `object_layer`; both use indexed group assignment.
 The independent [arrays module](plane-arrays.md) owns rectangular, linear, and
 polar layout. Its geometry extents use tolerance-controlled
 [curve](curve-bounds.md), [surface](surface-bounds.md), and

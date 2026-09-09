@@ -14,6 +14,10 @@ and O(K log K + N log K) work, stopping once all IDs are found. Affine transform
 affine copy/arrays, morph and morph-copy, geometry replacement and geometry-copy,
 editable attribute changes, and layer transfers share it. Each caller still stages all changes
 before mutation; caller-specific ordering and group policies remain separate.
+The private `object_copy` module contains affine/morph copy entry points,
+replacement-geometry copy ordering, and the shared independent-instance commit.
+It uses the resolver and geometry staging modules without introducing a second
+object store or persistent lookup cache.
 
 Fresh ungrouped copies also skip empty membership transitions. Grouped copies
 still use the membership transition path, preserving ordered memberships and
