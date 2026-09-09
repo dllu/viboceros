@@ -1,0 +1,161 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "ordinary-target",
+      "value": {
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "memberships": [
+          [
+            0
+          ],
+          [
+            0
+          ],
+          [
+            0
+          ]
+        ],
+        "modes": [
+          "Normal",
+          "Normal",
+          "Normal"
+        ],
+        "selected": []
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "overlap-last-target",
+      "value": {
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "memberships": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1
+          ]
+        ],
+        "modes": [
+          "Normal",
+          "Normal",
+          "Normal"
+        ],
+        "selected": []
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "reversed-target",
+      "value": {
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "memberships": [
+          [
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "modes": [
+          "Normal",
+          "Normal",
+          "Normal"
+        ],
+        "selected": []
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "existing-target-member",
+      "value": {
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "memberships": [
+          [
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1
+          ]
+        ],
+        "modes": [
+          "Normal",
+          "Normal",
+          "Normal"
+        ],
+        "selected": []
+      }
+    }
+  ]
+}

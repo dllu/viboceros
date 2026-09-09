@@ -4719,6 +4719,10 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.group_prompt == Some(group_prompt::GroupPrompt::Target) {
+            self.pick_group_prompt_target(click.object_id);
+            return;
+        }
         if self.group_prompt.is_some() {
             self.select_group_prompt_objects(click.object_id, click.mode);
             return;
@@ -5122,11 +5126,6 @@ impl eframe::App for VibocerosApp {
             .map_or(Some(viboceros_command::ObjectSelectionFilter::Any), |p| {
                 p.selection_filter()
             });
-        let object_filter = if self.group_prompt == Some(group_prompt::GroupPrompt::Target) {
-            None
-        } else {
-            object_filter
-        };
         let preview_curve = self.curve_draft_preview();
         let document = &self.document;
         let curve_points = self

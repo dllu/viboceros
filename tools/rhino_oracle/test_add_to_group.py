@@ -5,6 +5,19 @@ import unittest
 
 
 class AddToGroupObservationTests(unittest.TestCase):
+    def test_target_clicks_choose_last_membership_without_reordering_existing_members(self):
+        data = json.loads((Path(__file__).parent / "observations/add_to_group_picking.json").read_text())
+        expected = {
+            "ordinary-target": [[0], [0], [0]],
+            "overlap-last-target": [[0, 1], [0, 1], [1]],
+            "reversed-target": [[0], [1, 0], [1, 0]],
+            "existing-target-member": [[0], [0, 1], [1]],
+        }
+        self.assertEqual({row["id"] for row in data["results"]}, set(expected))
+        for row in data["results"]:
+            self.assertEqual(row["value"]["memberships"], expected[row["id"]])
+            self.assertEqual(row["value"]["selected"], [])
+
     def test_memberships_and_selection_match_literal_expectations(self):
         root = Path(__file__).parent
         data = json.loads((root / "observations/add_to_group.json").read_text())

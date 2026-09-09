@@ -15,7 +15,7 @@ class GroupPickingTests(unittest.TestCase):
     def test_permanent_request_and_rejected_modes(self):
         request = json.loads(Path(__file__).with_name("fixtures").joinpath("group_picking.json").read_text())
         validate_request(request)
-        for name in ("last_selection.json", "last_selection_history.json", "deletion_recall.json"):
+        for name in ("last_selection.json", "last_selection_history.json", "deletion_recall.json", "add_to_group_picking.json"):
             validate_request(json.loads(Path(__file__).with_name("fixtures").joinpath(name).read_text()))
         for changes in [dict(seed=True), dict(seed=3), dict(groups=[[0, 0]]),
                         dict(groups=[[False]]), dict(groups=[[3]]), dict(locked=[1, 1]),
@@ -36,6 +36,16 @@ class GroupPickingTests(unittest.TestCase):
                         dict(request, operations=[]), dict(request, protocol_version=2),
                         dict(request, operations=request["operations"] * 2)]:
             with self.assertRaises(OracleProtocolError): validate_request(invalid)
+
+    def test_add_to_group_picking_rejects_unsafe_or_ambiguous_fixture_modes(self):
+        request = json.loads(Path(__file__).with_name("fixtures").joinpath("add_to_group_picking.json").read_text())
+        for changes in [dict(add_to_group_sources=[]), dict(add_to_group_sources=[True]),
+                        dict(add_to_group_sources=[3]), dict(add_to_group_sources=[0,0]),
+                        dict(groups=[]), dict(move=True), dict(hidden=[2]), dict(locked=[0]),
+                        dict(layer_mode="locked"), dict(recall_previous=True)]:
+            invalid = copy.deepcopy(request)
+            invalid["operations"][0].update(changes)
+            with self.subTest(changes=changes), self.assertRaises(OracleProtocolError): validate_request(invalid)
 
     def test_clicks_only_owned_window_once_and_never_sends_enter(self):
         with tempfile.TemporaryDirectory() as directory:

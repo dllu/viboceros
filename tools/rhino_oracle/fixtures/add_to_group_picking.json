@@ -1,0 +1,10 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"id":"ordinary-target", "op":"group_picking", "groups":[[0,1]], "seed":1, "add_to_group_sources":[2]},
+    {"id":"overlap-last-target", "op":"group_picking", "groups":[[0,1],[1,2]], "seed":1, "add_to_group_sources":[0]},
+    {"id":"reversed-target", "op":"group_picking", "groups":[[0,1],[1,2]], "seed":1, "reverse_bridge":true, "add_to_group_sources":[2]},
+    {"id":"existing-target-member", "op":"group_picking", "groups":[[0,1],[1,2]], "seed":0, "add_to_group_sources":[1]}
+  ]
+}

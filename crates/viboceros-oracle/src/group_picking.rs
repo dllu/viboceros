@@ -21,6 +21,8 @@ pub struct GroupPickingFixture {
     recall_last: bool,
     #[serde(default)]
     last_steps: Vec<last_selection::Step>,
+    #[serde(default)]
+    add_to_group_sources: Option<Vec<usize>>,
 }
 
 pub(super) fn run(
@@ -46,6 +48,18 @@ pub(super) fn run(
                 || (f.seed == 1 && f.layer_mode.is_some())))
         || f.last_steps.len() > 32
         || (!f.last_steps.is_empty() && !f.recall_last)
+        || f.add_to_group_sources.as_ref().is_some_and(|sources| {
+            sources.is_empty()
+                || !valid(sources)
+                || !f.groups.iter().any(|group| group.contains(&f.seed))
+                || f.move_objects
+                || f.recall_previous
+                || f.recall_last
+                || !f.last_steps.is_empty()
+                || !f.hidden.is_empty()
+                || !f.locked.is_empty()
+                || f.layer_mode.is_some()
+        })
     {
         return Err(ProbeError::FixtureInvariant("invalid group picking case"));
     }
@@ -87,7 +101,15 @@ pub(super) fn run(
     document.set_objects_locked(f.locked.iter().map(|i| ids[*i]), true)?;
     document.set_objects_visibility(f.hidden.iter().map(|i| ids[*i]), false)?;
     // A hidden/locked line cannot be hit by a mouse pick; this is not SelID.
-    if document.is_object_selectable(ids[f.seed]) {
+    if let Some(sources) = &f.add_to_group_sources {
+        let group = document
+            .object(ids[f.seed])
+            .unwrap()
+            .top_group()
+            .ok_or(ProbeError::FixtureInvariant("missing target group"))?;
+        document.select_objects_direct(sources.iter().map(|i| ids[*i]), SelectionMode::Replace)?;
+        registry.execute_add_to_group(&mut document, group)?;
+    } else if document.is_object_selectable(ids[f.seed]) {
         document.select_object(ids[f.seed], SelectionMode::Replace)?;
     }
     let mut value = json!({
@@ -101,6 +123,23 @@ pub(super) fn run(
             json!({"visible": layer.is_visible(), "locked": layer.is_locked()})
         }).collect::<Vec<_>>()
     });
+    if f.add_to_group_sources.is_some() {
+        let groups = document
+            .groups()
+            .map(|group| group.id())
+            .collect::<Vec<_>>();
+        value["memberships"] = json!(
+            ids.iter()
+                .map(|id| document
+                    .object(*id)
+                    .unwrap()
+                    .group_ids()
+                    .iter()
+                    .map(|group| groups.iter().position(|id| id == group).unwrap())
+                    .collect::<Vec<_>>())
+                .collect::<Vec<_>>()
+        );
+    }
     if f.move_objects {
         value["move_succeeded"] = if document.selected_object_count() == 0 {
             Value::Null
@@ -151,6 +190,26 @@ pub(super) fn run(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn add_to_group_target_clicks_match_rhino_membership_order() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/add_to_group_picking.json"
+        ))
+        .unwrap();
+        let observed: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/add_to_group_picking.json"
+        ))
+        .unwrap();
+        let actual = run_request(&request).unwrap();
+        let expected = observed["results"].as_array().unwrap();
+        assert_eq!(expected.len(), 4);
+        assert_eq!(actual.results.len(), expected.len());
+        for (actual, expected) in actual.results.iter().zip(expected) {
+            assert_eq!(actual.id, expected["id"]);
+            assert_eq!(actual.value, expected["value"], "{}", actual.id);
+        }
+    }
 
     #[test]
     fn deletion_and_move_history_match_complete_rhino_traces() {

@@ -163,10 +163,15 @@ def on_idle(sender, event):
             Rhino.RhinoApp.RunScript('_Zoom _Extents', False)
             view = document.Views.ActiveView
             document.Views.Redraw()
+            if operation.get('add_to_group_sources') is not None:
+                for source in operation['add_to_group_sources']:
+                    if not document.Objects.Select(ids[source]): raise ValueError('source preselection failed')
             point = view.ActiveViewport.WorldToClient(Rhino.Geometry.Point3d(operation['seed']*5,1,0))
             screen = view.ClientToScreen(System.Drawing.Point(int(point.X), int(point.Y)))
             state['stage'] = 'wait'
             progress('PICK %s %d %d' % (operation['id'], screen.X, screen.Y), required=True)
+            if operation.get('add_to_group_sources') is not None:
+                if not Rhino.RhinoApp.RunScript('_AddToGroup', False): raise ValueError('AddToGroup target pick failed')
         elif state['stage'] == 'wait':
             ack = os.path.join(root, 'click-ack.json')
             if not os.path.isfile(ack): return
@@ -177,6 +182,8 @@ def on_idle(sender, event):
         elif time.time() >= state['ready']:
             ids = state['ids']
             value = dict(selected=[i for i,key in enumerate(ids) if document.Objects.FindId(key).IsSelected(False)], modes=[str(document.Objects.FindId(key).Attributes.Mode) for key in ids], layers=[dict(visible=document.Layers[document.Objects.FindId(key).Attributes.LayerIndex].IsVisible, locked=document.Layers[document.Objects.FindId(key).Attributes.LayerIndex].IsLocked) for key in ids])
+            if operation.get('add_to_group_sources') is not None:
+                value['memberships'] = [[state['groups'].index(group) for group in (document.Objects.FindId(key).Attributes.GetGroupList() or [])] for key in ids]
             if operation.get('move'):
                 value['move_succeeded'] = bool(Rhino.RhinoApp.RunScript('_Move w0,0,0 w0,1,0', False)) if value['selected'] else None
                 value['points'] = [[float(document.Objects.FindId(key).Geometry.PointAtStart.X), float(document.Objects.FindId(key).Geometry.PointAtStart.Y), float(document.Objects.FindId(key).Geometry.PointAtStart.Z)] for key in ids]

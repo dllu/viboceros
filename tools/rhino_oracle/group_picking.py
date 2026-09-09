@@ -30,6 +30,12 @@ def validate_request(request):
         if not isinstance(groups, list) or len(groups) > 16:
             raise OracleProtocolError("invalid group picking definitions")
         for members in groups: indices(members)
+        sources = operation.get('add_to_group_sources')
+        if sources is not None:
+            indices(sources)
+            if (not sources or not any(operation['seed'] in group for group in groups)
+                or any(operation.get(field) for field in ('move', 'recall_previous', 'recall_last', 'last_steps', 'hidden', 'locked', 'layer_mode'))):
+                raise OracleProtocolError('invalid AddToGroup picking case')
         for field in ("locked", "hidden"): indices(operation.get(field, []))
         if set(operation.get("locked", [])).intersection(operation.get("hidden", [])):
             raise OracleProtocolError("object mode cannot be both hidden and locked")

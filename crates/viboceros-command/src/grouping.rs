@@ -17,11 +17,37 @@ impl Command for AddToGroupCommand {
             .group_by_name(&name)
             .map(|group| group.id())
             .ok_or_else(|| CommandError::NamedGroupNotFound(name.clone()))?;
-        let members = selected_ids(document)?;
-        let count = document.add_group_members(group, members)?;
-        document.clear_selection();
-        Ok(format!("Added {count} object(s) to group '{name}'"))
+        add_selected_to_group(document, group)
     }
+}
+
+impl CommandRegistry {
+    /// Execute an already-resolved target pick, including unnamed imported groups.
+    pub fn execute_add_to_group(
+        &self,
+        document: &mut Document,
+        group: viboceros_document::GroupId,
+    ) -> Result<String, CommandError> {
+        run_command_transaction(document, "AddToGroup", |document| {
+            add_selected_to_group(document, group)
+        })
+    }
+}
+
+fn add_selected_to_group(
+    document: &mut Document,
+    group: viboceros_document::GroupId,
+) -> Result<String, CommandError> {
+    let name = document
+        .group(group)
+        .ok_or(viboceros_document::DocumentError::GroupNotFound(group))?
+        .name()
+        .map(str::to_owned)
+        .unwrap_or_else(|| group.to_string());
+    let members = selected_ids(document)?;
+    let count = document.add_group_members(group, members)?;
+    document.clear_selection();
+    Ok(format!("Added {count} object(s) to group '{name}'"))
 }
 
 pub(super) struct GroupCommand;

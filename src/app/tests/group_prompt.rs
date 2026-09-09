@@ -58,9 +58,9 @@ fn bare_add_to_group_collects_sources_then_target_without_early_edits() {
     assert_eq!(app.document.undo_label(), history.as_deref());
     enter(&mut app, "");
     assert_eq!(app.group_prompt, Some(GroupPrompt::Target));
-    // Target-name entry must not accidentally change the source selection.
+    // An ungrouped target must not change the source selection.
     app.apply_selection_click(SelectionClick {
-        object_id: Some(ids[0]),
+        object_id: Some(ids[1]),
         mode: SelectionMode::Replace,
     });
     assert_eq!(
@@ -221,4 +221,52 @@ fn group_sources_support_selectors_and_sidebar_actions_cancel_pending_input() {
             .len(),
         1
     );
+}
+
+#[test]
+fn target_click_uses_last_membership_including_unnamed_groups() {
+    for variant in 0..3 {
+        let (mut app, ids) = setup();
+        let original = app.document.object(ids[0]).unwrap().top_group().unwrap();
+        let other = app
+            .document
+            .add_group(
+                if variant == 2 {
+                    None
+                } else {
+                    Some("Other".into())
+                },
+                [ids[0], ids[1]],
+            )
+            .unwrap();
+        let expected = if variant == 1 {
+            app.document
+                .set_object_group_memberships(ids[0], [other, original])
+                .unwrap();
+            original
+        } else {
+            other
+        };
+        let target_memberships = app.document.object(ids[0]).unwrap().group_ids().to_vec();
+        app.document
+            .select_objects_direct([ids[2]], SelectionMode::Replace)
+            .unwrap();
+        enter(&mut app, "AddToGroup");
+        app.apply_selection_click(SelectionClick {
+            object_id: Some(ids[0]),
+            mode: SelectionMode::Replace,
+        });
+        assert!(app.group_prompt.is_none());
+        assert_eq!(app.document.object(ids[2]).unwrap().group_ids(), [expected]);
+        assert_eq!(
+            app.document.object(ids[0]).unwrap().group_ids(),
+            target_memberships
+        );
+        assert_eq!(app.document.selected_object_count(), 0);
+        assert_eq!(app.document.undo_label(), Some("AddToGroup"));
+        enter(&mut app, "Undo");
+        assert!(app.document.object(ids[2]).unwrap().group_ids().is_empty());
+        enter(&mut app, "Redo");
+        assert_eq!(app.document.object(ids[2]).unwrap().group_ids(), [expected]);
+    }
 }

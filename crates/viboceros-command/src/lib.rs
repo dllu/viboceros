@@ -922,17 +922,7 @@ impl CommandRegistry {
             return run(document);
         }
 
-        document.begin_transaction(command.name())?;
-        match run(document) {
-            Ok(message) => {
-                document.commit_transaction()?;
-                Ok(message)
-            }
-            Err(error) => {
-                document.rollback_transaction()?;
-                Err(error)
-            }
-        }
+        run_command_transaction(document, command.name(), run)
     }
 
     /// Recognizes canonical names, aliases, script prefixes, and built-in help.
@@ -946,6 +936,24 @@ impl CommandRegistry {
         let mut names: Vec<_> = self.commands.iter().map(|command| command.name()).collect();
         names.sort_unstable_by_key(|name| name.to_ascii_lowercase());
         names
+    }
+}
+
+fn run_command_transaction(
+    document: &mut Document,
+    name: &'static str,
+    run: impl FnOnce(&mut Document) -> Result<String, CommandError>,
+) -> Result<String, CommandError> {
+    document.begin_transaction(name)?;
+    match run(document) {
+        Ok(message) => {
+            document.commit_transaction()?;
+            Ok(message)
+        }
+        Err(error) => {
+            document.rollback_transaction()?;
+            Err(error)
+        }
     }
 }
 

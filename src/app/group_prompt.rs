@@ -12,7 +12,7 @@ impl GroupPrompt {
     pub(super) fn hint(&self) -> &'static str {
         match self {
             Self::Sources { .. } => "Select objects to add; Enter continues, Esc cancels",
-            Self::Target => "Type the existing target group name; Esc cancels",
+            Self::Target => "Pick a grouped object or type the target group name; Esc cancels",
         }
     }
 }
@@ -141,6 +141,31 @@ impl VibocerosApp {
             if announce {
                 self.push_log("Cancelled AddToGroup".into());
             }
+        }
+    }
+
+    pub(super) fn pick_group_prompt_target(&mut self, id: Option<ObjectId>) {
+        let Some(id) = id else {
+            return;
+        };
+        let group = self
+            .document
+            .object(id)
+            .filter(|_| self.document.is_object_selectable(id))
+            .and_then(|object| object.top_group());
+        let Some(group) = group else {
+            self.push_log("Pick a selectable object that belongs to a group".into());
+            return;
+        };
+        match self
+            .commands
+            .execute_add_to_group(&mut self.document, group)
+        {
+            Ok(message) => {
+                self.cancel_group_prompt(false);
+                self.push_log(message);
+            }
+            Err(error) => self.push_log(format!("Error: {error}")),
         }
     }
 }

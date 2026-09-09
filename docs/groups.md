@@ -41,15 +41,20 @@ append, existing memberships keep their positions, and selection is cleared
 even for an all-existing no-op. Empty group definitions are valid targets.
 Missing names, missing groups, or empty selection produce an error without edits.
 The UI also accepts bare `AddToGroup`: pick source objects and press Enter, then
-type the target group name. Preselection skips source collection, and
+pick a grouped object or type the target group name. Preselection skips source collection, and
 `AddToGroup group-name` with no selection collects sources for that named target.
 Source clicks are additive; removal modifiers, window selection, `SelAll`, and
-`SelNone` can correct the source set. Target-name entry fixes viewport selection;
+`SelNone` can correct the source set. Target entry fixes the source selection;
 invalid names remain retryable. Esc cancels without membership edits. CPlane and
 interface commands remain transparent; another model command or a sidebar action
-ends the prompt. Mouse-based target-group picking is not implemented yet.
-These UI prompt transitions have native tests; the live Rhino probes below
-cover the preselection/named-target execution behavior, not UI gesture parity.
+ends the prompt. Clicking a target uses that object's last ordered membership,
+including unnamed imported groups. Clicking an ungrouped/nonselectable object
+does not complete the command; target-window gestures do not change sources.
+Four owned-window Rhino mouse probes verify ordinary, overlapping, reversed,
+and already-existing target memberships in `add_to_group_picking.json`.
+Native replay compares memberships, selection, object modes, and layer flags;
+independent Python expectations check the chosen group and membership order.
+This does not establish every ambiguous-pick menu or modifier-key behavior.
 Native Undo/Redo is one transaction for
 actual additions; a membership no-op creates no history entry.
 
@@ -58,6 +63,10 @@ repeat/all-existing additions, and an empty target. The complete ordered
 memberships, reverse group index, retained geometry, names, and selection match
 the saved observations in `add_to_group.json`; native and independent Python
 tests replay/check them. These probes do not claim Rhino outer Undo/Redo parity.
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/add_to_group_picking.json --timeout 180
+```
 
 ## Model and transactions
 
