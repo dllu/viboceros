@@ -24,6 +24,12 @@ still resolves individual object IDs; this is not a global object index.
 Tests cover all subsets of eight scattered objects, reversed and duplicate IDs,
 missing-ID precedence, unchanged state on failures across all seven consumers,
 redo preservation, and exact mixed grouped/ungrouped copy Undo/Redo replay.
+Late geometry-overflow coverage also stages valid sources before a failing
+source in both in-place transforms and multi-instance copies. It compares the
+complete document's debug representation before and after failure, including
+overlapping groups, selection, redo history, and a caller-owned transaction
+with an earlier pending edit. Both standalone and caller-transaction cases
+must remain unchanged.
 
 A native debug-build diagnostic on 20,000 ungrouped points measured transform
 at about 1.14 s before these changes and 108 ms afterward; copy improved from

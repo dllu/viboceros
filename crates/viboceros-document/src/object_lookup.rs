@@ -31,6 +31,58 @@ impl Document {
 mod tests {
     use super::*;
 
+    #[test]
+    fn late_geometry_overflow_preserves_groups_redo_and_caller_transactions() {
+        for copy in [false, true] {
+            for active in [false, true] {
+                let mut document = Document::default();
+                let ids = [1., f64::MAX].map(|x| {
+                    document
+                        .add_geometry(Geometry::Point(Point3::try_new(x, 0., 0.).unwrap()))
+                        .unwrap()
+                });
+                document.add_group(Some("Both".into()), ids).unwrap();
+                document.add_group(Some("Last".into()), [ids[1]]).unwrap();
+                document
+                    .select_objects_direct(ids, SelectionMode::Replace)
+                    .unwrap();
+                document
+                    .add_geometry(Geometry::Point(Point3::try_new(2., 0., 0.).unwrap()))
+                    .unwrap();
+                document.undo().unwrap();
+                if active {
+                    document.begin_transaction("caller").unwrap();
+                    document
+                        .add_geometry(Geometry::Point(Point3::try_new(3., 0., 0.).unwrap()))
+                        .unwrap();
+                }
+                let before = format!("{document:?}");
+                let transform = AffineTransform3::from_translation(
+                    viboceros_geometry::Vector3::try_new(f64::MAX, 0., 0.).unwrap(),
+                );
+                // The first source transforms successfully; only the later
+                // source overflows. Copy also stages an earlier valid instance.
+                if copy {
+                    assert!(
+                        document
+                            .copy_objects_with_transforms(
+                                ids,
+                                &[AffineTransform3::identity(), transform]
+                            )
+                            .is_err()
+                    );
+                } else {
+                    assert!(document.transform_objects(ids, transform).is_err());
+                }
+                assert_eq!(
+                    format!("{document:?}"),
+                    before,
+                    "copy={copy}, active={active}"
+                );
+            }
+        }
+    }
+
     struct IdentityMorph;
     impl PointMorph for IdentityMorph {
         fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError> {
