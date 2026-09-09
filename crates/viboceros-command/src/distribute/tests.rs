@@ -3,6 +3,39 @@ use crate::{CommandRegistry, construction_plane::WorldPlane};
 use viboceros_document::{Geometry, SelectionMode};
 use viboceros_geometry::{NurbsCurve, PointCloud3, WeightedPoint3};
 
+#[test]
+fn borrowed_units_preserve_first_appearance_top_membership_and_partial_selection() {
+    let mut document = Document::default();
+    let ids = (0..4)
+        .map(|x| {
+            document
+                .add_geometry(Geometry::Point(p([x as f64, 0., 0.])))
+                .unwrap()
+        })
+        .collect::<Vec<_>>();
+    document.add_group(None, [ids[0], ids[1]]).unwrap();
+    document.add_group(None, [ids[1], ids[2], ids[3]]).unwrap();
+    for &id in &[ids[2], ids[0], ids[1]] {
+        document
+            .select_objects_direct([id], SelectionMode::Add)
+            .unwrap();
+    }
+    let before = format!("{document:?}");
+    let grouped = units(&document);
+    assert_eq!(
+        grouped
+            .iter()
+            .map(|objects| objects.iter().map(|object| object.id()).collect::<Vec<_>>())
+            .collect::<Vec<_>>(),
+        vec![vec![ids[2], ids[1]], vec![ids[0]]]
+    );
+    for object in grouped.into_iter().flatten() {
+        assert!(std::ptr::eq(object, document.object(object.id()).unwrap()));
+    }
+    assert_eq!(distribution_unit_count(&document), 2);
+    assert_eq!(format!("{document:?}"), before);
+}
+
 fn p(a: [f64; 3]) -> Point3 {
     Point3::try_from(a).unwrap()
 }

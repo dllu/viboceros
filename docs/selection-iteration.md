@@ -22,6 +22,11 @@ object's geometry, attributes, and memberships instead of resolving the ID twice
 A 20-mesh regression crosses the indexed-iterator threshold in non-table action
 order, includes a hidden group-selected peer, and checks that a late extraction
 callback failure leaves the document unchanged.
+`Distribute` carries borrowed objects from this iterator into rigid-unit
+grouping, local bounds, and transform staging, avoiding later per-ID scans.
+Units follow the first selected member's action order and each object's top
+membership; unselected group members are not included. A regression checks
+overlapping groups, partial selection, order, and read-only borrowed identity.
 
 ## Building explicit selections
 

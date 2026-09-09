@@ -3,7 +3,7 @@ use crate::{
     Command, CommandContext, CommandError, option_name_eq, parse_finite_real, parse_point,
 };
 use std::collections::BTreeMap;
-use viboceros_document::{Document, GroupId, ObjectId};
+use viboceros_document::{Document, GroupId, Object, ObjectId};
 use viboceros_geometry::{AffineTransform3, Frame3, GeometryError, Point3, Tolerance, Vector3};
 #[cfg(test)]
 mod tests;
@@ -81,11 +81,7 @@ pub(super) struct DistributeCommand;
 
 /// Number of independently distributed units in the current selection.
 pub fn distribution_unit_count(document: &Document) -> usize {
-    units(
-        document,
-        &document.selected_object_ids().collect::<Vec<_>>(),
-    )
-    .len()
+    units(document).len()
 }
 
 impl Command for DistributeCommand {
@@ -102,19 +98,13 @@ impl Command for DistributeCommand {
         context: CommandContext,
     ) -> Result<String, CommandError> {
         let options = parse(arguments)?;
-        let selected = document.selected_object_ids().collect::<Vec<_>>();
-        let units = units(document, &selected);
+        let units = units(document);
         if units.len() < 3 {
             return Err(CommandError::InsufficientDistributionObjects {
                 actual: units.len(),
             });
         }
-        let anchor = document
-            .object(selected[0])
-            .unwrap()
-            .geometry()
-            .bounds()
-            .center()?;
+        let anchor = units[0][0].geometry().bounds().center()?;
         let frame = direction_frame(
             options.direction,
             context.construction_plane,
@@ -123,10 +113,9 @@ impl Command for DistributeCommand {
         )?;
         let bounds = units
             .iter()
-            .map(|ids| {
+            .map(|objects| {
                 crate::object_bounds::local_bounds(
-                    ids.iter()
-                        .map(|id| document.object(*id).unwrap().geometry()),
+                    objects.iter().map(|object| object.geometry()),
                     frame,
                     document.tolerance(),
                 )
@@ -153,20 +142,18 @@ impl Command for DistributeCommand {
             }
             let translation = frame.x_axis().as_vector().scaled(distance)?;
             let transform = AffineTransform3::from_translation(translation);
-            for id in &units[index] {
-                let geometry = document
-                    .object(*id)
-                    .unwrap()
+            for object in &units[index] {
+                let geometry = object
                     .geometry()
                     .transformed(transform, document.tolerance())?;
-                replacements.push((*id, geometry));
+                replacements.push((object.id(), geometry));
             }
         }
+        let unit_count = units.len();
         let changed = document.replace_object_geometries(replacements)?;
         Ok(format!(
             "Distributed {} object/group unit(s) with {:?} spacing {spacing:.6}; moved {changed} object(s)",
-            units.len(),
-            options.settings.mode
+            unit_count, options.settings.mode
         ))
     }
 }
@@ -236,34 +223,23 @@ fn direction_frame(
 
 /// Each object's last membership supplies its rigid unit. Partial selection
 /// never moves unseen members, even when that top group contains them.
-fn units(document: &Document, selected: &[ObjectId]) -> Vec<Vec<ObjectId>> {
+fn units(document: &Document) -> Vec<Vec<&Object>> {
     #[derive(Clone, Copy, Eq, Ord, PartialEq, PartialOrd)]
     enum Unit {
         Object(ObjectId),
         Group(GroupId),
     }
-    // Join selection order to document order in one pass; avoid a linear
-    // document lookup for every selected object in large distributions.
-    let indices = selected
-        .iter()
-        .enumerate()
-        .map(|(i, id)| (*id, i))
-        .collect::<BTreeMap<_, _>>();
-    let mut memberships = vec![None; selected.len()];
-    for object in document.objects() {
-        if let Some(index) = indices.get(&object.id()) {
-            memberships[*index] = object.top_group();
-        }
-    }
     let mut slots = BTreeMap::new();
-    let mut result = Vec::<Vec<ObjectId>>::new();
-    for (i, id) in selected.iter().copied().enumerate() {
-        let key = memberships[i].map_or(Unit::Object(id), Unit::Group);
+    let mut result = Vec::<Vec<&Object>>::new();
+    for object in document.selected_objects() {
+        let key = object
+            .top_group()
+            .map_or(Unit::Object(object.id()), Unit::Group);
         let slot = *slots.entry(key).or_insert_with(|| {
             result.push(Vec::new());
             result.len() - 1
         });
-        result[slot].push(id);
+        result[slot].push(object);
     }
     result
 }
