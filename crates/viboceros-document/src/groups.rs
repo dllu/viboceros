@@ -74,6 +74,7 @@ impl Document {
         if indices.is_empty() {
             return Err(DocumentError::EmptyGroup);
         }
+        self.validate_memberships_at_indices(&indices)?;
         self.group_transaction("Add group", |document| {
             let id = document.add_empty_group(name)?;
             document.append_group_at_indices(id, &indices)?;
@@ -139,8 +140,17 @@ impl Document {
         let group = self
             .group(group_id)
             .ok_or(DocumentError::GroupNotFound(group_id))?;
-        let additions = self
-            .resolve_object_indices(members)?
+        let indices = self.resolve_object_indices(members)?;
+        self.validate_memberships_at_indices(&indices)?;
+        for &index in &indices {
+            let object = &self.objects[index];
+            if object.group_ids.contains(&group_id) != group.members.contains(&object.id) {
+                return Err(DocumentError::HistoryInvariant(
+                    "group member index does not match",
+                ));
+            }
+        }
+        let additions = indices
             .into_iter()
             .filter(|index| !group.members.contains(&self.objects[*index].id))
             .collect::<Vec<_>>();
@@ -148,6 +158,16 @@ impl Document {
             document.append_group_at_indices(group_id, &additions)?;
             Ok(additions.len())
         })
+    }
+
+    // Check even memberships unrelated to the requested group: a later
+    // transition must not fail after earlier objects have already changed.
+    fn validate_memberships_at_indices(&self, indices: &[usize]) -> Result<(), DocumentError> {
+        for &index in indices {
+            let memberships = &self.objects[index].group_ids;
+            membership_changes(self, index, memberships, memberships)?;
+        }
+        Ok(())
     }
 
     // Call within a group transaction after resolving all objects. Membership
@@ -185,6 +205,7 @@ impl Document {
                 ));
             }
         }
+        self.validate_memberships_at_indices(&indices)?;
         self.group_transaction("Remove group", |document| {
             for &object_index in &indices {
                 let remaining = document.objects[object_index]

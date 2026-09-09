@@ -31,6 +31,12 @@ Deleting objects likewise removes their memberships, not their group definitions
 An empty group remains addressable, and undo restores memberships in their original
 order. Explicit group deletion remains a separate operation.
 
+Document-level group creation, member addition, and definition deletion validate
+all affected objects' existing memberships before editing. A malformed later
+member cannot leave earlier members partially changed, including inside a
+caller-owned transaction. Regression tests inject inconsistent forward/reverse
+memberships and verify that failures retain the complete document and history.
+
 Viboceros also retains explicit document-management extensions: `Group all Name`
 groups every selectable object; `Ungroup Name` deletes a named definition and
 all of its memberships; `Ungroup all` deletes every definition in the document.

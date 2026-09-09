@@ -2,6 +2,52 @@ use super::*;
 use viboceros_geometry::{Point3, Vector3};
 
 #[test]
+fn group_batches_reject_late_membership_corruption_before_any_edit() {
+    for operation in ["create", "append", "remove"] {
+        for active in [false, true] {
+            let (mut document, ids, groups) = fixture();
+            let target = document.add_empty_group(None).unwrap();
+            document.add_geometry(geometry(99.)).unwrap();
+            document.undo().unwrap();
+            // The final object's unrelated group is broken: earlier objects
+            // must not be edited before this failure is discovered.
+            document
+                .groups
+                .iter_mut()
+                .find(|g| g.id == groups[1])
+                .unwrap()
+                .members
+                .remove(&ids[2]);
+            if active {
+                document.begin_transaction("caller").unwrap();
+            }
+            let before = format!("{document:?}");
+            let result = match operation {
+                "create" => document.add_group(None, ids).map(|_| ()),
+                "append" => document.add_group_members(target, ids).map(|_| ()),
+                "remove" => document.remove_group(groups[0]).map(|_| ()),
+                _ => unreachable!(),
+            };
+            assert!(result.is_err(), "{operation}, active={active}");
+            assert_eq!(
+                format!("{document:?}"),
+                before,
+                "{operation}, active={active}"
+            );
+        }
+    }
+}
+
+#[test]
+fn adding_an_indexed_member_does_not_hide_a_missing_forward_membership() {
+    let (mut document, ids, groups) = fixture();
+    document.objects[2].group_ids.retain(|id| *id != groups[0]);
+    let before = format!("{document:?}");
+    assert!(document.add_group_members(groups[0], [ids[2]]).is_err());
+    assert_eq!(format!("{document:?}"), before);
+}
+
+#[test]
 fn batch_clear_groups_preserves_peers_definitions_and_history() {
     let (mut document, ids, _) = fixture();
     let original = state(&document);
