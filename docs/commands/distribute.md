@@ -73,6 +73,18 @@ rules, and 57 additional tie-order cases. The comparison epsilon is absolute
 Records include every source's retained ID, selection,
 current layer, domains, sampled points, and groups.
 
+Run this fixture with its explicit comparison limits (the runner defaults are
+stricter and are not this fixture's acceptance limits):
+
+```sh
+tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/distribute.json --absolute-epsilon 1e-8 --relative-epsilon 1e-12 --timeout 240
+```
+
+A fresh Rhino 8 run against native revision `fffcc02` reconfirmed all 188
+comparisons after the spacing-overflow fixes, with maximum coordinate error
+`3.829159211932165e-10`. At the runner's default limits, four curved-NURBS
+placement cases fail; these established fixture limits were not changed.
+
 Six comparisons remain explicitly failing in `distribute_diagnostics.json`:
 oblique quadratic-surface and disk-face placement, and a transformed disk's
 world-Z placement, in both modes. Maximum placement differences are about
