@@ -179,6 +179,7 @@ enum InteractiveCommand {
     PointGrid {
         base: Option<Point3>,
         opposite: Option<Point3>,
+        third: Option<Point3>,
         options: viboceros_command::PointGridOptions,
     },
     MeshPlane {
@@ -527,8 +528,22 @@ impl InteractiveCommand {
             Self::PointGrid { base: None, .. } => {
                 "PointGrid: pick the first base corner (Esc to cancel)"
             }
+            Self::PointGrid {
+                opposite: None,
+                options,
+                ..
+            } if options.three_point() => {
+                "PointGrid: pick the end of the first edge (Esc to cancel)"
+            }
             Self::PointGrid { opposite: None, .. } => {
                 "PointGrid: pick the opposite base corner (Esc to cancel)"
+            }
+            Self::PointGrid {
+                third: None,
+                options,
+                ..
+            } if options.three_point() => {
+                "PointGrid: pick a point on the opposite side (Esc to cancel)"
             }
             Self::PointGrid { .. } => {
                 "PointGrid: pick or enter height; Enter uses base width (Esc to cancel)"
@@ -1204,6 +1219,7 @@ impl VibocerosApp {
             InteractiveCommand::PointGrid {
                 base: None,
                 opposite: None,
+                third: None,
                 options,
             }
         } else if normalized == "meshellipsoid" {
@@ -3386,12 +3402,8 @@ impl VibocerosApp {
             InteractiveCommand::Box { base, opposite } => {
                 return self.apply_box_point(plane, base, opposite, point);
             }
-            InteractiveCommand::PointGrid {
-                base,
-                opposite,
-                options,
-            } => {
-                return self.apply_point_grid_point(plane, base, opposite, options, point);
+            command @ InteractiveCommand::PointGrid { .. } => {
+                return self.apply_point_grid_point(plane, command, point);
             }
             InteractiveCommand::MeshCone {
                 center: None,

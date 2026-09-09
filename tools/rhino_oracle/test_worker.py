@@ -11,6 +11,18 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_three_point_grid_probe_whitelists_mode_and_requires_three_points(self):
+        operation = {"count": [3, 2, 1], "three_point": True, "points": [[0,0,0], [6,0,2], [3,4,5]], "height": -2}
+        with patch.object(self.worker, "_command_point", side_effect=["0,0,0", "6,0,2", "3,4,5"]), \
+                patch.object(self.worker, "_in_construction_plane", return_value=({}, 0)) as run:
+            self.worker._point_grid_command(operation)
+        self.assertEqual(run.call_args.args[1], "_PointGrid _XCount=3 _YCount=2 _ZCount=1 _3Point w0,0,0 w6,0,2 w3,4,5 -2")
+        for invalid in [dict(operation, three_point="3Point"), dict(operation, three_point=1), dict(operation, points=operation["points"][:2])]:
+            with patch.object(self.worker, "_in_construction_plane") as run:
+                with self.assertRaises(ValueError):
+                    self.worker._point_grid_command(invalid)
+                run.assert_not_called()
+
     def test_point_grid_probe_uses_observed_count_names_and_always_supplies_height(self):
         operation = {"count": [3, 2, 1], "points": [[0, 0, 0], [6, 4, 0]]}
         with patch.object(self.worker, "_command_point", side_effect=["0,0,0", "6,4,0"]), \

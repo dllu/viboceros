@@ -25,6 +25,88 @@ fn shared_options_roundtrip_without_filling_omitted_counts() {
     }
 }
 
+#[test]
+fn three_point_grid_uses_perpendicular_width_and_the_plane_defined_by_its_points() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry
+        .execute(
+            &mut document,
+            "PointGrid 3Point 0,0,0 6,0,2 3,4,5 2 XCount=3 YCount=2 ZCount=2",
+        )
+        .unwrap();
+    let actual = points(&document);
+    let edge = [6.0, 0.0, 2.0];
+    // Independently remove the component (dot=28, squared edge length=40).
+    let width = [-1.2, 4.0, 3.6];
+    let normal = [-8.0, -24.0, 24.0].map(|v| v / 1216.0_f64.sqrt());
+    let expected: Vec<[f64; 3]> = [0.0, 2.0]
+        .into_iter()
+        .flat_map(|height| {
+            [1.0, 0.0].into_iter().flat_map(move |side| {
+                [0.0, 0.5, 1.0].into_iter().map(move |along| {
+                    std::array::from_fn(|axis| {
+                        edge[axis] * along + width[axis] * side + normal[axis] * height
+                    })
+                })
+            })
+        })
+        .collect();
+    for (actual, expected) in actual.iter().zip(&expected) {
+        for axis in 0..3 {
+            assert!((actual[axis] - expected[axis]).abs() < 1e-12);
+        }
+    }
+    assert_eq!(actual.len(), expected.len());
+    let mut other_plane = Document::default();
+    let context = CommandContext {
+        construction_plane: Frame3::try_from_points(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap(),
+    };
+    registry
+        .execute_in_context(
+            &mut other_plane,
+            "PointGrid 3Point 0,0,0 6,0,2 3,4,5 2 XCount=3 YCount=2 ZCount=2",
+            context,
+        )
+        .unwrap();
+    assert_eq!(actual, points(&other_plane));
+}
+
+#[test]
+fn invalid_three_point_bases_do_not_change_history_or_mode_defaults() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    for command in [
+        "PointGrid 3Point 3Point 0,0,0 1,0,0 0,1,0 2",
+        "PointGrid 3Point 0,0,0 0,0,0 0,1,0 2",
+        "PointGrid 3Point 0,0,0 1,0,0 2,0,0 2",
+        "PointGrid 3Point 0,0,0 1,0,0",
+    ] {
+        assert!(
+            registry.execute(&mut document, command).is_err(),
+            "{command}"
+        );
+        assert_eq!(document.objects().len(), 0);
+        assert!(document.undo_label().is_none());
+    }
+    registry
+        .execute(
+            &mut document,
+            "PointGrid 3Point 0,0,0 6,0,0 3,4,0 2 XCount=2 YCount=2 ZCount=1",
+        )
+        .unwrap();
+    registry
+        .execute(&mut document, "PointGrid 0,0,0 6,4,0 2")
+        .unwrap();
+    assert_eq!(points(&document).len(), 4);
+}
+
 fn points(document: &Document) -> Vec<[Real; 3]> {
     let Geometry::PointCloud(cloud) = document.objects().last().unwrap().geometry() else {
         panic!("cloud expected")

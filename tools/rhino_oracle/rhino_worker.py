@@ -2902,19 +2902,25 @@ def _point_grid_command(operation):
     if len(counts) != 3 or any(type(n) is not int or not 1 <= n <= 100 for n in counts):
         raise ValueError("PointGrid probe counts must be three integers in [1,100]")
     points = operation["points"]
-    if len(points) != 2:
-        raise ValueError("PointGrid requires two corners")
-    script = "_PointGrid _XCount=%d _YCount=%d _ZCount=%d w%s w%s" % (
-        counts[0], counts[1], counts[2], _command_point(points[0]), _command_point(points[1]))
+    three_point = operation.get("three_point", False)
+    if type(three_point) is not bool or len(points) != (3 if three_point else 2):
+        raise ValueError("PointGrid requires two corners or three base points")
+    script = "_PointGrid _XCount=%d _YCount=%d _ZCount=%d " % tuple(counts)
+    if three_point:
+        script += "_3Point "
+    script += " ".join("w" + _command_point(p) for p in points)
     script += (" %.17g" % _finite(operation["height"], "grid height")
                if operation.get("height") is not None else " _Enter")
     def record(geometry):
         if not isinstance(geometry, Rhino.Geometry.PointCloud):
             raise ValueError("PointGrid did not produce a point cloud")
-        plane = Rhino.Geometry.Plane(_point(points[0]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
+        plane = (Rhino.Geometry.Plane(_point(points[0]), _point(points[1]), _point(points[2])) if three_point else
+                 Rhino.Geometry.Plane(_point(points[0]), _vector(operation["x_axis"]), _vector(operation["y_axis"])))
         axes = [plane.XAxis, plane.YAxis, plane.ZAxis]
         delta = _point(points[1]) - plane.Origin
         size = [Rhino.Geometry.Vector3d.Multiply(delta, axis) for axis in axes]
+        if three_point:
+            size[1] = Rhino.Geometry.Vector3d.Multiply(_point(points[2]) - plane.Origin, plane.YAxis)
         size[2] = operation.get("height") if operation.get("height") is not None else abs(size[1])
         dimensions = [max(2, counts[0]), max(2, counts[1]), counts[2]]
         def key(p):

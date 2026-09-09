@@ -6,7 +6,9 @@ pub struct PointMatrixFixture {
     pub origin: [f64; 3],
     pub x_axis: [f64; 3],
     pub y_axis: [f64; 3],
-    pub points: [[f64; 3]; 2],
+    pub points: Vec<[f64; 3]>,
+    #[serde(default)]
+    pub three_point: bool,
     pub count: [usize; 3],
     pub height: Option<f64>,
 }
@@ -15,6 +17,11 @@ pub(super) fn run(
     f: &PointMatrixFixture,
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
+    if f.points.len() != if f.three_point { 3 } else { 2 } {
+        return Err(ProbeError::FixtureInvariant(
+            "incorrect PointGrid base point count",
+        ));
+    }
     let context = viboceros_command::CommandContext {
         construction_plane: Frame3::try_from_directions(
             Point3::try_from(f.origin)?,
@@ -27,7 +34,10 @@ pub(super) fn run(
         "PointGrid XCount={} YCount={} ZCount={}",
         f.count[0], f.count[1], f.count[2]
     );
-    for p in f.points {
+    if f.three_point {
+        command.push_str(" 3Point");
+    }
+    for p in &f.points {
         command.push_str(&format!(" {},{},{}", p[0], p[1], p[2]));
     }
     if let Some(height) = f.height {
@@ -43,10 +53,22 @@ pub(super) fn run(
     else {
         return Err(ProbeError::FixtureInvariant("expected a point cloud"));
     };
-    let frame = context
-        .construction_plane
-        .with_origin(Point3::try_from(f.points[0])?);
+    let frame = if f.three_point {
+        Frame3::try_from_points(
+            Point3::try_from(f.points[0])?,
+            Point3::try_from(f.points[1])?,
+            Point3::try_from(f.points[2])?,
+            tolerance,
+        )?
+    } else {
+        context
+            .construction_plane
+            .with_origin(Point3::try_from(f.points[0])?)
+    };
     let mut size = frame.coordinates_of(Point3::try_from(f.points[1])?)?;
+    if f.three_point {
+        size[1] = frame.coordinates_of(Point3::try_from(f.points[2])?)?[1];
+    }
     size[2] = f.height.unwrap_or(size[1].abs());
     let count = [f.count[0].max(2), f.count[1].max(2), f.count[2]];
     let mut points = cloud
@@ -70,10 +92,22 @@ pub(super) fn run(
 mod tests {
     #[test]
     fn point_grid_command_fixture_runs_all_cases() {
-        let request: crate::ProbeRequest = serde_json::from_str(include_str!(
-            "../../../tools/rhino_oracle/fixtures/point_matrix_command.json"
-        ))
-        .unwrap();
+        check(
+            include_str!("../../../tools/rhino_oracle/fixtures/point_matrix_command.json"),
+            include_str!("../../../tools/rhino_oracle/observations/point_matrix_command.json"),
+        );
+    }
+
+    #[test]
+    fn three_point_grid_command_fixture_matches_rhino_point_sets() {
+        check(
+            include_str!("../../../tools/rhino_oracle/fixtures/point_matrix_three_point.json"),
+            include_str!("../../../tools/rhino_oracle/observations/point_matrix_three_point.json"),
+        );
+    }
+
+    fn check(request: &str, reference: &str) {
+        let request: crate::ProbeRequest = serde_json::from_str(request).unwrap();
         let result = crate::run_request(&request).unwrap();
         assert_eq!(result.results.len(), request.operations.len());
         assert!(
@@ -82,10 +116,7 @@ mod tests {
                 .iter()
                 .all(|r| !r.value["points"].as_array().unwrap().is_empty())
         );
-        let reference: serde_json::Value = serde_json::from_str(include_str!(
-            "../../../tools/rhino_oracle/observations/point_matrix_command.json"
-        ))
-        .unwrap();
+        let reference: serde_json::Value = serde_json::from_str(reference).unwrap();
         assert_eq!(
             result.results.len(),
             reference["results"].as_array().unwrap().len()

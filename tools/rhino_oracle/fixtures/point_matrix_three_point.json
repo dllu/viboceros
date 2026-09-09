@@ -1,0 +1,9 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"op":"point_grid_command","id":"three-xy","three_point":true,"origin":[0,0,0],"x_axis":[1,0,0],"y_axis":[0,1,0],"count":[3,2,2],"points":[[0,0,0],[6,0,0],[3,4,0]],"height":2},
+    {"op":"point_grid_command","id":"three-free","three_point":true,"origin":[0,0,0],"x_axis":[1,0,0],"y_axis":[0,1,0],"count":[3,2,2],"points":[[0,0,0],[6,0,2],[3,4,5]],"height":2},
+    {"op":"point_grid_command","id":"three-negative","three_point":true,"origin":[0,0,0],"x_axis":[1,0,0],"y_axis":[0,1,0],"count":[3,2,2],"points":[[0,0,0],[6,0,0],[9,-4,0]],"height":-2}
+  ]
+}

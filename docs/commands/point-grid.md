@@ -11,6 +11,7 @@ height uses the base's Y width; negative height extends opposite the plane norma
 ```text
 PointGrid 0,0,0 6,4,0 XCount=7 YCount=5 ZCount=1
 PointGrid 0,0,0 6,4,0 -8 XCount=7 YCount=5 ZCount=9
+PointGrid 3Point 0,0,0 6,0,2 3,4,5 2 XCount=3 YCount=2 ZCount=2
 ```
 
 Counts describe points, not subdivisions. The initial defaults are 10, 10, and
@@ -34,13 +35,30 @@ or final heights keep the draft for retry; failed completion preserves undo/redo
 history. The UI and command share the count parser, and omitted counts remain
 unspecified until execution, so interactive commands honor remembered settings.
 
+## Three-point bases
+
+`PointGrid 3Point first-corner edge-end opposite-side-point [height]` defines a
+rectangle on the plane through those three points, independent of the CPlane.
+The first two points specify the full first edge. The third determines the
+perpendicular width, not the opposite corner: its component along the first
+edge is discarded. That perpendicular direction is positive Y; X cross Y fixes
+the height normal. A negative height extends against that normal. Omitted height
+uses the perpendicular width.
+
+Enter `PointGrid 3Point` with optional counts to pick those three base points
+before supplying height. Collinear or coincident defining points are rejected by
+the kernel's frame validation at document tolerances, and an invalid pick keeps
+the preceding points. Height picking uses the three-point plane even when another
+viewport is active. Counts remain remembered; the base mode is explicit per
+invocation. Numeric width in place of the third point is not yet supported.
+
 Native point order is deterministic: X increases fastest, then Y decreases for
 positive height (increases for negative height), then Z advances from the base
 to the requested height. The cloud retains its exact grid locations; it is not
 a polygon mesh. Existing Explode and point-cloud picking operations apply.
 
-This implementation currently accepts two-corner rectangular input.
-Rhino's Diagonal, 3Point, Vertical, and Center workflows are not yet implemented.
+This implementation accepts two-corner and three-point rectangular input.
+Rhino's Diagonal, Vertical, and Center workflows are not yet implemented.
 Count-option prompts observed in Rhino 8.32 use `XCount`,
 `YCount`, and `ZCount`, unlike the names in the
 [online help](https://docs.mcneel.com/rhino/8/help/en-us/commands/pointgrid.htm).
@@ -65,6 +83,15 @@ replay in an independent one-to-one point-set test at `1e-10`; this test does no
 reuse the live comparison's sorting keys. These checks do not establish every
 rectangle input mode, arbitrary-scale accuracy, or a Rhino performance comparison.
 
+The three-point fixture additionally checks a planar base, a tilted edge and
+off-plane third point, and reversed width with negative height. All three live
+Rhino comparisons passed within `1.8e-15`; their
+[raw measurements](../../tools/rhino_oracle/observations/point_matrix_three_point.json)
+also replay independently at `1e-10`. Native tests check the perpendicular-width
+calculation analytically, CPlane independence, and rejected inputs; UI tests
+exercise the additional pick stage and its height normal.
+
 ```sh
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_command.json --timeout 300
+tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_three_point.json --timeout 300
 ```

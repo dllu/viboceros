@@ -38,6 +38,63 @@ fn picked_grid_matches_typed_command_and_is_one_undo_step() {
 }
 
 #[test]
+fn three_point_grid_waits_for_width_and_uses_its_own_height_normal() {
+    let mut app = test_app();
+    enter(&mut app, "PointGrid 3Point XCount=3 YCount=2 ZCount=2");
+    assert!(app.accept_drafting_point(point(0.0, 0.0, 0.0)));
+    let first = app.active_command;
+    assert!(!app.accept_drafting_point(point(0.0, 0.0, 0.0)));
+    assert_eq!(app.active_command, first);
+    assert!(app.accept_drafting_point(point(6.0, 0.0, 2.0)));
+    let awaiting_width = app.active_command;
+    enter(&mut app, "");
+    assert_eq!(app.active_command, awaiting_width);
+    assert!(!app.accept_drafting_point(point(12.0, 0.0, 4.0)));
+    assert_eq!(app.active_command, awaiting_width);
+    assert!(app.accept_drafting_point(point(3.0, 4.0, 5.0)));
+    app.active_viewport = 3;
+    assert!(app.accept_drafting_point(point(0.0, 0.0, 2.0)));
+    let mut expected = Document::default();
+    let height = 48.0 / 1216.0_f64.sqrt();
+    CommandRegistry::with_builtins()
+        .execute(
+            &mut expected,
+            &format!("PointGrid 3Point 0,0,0 6,0,2 3,4,5 {height} XCount=3 YCount=2 ZCount=2"),
+        )
+        .unwrap();
+    for (actual, expected) in cloud(&app.document).iter().zip(cloud(&expected)) {
+        assert!(actual.distance_to(expected).unwrap() < 1e-12);
+    }
+    assert_eq!(cloud(&app.document).len(), 12);
+    assert_eq!(app.document.undo_label(), Some("PointGrid"));
+}
+
+#[test]
+fn three_point_grid_accepts_numeric_and_default_heights() {
+    for height in ["-2", ""] {
+        let mut app = test_app();
+        for input in [
+            "PointGrid 3Point XCount=2 YCount=2 ZCount=2",
+            "w0,0,0",
+            "w6,0,0",
+            "w9,-4,0",
+            height,
+        ] {
+            enter(&mut app, input);
+        }
+        assert!(app.active_command.is_none());
+        let mut expected = Document::default();
+        CommandRegistry::with_builtins()
+            .execute(
+                &mut expected,
+                &format!("PointGrid 3Point 0,0,0 6,0,0 9,-4,0 {height} XCount=2 YCount=2 ZCount=2"),
+            )
+            .unwrap();
+        assert_eq!(cloud(&app.document), cloud(&expected));
+    }
+}
+
+#[test]
 fn scalar_and_default_height_finish_the_same_draft() {
     for height in ["-8", ""] {
         let mut app = test_app();
