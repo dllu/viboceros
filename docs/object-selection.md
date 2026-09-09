@@ -2,14 +2,25 @@
 
 [MeshToNURB](commands/mesh-to-nurb.md), [ToNURBS](commands/to-nurbs.md),
 [ConvertToBeziers](commands/beziers.md), and
-[ConvertToSingleSpans](commands/single-spans.md) use these workflows. Other object-taking
-commands do not yet share this interactive framework.
+[ConvertToSingleSpans](commands/single-spans.md) use these workflows, as do
+[PointCloud](commands/point-cloud.md) and
+[RemoveFromGroup](commands/remove-from-group.md). Not every object-taking command
+shares this interactive framework.
 
 With no eligible preselection, enter the command and click objects or drag
 selection windows. Ordinary clicks add picks without Shift; Ctrl/Command removes
 them. Empty clicks leave picks alone. `SelAll` adds only eligible, selectable
 objects; `SelNone` clears the picks. Hidden/locked objects and objects on hidden/
 locked layers cannot be picked. A group's other members are not implicitly picked.
+
+`ObjectSelectionFilter::accepts_object` is the single eligibility entry point
+for command prompts, viewport picking, and oracle adapters. It sees both geometry
+and attributes, so a grouped-object restriction cannot be bypassed by a
+geometry-only check. Filters do not themselves reject hidden/locked objects:
+interactive picking checks selectability separately, while commands may operate
+on hidden/locked peers already selected through a group. A matrix test covers
+points, lines, meshes, surfaces, and point clouds before/after grouping and locking,
+and verifies that filter queries leave the document unchanged.
 
 | Behavior | MeshToNURB | ToNURBS | ConvertToBeziers |
 | --- | --- | --- | --- |
@@ -57,7 +68,7 @@ conversion is one undoable edit.
 
 ## Separation of responsibilities
 
-`viboceros-command::object_selection` defines geometry filters, typed boolean
+`viboceros-command::object_selection` defines object eligibility filters, typed boolean
 options/aliases, menus, finite choices and two-value actions, and workflow descriptions. The command supplies a
 selection-dependent confirmation description; no-op-only input can bypass it.
 Reading descriptions and validating edits do not change document state.

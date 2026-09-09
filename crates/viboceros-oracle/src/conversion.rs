@@ -107,8 +107,7 @@ pub(super) fn run_command(
         );
     }
     if f.postselect {
-        let eligible =
-            |index: usize| filter.accepts(document.object(ids[index]).unwrap().geometry());
+        let eligible = |index: usize| filter.accepts_object(document.object(ids[index]).unwrap());
         if !(selected.iter().copied().any(eligible) || f.cancel && (0..ids.len()).any(eligible)) {
             return Err(invalid());
         }
@@ -118,7 +117,7 @@ pub(super) fn run_command(
         && !f.cancel_at_selection
         && !selected
             .iter()
-            .any(|i| filter.accepts(document.object(ids[*i]).unwrap().geometry()))
+            .any(|i| filter.accepts_object(document.object(ids[*i]).unwrap()))
     {
         return Err(invalid());
     }
@@ -148,7 +147,7 @@ pub(super) fn run_command(
     } else {
         &selected
     } {
-        if f.postselect && filter.accepts(document.object(ids[*index]).unwrap().geometry()) {
+        if f.postselect && filter.accepts_object(document.object(ids[*index]).unwrap()) {
             return Err(invalid());
         }
         document.select_objects_direct([ids[*index]], SelectionMode::Add)?;
@@ -170,7 +169,7 @@ pub(super) fn run_command(
         }
         document.clear_selection();
         for index in selected {
-            if filter.accepts(document.object(ids[index]).unwrap().geometry()) {
+            if filter.accepts_object(document.object(ids[index]).unwrap()) {
                 document.select_objects_direct([ids[index]], SelectionMode::Add)?;
             }
         }

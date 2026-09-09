@@ -45,7 +45,7 @@ impl Command for ConvertToBeziersCommand {
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
         if !document
             .selected_objects()
-            .any(|o| ObjectSelectionFilter::Beziers.accepts(o.geometry()))
+            .any(|o| ObjectSelectionFilter::Beziers.accepts_object(o))
         {
             return Err(CommandError::UnsupportedConvertToBeziersGeometry);
         }

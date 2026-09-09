@@ -44,7 +44,7 @@ pub(super) fn run(f: &PointCloudFixture, tolerance: Tolerance) -> Result<(Value,
         .filter(|id| {
             !f.postselect
                 || viboceros_command::ObjectSelectionFilter::PointCloudSources
-                    .accepts(document.object(*id).unwrap().geometry())
+                    .accepts_object(document.object(*id).unwrap())
         })
         .collect::<Vec<_>>();
     // Individual selection actions retain pick order; a batch is intentionally

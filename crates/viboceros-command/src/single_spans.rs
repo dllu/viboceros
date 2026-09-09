@@ -73,7 +73,7 @@ impl Command for ConvertToSingleSpansCommand {
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
         if !document
             .selected_objects()
-            .any(|o| ObjectSelectionFilter::Surfaces.accepts(o.geometry()))
+            .any(|o| ObjectSelectionFilter::Surfaces.accepts_object(o))
         {
             return Err(CommandError::UnsupportedConvertToSingleSpansGeometry);
         }
@@ -97,7 +97,7 @@ impl Command for ConvertToSingleSpansCommand {
         }
         if !document
             .selected_objects()
-            .any(|o| ObjectSelectionFilter::Surfaces.accepts(o.geometry()))
+            .any(|o| ObjectSelectionFilter::Surfaces.accepts_object(o))
         {
             return Err(CommandError::UnsupportedConvertToSingleSpansGeometry);
         }

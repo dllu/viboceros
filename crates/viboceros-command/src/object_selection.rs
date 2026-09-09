@@ -21,16 +21,18 @@ pub enum ObjectSelectionFilter {
 
 impl ObjectSelectionFilter {
     /// Apply both geometry and attribute restrictions to a document object.
+    /// Visibility and locking remain the caller's selection-policy decision.
     pub fn accepts_object(self, object: &viboceros_document::Object) -> bool {
-        self.accepts(object.geometry()) && (self != Self::Grouped || !object.group_ids().is_empty())
-    }
-    pub fn accepts(self, geometry: &Geometry) -> bool {
+        let geometry = object.geometry();
         match self {
-            Self::Any | Self::Grouped => true,
+            Self::Any => true,
+            Self::Grouped => !object.group_ids().is_empty(),
             Self::PointCloudSources => matches!(geometry, Geometry::Point(_) | Geometry::Mesh(_)),
             Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
             Self::ToNurbs => !matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_)),
-            Self::Beziers => geometry.curve_ref().is_some() || Self::Surfaces.accepts(geometry),
+            Self::Beziers => {
+                geometry.curve_ref().is_some() || Self::Surfaces.accepts_object(object)
+            }
             Self::Surfaces => {
                 matches!(geometry, Geometry::NurbsSurface(_))
                     || matches!(geometry, Geometry::Brep(brep) if brep.faces().len() == 1)

@@ -1,6 +1,76 @@
 use super::*;
 
 #[test]
+fn object_filters_cover_geometry_and_memberships_without_changing_selection_policy() {
+    let points =
+        [(0., 0.), (1., 0.), (0., 1.), (1., 1.)].map(|(x, y)| Point3::try_new(x, y, 0.).unwrap());
+    let geometries = [
+        Geometry::Point(points[0]),
+        Geometry::Line(LineSegment::try_new(points[0], points[1], Tolerance::DEFAULT).unwrap()),
+        Geometry::Mesh(
+            TriangleMesh::try_new(points[..3].to_vec(), vec![[0, 1, 2]], Tolerance::DEFAULT)
+                .unwrap(),
+        ),
+        Geometry::NurbsSurface(
+            NurbsSurface::try_clamped_uniform(1, 1, 2, 2, points.to_vec()).unwrap(),
+        ),
+        Geometry::PointCloud(viboceros_geometry::PointCloud3::try_new(points.to_vec()).unwrap()),
+    ];
+    let mut document = Document::default();
+    let ids = geometries
+        .into_iter()
+        .map(|geometry| document.add_geometry(geometry).unwrap())
+        .collect::<Vec<_>>();
+    for grouped in [false, true] {
+        if grouped {
+            document.add_group(None, ids.iter().copied()).unwrap();
+            document
+                .set_objects_locked(ids.iter().copied(), true)
+                .unwrap();
+        }
+        let before = format!("{document:?}");
+        for (filter, expected) in [
+            (ObjectSelectionFilter::Any, [true, true, true, true, true]),
+            (ObjectSelectionFilter::Grouped, [grouped; 5]),
+            (
+                ObjectSelectionFilter::Mesh,
+                [false, false, true, false, false],
+            ),
+            (
+                ObjectSelectionFilter::ToNurbs,
+                [false, true, true, true, false],
+            ),
+            (
+                ObjectSelectionFilter::Beziers,
+                [false, true, false, true, false],
+            ),
+            (
+                ObjectSelectionFilter::Surfaces,
+                [false, false, false, true, false],
+            ),
+            (
+                ObjectSelectionFilter::PointCloudSources,
+                [true, false, true, false, false],
+            ),
+        ] {
+            assert_eq!(
+                document
+                    .objects()
+                    .map(|object| filter.accepts_object(object))
+                    .collect::<Vec<_>>(),
+                expected,
+                "{filter:?}"
+            );
+        }
+        assert!(
+            ids.iter()
+                .all(|id| document.is_object_selectable(*id) != grouped)
+        );
+        assert_eq!(format!("{document:?}"), before);
+    }
+}
+
+#[test]
 fn choice_options_and_toggle_actions_are_canonical_bounded_and_atomic() {
     let mut prompt = CommandRegistry::with_builtins()
         .object_selection_prompt("ToNURBS")

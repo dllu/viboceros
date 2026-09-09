@@ -74,7 +74,7 @@ fn convert(
     let inputs = if postselected {
         document
             .selected_objects()
-            .filter(|o| ObjectSelectionFilter::PointCloudSources.accepts(o.geometry()))
+            .filter(|o| ObjectSelectionFilter::PointCloudSources.accepts_object(o))
             .collect::<Vec<_>>()
     } else {
         // The document already supplies preselection order: no rank map or
@@ -83,7 +83,7 @@ fn convert(
             .objects()
             .filter(|o| {
                 document.is_selected(o.id())
-                    && ObjectSelectionFilter::PointCloudSources.accepts(o.geometry())
+                    && ObjectSelectionFilter::PointCloudSources.accepts_object(o)
             })
             .collect::<Vec<_>>()
     };
