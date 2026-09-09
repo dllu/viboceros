@@ -1,0 +1,14 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"op":"point_cloud_command","id":"points-post","postselect":true,"selected":[2,0,1],"sources":[{"type":"point","point":[1,2,3]},{"type":"point","point":[4,5,6]},{"type":"point","point":[1,2,3]}]},
+    {"op":"point_cloud_command","id":"points-pre","selected":[2,0,1],"sources":[{"type":"point","point":[1,2,3]},{"type":"point","point":[4,5,6]},{"type":"point","point":[1,2,3]}]},
+    {"op":"point_cloud_command","id":"single-point","sources":[{"type":"point","point":[1,2,3]}]},
+    {"op":"point_cloud_command","id":"mesh","sources":[{"type":"mesh","vertices":[[0,0,0],[3,0,0],[0,4,0],[0,0,0]],"faces":[[0,1,2]]}]},
+    {"op":"point_cloud_command","id":"mixed","postselect":true,"selected":[2,0,1,3],"sources":[{"type":"point","point":[1,2,3]},{"type":"point_cloud","points":[[9,8,7],[6,5,4]]},{"type":"mesh","vertices":[[0,0,0],[3,0,0],[0,4,0]],"faces":[[0,1,2]]},{"type":"line","start":[0,0,0],"end":[1,0,0]}]},
+    {"op":"point_cloud_command","id":"point-mesh-pre","selected":[1,0,2],"sources":[{"type":"point","point":[1,2,3]},{"type":"mesh","vertices":[[0,0,0],[3,0,0],[0,4,0]],"faces":[[0,1,2]]},{"type":"line","start":[0,0,0],"end":[1,0,0]}]},
+    {"op":"point_cloud_command","id":"single-point-post","postselect":true,"sources":[{"type":"point","point":[1,2,3]}]},
+    {"op":"point_cloud_command","id":"mesh-post","postselect":true,"sources":[{"type":"mesh","vertices":[[0,0,0],[3,0,0],[0,4,0]],"faces":[[0,1,2]]}]}
+  ]
+}

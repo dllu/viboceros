@@ -11,6 +11,24 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_point_cloud_probe_rejects_incomplete_or_invalid_selection(self):
+        point = {"type":"point", "point":[1,2,3]}
+        cloud = {"type":"point_cloud", "points":[[1,2,3]]}
+        cases = [
+            {"sources":[]},
+            {"sources":[point], "selected":[]},
+            {"sources":[point], "selected":[1]},
+            {"sources":[point], "selected":[0,0]},
+            {"sources":[point], "selected":[True]},
+            {"sources":[point], "postselect":1},
+            {"sources":[cloud]},
+            {"sources":[cloud], "postselect":True},
+            {"sources":[cloud,point]},
+        ]
+        for operation in cases:
+            with self.subTest(operation=operation), self.assertRaises(ValueError):
+                self.worker._point_cloud_conversion(operation, 1e-6)
+
     def test_diagonal_grid_probe_seeds_counts_in_a_separate_owned_command(self):
         operation = {"origin": [0,0,0], "x_axis": [1,0,0], "y_axis": [0,1,0], "count": [3,2,2], "points": [[10,20,3], [12,25,7]]}
         plane = SimpleNamespace(Origin="origin", PointAt=lambda x,y: "corner")

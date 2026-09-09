@@ -1,0 +1,425 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "points-post",
+      "value": {
+        "objects": [
+          {
+            "color_source": "ColorFromLayer",
+            "has_colors": false,
+            "kind": "point_cloud",
+            "layer": "Current",
+            "name": null,
+            "original": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              [
+                4.0,
+                5.0,
+                6.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "points-pre",
+      "value": {
+        "objects": [
+          {
+            "color_source": "ColorFromLayer",
+            "has_colors": false,
+            "kind": "point_cloud",
+            "layer": "Current",
+            "name": null,
+            "original": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              [
+                4.0,
+                5.0,
+                6.0
+              ],
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "single-point",
+      "value": {
+        "objects": [
+          {
+            "color_source": "ColorFromLayer",
+            "has_colors": false,
+            "kind": "point",
+            "layer": "Source",
+            "name": "source-0",
+            "original": 0,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "mesh",
+      "value": {
+        "objects": [
+          {
+            "color_source": "ColorFromLayer",
+            "has_colors": false,
+            "kind": "mesh",
+            "layer": "Source",
+            "name": "source-0",
+            "original": 0,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "selected": true
+          },
+          {
+            "color_source": "ColorFromLayer",
+            "has_colors": false,
+            "kind": "point_cloud",
+            "layer": "Current",
+            "name": null,
+            "original": null,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "mixed",
+      "value": {
+        "objects": [
+          {
+            "color_source": "ColorFromLayer",
+            "has_colors": false,
+            "kind": "point_cloud",
+            "layer": "Source",
+            "name": "source-1",
+            "original": 1,
+            "points": [
+              [
+                9.0,
+                8.0,
+                7.0
+              ],
+              [
+                6.0,
+                5.0,
+                4.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "color_source": "ColorFromLayer",
+            "has_colors": false,
+            "kind": "mesh",
+            "layer": "Source",
+            "name": "source-2",
+            "original": 2,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                0.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "color_source": "ColorFromLayer",
+            "has_colors": false,
+            "kind": "other",
+            "layer": "Source",
+            "name": "source-3",
+            "original": 3,
+            "points": [],
+            "selected": false
+          },
+          {
+            "color_source": "ColorFromLayer",
+            "has_colors": false,
+            "kind": "point_cloud",
+            "layer": "Current",
+            "name": null,
+            "original": null,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                0.0
+              ],
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-mesh-pre",
+      "value": {
+        "objects": [
+          {
+            "color_source": "ColorFromLayer",
+            "has_colors": false,
+            "kind": "mesh",
+            "layer": "Source",
+            "name": "source-1",
+            "original": 1,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                0.0
+              ]
+            ],
+            "selected": true
+          },
+          {
+            "color_source": "ColorFromLayer",
+            "has_colors": false,
+            "kind": "other",
+            "layer": "Source",
+            "name": "source-2",
+            "original": 2,
+            "points": [],
+            "selected": true
+          },
+          {
+            "color_source": "ColorFromLayer",
+            "has_colors": false,
+            "kind": "point_cloud",
+            "layer": "Current",
+            "name": null,
+            "original": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                0.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "single-point-post",
+      "value": {
+        "objects": [
+          {
+            "color_source": "ColorFromLayer",
+            "has_colors": false,
+            "kind": "point",
+            "layer": "Source",
+            "name": "source-0",
+            "original": 0,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "mesh-post",
+      "value": {
+        "objects": [
+          {
+            "color_source": "ColorFromLayer",
+            "has_colors": false,
+            "kind": "mesh",
+            "layer": "Source",
+            "name": "source-0",
+            "original": 0,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                0.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "color_source": "ColorFromLayer",
+            "has_colors": false,
+            "kind": "point_cloud",
+            "layer": "Current",
+            "name": null,
+            "original": null,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                0.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    }
+  ]
+}

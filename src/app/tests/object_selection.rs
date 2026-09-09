@@ -1,6 +1,66 @@
 use super::*;
 use viboceros_document::SelectionMode;
 
+#[test]
+fn point_cloud_command_first_filters_clouds_and_curves_and_preserves_pick_order() {
+    let mut app = test_app();
+    let ids = [1.0, 2.0, 3.0].map(|x| {
+        app.document
+            .add_geometry(Geometry::Point(point(x, 0.0, 0.0)))
+            .unwrap()
+    });
+    let cloud_id = app
+        .document
+        .add_geometry(Geometry::PointCloud(
+            viboceros_geometry::PointCloud3::try_new(vec![point(99.0, 0.0, 0.0)]).unwrap(),
+        ))
+        .unwrap();
+    enter(&mut app, "PointCloud");
+    assert!(app.object_prompt.is_some());
+    for id in [cloud_id, ids[2], ids[0], ids[1]] {
+        app.apply_selection_click(SelectionClick {
+            object_id: Some(id),
+            mode: SelectionMode::Replace,
+        });
+    }
+    assert!(!app.document.is_selected(cloud_id));
+    enter(&mut app, "");
+    assert!(app.object_prompt.is_none());
+    assert!(app.document.object(cloud_id).is_some());
+    let object = app.document.objects().find(|o| o.id() != cloud_id).unwrap();
+    let Geometry::PointCloud(cloud) = object.geometry() else {
+        panic!()
+    };
+    assert_eq!(
+        cloud.points(),
+        [
+            point(3.0, 0.0, 0.0),
+            point(1.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0)
+        ]
+    );
+    assert_eq!(app.document.selected_object_count(), 0);
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().len(), 4);
+}
+
+#[test]
+fn point_cloud_cancel_preserves_sources_and_rejects_unsupported_colors() {
+    let mut app = test_app();
+    let id = app
+        .document
+        .add_geometry(Geometry::Point(point(1.0, 0.0, 0.0)))
+        .unwrap();
+    enter(&mut app, "PointCloud UsePointColors=Yes");
+    assert!(app.object_prompt.is_none());
+    assert!(app.document.object(id).is_some());
+    enter(&mut app, "PointCloud");
+    assert!(app.object_prompt.is_some());
+    app.cancel_interactive_command(false);
+    assert!(app.object_prompt.is_none());
+    assert!(app.document.object(id).is_some());
+}
+
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
     app.run_command();

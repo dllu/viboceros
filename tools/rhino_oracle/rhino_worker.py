@@ -3833,6 +3833,86 @@ def _group_memberships(operation, tolerance):
             for geometry in reversed(owned): geometry.Dispose()
 
 
+def _point_cloud_conversion(operation, tolerance):
+    sources = operation["sources"]
+    selected = operation.get("selected", list(range(len(sources))))
+    postselect = operation.get("postselect", False)
+    if not 1 <= len(sources) <= 16 or type(postselect) is not bool:
+        raise ValueError("invalid point cloud fixture")
+    if not selected or any(type(i) is not int or not 0 <= i < len(sources) for i in selected) or len(set(selected)) != len(selected):
+        raise ValueError("invalid point cloud selection")
+    eligible = [i for i in selected if sources[i]["type"] in ("point", "mesh")]
+    if not eligible or (not postselect and any(sources[i]["type"] == "point_cloud" for i in selected)):
+        raise ValueError("fixture must create a cloud, not enter Add/Remove")
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = settings.HiddenObjects = settings.LockedObjects = True
+    def objects(): return list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in objects())
+    selection_before = [obj.Id for obj in objects() if obj.IsSelected(False)]
+    layer_before = document.Layers.CurrentLayerIndex
+    ids, owned, layers = [], [], []
+    def record():
+        output = []
+        for obj in objects():
+            if obj.Id in before: continue
+            geometry = obj.Geometry
+            if isinstance(geometry, Rhino.Geometry.Point): kind, points = "point", [_xyz(geometry.Location)]
+            elif isinstance(geometry, Rhino.Geometry.PointCloud): kind, points = "point_cloud", [_xyz(p) for p in geometry.GetPoints()]
+            elif isinstance(geometry, Rhino.Geometry.Mesh): kind, points = "mesh", [_xyz(p) for p in geometry.Vertices]
+            else: kind, points = "other", []
+            attributes = obj.Attributes
+            output.append(dict(original=ids.index(obj.Id) if obj.Id in ids else None, kind=kind, points=points,
+                               name=attributes.Name or None, selected=bool(obj.IsSelected(False)),
+                               layer="Source" if attributes.LayerIndex == layers[0] else "Current" if attributes.LayerIndex == layers[1] else "Unexpected",
+                               color_source=str(attributes.ColorSource),
+                               has_colors=bool(geometry.ContainsColors) if kind == "point_cloud" else False))
+        output.sort(key=lambda obj: (obj["original"] is None, obj["original"] if obj["original"] is not None else -1))
+        return output
+    try:
+        document.Objects.UnselectAll()
+        for label in ("Source", "Current"):
+            layer = Rhino.DocObjects.Layer()
+            try:
+                layer.Name = "Vibo Cloud " + label + " " + str(System.Guid.NewGuid())
+                index = document.Layers.Add(layer)
+                if index < 0: raise ValueError("point cloud layer insertion failed")
+                layers.append(index)
+            finally: layer.Dispose()
+        document.Layers.SetCurrentLayerIndex(layers[1], True)
+        for i, source in enumerate(sources):
+            geometry = _object_source(source, tolerance)
+            owned.append(geometry)
+            attributes = Rhino.DocObjects.ObjectAttributes()
+            try:
+                attributes.LayerIndex = layers[0]
+                attributes.Name = "source-%d" % i
+                kind = source["type"]
+                if kind == "point": key = document.Objects.AddPoint(geometry.Location, attributes)
+                elif kind == "point_cloud": key = document.Objects.AddPointCloud(geometry, attributes)
+                elif kind == "mesh": key = document.Objects.AddMesh(geometry, attributes)
+                else: key = document.Objects.AddCurve(geometry, attributes)
+                if key == System.Guid.Empty: raise ValueError("point cloud source insertion failed")
+                ids.append(key)
+            finally: attributes.Dispose()
+        if not postselect:
+            for i in selected: document.Objects.Select(ids[i])
+        script = "_PointCloud"
+        if postselect:
+            script += " _UsePointColors=_No " + " ".join("_SelID %s" % ids[i] for i in eligible) + " _Enter"
+        _run_surface_script(script, True)
+        return dict(objects=record()), 0
+    finally:
+        Rhino.RhinoApp.RunScript("!", False)
+        for obj in objects():
+            if obj.Id not in before: document.Objects.Delete(obj.Id, True)
+        document.Layers.SetCurrentLayerIndex(layer_before, True)
+        for i in reversed(layers): document.Layers.Delete(i, True)
+        document.Objects.UnselectAll()
+        for key in selection_before: document.Objects.Select(key)
+        for geometry in reversed(owned): geometry.Dispose()
+
+
 def _conversion_accepts_source(command, definition):
     kind = definition["type"]
     if command == "MeshToNURB": return kind == "mesh"
@@ -4140,6 +4220,8 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
+    if operation.get("op") == "point_cloud_command":
+        return _point_cloud_conversion(operation, tolerance)
     if operation.get("op") == "document_units":
         from generate_document_units_reference import generate_case
         return generate_case(operation["source"], operation["target"], operation["rescale"]), 0

@@ -15,12 +15,14 @@ pub enum ObjectSelectionFilter {
     ToNurbs,
     Beziers,
     Surfaces,
+    PointCloudSources,
 }
 
 impl ObjectSelectionFilter {
     pub fn accepts(self, geometry: &Geometry) -> bool {
         match self {
             Self::Any => true,
+            Self::PointCloudSources => matches!(geometry, Geometry::Point(_) | Geometry::Mesh(_)),
             Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
             Self::ToNurbs => !matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_)),
             Self::Beziers => geometry.curve_ref().is_some() || Self::Surfaces.accepts(geometry),
