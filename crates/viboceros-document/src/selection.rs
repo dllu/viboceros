@@ -64,7 +64,9 @@ impl Document {
             return BTreeSet::new();
         }
         if self.groups.is_empty() {
-            return ids.filter(|id| self.is_object_selectable(*id)).collect();
+            // Batch history can restore thousands of selected objects. Scan
+            // the object table once instead of resolving each ID linearly.
+            return self.selectable_recorded_objects(&ids.collect());
         }
         let layers = self
             .layers

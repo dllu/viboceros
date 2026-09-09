@@ -1,5 +1,33 @@
 use super::*;
 
+#[test]
+#[ignore = "manual large point-object conversion timing"]
+fn benchmark_large_point_conversion() {
+    let mut doc = Document::default();
+    doc.begin_transaction("fixture").unwrap();
+    for i in 0..10_000 {
+        doc.add_geometry(Geometry::Point(p(i as Real))).unwrap();
+    }
+    doc.commit_transaction().unwrap();
+    let ids = doc.objects().map(|o| o.id()).collect::<Vec<_>>();
+    doc.select_objects_direct(ids, SelectionMode::Replace)
+        .unwrap();
+    let registry = CommandRegistry::with_builtins();
+    let start = std::time::Instant::now();
+    registry.execute(&mut doc, "PointCloud").unwrap();
+    let convert = start.elapsed();
+    let start = std::time::Instant::now();
+    registry.execute(&mut doc, "Undo").unwrap();
+    let undo = start.elapsed();
+    let start = std::time::Instant::now();
+    registry.execute(&mut doc, "Redo").unwrap();
+    eprintln!(
+        "10k points: conversion={convert:?}, undo={undo:?}, redo={:?}",
+        start.elapsed()
+    );
+    assert_eq!(doc.objects().len(), 1);
+}
+
 fn p(x: Real) -> Point3 {
     Point3::try_new(x, 0.0, 0.0).unwrap()
 }
@@ -42,9 +70,12 @@ fn point_conversion_respects_pre_and_postselection_order_and_undo() {
         registry.execute(&mut doc, "Undo").unwrap();
         assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
         assert!(doc.group(group).is_some());
-        // Existing history exchanges per-object selection, not the original
-        // pick sequence. Check membership; source-order parity above is for
-        // the actual pre/postselected invocation, not an unmeasured Rhino Undo.
+        // Batch deletion restores the removed sources' relative pick order.
+        // This native invariant does not claim Rhino Undo pick-order parity.
+        assert_eq!(
+            doc.selected_object_ids().collect::<Vec<_>>(),
+            [ids[2], ids[0], ids[1]]
+        );
         assert_eq!(
             doc.selected_object_ids().collect::<BTreeSet<_>>(),
             ids.into_iter().collect()

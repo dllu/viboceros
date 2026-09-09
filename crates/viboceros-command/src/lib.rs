@@ -15055,9 +15055,7 @@ impl Command for DeleteCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         require_consumed(arguments, 0, "Delete")?;
         let selected: Vec<_> = document.selected_object_ids().collect();
-        for id in &selected {
-            document.delete_object(*id)?;
-        }
+        document.delete_objects(selected.iter().copied())?;
         Ok(format!("Deleted {} object(s)", selected.len()))
     }
 }

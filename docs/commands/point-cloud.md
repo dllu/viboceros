@@ -23,8 +23,8 @@ unnamed, ungrouped, and uses the current layer and layer color. Preselected
 meshes and unrelated objects retain selection. Command-first selection is
 cleared on completion, including a single-point no-op. Creation is one undo
 step, restoring source geometry, attributes, group membership, and selection
-membership. Existing document history does not restore the original pick
-sequence; Rhino Undo pick-order parity has not been measured.
+membership. Batch deletion also restores the removed points' relative pick order;
+interleaving with unrelated picks and Rhino Undo pick-order parity are not promised.
 
 ## Limits
 
@@ -49,7 +49,8 @@ expected point lists and retained source indices. Native tests also cover
 undo/redo, group restoration, and atomic rejection; UI tests cover filtered
 selection, pick order, cancellation, and unsupported colors.
 The eight-case live comparison passed with zero coordinate difference and
-matching recorded document state. Large-cloud performance remains unmeasured.
+matching recorded document state. A [batch-deletion benchmark](../batch-deletion.md)
+tracks native conversion and history costs; Rhino performance parity remains unmeasured.
 
 ```sh
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_cloud_command.json --timeout 180

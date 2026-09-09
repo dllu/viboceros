@@ -52,6 +52,8 @@ and copy/group transactions with the other transform commands.
 The document's independent `groups` module owns ordered object memberships and
 their reverse member index. Lightweight membership history records preserve
 order without cloning geometry; see [group invariants](groups.md).
+The [batch-deletion module](batch-deletion.md) moves removed objects into compact
+history records and restores table order without repeated vector insertions.
 The independent [arrays module](plane-arrays.md) owns rectangular, linear, and
 polar layout. Its geometry extents use tolerance-controlled
 [curve](curve-bounds.md), [surface](surface-bounds.md), and

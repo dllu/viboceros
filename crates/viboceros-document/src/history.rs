@@ -36,6 +36,7 @@ pub(super) struct History {
 
 #[derive(Clone, Debug)]
 pub(super) enum Edit {
+    ObjectsRemoved(Box<super::object_deletion::RemovedObjects>),
     ToleranceChanged {
         tolerance: viboceros_geometry::Tolerance,
     },
@@ -109,6 +110,7 @@ pub(super) enum Edit {
 impl Edit {
     pub fn undo(&mut self, document: &mut Document) -> Result<(), DocumentError> {
         match self {
+            Self::ObjectsRemoved(removed) => removed.restore(document)?,
             Self::ToleranceChanged { tolerance } => {
                 std::mem::swap(&mut document.tolerance, tolerance);
             }
@@ -198,6 +200,7 @@ impl Edit {
 
     pub fn redo(&mut self, document: &mut Document) -> Result<(), DocumentError> {
         match self {
+            Self::ObjectsRemoved(removed) => removed.remove(document)?,
             Self::ToleranceChanged { tolerance } => {
                 std::mem::swap(&mut document.tolerance, tolerance);
             }

@@ -4,6 +4,7 @@ mod duplicate;
 mod geometry;
 mod groups;
 mod history;
+mod object_deletion;
 mod object_layer;
 mod object_order;
 mod selection;
@@ -1918,6 +1919,7 @@ impl Document {
 
     fn affected_object_ids(&self, edit: &Edit) -> BTreeSet<ObjectId> {
         match edit {
+            Edit::ObjectsRemoved(removed) => removed.ids.clone(),
             Edit::ObjectsMovedToEnd { moved, .. } => moved.iter().map(|(_, id)| *id).collect(),
             Edit::GroupInserted { id, .. } => self
                 .group(*id)
