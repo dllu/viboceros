@@ -17,6 +17,11 @@ O(K) temporary storage and O(N log K + K log K) work instead of K full object-ta
 searches. It stores references, not cloned geometry, and changes no document,
 selection, or history state. Each iterator owns its lookup; there is no persistent
 cache to invalidate. PointCloud command-first creation uses this shared path.
+Mesh-face source and extraction staging also use it, reusing each borrowed
+object's geometry, attributes, and memberships instead of resolving the ID twice.
+A 20-mesh regression crosses the indexed-iterator threshold in non-table action
+order, includes a hidden group-selected peer, and checks that a late extraction
+callback failure leaves the document unchanged.
 
 ## Building explicit selections
 

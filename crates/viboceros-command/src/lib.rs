@@ -13795,19 +13795,13 @@ fn selected_mesh_face_sources(
     unsupported_geometry: impl Fn() -> CommandError,
 ) -> Result<Vec<MeshFaceSource>, CommandError> {
     document
-        .selected_object_ids()
-        .map(|id| {
-            let object = document
-                .object(id)
-                .expect("selected object identities belong to the document");
+        .selected_objects()
+        .map(|object| {
+            let id = object.id();
             let Geometry::Mesh(mesh) = object.geometry() else {
                 return Err(unsupported_geometry());
             };
-            let group_ids = document
-                .object(id)
-                .expect("validated source object")
-                .group_ids()
-                .to_vec();
+            let group_ids = object.group_ids().to_vec();
             Ok(MeshFaceSource {
                 id,
                 mesh: mesh.clone(),
@@ -14877,19 +14871,13 @@ fn stage_selected_mesh_face_extractions(
     mut extract: impl FnMut(&TriangleMesh) -> Result<Option<MeshFaceExtraction>, GeometryError>,
 ) -> Result<Vec<MeshFaceExtractionInput>, CommandError> {
     document
-        .selected_object_ids()
-        .map(|id| {
-            let object = document
-                .object(id)
-                .expect("selected object identities belong to the document");
+        .selected_objects()
+        .map(|object| {
+            let id = object.id();
             let Geometry::Mesh(mesh) = object.geometry() else {
                 return Err(unsupported_geometry());
             };
-            let group_ids = document
-                .object(id)
-                .expect("validated source object")
-                .group_ids()
-                .to_vec();
+            let group_ids = object.group_ids().to_vec();
             Ok(MeshFaceExtractionInput {
                 id,
                 attributes: object.attributes().clone(),
@@ -18493,6 +18481,9 @@ mod polycurve_tests;
 
 #[cfg(test)]
 mod curve_parameter_tests;
+
+#[cfg(test)]
+mod mesh_selection_tests;
 
 #[cfg(test)]
 mod tests {
