@@ -132,6 +132,9 @@ and values adjacent to the normal/subnormal boundary in both operand orders.
 This arithmetic and its regression tests live in the independent
 [`brep/tolerance` module](../crates/viboceros-geometry/src/brep/tolerance.rs),
 separate from topology construction and validation.
+The module validates both nonnegative finite operands before zero shortcuts or
+multiplication, so invalid scales cannot be hidden by a zero tolerance or by
+two negative operands producing a positive product.
 
 ## Line interpolation and extrapolation
 

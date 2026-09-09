@@ -2,6 +2,8 @@
 use super::{GeometryError, Real, require_nonnegative_finite};
 
 pub(super) fn scaled_tolerance(value: Real, scale: Real) -> Result<Real, GeometryError> {
+    require_nonnegative_finite(value, "B-rep component tolerance")?;
+    require_nonnegative_finite(scale, "B-rep tolerance scale")?;
     if value == 0.0 {
         return Ok(0.0);
     }
@@ -51,6 +53,25 @@ fn product_rounded_down(a: Real, b: Real, rounded: Real) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn invalid_operands_are_rejected_before_zero_or_product_shortcuts() {
+        for invalid in [
+            -1.,
+            -Real::from_bits(1),
+            Real::NAN,
+            Real::INFINITY,
+            Real::NEG_INFINITY,
+        ] {
+            for valid in [0., -0., Real::from_bits(1), 1., Real::MAX] {
+                assert!(scaled_tolerance(invalid, valid).is_err());
+                assert!(scaled_tolerance(valid, invalid).is_err());
+            }
+            assert!(scaled_tolerance(invalid, invalid).is_err());
+        }
+        assert_eq!(scaled_tolerance(-0., 1.).unwrap(), 0.);
+        assert_eq!(scaled_tolerance(1., -0.).unwrap(), 0.);
+    }
 
     #[test]
     fn subnormal_products_match_integer_ceiling_in_both_operand_orders() {
