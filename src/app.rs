@@ -30,6 +30,7 @@ const MAX_LOG_ENTRIES: usize = 100;
 mod construction_plane;
 mod curve_preview;
 mod curve_prompt;
+mod group_prompt;
 mod interface;
 mod object_selection;
 mod plane_primitives;
@@ -1092,6 +1093,7 @@ pub struct VibocerosApp {
     drafting_plane: Option<Frame3>,
     plane_prompt: Option<construction_plane::PlanePrompt>,
     object_prompt: Option<object_selection::PendingObjectCommand>,
+    group_prompt: Option<group_prompt::GroupPrompt>,
     curve_points: Vec<Point3>,
     points_session: Option<points::PointsSession>,
     curve_preview: curve_preview::CurvePreviewCache,
@@ -1129,6 +1131,7 @@ impl VibocerosApp {
             drafting_plane: None,
             plane_prompt: None,
             object_prompt: None,
+            group_prompt: None,
             curve_points: Vec::new(),
             points_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
@@ -1147,6 +1150,9 @@ impl VibocerosApp {
             return;
         }
         if self.try_continue_object_prompt(&input) {
+            return;
+        }
+        if self.try_continue_group_prompt(&input) {
             return;
         }
         if self.try_continue_points(&input) {
@@ -1170,7 +1176,10 @@ impl VibocerosApp {
             return;
         }
         self.command_input.clear();
-        if self.try_start_object_prompt(&input) || self.try_start_interactive_command(&input) {
+        if self.try_start_group_prompt(&input)
+            || self.try_start_object_prompt(&input)
+            || self.try_start_interactive_command(&input)
+        {
             return;
         }
         self.execute_command(&input);
@@ -2871,6 +2880,7 @@ impl VibocerosApp {
     fn cancel_interactive_command(&mut self, announce: bool) {
         self.finish_points_session();
         self.cancel_object_prompt(announce);
+        self.cancel_group_prompt(announce);
         let command = self.active_command.take();
         self.drafting_plane = None;
         if command.is_some() {
@@ -4709,6 +4719,10 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.group_prompt.is_some() {
+            self.select_group_prompt_objects(click.object_id, click.mode);
+            return;
+        }
         if self.object_prompt.is_some() {
             self.select_prompt_objects(click.object_id, click.mode);
             return;
@@ -4729,6 +4743,10 @@ impl VibocerosApp {
     }
 
     fn apply_selection_window(&mut self, selection: SelectionWindow) {
+        if self.group_prompt.is_some() {
+            self.select_group_prompt_objects(selection.object_ids, selection.mode);
+            return;
+        }
         if self.object_prompt.is_some() {
             self.select_prompt_objects(selection.object_ids, selection.mode);
             return;
@@ -4777,7 +4795,9 @@ impl VibocerosApp {
     fn apply_sidebar_action(&mut self, action: SidebarAction) {
         // Sidebar document edits must not join or conflict with a live Points
         // transaction. Finish accepted points before starting another action.
-        if self.active_command == Some(InteractiveCommand::Points) {
+        // A sidebar edit also ends pending group input before changing sources
+        // or target definitions beneath it.
+        if self.active_command == Some(InteractiveCommand::Points) || self.group_prompt.is_some() {
             self.cancel_interactive_command(false);
         }
         match action {
@@ -4907,6 +4927,8 @@ impl VibocerosApp {
                         "CPlane"
                     } else if let Some(prompt) = &self.object_prompt {
                         prompt.label()
+                    } else if self.group_prompt.is_some() {
+                        "AddToGroup"
                     } else {
                         self.active_command
                             .map_or("Command", InteractiveCommand::name)
@@ -4925,6 +4947,8 @@ impl VibocerosApp {
                             .hint_text(if self.plane_prompt.is_some() {
                                 "Define the construction plane; Esc returns to the previous prompt"
                             } else if let Some(prompt) = &self.object_prompt {
+                                prompt.hint()
+                            } else if let Some(prompt) = &self.group_prompt {
                                 prompt.hint()
                             } else if self.active_command.is_some() {
                                 if self
@@ -5037,7 +5061,10 @@ impl eframe::App for VibocerosApp {
         if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
             if self.plane_prompt.is_some() {
                 self.cancel_plane_prompt();
-            } else if self.active_command.is_some() || self.object_prompt.is_some() {
+            } else if self.active_command.is_some()
+                || self.object_prompt.is_some()
+                || self.group_prompt.is_some()
+            {
                 self.cancel_interactive_command(true);
             } else {
                 let count = self.document.clear_selection();
@@ -5053,6 +5080,7 @@ impl eframe::App for VibocerosApp {
         }
         if self.active_command.is_none()
             && self.object_prompt.is_none()
+            && self.group_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.document.selected_object_count() > 0
             && !ui.ctx().egui_wants_keyboard_input()
@@ -5094,6 +5122,11 @@ impl eframe::App for VibocerosApp {
             .map_or(Some(viboceros_command::ObjectSelectionFilter::Any), |p| {
                 p.selection_filter()
             });
+        let object_filter = if self.group_prompt == Some(group_prompt::GroupPrompt::Target) {
+            None
+        } else {
+            object_filter
+        };
         let preview_curve = self.curve_draft_preview();
         let document = &self.document;
         let curve_points = self
@@ -5209,6 +5242,7 @@ mod tests {
     mod bezier_selection;
     mod construction_plane;
     mod distribute;
+    mod group_prompt;
     mod interface;
     mod nurbs_selection;
     mod object_selection;
@@ -5246,6 +5280,7 @@ mod tests {
             plane_prompt: None,
             object_prompt: None,
             curve_points: Vec::new(),
+            group_prompt: None,
             points_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
             sidebar: DocumentSidebar::default(),

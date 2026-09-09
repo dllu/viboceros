@@ -40,8 +40,17 @@ modified; unselected peers are not pulled into the target. New memberships
 append, existing memberships keep their positions, and selection is cleared
 even for an all-existing no-op. Empty group definitions are valid targets.
 Missing names, missing groups, or empty selection produce an error without edits.
-This implements the named-target, preselection path; bare-command object/group
-mouse prompts are not implemented yet. Native Undo/Redo is one transaction for
+The UI also accepts bare `AddToGroup`: pick source objects and press Enter, then
+type the target group name. Preselection skips source collection, and
+`AddToGroup group-name` with no selection collects sources for that named target.
+Source clicks are additive; removal modifiers, window selection, `SelAll`, and
+`SelNone` can correct the source set. Target-name entry fixes viewport selection;
+invalid names remain retryable. Esc cancels without membership edits. CPlane and
+interface commands remain transparent; another model command or a sidebar action
+ends the prompt. Mouse-based target-group picking is not implemented yet.
+These UI prompt transitions have native tests; the live Rhino probes below
+cover the preselection/named-target execution behavior, not UI gesture parity.
+Native Undo/Redo is one transaction for
 actual additions; a membership no-op creates no history entry.
 
 Three private Rhino `AddToGroup` probes verify partial selection of a group,
