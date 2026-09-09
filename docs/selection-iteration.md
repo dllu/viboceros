@@ -29,6 +29,17 @@ use the shared iterator. Selection prompts intersect incoming IDs with this trav
 applying the selection mode, rather than resolving every incoming ID twice.
 Layer lookup remains linear in the layer table; this removes repeated
 object-table scans, not every possible selection cost.
+Geometry-filtered commands (`SelCrv`, `SelMesh`, `SelPt`, `SelShortCrv`, and
+the other geometry filters) also share this traversal. Their fallible geometry
+predicates still finish before selection changes, and matching seeds retain
+the existing group-expansion behavior. A 20,000-point debug diagnostic improved
+from 1.12 seconds to 88 milliseconds and checks the complete selected ID set.
+These are focused native CPU timings, not release or Rhino comparisons:
+
+```sh
+cargo test -p viboceros-command benchmark_large_geometry_selection -- --ignored --nocapture
+```
+
 A native test covers all 16 combinations of object/layer visibility and locking,
 read-only traversal, and named-group selection without hidden/locked peers.
 

@@ -37,8 +37,8 @@ fn select_matching_geometry(
     mut predicate: impl FnMut(&Geometry) -> Result<bool, GeometryError>,
 ) -> Result<String, CommandError> {
     let mut matches = Vec::new();
-    for object in document.objects() {
-        if document.is_object_selectable(object.id()) && predicate(object.geometry())? {
+    for object in document.selectable_objects() {
+        if predicate(object.geometry())? {
             matches.push(object.id());
         }
     }
@@ -168,6 +168,28 @@ impl Command for SelShortCurveCommand {
 mod tests {
     use super::*;
     use serde_json::Value;
+
+    #[test]
+    #[ignore = "manual geometry-selection timing"]
+    fn benchmark_large_geometry_selection() {
+        let mut document = Document::default();
+        document.begin_transaction("fixture").unwrap();
+        let ids = (0..20_000)
+            .map(|x| {
+                document
+                    .add_geometry(Geometry::Point(Point3::try_new(x as f64, 0., 0.).unwrap()))
+                    .unwrap()
+            })
+            .collect::<BTreeSet<_>>();
+        document.commit_transaction().unwrap();
+        let start = std::time::Instant::now();
+        assert_eq!(
+            select_matching_geometry(&mut document, |_| Ok(true)).unwrap(),
+            "Selected 20000 object(s)"
+        );
+        eprintln!("20k geometry selection: {:?}", start.elapsed());
+        assert_eq!(document.selected_object_ids().collect::<BTreeSet<_>>(), ids);
+    }
 
     #[test]
     fn shared_selection_preflight_skips_ineligible_objects_and_commits_only_on_success() {
