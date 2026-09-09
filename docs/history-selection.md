@@ -32,6 +32,12 @@ group memberships, including during Undo/Redo and rollback. Replay validates
 the expected property state and retains the same selection-exchange behavior
 as geometry edits. Missing objects, mismatched identities, and unexpected
 properties are errors before mutation.
+The same module owns property staging and commit. Its explicit display-mode
+policy permits edits to hidden/locked objects and prunes unavailable selection;
+the editable-attribute policy requires editable sources and preserves selection.
+Both resolve all IDs before invoking changes, deduplicate in table order, and
+leave history untouched for no-ops. Editable sources are all checked before
+any change callback runs.
 
 Native tests verify exact object restoration and unchanged backing allocation
 of a 10,000-vertex polyline through name, color, visibility, lock, and layer

@@ -2,6 +2,68 @@
 
 use super::*;
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum ChangePolicy {
+    /// Hide/show/lock/isolation can edit non-editable objects and must prune
+    /// selection when an object becomes unavailable.
+    DisplayMode,
+    /// Names and colors require editable sources and preserve selection.
+    EditableAttribute,
+}
+
+impl Document {
+    pub(super) fn change_object_properties(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        label: &'static str,
+        policy: ChangePolicy,
+        change: impl Fn(&mut ObjectProperties),
+    ) -> Result<usize, DocumentError> {
+        let indices = self.resolve_object_indices(ids)?;
+        if policy == ChangePolicy::EditableAttribute {
+            for &index in &indices {
+                self.ensure_object_editable(&self.objects[index])?;
+            }
+        }
+        let mut staged = Vec::with_capacity(indices.len());
+        for index in indices {
+            let before = ObjectProperties::from(&self.objects[index]);
+            let mut after = before.clone();
+            change(&mut after);
+            if before != after {
+                staged.push((index, before, after));
+            }
+        }
+        if staged.is_empty() {
+            return Ok(0);
+        }
+        let count = staged.len();
+        let owns_transaction = self.history.active.is_none();
+        if owns_transaction {
+            self.begin_transaction(label)?;
+        }
+        for (index, before, after) in staged {
+            let id = before.id;
+            after.apply_to(&mut self.objects[index]);
+            self.record_edit(
+                label,
+                Edit::ObjectPropertiesChanged {
+                    id,
+                    selected: self.is_selected(id),
+                    states: Box::new([before, after]),
+                },
+            );
+        }
+        if policy == ChangePolicy::DisplayMode {
+            self.prune_selection();
+        }
+        if owns_transaction {
+            self.commit_transaction()?;
+        }
+        Ok(count)
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub(super) struct ObjectProperties {
     pub id: ObjectId,
@@ -57,6 +119,55 @@ pub(super) fn replace(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn property_staging_preflights_ids_and_policy_before_callbacks() {
+        let mut document = Document::default();
+        let ids = [0., 1.].map(|x| {
+            document
+                .add_geometry(Geometry::Point(Point3::try_new(x, 0., 0.).unwrap()))
+                .unwrap()
+        });
+        document.set_objects_locked([ids[1]], true).unwrap();
+        let missing = ObjectId::new();
+        let before = format!("{document:?}");
+        for policy in [ChangePolicy::DisplayMode, ChangePolicy::EditableAttribute] {
+            assert_eq!(
+                document.change_object_properties(
+                    [ids[0], missing, ids[1]],
+                    "test",
+                    policy,
+                    |_| panic!("missing ID must precede callbacks")
+                ),
+                Err(DocumentError::ObjectNotFound(missing))
+            );
+        }
+        assert_eq!(
+            document.change_object_properties(
+                ids,
+                "test",
+                ChangePolicy::EditableAttribute,
+                |_| panic!("locked source must precede callbacks")
+            ),
+            Err(DocumentError::ObjectLocked(ids[1]))
+        );
+        assert_eq!(format!("{document:?}"), before);
+
+        let visited = std::cell::RefCell::new(Vec::new());
+        assert_eq!(
+            document
+                .change_object_properties(
+                    [ids[1], ids[0], ids[1]],
+                    "test",
+                    ChangePolicy::DisplayMode,
+                    |properties| visited.borrow_mut().push(properties.id)
+                )
+                .unwrap(),
+            0
+        );
+        assert_eq!(*visited.borrow(), ids);
+        assert_eq!(format!("{document:?}"), before);
+    }
 
     fn vertices(document: &Document, id: ObjectId) -> *const Point3 {
         let Geometry::Polyline(curve) = document.object(id).unwrap().geometry() else {

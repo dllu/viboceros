@@ -1662,54 +1662,12 @@ impl Document {
         label: &'static str,
         change: impl Fn(&mut ObjectProperties),
     ) -> Result<usize, DocumentError> {
-        let mut remaining = ids.into_iter().collect::<BTreeSet<_>>();
-        if remaining.is_empty() {
-            return Ok(0);
-        }
-        let mut staged = Vec::with_capacity(remaining.len());
-        for (index, object) in self.objects.iter().enumerate() {
-            if !remaining.remove(&object.id) {
-                continue;
-            }
-            let before = ObjectProperties::from(object);
-            let mut after = before.clone();
-            change(&mut after);
-            if before != after {
-                staged.push((index, before, after));
-            }
-            if remaining.is_empty() {
-                break;
-            }
-        }
-        if let Some(missing) = remaining.first().copied() {
-            return Err(DocumentError::ObjectNotFound(missing));
-        }
-        if staged.is_empty() {
-            return Ok(0);
-        }
-
-        let changed_count = staged.len();
-        let owns_transaction = self.history.active.is_none();
-        if owns_transaction {
-            self.begin_transaction(label)?;
-        }
-        for (index, before, after) in staged {
-            let id = before.id;
-            after.apply_to(&mut self.objects[index]);
-            self.record_edit(
-                label,
-                Edit::ObjectPropertiesChanged {
-                    id,
-                    selected: self.is_selected(id),
-                    states: Box::new([before, after]),
-                },
-            );
-        }
-        self.prune_selection();
-        if owns_transaction {
-            self.commit_transaction()?;
-        }
-        Ok(changed_count)
+        self.change_object_properties(
+            ids,
+            label,
+            object_properties::ChangePolicy::DisplayMode,
+            change,
+        )
     }
 
     fn change_editable_objects(
@@ -1718,43 +1676,12 @@ impl Document {
         label: &'static str,
         change: impl Fn(&mut ObjectProperties),
     ) -> Result<usize, DocumentError> {
-        let indices = self.resolve_object_indices(ids)?;
-        let mut staged = Vec::with_capacity(indices.len());
-        for index in indices {
-            let object = &self.objects[index];
-            self.ensure_object_editable(object)?;
-            let before = ObjectProperties::from(object);
-            let mut after = before.clone();
-            change(&mut after);
-            if before != after {
-                staged.push((index, before, after));
-            }
-        }
-        if staged.is_empty() {
-            return Ok(0);
-        }
-
-        let changed_count = staged.len();
-        let owns_transaction = self.history.active.is_none();
-        if owns_transaction {
-            self.begin_transaction(label)?;
-        }
-        for (index, before, after) in staged {
-            let id = before.id;
-            after.apply_to(&mut self.objects[index]);
-            self.record_edit(
-                label,
-                Edit::ObjectPropertiesChanged {
-                    id,
-                    selected: self.is_selected(id),
-                    states: Box::new([before, after]),
-                },
-            );
-        }
-        if owns_transaction {
-            self.commit_transaction()?;
-        }
-        Ok(changed_count)
+        self.change_object_properties(
+            ids,
+            label,
+            object_properties::ChangePolicy::EditableAttribute,
+            change,
+        )
     }
 
     fn eligible_object_ids(
