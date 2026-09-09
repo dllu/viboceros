@@ -2,6 +2,62 @@ use super::*;
 use viboceros_document::SelectionMode;
 
 #[test]
+fn prompt_batch_selection_filters_and_coalesces_before_applying_modes() {
+    let mut app = test_app();
+    let ids = [0., 1., 2., 3., 4.].map(|x| {
+        app.document
+            .add_geometry(Geometry::Point(point(x, 0., 0.)))
+            .unwrap()
+    });
+    app.document
+        .add_group(None, ids[..4].iter().copied())
+        .unwrap();
+    app.document.set_objects_locked([ids[2]], true).unwrap();
+    app.document
+        .set_objects_visibility([ids[3]], false)
+        .unwrap();
+    let missing = app
+        .document
+        .add_geometry(Geometry::Point(point(99., 0., 0.)))
+        .unwrap();
+    app.document.delete_objects([missing]).unwrap();
+    let objects = app.document.objects().cloned().collect::<Vec<_>>();
+    let groups = app.document.groups().cloned().collect::<Vec<_>>();
+    let history = app.document.undo_label().map(str::to_owned);
+    enter(&mut app, "RemoveFromGroup");
+    app.select_prompt_objects(
+        [ids[1], ids[0], ids[1], ids[2], ids[3], ids[4], missing],
+        SelectionMode::Replace,
+    );
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        ids[..2]
+    );
+    app.select_prompt_objects([ids[0], ids[0]], SelectionMode::Remove);
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        [ids[1]]
+    );
+    app.select_prompt_objects([ids[1], ids[0], ids[0]], SelectionMode::Toggle);
+    // Batch toggle adds the entire batch unless every member is selected.
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        [ids[1], ids[0]]
+    );
+    app.select_prompt_objects([ids[1], ids[0], ids[0]], SelectionMode::Toggle);
+    assert_eq!(app.document.selected_object_count(), 0);
+    app.select_prompt_objects([ids[0]], SelectionMode::Replace);
+    app.select_prompt_objects([ids[1]], SelectionMode::Replace);
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        ids[..2]
+    );
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
+    assert_eq!(app.document.groups().cloned().collect::<Vec<_>>(), groups);
+    assert_eq!(app.document.undo_label(), history.as_deref());
+}
+
+#[test]
 fn remove_from_group_prompt_picks_individual_members_and_supports_copy() {
     for copy in [false, true] {
         let mut app = test_app();

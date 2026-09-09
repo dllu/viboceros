@@ -360,13 +360,13 @@ impl VibocerosApp {
         else {
             return;
         };
-        let ids = ids
-            .into_iter()
-            .filter(|id| {
-                self.document.object(*id).is_some_and(|o| {
-                    self.document.is_object_selectable(*id) && filter.accepts_object(o)
-                })
-            })
+        let requested = ids.into_iter().collect::<std::collections::BTreeSet<_>>();
+        let ids = self
+            .document
+            .selectable_objects()
+            .filter(|object| requested.contains(&object.id()))
+            .filter(|object| filter.accepts_object(object))
+            .map(|object| object.id())
             .collect::<Vec<_>>();
         let mode = if mode == SelectionMode::Replace {
             SelectionMode::Add

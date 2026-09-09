@@ -25,8 +25,10 @@ iterator. It filters object and layer visibility/locking without expanding
 groups or looking up each object's ID again. Window selection, `Group all`, and
 named-group filtering use it; duplicate and layer selection likewise reuse
 their existing object records. Click picking and selection-prompt `SelAll` also
-use the shared iterator. Layer lookup remains linear in the layer table;
-this removes repeated object-table scans, not every possible selection cost.
+use the shared iterator. Selection prompts intersect incoming IDs with this traversal as a batch before
+applying the selection mode, rather than resolving every incoming ID twice.
+Layer lookup remains linear in the layer table; this removes repeated
+object-table scans, not every possible selection cost.
 A native test covers all 16 combinations of object/layer visibility and locking,
 read-only traversal, and named-group selection without hidden/locked peers.
 
