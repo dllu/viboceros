@@ -1,4 +1,43 @@
 use super::*;
+use viboceros_geometry::{Point3, Vector3};
+
+#[test]
+#[ignore = "manual large group creation timing"]
+fn benchmark_large_group_creation() {
+    let mut document = Document::default();
+    document.begin_transaction("fixture").unwrap();
+    let ids = (0..20_000)
+        .map(|i| document.add_geometry(geometry(i as f64)).unwrap())
+        .collect::<Vec<_>>();
+    document.commit_transaction().unwrap();
+    let start = std::time::Instant::now();
+    let first = document.add_group(None, ids.iter().rev().copied()).unwrap();
+    eprintln!("20k points, create group: {:?}", start.elapsed());
+    let second = document.add_empty_group(None).unwrap();
+    let start = std::time::Instant::now();
+    assert_eq!(
+        document
+            .add_group_members(second, ids.iter().rev().copied())
+            .unwrap(),
+        ids.len()
+    );
+    eprintln!("20k points, add group members: {:?}", start.elapsed());
+    assert_eq!(
+        document.group(first).unwrap().members,
+        ids.iter().copied().collect()
+    );
+    assert_eq!(
+        document.group(second).unwrap().members,
+        ids.iter().copied().collect()
+    );
+    assert!(
+        document
+            .objects
+            .iter()
+            .all(|object| object.group_ids == [first, second])
+    );
+    consistent(&document);
+}
 
 #[test]
 #[ignore = "manual grouped copy timing"]
@@ -34,7 +73,6 @@ fn benchmark_large_group_copy() {
         );
     }
 }
-use viboceros_geometry::{Point3, Vector3};
 
 fn geometry(x: f64) -> Geometry {
     Geometry::Point(Point3::try_new(x, 0., 0.).unwrap())
@@ -88,6 +126,95 @@ fn state(document: &Document) -> (Vec<Object>, Vec<Group>) {
         document.objects().cloned().collect(),
         document.groups().cloned().collect(),
     )
+}
+
+#[test]
+fn batch_group_additions_preserve_order_noops_and_exact_history() {
+    for create in [false, true] {
+        for mask in 0_u8..8 {
+            let (mut document, ids, _) = fixture();
+            let target = if create {
+                None
+            } else {
+                Some(document.add_group(None, [ids[0]]).unwrap())
+            };
+            let original = state(&document);
+            let original_selection = document.selection_order.clone();
+            let original_debug = format!("{document:?}");
+            let request = (0..3)
+                .rev()
+                .filter(|i| mask & (1 << i) != 0)
+                .flat_map(|i| [ids[i], ids[i]])
+                .collect::<Vec<_>>();
+            if create && mask == 0 {
+                assert_eq!(
+                    document.add_group(None, request),
+                    Err(DocumentError::EmptyGroup)
+                );
+                assert_eq!(format!("{document:?}"), original_debug);
+                continue;
+            }
+            let (group, changed) = if let Some(target) = target {
+                let changed = document.add_group_members(target, request).unwrap();
+                assert_eq!(changed, (mask & !1).count_ones() as usize);
+                (target, changed)
+            } else {
+                (
+                    document.add_group(None, request).unwrap(),
+                    mask.count_ones() as usize,
+                )
+            };
+            if changed == 0 {
+                assert_eq!(format!("{document:?}"), original_debug);
+                continue;
+            }
+            for (i, object) in document.objects.iter().enumerate() {
+                let mut expected = original.0[i].group_ids.clone();
+                if mask & (1 << i) != 0 && !expected.contains(&group) {
+                    expected.push(group);
+                }
+                assert_eq!(object.group_ids, expected);
+            }
+            assert_eq!(document.selection_order, original_selection);
+            let changed_state = state(&document);
+            document.undo().unwrap();
+            assert_eq!(state(&document), original);
+            document.redo().unwrap();
+            assert_eq!(state(&document), changed_state);
+        }
+    }
+}
+
+#[test]
+fn missing_group_sources_preserve_redo_and_existing_transaction() {
+    for create in [false, true] {
+        for active in [false, true] {
+            let (mut document, ids, groups) = fixture();
+            document.add_geometry(geometry(99.)).unwrap();
+            document.undo().unwrap();
+            if active {
+                document.begin_transaction("caller").unwrap();
+            }
+            let before = format!("{document:?}");
+            let missing = [ObjectId::new(), ObjectId::new()];
+            let request = ids.into_iter().chain(missing).collect::<Vec<_>>();
+            let result = if create {
+                document.add_group(None, request).map(|_| 0)
+            } else {
+                document.add_group_members(groups[0], request)
+            };
+            assert_eq!(
+                result,
+                Err(DocumentError::ObjectNotFound(
+                    *missing.iter().min().unwrap()
+                ))
+            );
+            assert_eq!(format!("{document:?}"), before);
+            if active {
+                document.rollback_transaction().unwrap();
+            }
+        }
+    }
 }
 
 #[test]

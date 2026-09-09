@@ -70,16 +70,13 @@ impl Document {
         name: Option<String>,
         members: impl IntoIterator<Item = ObjectId>,
     ) -> Result<GroupId, DocumentError> {
-        let members = members.into_iter().collect::<BTreeSet<_>>();
-        if members.is_empty() {
+        let indices = self.resolve_object_indices(members)?;
+        if indices.is_empty() {
             return Err(DocumentError::EmptyGroup);
-        }
-        if let Some(missing) = members.iter().find(|id| self.object(**id).is_none()) {
-            return Err(DocumentError::ObjectNotFound(*missing));
         }
         self.group_transaction("Add group", |document| {
             let id = document.add_empty_group(name)?;
-            document.add_group_members(id, members)?;
+            document.append_group_at_indices(id, &indices)?;
             Ok(id)
         })
     }
@@ -122,22 +119,30 @@ impl Document {
         let group = self
             .group(group_id)
             .ok_or(DocumentError::GroupNotFound(group_id))?;
-        let members = members.into_iter().collect::<BTreeSet<_>>();
-        if let Some(missing) = members.iter().find(|id| self.object(**id).is_none()) {
-            return Err(DocumentError::ObjectNotFound(*missing));
-        }
-        let additions = members
+        let additions = self
+            .resolve_object_indices(members)?
             .into_iter()
-            .filter(|id| !group.members.contains(id))
+            .filter(|index| !group.members.contains(&self.objects[*index].id))
             .collect::<Vec<_>>();
         self.group_transaction("Add group members", |document| {
-            for id in &additions {
-                let mut memberships = document.object(*id).unwrap().group_ids.clone();
-                memberships.push(group_id);
-                document.set_object_group_memberships(*id, memberships)?;
-            }
+            document.append_group_at_indices(group_id, &additions)?;
             Ok(additions.len())
         })
+    }
+
+    // Call within a group transaction after resolving all objects. Membership
+    // edits never reorder the object table, so each index stays valid.
+    fn append_group_at_indices(
+        &mut self,
+        group: GroupId,
+        indices: &[usize],
+    ) -> Result<(), DocumentError> {
+        for &index in indices {
+            let mut memberships = self.objects[index].group_ids.clone();
+            memberships.push(group);
+            self.set_object_group_memberships_at(index, memberships)?;
+        }
+        Ok(())
     }
 
     /// Removes a definition and all memberships, retaining each surviving

@@ -76,3 +76,24 @@ directions. As above, these are not Rhino or release-build timings.
 ```sh
 cargo test -p viboceros-document benchmark_large_group_copy -- --ignored --nocapture
 ```
+
+## Group creation and member addition
+
+Group creation and adding members also resolve all requested object IDs once.
+Both use the indexed membership setter within the existing group transaction;
+new definitions do not cause a second source-validation pass. Duplicate object
+IDs are coalesced. Already-present members remain in their original membership
+position, while new memberships append. Validation still rejects missing source
+IDs before any edits, preserving redo and caller-owned transactions on failure.
+
+Tests exercise every subset of three objects with different overlapping
+membership orders, reversed/duplicate requests, no-ops, and exact Undo/Redo
+restoration. A 20,000-point debug diagnostic measured group creation at about
+4.29 s before batching and 118 ms afterward, and member addition at 3.35 s before
+and 162 ms afterward. Timings exclude the separate exhaustive consistency check
+that follows both operations. This does not optimize group deletion or history
+replay, nor establish release-build or Rhino performance parity.
+
+```sh
+cargo test -p viboceros-document benchmark_large_group_creation -- --ignored --nocapture
+```
