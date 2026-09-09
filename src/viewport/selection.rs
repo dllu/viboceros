@@ -74,8 +74,8 @@ impl Viewport {
         filter: ObjectSelectionFilter,
     ) -> Option<ObjectId> {
         let mut nearest: Option<(PickHit, ObjectId)> = None;
-        for object in document.objects() {
-            if !document.is_object_selectable(object.id()) || !filter.accepts_object(object) {
+        for object in document.selectable_objects() {
+            if !filter.accepts_object(object) {
                 continue;
             }
             let hit = match object.geometry() {
@@ -514,6 +514,27 @@ pub(super) fn is_crossing_selection(start: Pos2, end: Pos2) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use viboceros_document::ColorRgb;
+
+    #[test]
+    #[ignore = "manual large-scene click-picking timing"]
+    fn benchmark_large_scene_click_picking() {
+        let view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        let mut document = Document::default();
+        document.begin_transaction("fixture").unwrap();
+        let mut first = None;
+        for _ in 0..20_000 {
+            let id = document
+                .add_geometry(Geometry::Point(Point3::try_new(0., 0., 0.).unwrap()))
+                .unwrap();
+            first.get_or_insert(id);
+        }
+        document.commit_transaction().unwrap();
+        let start = std::time::Instant::now();
+        assert_eq!(view.pick_object(rect.center(), rect, &document), first);
+        eprintln!("20k overlapping points, click pick: {:?}", start.elapsed());
+    }
 
     #[test]
     fn grouped_filter_excludes_overlapping_ungrouped_hits_and_tracks_membership_edits() {
@@ -562,6 +583,31 @@ mod tests {
             assert_eq!(pick(&document), None);
             document.undo().unwrap();
             assert_eq!(pick(&document), Some(grouped));
+            let layer = document.add_layer("Pick target", ColorRgb::BLACK).unwrap();
+            document.set_objects_layer([grouped], layer).unwrap();
+            for locked in [false, true] {
+                if locked {
+                    document.set_layer_locked(layer, true).unwrap();
+                } else {
+                    document.set_layer_visibility(layer, false).unwrap();
+                }
+                assert_eq!(pick(&document), None);
+                assert_eq!(view.pick_object(pointer, rect, &document), Some(ungrouped));
+                for crossing in [false, true] {
+                    assert!(
+                        view.objects_in_selection_matching(
+                            rect,
+                            selection,
+                            crossing,
+                            &document,
+                            ObjectSelectionFilter::Grouped
+                        )
+                        .is_empty()
+                    );
+                }
+                document.undo().unwrap();
+                assert_eq!(pick(&document), Some(grouped));
+            }
         }
     }
 

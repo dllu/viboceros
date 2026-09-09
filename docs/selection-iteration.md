@@ -24,10 +24,18 @@ cache to invalidate. PointCloud command-first creation uses this shared path.
 iterator. It filters object and layer visibility/locking without expanding
 groups or looking up each object's ID again. Window selection, `Group all`, and
 named-group filtering use it; duplicate and layer selection likewise reuse
-their existing object records. Layer lookup remains linear in the layer table;
+their existing object records. Click picking and selection-prompt `SelAll` also
+use the shared iterator. Layer lookup remains linear in the layer table;
 this removes repeated object-table scans, not every possible selection cost.
 A native test covers all 16 combinations of object/layer visibility and locking,
 read-only traversal, and named-group selection without hidden/locked peers.
+
+The ignored `benchmark_large_scene_click_picking` test exercises 20,000
+overlapping points and checks deterministic first-object tie-breaking. On the
+development machine, replacing the per-object ID lookup reduced its debug pick
+time from 1.05 seconds to 5.1 milliseconds. This is a focused CPU measurement,
+not a Rhino comparison or a general frame-rate guarantee. Run it with
+`cargo test -p viboceros benchmark_large_scene_click_picking -- --ignored --nocapture`.
 
 `select_objects` and `select_objects_direct` share seed validation. Large
 requests scan the object table once, using a set of remaining requested IDs

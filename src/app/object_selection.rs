@@ -241,11 +241,8 @@ impl VibocerosApp {
             } else {
                 let ids = self
                     .document
-                    .objects()
-                    .filter(|o| {
-                        self.document.is_object_selectable(o.id())
-                            && pending.description.filter.accepts_object(o)
-                    })
+                    .selectable_objects()
+                    .filter(|o| pending.description.filter.accepts_object(o))
                     .map(|o| o.id())
                     .collect::<Vec<_>>();
                 self.select_prompt_objects(ids, SelectionMode::Add);
