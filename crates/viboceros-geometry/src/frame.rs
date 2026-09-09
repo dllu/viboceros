@@ -161,12 +161,11 @@ impl Frame3 {
 
     /// Coordinates relative to this frame's origin, with scale-safe dot products.
     pub fn coordinates_of(self, point: Point3) -> Result<[f64; 3], GeometryError> {
-        let delta = self.origin.vector_to(point)?;
-        Ok([
-            delta.dot(self.x_axis.as_vector())?,
-            delta.dot(self.y_axis.as_vector())?,
-            delta.dot(self.z_axis.as_vector())?,
-        ])
+        let coordinates = self
+            .axes()
+            .map(|axis| axis.as_vector().dot_point_difference(point, self.origin));
+        crate::require_finite(coordinates, "frame coordinates")?;
+        Ok(coordinates)
     }
 
     /// Evaluates finite local coordinates without forming huge world-space axes.
@@ -186,6 +185,52 @@ impl Frame3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn frame_coordinates_do_not_require_a_representable_world_displacement() {
+        let huge = 2_f64.powi(1023);
+        let frame = Frame3::try_from_x_and_normal(
+            point(-huge, 0., 0.),
+            Vector3::try_new(1., 1., 0.).unwrap(),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let target = point(huge, 0., 0.);
+        let expected = frame.axes().map(|axis| (axis.as_vector().x() * 2.) * huge);
+        assert_eq!(frame.coordinates_of(target).unwrap(), expected);
+        assert_eq!(
+            frame
+                .with_origin(target)
+                .coordinates_of(frame.origin())
+                .unwrap(),
+            expected.map(|v| -v)
+        );
+        let world = Frame3::try_from_directions(
+            point(-huge, 0., 0.),
+            Vector3::try_new(1., 0., 0.).unwrap(),
+            Vector3::try_new(0., 1., 0.).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(world.coordinates_of(target).is_err());
+    }
+
+    #[test]
+    fn frame_coordinates_retain_origins_after_projection_cancellation() {
+        let frame = Frame3::try_from_x_and_normal(
+            point(1., 0., 0.),
+            Vector3::try_new(1., -1., 0.).unwrap(),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let large = 2_f64.powi(100);
+        assert_eq!(
+            frame.coordinates_of(point(large, large, 0.)).unwrap()[0],
+            -frame.x_axis().as_vector().x()
+        );
+    }
 
     #[test]
     fn frame_coordinates_retain_small_components_and_translated_origins() {

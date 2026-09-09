@@ -10,8 +10,9 @@ result can be recovered safely.
 
 Implementation: [vectors](../crates/viboceros-geometry/src/vector.rs),
 [exact accumulator](../crates/viboceros-geometry/src/vector/exact_dot.rs),
-[lines](../crates/viboceros-geometry/src/line.rs), and
-[planes](../crates/viboceros-geometry/src/plane.rs).
+[lines](../crates/viboceros-geometry/src/line.rs),
+[planes](../crates/viboceros-geometry/src/plane.rs), and
+[frames](../crates/viboceros-geometry/src/frame.rs).
 
 ## Dot and cross products
 
@@ -35,8 +36,8 @@ sums and cancellation retaining a smallest-subnormal contribution.
 
 ## Point-difference projections
 
-`Vector3::dot_point_difference` is an internal helper shared by line closest-point
-and plane signed-distance calculations. The fast path checks subtraction
+`Vector3::dot_point_difference` is an internal helper shared by line closest-point,
+plane signed-distance, and frame-coordinate calculations. The fast path checks subtraction
 residuals before using the compensated dot product. If a relevant displacement
 coordinate lost bits, or displacement/projection arithmetic overflows, the
 fallback projects the original point coordinates as six signed products.
@@ -47,6 +48,12 @@ an unrepresentable distance. Tests cover overflowing tangential displacement,
 finite interior projections, oblique cancellation, opposite normal signs,
 reversed point/origin roles, and small origin contributions lost by naive
 subtraction, including subnormal results.
+
+Frame conversion checks all three projected coordinates for finiteness. A
+rotated frame can have finite local coordinates even when a world displacement
+component overflows; an axis-aligned frame with a truly overflowing local
+coordinate still returns an error. Frame tests also cover reversed origins and
+small origin contributions retained after cancellation.
 
 ## Line interpolation and extrapolation
 
