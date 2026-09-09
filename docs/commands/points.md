@@ -27,6 +27,13 @@ commits as one document undo entry. A session with no remaining points rolls bac
 preserving prior geometry, selection, and redo. The complete typed command stages
 all coordinates and local Undo actions before making any document edits.
 
+[Transparent CPlane editing](../cplane.md) and display/drafting switches keep
+Points active. While a CPlane prompt is open, Enter belongs to that inner prompt,
+not to Points. Escape cancels only the inner plane prompt. A bare `Undo` exits
+the plane prompt before removing the latest session point; `CPlane Undo` acts
+only on viewport plane history. Completing a plane edit preserves earlier
+points and the relative-input base; later local coordinates use the new plane.
+
 ## Verification and limits
 
 The [Rhino reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/point.htm)
@@ -43,6 +50,8 @@ normal command-history behavior. The current comparison deliberately tests only
 accepted points. Native single-entry history, redo, session retry, and switching
 commands are separately covered by command/UI tests; Rhino outer-history parity
 remains unverified.
+UI regression tests additionally cover nested origin, three-point, elevation,
+and rotation prompts, Enter/Undo priority, and plane/model history isolation.
 
 ```sh
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/points_command.json --timeout 180

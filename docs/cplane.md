@@ -45,6 +45,9 @@ coordinates use the new plane. Escape cancels only the innermost CPlane prompt.
 The plane being edited is the viewport where the CPlane prompt started, even
 when reference picks come from other viewports. Previously latched primitive
 and transform construction frames retain their documented rules.
+The same nesting applies to live `Points` placement: Enter is handled by the
+innermost plane prompt, and completing or cancelling that prompt leaves the
+point session active. Plane changes do not join its document transaction.
 
 Plane history retains up to 50 entries per viewport. Successful no-op edits
 also create history entries, as observed in Rhino. Editing after undo clears

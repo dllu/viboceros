@@ -1138,9 +1138,6 @@ impl VibocerosApp {
 
     fn run_command(&mut self) {
         let input = self.command_input.trim().to_owned();
-        if self.try_continue_points(&input) {
-            return;
-        }
         if !input.is_empty()
             && (self.try_run_plane_command(&input) || self.try_run_interface_command(&input))
         {
@@ -1150,6 +1147,9 @@ impl VibocerosApp {
             return;
         }
         if self.try_continue_object_prompt(&input) {
+            return;
+        }
+        if self.try_continue_points(&input) {
             return;
         }
         if self.try_continue_point_grid_height(&input) {

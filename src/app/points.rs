@@ -36,7 +36,10 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_points(&mut self, input: &str) -> bool {
-        if self.active_command != Some(InteractiveCommand::Points) {
+        if self.active_command != Some(InteractiveCommand::Points)
+            || self.plane_prompt.is_some()
+            || self.object_prompt.is_some()
+        {
             return false;
         }
         if input.is_empty() {

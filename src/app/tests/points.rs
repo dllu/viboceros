@@ -97,3 +97,106 @@ fn sidebar_edits_finish_points_and_have_separate_history() {
     enter(&mut app, "Undo");
     assert_eq!(app.document.objects().len(), 0);
 }
+
+#[test]
+fn transparent_plane_enter_does_not_finish_live_points() {
+    for plane_command in [
+        "CPlane",
+        "CPlane 3Point",
+        "CPlane Elevation",
+        "CPlane Rotate",
+    ] {
+        let mut app = test_app();
+        enter(&mut app, "Points");
+        enter(&mut app, "1,2,3");
+        enter(&mut app, plane_command);
+        assert!(app.plane_prompt.is_some());
+        enter(&mut app, "");
+        assert_eq!(app.active_command, Some(InteractiveCommand::Points));
+        assert!(app.points_session.is_some());
+        assert_eq!(app.document.objects().len(), 1);
+        if plane_command == "CPlane" {
+            assert!(app.plane_prompt.is_none());
+        } else {
+            assert_eq!(
+                app.plane_prompt.as_ref().unwrap().points.len(),
+                usize::from(plane_command == "CPlane 3Point")
+            );
+            app.cancel_plane_prompt();
+        }
+        enter(&mut app, "");
+        assert!(app.points_session.is_none());
+        assert_eq!(app.document.undo_label(), Some("Points"));
+    }
+}
+
+#[test]
+fn modeling_undo_exits_transparent_plane_prompt_before_removing_session_point() {
+    let mut app = test_app();
+    enter(&mut app, "Points");
+    enter(&mut app, "1,2,3");
+    enter(&mut app, "CPlane 3Point");
+    enter(&mut app, "Undo");
+    assert!(app.plane_prompt.is_none());
+    assert_eq!(app.active_command, Some(InteractiveCommand::Points));
+    assert!(app.points_session.is_some());
+    assert_eq!(app.document.objects().len(), 0);
+    enter(&mut app, "");
+    assert!(app.points_session.is_none());
+}
+
+#[test]
+fn completed_transparent_plane_and_interface_edits_preserve_live_point_history() {
+    let mut app = test_app();
+    enter(&mut app, "Points");
+    enter(&mut app, "w1,2,3");
+    let last = app.last_point;
+    for input in [
+        "CPlane 3Point",
+        "w10,20,30",
+        "w10,21,30",
+        "Snap",
+        "w10,20,31",
+    ] {
+        enter(&mut app, input);
+    }
+    assert!(app.plane_prompt.is_none());
+    assert_eq!(app.last_point, last);
+    assert_eq!(app.active_command, Some(InteractiveCommand::Points));
+    enter(&mut app, "2,3");
+    enter(&mut app, "");
+    let expected = [point(1., 2., 3.), point(10., 22., 33.)];
+    let actual = app
+        .document
+        .objects()
+        .map(|o| {
+            if let Geometry::Point(p) = o.geometry() {
+                *p
+            } else {
+                panic!()
+            }
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(actual, expected);
+    let frame = app.viewports[0].construction_plane();
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().len(), 0);
+    assert_eq!(app.viewports[0].construction_plane(), frame);
+    enter(&mut app, "Redo");
+    assert_eq!(app.document.objects().len(), 2);
+}
+
+#[test]
+fn points_handler_declines_input_owned_by_a_transparent_plane_prompt() {
+    let mut app = test_app();
+    enter(&mut app, "Points");
+    enter(&mut app, "1,2,3");
+    enter(&mut app, "CPlane 3Point");
+    assert!(!app.try_continue_points(""));
+    assert!(!app.try_continue_points("Undo"));
+    assert_eq!(app.document.objects().len(), 1);
+    assert!(app.points_session.is_some());
+    app.cancel_plane_prompt();
+    app.cancel_interactive_command(false);
+    assert_eq!(app.document.undo_label(), Some("Points"));
+}
