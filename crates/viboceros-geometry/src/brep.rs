@@ -24,6 +24,9 @@ use tolerance::scaled_tolerance;
 mod trim_image;
 mod validate;
 
+#[cfg(test)]
+mod transform_tests;
+
 const LOOP_SAMPLES_PER_SPAN: usize = 4;
 const MAX_EAR_CLIP_VERTICES: usize = 16_384;
 const MAX_CONSTRAINED_TRIM_VERTICES: usize = 131_072;
