@@ -94,3 +94,11 @@ A private GUI smoke test used an oblique CPlane, four named point clouds, and
 one group. Automatic center spacing, automatic gap spacing through the two-point
 prompt, and explicit spacing all survived 3DM export with maximum coordinate
 error below `5.2e-15`; undo/redo and retained names, layers, and groups were checked.
+
+Native spacing-planner tests also cover finite automatic spacing across
+opposite-sign extreme endpoints and subnormal point intervals. Midpoints avoid
+premature underflow; differences are scaled before subtraction when the raw
+difference overflows but the averaged spacing is representable. Unrepresentable
+final displacements remain errors. This verifies the interval planner, not
+end-to-end Rhino parity or representability of every preceding bounds/frame
+calculation at these extremes.

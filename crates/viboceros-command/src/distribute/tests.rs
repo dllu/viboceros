@@ -55,6 +55,27 @@ fn near(a: f64, b: f64) {
 }
 
 #[test]
+fn spacing_plans_retain_finite_extreme_gaps_and_subnormal_centers() {
+    for huge in [2_f64.powi(1023), f64::MAX] {
+        let (offsets, spacing) =
+            super::offsets(&[[-huge; 2], [0.; 2], [huge; 2]], Mode::Center, None).unwrap();
+        assert_eq!(spacing, huge);
+        assert_eq!(offsets, [0.; 3]);
+        let (offsets, spacing) =
+            super::offsets(&[[-huge; 2], [huge; 2], [huge; 2]], Mode::Gap, None).unwrap();
+        assert_eq!(spacing, huge);
+        assert_eq!(offsets, [0., -huge, 0.]);
+    }
+    let intervals = [1, 3, 5].map(|bits| [f64::from_bits(bits); 2]);
+    let (offsets, spacing) = super::offsets(&intervals, Mode::Center, None).unwrap();
+    assert_eq!(spacing, f64::from_bits(2));
+    assert_eq!(offsets, [0.; 3]);
+    for mode in [Mode::Center, Mode::Gap] {
+        assert!(super::offsets(&[[0.; 2], [1.; 2], [2.; 2]], mode, Some(f64::MAX)).is_err());
+    }
+}
+
+#[test]
 fn spacing_plans_use_leading_edge_order_and_pin_automatic_end_objects() {
     let intervals = [[0., 2.], [5., 9.], [16., 17.]];
     for (mode, spacing, expected) in [

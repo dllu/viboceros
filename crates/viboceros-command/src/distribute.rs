@@ -249,17 +249,19 @@ fn offsets(
     mode: Mode,
     explicit: Option<f64>,
 ) -> Result<(Vec<f64>, f64), GeometryError> {
-    let center = |[a, b]: [f64; 2]| 0.5 * a + 0.5 * b;
+    let center = |[a, b]: [f64; 2]| a.midpoint(b);
     let count = intervals.len();
     let divisor = (count - 1) as f64;
     let spacing = explicit.unwrap_or_else(|| match mode {
-        Mode::Center => (center(intervals[count - 1]) - center(intervals[0])) / divisor,
+        Mode::Center => {
+            divided_difference(center(intervals[count - 1]), center(intervals[0]), divisor)
+        }
         Mode::Gap => {
             // Average existing gaps avoids subtracting two large total widths.
             let mut sum = 0.;
             let mut correction = 0.;
             for pair in intervals.windows(2) {
-                let gap = (pair[1][0] - pair[0][1]) / divisor;
+                let gap = divided_difference(pair[1][0], pair[0][1], divisor);
                 let adjusted = gap - correction;
                 let next = sum + adjusted;
                 correction = (next - sum) - adjusted;
@@ -287,4 +289,15 @@ fn offsets(
         Vector3::try_new(*value, 0., 0.)?;
     }
     Ok((offsets, spacing))
+}
+
+// Keep ordinary subtraction rounding, but scale first when the difference
+// alone overflows. Distribution has at least three units, so divisor >= 2.
+fn divided_difference(a: f64, b: f64, divisor: f64) -> f64 {
+    let difference = a - b;
+    if difference.is_finite() {
+        difference / divisor
+    } else {
+        a / divisor - b / divisor
+    }
 }
