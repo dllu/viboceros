@@ -316,18 +316,47 @@ impl AffineTransform3 {
         if scale == 0.0 {
             return Ok(0.0);
         }
-        let normalized = rows.map(|row| row.map(|value| value.abs() / scale));
+        // Scaled coordinate permutations have exact norm max(abs(entries)).
+        // Keep identity/diagonal tolerances unchanged, including subnormals.
+        if rows
+            .iter()
+            .all(|row| row.iter().filter(|v| **v != 0.).count() <= 1)
+            && (0..3).all(|column| rows.iter().filter(|row| row[column] != 0.).count() <= 1)
+        {
+            return Ok(scale);
+        }
+        // Each nonnegative operation rounds outward. Round-to-nearest sums
+        // can discard a small positive entry and underestimate the norm.
+        let normalized = rows.map(|row| {
+            row.map(|value| {
+                if value == 0. {
+                    0.
+                } else {
+                    (value.abs() / scale).next_up()
+                }
+            })
+        });
+        let add_up = |a: Real, b: Real| {
+            if a == 0. {
+                b
+            } else if b == 0. {
+                a
+            } else {
+                (a + b).next_up()
+            }
+        };
         let maximum_row_sum = normalized
             .iter()
-            .map(|row| row.iter().sum::<Real>())
+            .map(|row| row.iter().copied().fold(0., add_up))
             .fold(0.0, Real::max);
         let maximum_column_sum = (0..3)
-            .map(|column| normalized.iter().map(|row| row[column]).sum::<Real>())
+            .map(|column| normalized.iter().map(|row| row[column]).fold(0., add_up))
             .fold(0.0, Real::max);
         // ||A||_2 <= sqrt(||A||_1 ||A||_infinity). Scaling first keeps both
         // induced norms finite, while this bound remains exact for identity
         // and diagonal scale transforms.
-        let maximum = scale * (maximum_row_sum * maximum_column_sum).sqrt();
+        let product = (maximum_row_sum * maximum_column_sum).next_up();
+        let maximum = (scale * product.sqrt().next_up()).next_up();
         require_finite([maximum], "affine transform scale bound")?;
         Ok(maximum)
     }

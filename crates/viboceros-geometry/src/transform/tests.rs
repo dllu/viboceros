@@ -1,6 +1,51 @@
 use super::*;
 
 #[test]
+fn scale_bound_is_exact_for_scaled_coordinate_permutations() {
+    for columns in [
+        [0, 1, 2],
+        [0, 2, 1],
+        [1, 0, 2],
+        [1, 2, 0],
+        [2, 0, 1],
+        [2, 1, 0],
+    ] {
+        for scales in [
+            [1., 1., 1.],
+            [-2., 3., 0.],
+            [Real::MAX, Real::from_bits(1), -1.],
+            [Real::from_bits(1); 3],
+            [0.; 3],
+        ] {
+            let mut rows = [[0.; 3]; 3];
+            for i in 0..3 {
+                rows[i][columns[i]] = scales[i];
+            }
+            let transform =
+                AffineTransform3::try_new(rows, Vector3::try_new(0., 0., 0.).unwrap()).unwrap();
+            assert_eq!(
+                transform.maximum_linear_scale().unwrap(),
+                scales.into_iter().map(Real::abs).fold(0., Real::max)
+            );
+        }
+    }
+}
+
+#[test]
+fn scale_bound_rounds_outward_when_small_terms_increase_the_norm() {
+    let small = Real::EPSILON * 0.5;
+    let transform = AffineTransform3::try_new(
+        [[1., small, 0.], [small, 1., 0.], [0., 0., 1.]],
+        Vector3::try_new(0., 0., 0.).unwrap(),
+    )
+    .unwrap();
+    // The exact largest eigenvalue (and singular value) is 1 + 2^-53.
+    // Rounding the row sums to nearest instead returns the unsafe bound 1.
+    assert!(transform.maximum_linear_scale().unwrap() > 1.);
+    assert!(transform.maximum_linear_scale().unwrap() <= 1. + 16. * Real::EPSILON);
+}
+
+#[test]
 fn orientation_retains_extreme_scale_signs_and_rejects_exact_singularity() {
     for sign in [-1., 1.] {
         let transform = AffineTransform3::try_new(

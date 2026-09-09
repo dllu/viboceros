@@ -114,6 +114,13 @@ heap-allocated flattened array. Composition and direction mapping share one
 checked matrix-product helper. Row/column-basis tests protect matrix layout,
 and invalid-coefficient tests cover all nine matrix entries.
 
+The maximum-linear-scale bound used for B-rep tolerance propagation rounds
+nonnegative normalization, norm sums, products, and square root outward.
+Round-to-nearest row sums could otherwise erase a small positive entry and
+underestimate the true stretch. Scaled coordinate permutations (including
+diagonal maps) retain the exact maximum absolute coefficient. A symmetric
+matrix with known norm `1 + 2^-53` checks that the result rounds upward, not to 1.
+
 ## Line interpolation and extrapolation
 
 Line evaluation fuses coordinate scaling and translation, retaining finite
