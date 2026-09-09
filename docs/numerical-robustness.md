@@ -120,6 +120,12 @@ Round-to-nearest row sums could otherwise erase a small positive entry and
 underestimate the true stretch. Scaled coordinate permutations (including
 diagonal maps) retain the exact maximum absolute coefficient. A symmetric
 matrix with known norm `1 + 2^-53` checks that the result rounds upward, not to 1.
+The final B-rep component-tolerance multiplication also rounds outward. An
+integer-significand comparison detects downward rounding even below the
+subnormal quantum, where an FMA residual could itself round to zero. Exact
+products are retained, including identity scaling and the largest finite result.
+Tests cover subnormal underflow and 10,000 mantissa pairs at three binary scales
+against independent FMA residuals in their representable range.
 
 ## Line interpolation and extrapolation
 
