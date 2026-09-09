@@ -5,6 +5,7 @@ mod geometry;
 mod groups;
 mod history;
 mod object_deletion;
+mod object_geometry;
 mod object_layer;
 mod object_lookup;
 mod object_order;
@@ -1206,36 +1207,10 @@ impl Document {
         ids: impl IntoIterator<Item = ObjectId>,
         transform: AffineTransform3,
     ) -> Result<usize, DocumentError> {
-        let staged = self
-            .stage_transformed_objects(ids, transform)?
-            .into_iter()
-            .filter(|(_, before, after)| before != after)
-            .collect::<Vec<_>>();
-        if staged.is_empty() {
-            return Ok(0);
-        }
-        let transformed_count = staged.len();
-
-        let owns_transaction = self.history.active.is_none();
-        if owns_transaction {
-            self.begin_transaction("Transform objects")?;
-        }
-        for (index, before, after) in staged {
-            let id = before.id;
-            self.objects[index] = after.clone();
-            self.record_edit(
-                "Transform object",
-                Edit::ObjectChanged {
-                    id,
-                    selected: self.is_selected(id),
-                    states: Box::new([before, after]),
-                },
-            );
-        }
-        if owns_transaction {
-            self.commit_transaction()?;
-        }
-        Ok(transformed_count)
+        let staged = self.stage_object_geometries(ids, |geometry| {
+            geometry.transformed(transform, self.tolerance)
+        })?;
+        self.commit_object_geometries(staged, "Transform objects", "Transform object")
     }
 
     /// Atomically replaces geometry while retaining object identity,
@@ -1248,43 +1223,16 @@ impl Document {
         let indices = self.resolve_object_indices(replacements.keys().copied())?;
 
         let mut staged = Vec::with_capacity(replacements.len());
-        for index in indices {
-            let object = &self.objects[index];
-            let geometry = &replacements[&object.id];
+        for index in &indices {
+            let object = &self.objects[*index];
             self.ensure_object_editable(object)?;
-            if &object.geometry == geometry {
-                continue;
-            }
-            let before = object.clone();
-            let mut after = before.clone();
-            after.geometry = geometry.clone();
-            staged.push((index, before, after));
         }
-        if staged.is_empty() {
-            return Ok(0);
+        let mut replacements = replacements;
+        for index in indices {
+            let geometry = replacements.remove(&self.objects[index].id).unwrap();
+            staged.push((index, geometry));
         }
-
-        let replacement_count = staged.len();
-        let owns_transaction = self.history.active.is_none();
-        if owns_transaction {
-            self.begin_transaction("Replace object geometry")?;
-        }
-        for (index, before, after) in staged {
-            let id = before.id;
-            self.objects[index] = after.clone();
-            self.record_edit(
-                "Replace object geometry",
-                Edit::ObjectChanged {
-                    id,
-                    selected: self.is_selected(id),
-                    states: Box::new([before, after]),
-                },
-            );
-        }
-        if owns_transaction {
-            self.commit_transaction()?;
-        }
-        Ok(replacement_count)
+        self.commit_object_geometries(staged, "Replace object geometry", "Replace object geometry")
     }
 
     pub fn copy_objects_transformed(
@@ -1465,13 +1413,9 @@ impl Document {
         ids: impl IntoIterator<Item = ObjectId>,
         morph: &(impl PointMorph + ?Sized),
     ) -> Result<usize, DocumentError> {
-        let indices = self.resolve_object_indices(ids)?;
-        let replacements = indices
-            .into_iter()
-            .map(|index| &self.objects[index])
-            .map(|object| Ok((object.id, object.geometry.morphed(morph, self.tolerance)?)))
-            .collect::<Result<Vec<_>, DocumentError>>()?;
-        self.replace_object_geometries(replacements)
+        let staged =
+            self.stage_object_geometries(ids, |geometry| geometry.morphed(morph, self.tolerance))?;
+        self.commit_object_geometries(staged, "Replace object geometry", "Replace object geometry")
     }
 
     fn copy_staged_object_sets(
@@ -1832,23 +1776,6 @@ impl Document {
             }
         }
         Ok(ids)
-    }
-
-    fn stage_transformed_objects(
-        &self,
-        ids: impl IntoIterator<Item = ObjectId>,
-        transform: AffineTransform3,
-    ) -> Result<Vec<(usize, Object, Object)>, DocumentError> {
-        let indices = self.resolve_object_indices(ids)?;
-        let mut staged = Vec::with_capacity(indices.len());
-        for index in indices {
-            let object = &self.objects[index];
-            self.ensure_object_editable(object)?;
-            let mut transformed = object.clone();
-            transformed.geometry = object.geometry.transformed(transform, self.tolerance)?;
-            staged.push((index, object.clone(), transformed));
-        }
-        Ok(staged)
     }
 
     fn record_layer_change(&mut self, label: &'static str, index: usize, before: Layer) {

@@ -31,6 +31,16 @@ overlapping groups, selection, redo history, and a caller-owned transaction
 with an earlier pending edit. Both standalone and caller-transaction cases
 must remain unchanged.
 
+The private `object_geometry` module shares geometry-only staging and commit
+between in-place transforms, morphs, and replacements. All requested objects
+are checked for editability before invoking a transform or morph. Staging
+holds only new geometry; unchanged geometry is discarded before opening a
+transaction. Commit moves the old object into history and clones the new
+geometry once for the independent live and redo states, avoiding temporary
+clones of the old mesh or B-rep. Morphs reuse the resolved indices rather than
+looking up the same source set again through the replacement API. Object
+identity, attributes, isolation, memberships, and selection are retained.
+
 A native debug-build diagnostic on 20,000 ungrouped points measured transform
 at about 1.14 s before these changes and 108 ms afterward; copy improved from
 4.39 s to 252 ms. The diagnostic checks every resulting point and output count.
