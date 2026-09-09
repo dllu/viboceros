@@ -114,6 +114,15 @@ member-index validation is shared with ordinary edits and history replay; only
 object resolution differs. Group-table searches and per-object history records
 remain, so this does not remove every large-group scaling cost.
 
+Automatic naming uses an ephemeral allocator shared across a copy operation's
+instances. It captures live names once, lazily on the first required definition,
+and advances through unused `GroupNN` candidates without restarting the search.
+The allocator is not persistent document state and is discarded after the copy;
+unrelated group edits cannot leave a stale cache. Tests compare 128 successive
+allocations against an independent first-unused-name search with numbering gaps,
+case variants, alternate zero padding, and unnamed groups. Individual group
+insertion still validates name uniqueness through the normal document API.
+
 Corruption tests check mismatched prior memberships, duplicate memberships,
 missing group definitions, and inconsistent reverse indexes, requiring complete
 state preservation on failure. Existing copy tests cover membership order across

@@ -1,5 +1,7 @@
 //! Ordered object memberships with a synchronized group-to-member index.
 use super::*;
+mod names;
+pub(super) use names::GroupNames;
 
 #[cfg(test)]
 mod tests;
@@ -264,18 +266,7 @@ impl Document {
     /// Returns the first unused live automatic-style group name, case-sensitive.
     /// Deleted-name reservation across document history is not modeled here.
     pub fn next_unused_group_name(&self) -> String {
-        for number in 1_u64..=u64::MAX {
-            let candidate = format!("Group{number:02}");
-            if self.group_by_name(&candidate).is_none() {
-                return candidate;
-            }
-        }
-        loop {
-            let candidate = format!("Group{}", GroupId::new());
-            if self.group_by_name(&candidate).is_none() {
-                return candidate;
-            }
-        }
+        GroupNames::default().next(self)
     }
 
     /// Recreates touched definitions on first use, walking sources in document
@@ -286,6 +277,7 @@ impl Document {
         &mut self,
         copies: &[(usize, usize)],
         assign_memberships: bool,
+        names: &mut GroupNames,
     ) -> Result<(), DocumentError> {
         debug_assert!(copies.windows(2).all(|pair| pair[0].0 < pair[1].0));
         let mut mapped = BTreeMap::new();
@@ -295,10 +287,8 @@ impl Document {
             let groups = self.objects[source_index].group_ids.clone();
             for group in &groups {
                 if !mapped.contains_key(group) {
-                    mapped.insert(
-                        *group,
-                        self.add_empty_group(Some(self.next_unused_group_name()))?,
-                    );
+                    let name = names.next(self);
+                    mapped.insert(*group, self.add_empty_group(Some(name))?);
                 }
             }
             // These are freshly inserted, ungrouped copies. Empty source

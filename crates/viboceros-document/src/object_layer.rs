@@ -106,7 +106,11 @@ impl Document {
             copied_indices.push((source_index, index));
             copied_ids.push(id);
         }
-        self.copy_group_memberships(&copied_indices, true)?;
+        self.copy_group_memberships(
+            &copied_indices,
+            true,
+            &mut super::groups::GroupNames::default(),
+        )?;
         if owns_transaction {
             self.commit_transaction()?;
         }

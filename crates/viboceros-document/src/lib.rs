@@ -1461,6 +1461,7 @@ impl Document {
         }
         let mut copied_ids = Vec::with_capacity(copy_count);
         let mut staged = staged.into_iter();
+        let mut group_names = groups::GroupNames::default();
         for _ in 0..instance_count {
             let mut copied_indices = Vec::new();
             for _ in sources {
@@ -1496,6 +1497,7 @@ impl Document {
                 self.copy_group_memberships(
                     &copied_indices,
                     group_policy == CopyGroupPolicy::Preserve,
+                    &mut group_names,
                 )?;
             }
         }
