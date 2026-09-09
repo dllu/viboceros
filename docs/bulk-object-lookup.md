@@ -17,7 +17,7 @@ before mutation; caller-specific ordering and group policies remain separate.
 
 Fresh ungrouped copies also skip empty membership transitions. Grouped copies
 still use the membership transition path, preserving ordered memberships and
-reverse group indexes. Grouped copies resolve destination indices once and use
+reverse group indexes. Grouped copies retain destination indices from insertion and use
 the same checked transition without repeated object searches. History replay
 still resolves individual object IDs; this is not a global object index.
 
@@ -104,8 +104,10 @@ Failure tests exercise missing definitions, duplicate memberships, and missing
 reverse membership entries across these group-preserving copy paths, including
 caller transactions with earlier edits and redo history.
 
-Copy membership assignment builds a temporary destination-ID-to-index map for
-copies with nonempty memberships. New group definitions still follow source
+Copy membership assignment receives validated source/destination index pairs
+directly from affine/morph and layer-copy insertion. It does not scan the
+growing object table or resolve destination IDs for each array instance.
+New group definitions still follow source
 table order and each source's ordered memberships. Creating those definitions
 does not reorder objects, so the indices remain valid. Group-list and reverse
 member-index validation is shared with ordinary edits and history replay; only
@@ -115,7 +117,9 @@ remain, so this does not remove every large-group scaling cost.
 Corruption tests check mismatched prior memberships, duplicate memberships,
 missing group definitions, and inconsistent reverse indexes, requiring complete
 state preservation on failure. Existing copy tests cover membership order across
-copy modes and undo/redo. The debug diagnostic copying 20,000 points in one group
+copy modes and undo/redo. Sparse-array coverage uses reversed and duplicate
+requests among unrelated objects and checks independent group definitions and
+exact history replay across three instances. The debug diagnostic copying 20,000 points in one group
 improved from 6.57 s to 385 ms and checks every copied point and both membership
 directions. As above, these are not Rhino or release-build timings.
 

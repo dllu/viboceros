@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use super::history::Edit;
 use super::{Document, DocumentError, LayerId, Object, ObjectId, ObjectIsolation};
 
@@ -82,10 +80,9 @@ impl Document {
             self.begin_transaction("Copy objects to layer")?;
         }
         let mut copied_ids = Vec::with_capacity(staged.len());
-        let mut copied_by_original = BTreeMap::new();
+        let mut copied_indices = Vec::with_capacity(staged.len());
         for source_index in staged {
             let original = &self.objects[source_index];
-            let original_id = original.id;
             let id = ObjectId::new();
             let index = self.objects.len();
             let mut attributes = original.attributes.clone();
@@ -106,10 +103,10 @@ impl Document {
                     selected: false,
                 },
             );
-            copied_by_original.insert(original_id, id);
+            copied_indices.push((source_index, index));
             copied_ids.push(id);
         }
-        self.copy_group_memberships(&copied_by_original, true)?;
+        self.copy_group_memberships(&copied_indices, true)?;
         if owns_transaction {
             self.commit_transaction()?;
         }

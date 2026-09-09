@@ -32,6 +32,66 @@ mod tests {
     use super::*;
 
     #[test]
+    fn sparse_array_sources_keep_independent_group_instances_and_table_order() {
+        let mut document = Document::default();
+        let ids = (0..32)
+            .map(|x| {
+                document
+                    .add_geometry(Geometry::Point(Point3::try_new(x as f64, 0., 0.).unwrap()))
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        let source_indices = [3, 8, 19];
+        document.add_group(None, [ids[3], ids[19]]).unwrap();
+        document.add_group(None, [ids[19]]).unwrap();
+        let original_objects = document.objects.clone();
+        let original_groups = document.groups.clone();
+        let copies = document
+            .copy_objects_with_transforms(
+                [ids[19], ids[8], ids[3], ids[19]],
+                &[AffineTransform3::identity(); 3],
+            )
+            .unwrap();
+        assert_eq!(copies.len(), 9);
+        let mut instance_groups = BTreeSet::new();
+        for chunk in copies.chunks_exact(3) {
+            for (&copy, source) in chunk.iter().zip(source_indices) {
+                assert_eq!(
+                    document.object(copy).unwrap().geometry,
+                    original_objects[source].geometry
+                );
+            }
+            let first = document.object(chunk[0]).unwrap();
+            let middle = document.object(chunk[1]).unwrap();
+            let last = document.object(chunk[2]).unwrap();
+            assert_eq!(first.group_ids.len(), 1);
+            assert!(middle.group_ids.is_empty());
+            assert_eq!(last.group_ids.len(), 2);
+            assert_eq!(first.group_ids[0], last.group_ids[0]);
+            for &group in &last.group_ids {
+                assert!(instance_groups.insert(group));
+            }
+            assert_eq!(
+                document.group(first.group_ids[0]).unwrap().members,
+                BTreeSet::from([chunk[0], chunk[2]])
+            );
+            assert_eq!(
+                document.group(last.group_ids[1]).unwrap().members,
+                BTreeSet::from([chunk[2]])
+            );
+        }
+        assert_eq!(&document.objects[..32], original_objects);
+        let after_objects = document.objects.clone();
+        let after_groups = document.groups.clone();
+        document.undo().unwrap();
+        assert_eq!(document.objects, original_objects);
+        assert_eq!(document.groups, original_groups);
+        document.redo().unwrap();
+        assert_eq!(document.objects, after_objects);
+        assert_eq!(document.groups, after_groups);
+    }
+
+    #[test]
     fn copies_preflight_late_membership_corruption() {
         for corruption in 0..3 {
             for active in [false, true] {

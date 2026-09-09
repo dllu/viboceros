@@ -1462,13 +1462,12 @@ impl Document {
         let mut copied_ids = Vec::with_capacity(copy_count);
         let mut staged = staged.into_iter();
         for _ in 0..instance_count {
-            let mut copied_by_original = BTreeMap::new();
+            let mut copied_indices = Vec::new();
             for _ in sources {
                 let (source_index, geometry) = staged
                     .next()
                     .expect("each transform has one staged geometry per source");
                 let source = &self.objects[source_index];
-                let original_id = source.id;
                 let attributes = source.attributes.clone();
                 let id = ObjectId::new();
                 let index = self.objects.len();
@@ -1489,13 +1488,13 @@ impl Document {
                     },
                 );
                 if group_policy != CopyGroupPolicy::Omit {
-                    copied_by_original.insert(original_id, id);
+                    copied_indices.push((source_index, index));
                 }
                 copied_ids.push(id);
             }
             if group_policy != CopyGroupPolicy::Omit {
                 self.copy_group_memberships(
-                    &copied_by_original,
+                    &copied_indices,
                     group_policy == CopyGroupPolicy::Preserve,
                 )?;
             }

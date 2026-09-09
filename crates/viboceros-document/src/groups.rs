@@ -279,38 +279,20 @@ impl Document {
     }
 
     /// Recreates touched definitions on first use, walking sources in document
-    /// order and memberships in each source's order. Call in the copy transaction.
+    /// order and memberships in each source's order. Call in the copy transaction
+    /// with validated source/destination indices in source-table order. Destinations
+    /// must be freshly inserted, ungrouped objects; neither table is reordered.
     pub(super) fn copy_group_memberships(
         &mut self,
-        copies: &BTreeMap<ObjectId, ObjectId>,
+        copies: &[(usize, usize)],
         assign_memberships: bool,
     ) -> Result<(), DocumentError> {
-        let memberships = self
-            .objects
-            .iter()
-            .filter_map(|source| {
-                copies
-                    .get(&source.id)
-                    .map(|copy| (*copy, source.group_ids.clone()))
-            })
-            .collect::<Vec<_>>();
+        debug_assert!(copies.windows(2).all(|pair| pair[0].0 < pair[1].0));
         let mut mapped = BTreeMap::new();
-        // Copies only append to the object table; group creation does not
-        // invalidate these temporary indices. Avoid two scans per membership.
-        let copy_indices = if assign_memberships {
-            self.resolve_object_indices(
-                memberships
-                    .iter()
-                    .filter(|(_, groups)| !groups.is_empty())
-                    .map(|(id, _)| *id),
-            )?
-            .into_iter()
-            .map(|index| (self.objects[index].id, index))
-            .collect::<BTreeMap<_, _>>()
-        } else {
-            BTreeMap::new()
-        };
-        for (copy, groups) in memberships {
+        for &(source_index, copy_index) in copies {
+            debug_assert!(source_index < copy_index);
+            debug_assert!(self.objects[copy_index].group_ids.is_empty());
+            let groups = self.objects[source_index].group_ids.clone();
             for group in &groups {
                 if !mapped.contains_key(group) {
                     mapped.insert(
@@ -323,7 +305,7 @@ impl Document {
             // memberships need no transition or per-copy object-table search.
             if assign_memberships && !groups.is_empty() {
                 self.set_object_group_memberships_at(
-                    copy_indices[&copy],
+                    copy_index,
                     groups.iter().map(|id| mapped[id]),
                 )?;
             }
