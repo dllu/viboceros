@@ -6,46 +6,9 @@ The dependency direction runs from mathematical primitives through document
 state and commands to the user interface. Geometry does not depend on the UI,
 file formats, or command parsing.
 
-Vector cross products use compensated two-product determinants. Extreme-range
-recovery is component-local: ordinary components are retained instead of being
-recomputed from globally normalized vectors. Regression tests
-cover cancellation, exact parallelism, disparate magnitudes, axis permutations,
-and genuine result overflow. Each determinant falls back to the exact dot-product
-accumulator for overflow recovery or when product bits could be lost below the
-subnormal range. Binary-scaled integer determinants check representable
-differences of both overflowing and near-underflow normal products.
-Direct vector dot products compensate both multiplication and summation
-rounding; tests cover exact orthogonality, near-cancelling integer products,
-and small terms between large opposite terms. Dot products use an allocation-free
-fixed-size integer accumulator when individual products overflow or could lose
-bits below the subnormal quantum (even when the rounded products are normal),
-or when the running sum overflows. The accumulator spans the full binary64
-product range and rounds only the final sum (nearest, ties to even);
-tests compare it with hardware multiplication and fused multiply-add across
-10,000 deterministic full-range inputs, plus cancellation and rounding boundaries.
-
-Line interpolation/extrapolation fuses coordinate scaling and translation so
-a representable extrapolated point is not rejected solely because its offset
-overflows. Exact-power-of-two regression cases cover both signs, all coordinate
-axes, reversed endpoints, nonfinite parameters, and true result overflow.
-This addresses intermediate arithmetic range, not a relaxation of finite-point
-or nondegenerate-line validation.
-Within the segment, interpolation anchors at the nearer endpoint so a rounded
-endpoint difference cannot spuriously move a near-end sample onto the endpoint.
-An exact binary regression checks the result and its reversed-line equivalent.
-Line closest-point projection also falls back to a six-product exact sum when
-the target displacement or dot product overflows. Perpendicular extreme-range
-coordinates no longer prevent a valid interior result; an unbounded signed
-projection clamps to the appropriate finite segment endpoint. Independent
-integer sums test the extended accumulator alongside axis/reversal cases.
-Plane signed distances share this point-difference projection, but reject a
-truly unrepresentable result instead of clamping it. Tests distinguish finite
-normal distance from overflowing tangential displacement, including oblique
-cancellation, opposite normal signs, and reversed point/origin roles.
-The projection fast path checks displacement subtraction residuals before using
-the compensated dot product. If relevant coordinate bits were rounded away, it
-instead projects the original coordinates through the exact accumulator; large
-cancelling terms therefore cannot erase a small plane-origin contribution.
+The kernel combines validated finite primitives with compensated arithmetic and
+exact fallbacks for difficult binary64 inputs. See [numerical robustness](numerical-robustness.md)
+for implementation boundaries, regression evidence, and focused test commands.
 
 | Module | Responsibility |
 | --- | --- |
