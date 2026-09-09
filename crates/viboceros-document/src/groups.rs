@@ -28,11 +28,22 @@ impl Document {
         id: ObjectId,
         groups: impl IntoIterator<Item = GroupId>,
     ) -> Result<bool, DocumentError> {
-        let before = self
-            .object(id)
-            .ok_or(DocumentError::ObjectNotFound(id))?
-            .group_ids
-            .clone();
+        let index = self
+            .objects
+            .iter()
+            .position(|object| object.id == id)
+            .ok_or(DocumentError::ObjectNotFound(id))?;
+        self.set_object_group_memberships_at(index, groups)
+    }
+
+    // The caller owns a validated index and must not reorder/remove objects.
+    fn set_object_group_memberships_at(
+        &mut self,
+        index: usize,
+        groups: impl IntoIterator<Item = GroupId>,
+    ) -> Result<bool, DocumentError> {
+        let id = self.objects[index].id;
+        let before = self.objects[index].group_ids.clone();
         let after = groups.into_iter().collect::<Vec<_>>();
         let mut unique = BTreeSet::new();
         for group in &after {
@@ -46,7 +57,7 @@ impl Document {
         if before == after {
             return Ok(false);
         }
-        apply_memberships(self, id, &before, &after)?;
+        apply_memberships_at(self, index, &before, &after)?;
         self.record_edit(
             "Set object groups",
             Edit::ObjectGroupsChanged { id, before, after },
@@ -202,6 +213,21 @@ impl Document {
             })
             .collect::<Vec<_>>();
         let mut mapped = BTreeMap::new();
+        // Copies only append to the object table; group creation does not
+        // invalidate these temporary indices. Avoid two scans per membership.
+        let copy_indices = if assign_memberships {
+            self.resolve_object_indices(
+                memberships
+                    .iter()
+                    .filter(|(_, groups)| !groups.is_empty())
+                    .map(|(id, _)| *id),
+            )?
+            .into_iter()
+            .map(|index| (self.objects[index].id, index))
+            .collect::<BTreeMap<_, _>>()
+        } else {
+            BTreeMap::new()
+        };
         for (copy, groups) in memberships {
             for group in &groups {
                 if !mapped.contains_key(group) {
@@ -214,7 +240,10 @@ impl Document {
             // These are freshly inserted, ungrouped copies. Empty source
             // memberships need no transition or per-copy object-table search.
             if assign_memberships && !groups.is_empty() {
-                self.set_object_group_memberships(copy, groups.iter().map(|id| mapped[id]))?;
+                self.set_object_group_memberships_at(
+                    copy_indices[&copy],
+                    groups.iter().map(|id| mapped[id]),
+                )?;
             }
         }
         Ok(())
@@ -257,6 +286,17 @@ pub(super) fn apply_memberships(
             .ok_or(DocumentError::HistoryInvariant(
                 "membership object is missing",
             ))?;
+    apply_memberships_at(document, object_index, before, after)
+}
+
+/// Shared checked transition, with object resolution supplied by the caller.
+fn apply_memberships_at(
+    document: &mut Document,
+    object_index: usize,
+    before: &[GroupId],
+    after: &[GroupId],
+) -> Result<(), DocumentError> {
+    let id = document.objects[object_index].id;
     if document.objects[object_index].group_ids != before {
         return Err(DocumentError::HistoryInvariant(
             "ordered object memberships do not match",

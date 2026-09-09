@@ -17,8 +17,9 @@ before mutation; caller-specific ordering and group policies remain separate.
 
 Fresh ungrouped copies also skip empty membership transitions. Grouped copies
 still use the membership transition path, preserving ordered memberships and
-reverse group indexes. Large grouped copies and history replay can still incur
-repeated object lookups; this is not a global object-index implementation.
+reverse group indexes. Grouped copies resolve destination indices once and use
+the same checked transition without repeated object searches. History replay
+still resolves individual object IDs; this is not a global object index.
 
 Tests cover all subsets of eight scattered objects, reversed and duplicate IDs,
 missing-ID precedence, unchanged state on failures across all seven consumers,
@@ -53,4 +54,25 @@ timings exclude GUI work and are not comparisons against Rhino.
 
 ```sh
 cargo test -p viboceros-document benchmark_large_layer_transfers -- --ignored --nocapture
+```
+
+## Grouped copies
+
+Copy membership assignment builds a temporary destination-ID-to-index map for
+copies with nonempty memberships. New group definitions still follow source
+table order and each source's ordered memberships. Creating those definitions
+does not reorder objects, so the indices remain valid. Group-list and reverse
+member-index validation is shared with ordinary edits and history replay; only
+object resolution differs. Group-table searches and per-object history records
+remain, so this does not remove every large-group scaling cost.
+
+Corruption tests check mismatched prior memberships, duplicate memberships,
+missing group definitions, and inconsistent reverse indexes, requiring complete
+state preservation on failure. Existing copy tests cover membership order across
+copy modes and undo/redo. The debug diagnostic copying 20,000 points in one group
+improved from 6.57 s to 385 ms and checks every copied point and both membership
+directions. As above, these are not Rhino or release-build timings.
+
+```sh
+cargo test -p viboceros-document benchmark_large_group_copy -- --ignored --nocapture
 ```

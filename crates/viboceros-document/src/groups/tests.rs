@@ -1,4 +1,39 @@
 use super::*;
+
+#[test]
+#[ignore = "manual grouped copy timing"]
+fn benchmark_large_group_copy() {
+    let mut document = Document::default();
+    document.begin_transaction("fixture").unwrap();
+    let ids = (0..20_000)
+        .map(|i| {
+            document
+                .add_geometry(Geometry::Point(Point3::try_new(i as f64, 0., 0.).unwrap()))
+                .unwrap()
+        })
+        .collect::<Vec<_>>();
+    let group = document.add_empty_group(None).unwrap();
+    for object in &mut document.objects {
+        object.group_ids.push(group);
+    }
+    document.groups[0].members.extend(ids.iter().copied());
+    document.commit_transaction().unwrap();
+    let start = std::time::Instant::now();
+    let copies = document
+        .copy_objects_transformed(ids, AffineTransform3::identity())
+        .unwrap();
+    eprintln!("20k grouped points, copy: {:?}", start.elapsed());
+    assert_eq!(copies.len(), 20_000);
+    let copied_group = document.groups[1].id;
+    assert_eq!(document.groups[1].members, copies.iter().copied().collect());
+    for (i, object) in document.objects.iter().skip(20_000).enumerate() {
+        assert_eq!(object.group_ids, [copied_group]);
+        assert_eq!(
+            object.geometry,
+            Geometry::Point(Point3::try_new(i as f64, 0., 0.).unwrap())
+        );
+    }
+}
 use viboceros_geometry::{Point3, Vector3};
 
 fn geometry(x: f64) -> Geometry {
@@ -53,6 +88,45 @@ fn state(document: &Document) -> (Vec<Object>, Vec<Group>) {
         document.objects().cloned().collect(),
         document.groups().cloned().collect(),
     )
+}
+
+#[test]
+fn indexed_membership_transition_rejects_corruption_without_partial_changes() {
+    for failure in 0..4 {
+        let (mut document, ids, groups) = fixture();
+        let index = 1;
+        let mut before = document.objects[index].group_ids.clone();
+        let mut after = vec![groups[0], groups[2]];
+        let expected = match failure {
+            0 => {
+                before.reverse();
+                "ordered object memberships do not match"
+            }
+            1 => {
+                after.push(groups[0]);
+                "duplicate ordered membership"
+            }
+            2 => {
+                after.push(GroupId::new());
+                "membership group is missing"
+            }
+            _ => {
+                document.groups[2].members.remove(&ids[index]);
+                "group member index does not match"
+            }
+        };
+        let original = format!("{document:?}");
+        assert_eq!(
+            apply_memberships_at(&mut document, index, &before, &after),
+            Err(DocumentError::HistoryInvariant(expected))
+        );
+        assert_eq!(format!("{document:?}"), original);
+        assert_eq!(
+            apply_memberships(&mut document, ids[index], &before, &after),
+            Err(DocumentError::HistoryInvariant(expected))
+        );
+        assert_eq!(format!("{document:?}"), original);
+    }
 }
 
 #[test]
