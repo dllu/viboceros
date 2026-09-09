@@ -13,12 +13,35 @@ pub struct PointMatrixFixture {
     pub centered: bool,
     pub count: [usize; 3],
     pub height: Option<f64>,
+    pub height_point: Option<[f64; 3]>,
 }
 
 pub(super) fn run(
     f: &PointMatrixFixture,
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
+    run_mode(f, tolerance, false)
+}
+
+pub(super) fn run_diagonal(
+    f: &PointMatrixFixture,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    run_mode(f, tolerance, true)
+}
+
+fn run_mode(
+    f: &PointMatrixFixture,
+    tolerance: Tolerance,
+    diagonal: bool,
+) -> Result<(Value, u64), ProbeError> {
+    if (diagonal && (f.three_point || f.centered || f.height.is_some()))
+        || (!diagonal && f.height_point.is_some())
+    {
+        return Err(ProbeError::FixtureInvariant(
+            "invalid PointGrid mode or height input",
+        ));
+    }
     if (f.centered && f.three_point) || f.points.len() != if f.three_point { 3 } else { 2 } {
         return Err(ProbeError::FixtureInvariant(
             "incorrect PointGrid base point count",
@@ -42,11 +65,17 @@ pub(super) fn run(
     if f.centered {
         command.push_str(" Center");
     }
+    if diagonal {
+        command.push_str(" Diagonal");
+    }
     for p in &f.points {
         command.push_str(&format!(" {},{},{}", p[0], p[1], p[2]));
     }
     if let Some(height) = f.height {
         command.push_str(&format!(" {height}"));
+    }
+    if let Some(p) = f.height_point {
+        command.push_str(&format!(" {},{},{}", p[0], p[1], p[2]));
     }
     let mut document = Document::new(tolerance);
     CommandRegistry::with_builtins().execute_in_context(&mut document, &command, context)?;
@@ -58,6 +87,12 @@ pub(super) fn run(
     else {
         return Err(ProbeError::FixtureInvariant("expected a point cloud"));
     };
+    if diagonal {
+        return Ok((
+            json!({"points": cloud.points().iter().map(|p| p.to_array()).collect::<Vec<_>>()}),
+            0,
+        ));
+    }
     let frame = if f.three_point {
         Frame3::try_from_points(
             Point3::try_from(f.points[0])?,
@@ -97,6 +132,33 @@ pub(super) fn run(
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn diagonal_grid_fixture_matches_rhino_in_source_order() {
+        let request: crate::ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/point_matrix_diagonal.json"
+        ))
+        .unwrap();
+        let response = crate::run_request(&request).unwrap();
+        let reference: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/point_matrix_diagonal_prompt.json"
+        ))
+        .unwrap();
+        assert_eq!(response.results.len(), 4);
+        for result in response.results {
+            let expected = reference["results"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|r| r["id"] == result.id)
+                .unwrap();
+            let actual: Vec<[f64; 3]> =
+                serde_json::from_value(result.value["points"].clone()).unwrap();
+            let expected: Vec<[f64; 3]> =
+                serde_json::from_value(expected["value"]["points"].clone()).unwrap();
+            assert_eq!(actual, expected, "{}", result.id);
+        }
+    }
+
     #[test]
     fn point_grid_command_fixture_runs_all_cases() {
         check(

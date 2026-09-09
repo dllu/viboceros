@@ -7,7 +7,7 @@ import unittest
 class PointGridDiagonalMeasurements(unittest.TestCase):
     def test_recorded_diagonal_grids_match_directed_rectangular_lattices(self):
         root = Path(__file__).parent
-        request = json.loads((root / "fixtures/point_matrix_diagonal_prompt_rhino_only.json").read_text())
+        request = json.loads((root / "fixtures/point_matrix_diagonal.json").read_text())
         response = json.loads((root / "observations/point_matrix_diagonal_prompt.json").read_text())
         axes = {
             "diagonal-positive": ([10, 11, 12], [20, 25], [3, 5, 7]),

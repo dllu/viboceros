@@ -1226,6 +1226,11 @@ impl VibocerosApp {
             let Ok(options) = viboceros_command::PointGridOptions::parse(&arguments) else {
                 return false;
             };
+            // Typed Diagonal construction is available; do not route it through
+            // the ordinary grid's different height/default-height prompts.
+            if options.diagonal() {
+                return false;
+            }
             InteractiveCommand::PointGrid {
                 base: None,
                 opposite: None,

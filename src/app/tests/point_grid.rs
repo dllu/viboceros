@@ -38,6 +38,21 @@ fn picked_grid_matches_typed_command_and_is_one_undo_step() {
 }
 
 #[test]
+fn typed_diagonal_does_not_enter_the_ordinary_height_picker() {
+    let mut app = test_app();
+    assert!(!app.try_start_interactive_command("PointGrid Diagonal XCount=3"));
+    assert!(app.active_command.is_none());
+    enter(
+        &mut app,
+        "PointGrid Diagonal 10,20,3 8,24,-1 XCount=3 YCount=2 ZCount=2",
+    );
+    assert!(app.active_command.is_none());
+    assert_eq!(cloud(&app.document).len(), 12);
+    assert_eq!(cloud(&app.document)[0], point(10.0, 20.0, 3.0));
+    assert_eq!(cloud(&app.document)[11], point(8.0, 24.0, -1.0));
+}
+
+#[test]
 fn centered_grid_prompts_and_default_height_match_the_typed_command() {
     let mut app = test_app();
     enter(&mut app, "PointGrid Center XCount=3 YCount=3 ZCount=2");

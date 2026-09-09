@@ -2,7 +2,7 @@
 
 use super::*;
 
-const USAGE: &str = "PointGrid [3Point|Center] first-point second-point [third-base-point] [height] [XCount=n YCount=n ZCount=n]";
+const USAGE: &str = "PointGrid [3Point|Center] first-point second-point [third-base-point] [height] [XCount=n YCount=n ZCount=n] | PointGrid Diagonal first-corner opposite-corner [height-point] [XCount=n YCount=n ZCount=n]";
 const MAX_POINTS: usize = 1_000_000;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
@@ -11,6 +11,7 @@ enum BaseMode {
     Corners,
     ThreePoint,
     Center,
+    Diagonal,
 }
 
 /// Grid base mode and requested counts; omitted counts retain remembered settings.
@@ -31,6 +32,11 @@ impl PointGridOptions {
         matches!(self.base_mode, BaseMode::Center)
     }
 
+    /// Whether ordered diagonal corners determine the grid's signed extents.
+    pub const fn diagonal(self) -> bool {
+        matches!(self.base_mode, BaseMode::Diagonal)
+    }
+
     /// Parses an options-only interactive command prefix without changing settings.
     pub fn parse(arguments: &[&str]) -> Result<Self, CommandError> {
         let (options, coordinates) = Self::split(arguments)?;
@@ -47,17 +53,18 @@ impl PointGridOptions {
         let mut coordinates = Vec::new();
         let mut cursor = 0;
         while cursor < arguments.len() {
-            if option_name_eq(arguments[cursor], "3Point")
-                || option_name_eq(arguments[cursor], "Center")
+            if let Some((_, mode)) = [
+                ("3Point", BaseMode::ThreePoint),
+                ("Center", BaseMode::Center),
+                ("Diagonal", BaseMode::Diagonal),
+            ]
+            .into_iter()
+            .find(|(name, _)| option_name_eq(arguments[cursor], name))
             {
                 if options.base_mode != BaseMode::Corners {
                     return Err(CommandError::Usage(USAGE));
                 }
-                options.base_mode = if option_name_eq(arguments[cursor], "3Point") {
-                    BaseMode::ThreePoint
-                } else {
-                    BaseMode::Center
-                };
+                options.base_mode = mode;
                 cursor += 1;
             } else if arguments[cursor].contains('=')
                 || ["XCount", "YCount", "ZCount"]
@@ -109,6 +116,7 @@ impl std::fmt::Display for PointGridOptions {
             BaseMode::Corners => {}
             BaseMode::ThreePoint => write!(f, " 3Point")?,
             BaseMode::Center => write!(f, " Center")?,
+            BaseMode::Diagonal => write!(f, " Diagonal")?,
         }
         for (name, count) in ["XCount", "YCount", "ZCount"].into_iter().zip(self.counts) {
             if let Some(count) = count {
@@ -172,10 +180,22 @@ impl Command for PointMatrixCommand {
             .into());
         }
         let remaining = &coordinates[consumed..];
-        let height = match remaining {
-            [] => y.abs() * if options.centered() { 2.0 } else { 1.0 },
-            [value] => parse_finite_real(value)?,
-            _ => return Err(CommandError::Usage(USAGE)),
+        let height = if options.diagonal() {
+            let z = frame.coordinates_of(opposite)?[2];
+            if z != 0.0 {
+                require_consumed(remaining, 0, USAGE)?;
+                z
+            } else {
+                let (height_point, consumed) = parse_point(remaining)?;
+                require_consumed(remaining, consumed, USAGE)?;
+                frame.coordinates_of(height_point)?[2]
+            }
+        } else {
+            match remaining {
+                [] => y.abs() * if options.centered() { 2.0 } else { 1.0 },
+                [value] => parse_finite_real(value)?,
+                _ => return Err(CommandError::Usage(USAGE)),
+            }
         };
         if !height.is_finite() {
             return Err(GeometryError::NonFinite {
@@ -201,15 +221,19 @@ impl Command for PointMatrixCommand {
         } else {
             [y.min(0.0), y.max(0.0)]
         };
-        let intervals = [
-            x_interval,
-            if height > 0.0 {
-                [y_interval[1], y_interval[0]]
-            } else {
-                y_interval
-            },
-            [0.0, height],
-        ];
+        let intervals = if options.diagonal() {
+            [[0.0, x], [0.0, y], [0.0, height]]
+        } else {
+            [
+                x_interval,
+                if height > 0.0 {
+                    [y_interval[1], y_interval[0]]
+                } else {
+                    y_interval
+                },
+                [0.0, height],
+            ]
+        };
         let mut points = Vec::with_capacity(total);
         for k in 0..counts[2] {
             for j in 0..counts[1] {

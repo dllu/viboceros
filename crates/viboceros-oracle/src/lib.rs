@@ -271,6 +271,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: point_matrix::PointMatrixFixture,
     },
+    PointGridDiagonalPrompt {
+        id: String,
+        #[serde(flatten)]
+        fixture: point_matrix::PointMatrixFixture,
+    },
     SurfaceGrid {
         id: String,
         #[serde(flatten)]
@@ -1580,6 +1585,7 @@ impl Operation {
             | Self::Loft { id, .. }
             | Self::EdgeSurface { id, .. }
             | Self::PointGridCommand { id, .. }
+            | Self::PointGridDiagonalPrompt { id, .. }
             | Self::SurfaceGrid { id, .. }
             | Self::SurfaceCurvature { id, .. }
             | Self::CurvatureCommand { id, .. }
@@ -2001,6 +2007,9 @@ fn execute(
             edge_surface::run(fixture, iterations, tolerance)?
         }
         Operation::PointGridCommand { fixture, .. } => point_matrix::run(fixture, tolerance)?,
+        Operation::PointGridDiagonalPrompt { fixture, .. } => {
+            point_matrix::run_diagonal(fixture, tolerance)?
+        }
         Operation::SurfaceGrid { fixture, .. } => point_grid::run(fixture, iterations, tolerance)?,
         Operation::CurveSurfaceMorph { fixture, .. } => {
             curve_morph::run(fixture, iterations, tolerance)?

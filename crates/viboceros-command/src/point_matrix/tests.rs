@@ -1,6 +1,97 @@
 use super::*;
 
 #[test]
+fn diagonal_grid_preserves_all_signed_axis_directions() {
+    for x in [-3.0, 3.0] {
+        for y in [-4.0, 4.0] {
+            for z in [-2.0, 2.0] {
+                let mut document = Document::default();
+                let registry = CommandRegistry::with_builtins();
+                registry
+                    .execute(
+                        &mut document,
+                        &format!(
+                            "PointGrid Diagonal 10,20,30 {},{},{} XCount=3 YCount=3 ZCount=3",
+                            10.0 + x,
+                            20.0 + y,
+                            30.0 + z
+                        ),
+                    )
+                    .unwrap();
+                let expected: Vec<_> = [0.0, 0.5, 1.0]
+                    .into_iter()
+                    .flat_map(|k| {
+                        [0.0, 0.5, 1.0].into_iter().flat_map(move |j| {
+                            [0.0, 0.5, 1.0]
+                                .into_iter()
+                                .map(move |i| [10.0 + x * i, 20.0 + y * j, 30.0 + z * k])
+                        })
+                    })
+                    .collect();
+                assert_eq!(points(&document), expected);
+                registry.execute(&mut document, "Undo").unwrap();
+                assert_eq!(document.objects().len(), 0);
+                registry.execute(&mut document, "Redo").unwrap();
+                assert_eq!(points(&document), expected);
+            }
+        }
+    }
+}
+
+#[test]
+fn coplanar_diagonal_uses_only_the_height_points_normal_coordinate() {
+    let mut document = Document::default();
+    CommandRegistry::with_builtins()
+        .execute(
+            &mut document,
+            "PointGrid Diagonal 0,0,3 6,4,3 99,98,1 XCount=3 YCount=2 ZCount=2",
+        )
+        .unwrap();
+    assert_eq!(
+        points(&document),
+        vec![
+            [0.0, 0.0, 3.0],
+            [3.0, 0.0, 3.0],
+            [6.0, 0.0, 3.0],
+            [0.0, 4.0, 3.0],
+            [3.0, 4.0, 3.0],
+            [6.0, 4.0, 3.0],
+            [0.0, 0.0, 1.0],
+            [3.0, 0.0, 1.0],
+            [6.0, 0.0, 1.0],
+            [0.0, 4.0, 1.0],
+            [3.0, 4.0, 1.0],
+            [6.0, 4.0, 1.0]
+        ]
+    );
+}
+
+#[test]
+fn invalid_diagonal_height_and_mode_requests_preserve_history() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry.execute(&mut document, "Point 1,2,3").unwrap();
+    registry.execute(&mut document, "Undo").unwrap();
+    for command in [
+        "PointGrid Diagonal 0,0,0 6,4,0",
+        "PointGrid Diagonal 0,0,0 6,4,0 2",
+        "PointGrid Diagonal 0,0,0 6,4,0 99,98,0",
+        "PointGrid Diagonal 0,0,0 6,4,2 0,0,3",
+        "PointGrid Diagonal Center 0,0,0 6,4,2",
+        "PointGrid Diagonal 3Point 0,0,0 6,4,2",
+        "PointGrid Diagonal Diagonal 0,0,0 6,4,2",
+        "PointGrid Diagonal 0,0,0 0,4,2",
+    ] {
+        assert!(
+            registry.execute(&mut document, command).is_err(),
+            "{command}"
+        );
+        assert_eq!(document.objects().len(), 0);
+        assert_eq!(document.redo_label(), Some("Point"));
+    }
+}
+
+#[test]
 fn centered_grid_uses_full_width_for_default_height_and_ignores_corner_depth() {
     let mut document = Document::default();
     let registry = CommandRegistry::with_builtins();

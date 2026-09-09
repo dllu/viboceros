@@ -13,6 +13,8 @@ PointGrid 0,0,0 6,4,0 XCount=7 YCount=5 ZCount=1
 PointGrid 0,0,0 6,4,0 -8 XCount=7 YCount=5 ZCount=9
 PointGrid 3Point 0,0,0 6,0,2 3,4,5 2 XCount=3 YCount=2 ZCount=2
 PointGrid Center 10,20,3 12,24,3 XCount=3 YCount=3 ZCount=2
+PointGrid Diagonal 10,20,3 8,24,-1 XCount=3 YCount=2 ZCount=2
+PointGrid Diagonal 0,0,3 6,4,3 0,0,5 XCount=3 YCount=2 ZCount=2
 ```
 
 Counts describe points, not subdivisions. The initial defaults are 10, 10, and
@@ -71,17 +73,31 @@ calculation when all output points remain finite. An explicit finite height can
 therefore support such a wide base. An unrepresentable default height or output
 coordinate is still rejected before adding geometry.
 
+## Typed diagonal grids
+
+`PointGrid Diagonal first-corner opposite-corner [height-point]` uses all three
+CPlane components of the diagonal. Each axis runs from the first corner toward
+the second, preserving its sign; X varies fastest, then Y, then Z. When the
+computed normal displacement is exactly zero, an explicit height point is
+required, and only its normal component relative to the first corner is used.
+Otherwise the second corner supplies the height and extra height input is rejected.
+
+This mode currently requires a complete typed command. Interactive Diagonal
+picking, numeric-only height, and default height are not supported. The native
+exact-zero rule does not claim parity with Rhino's unmeasured near-coplanar prompt
+threshold. Diagonal cannot be combined with Center or 3Point.
+
 ## Point order and remaining limits
 
-Native point order is deterministic in the base frame: X increases fastest, then Y decreases for
+For non-diagonal modes, native point order is deterministic in the base frame: X increases fastest, then Y decreases for
 positive height (increases for negative height), then Z advances from the base
 to the requested height. The result is a point cloud, not a polygon mesh.
 Existing Explode and point-cloud picking operations apply.
 
-This implementation accepts two-corner, three-point, and center-based input.
-Rhino's Diagonal and Vertical workflows are not yet implemented.
-The [Diagonal investigation](../point-grid-diagonal.md) records prompt and point-order
-differences that must be resolved before adding that mode.
+This implementation accepts two-corner, three-point, center-based, and typed
+diagonal input. Rhino's Vertical workflow is not yet implemented.
+The [Diagonal investigation](../point-grid-diagonal.md) records measured behavior
+and the remaining prompt uncertainties.
 Count-option prompts observed in Rhino 8.32 use `XCount`,
 `YCount`, and `ZCount`, unlike the names in the
 [online help](https://docs.mcneel.com/rhino/8/help/en-us/commands/pointgrid.htm).
@@ -123,8 +139,15 @@ cover finite centered endpoints with an overflowing full span, failure atomicity
 and conflicting base modes. UI tests verify center/corner prompts and height
 picking after changing viewports.
 
+Four World XY diagonal cases (54 points) passed a live Rhino comparison with
+zero coordinate difference, including source order. Stored measurements replay
+as ordered numeric coordinates; native tests additionally cover all eight signed
+axis combinations, height-point projection, undo/redo, and rejected inputs.
+Arbitrary-CPlane Diagonal parity remains unverified.
+
 ```sh
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_command.json --timeout 300
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_three_point.json --timeout 300
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_center.json --timeout 300
+tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_diagonal.json --timeout 180
 ```
