@@ -1433,16 +1433,13 @@ impl Document {
             return Err(DocumentError::TooManyObjectCopies);
         }
 
-        let originals = sources
-            .iter()
-            .map(|index| self.objects[*index].id)
-            .collect::<BTreeSet<_>>();
-        let group_count = self
-            .groups
-            .iter()
-            .filter(|group| group.members.iter().any(|id| originals.contains(id)))
-            .count();
         let group_copy_count = if group_policy != CopyGroupPolicy::Omit {
+            self.validate_memberships_at_indices(sources)?;
+            let group_count = sources
+                .iter()
+                .flat_map(|index| self.objects[*index].group_ids.iter().copied())
+                .collect::<BTreeSet<_>>()
+                .len();
             group_count
                 .checked_mul(instance_count)
                 .ok_or(DocumentError::TooManyObjectCopies)?
@@ -1489,7 +1486,9 @@ impl Document {
                         selected: false,
                     },
                 );
-                copied_by_original.insert(original_id, id);
+                if group_policy != CopyGroupPolicy::Omit {
+                    copied_by_original.insert(original_id, id);
+                }
                 copied_ids.push(id);
             }
             if group_policy != CopyGroupPolicy::Omit {

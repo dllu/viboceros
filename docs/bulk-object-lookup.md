@@ -89,6 +89,15 @@ cargo test -p viboceros-document benchmark_large_layer_transfers -- --ignored --
 
 ## Grouped copies
 
+Affine arrays and morph copies validate source memberships before inserting
+objects or definitions when groups are preserved. This also applies to the
+definitions-only policy. Required group capacity is counted from unique source
+memberships rather than scanning every group's reverse member index. The omit
+policy does not inspect source groups or build a source-to-copy group map.
+Failure tests exercise missing definitions, duplicate memberships, and missing
+reverse membership entries across these group-preserving copy paths, including
+caller transactions with earlier edits and redo history.
+
 Copy membership assignment builds a temporary destination-ID-to-index map for
 copies with nonempty memberships. New group definitions still follow source
 table order and each source's ordered memberships. Creating those definitions

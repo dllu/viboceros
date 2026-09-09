@@ -32,10 +32,10 @@ mod tests {
     use super::*;
 
     #[test]
-    fn replacement_copies_preflight_late_membership_corruption() {
+    fn copies_preflight_late_membership_corruption() {
         for corruption in 0..3 {
             for active in [false, true] {
-                for ordered in [false, true] {
+                for operation in 0..5 {
                     let mut document = Document::default();
                     let geometry = Geometry::Point(Point3::try_new(1., 2., 3.).unwrap());
                     let ids = [0, 1].map(|_| document.add_geometry(geometry.clone()).unwrap());
@@ -55,10 +55,19 @@ mod tests {
                     }
                     let before = format!("{document:?}");
                     let copies = ids.map(|id| (id, geometry.clone()));
-                    let result = if ordered {
-                        document.copy_object_geometries_into_source_groups_in_order(copies)
-                    } else {
-                        document.copy_object_geometries_into_source_groups(copies)
+                    let result = match operation {
+                        0 => document.copy_object_geometries_into_source_groups(copies),
+                        1 => document.copy_object_geometries_into_source_groups_in_order(copies),
+                        2 | 3 => document.copy_objects_with_transforms_and_groups(
+                            ids,
+                            &[AffineTransform3::identity(); 2],
+                            if operation == 2 {
+                                CopyGroupPolicy::Preserve
+                            } else {
+                                CopyGroupPolicy::DefinitionsOnly
+                            },
+                        ),
+                        _ => document.copy_objects_morphed(ids, &IdentityMorph),
                     };
                     assert!(result.is_err());
                     assert_eq!(format!("{document:?}"), before);
