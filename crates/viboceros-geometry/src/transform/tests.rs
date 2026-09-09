@@ -1,6 +1,33 @@
 use super::*;
 
 #[test]
+fn construction_preserves_row_major_coefficients_and_checks_every_entry() {
+    let rows = [[1., 2., 3.], [4., 5., 6.], [7., 8., 9.]];
+    let translation = Vector3::try_new(10., 11., 12.).unwrap();
+    let transform = AffineTransform3::try_new(rows, translation).unwrap();
+    assert_eq!(transform.linear_rows(), rows);
+    assert_eq!(transform.translation(), translation);
+    for column in 0..3 {
+        let mut basis = [0.; 3];
+        basis[column] = 1.;
+        assert_eq!(
+            transform
+                .transform_vector(Vector3::try_from(basis).unwrap())
+                .unwrap()
+                .to_array(),
+            rows.map(|row| row[column])
+        );
+        for row in 0..3 {
+            for invalid in [Real::NAN, Real::INFINITY, Real::NEG_INFINITY] {
+                let mut invalid_rows = rows;
+                invalid_rows[row][column] = invalid;
+                assert!(AffineTransform3::try_new(invalid_rows, translation).is_err());
+            }
+        }
+    }
+}
+
+#[test]
 fn centered_scale_retains_finite_translation_after_linear_overflow() {
     let huge = 2_f64.powi(1023);
     for sign in [-1., 1.] {

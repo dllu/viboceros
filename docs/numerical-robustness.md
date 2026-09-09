@@ -90,6 +90,10 @@ point/vector application with sequential evaluation and check triple
 associativity without rounding ambiguity. Extreme cases cover overflowing
 products that cancel and translated sums that remain finite. In general,
 rounded composition is not guaranteed bit-identical to sequential application.
+Construction populates the fixed-size matrix directly, without a temporary
+heap-allocated flattened array. Composition and direction mapping share one
+checked matrix-product helper. Row/column-basis tests protect matrix layout,
+and invalid-coefficient tests cover all nine matrix entries.
 
 ## Line interpolation and extrapolation
 

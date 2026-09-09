@@ -257,7 +257,7 @@ impl AffineTransform3 {
     ) -> Result<Self, GeometryError> {
         require_finite(linear_rows.iter().flatten().copied(), "affine transform")?;
         Ok(Self {
-            linear: Matrix3::from_row_slice(&linear_rows.concat()),
+            linear: Matrix3::from_fn(|row, column| linear_rows[row][column]),
             translation,
         })
     }
@@ -286,18 +286,7 @@ impl AffineTransform3 {
     /// Singular maps are valid. Rejects unrepresentable composed coefficients;
     /// rounded composition need not be bit-identical to sequential evaluation.
     pub fn then(self, next: Self) -> Result<Self, GeometryError> {
-        let mut linear = [[0.; 3]; 3];
-        for (row, coefficients) in linear.iter_mut().enumerate() {
-            let left = Vector3::try_from(next.linear_rows()[row])?;
-            for (column, coefficient) in coefficients.iter_mut().enumerate() {
-                let right = Vector3::try_new(
-                    self.linear[(0, column)],
-                    self.linear[(1, column)],
-                    self.linear[(2, column)],
-                )?;
-                *coefficient = left.dot(right)?;
-            }
-        }
+        let linear = multiply_linear(next.linear_rows(), self.linear_rows())?;
         let translation = next.transform_point(Point3::try_from(self.translation.to_array())?)?;
         Self::try_new(linear, Vector3::try_from(translation.to_array())?)
     }
