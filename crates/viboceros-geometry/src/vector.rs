@@ -56,8 +56,23 @@ impl Vector3 {
     /// itself to be representable. May return signed infinity for callers that
     /// clamp to a finite interval; all input coordinates are validated finite.
     pub(crate) fn dot_point_difference(self, end: crate::Point3, start: crate::Point3) -> Real {
-        if let Ok(value) = start.vector_to(end).and_then(|offset| offset.dot(self)) {
-            return value;
+        if let Ok(offset) = start.vector_to(end) {
+            // TwoDiff recovers subtraction rounding error. A compensated dot
+            // cannot recover coordinate bits already lost in the displacement.
+            let exact = end
+                .to_array()
+                .into_iter()
+                .zip(start.to_array())
+                .zip(offset.to_array())
+                .zip(self.to_array())
+                .all(|(((a, b), difference), weight)| {
+                    let b_virtual = a - difference;
+                    let error = (a - (difference + b_virtual)) + (b_virtual - b);
+                    weight == 0. || error == 0.
+                });
+            if exact && let Ok(value) = offset.dot(self) {
+                return value;
+            }
         }
         let [x, y, z] = self.to_array();
         exact_dot::dot(

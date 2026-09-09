@@ -83,6 +83,22 @@ mod tests {
     }
 
     #[test]
+    fn signed_distance_preserves_origin_after_large_terms_cancel() {
+        for exponent in [54, 100, 500, 1023] {
+            let large = 2_f64.powi(exponent);
+            let target = Point3::try_new(large, large, 0.).unwrap();
+            for offset in [1., -1., 2_f64.powi(-500), Real::MIN_POSITIVE] {
+                let origin = Point3::try_new(offset, 0., 0.).unwrap();
+                let plane = axis_plane(origin, [1., -1., 0.]);
+                assert_eq!(
+                    plane.signed_distance_to(target).unwrap(),
+                    -plane.normal().as_vector().x() * offset
+                );
+            }
+        }
+    }
+
+    #[test]
     fn signed_distance_survives_unrepresentable_tangential_displacements() {
         let huge = 2_f64.powi(1023);
         for axis in 0..3 {

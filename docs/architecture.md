@@ -39,6 +39,10 @@ Plane signed distances share this point-difference projection, but reject a
 truly unrepresentable result instead of clamping it. Tests distinguish finite
 normal distance from overflowing tangential displacement, including oblique
 cancellation, opposite normal signs, and reversed point/origin roles.
+The projection fast path checks displacement subtraction residuals before using
+the compensated dot product. If relevant coordinate bits were rounded away, it
+instead projects the original coordinates through the exact accumulator; large
+cancelling terms therefore cannot erase a small plane-origin contribution.
 
 | Module | Responsibility |
 | --- | --- |
