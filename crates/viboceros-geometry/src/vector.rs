@@ -52,6 +52,27 @@ impl Vector3 {
         Ok(result)
     }
 
+    /// Projection of a point difference without requiring the displacement
+    /// itself to be representable. May return signed infinity for callers that
+    /// clamp to a finite interval; all input coordinates are validated finite.
+    pub(crate) fn dot_point_difference(self, end: crate::Point3, start: crate::Point3) -> Real {
+        if let Ok(value) = start.vector_to(end).and_then(|offset| offset.dot(self)) {
+            return value;
+        }
+        let [x, y, z] = self.to_array();
+        exact_dot::dot(
+            [
+                end.x(),
+                end.y(),
+                end.z(),
+                -start.x(),
+                -start.y(),
+                -start.z(),
+            ],
+            [x, y, z, x, y, z],
+        )
+    }
+
     pub fn cross(self, other: Self) -> Result<Self, GeometryError> {
         // Each determinant chooses its own fast or exact path. No normalization
         // of unrelated coordinates can erase a component's small remainder.

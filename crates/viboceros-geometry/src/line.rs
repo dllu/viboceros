@@ -111,7 +111,9 @@ impl LineSegment {
     ) -> Result<Real, GeometryError> {
         let direction = self.direction(tolerance)?;
         let length = self.length()?;
-        let along = self.start.vector_to(target)?.dot(direction.as_vector())?;
+        let along = direction
+            .as_vector()
+            .dot_point_difference(target, self.start);
         Ok((along / length).clamp(0.0, 1.0))
     }
 
@@ -167,6 +169,46 @@ mod tests {
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn closest_point_handles_overflowing_target_displacements() {
+        let huge = 2_f64.powi(1023);
+        for axis in 0..3 {
+            let other = (axis + 1) % 3;
+            let mut start = [0.; 3];
+            start[other] = -huge;
+            let mut end = start;
+            end[axis] = 4.;
+            let make = |v: [Real; 3]| point(v[0], v[1], v[2]);
+            let line = LineSegment::try_new(make(start), make(end), Tolerance::DEFAULT).unwrap();
+            for (coordinate, expected) in [(-huge, 0.), (1., 0.25), (huge, 1.)] {
+                let mut target = [0.; 3];
+                target[other] = huge;
+                target[axis] = coordinate;
+                assert_eq!(
+                    line.closest_parameter(make(target), Tolerance::DEFAULT)
+                        .unwrap(),
+                    expected
+                );
+                assert_eq!(
+                    line.reversed()
+                        .closest_parameter(make(target), Tolerance::DEFAULT)
+                        .unwrap(),
+                    1. - expected
+                );
+            }
+        }
+        let diagonal =
+            LineSegment::try_new(point(0., 0., 0.), point(1., 1., 0.), Tolerance::DEFAULT).unwrap();
+        for (coordinate, expected) in [(Real::MAX, 1.), (-Real::MAX, 0.)] {
+            assert_eq!(
+                diagonal
+                    .closest_parameter(point(coordinate, coordinate, 0.), Tolerance::DEFAULT)
+                    .unwrap(),
+                expected
+            );
+        }
     }
 
     #[test]

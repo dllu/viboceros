@@ -30,6 +30,11 @@ overflows. Exact-power-of-two regression cases cover both signs, all coordinate
 axes, reversed endpoints, nonfinite parameters, and true result overflow.
 This addresses intermediate arithmetic range, not a relaxation of finite-point
 or nondegenerate-line validation.
+Line closest-point projection also falls back to a six-product exact sum when
+the target displacement or dot product overflows. Perpendicular extreme-range
+coordinates no longer prevent a valid interior result; an unbounded signed
+projection clamps to the appropriate finite segment endpoint. Independent
+integer sums test the extended accumulator alongside axis/reversal cases.
 
 | Module | Responsibility |
 | --- | --- |

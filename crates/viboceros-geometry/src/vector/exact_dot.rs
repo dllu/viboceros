@@ -1,15 +1,16 @@
 //! Allocation-free fallback for dot products outside ordinary floating-point range.
 //!
 //! Every finite binary64 value is an integer significand times a power of two.
-//! Products therefore fit an integer accumulator with quantum 2^-2148. Three
-//! products need at most 4198 bits, including carry; 66 limbs provide 4224.
+//! Products therefore fit an integer accumulator with quantum 2^-2148. Up to six
+//! products need at most 4199 bits, including carry; 66 limbs provide 4224.
 //! Separate positive/negative magnitudes avoid losing small terms before large
 //! terms cancel. Only the final conversion rounds (nearest, ties to even).
 
 const LIMBS: usize = 66;
 use crate::binary_accumulator::{add_product, decompose, finish};
 
-pub(super) fn dot(left: [f64; 3], right: [f64; 3]) -> f64 {
+pub(super) fn dot<const N: usize>(left: [f64; N], right: [f64; N]) -> f64 {
+    assert!(N <= 6, "exact dot accumulator capacity");
     let mut positive = [0; LIMBS];
     let mut negative = [0; LIMBS];
     for (a, b) in left.into_iter().zip(right) {
@@ -29,6 +30,28 @@ pub(super) fn dot(left: [f64; 3], right: [f64; 3]) -> f64 {
 #[cfg(test)]
 mod tests {
     use super::dot;
+
+    #[test]
+    fn six_products_preserve_cancellation_and_integer_sums() {
+        let huge = 2_f64.powi(1023);
+        for small in [f64::from_bits(1), 1., 3.] {
+            assert_eq!(dot([huge, -huge, small, huge, -huge, 0.], [1.; 6]), small);
+        }
+        let mut state = 17_u64;
+        for _ in 0..1000 {
+            let mut next = || {
+                state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
+                i128::from(state & ((1_u64 << 40) - 1)) - (1_i128 << 39)
+            };
+            let a: [_; 6] = std::array::from_fn(|_| next());
+            let b: [_; 6] = std::array::from_fn(|_| next());
+            let expected = a.into_iter().zip(b).map(|(a, b)| a * b).sum::<i128>();
+            assert_eq!(
+                dot(a.map(|v| v as f64), b.map(|v| v as f64)),
+                expected as f64
+            );
+        }
+    }
 
     #[test]
     fn agrees_with_hardware_product_and_fused_add_across_binary64_range() {
