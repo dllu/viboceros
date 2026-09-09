@@ -18,6 +18,27 @@ searches. It stores references, not cloned geometry, and changes no document,
 selection, or history state. Each iterator owns its lookup; there is no persistent
 cache to invalidate. PointCloud command-first creation uses this shared path.
 
+## Building explicit selections
+
+`select_objects` and `select_objects_direct` share seed validation. Large
+requests scan the object table once, using a set of remaining requested IDs
+and a cached set of selectable layers. Small requests retain direct checks.
+All IDs are validated before mutation or group expansion. Missing IDs retain
+priority over unselectable objects, with the lowest sorted ID reported in each
+category. Duplicate seeds are coalesced. Hidden/locked group peers may still be
+reached through valid seeds; the validator does not reject the expanded cluster.
+
+Regression tests compare batch validation against independent per-ID checks on
+both sides of the small-request threshold. They verify all four selection modes,
+direct and group-aware selection, failure atomicity including redo and selection
+memories, and group expansion without propagating through peers' other groups.
+
+The same 20,000-object diagnostic separately times direct selection setup:
+about 2.09 s before batched validation and 40 ms afterward. This measurement does
+not cover every attribute-based selection command.
+
+## Iteration checks and timing
+
 Tests check both sides of the crossover, reversed and sparse pick order, removal
 from selection, group-expanded hidden members, deletion/Undo replay, read-only
 behavior, iterator exhaustion, and lazy first-object access.

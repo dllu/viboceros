@@ -761,12 +761,7 @@ impl Document {
         mode: SelectionMode,
     ) -> Result<usize, DocumentError> {
         let ids = ids.into_iter().collect::<BTreeSet<_>>();
-        if let Some(missing) = ids.iter().find(|id| self.object(**id).is_none()) {
-            return Err(DocumentError::ObjectNotFound(*missing));
-        }
-        if let Some(unselectable) = ids.iter().find(|id| !self.is_object_selectable(**id)) {
-            return Err(DocumentError::ObjectNotSelectable(*unselectable));
-        }
+        self.validate_selection_seeds(&ids)?;
         let cluster = self.selectable_clusters(ids.iter().copied());
         Ok(self.apply_selection_mode(cluster, mode))
     }
@@ -780,12 +775,7 @@ impl Document {
         mode: SelectionMode,
     ) -> Result<usize, DocumentError> {
         let ids = ids.into_iter().collect::<BTreeSet<_>>();
-        if let Some(missing) = ids.iter().find(|id| self.object(**id).is_none()) {
-            return Err(DocumentError::ObjectNotFound(*missing));
-        }
-        if let Some(unselectable) = ids.iter().find(|id| !self.is_object_selectable(**id)) {
-            return Err(DocumentError::ObjectNotSelectable(*unselectable));
-        }
+        self.validate_selection_seeds(&ids)?;
         Ok(self.apply_selection_mode(ids, mode))
     }
 

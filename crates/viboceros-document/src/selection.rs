@@ -6,6 +6,47 @@ pub(super) fn selected_objects(document: &Document) -> impl Iterator<Item = &Obj
 }
 
 impl Document {
+    /// Validate the complete request before expanding groups or mutating selection.
+    /// Missing IDs take precedence over unselectable seeds, in sorted-ID order.
+    pub(super) fn validate_selection_seeds(
+        &self,
+        ids: &BTreeSet<ObjectId>,
+    ) -> Result<(), DocumentError> {
+        if ids.len() <= 16 {
+            if let Some(id) = ids.iter().find(|id| self.object(**id).is_none()) {
+                return Err(DocumentError::ObjectNotFound(*id));
+            }
+            if let Some(id) = ids.iter().find(|id| !self.is_object_selectable(**id)) {
+                return Err(DocumentError::ObjectNotSelectable(*id));
+            }
+            return Ok(());
+        }
+        let layers = self
+            .layers
+            .iter()
+            .filter(|l| l.visible && !l.locked)
+            .map(|l| l.id)
+            .collect::<BTreeSet<_>>();
+        let mut missing = ids.clone();
+        let mut unselectable: Option<ObjectId> = None;
+        for object in &self.objects {
+            if !missing.remove(&object.id) {
+                continue;
+            }
+            let attributes = &object.attributes;
+            if !attributes.visible || attributes.locked || !layers.contains(&attributes.layer_id) {
+                unselectable = Some(unselectable.map_or(object.id, |id| id.min(object.id)));
+            }
+        }
+        if let Some(id) = missing.first() {
+            return Err(DocumentError::ObjectNotFound(*id));
+        }
+        if let Some(id) = unselectable {
+            return Err(DocumentError::ObjectNotSelectable(id));
+        }
+        Ok(())
+    }
+
     pub(super) fn previous_selection_targets(&self) -> BTreeSet<ObjectId> {
         self.selectable_recorded_objects(&self.previous_selection)
     }
@@ -120,6 +161,152 @@ mod tests {
     use super::*;
 
     #[test]
+    fn batched_seed_validation_matches_independent_per_id_checks() {
+        let mut document = Document::default();
+        let ids = points(&mut document, 64);
+        let layer = document.add_layer("locked", ColorRgb::BLACK).unwrap();
+        document.set_layer_locked(layer, true).unwrap();
+        // Test both object flags and layer policy, including a non-current layer.
+        document.objects[3].attributes.visible = false;
+        document.objects[20].attributes.locked = true;
+        document.objects[45].attributes.layer_id = layer;
+        for count in [0, 1, 16, 17, 32, 64] {
+            for offset in [0, 7, 19] {
+                let mut requested = (0..count)
+                    .map(|i| ids[(i + offset) % ids.len()])
+                    .collect::<BTreeSet<_>>();
+                for missing in [false, true] {
+                    if missing {
+                        requested.insert(ObjectId::new());
+                    }
+                    let expected = if let Some(id) =
+                        requested.iter().find(|id| document.object(**id).is_none())
+                    {
+                        Err(DocumentError::ObjectNotFound(*id))
+                    } else if let Some(id) = requested
+                        .iter()
+                        .find(|id| !document.is_object_selectable(**id))
+                    {
+                        Err(DocumentError::ObjectNotSelectable(*id))
+                    } else {
+                        Ok(())
+                    };
+                    assert_eq!(
+                        document.validate_selection_seeds(&requested),
+                        expected,
+                        "count={count} offset={offset}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn seed_validation_rejects_each_object_and_layer_visibility_state() {
+        for count in [1, 17] {
+            for blocked in 0..4 {
+                let mut document = Document::default();
+                let ids = points(&mut document, count);
+                let target = ids[count - 1];
+                match blocked {
+                    0 => document.objects[count - 1].attributes.visible = false,
+                    1 => document.objects[count - 1].attributes.locked = true,
+                    _ => {
+                        let layer = document.add_layer("blocked", ColorRgb::BLACK).unwrap();
+                        document.objects[count - 1].attributes.layer_id = layer;
+                        if blocked == 2 {
+                            document.set_layer_visibility(layer, false).unwrap();
+                        } else {
+                            document.set_layer_locked(layer, true).unwrap();
+                        }
+                    }
+                }
+                assert_eq!(
+                    document.validate_selection_seeds(&ids.into_iter().collect()),
+                    Err(DocumentError::ObjectNotSelectable(target))
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn invalid_large_selection_is_atomic_for_all_modes_and_both_selection_paths() {
+        for direct in [false, true] {
+            for mode in [
+                SelectionMode::Replace,
+                SelectionMode::Add,
+                SelectionMode::Remove,
+                SelectionMode::Toggle,
+            ] {
+                let mut document = Document::default();
+                let ids = points(&mut document, 32);
+                document
+                    .select_object(ids[3], SelectionMode::Replace)
+                    .unwrap();
+                document
+                    .set_objects_visibility([ids[1], ids[17]], false)
+                    .unwrap();
+                document
+                    .add_geometry(Geometry::Point(Point3::try_new(99., 0., 0.).unwrap()))
+                    .unwrap();
+                document.undo().unwrap();
+                let before = format!("{document:?}");
+                for missing in [false, true] {
+                    let mut requested = ids.clone();
+                    let absent = ObjectId::new();
+                    if missing {
+                        requested.push(absent);
+                    }
+                    let result = if direct {
+                        document.select_objects_direct(requested, mode)
+                    } else {
+                        document.select_objects(requested, mode)
+                    };
+                    let expected = if missing {
+                        DocumentError::ObjectNotFound(absent)
+                    } else {
+                        DocumentError::ObjectNotSelectable(ids[1].min(ids[17]))
+                    };
+                    assert_eq!(result, Err(expected));
+                    assert_eq!(format!("{document:?}"), before);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn large_valid_seed_sets_expand_only_their_groups_and_keep_batch_order() {
+        let mut document = Document::default();
+        let ids = points(&mut document, 40);
+        document.add_group(None, [ids[0], ids[30]]).unwrap();
+        document.add_group(None, [ids[30], ids[31]]).unwrap();
+        document.set_objects_visibility([ids[30]], false).unwrap();
+        let seeds = ids[..20]
+            .iter()
+            .rev()
+            .copied()
+            .chain(ids[..20].iter().copied())
+            .collect::<Vec<_>>();
+        document
+            .select_objects_direct(seeds.clone(), SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            ids[..20]
+        );
+        document
+            .select_objects(seeds, SelectionMode::Replace)
+            .unwrap();
+        let expected = ids[..20]
+            .iter()
+            .copied()
+            .chain([ids[30]])
+            .collect::<Vec<_>>();
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), expected);
+        assert!(!document.is_selected(ids[31]));
+    }
+
+    #[test]
     #[ignore = "manual large selection iteration timing"]
     fn benchmark_ordered_selection_iteration() {
         let mut document = Document::default();
@@ -134,9 +321,11 @@ mod tests {
             })
             .collect::<Vec<_>>();
         document.commit_transaction().unwrap();
+        let selection_start = std::time::Instant::now();
         document
             .select_objects_direct(ids.iter().copied(), SelectionMode::Replace)
             .unwrap();
+        let selection_elapsed = selection_start.elapsed();
         let start = std::time::Instant::now();
         let actual = document
             .selected_objects()
@@ -145,6 +334,7 @@ mod tests {
         let elapsed = start.elapsed();
         assert_eq!(actual, ids);
         eprintln!("20k selected objects, ordered iteration: {elapsed:?}");
+        eprintln!("20k objects, direct selection: {selection_elapsed:?}");
     }
 
     fn points(document: &mut Document, count: usize) -> Vec<ObjectId> {
