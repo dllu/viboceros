@@ -1,4 +1,6 @@
 mod components;
+#[cfg(test)]
+mod transform_tests;
 
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
@@ -4005,6 +4007,8 @@ impl TriangleMesh {
             .expect("a validated mesh has triangle vertices")
     }
 
+    /// Transforms vertices while retaining face index order. A reflection
+    /// reverses signed volume; it does not implicitly flip mesh winding.
     pub fn transformed(
         &self,
         transform: AffineTransform3,

@@ -113,6 +113,13 @@ An end-to-end B-rep box test compares complete sequential and composed results
 for exact integer maps, including one and two reflections. It checks topology,
 unchanged parameter-space trims, propagated component tolerances, face reversal
 parity, positive volume, and an unchanged source B-rep.
+Mesh transforms instead retain face index order: a reflection reverses signed
+volume, and two reflections restore its sign. This agrees with the low-level
+`ON_Mesh::Transform` implementation in the vendored
+[OpenNURBS source](../third_party/opennurbs/opennurbs_mesh.cpp), which does not
+flip mesh faces. A native mesh-box test checks retained indices, signed-volume
+parity, and sequential/composed equality. This does not establish every Rhino
+UI command's higher-level mesh-orientation policy.
 Construction populates the fixed-size matrix directly, without a temporary
 heap-allocated flattened array. Composition and direction mapping share one
 checked matrix-product helper. Row/column-basis tests protect matrix layout,
