@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 
 use super::history::Edit;
 use super::{Document, DocumentError, LayerId, Object, ObjectId, ObjectIsolation};
@@ -16,15 +16,16 @@ impl Document {
     ) -> Result<usize, DocumentError> {
         self.layer_index(layer_id)?;
         let staged = self
-            .stage_editable_layer_objects(ids)?
+            .editable_layer_object_indices(ids)?
             .into_iter()
-            .filter_map(|(index, before)| {
+            .filter_map(|index| {
+                let before = &self.objects[index];
                 if before.attributes.layer_id == layer_id {
                     return None;
                 }
                 let mut after = before.clone();
                 after.attributes.layer_id = layer_id;
-                Some((index, before, after))
+                Some((index, before.clone(), after))
             })
             .collect::<Vec<_>>();
         if staged.is_empty() {
@@ -69,9 +70,9 @@ impl Document {
     ) -> Result<Vec<ObjectId>, DocumentError> {
         self.layer_index(layer_id)?;
         let staged = self
-            .stage_editable_layer_objects(ids)?
+            .editable_layer_object_indices(ids)?
             .into_iter()
-            .filter(|(_, object)| object.attributes.layer_id != layer_id)
+            .filter(|index| self.objects[*index].attributes.layer_id != layer_id)
             .collect::<Vec<_>>();
         if staged.is_empty() {
             return Ok(Vec::new());
@@ -83,14 +84,16 @@ impl Document {
         }
         let mut copied_ids = Vec::with_capacity(staged.len());
         let mut copied_by_original = BTreeMap::new();
-        for (_, original) in staged {
+        for source_index in staged {
+            let original = &self.objects[source_index];
+            let original_id = original.id;
             let id = ObjectId::new();
             let index = self.objects.len();
-            let mut attributes = original.attributes;
+            let mut attributes = original.attributes.clone();
             attributes.layer_id = layer_id;
             self.objects.push(Object {
                 id,
-                geometry: original.geometry,
+                geometry: original.geometry.clone(),
                 attributes,
                 isolation: ObjectIsolation::None,
                 group_ids: Vec::new(),
@@ -104,7 +107,7 @@ impl Document {
                     selected: false,
                 },
             );
-            copied_by_original.insert(original.id, id);
+            copied_by_original.insert(original_id, id);
             copied_ids.push(id);
         }
         self.copy_group_memberships(&copied_by_original, true)?;
@@ -114,24 +117,17 @@ impl Document {
         Ok(copied_ids)
     }
 
-    fn stage_editable_layer_objects(
+    // Validate every source before skipping same-layer no-ops. Indices stay
+    // valid while copies append; no geometry is cloned merely for validation.
+    fn editable_layer_object_indices(
         &self,
         ids: impl IntoIterator<Item = ObjectId>,
-    ) -> Result<Vec<(usize, Object)>, DocumentError> {
-        let ids = ids.into_iter().collect::<BTreeSet<_>>();
-        if let Some(missing) = ids.iter().find(|id| self.object(**id).is_none()) {
-            return Err(DocumentError::ObjectNotFound(*missing));
+    ) -> Result<Vec<usize>, DocumentError> {
+        let indices = self.resolve_object_indices(ids)?;
+        for index in &indices {
+            self.ensure_object_editable(&self.objects[*index])?;
         }
-
-        let mut staged = Vec::with_capacity(ids.len());
-        for (index, object) in self.objects.iter().enumerate() {
-            if !ids.contains(&object.id) {
-                continue;
-            }
-            self.ensure_object_editable(object)?;
-            staged.push((index, object.clone()));
-        }
-        Ok(staged)
+        Ok(indices)
     }
 }
 
@@ -143,6 +139,158 @@ mod tests {
 
     fn point(x: f64) -> Geometry {
         Geometry::Point(Point3::try_new(x, 0.0, 0.0).unwrap())
+    }
+
+    #[test]
+    #[ignore = "manual large layer transfer timing"]
+    fn benchmark_large_layer_transfers() {
+        let mut document = Document::default();
+        let target = document.add_layer("target", ColorRgb::BLACK).unwrap();
+        document.begin_transaction("fixture").unwrap();
+        let ids = (0..20_000)
+            .map(|i| document.add_geometry(point(i as f64)).unwrap())
+            .collect::<Vec<_>>();
+        document.commit_transaction().unwrap();
+        let start = std::time::Instant::now();
+        assert_eq!(
+            document
+                .set_objects_layer(ids.iter().copied(), target)
+                .unwrap(),
+            ids.len()
+        );
+        eprintln!("20k points, set layer: {:?}", start.elapsed());
+        let start = std::time::Instant::now();
+        let copied = document
+            .copy_objects_to_layer(ids, document.current_layer_id())
+            .unwrap();
+        eprintln!("20k points, copy to layer: {:?}", start.elapsed());
+        assert_eq!(copied.len(), 20_000);
+        for (i, object) in document.objects.iter().enumerate() {
+            assert_eq!(object.geometry, point((i % 20_000) as f64));
+            assert_eq!(
+                object.attributes.layer_id,
+                if i < 20_000 {
+                    target
+                } else {
+                    document.current_layer_id()
+                }
+            );
+        }
+    }
+
+    #[test]
+    fn layer_transfer_validation_and_noops_preserve_complete_state() {
+        let mut fixture = Document::default();
+        let target = fixture.add_layer("target", ColorRgb::BLACK).unwrap();
+        let first = fixture.add_geometry(point(0.)).unwrap();
+        let already_there = fixture
+            .add_geometry_with_attributes(point(1.), ObjectAttributes::on_layer(target))
+            .unwrap();
+        fixture.set_objects_locked([already_there], true).unwrap();
+        fixture
+            .select_objects_direct([first], SelectionMode::Replace)
+            .unwrap();
+        fixture.add_geometry(point(2.)).unwrap();
+        fixture.undo().unwrap();
+        let missing = ObjectId::new();
+        let missing_layer = LayerId::new();
+        for copy in [false, true] {
+            for (ids, layer, expected) in [
+                (
+                    vec![first, missing, already_there],
+                    missing_layer,
+                    Err(DocumentError::LayerNotFound(missing_layer)),
+                ),
+                (
+                    vec![first, missing, already_there],
+                    target,
+                    Err(DocumentError::ObjectNotFound(missing)),
+                ),
+                (
+                    vec![first, already_there, first],
+                    target,
+                    Err(DocumentError::ObjectLocked(already_there)),
+                ),
+                (vec![first, first], fixture.current_layer_id(), Ok(0)),
+                (vec![], target, Ok(0)),
+            ] {
+                let mut document = fixture.clone();
+                let before = format!("{document:?}");
+                let result = if copy {
+                    document.copy_objects_to_layer(ids, layer).map(|v| v.len())
+                } else {
+                    document.set_objects_layer(ids, layer)
+                };
+                assert_eq!(result, expected, "copy={copy}");
+                assert_eq!(format!("{document:?}"), before, "copy={copy}");
+            }
+        }
+    }
+
+    #[test]
+    fn layer_transfer_deduplicates_in_table_order_and_rolls_back() {
+        for copy in [false, true] {
+            let mut document = Document::default();
+            let target = document.add_layer("target", ColorRgb::BLACK).unwrap();
+            let ids = (0..40)
+                .map(|i| {
+                    document.add_geometry_with_attributes(
+                        point(i as f64),
+                        ObjectAttributes::on_layer(if i % 3 == 0 {
+                            target
+                        } else {
+                            document.current_layer_id()
+                        }),
+                    )
+                })
+                .collect::<Result<Vec<_>, _>>()
+                .unwrap();
+            for id in ids.iter().rev() {
+                document
+                    .select_objects_direct([*id], SelectionMode::Add)
+                    .unwrap();
+            }
+            let before = document.clone();
+            let request = ids
+                .iter()
+                .rev()
+                .flat_map(|id| [*id, *id])
+                .collect::<Vec<_>>();
+            document.begin_transaction("transfer").unwrap();
+            if copy {
+                let copies = document.copy_objects_to_layer(request, target).unwrap();
+                let expected = (0..40)
+                    .filter(|i| i % 3 != 0)
+                    .map(|i| point(i as f64))
+                    .collect::<Vec<_>>();
+                assert_eq!(
+                    copies
+                        .iter()
+                        .map(|id| document.object(*id).unwrap().geometry.clone())
+                        .collect::<Vec<_>>(),
+                    expected
+                );
+                assert!(copies.iter().all(|id| !document.is_selected(*id)));
+            } else {
+                assert_eq!(document.set_objects_layer(request, target).unwrap(), 26);
+                assert!(
+                    document
+                        .objects
+                        .iter()
+                        .all(|o| o.attributes.layer_id == target)
+                );
+            }
+            assert_eq!(document.selection_order, before.selection_order);
+            document.rollback_transaction().unwrap();
+            assert_eq!(document.objects, before.objects);
+            assert_eq!(document.groups, before.groups);
+            assert_eq!(document.selection_order, before.selection_order);
+            assert_eq!(document.previous_selection, before.previous_selection);
+            assert_eq!(
+                document.previous_selection_order,
+                before.previous_selection_order
+            );
+        }
     }
 
     #[test]
