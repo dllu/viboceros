@@ -1,6 +1,88 @@
 use super::*;
 
 #[test]
+fn centered_grid_uses_full_width_for_default_height_and_ignores_corner_depth() {
+    let mut document = Document::default();
+    let registry = CommandRegistry::with_builtins();
+    registry
+        .execute(
+            &mut document,
+            "PointGrid Center 10,20,3 12,24,99 XCount=3 YCount=3 ZCount=2",
+        )
+        .unwrap();
+    let expected: Vec<_> = [3.0, 11.0]
+        .into_iter()
+        .flat_map(|z| {
+            [24.0, 20.0, 16.0]
+                .into_iter()
+                .flat_map(move |y| [8.0, 10.0, 12.0].into_iter().map(move |x| [x, y, z]))
+        })
+        .collect();
+    assert_eq!(points(&document), expected);
+    assert_eq!(document.undo_label(), Some("PointGrid"));
+    registry.execute(&mut document, "Undo").unwrap();
+    assert_eq!(document.objects().len(), 0);
+    registry.execute(&mut document, "Redo").unwrap();
+    assert_eq!(points(&document), expected);
+}
+
+#[test]
+fn centered_endpoints_do_not_require_a_representable_full_span() {
+    for axis in 0..2 {
+        let mut document = Document::default();
+        let mut corner = [1.0, 1.0, 0.0];
+        corner[axis] = Real::MAX;
+        CommandRegistry::with_builtins()
+            .execute(
+                &mut document,
+                &format!(
+                    "PointGrid Center 0,0,0 {},{},0 1 XCount=3 YCount=3 ZCount=1",
+                    corner[0], corner[1]
+                ),
+            )
+            .unwrap();
+        let points = points(&document);
+        assert_eq!(points.len(), 9);
+        assert!(points.iter().flatten().all(|value| value.is_finite()));
+        for coordinate in [-Real::MAX, 0.0, Real::MAX] {
+            assert_eq!(points.iter().filter(|p| p[axis] == coordinate).count(), 3);
+        }
+    }
+}
+
+#[test]
+fn centered_mode_conflicts_and_unrepresentable_default_height_fail_atomically() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry.execute(&mut document, "Point 1,2,3").unwrap();
+    registry.execute(&mut document, "Undo").unwrap();
+    for input in [
+        "PointGrid Center Center 0,0,0 1,1,0",
+        "PointGrid 3Point Center 0,0,0 1,1,0",
+        "PointGrid Center 3Point 0,0,0 1,1,0",
+    ] {
+        assert!(registry.execute(&mut document, input).is_err());
+    }
+    assert!(
+        registry
+            .execute(
+                &mut document,
+                &format!(
+                    "PointGrid Center 0,0,0 1,{},0 XCount=2 YCount=2 ZCount=1",
+                    Real::MAX
+                )
+            )
+            .is_err()
+    );
+    assert_eq!(document.objects().len(), 0);
+    assert_eq!(document.redo_label(), Some("Point"));
+    let options = PointGridOptions::parse(&["Center", "XCount=3"]).unwrap();
+    assert!(options.centered());
+    assert!(!options.three_point());
+    assert_eq!(options.to_string(), " Center XCount=3");
+}
+
+#[test]
 fn shared_options_roundtrip_without_filling_omitted_counts() {
     let options = PointGridOptions::parse(&["xcount", "1", "ZCount=3"]).unwrap();
     assert_eq!(options.to_string(), " XCount=1 ZCount=3");

@@ -2,20 +2,33 @@
 
 use super::*;
 
-const USAGE: &str = "PointGrid [3Point] first-corner second-corner [third-base-point] [height] [XCount=n YCount=n ZCount=n]";
+const USAGE: &str = "PointGrid [3Point|Center] first-point second-point [third-base-point] [height] [XCount=n YCount=n ZCount=n]";
 const MAX_POINTS: usize = 1_000_000;
+
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+enum BaseMode {
+    #[default]
+    Corners,
+    ThreePoint,
+    Center,
+}
 
 /// Grid base mode and requested counts; omitted counts retain remembered settings.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct PointGridOptions {
     counts: [Option<usize>; 3],
-    three_point: bool,
+    base_mode: BaseMode,
 }
 
 impl PointGridOptions {
     /// Whether the base is defined by an edge and a third, off-edge point.
     pub const fn three_point(self) -> bool {
-        self.three_point
+        matches!(self.base_mode, BaseMode::ThreePoint)
+    }
+
+    /// Whether the first point is the base center rather than a corner.
+    pub const fn centered(self) -> bool {
+        matches!(self.base_mode, BaseMode::Center)
     }
 
     /// Parses an options-only interactive command prefix without changing settings.
@@ -34,11 +47,17 @@ impl PointGridOptions {
         let mut coordinates = Vec::new();
         let mut cursor = 0;
         while cursor < arguments.len() {
-            if option_name_eq(arguments[cursor], "3Point") {
-                if options.three_point {
+            if option_name_eq(arguments[cursor], "3Point")
+                || option_name_eq(arguments[cursor], "Center")
+            {
+                if options.base_mode != BaseMode::Corners {
                     return Err(CommandError::Usage(USAGE));
                 }
-                options.three_point = true;
+                options.base_mode = if option_name_eq(arguments[cursor], "3Point") {
+                    BaseMode::ThreePoint
+                } else {
+                    BaseMode::Center
+                };
                 cursor += 1;
             } else if arguments[cursor].contains('=')
                 || ["XCount", "YCount", "ZCount"]
@@ -86,8 +105,10 @@ impl PointGridOptions {
 
 impl std::fmt::Display for PointGridOptions {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if self.three_point {
-            write!(f, " 3Point")?;
+        match self.base_mode {
+            BaseMode::Corners => {}
+            BaseMode::ThreePoint => write!(f, " 3Point")?,
+            BaseMode::Center => write!(f, " Center")?,
         }
         for (name, count) in ["XCount", "YCount", "ZCount"].into_iter().zip(self.counts) {
             if let Some(count) = count {
@@ -130,7 +151,7 @@ impl Command for PointMatrixCommand {
         let (first, consumed) = parse_point(&coordinates)?;
         let (opposite, more) = parse_point(&coordinates[consumed..])?;
         let mut consumed = consumed + more;
-        let (frame, x, y) = if options.three_point {
+        let (frame, x, y) = if options.three_point() {
             let (third, more) = parse_point(&coordinates[consumed..])?;
             consumed += more;
             let frame = Frame3::try_from_points(first, opposite, third, document.tolerance())?;
@@ -152,22 +173,40 @@ impl Command for PointMatrixCommand {
         }
         let remaining = &coordinates[consumed..];
         let height = match remaining {
-            [] => y.abs(),
+            [] => y.abs() * if options.centered() { 2.0 } else { 1.0 },
             [value] => parse_finite_real(value)?,
             _ => return Err(CommandError::Usage(USAGE)),
         };
+        if !height.is_finite() {
+            return Err(GeometryError::NonFinite {
+                context: "point grid height",
+            }
+            .into());
+        }
         if height == 0.0 {
             return Err(GeometryError::Degenerate {
                 context: "point grid height",
             }
             .into());
         }
+        // Store centered endpoints directly: doubling a finite half-width can
+        // overflow even when every requested point is representable.
+        let x_interval = if options.centered() {
+            [-x.abs(), x.abs()]
+        } else {
+            [x.min(0.0), x.max(0.0)]
+        };
+        let y_interval = if options.centered() {
+            [-y.abs(), y.abs()]
+        } else {
+            [y.min(0.0), y.max(0.0)]
+        };
         let intervals = [
-            [x.min(0.0), x.max(0.0)],
+            x_interval,
             if height > 0.0 {
-                [y.max(0.0), y.min(0.0)]
+                [y_interval[1], y_interval[0]]
             } else {
-                [y.min(0.0), y.max(0.0)]
+                y_interval
             },
             [0.0, height],
         ];

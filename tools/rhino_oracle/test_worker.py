@@ -11,6 +11,18 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_center_grid_probe_whitelists_mode_and_rejects_conflicts(self):
+        operation = {"count": [3, 2, 1], "centered": True, "points": [[10,20,3], [12,24,99]]}
+        with patch.object(self.worker, "_command_point", side_effect=["10,20,3", "12,24,99"]), \
+                patch.object(self.worker, "_in_construction_plane", return_value=({}, 0)) as run:
+            self.worker._point_grid_command(operation)
+        self.assertEqual(run.call_args.args[1], "_PointGrid _XCount=3 _YCount=2 _ZCount=1 _Center w10,20,3 w12,24,99 _Enter")
+        for invalid in [dict(operation, centered="Center"), dict(operation, centered=1), dict(operation, three_point=True)]:
+            with patch.object(self.worker, "_in_construction_plane") as run:
+                with self.assertRaises(ValueError):
+                    self.worker._point_grid_command(invalid)
+                run.assert_not_called()
+
     def test_three_point_grid_probe_whitelists_mode_and_requires_three_points(self):
         operation = {"count": [3, 2, 1], "three_point": True, "points": [[0,0,0], [6,0,2], [3,4,5]], "height": -2}
         with patch.object(self.worker, "_command_point", side_effect=["0,0,0", "6,0,2", "3,4,5"]), \

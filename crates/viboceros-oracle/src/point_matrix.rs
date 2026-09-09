@@ -9,6 +9,8 @@ pub struct PointMatrixFixture {
     pub points: Vec<[f64; 3]>,
     #[serde(default)]
     pub three_point: bool,
+    #[serde(default)]
+    pub centered: bool,
     pub count: [usize; 3],
     pub height: Option<f64>,
 }
@@ -17,7 +19,7 @@ pub(super) fn run(
     f: &PointMatrixFixture,
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
-    if f.points.len() != if f.three_point { 3 } else { 2 } {
+    if (f.centered && f.three_point) || f.points.len() != if f.three_point { 3 } else { 2 } {
         return Err(ProbeError::FixtureInvariant(
             "incorrect PointGrid base point count",
         ));
@@ -36,6 +38,9 @@ pub(super) fn run(
     );
     if f.three_point {
         command.push_str(" 3Point");
+    }
+    if f.centered {
+        command.push_str(" Center");
     }
     for p in &f.points {
         command.push_str(&format!(" {},{},{}", p[0], p[1], p[2]));
@@ -69,7 +74,9 @@ pub(super) fn run(
     if f.three_point {
         size[1] = frame.coordinates_of(Point3::try_from(f.points[2])?)?[1];
     }
-    size[2] = f.height.unwrap_or(size[1].abs());
+    size[2] = f
+        .height
+        .unwrap_or(size[1].abs() * if f.centered { 2.0 } else { 1.0 });
     let count = [f.count[0].max(2), f.count[1].max(2), f.count[2]];
     let mut points = cloud
         .points()
@@ -103,6 +110,14 @@ mod tests {
         check(
             include_str!("../../../tools/rhino_oracle/fixtures/point_matrix_three_point.json"),
             include_str!("../../../tools/rhino_oracle/observations/point_matrix_three_point.json"),
+        );
+    }
+
+    #[test]
+    fn center_grid_command_fixture_matches_rhino_point_sets() {
+        check(
+            include_str!("../../../tools/rhino_oracle/fixtures/point_matrix_center.json"),
+            include_str!("../../../tools/rhino_oracle/observations/point_matrix_center.json"),
         );
     }
 

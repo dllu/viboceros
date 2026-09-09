@@ -1,0 +1,9 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"op":"point_grid_command","id":"center-default","centered":true,"origin":[0,0,0],"x_axis":[1,0,0],"y_axis":[0,1,0],"count":[3,3,2],"points":[[10,20,3],[12,24,99]]},
+    {"op":"point_grid_command","id":"center-negative","centered":true,"origin":[0,0,0],"x_axis":[1,0,0],"y_axis":[0,1,0],"count":[3,2,2],"points":[[1,2,3],[-2,6,0]],"height":-2},
+    {"op":"point_grid_command","id":"center-oblique","centered":true,"origin":[10,20,30],"x_axis":[0.6,0.8,0],"y_axis":[0,0,1],"count":[3,2,2],"points":[[1,2,3],[4.6,6.8,7]],"height":4}
+  ]
+}

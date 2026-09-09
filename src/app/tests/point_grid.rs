@@ -38,6 +38,51 @@ fn picked_grid_matches_typed_command_and_is_one_undo_step() {
 }
 
 #[test]
+fn centered_grid_prompts_and_default_height_match_the_typed_command() {
+    let mut app = test_app();
+    enter(&mut app, "PointGrid Center XCount=3 YCount=3 ZCount=2");
+    assert!(app.active_command.unwrap().prompt().contains("base center"));
+    assert!(app.accept_drafting_point(point(10.0, 20.0, 3.0)));
+    assert!(app.active_command.unwrap().prompt().contains("base corner"));
+    assert!(app.accept_drafting_point(point(12.0, 24.0, 99.0)));
+    enter(&mut app, "");
+    let mut expected = Document::default();
+    CommandRegistry::with_builtins()
+        .execute(
+            &mut expected,
+            "PointGrid Center 10,20,3 12,24,99 XCount=3 YCount=3 ZCount=2",
+        )
+        .unwrap();
+    assert_eq!(cloud(&app.document), cloud(&expected));
+    assert!(app.active_command.is_none());
+    assert_eq!(app.document.undo_label(), Some("PointGrid"));
+}
+
+#[test]
+fn centered_picked_height_keeps_the_first_plane_across_viewports() {
+    let mut app = test_app();
+    app.active_viewport = 2;
+    let plane = app.viewports[2].construction_plane();
+    enter(&mut app, "PointGrid Center XCount=3 YCount=2 ZCount=2");
+    assert!(app.accept_drafting_point(point(10.0, 20.0, 30.0)));
+    app.active_viewport = 0;
+    assert!(app.accept_drafting_point(point(13.0, 99.0, 34.0)));
+    assert!(app.accept_drafting_point(point(99.0, 22.0, 99.0)));
+    let mut expected = Document::default();
+    CommandRegistry::with_builtins()
+        .execute_in_context(
+            &mut expected,
+            "PointGrid Center 10,20,30 13,99,34 -2 XCount=3 YCount=2 ZCount=2",
+            viboceros_command::CommandContext {
+                construction_plane: plane,
+            },
+        )
+        .unwrap();
+    assert_eq!(cloud(&app.document), cloud(&expected));
+    assert!(app.active_command.is_none());
+}
+
+#[test]
 fn three_point_grid_waits_for_width_and_uses_its_own_height_normal() {
     let mut app = test_app();
     enter(&mut app, "PointGrid 3Point XCount=3 YCount=2 ZCount=2");

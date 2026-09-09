@@ -12,6 +12,7 @@ height uses the base's Y width; negative height extends opposite the plane norma
 PointGrid 0,0,0 6,4,0 XCount=7 YCount=5 ZCount=1
 PointGrid 0,0,0 6,4,0 -8 XCount=7 YCount=5 ZCount=9
 PointGrid 3Point 0,0,0 6,0,2 3,4,5 2 XCount=3 YCount=2 ZCount=2
+PointGrid Center 10,20,3 12,24,3 XCount=3 YCount=3 ZCount=2
 ```
 
 Counts describe points, not subdivisions. The initial defaults are 10, 10, and
@@ -52,13 +53,33 @@ the preceding points. Height picking uses the three-point plane even when anothe
 viewport is active. Counts remain remembered; the base mode is explicit per
 invocation. Numeric width in place of the third point is not yet supported.
 
-Native point order is deterministic: X increases fastest, then Y decreases for
-positive height (increases for negative height), then Z advances from the base
-to the requested height. The cloud retains its exact grid locations; it is not
-a polygon mesh. Existing Explode and point-cloud picking operations apply.
+## Center-based grids
 
-This implementation accepts two-corner and three-point rectangular input.
-Rhino's Diagonal, Vertical, and Center workflows are not yet implemented.
+`PointGrid Center base-center corner [height]` creates a base symmetric about
+the first point along the captured CPlane X and Y axes. The corner's normal
+offset is ignored. Omitted height uses the **full** Y width, twice the picked
+half-width. The first point centers the base, not the height interval; signed
+height still starts at that base plane.
+
+Enter `PointGrid Center` with optional counts to pick the center and corner,
+then pick, type, or default the height. The base modes are mutually exclusive;
+combining `Center` and `3Point`, or repeating either, is an error. The base mode
+does not persist to the next command.
+
+Centered endpoints are stored directly, avoiding an overflowing full-span
+calculation when all output points remain finite. An explicit finite height can
+therefore support such a wide base. An unrepresentable default height or output
+coordinate is still rejected before adding geometry.
+
+## Point order and remaining limits
+
+Native point order is deterministic in the base frame: X increases fastest, then Y decreases for
+positive height (increases for negative height), then Z advances from the base
+to the requested height. The result is a point cloud, not a polygon mesh.
+Existing Explode and point-cloud picking operations apply.
+
+This implementation accepts two-corner, three-point, and center-based input.
+Rhino's Diagonal and Vertical workflows are not yet implemented.
 Count-option prompts observed in Rhino 8.32 use `XCount`,
 `YCount`, and `ZCount`, unlike the names in the
 [online help](https://docs.mcneel.com/rhino/8/help/en-us/commands/pointgrid.htm).
@@ -91,7 +112,17 @@ also replay independently at `1e-10`. Native tests check the perpendicular-width
 calculation analytically, CPlane independence, and rejected inputs; UI tests
 exercise the additional pick stage and its height normal.
 
+The three-case center fixture covers default full-width height, a negative
+height with a reflected corner, and an oblique CPlane. Live Rhino comparisons
+passed within `2.7e-15`; the
+[raw measurements](../../tools/rhino_oracle/observations/point_matrix_center.json)
+replay with the same independent point-set check. Native tests additionally
+cover finite centered endpoints with an overflowing full span, failure atomicity,
+and conflicting base modes. UI tests verify center/corner prompts and height
+picking after changing viewports.
+
 ```sh
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_command.json --timeout 300
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_three_point.json --timeout 300
+tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_center.json --timeout 300
 ```

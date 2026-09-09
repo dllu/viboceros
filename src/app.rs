@@ -525,6 +525,11 @@ impl InteractiveCommand {
             Self::MeshBox {
                 opposite: Some(_), ..
             } => "MeshBox: pick the height in the viewport (Esc to cancel)",
+            Self::PointGrid {
+                base: None,
+                options,
+                ..
+            } if options.centered() => "PointGrid: pick the base center (Esc to cancel)",
             Self::PointGrid { base: None, .. } => {
                 "PointGrid: pick the first base corner (Esc to cancel)"
             }
@@ -535,6 +540,11 @@ impl InteractiveCommand {
             } if options.three_point() => {
                 "PointGrid: pick the end of the first edge (Esc to cancel)"
             }
+            Self::PointGrid {
+                opposite: None,
+                options,
+                ..
+            } if options.centered() => "PointGrid: pick a base corner (Esc to cancel)",
             Self::PointGrid { opposite: None, .. } => {
                 "PointGrid: pick the opposite base corner (Esc to cancel)"
             }
