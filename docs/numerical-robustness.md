@@ -72,6 +72,16 @@ intended fixed points are not guaranteed bit-exact; the directional-scale test
 uses a tight binary64 error bound rather than relying on intermediate rounding
 to cancel coefficient error.
 
+`AffineTransform3::then(next)` composes in application order: first `self`, then
+`next`. Its linear part uses compensated/exact row-column products, and its
+translation uses the checked affine point evaluator. Singular maps are allowed;
+unrepresentable final coefficients are errors even if some particular input
+points would map to finite values. Integer-matrix tests compare every pair's
+point/vector application with sequential evaluation and check triple
+associativity without rounding ambiguity. Extreme cases cover overflowing
+products that cancel and translated sums that remain finite. In general,
+rounded composition is not guaranteed bit-identical to sequential application.
+
 ## Line interpolation and extrapolation
 
 Line evaluation fuses coordinate scaling and translation, retaining finite

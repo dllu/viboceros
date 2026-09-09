@@ -282,6 +282,26 @@ impl AffineTransform3 {
         Vector3::try_from(self.linear_coordinates(vector)?)
     }
 
+    /// Composes maps in application order: `self`, followed by `next`.
+    /// Singular maps are valid. Rejects unrepresentable composed coefficients;
+    /// rounded composition need not be bit-identical to sequential evaluation.
+    pub fn then(self, next: Self) -> Result<Self, GeometryError> {
+        let mut linear = [[0.; 3]; 3];
+        for (row, coefficients) in linear.iter_mut().enumerate() {
+            let left = Vector3::try_from(next.linear_rows()[row])?;
+            for (column, coefficient) in coefficients.iter_mut().enumerate() {
+                let right = Vector3::try_new(
+                    self.linear[(0, column)],
+                    self.linear[(1, column)],
+                    self.linear[(2, column)],
+                )?;
+                *coefficient = left.dot(right)?;
+            }
+        }
+        let translation = next.transform_point(Point3::try_from(self.translation.to_array())?)?;
+        Self::try_new(linear, Vector3::try_from(translation.to_array())?)
+    }
+
     /// Returns whether the linear part reverses orientation. Singular maps do
     /// not have a well-defined orientation and are rejected.
     pub(crate) fn orientation_reversing(self) -> Result<bool, GeometryError> {
@@ -439,6 +459,80 @@ mod tests {
                 .unwrap(),
             Vector3::try_new(-4.0, 3.0, 12.0).unwrap()
         );
+    }
+
+    #[test]
+    fn composition_matches_sequential_integer_maps_in_application_order() {
+        let zero = Vector3::try_new(0., 0., 0.).unwrap();
+        let maps = [
+            AffineTransform3::identity(),
+            AffineTransform3::from_translation(Vector3::try_new(2., -3., 5.).unwrap()),
+            AffineTransform3::try_new([[0., -1., 0.], [1., 0., 0.], [0., 0., 1.]], zero).unwrap(),
+            AffineTransform3::try_new(
+                [[2., 1., 0.], [0., -3., 1.], [0., 0., 0.]],
+                Vector3::try_new(1., 2., 3.).unwrap(),
+            )
+            .unwrap(),
+        ];
+        for first in maps {
+            for second in maps {
+                let composed = first.then(second).unwrap();
+                for p in [point(0., 0., 0.), point(1., 2., 3.), point(-3., 2., -7.)] {
+                    assert_eq!(
+                        composed.transform_point(p).unwrap(),
+                        second
+                            .transform_point(first.transform_point(p).unwrap())
+                            .unwrap()
+                    );
+                    let v = Vector3::try_from(p.to_array()).unwrap();
+                    assert_eq!(
+                        composed.transform_vector(v).unwrap(),
+                        second
+                            .transform_vector(first.transform_vector(v).unwrap())
+                            .unwrap()
+                    );
+                }
+                for third in maps {
+                    assert_eq!(
+                        composed.then(third).unwrap(),
+                        first.then(second.then(third).unwrap()).unwrap()
+                    );
+                }
+            }
+        }
+        assert_ne!(
+            maps[1].then(maps[2]).unwrap(),
+            maps[2].then(maps[1]).unwrap()
+        );
+    }
+
+    #[test]
+    fn composition_recovers_overflowing_products_and_checks_final_coefficients() {
+        let huge = 2_f64.powi(1023);
+        let first = AffineTransform3::try_new(
+            [[huge, 0., 0.], [huge, 0., 0.], [0., 0., 0.]],
+            Vector3::try_new(huge, huge, 0.).unwrap(),
+        )
+        .unwrap();
+        let second = AffineTransform3::try_new(
+            [[2., -2., 0.], [0., 0., 0.], [0., 0., 0.]],
+            Vector3::try_new(1., 2., 3.).unwrap(),
+        )
+        .unwrap();
+        assert_eq!(
+            first.then(second).unwrap(),
+            AffineTransform3::try_new([[0.; 3]; 3], Vector3::try_new(1., 2., 3.).unwrap()).unwrap()
+        );
+        let doubled = AffineTransform3::try_new(
+            [[2., 0., 0.], [0., 1., 0.], [0., 0., 1.]],
+            Vector3::try_new(-huge, 0., 0.).unwrap(),
+        )
+        .unwrap();
+        let translated =
+            AffineTransform3::from_translation(Vector3::try_new(huge, 0., 0.).unwrap());
+        assert_eq!(translated.then(doubled).unwrap().translation().x(), huge);
+        assert!(first.then(doubled).is_err());
+        assert!(translated.then(translated).is_err());
     }
 
     #[test]
