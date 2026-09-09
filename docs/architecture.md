@@ -24,6 +24,13 @@ product range and rounds only the final sum (nearest, ties to even);
 tests compare it with hardware multiplication and fused multiply-add across
 10,000 deterministic full-range inputs, plus cancellation and rounding boundaries.
 
+Line interpolation/extrapolation fuses coordinate scaling and translation so
+a representable extrapolated point is not rejected solely because its offset
+overflows. Exact-power-of-two regression cases cover both signs, all coordinate
+axes, reversed endpoints, nonfinite parameters, and true result overflow.
+This addresses intermediate arithmetic range, not a relaxation of finite-point
+or nondegenerate-line validation.
+
 | Module | Responsibility |
 | --- | --- |
 | `viboceros-geometry` | Validated primitives, NURBS, intersections, B-rep topology, tessellation, and mass properties; nalgebra and faer provide linear algebra. |

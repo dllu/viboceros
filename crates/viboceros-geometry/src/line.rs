@@ -62,8 +62,14 @@ impl LineSegment {
         if parameter == 1.0 {
             return Ok(self.end);
         }
-        let offset = self.start.vector_to(self.end)?.scaled(parameter)?;
-        self.start.translated(offset)
+        let delta = self.start.vector_to(self.end)?;
+        // Round the offset and translation together: extrapolation can have
+        // a finite result even when the offset alone exceeds binary64 range.
+        Point3::try_new(
+            delta.x().mul_add(parameter, self.start.x()),
+            delta.y().mul_add(parameter, self.start.y()),
+            delta.z().mul_add(parameter, self.start.z()),
+        )
     }
 
     pub fn domain(self) -> RangeInclusive<Real> {
@@ -161,6 +167,30 @@ mod tests {
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn extrapolation_keeps_finite_results_when_the_offset_overflows() {
+        let magnitude = 2_f64.powi(1023);
+        for axis in 0..3 {
+            for sign in [-1., 1.] {
+                let mut start = [1., 2., 3.];
+                let mut end = start;
+                let mut expected = start;
+                start[axis] = -sign * magnitude;
+                end[axis] = -sign * magnitude * 0.5;
+                expected[axis] = sign * magnitude;
+                let make = |v: [Real; 3]| point(v[0], v[1], v[2]);
+                let line =
+                    LineSegment::try_new(make(start), make(end), Tolerance::DEFAULT).unwrap();
+                assert_eq!(line.point_at(4.).unwrap(), make(expected));
+                assert_eq!(line.reversed().point_at(-3.).unwrap(), make(expected));
+                assert!(line.point_at(8.).is_err());
+                for invalid in [Real::NAN, Real::INFINITY, Real::NEG_INFINITY] {
+                    assert!(line.point_at(invalid).is_err());
+                }
+            }
+        }
     }
 
     #[test]
