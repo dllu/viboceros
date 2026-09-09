@@ -1,5 +1,38 @@
 use super::*;
+
+#[test]
+fn centered_scale_retains_finite_translation_after_linear_overflow() {
+    let huge = 2_f64.powi(1023);
+    for sign in [-1., 1.] {
+        let center = point(sign * huge, 0., 0.);
+        let scale = AffineTransform3::try_uniform_scale(center, 2.).unwrap();
+        assert_eq!(scale.translation().to_array(), [-sign * huge, 0., 0.]);
+        assert_eq!(scale.transform_point(center).unwrap(), center);
+        assert_eq!(
+            scale
+                .transform_point(point(sign * huge * 0.5, 0., 0.))
+                .unwrap(),
+            point(0., 0., 0.)
+        );
+        assert!(AffineTransform3::try_uniform_scale(center, 4.).is_err());
+    }
+}
 use crate::Tolerance;
+
+#[test]
+fn origin_mapping_retains_small_translation_after_cancellation() {
+    let large = 2_f64.powi(100);
+    let source = point(large, 1., 0.);
+    let target = point(large, 0., 0.);
+    let transform = AffineTransform3::try_mapping_origins(
+        [[1., 1., 0.], [0., 1., 0.], [0., 0., 1.]],
+        source,
+        target,
+    )
+    .unwrap();
+    assert_eq!(transform.translation().to_array(), [-1., -1., 0.]);
+    assert_eq!(transform.transform_point(source).unwrap(), target);
+}
 
 fn point(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()

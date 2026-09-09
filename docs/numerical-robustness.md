@@ -75,6 +75,11 @@ Centered maps still store rounded matrix and translation coefficients. Their
 intended fixed points are not guaranteed bit-exact; the directional-scale test
 uses a tight binary64 error bound rather than relying on intermediate rounding
 to cancel coefficient error.
+Centered and origin-mapping constructors compute translation as one
+`target - A*source` sum per coordinate, sharing the same compensated/exact
+arithmetic. They do not first require `A*source` to be finite. Exact scale tests
+cover cancellation of an overflowing mapped center and rejection when the
+translation itself is unrepresentable.
 
 `AffineTransform3::then(next)` composes in application order: first `self`, then
 `next`. Its linear part uses compensated/exact row-column products, and its

@@ -371,11 +371,7 @@ impl AffineTransform3 {
         linear_rows: [[Real; 3]; 3],
         fixed_point: Point3,
     ) -> Result<Self, GeometryError> {
-        let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
-        let linear_transform = Self::try_new(linear_rows, zero)?;
-        let mapped_fixed_point = linear_transform.transform_point(fixed_point)?;
-        let translation = mapped_fixed_point.vector_to(fixed_point)?;
-        Self::try_new(linear_rows, translation)
+        Self::try_mapping_origins(linear_rows, fixed_point, fixed_point)
     }
 
     fn try_mapping_origins(
@@ -383,10 +379,18 @@ impl AffineTransform3 {
         source_origin: Point3,
         target_origin: Point3,
     ) -> Result<Self, GeometryError> {
-        let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
-        let linear_transform = Self::try_new(linear_rows, zero)?;
-        let mapped_source = linear_transform.transform_point(source_origin)?;
-        Self::try_new(linear_rows, mapped_source.vector_to(target_origin)?)
+        // Translation is target - A*source. Include target in each sum;
+        // A*source alone can overflow or lose a contribution to cancellation.
+        let source = Vector3::try_from(source_origin.to_array())?;
+        let target = target_origin.to_array();
+        let component = |i: usize| {
+            source.dot_with_offset(
+                Vector3::try_from(linear_rows[i].map(|coefficient| -coefficient))?,
+                target[i],
+            )
+        };
+        let translation = Vector3::try_new(component(0)?, component(1)?, component(2)?)?;
+        Self::try_new(linear_rows, translation)
     }
 }
 
