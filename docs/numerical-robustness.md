@@ -50,6 +50,12 @@ predicate, not a condition-number estimate or an inversion guarantee.
 An exhaustive test additionally covers all 19,683 matrices with entries in
 `{-1, 0, 1}`, including singular cases, transposition, row negation, and positive
 row scaling by the smallest subnormal and largest finite binary64 values.
+Triangular matrices use an exact sign/zero check of the diagonal, avoiding
+accumulation and even multiplication. Other matrices skip identically zero
+triple products. The exhaustive suite covers these paths. The ignored
+`benchmark_diagonal_orientation` test measured 100,000 diagonal queries at
+192 ms before and 15.4 ms after this optimization in a development debug build;
+this is not a release or Rhino performance comparison.
 
 ## Point-difference projections
 

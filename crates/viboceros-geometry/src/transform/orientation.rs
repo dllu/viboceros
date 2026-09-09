@@ -3,6 +3,27 @@ use crate::binary_accumulator::{add_product, decompose};
 use std::cmp::Ordering;
 
 pub(super) fn determinant_sign(rows: [[f64; 3]; 3]) -> Ordering {
+    // Triangular matrices need only diagonal signs, never a floating product.
+    // This includes ordinary scales/reflections and coordinate-axis shears.
+    if (rows[1][0] == 0. && rows[2][0] == 0. && rows[2][1] == 0.)
+        || (rows[0][1] == 0. && rows[0][2] == 0. && rows[1][2] == 0.)
+    {
+        let diagonal = [rows[0][0], rows[1][1], rows[2][2]];
+        if diagonal.contains(&0.) {
+            return Ordering::Equal;
+        }
+        return if diagonal
+            .into_iter()
+            .filter(|v| v.is_sign_negative())
+            .count()
+            % 2
+            == 0
+        {
+            Ordering::Greater
+        } else {
+            Ordering::Less
+        };
+    }
     // Triple products have quantum 2^-3222 and magnitude below 2^3072.
     // Six terms need at most 6297 bits; 99 limbs provide 6336.
     let mut positive = [0; 99];
@@ -16,6 +37,9 @@ pub(super) fn determinant_sign(rows: [[f64; 3]; 3]) -> Ordering {
         ([2, 1, 0], true),
     ] {
         let [a, b, c] = std::array::from_fn(|i| rows[i][columns[i]]);
+        if a == 0. || b == 0. || c == 0. {
+            continue;
+        }
         let (a_bits, a_shift) = decompose(a);
         let (b_bits, b_shift) = decompose(b);
         let (c_bits, c_shift) = decompose(c);
@@ -41,6 +65,20 @@ pub(super) fn determinant_sign(rows: [[f64; 3]; 3]) -> Ordering {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    #[ignore = "manual diagonal orientation timing"]
+    fn benchmark_diagonal_orientation() {
+        let rows = [[-2., 0., 0.], [0., 3., 0.], [0., 0., 4.]];
+        let start = std::time::Instant::now();
+        for _ in 0..100_000 {
+            assert_eq!(determinant_sign(std::hint::black_box(rows)), Ordering::Less);
+        }
+        eprintln!(
+            "100k diagonal orientation predicates: {:?}",
+            start.elapsed()
+        );
+    }
 
     #[test]
     fn exhausts_ternary_matrices_including_singular_cases_and_subnormal_rows() {
