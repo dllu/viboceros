@@ -2,6 +2,56 @@ use super::*;
 use viboceros_document::SelectionMode;
 
 #[test]
+fn remove_from_group_prompt_picks_individual_members_and_supports_copy() {
+    for copy in [false, true] {
+        let mut app = test_app();
+        let ids = [0., 1., 2.].map(|x| {
+            app.document
+                .add_geometry(Geometry::Point(point(x, 0., 0.)))
+                .unwrap()
+        });
+        let group = app.document.add_group(None, [ids[0], ids[1]]).unwrap();
+        enter(&mut app, "RemoveFromGroup");
+        assert!(app.object_prompt.is_some());
+        app.apply_selection_click(SelectionClick {
+            object_id: Some(ids[2]),
+            mode: SelectionMode::Replace,
+        });
+        assert_eq!(app.document.selected_object_count(), 0);
+        app.apply_selection_click(SelectionClick {
+            object_id: Some(ids[0]),
+            mode: SelectionMode::Replace,
+        });
+        assert_eq!(
+            app.document.selected_object_ids().collect::<Vec<_>>(),
+            [ids[0]]
+        );
+        if copy {
+            enter(&mut app, "Copy=Yes");
+        }
+        enter(&mut app, "");
+        assert!(app.object_prompt.is_none());
+        assert_eq!(app.document.selected_object_count(), 1);
+        assert!(
+            app.document
+                .selected_objects()
+                .next()
+                .unwrap()
+                .group_ids()
+                .is_empty()
+        );
+        assert_eq!(
+            app.document.group(group).unwrap().members().len(),
+            if copy { 2 } else { 1 }
+        );
+        assert_eq!(app.document.objects().len(), if copy { 4 } else { 3 });
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.group(group).unwrap().members().len(), 2);
+        assert_eq!(app.document.objects().len(), 3);
+    }
+}
+
+#[test]
 fn point_cloud_command_first_filters_clouds_and_curves_and_preserves_pick_order() {
     let mut app = test_app();
     let ids = [1.0, 2.0, 3.0].map(|x| {

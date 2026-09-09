@@ -11,6 +11,7 @@ mod tests;
 pub enum ObjectSelectionFilter {
     #[default]
     Any,
+    Grouped,
     Mesh,
     ToNurbs,
     Beziers,
@@ -19,9 +20,13 @@ pub enum ObjectSelectionFilter {
 }
 
 impl ObjectSelectionFilter {
+    /// Apply both geometry and attribute restrictions to a document object.
+    pub fn accepts_object(self, object: &viboceros_document::Object) -> bool {
+        self.accepts(object.geometry()) && (self != Self::Grouped || !object.group_ids().is_empty())
+    }
     pub fn accepts(self, geometry: &Geometry) -> bool {
         match self {
-            Self::Any => true,
+            Self::Any | Self::Grouped => true,
             Self::PointCloudSources => matches!(geometry, Geometry::Point(_) | Geometry::Mesh(_)),
             Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
             Self::ToNurbs => !matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_)),

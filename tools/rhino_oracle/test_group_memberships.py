@@ -50,7 +50,7 @@ class GroupMembershipWorkerTests(unittest.TestCase):
                 self.exercise(failure)
 
     def test_command_macros_complete_the_observed_prompts(self):
-        for command in ["Copy", "Array", "ArrayLinear", "ArrayPolar", "Explode", "ConvertToBeziers", "Ungroup", "UngroupAll", "AddToGroup"]:
+        for command in ["Copy", "Array", "ArrayLinear", "ArrayPolar", "Explode", "ConvertToBeziers", "Ungroup", "UngroupAll", "AddToGroup", "RemoveFromGroup", "RemoveFromGroupCopy"]:
             with self.subTest(command=command): self.exercise(None, command)
 
     def test_nameless_output_provenance_is_only_inferred_for_a_single_source(self):
@@ -145,13 +145,15 @@ class GroupMembershipWorkerTests(unittest.TestCase):
         def run(script, verify):
             self.assertEqual(script, {"Copy":"_Copy w0,0,0 w10,0,0 _Enter",
                 "AddToGroup":"_AddToGroup Group-0 _Enter",
+                "RemoveFromGroup":"_RemoveFromGroup _Copy=_No _SelID object-1 _SelID object-2 _Enter",
+                "RemoveFromGroupCopy":"_RemoveFromGroup _Copy=_Yes _SelID object-1 _SelID object-2 _Enter",
                 "Array":"_-Array _Mode=_UnitCell 2 1 1 10 _Enter",
                 "ArrayPolar":"_-ArrayPolar w0,0,0 2 _Rotate=_Yes _ZOffset 0 180 _Enter",
                 "ArrayLinear":"_ArrayLinear 2 w0,0,0 w10,0,0", "Explode":"_Explode",
                 "ConvertToBeziers":"_ConvertToBeziers _Yes", "Ungroup":"_Ungroup", "UngroupAll":"_UngroupAll"}[command])
             self.assertTrue(verify)
             self.assertFalse(aid.UniversalConstructionPlaneMode)
-            self.assertEqual(selected, {"object-1"} if nameless and failure is None else {"object-1", "object-2"})
+            self.assertEqual(selected, set() if command in ("RemoveFromGroup", "RemoveFromGroupCopy") else ({"object-1"} if nameless and failure is None else {"object-1", "object-2"}))
             # Exercise a new command-created definition reusing a deleted slot.
             groups.Delete(0)
             groups.Add("Group107", ["object-1"])

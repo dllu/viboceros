@@ -75,7 +75,7 @@ impl Viewport {
     ) -> Option<ObjectId> {
         let mut nearest: Option<(PickHit, ObjectId)> = None;
         for object in document.objects() {
-            if !document.is_object_selectable(object.id()) || !filter.accepts(object.geometry()) {
+            if !document.is_object_selectable(object.id()) || !filter.accepts_object(object) {
                 continue;
             }
             let hit = match object.geometry() {
@@ -206,7 +206,7 @@ impl Viewport {
         document
             .objects()
             .filter(|object| document.is_object_selectable(object.id()))
-            .filter(|object| filter.accepts(object.geometry()))
+            .filter(|object| filter.accepts_object(object))
             .filter_map(|object| {
                 let primitives = self.projected_primitives(
                     object.geometry(),

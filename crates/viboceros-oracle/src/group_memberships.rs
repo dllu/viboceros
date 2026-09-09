@@ -32,6 +32,8 @@ pub enum ObjectCommand {
     ArrayPolar,
     Ungroup,
     UngroupAll,
+    RemoveFromGroup,
+    RemoveFromGroupCopy,
     Explode,
     ConvertToBeziers,
     Delete,
@@ -131,6 +133,7 @@ pub(super) fn run(
                     .collect::<BTreeSet<_>>();
                 let command = match name {
                     ObjectCommand::Move => "Move 0,0,0 0,1,0".into(),
+                    ObjectCommand::RemoveFromGroupCopy => "RemoveFromGroup Copy=Yes".into(),
                     ObjectCommand::Copy => "Copy 0,0,0 10,0,0".into(),
                     ObjectCommand::Array => "Array 2 1 1 10 0 0".into(),
                     ObjectCommand::ArrayLinear => "ArrayLinear 2 0,0,0 10,0,0".into(),

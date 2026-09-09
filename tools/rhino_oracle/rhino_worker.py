@@ -3671,6 +3671,7 @@ def _group_memberships(operation, tolerance):
         if any(type(i) is not int or not 0 <= i < count for i in values) or (unique and len(set(values)) != len(values)):
             raise ValueError("invalid membership indices")
     scripts = {"Copy": "_Copy w0,0,0 w10,0,0 _Enter", "Ungroup": "_Ungroup", "UngroupAll": "_UngroupAll",
+               "RemoveFromGroup": "_RemoveFromGroup", "RemoveFromGroupCopy": "_RemoveFromGroup",
                "Explode": "_Explode", "ConvertToBeziers": "_ConvertToBeziers _Yes", "Delete": "_Delete",
                "Distribute": "_-Distribute _Mode=_Gap _Spacing _Automatic _XAxis",
                "Array": "_-Array _Mode=_UnitCell 2 1 1 10 _Enter",
@@ -3815,7 +3816,16 @@ def _group_memberships(operation, tolerance):
                     if step["name"] == "Distribute" and len(selected) < 3:
                         raise ValueError("distribution requires three preselected objects")
                     source_candidates = set(source_by_id[obj.Id] for obj in selected)
-                    _run_surface_script(scripts[step["name"]], True)
+                    if step['name'] in ('RemoveFromGroup', 'RemoveFromGroupCopy'):
+                        eligible = [obj for obj in selected if obj.Attributes.GetGroupList()]
+                        if not eligible: raise ValueError('remove from group requires grouped sources')
+                        document.Objects.UnselectAll()
+                        script = '_RemoveFromGroup _Copy=_%s %s _Enter' % (
+                            'Yes' if step['name'] == 'RemoveFromGroupCopy' else 'No',
+                            ' '.join('_SelID %s' % obj.Id for obj in eligible))
+                        _run_surface_script(script, True)
+                    else:
+                        _run_surface_script(scripts[step["name"]], True)
                     for obj in objects():
                         if obj.Id in before or obj.Id in source_by_id: continue
                         name = obj.Attributes.Name

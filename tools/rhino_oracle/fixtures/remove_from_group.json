@@ -1,0 +1,10 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"id":"overlap-remove", "op":"group_memberships", "sources":[{"type":"point","point":[0,0,0]},{"type":"point","point":[1,0,0]},{"type":"point","point":[2,0,0]}], "groups":[[0,1],[1,2]], "steps":[{"kind":"select","objects":[1]},{"kind":"command","name":"RemoveFromGroup"}]},
+    {"id":"overlap-copy", "op":"group_memberships", "sources":[{"type":"point","point":[0,0,0]},{"type":"point","point":[1,0,0]},{"type":"point","point":[2,0,0]}], "groups":[[0,1],[1,2]], "steps":[{"kind":"select","objects":[1]},{"kind":"command","name":"RemoveFromGroupCopy"}]},
+    {"id":"whole-group-remove", "op":"group_memberships", "sources":[{"type":"point","point":[0,0,0]},{"type":"point","point":[1,0,0]}], "groups":[[0,1]], "steps":[{"kind":"select","objects":[0,1]},{"kind":"command","name":"RemoveFromGroup"}]},
+    {"id":"whole-group-copy", "op":"group_memberships", "sources":[{"type":"point","point":[0,0,0]},{"type":"point","point":[1,0,0]}], "groups":[[0,1]], "steps":[{"kind":"select","objects":[0,1]},{"kind":"command","name":"RemoveFromGroupCopy"}]}
+  ]
+}

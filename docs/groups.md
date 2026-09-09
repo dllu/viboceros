@@ -16,6 +16,10 @@ same groups. This agrees with the open-source
 [OpenNURBS attributes implementation](../third_party/opennurbs/opennurbs_3dm_attributes.cpp)
 and direct Rhino 8 observations.
 
+[`RemoveFromGroup`](commands/remove-from-group.md) detaches all memberships
+from individual selected members, or creates selected ungrouped copies with
+`Copy=Yes`. It leaves unselected peers and group definitions intact.
+
 Bare `Ungroup` removes only the last membership on each selected object;
 `UngroupAll` removes all memberships on those objects. Both retain empty group
 definitions and leave unselected peers unchanged. These are the

@@ -8,6 +8,7 @@ Rhino's complete command set is still a work in progress.
 - [Single and repeated point placement](points.md)
 - [Rectangular point grids](point-grid.md)
 - [Point-cloud creation](point-cloud.md)
+- [Detach or copy group members](remove-from-group.md)
 - [NURBS structure and parameterization](nurbs.md)
 - [Object conversion to NURBS](to-nurbs.md)
 - [Bézier conversion](beziers.md)
@@ -170,6 +171,7 @@ Revolve 0,0,0 0,0,1 270 StartAngle=0 DeleteInput=No
 Group Assembly
 Group All Everything
 AddToGroup Assembly
+RemoveFromGroup Copy=No
 SetObjectName "Fastener Part" AppendCounter=Yes
 SetObjectColor 12,34,56
 SetObjectColor ByLayer

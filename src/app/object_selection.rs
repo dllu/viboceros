@@ -35,7 +35,11 @@ impl PendingObjectCommand {
         match self.phase {
             ObjectPromptPhase::Selecting => match self.description.workflow {
                 ObjectSelectionWorkflow::OptionsDuringSelection => {
-                    "Select meshes or type options; Enter finishes, Esc cancels"
+                    if self.description.filter == ObjectSelectionFilter::Grouped {
+                        "Select grouped objects or type options; Enter finishes, Esc cancels"
+                    } else {
+                        "Select objects or type options; Enter finishes, Esc cancels"
+                    }
                 }
                 ObjectSelectionWorkflow::ConfirmAfterSelection => {
                     "Select objects; Enter opens conversion options, Esc cancels"
@@ -75,7 +79,7 @@ impl VibocerosApp {
         let preselected = self
             .document
             .selected_objects()
-            .any(|o| description.filter.accepts(o.geometry()));
+            .any(|o| description.filter.accepts_object(o));
         if preselected {
             if description.workflow == ObjectSelectionWorkflow::OptionsDuringSelection {
                 return false;
@@ -172,7 +176,7 @@ impl VibocerosApp {
                 if !self
                     .document
                     .selected_objects()
-                    .any(|o| pending.description.filter.accepts(o.geometry()))
+                    .any(|o| pending.description.filter.accepts_object(o))
                 {
                     self.push_log("Select at least one eligible object; Esc cancels".into());
                     return true;
@@ -240,7 +244,7 @@ impl VibocerosApp {
                     .objects()
                     .filter(|o| {
                         self.document.is_object_selectable(o.id())
-                            && pending.description.filter.accepts(o.geometry())
+                            && pending.description.filter.accepts_object(o)
                     })
                     .map(|o| o.id())
                     .collect::<Vec<_>>();
@@ -363,7 +367,7 @@ impl VibocerosApp {
             .into_iter()
             .filter(|id| {
                 self.document.object(*id).is_some_and(|o| {
-                    self.document.is_object_selectable(*id) && filter.accepts(o.geometry())
+                    self.document.is_object_selectable(*id) && filter.accepts_object(o)
                 })
             })
             .collect::<Vec<_>>();
