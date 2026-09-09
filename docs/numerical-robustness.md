@@ -14,6 +14,10 @@ Implementation: [vectors](../crates/viboceros-geometry/src/vector.rs),
 [planes](../crates/viboceros-geometry/src/plane.rs), and
 [frames](../crates/viboceros-geometry/src/frame.rs).
 
+Affine application and composition live in
+[transform.rs](../crates/viboceros-geometry/src/transform.rs), with their focused
+regression suite in [transform/tests.rs](../crates/viboceros-geometry/src/transform/tests.rs).
+
 ## Dot and cross products
 
 Vector dot products compensate multiplication and summation rounding. When
