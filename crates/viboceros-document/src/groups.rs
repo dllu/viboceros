@@ -81,6 +81,26 @@ impl Document {
         })
     }
 
+    /// Clears all memberships of the requested objects, retaining definitions.
+    /// Duplicate IDs coalesce; ungrouped objects are no-ops. Validate the entire
+    /// batch before editing, including within a caller-owned transaction.
+    pub fn clear_object_group_memberships(
+        &mut self,
+        objects: impl IntoIterator<Item = ObjectId>,
+    ) -> Result<usize, DocumentError> {
+        let indices = self.resolve_object_indices(objects)?;
+        for &index in &indices {
+            membership_changes(self, index, &self.objects[index].group_ids, &[])?;
+        }
+        self.group_transaction("Clear object groups", |document| {
+            let mut changed = 0;
+            for index in indices {
+                changed += usize::from(document.set_object_group_memberships_at(index, [])?);
+            }
+            Ok(changed)
+        })
+    }
+
     /// Adds an empty group definition, including unused imported table entries.
     pub fn add_empty_group(&mut self, name: Option<String>) -> Result<GroupId, DocumentError> {
         let name = name
@@ -306,6 +326,25 @@ fn apply_memberships_at(
     before: &[GroupId],
     after: &[GroupId],
 ) -> Result<(), DocumentError> {
+    let changes = membership_changes(document, object_index, before, after)?;
+    let id = document.objects[object_index].id;
+    for (index, present) in changes {
+        if present {
+            document.groups[index].members.insert(id);
+        } else {
+            document.groups[index].members.remove(&id);
+        }
+    }
+    document.objects[object_index].group_ids = after.to_vec();
+    Ok(())
+}
+
+fn membership_changes(
+    document: &Document,
+    object_index: usize,
+    before: &[GroupId],
+    after: &[GroupId],
+) -> Result<Vec<(usize, bool)>, DocumentError> {
     let id = document.objects[object_index].id;
     if document.objects[object_index].group_ids != before {
         return Err(DocumentError::HistoryInvariant(
@@ -331,13 +370,5 @@ fn apply_memberships_at(
         }
         changes.push((index, after_set.contains(group)));
     }
-    for (index, present) in changes {
-        if present {
-            document.groups[index].members.insert(id);
-        } else {
-            document.groups[index].members.remove(&id);
-        }
-    }
-    document.objects[object_index].group_ids = after.to_vec();
-    Ok(())
+    Ok(changes)
 }

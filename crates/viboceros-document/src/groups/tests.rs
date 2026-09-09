@@ -2,6 +2,89 @@ use super::*;
 use viboceros_geometry::{Point3, Vector3};
 
 #[test]
+fn batch_clear_groups_preserves_peers_definitions_and_history() {
+    let (mut document, ids, _) = fixture();
+    let original = state(&document);
+    assert_eq!(
+        document
+            .clear_object_group_memberships([ids[2], ids[0], ids[2]])
+            .unwrap(),
+        2
+    );
+    assert!(document.object(ids[0]).unwrap().group_ids().is_empty());
+    assert!(document.object(ids[2]).unwrap().group_ids().is_empty());
+    assert_eq!(document.object(ids[1]).unwrap(), &original.0[1]);
+    assert_eq!(document.groups().len(), original.1.len());
+    consistent(&document);
+    let changed = state(&document);
+    document.undo().unwrap();
+    assert_eq!(state(&document), original);
+    document.redo().unwrap();
+    assert_eq!(state(&document), changed);
+    document.add_geometry(geometry(99.)).unwrap();
+    document.undo().unwrap();
+    let before = format!("{document:?}");
+    assert_eq!(
+        document
+            .clear_object_group_memberships([ids[0], ids[2]])
+            .unwrap(),
+        0
+    );
+    assert_eq!(document.clear_object_group_memberships([]).unwrap(), 0);
+    assert_eq!(format!("{document:?}"), before);
+}
+
+#[test]
+fn batch_clear_groups_preflights_all_objects_even_in_a_transaction() {
+    for active in [false, true] {
+        for corrupt in [false, true] {
+            let (mut document, ids, groups) = fixture();
+            document.add_geometry(geometry(99.)).unwrap();
+            document.undo().unwrap();
+            if corrupt {
+                document
+                    .groups
+                    .iter_mut()
+                    .find(|g| g.id == groups[0])
+                    .unwrap()
+                    .members
+                    .remove(&ids[2]);
+            }
+            if active {
+                document.begin_transaction("caller").unwrap();
+            }
+            let before = format!("{document:?}");
+            let requested = if corrupt {
+                ids.to_vec()
+            } else {
+                vec![ids[0], ObjectId::new()]
+            };
+            assert!(document.clear_object_group_memberships(requested).is_err());
+            assert_eq!(format!("{document:?}"), before);
+        }
+    }
+}
+
+#[test]
+fn batch_clear_groups_joins_and_rolls_back_with_the_caller() {
+    let (mut document, ids, _) = fixture();
+    document.add_geometry(geometry(99.)).unwrap();
+    document.undo().unwrap();
+    let before = format!("{document:?}");
+    document.begin_transaction("caller").unwrap();
+    document.add_geometry(geometry(100.)).unwrap();
+    assert_eq!(document.clear_object_group_memberships(ids).unwrap(), 3);
+    assert!(
+        document
+            .objects()
+            .all(|object| object.group_ids().is_empty())
+    );
+    assert!(document.groups().all(|group| group.members().len() == 0));
+    document.rollback_transaction().unwrap();
+    assert_eq!(format!("{document:?}"), before);
+}
+
+#[test]
 #[ignore = "manual large group creation timing"]
 fn benchmark_large_group_creation() {
     let mut document = Document::default();
@@ -46,6 +129,21 @@ fn benchmark_large_group_creation() {
             .iter()
             .all(|object| object.group_ids == [second])
     );
+    consistent(&document);
+    let start = std::time::Instant::now();
+    assert_eq!(
+        document
+            .clear_object_group_memberships(ids.iter().rev().copied())
+            .unwrap(),
+        ids.len()
+    );
+    eprintln!("20k points, clear memberships: {:?}", start.elapsed());
+    assert!(
+        document
+            .objects()
+            .all(|object| object.group_ids().is_empty())
+    );
+    assert!(document.groups().all(|group| group.members().len() == 0));
     consistent(&document);
 }
 

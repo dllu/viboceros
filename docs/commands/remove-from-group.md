@@ -18,6 +18,12 @@ no extra group definitions are created. Both modes use one model transaction,
 with native Undo/Redo coverage. Invalid options or no eligible objects fail
 without edits or loss of redo.
 
+Membership removal resolves selected objects in one batch, without a repeated
+object-table scan per source or geometry copies. The document batch API validates
+all requested IDs and membership transitions before editing, also inside an
+existing transaction. Tests cover duplicate IDs, ungrouped no-ops, retained group
+definitions, unchanged peers, failure atomicity, and ordered Undo/Redo.
+
 Without eligible preselection, the UI collects grouped objects individually,
 without expanding picks to their group peers. Ungrouped objects are filtered
 from click/window selection and `SelAll`. Enter finishes; `Copy=Yes`/`Copy=No`

@@ -42,9 +42,7 @@ impl Command for RemoveFromGroupCommand {
                 viboceros_document::CopyGroupPolicy::Omit,
             )?;
         } else {
-            for id in sources {
-                document.set_object_group_memberships(id, [])?;
-            }
+            document.clear_object_group_memberships(sources)?;
         }
         Ok(format!(
             "{} {count} object(s) from groups",
