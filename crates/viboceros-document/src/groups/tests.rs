@@ -37,6 +37,16 @@ fn benchmark_large_group_creation() {
             .all(|object| object.group_ids == [first, second])
     );
     consistent(&document);
+    let start = std::time::Instant::now();
+    assert_eq!(document.remove_group(first).unwrap(), ids.len());
+    eprintln!("20k points, remove group: {:?}", start.elapsed());
+    assert!(
+        document
+            .objects
+            .iter()
+            .all(|object| object.group_ids == [second])
+    );
+    consistent(&document);
 }
 
 #[test]
@@ -126,6 +136,55 @@ fn state(document: &Document) -> (Vec<Object>, Vec<Group>) {
         document.objects().cloned().collect(),
         document.groups().cloned().collect(),
     )
+}
+
+#[test]
+fn group_removal_rejects_broken_member_indexes_before_transaction_edits() {
+    for active in [false, true] {
+        for corruption in 0..3 {
+            let (mut document, ids, groups) = fixture();
+            document.add_geometry(geometry(99.)).unwrap();
+            document.undo().unwrap();
+            if active {
+                document.begin_transaction("caller").unwrap();
+            }
+            let expected = match corruption {
+                0 => {
+                    let missing = ObjectId::new();
+                    document.groups[0].members.insert(missing);
+                    DocumentError::ObjectNotFound(missing)
+                }
+                1 => {
+                    document.groups[0].members.remove(&ids[0]);
+                    DocumentError::HistoryInvariant("group member index does not match")
+                }
+                _ => {
+                    document.objects[0].group_ids.retain(|id| *id != groups[0]);
+                    DocumentError::HistoryInvariant("group member index does not match")
+                }
+            };
+            let before = format!("{document:?}");
+            assert_eq!(document.remove_group(groups[0]), Err(expected));
+            assert_eq!(format!("{document:?}"), before);
+        }
+    }
+}
+
+#[test]
+fn empty_group_removal_preserves_objects_and_replays_its_table_position() {
+    let (mut document, _, _) = fixture();
+    let empty = document.add_empty_group(Some("unused".into())).unwrap();
+    document.add_empty_group(Some("later".into())).unwrap();
+    let before = state(&document);
+    let selection = document.selection_order.clone();
+    assert_eq!(document.remove_group(empty).unwrap(), 0);
+    assert_eq!(document.objects, before.0);
+    assert_eq!(document.selection_order, selection);
+    let after = state(&document);
+    document.undo().unwrap();
+    assert_eq!(state(&document), before);
+    document.redo().unwrap();
+    assert_eq!(state(&document), after);
 }
 
 #[test]

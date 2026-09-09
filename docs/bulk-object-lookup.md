@@ -91,9 +91,22 @@ membership orders, reversed/duplicate requests, no-ops, and exact Undo/Redo
 restoration. A 20,000-point debug diagnostic measured group creation at about
 4.29 s before batching and 118 ms afterward, and member addition at 3.35 s before
 and 162 ms afterward. Timings exclude the separate exhaustive consistency check
-that follows both operations. This does not optimize group deletion or history
-replay, nor establish release-build or Rhino performance parity.
+that follows both operations. This does not optimize history replay or establish
+release-build or Rhino performance parity.
 
 ```sh
 cargo test -p viboceros-document benchmark_large_group_creation -- --ignored --nocapture
 ```
+
+The same diagnostic also removes the first group while retaining the second.
+Group deletion resolves member indices once and checks that object memberships
+agree with the group's reverse index before beginning its transaction. Missing
+member objects return an error instead of panicking; an incomplete reverse index
+is rejected instead of leaving dangling memberships after definition removal.
+Corruption tests cover these cases with and without a caller-owned transaction,
+including unchanged redo and document state. Empty-definition removal and
+overlapping ordered memberships have Undo/Redo coverage.
+
+Deleting the group of 20,000 points improved from 2.21 s to 161 ms in the debug
+diagnostic, including the preflight consistency check. Surviving membership
+order is retained; history replay still uses per-object ID resolution.

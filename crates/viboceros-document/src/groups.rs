@@ -153,22 +153,27 @@ impl Document {
             .iter()
             .position(|g| g.id == id)
             .ok_or(DocumentError::GroupNotFound(id))?;
-        let members = self.groups[index]
-            .members
-            .iter()
-            .copied()
-            .collect::<Vec<_>>();
+        let members = &self.groups[index].members;
+        let indices = self.resolve_object_indices(members.iter().copied())?;
+        // Validate both directions before removing a definition: otherwise an
+        // absent reverse entry could leave dangling memberships, and a missing
+        // object used to panic after the transaction had already started.
+        for object in &self.objects {
+            if object.group_ids.contains(&id) != members.contains(&object.id) {
+                return Err(DocumentError::HistoryInvariant(
+                    "group member index does not match",
+                ));
+            }
+        }
         self.group_transaction("Remove group", |document| {
-            for member in &members {
-                let remaining = document
-                    .object(*member)
-                    .unwrap()
+            for &object_index in &indices {
+                let remaining = document.objects[object_index]
                     .group_ids
                     .iter()
                     .copied()
                     .filter(|group| *group != id)
                     .collect::<Vec<_>>();
-                document.set_object_group_memberships(*member, remaining)?;
+                document.set_object_group_memberships_at(object_index, remaining)?;
             }
             let group = document.groups.remove(index);
             debug_assert!(group.members.is_empty());
@@ -180,7 +185,7 @@ impl Document {
                     stored: Some(group),
                 },
             );
-            Ok(members.len())
+            Ok(indices.len())
         })
     }
 
