@@ -148,6 +148,73 @@ mod tests {
 
     struct UnreachableMorph;
 
+    #[test]
+    fn morph_copies_visit_unique_sources_in_table_order_and_fail_before_mutation() {
+        struct RecordingMorph(std::cell::RefCell<Vec<Point3>>);
+        impl PointMorph for RecordingMorph {
+            fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError> {
+                self.0.borrow_mut().push(point);
+                Point3::try_new(point.x() * 2., point.y(), point.z())
+            }
+        }
+
+        for fail in [false, true] {
+            for active in [false, true] {
+                let mut document = Document::default();
+                let points = [1., if fail { f64::MAX } else { 2. }]
+                    .map(|x| Point3::try_new(x, 0., 0.).unwrap());
+                let ids =
+                    points.map(|point| document.add_geometry(Geometry::Point(point)).unwrap());
+                document.add_group(Some("Both".into()), ids).unwrap();
+                document.add_group(None, [ids[1]]).unwrap();
+                document
+                    .select_objects_direct(ids, SelectionMode::Replace)
+                    .unwrap();
+                document.add_geometry(Geometry::Point(points[0])).unwrap();
+                document.undo().unwrap();
+                let original_objects = document.objects.clone();
+                let original_groups = document.groups.clone();
+                if active {
+                    document.begin_transaction("caller").unwrap();
+                    document.add_geometry(Geometry::Point(points[0])).unwrap();
+                }
+                let before = format!("{document:?}");
+                let morph = RecordingMorph(Default::default());
+                let result = document.copy_objects_morphed([ids[1], ids[0], ids[1]], &morph);
+                assert_eq!(*morph.0.borrow(), points);
+                if fail {
+                    assert!(result.is_err());
+                    assert_eq!(format!("{document:?}"), before);
+                } else {
+                    let copies = result.unwrap();
+                    assert_eq!(copies.len(), 2);
+                    for (index, id) in copies.iter().enumerate() {
+                        let object = document.object(*id).unwrap();
+                        assert_eq!(
+                            object.geometry,
+                            Geometry::Point(
+                                Point3::try_new(2. * (index + 1) as f64, 0., 0.).unwrap()
+                            )
+                        );
+                        assert_eq!(object.group_ids.len(), index + 1);
+                    }
+                    let objects = document.objects.clone();
+                    let groups = document.groups.clone();
+                    if active {
+                        document.commit_transaction().unwrap();
+                    }
+                    document.undo().unwrap();
+                    assert_eq!(document.objects, original_objects);
+                    assert_eq!(document.groups, original_groups);
+                    document.redo().unwrap();
+                    assert_eq!(document.objects, objects);
+                    assert_eq!(document.groups, groups);
+                    assert_eq!(document.selection, copies.into_iter().collect());
+                }
+            }
+        }
+    }
+
     impl PointMorph for UnreachableMorph {
         fn morph_point(&self, _: Point3) -> Result<Point3, GeometryError> {
             panic!("editability must be checked before invoking geometry operations");
@@ -173,6 +240,10 @@ mod tests {
         );
         assert_eq!(
             document.morph_objects(ids, &UnreachableMorph),
+            Err(DocumentError::ObjectLocked(ids[1]))
+        );
+        assert_eq!(
+            document.copy_objects_morphed(ids, &UnreachableMorph),
             Err(DocumentError::ObjectLocked(ids[1]))
         );
         assert_eq!(format!("{document:?}"), before);

@@ -1303,16 +1303,12 @@ impl Document {
         ids: impl IntoIterator<Item = ObjectId>,
         morph: &(impl PointMorph + ?Sized),
     ) -> Result<Vec<ObjectId>, DocumentError> {
-        let sources = self.resolve_object_indices(ids)?;
-        let mut staged = Vec::with_capacity(sources.len());
-        for &index in &sources {
-            let object = &self.objects[index];
-            self.ensure_object_editable(object)?;
-            staged.push((index, object.geometry.morphed(morph, self.tolerance)?));
-        }
-        if sources.is_empty() {
+        let staged =
+            self.stage_object_geometries(ids, |geometry| geometry.morphed(morph, self.tolerance))?;
+        if staged.is_empty() {
             return Ok(Vec::new());
         }
+        let sources = staged.iter().map(|(index, _)| *index).collect::<Vec<_>>();
         self.copy_staged_object_sets(&sources, 1, staged, CopyGroupPolicy::Preserve)
     }
 
