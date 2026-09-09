@@ -11,6 +11,15 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_points_probe_rejects_untrusted_events_before_document_access(self):
+        for operation in [
+            {"events":"1,2,3"}, {"events":["Delete"]},
+            {"events":[[1,2]]}, {"events":[],"cancel":1},
+            {"events":["undo"]*101},
+        ]:
+            with self.subTest(operation=operation), self.assertRaises(ValueError):
+                self.worker._points_command(operation)
+
     def test_point_cloud_probe_rejects_incomplete_or_invalid_selection(self):
         point = {"type":"point", "point":[1,2,3]}
         cloud = {"type":"point_cloud", "points":[[1,2,3]]}

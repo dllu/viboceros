@@ -35,6 +35,7 @@ mod object_selection;
 mod plane_primitives;
 mod point_grid;
 mod point_input;
+mod points;
 mod toolbar;
 use point_input::{plane_radius_exceeds_tolerance, plane_rectangle_exceeds_tolerance};
 
@@ -142,6 +143,7 @@ impl InteractiveScaleKind {
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
     Point,
+    Points,
     Line {
         start: Option<Point3>,
     },
@@ -378,6 +380,7 @@ impl InteractiveCommand {
     const fn name(self) -> &'static str {
         match self {
             Self::Point => "Point",
+            Self::Points => "Points",
             Self::Line { .. } => "Line",
             Self::Circle { .. } => "Circle",
             Self::Sphere { .. } => "Sphere",
@@ -447,6 +450,7 @@ impl InteractiveCommand {
     const fn prompt(self) -> &'static str {
         match self {
             Self::Point => "Point: pick a location in the viewport (Esc to cancel)",
+            Self::Points => "Points: pick locations; Undo removes the last; Enter or Esc finishes",
             Self::Line { start: None } => {
                 "Line: pick the start point in the viewport (Esc to cancel)"
             }
@@ -883,6 +887,7 @@ impl InteractiveCommand {
     const fn anchor(self) -> Option<Point3> {
         match self {
             Self::Point
+            | Self::Points
             | Self::Line { start: None }
             | Self::Circle { center: None }
             | Self::Sphere { center: None }
@@ -1088,6 +1093,7 @@ pub struct VibocerosApp {
     plane_prompt: Option<construction_plane::PlanePrompt>,
     object_prompt: Option<object_selection::PendingObjectCommand>,
     curve_points: Vec<Point3>,
+    points_session: Option<points::PointsSession>,
     curve_preview: curve_preview::CurvePreviewCache,
     sidebar: DocumentSidebar,
 }
@@ -1124,6 +1130,7 @@ impl VibocerosApp {
             plane_prompt: None,
             object_prompt: None,
             curve_points: Vec::new(),
+            points_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
             sidebar: DocumentSidebar::default(),
         }
@@ -1131,6 +1138,9 @@ impl VibocerosApp {
 
     fn run_command(&mut self) {
         let input = self.command_input.trim().to_owned();
+        if self.try_continue_points(&input) {
+            return;
+        }
         if !input.is_empty()
             && (self.try_run_plane_command(&input) || self.try_run_interface_command(&input))
         {
@@ -1171,6 +1181,9 @@ impl VibocerosApp {
     }
 
     fn try_execute_command(&mut self, input: &str) -> bool {
+        if self.try_continue_points(input) {
+            return true;
+        }
         let active_plane = self.viewports[self.active_viewport].construction_plane();
         // Scale2D uses the viewport where the scale factor is supplied, not
         // the one where its center/reference was picked.
@@ -2740,6 +2753,7 @@ impl VibocerosApp {
             }
             match normalized.as_str() {
                 "point" | "pt" => InteractiveCommand::Point,
+                "points" => InteractiveCommand::Points,
                 "line" | "l" => InteractiveCommand::Line { start: None },
                 "circle" | "c" => InteractiveCommand::Circle { center: None },
                 "sphere" | "sph" => InteractiveCommand::Sphere { center: None },
@@ -2855,6 +2869,7 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
+        self.finish_points_session();
         self.cancel_object_prompt(announce);
         let command = self.active_command.take();
         self.drafting_plane = None;
@@ -2864,6 +2879,7 @@ impl VibocerosApp {
         self.curve_points.clear();
         if let Some(command) = command
             && announce
+            && command != InteractiveCommand::Points
         {
             self.push_log(format!("Cancelled {}", command.name()));
         }
@@ -2877,6 +2893,7 @@ impl VibocerosApp {
             .drafting_plane
             .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane());
         match command {
+            InteractiveCommand::Points => return self.apply_points_point(point),
             InteractiveCommand::Point => {
                 self.active_command = None;
                 self.execute_command(&format!("Point {}", format_model_point(point)));
@@ -4758,6 +4775,11 @@ impl VibocerosApp {
     }
 
     fn apply_sidebar_action(&mut self, action: SidebarAction) {
+        // Sidebar document edits must not join or conflict with a live Points
+        // transaction. Finish accepted points before starting another action.
+        if self.active_command == Some(InteractiveCommand::Points) {
+            self.cancel_interactive_command(false);
+        }
         match action {
             SidebarAction::AddLayer { name } => {
                 let color = suggested_layer_color(self.document.layers().len());
@@ -5193,6 +5215,7 @@ mod tests {
     mod plane_arrays;
     mod point_grid;
     mod point_input;
+    mod points;
     mod rhino_curve_prompt;
     mod single_span_selection;
     use super::*;
@@ -5223,6 +5246,7 @@ mod tests {
             plane_prompt: None,
             object_prompt: None,
             curve_points: Vec::new(),
+            points_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
             sidebar: DocumentSidebar::default(),
         }

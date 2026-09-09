@@ -75,6 +75,7 @@ pub use loft::LoftFixture;
 mod point_cloud_command;
 mod point_grid;
 mod point_matrix;
+mod points_command;
 pub use point_grid::PointGridFixture;
 mod surface_jets;
 pub use surface_jets::SurfaceJetsFixture;
@@ -276,6 +277,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: point_cloud_command::PointCloudFixture,
+    },
+    PointsCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: points_command::PointsFixture,
     },
     PointGridDiagonalPrompt {
         id: String,
@@ -1592,6 +1598,7 @@ impl Operation {
             | Self::EdgeSurface { id, .. }
             | Self::PointGridCommand { id, .. }
             | Self::PointCloudCommand { id, .. }
+            | Self::PointsCommand { id, .. }
             | Self::PointGridDiagonalPrompt { id, .. }
             | Self::SurfaceGrid { id, .. }
             | Self::SurfaceCurvature { id, .. }
@@ -2017,6 +2024,7 @@ fn execute(
         Operation::PointCloudCommand { fixture, .. } => {
             point_cloud_command::run(fixture, tolerance)?
         }
+        Operation::PointsCommand { fixture, .. } => points_command::run(fixture, tolerance)?,
         Operation::PointGridDiagonalPrompt { fixture, .. } => {
             point_matrix::run_diagonal(fixture, tolerance)?
         }

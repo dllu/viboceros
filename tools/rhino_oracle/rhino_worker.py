@@ -3833,6 +3833,41 @@ def _group_memberships(operation, tolerance):
             for geometry in reversed(owned): geometry.Dispose()
 
 
+def _points_command(operation):
+    events = operation["events"]
+    cancel = operation.get("cancel", False)
+    if not isinstance(events, list) or len(events) > 100 or type(cancel) is not bool:
+        raise ValueError("invalid Points fixture")
+    tokens = []
+    for event in events:
+        if event == "undo": tokens.append("_Undo")
+        elif isinstance(event, list) and len(event) == 3: tokens.append("w" + _command_point(event))
+        else: raise ValueError("invalid Points event")
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = settings.HiddenObjects = settings.LockedObjects = True
+    def objects(): return list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in objects())
+    selection = [obj.Id for obj in objects() if obj.IsSelected(False)]
+    def record():
+        result = []
+        for obj in sorted(objects(), key=lambda o:o.RuntimeSerialNumber):
+            if obj.Id in before: continue
+            if not isinstance(obj.Geometry, Rhino.Geometry.Point): raise ValueError("Points created unexpected geometry")
+            result.append(dict(point=_xyz(obj.Geometry.Location), selected=bool(obj.IsSelected(False))))
+        return result
+    try:
+        document.Objects.UnselectAll()
+        _run_surface_script("_Points " + " ".join(tokens) + (" !" if cancel else " _Enter"), True)
+        return dict(after=record()), 0
+    finally:
+        Rhino.RhinoApp.RunScript("!", False)
+        for obj in objects():
+            if obj.Id not in before: document.Objects.Delete(obj.Id, True)
+        document.Objects.UnselectAll()
+        for key in selection: document.Objects.Select(key)
+
+
 def _point_cloud_conversion(operation, tolerance):
     sources = operation["sources"]
     selected = operation.get("selected", list(range(len(sources))))
@@ -4220,6 +4255,8 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
+    if operation.get("op") == "points_command":
+        return _points_command(operation)
     if operation.get("op") == "point_cloud_command":
         return _point_cloud_conversion(operation, tolerance)
     if operation.get("op") == "document_units":

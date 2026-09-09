@@ -1,0 +1,13 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"op":"points_command","id":"points-duplicates","events":[[1,2,3],[4,5,6],[1,2,3]]},
+    {"op":"points_command","id":"points-session-undo","events":[[1,2,3],[4,5,6],"undo",[7,8,9]]},
+    {"op":"points_command","id":"points-undo-all","events":[[1,2,3],"undo"]},
+    {"op":"points_command","id":"points-empty","events":[]},
+    {"op":"points_command","id":"points-cancel","events":[[1,2,3],[4,5,6]],"cancel":true},
+    {"op":"points_command","id":"points-cancel-empty","events":[],"cancel":true},
+    {"op":"points_command","id":"points-undo-empty","events":["undo",[1,2,3]]}
+  ]
+}
