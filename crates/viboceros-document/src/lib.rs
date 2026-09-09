@@ -1336,19 +1336,22 @@ impl Document {
         copies: impl IntoIterator<Item = (ObjectId, Geometry)>,
         input_order: bool,
     ) -> Result<Vec<ObjectId>, DocumentError> {
-        let copies = copies
+        let mut copies = copies
             .into_iter()
             .enumerate()
             .map(|(rank, (id, geometry))| (id, (rank, geometry)))
             .collect::<BTreeMap<_, _>>();
         let indices = self.resolve_object_indices(copies.keys().copied())?;
+        for &index in &indices {
+            self.ensure_object_editable(&self.objects[index])?;
+        }
+        self.validate_memberships_at_indices(&indices)?;
 
         let mut staged = Vec::with_capacity(copies.len());
         for index in indices {
             let object = &self.objects[index];
-            let (rank, geometry) = &copies[&object.id];
-            self.ensure_object_editable(object)?;
-            staged.push((index, *rank, geometry.clone()));
+            let (rank, geometry) = copies.remove(&object.id).unwrap();
+            staged.push((index, rank, geometry));
         }
         if staged.is_empty() {
             return Ok(Vec::new());
@@ -1368,7 +1371,6 @@ impl Document {
         let mut copied = Vec::with_capacity(staged.len());
         for (source_index, _, geometry) in staged {
             let source = &self.objects[source_index];
-            let source_id = source.id;
             let attributes = source.attributes.clone();
             let copy_id = ObjectId::new();
             let index = self.objects.len();
@@ -1388,18 +1390,20 @@ impl Document {
                     selected: false,
                 },
             );
-            copied.push((source_id, copy_id));
+            copied.push((source_index, index, copy_id));
         }
 
-        for (source_id, copy_id) in &copied {
-            let memberships = self.object(*source_id).unwrap().group_ids.clone();
-            self.set_object_group_memberships(*copy_id, memberships)?;
+        for &(source_index, copy_index, _) in &copied {
+            let memberships = self.objects[source_index].group_ids.clone();
+            if !memberships.is_empty() {
+                self.set_object_group_memberships_at(copy_index, memberships)?;
+            }
         }
 
         if owns_transaction {
             self.commit_transaction()?;
         }
-        Ok(copied.into_iter().map(|(_, copy_id)| copy_id).collect())
+        Ok(copied.into_iter().map(|(_, _, copy_id)| copy_id).collect())
     }
 
     /// Atomically morphs objects in place while retaining identities,

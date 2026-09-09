@@ -46,6 +46,16 @@ callback order and duplicate coalescing, late callback overflow without
 document mutation, and grouped copy history in standalone and caller-owned
 transactions.
 
+Replacement-geometry copies into existing source groups retain source and
+destination indices through insertion and membership assignment. They move
+the supplied geometry out of the deduplicated input map without cloning it,
+and skip empty membership updates. Source membership validity is checked
+before insertion, including duplicate memberships, missing definitions, and
+inconsistent reverse indexes. Regression tests cover unchanged document and
+caller-transaction state on these failures, both table-order and caller-order
+copies, last-value/last-position duplicate handling, and exact undo/redo.
+History replay still uses its existing object lookup strategy.
+
 A native debug-build diagnostic on 20,000 ungrouped points measured transform
 at about 1.14 s before these changes and 108 ms afterward; copy improved from
 4.39 s to 252 ms. The diagnostic checks every resulting point and output count.

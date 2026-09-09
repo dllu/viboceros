@@ -32,6 +32,86 @@ mod tests {
     use super::*;
 
     #[test]
+    fn replacement_copies_preflight_late_membership_corruption() {
+        for corruption in 0..3 {
+            for active in [false, true] {
+                for ordered in [false, true] {
+                    let mut document = Document::default();
+                    let geometry = Geometry::Point(Point3::try_new(1., 2., 3.).unwrap());
+                    let ids = [0, 1].map(|_| document.add_geometry(geometry.clone()).unwrap());
+                    let group = document.add_group(None, ids).unwrap();
+                    document.add_geometry(geometry.clone()).unwrap();
+                    document.undo().unwrap();
+                    if active {
+                        document.begin_transaction("caller").unwrap();
+                        document.add_geometry(geometry.clone()).unwrap();
+                    }
+                    match corruption {
+                        0 => document.objects[1].group_ids.push(GroupId::new()),
+                        1 => document.objects[1].group_ids.push(group),
+                        _ => {
+                            document.groups[0].members.remove(&ids[1]);
+                        }
+                    }
+                    let before = format!("{document:?}");
+                    let copies = ids.map(|id| (id, geometry.clone()));
+                    let result = if ordered {
+                        document.copy_object_geometries_into_source_groups_in_order(copies)
+                    } else {
+                        document.copy_object_geometries_into_source_groups(copies)
+                    };
+                    assert!(result.is_err());
+                    assert_eq!(format!("{document:?}"), before);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn replacement_copy_order_duplicates_and_memberships_replay_exactly() {
+        for ordered in [false, true] {
+            let mut document = Document::default();
+            let point = |x| Geometry::Point(Point3::try_new(x, 0., 0.).unwrap());
+            let ids = [0., 1., 2.].map(|x| document.add_geometry(point(x)).unwrap());
+            document.add_group(None, [ids[0], ids[2]]).unwrap();
+            document.add_group(None, [ids[2]]).unwrap();
+            document
+                .select_objects_direct([ids[2]], SelectionMode::Replace)
+                .unwrap();
+            let originals = document.objects.clone();
+            let groups = document.groups.clone();
+            let input = [
+                (ids[0], point(9.)),
+                (ids[2], point(12.)),
+                (ids[1], point(11.)),
+                (ids[0], point(10.)),
+            ];
+            let copies = if ordered {
+                document.copy_object_geometries_into_source_groups_in_order(input)
+            } else {
+                document.copy_object_geometries_into_source_groups(input)
+            }
+            .unwrap();
+            let order = if ordered { [2, 1, 0] } else { [0, 1, 2] };
+            for (copy, source) in copies.iter().zip(order) {
+                let object = document.object(*copy).unwrap();
+                assert_eq!(object.geometry, point(10. + source as f64));
+                assert_eq!(object.group_ids, originals[source].group_ids);
+                assert_eq!(object.attributes, originals[source].attributes);
+            }
+            assert_eq!(document.selection, BTreeSet::from([ids[2]]));
+            let after_objects = document.objects.clone();
+            let after_groups = document.groups.clone();
+            document.undo().unwrap();
+            assert_eq!(document.objects, originals);
+            assert_eq!(document.groups, groups);
+            document.redo().unwrap();
+            assert_eq!(document.objects, after_objects);
+            assert_eq!(document.groups, after_groups);
+        }
+    }
+
+    #[test]
     fn late_geometry_overflow_preserves_groups_redo_and_caller_transactions() {
         for copy in [false, true] {
             for active in [false, true] {

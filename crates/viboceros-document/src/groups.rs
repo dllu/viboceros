@@ -37,7 +37,7 @@ impl Document {
     }
 
     // The caller owns a validated index and must not reorder/remove objects.
-    fn set_object_group_memberships_at(
+    pub(super) fn set_object_group_memberships_at(
         &mut self,
         index: usize,
         groups: impl IntoIterator<Item = GroupId>,
@@ -190,7 +190,10 @@ impl Document {
 
     // Check even memberships unrelated to the requested group: a later
     // transition must not fail after earlier objects have already changed.
-    fn validate_memberships_at_indices(&self, indices: &[usize]) -> Result<(), DocumentError> {
+    pub(super) fn validate_memberships_at_indices(
+        &self,
+        indices: &[usize],
+    ) -> Result<(), DocumentError> {
         for &index in indices {
             let memberships = &self.objects[index].group_ids;
             membership_changes(self, index, memberships, memberships)?;
