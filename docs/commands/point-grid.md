@@ -80,6 +80,8 @@ Existing Explode and point-cloud picking operations apply.
 
 This implementation accepts two-corner, three-point, and center-based input.
 Rhino's Diagonal and Vertical workflows are not yet implemented.
+The [Diagonal investigation](../point-grid-diagonal.md) records prompt and point-order
+differences that must be resolved before adding that mode.
 Count-option prompts observed in Rhino 8.32 use `XCount`,
 `YCount`, and `ZCount`, unlike the names in the
 [online help](https://docs.mcneel.com/rhino/8/help/en-us/commands/pointgrid.htm).

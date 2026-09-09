@@ -1,0 +1,9 @@
+oracle failed: rhino probe failed: ValueError at operation diagonal-positive: start: surface command rejected an option: Python Script ( ResetEngine ): _PointGrid
+First corner of base ( Diagonal  3Point  Vertical  Center  XCount=10  YCount=10  ZCount=1 ): _XCount=3
+First corner of base ( 3Point  Vertical  Center  AroundCurve  XCount=3  YCount=10  ZCount=1 ): _YCount=2
+First corner of base ( 3Point  Vertical  Center  AroundCurve  XCount=3  YCount=2  ZCount=1 ): _ZCount=3
+First corner of base ( 3Point  Vertical  Center  AroundCurve  XCount=3  YCount=2  ZCount=3 ): _Diagonal
+Unknown command: _Diagonal
+First corner of base ( 3Point  Vertical  Center  AroundCurve  XCount=3  YCount=2  ZCount=3 ): w10,20,3
+Other corner of base or length ( 3Point ): w12,24,7
+Height. Press Enter to use width

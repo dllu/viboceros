@@ -11,6 +11,36 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_diagonal_grid_probe_seeds_counts_in_a_separate_owned_command(self):
+        operation = {"origin": [0,0,0], "x_axis": [1,0,0], "y_axis": [0,1,0], "count": [3,2,2], "points": [[10,20,3], [12,25,7]]}
+        plane = SimpleNamespace(Origin="origin", PointAt=lambda x,y: "corner")
+        self.worker.Rhino.Geometry = SimpleNamespace(Plane=Mock(return_value=plane))
+        with patch.object(self.worker, "_point"), patch.object(self.worker, "_vector"), \
+                patch.object(self.worker, "_xyz", side_effect=[[0,0,0], [1,1,0]]), \
+                patch.object(self.worker, "_command_point", side_effect=["0,0,0", "1,1,0", "10,20,3", "12,25,7"]), \
+                patch.object(self.worker, "_in_construction_plane", return_value=({}, 0)) as run:
+            self.worker._point_grid_command(operation, diagonal=True)
+        self.assertEqual(run.call_count, 2)
+        self.assertEqual(run.call_args_list[0].args[1], "_PointGrid _XCount=3 _YCount=2 _ZCount=2 w0,0,0 w1,1,0 1")
+        self.assertEqual(run.call_args_list[1].args[1], "_PointGrid _Diagonal w10,20,3 w12,25,7")
+        for height in [0, -2, float("nan"), float("inf")]:
+            with patch.object(self.worker, "_in_construction_plane") as run:
+                with self.assertRaises(ValueError):
+                    self.worker._point_grid_command(dict(operation, height=height), diagonal=True)
+                run.assert_not_called()
+
+    def test_diagonal_grid_probe_emits_world_height_point_without_leaking_it_to_setup(self):
+        operation = {"origin": [0,0,0], "x_axis": [1,0,0], "y_axis": [0,1,0], "count": [3,2,2], "points": [[0,0,0], [6,4,0]], "height_point": [0,0,-2]}
+        plane = SimpleNamespace(Origin="origin", PointAt=lambda x,y: "corner")
+        self.worker.Rhino.Geometry = SimpleNamespace(Plane=Mock(return_value=plane))
+        with patch.object(self.worker, "_point"), patch.object(self.worker, "_vector"), \
+                patch.object(self.worker, "_xyz", side_effect=[[0,0,0], [1,1,0]]), \
+                patch.object(self.worker, "_command_point", side_effect=lambda p: ",".join(str(v) for v in p)), \
+                patch.object(self.worker, "_in_construction_plane", return_value=({}, 0)) as run:
+            self.worker._point_grid_command(operation, diagonal=True)
+        self.assertNotIn("height_point", run.call_args_list[0].args[0])
+        self.assertEqual(run.call_args_list[1].args[1], "_PointGrid _Diagonal w0,0,0 w6,4,0 w0,0,-2")
+
     def test_center_grid_probe_whitelists_mode_and_rejects_conflicts(self):
         operation = {"count": [3, 2, 1], "centered": True, "points": [[10,20,3], [12,24,99]]}
         with patch.object(self.worker, "_command_point", side_effect=["10,20,3", "12,24,99"]), \

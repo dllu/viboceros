@@ -2897,28 +2897,49 @@ def _in_construction_plane(operation, script, record):
             document.Objects.Select(object_id)
 
 
-def _point_grid_command(operation):
+def _point_grid_command(operation, diagonal=False):
     counts = operation.get("count", [3, 2, 1])
     if len(counts) != 3 or any(type(n) is not int or not 1 <= n <= 100 for n in counts):
         raise ValueError("PointGrid probe counts must be three integers in [1,100]")
     points = operation["points"]
     three_point = operation.get("three_point", False)
     centered = operation.get("centered", False)
-    if type(centered) is not bool or (centered and three_point):
+    if type(centered) is not bool or type(diagonal) is not bool or sum(bool(mode) for mode in [centered, three_point, diagonal]) > 1:
         raise ValueError("PointGrid base modes must be mutually exclusive booleans")
     if type(three_point) is not bool or len(points) != (3 if three_point else 2):
         raise ValueError("PointGrid requires two corners or three base points")
-    script = "_PointGrid _XCount=%d _YCount=%d _ZCount=%d " % tuple(counts)
+    if diagonal and operation.get("height") is not None:
+        raise ValueError("diagonal prompt diagnostics use height_point, not a numeric height")
+    height_point = operation.get("height_point")
+    if height_point is not None and not diagonal:
+        raise ValueError("height_point is only supported by the diagonal prompt diagnostic")
+    height_suffix = " w" + _command_point(height_point) if height_point is not None else ""
+    if diagonal:
+        # Editing a count in Rhino 8.32 removes Diagonal from that prompt.
+        # Seed remembered counts with a separate, owned ordinary grid instead.
+        plane = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
+        setup = dict(operation, points=[_xyz(plane.Origin), _xyz(plane.PointAt(1, 1))], height=1)
+        setup.pop("height_point", None)
+        _point_grid_command(setup)
+        script = "_PointGrid "
+    else:
+        script = "_PointGrid _XCount=%d _YCount=%d _ZCount=%d " % tuple(counts)
     if three_point:
         script += "_3Point "
     if centered:
         script += "_Center "
+    if diagonal:
+        script += "_Diagonal "
     script += " ".join("w" + _command_point(p) for p in points)
-    script += (" %.17g" % _finite(operation["height"], "grid height")
-               if operation.get("height") is not None else " _Enter")
+    if not diagonal or operation.get("height") is not None:
+        script += (" %.17g" % _finite(operation["height"], "grid height")
+                   if operation.get("height") is not None else " _Enter")
+    script += height_suffix
     def record(geometry):
         if not isinstance(geometry, Rhino.Geometry.PointCloud):
             raise ValueError("PointGrid did not produce a point cloud")
+        if diagonal:
+            return {"points": [_xyz(p) for p in geometry.GetPoints()]}
         plane = (Rhino.Geometry.Plane(_point(points[0]), _point(points[1]), _point(points[2])) if three_point else
                  Rhino.Geometry.Plane(_point(points[0]), _vector(operation["x_axis"]), _vector(operation["y_axis"])))
         axes = [plane.XAxis, plane.YAxis, plane.ZAxis]
@@ -4183,6 +4204,8 @@ def _execute(operation, iterations, tolerance):
         return _plane_transform(operation)
     if kind == "point_grid_command":
         return _point_grid_command(operation)
+    if kind == "point_grid_diagonal_prompt":
+        return _point_grid_command(operation, diagonal=True)
     if kind == "plane_primitive":
         return _in_construction_plane(operation, _plane_primitive_script(operation), lambda g: _plane_primitive_record(g, operation.get("raw_representation", False), operation["primitive"]))
     if kind == "point_input":
