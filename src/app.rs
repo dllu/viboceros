@@ -5120,12 +5120,7 @@ impl eframe::App for VibocerosApp {
         let mut viewport_outputs: [ViewportOutput; 4] =
             std::array::from_fn(|_| ViewportOutput::default());
         let active_viewport = self.active_viewport;
-        let object_filter = self
-            .object_prompt
-            .as_ref()
-            .map_or(Some(viboceros_command::ObjectSelectionFilter::Any), |p| {
-                p.selection_filter()
-            });
+        let object_filter = self.viewport_object_filter();
         let preview_curve = self.curve_draft_preview();
         let document = &self.document;
         let curve_points = self

@@ -517,6 +517,56 @@ mod tests {
     use super::*;
 
     #[test]
+    fn grouped_filter_excludes_overlapping_ungrouped_hits_and_tracks_membership_edits() {
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let view = Viewport::new(kind);
+            let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+            let mut document = Document::default();
+            let point = Point3::try_new(0., 0., 0.).unwrap();
+            let ungrouped = document.add_geometry(Geometry::Point(point)).unwrap();
+            let grouped = document.add_geometry(Geometry::Point(point)).unwrap();
+            let group = document.add_group(None, [grouped]).unwrap();
+            let pointer = view.project(point, rect).unwrap();
+            let selection = Rect::from_center_size(pointer, Vec2::splat(20.));
+            let pick = |document: &Document| {
+                view.pick_object_matching(pointer, rect, document, ObjectSelectionFilter::Grouped)
+            };
+            let before = format!("{document:?}");
+            assert_eq!(view.pick_object(pointer, rect, &document), Some(ungrouped));
+            assert_eq!(pick(&document), Some(grouped));
+            for crossing in [false, true] {
+                assert_eq!(
+                    view.objects_in_selection_matching(
+                        rect,
+                        selection,
+                        crossing,
+                        &document,
+                        ObjectSelectionFilter::Grouped
+                    ),
+                    [grouped]
+                );
+            }
+            assert_eq!(format!("{document:?}"), before);
+            document.set_objects_locked([grouped], true).unwrap();
+            assert_eq!(pick(&document), None);
+            document.set_objects_locked([grouped], false).unwrap();
+            document.set_objects_visibility([grouped], false).unwrap();
+            assert_eq!(pick(&document), None);
+            document.undo().unwrap();
+            assert_eq!(pick(&document), Some(grouped));
+            document.remove_group(group).unwrap();
+            assert_eq!(pick(&document), None);
+            document.undo().unwrap();
+            assert_eq!(pick(&document), Some(grouped));
+        }
+    }
+
+    #[test]
     fn long_visible_line_is_captured_at_its_screen_distance() {
         let view = Viewport::new(ViewKind::Top);
         let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));

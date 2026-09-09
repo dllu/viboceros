@@ -18,6 +18,17 @@ impl GroupPrompt {
 }
 
 impl VibocerosApp {
+    pub(super) fn viewport_object_filter(
+        &self,
+    ) -> Option<viboceros_command::ObjectSelectionFilter> {
+        if self.group_prompt == Some(GroupPrompt::Target) {
+            return Some(viboceros_command::ObjectSelectionFilter::Grouped);
+        }
+        self.object_prompt.as_ref().map_or(
+            Some(viboceros_command::ObjectSelectionFilter::Any),
+            |prompt| prompt.selection_filter(),
+        )
+    }
     pub(super) fn try_start_group_prompt(&mut self, input: &str) -> bool {
         let mut words = input.split_whitespace();
         if !words.next().is_some_and(|name| {

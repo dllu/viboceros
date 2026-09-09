@@ -54,6 +54,10 @@ interface commands remain transparent; another model command or a sidebar action
 ends the prompt. Clicking a target uses that object's last ordered membership,
 including unnamed imported groups. Clicking an ungrouped/nonselectable object
 does not complete the command; target-window gestures do not change sources.
+Ungrouped geometry is excluded before click-hit ranking, so an overlapping
+ungrouped object cannot intercept an eligible target. Native viewport tests
+check overlapping points in all four views, click/window filters, visibility,
+locking, group deletion/Undo, and read-only query behavior.
 Four owned-window Rhino mouse probes verify ordinary, overlapping, reversed,
 and already-existing target memberships in `add_to_group_picking.json`.
 Native replay compares memberships, selection, object modes, and layer flags;

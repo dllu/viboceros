@@ -58,6 +58,10 @@ fn bare_add_to_group_collects_sources_then_target_without_early_edits() {
     assert_eq!(app.document.undo_label(), history.as_deref());
     enter(&mut app, "");
     assert_eq!(app.group_prompt, Some(GroupPrompt::Target));
+    assert_eq!(
+        app.viewport_object_filter(),
+        Some(viboceros_command::ObjectSelectionFilter::Grouped)
+    );
     // An ungrouped target must not change the source selection.
     app.apply_selection_click(SelectionClick {
         object_id: Some(ids[1]),
