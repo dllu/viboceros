@@ -5,6 +5,33 @@ import unittest
 
 
 class PointGridDiagonalMeasurements(unittest.TestCase):
+    def test_oriented_planes_match_analytic_directed_lattices(self):
+        root = Path(__file__).parent
+        request = json.loads((root / "fixtures/point_matrix_diagonal_planes.json").read_text())
+        response = json.loads((root / "observations/point_matrix_diagonal_planes.json").read_text())
+        # Independent world-coordinate formulas, not the production frame or
+        # oracle sorting routines. i, j, k are normalized lattice stations.
+        formulas = {
+            "diagonal-xz": lambda i, j, k: [1 + 6*i, 2 - 4*k, 3 + 5*j],
+            "diagonal-yz": lambda i, j, k: [1 - 4*k, 2 - 6*i, 3 + 5*j],
+            "diagonal-oblique": lambda i, j, k: [1 + 3.6*i + 3.2*k, 2 + 4.8*i - 2.4*k, 3 + 5*j],
+            "diagonal-xz-planar": lambda i, j, k: [1 - 6*i, 2 + 4*k, 3 + 5*j],
+        }
+        self.assertEqual(response["engine"], "rhino")
+        self.assertEqual(len(response["results"]), len(formulas))
+        self.assertEqual({op["id"] for op in request["operations"]}, set(formulas))
+        self.assertEqual({result["id"] for result in response["results"]}, set(formulas))
+        for result in response["results"]:
+            formula = formulas[result["id"]]
+            expected = [formula(i, j, k) for k in (0, 1) for j in (0, 1) for i in (0, 0.5, 1)]
+            actual = result["value"]["points"]
+            with self.subTest(case=result["id"]):
+                self.assertEqual(len(actual), len(expected))
+                for p, q in zip(actual, expected):
+                    self.assertEqual(len(p), 3)
+                    for a, b in zip(p, q):
+                        self.assertLessEqual(abs(a - b), 1e-12)
+
     def test_recorded_diagonal_grids_match_directed_rectangular_lattices(self):
         root = Path(__file__).parent
         request = json.loads((root / "fixtures/point_matrix_diagonal.json").read_text())

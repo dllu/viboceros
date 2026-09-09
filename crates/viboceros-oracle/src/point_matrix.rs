@@ -133,17 +133,34 @@ fn run_mode(
 #[cfg(test)]
 mod tests {
     #[test]
+    fn diagonal_grid_oriented_planes_match_rhino_in_source_order() {
+        check_ordered(
+            include_str!("../../../tools/rhino_oracle/fixtures/point_matrix_diagonal_planes.json"),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/point_matrix_diagonal_planes.json"
+            ),
+            1e-12,
+        );
+    }
+
+    #[test]
     fn diagonal_grid_fixture_matches_rhino_in_source_order() {
-        let request: crate::ProbeRequest = serde_json::from_str(include_str!(
-            "../../../tools/rhino_oracle/fixtures/point_matrix_diagonal.json"
-        ))
-        .unwrap();
+        check_ordered(
+            include_str!("../../../tools/rhino_oracle/fixtures/point_matrix_diagonal.json"),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/point_matrix_diagonal_prompt.json"
+            ),
+            0.0,
+        );
+    }
+
+    fn check_ordered(request: &str, reference: &str, epsilon: f64) {
+        let request: crate::ProbeRequest = serde_json::from_str(request).unwrap();
         let response = crate::run_request(&request).unwrap();
-        let reference: serde_json::Value = serde_json::from_str(include_str!(
-            "../../../tools/rhino_oracle/observations/point_matrix_diagonal_prompt.json"
-        ))
-        .unwrap();
+        let reference: serde_json::Value = serde_json::from_str(reference).unwrap();
         assert_eq!(response.results.len(), 4);
+        assert_eq!(request.operations.len(), 4);
+        assert_eq!(reference["results"].as_array().unwrap().len(), 4);
         for result in response.results {
             let expected = reference["results"]
                 .as_array()
@@ -155,7 +172,16 @@ mod tests {
                 serde_json::from_value(result.value["points"].clone()).unwrap();
             let expected: Vec<[f64; 3]> =
                 serde_json::from_value(expected["value"]["points"].clone()).unwrap();
-            assert_eq!(actual, expected, "{}", result.id);
+            assert_eq!(actual.len(), expected.len(), "{}", result.id);
+            for (p, q) in actual.iter().zip(&expected) {
+                for axis in 0..3 {
+                    assert!(
+                        (p[axis] - q[axis]).abs() <= epsilon,
+                        "{}: {p:?} != {q:?}",
+                        result.id
+                    );
+                }
+            }
         }
     }
 

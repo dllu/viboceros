@@ -2,7 +2,7 @@
 
 [PointGrid command](commands/point-grid.md) · [Oracle setup](oracle.md)
 
-Typed native Diagonal construction now reproduces the four measured cases from
+Typed native Diagonal construction now reproduces eight measured cases from
 Rhino `8.32.26160.13001`. Interactive Diagonal prompting remains deferred.
 
 ## Observed command behavior
@@ -38,6 +38,7 @@ rejects numeric `height` to avoid knowingly incomplete scripts.
 
 ```sh
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_diagonal.json --timeout 180
+tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_diagonal_planes.json --timeout 180
 python3 -m unittest tools.rhino_oracle.test_point_grid_diagonal
 ```
 
@@ -50,8 +51,15 @@ them exactly with four analytic directed lattices. A native replay also compares
 ordered numeric coordinates exactly. Worker tests check separate
 count initialization and world-coordinate height serialization.
 
+An additional [oriented-plane response](../tools/rhino_oracle/observations/point_matrix_diagonal_planes.json)
+records 48 points across World XZ, World YZ, an oblique CPlane, and a coplanar XZ
+base with a height point. Native source order matched in every case; maximum
+coordinate difference was `4.5e-16` (zero for the axis-aligned cases). Independent
+Python world-coordinate formulas and native ordered replays validate these
+measurements at `1e-12`, without canonical sorting.
+
 Still unverified: the near-coplanar auto-completion threshold, numeric height
-and Enter semantics, arbitrary CPlanes, and all diagonal corner permutations.
+and Enter semantics, exhaustive CPlane orientations, and all diagonal corner permutations.
 These need evidence before native prompt behavior can be claimed compatible.
 Native typed construction currently uses an exact computed zero normal component
 to require a height point; it does not infer Rhino's prompt tolerance.

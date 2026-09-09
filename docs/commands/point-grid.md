@@ -143,11 +143,18 @@ Four World XY diagonal cases (54 points) passed a live Rhino comparison with
 zero coordinate difference, including source order. Stored measurements replay
 as ordered numeric coordinates; native tests additionally cover all eight signed
 axis combinations, height-point projection, undo/redo, and rejected inputs.
-Arbitrary-CPlane Diagonal parity remains unverified.
+Four further diagonal cases cover World XZ, World YZ, an oblique CPlane, and
+coplanar XZ corners with a height point. All 48 points matched Rhino in source
+order within `4.5e-16`; the axis-aligned cases matched exactly. Their
+[raw measurements](../../tools/rhino_oracle/observations/point_matrix_diagonal_planes.json)
+replay in native ordered tests and independent Python world-coordinate formulas
+at `1e-12`. This is sampled plane coverage, not a guarantee at arbitrary scales
+or near the unmeasured coplanarity threshold.
 
 ```sh
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_command.json --timeout 300
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_three_point.json --timeout 300
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_center.json --timeout 300
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_diagonal.json --timeout 180
+tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_diagonal_planes.json --timeout 180
 ```

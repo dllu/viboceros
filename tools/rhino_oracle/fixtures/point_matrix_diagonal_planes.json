@@ -1,0 +1,10 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"op":"point_grid_diagonal_prompt","id":"diagonal-xz","origin":[10,20,30],"x_axis":[1,0,0],"y_axis":[0,0,1],"count":[3,2,2],"points":[[1,2,3],[7,-2,8]]},
+    {"op":"point_grid_diagonal_prompt","id":"diagonal-yz","origin":[10,20,30],"x_axis":[0,1,0],"y_axis":[0,0,1],"count":[3,2,2],"points":[[1,2,3],[-3,-4,8]]},
+    {"op":"point_grid_diagonal_prompt","id":"diagonal-oblique","origin":[10,20,30],"x_axis":[0.6,0.8,0],"y_axis":[0,0,1],"count":[3,2,2],"points":[[1,2,3],[7.8,4.4,8]]},
+    {"op":"point_grid_diagonal_prompt","id":"diagonal-xz-planar","origin":[10,20,30],"x_axis":[1,0,0],"y_axis":[0,0,1],"count":[3,2,2],"points":[[1,2,3],[-5,2,8]],"height_point":[99,6,98]}
+  ]
+}
