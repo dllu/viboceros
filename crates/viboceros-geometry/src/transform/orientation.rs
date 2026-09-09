@@ -43,6 +43,33 @@ mod tests {
     use super::*;
 
     #[test]
+    fn exhausts_ternary_matrices_including_singular_cases_and_subnormal_rows() {
+        for mut code in 0..3_u32.pow(9) {
+            let integers: [[i32; 3]; 3] = std::array::from_fn(|_| {
+                std::array::from_fn(|_| {
+                    let value = (code % 3) as i32 - 1;
+                    code /= 3;
+                    value
+                })
+            });
+            let [a, b, c] = integers;
+            let expected = (a[0] * (b[1] * c[2] - b[2] * c[1])
+                - a[1] * (b[0] * c[2] - b[2] * c[0])
+                + a[2] * (b[0] * c[1] - b[1] * c[0]))
+                .cmp(&0);
+            for scales in [[1.; 3], [f64::from_bits(1), f64::MAX, 1.]] {
+                let rows = std::array::from_fn(|i| integers[i].map(|v| f64::from(v) * scales[i]));
+                assert_eq!(determinant_sign(rows), expected, "{integers:?}, {scales:?}");
+                let transposed = std::array::from_fn(|i| std::array::from_fn(|j| rows[j][i]));
+                assert_eq!(determinant_sign(transposed), expected);
+                let mut negated = rows;
+                negated[0] = negated[0].map(|v| -v);
+                assert_eq!(determinant_sign(negated), expected.reverse());
+            }
+        }
+    }
+
+    #[test]
     fn distinguishes_exact_cancellation_from_a_unit_determinant() {
         assert_eq!(determinant_sign([[f64::MAX; 3]; 3]), Ordering::Equal);
         let n = 2_f64.powi(52);

@@ -47,6 +47,9 @@ underflow with singularity. Tests cover extreme diagonal scales, exact
 singularity, near-cancelling products with determinant one, and 1,000 independent
 integer matrices under extreme binary row scaling and row swaps. This is a sign
 predicate, not a condition-number estimate or an inversion guarantee.
+An exhaustive test additionally covers all 19,683 matrices with entries in
+`{-1, 0, 1}`, including singular cases, transposition, row negation, and positive
+row scaling by the smallest subnormal and largest finite binary64 values.
 
 ## Point-difference projections
 
