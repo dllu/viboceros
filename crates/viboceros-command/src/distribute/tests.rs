@@ -55,6 +55,18 @@ fn near(a: f64, b: f64) {
 }
 
 #[test]
+fn gap_planner_does_not_require_representable_interval_widths() {
+    for huge in [2_f64.powi(1023), f64::MAX] {
+        let intervals = [[-huge; 2], [-huge, huge], [huge; 2], [huge; 2]];
+        for spacing in [None, Some(0.)] {
+            let (offsets, actual_spacing) = super::offsets(&intervals, Mode::Gap, spacing).unwrap();
+            assert_eq!(actual_spacing, 0.);
+            assert_eq!(offsets, [0.; 4]);
+        }
+    }
+}
+
+#[test]
 fn spacing_plans_retain_finite_extreme_gaps_and_subnormal_centers() {
     for huge in [2_f64.powi(1023), f64::MAX] {
         let (offsets, spacing) =

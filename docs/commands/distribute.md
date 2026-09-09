@@ -102,3 +102,8 @@ difference overflows but the averaged spacing is representable. Unrepresentable
 final displacements remain errors. This verifies the interval planner, not
 end-to-end Rhino parity or representability of every preceding bounds/frame
 calculation at these extremes.
+Gap planning advances from the translated far endpoint using a compensated
+sum of endpoint, offset, and spacing; it does not require the interval width
+itself to be representable. A four-interval regression covers a stationary
+interval spanning opposite extreme coordinates, with automatic and explicit
+zero gaps. No unused next position is computed beyond the final interval.

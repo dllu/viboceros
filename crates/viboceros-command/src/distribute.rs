@@ -277,7 +277,13 @@ fn offsets(
             Mode::Center => spacing.mul_add(i as f64, center(intervals[0])) - center(intervals[i]),
             Mode::Gap => next_min - intervals[i][0],
         };
-        next_min += intervals[i][1] - intervals[i][0] + spacing;
+        if mode == Mode::Gap && i + 1 < count {
+            // Advance from the translated far end rather than materializing
+            // an interval width, which may overflow for finite endpoints.
+            // The compensated sum also permits cancellation with spacing.
+            next_min = Vector3::try_new(intervals[i][1], offsets[i], spacing)?
+                .dot(Vector3::try_new(1., 1., 1.)?)?;
+        }
     }
     if explicit.is_none() {
         offsets[count - 1] = 0.;
