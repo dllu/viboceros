@@ -1,4 +1,5 @@
 use nalgebra::Matrix3;
+mod orientation;
 
 use crate::{Frame3, GeometryError, Plane, Point3, Real, UnitVector3, Vector3, require_finite};
 
@@ -294,25 +295,13 @@ impl AffineTransform3 {
     /// Returns whether the linear part reverses orientation. Singular maps do
     /// not have a well-defined orientation and are rejected.
     pub(crate) fn orientation_reversing(self) -> Result<bool, GeometryError> {
-        let rows = self.linear_rows();
-        let scale = rows
-            .iter()
-            .flatten()
-            .map(|value| value.abs())
-            .fold(0.0, Real::max);
-        if scale == 0.0 {
-            return Err(GeometryError::Degenerate {
+        match orientation::determinant_sign(self.linear_rows()) {
+            std::cmp::Ordering::Less => Ok(true),
+            std::cmp::Ordering::Greater => Ok(false),
+            std::cmp::Ordering::Equal => Err(GeometryError::Degenerate {
                 context: "affine transform linear part",
-            });
+            }),
         }
-        let matrix = Matrix3::from_fn(|row, column| rows[row][column] / scale);
-        let determinant = matrix.determinant();
-        if !determinant.is_finite() || determinant == 0.0 {
-            return Err(GeometryError::Degenerate {
-                context: "affine transform linear part",
-            });
-        }
-        Ok(determinant < 0.0)
     }
 
     /// Conservative upper bound on the linear part's maximum singular value.

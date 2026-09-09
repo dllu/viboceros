@@ -1,6 +1,28 @@
 use super::*;
 
 #[test]
+fn orientation_retains_extreme_scale_signs_and_rejects_exact_singularity() {
+    for sign in [-1., 1.] {
+        let transform = AffineTransform3::try_new(
+            [
+                [sign * Real::MAX, 0., 0.],
+                [0., Real::from_bits(1), 0.],
+                [0., 0., 1.],
+            ],
+            Vector3::try_new(0., 0., 0.).unwrap(),
+        )
+        .unwrap();
+        assert_eq!(transform.orientation_reversing().unwrap(), sign < 0.);
+    }
+    let singular = AffineTransform3::try_new(
+        [[1., 2., 3.], [1., 2., 3.], [4., 5., 6.]],
+        Vector3::try_new(0., 0., 0.).unwrap(),
+    )
+    .unwrap();
+    assert!(singular.orientation_reversing().is_err());
+}
+
+#[test]
 fn construction_preserves_row_major_coefficients_and_checks_every_entry() {
     let rows = [[1., 2., 3.], [4., 5., 6.], [7., 8., 9.]];
     let translation = Vector3::try_new(10., 11., 12.).unwrap();

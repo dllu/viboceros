@@ -38,6 +38,16 @@ subnormal ties, exact orthogonality and parallelism, axis permutations, and
 genuine result overflow. Six-product tests include 1,000 independent integer
 sums and cancellation retaining a smallest-subnormal contribution.
 
+Affine orientation uses an exact determinant-sign predicate in
+[`transform/orientation`](../crates/viboceros-geometry/src/transform/orientation.rs).
+It accumulates six signed triple products in 99 fixed limbs and compares their
+positive/negative magnitudes without rounding. It therefore does not erase
+small scale factors through global normalization or confuse determinant
+underflow with singularity. Tests cover extreme diagonal scales, exact
+singularity, near-cancelling products with determinant one, and 1,000 independent
+integer matrices under extreme binary row scaling and row swaps. This is a sign
+predicate, not a condition-number estimate or an inversion guarantee.
+
 ## Point-difference projections
 
 `Vector3::dot_point_difference` is an internal helper shared by line closest-point,
