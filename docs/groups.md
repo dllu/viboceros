@@ -27,6 +27,12 @@ definitions and leave unselected peers unchanged. These are the
 Ordinary group-aware picking can expand selection before a command starts;
 these commands themselves do not expand it.
 
+Both selection-scoped ungroup commands use document batch operations: IDs are
+resolved once, duplicates coalesce, and all membership transitions are validated
+before editing. Top-level removal follows each object's own ordered list, not
+group-table order. Native subset tests cover unchanged peers, empty no-ops with
+redo retained, and exact membership/definition restoration through Undo/Redo.
+
 Deleting objects likewise removes their memberships, not their group definitions.
 An empty group remains addressable, and undo restores memberships in their original
 order. Explicit group deletion remains a separate operation.

@@ -127,20 +127,11 @@ impl Command for UngroupAllCommand {
 
 fn ungroup_selected(document: &mut Document, all: bool) -> Result<String, CommandError> {
     let selected = selected_ids(document)?;
-    let mut changed = 0;
-    for id in selected {
-        let mut memberships = document
-            .object(id)
-            .expect("selected object")
-            .group_ids()
-            .to_vec();
-        if all {
-            memberships.clear();
-        } else {
-            memberships.pop();
-        }
-        changed += usize::from(document.set_object_group_memberships(id, memberships)?);
-    }
+    let changed = if all {
+        document.clear_object_group_memberships(selected)?
+    } else {
+        document.pop_object_group_memberships(selected)?
+    };
     Ok(format!(
         "Ungrouped {changed} object(s){}",
         if all {

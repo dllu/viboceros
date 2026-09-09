@@ -89,14 +89,42 @@ impl Document {
         &mut self,
         objects: impl IntoIterator<Item = ObjectId>,
     ) -> Result<usize, DocumentError> {
+        self.remove_object_group_memberships(objects, true)
+    }
+
+    /// Removes only the last ordered membership of each requested object.
+    /// Retains group definitions and unrequested peers. Like complete clearing,
+    /// this validates the whole batch before editing and coalesces duplicate IDs.
+    pub fn pop_object_group_memberships(
+        &mut self,
+        objects: impl IntoIterator<Item = ObjectId>,
+    ) -> Result<usize, DocumentError> {
+        self.remove_object_group_memberships(objects, false)
+    }
+
+    fn remove_object_group_memberships(
+        &mut self,
+        objects: impl IntoIterator<Item = ObjectId>,
+        all: bool,
+    ) -> Result<usize, DocumentError> {
         let indices = self.resolve_object_indices(objects)?;
-        for &index in &indices {
-            membership_changes(self, index, &self.objects[index].group_ids, &[])?;
-        }
-        self.group_transaction("Clear object groups", |document| {
+        self.validate_memberships_at_indices(&indices)?;
+        let label = if all {
+            "Clear object groups"
+        } else {
+            "Pop object groups"
+        };
+        self.group_transaction(label, |document| {
             let mut changed = 0;
             for index in indices {
-                changed += usize::from(document.set_object_group_memberships_at(index, [])?);
+                let memberships = &document.objects[index].group_ids;
+                let retained = if all {
+                    0
+                } else {
+                    memberships.len().saturating_sub(1)
+                };
+                let remaining = memberships[..retained].to_vec();
+                changed += usize::from(document.set_object_group_memberships_at(index, remaining)?);
             }
             Ok(changed)
         })

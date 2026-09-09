@@ -2,8 +2,48 @@ use super::*;
 use viboceros_geometry::{Point3, Vector3};
 
 #[test]
+fn batch_pop_groups_uses_each_objects_last_membership_and_replays_exactly() {
+    for mask in 0_u8..8 {
+        let (mut document, ids, _) = fixture();
+        let before = state(&document);
+        let request = (0..3)
+            .rev()
+            .filter(|i| mask & (1 << i) != 0)
+            .flat_map(|i| [ids[i], ids[i]])
+            .collect::<Vec<_>>();
+        assert_eq!(
+            document
+                .pop_object_group_memberships(request.clone())
+                .unwrap(),
+            mask.count_ones() as usize
+        );
+        for (i, id) in ids.iter().enumerate() {
+            let mut expected = before.0[i].clone();
+            if mask & (1 << i) != 0 {
+                expected.group_ids.pop();
+            }
+            assert_eq!(document.object(*id).unwrap(), &expected);
+        }
+        let after = state(&document);
+        assert_eq!(before.1.len(), after.1.len());
+        if mask != 0 {
+            document.undo().unwrap();
+            assert_eq!(state(&document), before);
+            document.redo().unwrap();
+            assert_eq!(state(&document), after);
+        }
+        document.clear_object_group_memberships(ids).unwrap();
+        document.add_geometry(geometry(99.)).unwrap();
+        document.undo().unwrap();
+        let debug = format!("{document:?}");
+        assert_eq!(document.pop_object_group_memberships(request).unwrap(), 0);
+        assert_eq!(format!("{document:?}"), debug);
+    }
+}
+
+#[test]
 fn group_batches_reject_late_membership_corruption_before_any_edit() {
-    for operation in ["create", "append", "remove"] {
+    for operation in ["create", "append", "remove", "pop"] {
         for active in [false, true] {
             let (mut document, ids, groups) = fixture();
             let target = document.add_empty_group(None).unwrap();
@@ -26,6 +66,7 @@ fn group_batches_reject_late_membership_corruption_before_any_edit() {
                 "create" => document.add_group(None, ids).map(|_| ()),
                 "append" => document.add_group_members(target, ids).map(|_| ()),
                 "remove" => document.remove_group(groups[0]).map(|_| ()),
+                "pop" => document.pop_object_group_memberships(ids).map(|_| ()),
                 _ => unreachable!(),
             };
             assert!(result.is_err(), "{operation}, active={active}");
