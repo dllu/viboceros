@@ -18,15 +18,7 @@ impl Document {
         let staged = self
             .editable_layer_object_indices(ids)?
             .into_iter()
-            .filter_map(|index| {
-                let before = &self.objects[index];
-                if before.attributes.layer_id == layer_id {
-                    return None;
-                }
-                let mut after = before.clone();
-                after.attributes.layer_id = layer_id;
-                Some((index, before.clone(), after))
-            })
+            .filter(|index| self.objects[*index].attributes.layer_id != layer_id)
             .collect::<Vec<_>>();
         if staged.is_empty() {
             return Ok(0);
@@ -37,9 +29,11 @@ impl Document {
         if owns_transaction {
             self.begin_transaction("Set object layer")?;
         }
-        for (index, before, after) in staged {
-            let id = before.id;
-            self.objects[index] = after.clone();
+        for index in staged {
+            let mut after = self.objects[index].clone();
+            after.attributes.layer_id = layer_id;
+            let id = after.id;
+            let before = std::mem::replace(&mut self.objects[index], after.clone());
             self.record_edit(
                 "Set object layer",
                 Edit::ObjectChanged {
@@ -77,6 +71,10 @@ impl Document {
         if staged.is_empty() {
             return Ok(Vec::new());
         }
+        self.validate_memberships_at_indices(&staged)?;
+        self.objects
+            .try_reserve_exact(staged.len())
+            .map_err(|_| DocumentError::TooManyObjectCopies)?;
 
         let owns_transaction = self.history.active.is_none();
         if owns_transaction {

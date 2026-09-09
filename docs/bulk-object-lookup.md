@@ -77,6 +77,12 @@ Regression tests cover destination/missing-object/locked-object precedence,
 same-layer and empty no-ops preserving redo and complete document state,
 duplicate/reversed requests, skipped sources, selection order, and rollback.
 Existing tests cover group copies and hidden/locked destinations.
+Layer copies also preflight memberships of the sources that will actually be
+copied and reserve object capacity before opening a transaction. Corrupt
+memberships on a later source must leave the document and any caller-owned
+transaction unchanged. Same-layer sources remain skipped after editability
+validation. Layer moves stage only indices, then move old objects into history
+instead of cloning a separate old state during staging.
 
 The 20,000-point debug diagnostic measured layer reassignment at about 1.13 s
 before consolidation and 83 ms afterward; copy-to-layer went from 1.18 s to

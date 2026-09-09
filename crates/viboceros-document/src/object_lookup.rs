@@ -35,8 +35,9 @@ mod tests {
     fn copies_preflight_late_membership_corruption() {
         for corruption in 0..3 {
             for active in [false, true] {
-                for operation in 0..5 {
+                for operation in 0..6 {
                     let mut document = Document::default();
+                    let destination = document.add_layer("destination", ColorRgb::BLACK).unwrap();
                     let geometry = Geometry::Point(Point3::try_new(1., 2., 3.).unwrap());
                     let ids = [0, 1].map(|_| document.add_geometry(geometry.clone()).unwrap());
                     let group = document.add_group(None, ids).unwrap();
@@ -67,7 +68,8 @@ mod tests {
                                 CopyGroupPolicy::DefinitionsOnly
                             },
                         ),
-                        _ => document.copy_objects_morphed(ids, &IdentityMorph),
+                        4 => document.copy_objects_morphed(ids, &IdentityMorph),
+                        _ => document.copy_objects_to_layer(ids, destination),
                     };
                     assert!(result.is_err());
                     assert_eq!(format!("{document:?}"), before);
