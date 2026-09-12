@@ -1,6 +1,39 @@
 use super::*;
 
 #[test]
+fn output_counts_match_wide_arithmetic_at_index_and_machine_boundaries() {
+    let values = [
+        0,
+        1,
+        2,
+        u32::MAX as usize - 1,
+        u32::MAX as usize,
+        usize::MAX - 1,
+        usize::MAX,
+    ];
+    for retained in values {
+        for first in values {
+            for second in values {
+                let exact = retained as u128 + first as u128 + second as u128;
+                let expected = if exact <= usize::MAX as u128 && exact <= u32::MAX as u128 + 1 {
+                    Ok(exact as usize)
+                } else {
+                    Err(GeometryError::TooManyMeshVertices)
+                };
+                assert_eq!(output_vertex_count(retained, [first, second]), expected);
+                assert_eq!(output_vertex_count(retained, [second, 0, first]), expected);
+            }
+        }
+        let expected = if retained as u128 <= u32::MAX as u128 + 1 {
+            Ok(retained)
+        } else {
+            Err(GeometryError::TooManyMeshVertices)
+        };
+        assert_eq!(output_vertex_count(retained, []), expected);
+    }
+}
+
+#[test]
 fn corner_rebuilding_preserves_geometry_and_requested_sharing_partitions() {
     let points = [
         Point3::try_new(0.0, 0.0, 0.0).unwrap(),

@@ -7,8 +7,7 @@ mod edge_collapse;
 mod edge_split;
 mod edge_weld;
 mod normals;
-#[cfg(test)]
-mod rebuild_tests;
+mod rebuild;
 mod union_find;
 use union_find::{index_root, union_faces, union_indices_keep_earlier, union_indices_keep_later};
 #[cfg(test)]
@@ -3353,82 +3352,6 @@ impl TriangleMesh {
             self.rebuilt_from_face_components(&data, &face_components, &vertex_order)?,
             newly_separated_vertex_count,
         ))
-    }
-
-    fn rebuilt_from_face_components(
-        &self,
-        data: &MeshTopologyData,
-        face_components: &[Vec<Vec<usize>>],
-        topological_vertex_order: &[usize],
-    ) -> Result<Self, GeometryError> {
-        let affected_topological_vertices = face_components
-            .iter()
-            .map(|components| !components.is_empty())
-            .collect::<Vec<_>>();
-        let mut used = vec![false; self.vertices.len()];
-        for face in &self.faces {
-            for &vertex in face.indices() {
-                used[vertex as usize] = true;
-            }
-        }
-        let mut raw_remap = vec![u32::MAX; self.vertices.len()];
-        let mut vertices = Vec::new();
-        for (source, (&point, is_used)) in self.vertices.iter().zip(used).enumerate() {
-            if !is_used || affected_topological_vertices[data.topological_vertices[source]] {
-                continue;
-            }
-            raw_remap[source] =
-                u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
-            vertices.push(point);
-        }
-
-        // Faces have at most four corners. Corner-indexed slots avoid a tree
-        // allocation per face while keeping missing replacements explicit;
-        // every u32 value, including MAX, remains a valid replacement index.
-        let mut face_replacements = vec![[None; 4]; self.faces.len()];
-        for (face_index, face) in self.faces.iter().enumerate() {
-            for (corner, &raw_vertex) in face.indices().iter().enumerate() {
-                let source = raw_vertex as usize;
-                if !affected_topological_vertices[data.topological_vertices[source]] {
-                    face_replacements[face_index][corner] = Some(raw_remap[source]);
-                }
-            }
-        }
-        for &topological_vertex in topological_vertex_order {
-            let components = &face_components[topological_vertex];
-            for component in components {
-                let target = u32::try_from(vertices.len())
-                    .map_err(|_| GeometryError::TooManyMeshVertices)?;
-                vertices.push(data.topological_points[topological_vertex]);
-                for &face in component {
-                    let corner = self.faces[face]
-                        .indices()
-                        .iter()
-                        .position(|&raw| {
-                            data.topological_vertices[raw as usize] == topological_vertex
-                        })
-                        .expect("an incident face contains its topology vertex");
-                    face_replacements[face][corner] = Some(target);
-                }
-            }
-        }
-
-        let faces = self
-            .faces
-            .iter()
-            .copied()
-            .enumerate()
-            .map(|(face, polygon)| {
-                let mut corners = face_replacements[face].into_iter();
-                polygon.remapped(|_| {
-                    corners
-                        .next()
-                        .expect("a mesh face has at most four corners")
-                        .expect("every unwelded face vertex has a replacement")
-                })
-            })
-            .collect();
-        Ok(Self::from_validated_parts(vertices, faces))
     }
 
     /// Compacts coincident-vertex unions in source order, consuming the parent

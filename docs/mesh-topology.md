@@ -60,13 +60,20 @@ mask and returns before this rewrite. An independent partition reference checks
 1,000 combinations of earliest/latest survivors, chained parents, and unused
 source representatives; mixed triangle/quad tests check face kind and winding.
 
-Angle-, edge-, and vertex-based unwelding share a face-component rebuilder.
+Angle-, edge-, and vertex-based unwelding share the
+[`mesh/rebuild`](../crates/viboceros-geometry/src/mesh/rebuild.rs) face-component rebuilder.
 Replacement indices occupy four optional corner slots per face rather than a
 separately allocated tree map. Missing replacements remain explicit, without
 reserving an otherwise valid `u32` index as a sentinel. A 64-case mixed-face test
 checks ordered corner coordinates, face kind, complete vertex use, and pairwise
 sharing for every affected-location subset, grouped/separate components, and
 forward/reverse vertex rebuild order.
+Before constructing output vertices, the rebuilder sums retained vertices and
+replacement components with checked arithmetic and validates the last `u32`
+index. Wide-integer tests cover both index and machine-word limits without huge
+allocations. Vertex, raw-remap, corner-slot, and output-face buffers use fallible
+reservations. This is not an end-to-end allocation-failure guarantee: topology
+construction, selection masks, and derived triangulation still allocate normally.
 
 ## Normals and area
 
