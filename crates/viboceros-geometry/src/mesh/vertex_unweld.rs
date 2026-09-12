@@ -67,18 +67,19 @@ impl TriangleMesh {
             if !affected_vertices[topological_vertex] {
                 continue;
             }
-            let raw_vertices = faces
-                .iter()
-                .map(|&face| {
-                    self.faces[face]
-                        .indices()
-                        .iter()
-                        .copied()
-                        .find(|&raw| data.topological_vertices[raw as usize] == topological_vertex)
-                        .expect("an incident face contains its topology vertex")
-                })
-                .collect::<BTreeSet<_>>();
-            if raw_vertices.len() < faces.len() {
+            // Only the existence of a shared raw vertex affects the count;
+            // stop at the first repeated use instead of building the whole set.
+            let mut raw_vertices = BTreeSet::new();
+            let has_shared_raw_vertex = faces.iter().any(|&face| {
+                let raw = self.faces[face]
+                    .indices()
+                    .iter()
+                    .copied()
+                    .find(|&raw| data.topological_vertices[raw as usize] == topological_vertex)
+                    .expect("an incident face contains its topology vertex");
+                !raw_vertices.insert(raw)
+            });
+            if has_shared_raw_vertex {
                 newly_separated_vertex_count += 1;
             }
         }

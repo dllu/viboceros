@@ -66,6 +66,12 @@ face-to-local tree. A 24,576-case incidence/grouping matrix verifies that this
 walk matches identity-component ordering, including sparse face IDs, singleton
 groups, non-manifold incidences, and fallback faces. This equivalence does not
 apply when angle/edge Unweld joins multiple faces into one component.
+The changed-vertex count stops at the first repeated raw vertex in each fan;
+it does not require the complete set's cardinality. A 1,024-case sharing matrix
+checks this count against independent pairwise label comparisons, including
+fully separated and partially shared fans, unused coincident vertices, reversed
+face order, and reversed winding. It also checks complete face-local separation,
+unchanged ordered corner positions, and area.
 Edge unwelding validates before copying edge references or allocating flags, then
 reuses its selection mask for active edges. Per-endpoint activation requires one
 raw vertex shared by all incident edge faces: partial non-manifold sharing is

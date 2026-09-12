@@ -6,6 +6,62 @@ fn point(x: f64, y: f64, z: f64) -> Point3 {
 }
 
 #[test]
+fn change_count_matches_pairwise_sharing_for_all_four_face_assignments() {
+    for code in 0..256 {
+        let labels = std::array::from_fn::<_, 4, _>(|face| ((code >> (2 * face)) & 3) as u32);
+        let shared =
+            (0..4).any(|first| (first + 1..4).any(|second| labels[first] == labels[second]));
+        for reversed in [false, true] {
+            for flipped in [false, true] {
+                // Five coincident raw vertices include an unused member and
+                // every possible assignment of four faces to the other four.
+                let mut vertices = vec![point(0.0, 0.0, 0.0); 5];
+                let mut faces = Vec::new();
+                for (face, &raw) in labels.iter().enumerate() {
+                    let base = vertices.len() as u32;
+                    vertices.extend([
+                        point(face as f64 + 1.0, 1.0, 0.0),
+                        point(face as f64 + 1.0, 2.0, 0.0),
+                    ]);
+                    faces.push(if flipped {
+                        [raw, base + 1, base]
+                    } else {
+                        [raw, base, base + 1]
+                    });
+                }
+                if reversed {
+                    faces.reverse();
+                }
+                let mesh = TriangleMesh::try_new(vertices, faces, Tolerance::DEFAULT).unwrap();
+                let (result, count) = mesh.unwelded_topology_vertices(&[0, 0]).unwrap();
+                assert_eq!(count, usize::from(shared), "assignment={labels:?}");
+                assert_eq!(result.vertices().len(), 12);
+                assert_eq!(result.faces().len(), 4);
+                assert_eq!(
+                    result
+                        .faces()
+                        .iter()
+                        .flat_map(|face| face.indices())
+                        .copied()
+                        .collect::<BTreeSet<_>>()
+                        .len(),
+                    12
+                );
+                for (before, after) in mesh.faces().iter().zip(result.faces()) {
+                    for (&source, &target) in before.indices().iter().zip(after.indices()) {
+                        assert_eq!(
+                            mesh.vertices()[source as usize],
+                            result.vertices()[target as usize]
+                        );
+                    }
+                }
+                assert_eq!(result.area(), mesh.area());
+            }
+        }
+    }
+}
+
+#[test]
 fn rejects_first_invalid_selection_in_caller_order() {
     let mesh = TriangleMesh::try_new(
         vec![
