@@ -135,8 +135,9 @@ Older command comparisons made before this synchronization need revalidation.
 
 `mesh_split_picking.json` is a **Rhino-only diagnostic**, not yet a native compare
 operation. It uses the same owned-window idle-click mechanism with three disjoint
-meshes, then invokes the actual `SplitDisjointMesh` command. Five cases cover
-ordinary groups and either hidden/locked source. Run it with:
+meshes, then invokes the actual `SplitDisjointMesh` command. Thirteen cases cover
+ordinary and overlapping groups, ordered bridge memberships, hidden/locked
+objects, and hidden/locked layers. Run it with:
 
 ```sh
 tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/mesh_split_picking.json --timeout 240
@@ -144,8 +145,8 @@ tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/mesh_split_
 
 The checked-in `tools/rhino_oracle/observations/mesh_split_picking.json` records
 Rhino 8.32.26160.13001 on 2026-09-12: source identity, selection, object mode,
-group memberships, vertices and face counts, including the untouched third mesh.
-A native command regression now compares those five recorded output sets exactly;
+group memberships, layer modes, vertices and face counts, including untouched peers.
+A native command regression compares those 13 recorded output sets exactly;
 see the [verified fields and remaining limits](commands/meshes.md). The oracle CLI
 still has no native `mesh_split_picking` operation; this is an offline observation
 comparison in `cargo test -p viboceros-command split_disjoint_mesh_matches_live`.

@@ -212,6 +212,8 @@ def on_idle(sender, event):
                     records.append(dict(source=obj.Attributes.Name,
                         original_identity=obj.Id in original_ids,
                         selected=bool(obj.IsSelected(False)), mode=str(obj.Attributes.Mode),
+                        layer_visible=bool(document.Layers[obj.Attributes.LayerIndex].IsVisible),
+                        layer_locked=bool(document.Layers[obj.Attributes.LayerIndex].IsLocked),
                         groups=[state['groups'].index(group) for group in (obj.Attributes.GetGroupList() or [])],
                         faces=int(obj.Geometry.Faces.Count),
                         vertices=[[float(v.X), float(v.Y), float(v.Z)] for v in obj.Geometry.Vertices]))

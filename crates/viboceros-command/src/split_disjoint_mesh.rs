@@ -12,9 +12,10 @@ impl Command for SplitDisjointMeshCommand {
         if document.selected_object_count() == 0 {
             return Err(CommandError::NoObjectsSelected);
         }
-        let selectable_sources = document
-            .selectable_objects()
-            .map(|object| object.id())
+        let locked_layers = document
+            .layers()
+            .filter(|layer| layer.is_locked())
+            .map(|layer| layer.id())
             .collect::<BTreeSet<_>>();
         let inputs = document
             .selected_objects()
@@ -23,9 +24,10 @@ impl Command for SplitDisjointMeshCommand {
                     return Err(CommandError::UnsupportedSplitDisjointMeshGeometry);
                 };
                 Ok(SplitMeshInput {
+                    delete_source: object.attributes().is_visible()
+                        && !object.attributes().is_locked()
+                        && !locked_layers.contains(&object.attributes().layer_id()),
                     id: object.id(),
-                    attributes: object.attributes().clone(),
-                    group_ids: object.group_ids().to_vec(),
                     pieces: mesh.disjoint_pieces(),
                 })
             })
@@ -50,19 +52,20 @@ impl Command for SplitDisjointMeshCommand {
                 continue;
             }
             // Rhino creates fresh IDs for every piece. Its command retains
-            // hidden/locked sources picked through a selectable group peer.
-            if selectable_sources.contains(&input.id) {
+            // object-hidden/locked and layer-locked sources. A hidden layer
+            // alone does not prevent source deletion in the live command.
+            if input.delete_source {
                 deleted_sources.push(input.id);
             } else {
                 output_ids.push(input.id);
             }
             for piece in input.pieces {
-                let id = document.add_geometry_with_attributes(
+                // Source-derived copies can inherit a locked layer from an
+                // editable group-selected peer; arbitrary new geometry cannot.
+                output_ids.extend(document.copy_object_geometries_into_source_groups([(
+                    input.id,
                     Geometry::Mesh(piece),
-                    input.attributes.clone(),
-                )?;
-                output_ids.push(id);
-                document.set_object_group_memberships(id, input.group_ids.iter().copied())?;
+                )])?);
             }
         }
 
@@ -70,17 +73,7 @@ impl Command for SplitDisjointMeshCommand {
         // groups never become temporarily empty during the command.
         document.delete_objects(deleted_sources)?;
 
-        // Locked/hidden peers can be edited through a selected group. They
-        // cannot seed a new pick; selectable outputs expand their groups to
-        // include those peers and their new pieces instead.
-        let selectable = document
-            .selectable_objects()
-            .map(|object| object.id())
-            .collect::<BTreeSet<_>>();
-        replace_selection(
-            document,
-            output_ids.into_iter().filter(|id| selectable.contains(id)),
-        )?;
+        document.select_command_results(output_ids)?;
         Ok(format!(
             "Split {split_mesh_count} mesh(es) into {piece_count} piece(s); {unchanged_mesh_count} mesh(es) unchanged"
         ))
@@ -88,8 +81,7 @@ impl Command for SplitDisjointMeshCommand {
 }
 
 struct SplitMeshInput {
+    delete_source: bool,
     id: ObjectId,
-    attributes: ObjectAttributes,
-    group_ids: Vec<GroupId>,
     pieces: Vec<TriangleMesh>,
 }

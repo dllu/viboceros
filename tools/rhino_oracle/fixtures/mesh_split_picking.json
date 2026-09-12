@@ -68,6 +68,126 @@
       "hidden": [
         1
       ]
+    },
+    {
+      "op": "mesh_split_picking",
+      "id": "split-layer-locked",
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 0,
+      "layer_mode": "locked"
+    },
+    {
+      "op": "mesh_split_picking",
+      "id": "split-layer-hidden",
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 0,
+      "layer_mode": "hidden"
+    },
+    {
+      "op": "mesh_split_picking",
+      "id": "split-overlap-false-0",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "reverse_bridge": false
+    },
+    {
+      "op": "mesh_split_picking",
+      "id": "split-overlap-false-1",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "reverse_bridge": false
+    },
+    {
+      "op": "mesh_split_picking",
+      "id": "split-overlap-false-2",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "reverse_bridge": false
+    },
+    {
+      "op": "mesh_split_picking",
+      "id": "split-overlap-true-0",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "reverse_bridge": true
+    },
+    {
+      "op": "mesh_split_picking",
+      "id": "split-overlap-true-1",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "reverse_bridge": true
+    },
+    {
+      "op": "mesh_split_picking",
+      "id": "split-overlap-true-2",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "reverse_bridge": true
     }
   ]
 }

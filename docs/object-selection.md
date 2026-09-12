@@ -22,6 +22,12 @@ on hidden/locked peers already selected through a group. A matrix test covers
 points, lines, meshes, surfaces, and point clouds before/after grouping and locking,
 and verifies that filter queries leave the document unchanged.
 
+`Document::select_command_results` is a separate exact-output path for editing
+commands, not interactive picking. It permits inherited hidden/locked results,
+does not expand groups, and validates every ID before changing selection.
+`SplitDisjointMesh` uses it to avoid selecting untouched overlapping-group peers;
+ordinary pick APIs continue to reject restricted seeds.
+
 | Behavior | MeshToNURB | ToNURBS | ConvertToBeziers |
 | --- | --- | --- | --- |
 | Eligible picks | Meshes | Curves, surfaces, B-reps, meshes | Curves, surfaces, single-face B-reps |

@@ -6,6 +6,23 @@ pub(super) fn selected_objects(document: &Document) -> impl Iterator<Item = &Obj
 }
 
 impl Document {
+    /// Replaces selection with exact outputs of a document-editing command.
+    /// Unlike picking, this neither expands groups nor rejects hidden/locked
+    /// results inherited from a selected source. UI picking must use
+    /// `select_objects` or `select_objects_direct` instead.
+    /// Missing IDs are rejected before any selection/history state changes.
+    pub fn select_command_results(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+    ) -> Result<usize, DocumentError> {
+        let indices = self.resolve_object_indices(ids)?;
+        let selected = indices
+            .into_iter()
+            .map(|index| self.objects[index].id)
+            .collect();
+        Ok(self.update_selection(selected))
+    }
+
     /// Attribute/layer changes prune individual objects, without group expansion.
     /// History replay has a separate group-aware cleanup policy below.
     pub(super) fn prune_selection(&mut self) {
@@ -166,6 +183,40 @@ impl Document {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn command_results_are_exact_allow_restricted_outputs_and_validate_before_mutation() {
+        let mut document = Document::default();
+        let ids = [0., 1., 2.].map(|x| {
+            document
+                .add_geometry(Geometry::Point(Point3::try_new(x, 0., 0.).unwrap()))
+                .unwrap()
+        });
+        document.add_group(None, [ids[0], ids[1]]).unwrap();
+        document.add_group(None, [ids[1], ids[2]]).unwrap();
+        document.set_objects_locked([ids[1]], true).unwrap();
+        document.set_objects_visibility([ids[2]], false).unwrap();
+        document
+            .select_command_results([ids[2], ids[1], ids[1]])
+            .unwrap();
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([ids[1], ids[2]])
+        );
+        let missing = ObjectId::new();
+        let before = format!("{document:?}");
+        assert!(
+            matches!(document.select_command_results([ids[0], missing]), Err(DocumentError::ObjectNotFound(id)) if id == missing)
+        );
+        assert_eq!(format!("{document:?}"), before);
+        assert!(matches!(
+            document.select_objects_direct([ids[1]], SelectionMode::Replace),
+            Err(DocumentError::ObjectNotSelectable(_))
+        ));
+        assert_eq!(format!("{document:?}"), before);
+        document.select_command_results([]).unwrap();
+        assert_eq!(document.selected_object_count(), 0);
+    }
 
     #[test]
     fn selectable_iteration_obeys_object_and_layer_modes_without_group_expansion() {

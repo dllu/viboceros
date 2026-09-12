@@ -21,18 +21,26 @@ class GroupPickingTests(unittest.TestCase):
         for op, result in zip(request["operations"], observed["results"]):
             value = result["value"]
             self.assertTrue(value["split_succeeded"])
-            self.assertEqual(value["selected"], [0, 1])
+            memberships = [[i for i, members in enumerate(op["groups"]) if source in members] for source in range(3)]
+            if op.get("reverse_bridge"): memberships[1].reverse()
+            seed_groups = memberships[op["seed"]]
+            selected = sorted(op["groups"][seed_groups[-1]]) if seed_groups else [op["seed"]]
+            self.assertEqual(value["selected"], selected)
             for source in range(3):
                 outputs = [obj for obj in value["outputs"] if obj["source"] == "source-%d" % source]
                 restricted = source in op.get("hidden", []) or source in op.get("locked", [])
+                retained = restricted or (source == 1 and op.get("layer_mode") == "locked")
+                split = source in selected
                 originals = [obj for obj in outputs if obj["original_identity"]]
-                self.assertEqual(len(originals), int(restricted or source == 2))
-                self.assertEqual(len(outputs), 1 if source == 2 else 2 + int(restricted))
+                self.assertEqual(len(originals), int(retained or not split))
+                self.assertEqual(len(outputs), 2 + int(retained) if split else 1)
                 expected_mode = "Hidden" if source in op.get("hidden", []) else "Locked" if restricted else "Normal"
                 for obj in outputs:
                     self.assertEqual(obj["mode"], expected_mode)
-                    self.assertEqual(obj["selected"], source != 2)
-                    self.assertEqual(obj["groups"], [] if source == 2 else [0])
+                    self.assertEqual(obj["selected"], split)
+                    self.assertEqual(obj["groups"], memberships[source])
+                    self.assertEqual(obj["layer_visible"], not (source == 1 and op.get("layer_mode") == "hidden"))
+                    self.assertEqual(obj["layer_locked"], source == 1 and op.get("layer_mode") == "locked")
                     self.assertEqual(obj["faces"], 2 if obj["original_identity"] else 1)
                     self.assertEqual(len(obj["vertices"]), 3 * obj["faces"])
 

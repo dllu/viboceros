@@ -18,8 +18,6 @@ fn split_disjoint_mesh_matches_live_rhino_picking_observations() {
     for (operation, result) in operations.iter().zip(results) {
         assert_eq!(operation["id"], result["id"]);
         assert_eq!(operation["op"], "mesh_split_picking");
-        assert!(operation.get("layer_mode").is_none());
-        assert!(operation.get("reverse_bridge").is_none());
         let mut document = Document::default();
         let ids = [0, 1, 2].map(|source| {
             let vertices = [[0., 0.], [2., 0.], [0., 2.], [0., 4.], [2., 4.], [0., 6.]]
@@ -51,6 +49,19 @@ fn split_disjoint_mesh_matches_live_rhino_picking_observations() {
                     .unwrap()
             })
             .collect::<Vec<_>>();
+        if operation["reverse_bridge"].as_bool().unwrap_or(false) {
+            let reversed = document
+                .object(ids[1])
+                .unwrap()
+                .group_ids()
+                .iter()
+                .rev()
+                .copied()
+                .collect::<Vec<_>>();
+            document
+                .set_object_group_memberships(ids[1], reversed)
+                .unwrap();
+        }
         for mode in ["hidden", "locked"] {
             if let Some(indices) = operation.get(mode) {
                 let restricted = indices
@@ -65,6 +76,16 @@ fn split_disjoint_mesh_matches_live_rhino_picking_observations() {
                     document.set_objects_locked(restricted, true).unwrap();
                 }
             }
+        }
+        if let Some(mode) = operation["layer_mode"].as_str() {
+            let layer = document
+                .add_layer("Restricted source", ColorRgb::BLACK)
+                .unwrap();
+            document.set_objects_layer([ids[1]], layer).unwrap();
+            document.set_layer_locked(layer, mode == "locked").unwrap();
+            document
+                .set_layer_visibility(layer, mode != "hidden")
+                .unwrap();
         }
         document
             .select_object(
@@ -90,6 +111,8 @@ fn split_disjoint_mesh_matches_live_rhino_picking_observations() {
                 "original_identity": ids.contains(&object.id()),
                 "selected": document.is_selected(object.id()),
                 "mode": mode,
+                "layer_visible": document.layer(attributes.layer_id()).unwrap().is_visible(),
+                "layer_locked": document.layer(attributes.layer_id()).unwrap().is_locked(),
                 "groups": object.group_ids().iter().map(|group| groups.iter().position(|candidate| candidate == group).unwrap()).collect::<Vec<_>>(),
                 "faces": mesh.face_count(),
                 "vertices": mesh.vertices().iter().map(|p| [p.x(), p.y(), p.z()]).collect::<Vec<_>>()
