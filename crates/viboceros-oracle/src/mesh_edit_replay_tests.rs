@@ -2,6 +2,15 @@
 use super::*;
 
 #[test]
+fn permanent_edge_unweld_fixture_matches_recorded_rhino_geometry_and_partitions() {
+    assert_recorded_geometry(
+        include_str!("../../../tools/rhino_oracle/fixtures/mesh_unweld_edge.json"),
+        include_str!("../../../tools/rhino_oracle/observations/mesh_unweld_edge.json"),
+        16,
+    );
+}
+
+#[test]
 fn permanent_vertex_unweld_fixture_matches_recorded_rhino_geometry_and_partitions() {
     assert_recorded_geometry(
         include_str!("../../../tools/rhino_oracle/fixtures/mesh_unweld_vertex.json"),

@@ -227,7 +227,9 @@ normals remain derived data.
 `Edges=0,2`, `Edges=All`, or omit the selector to pick one edge in the viewport.
 It partitions closed and high-valence radial face fans, handles non-manifold
 edges, and preserves existing seams; naked or already-unwelded selections only
-trigger Rhino-compatible vertex compaction. `ModifyNormals=Yes|No` is accepted,
+trigger Rhino-compatible vertex compaction. At a non-manifold edge, an endpoint
+with existing partial sharing stays unchanged; only endpoints shared by every
+incident edge face are separated. `ModifyNormals=Yes|No` is accepted,
 but normals remain derived data.
 
 `UnweldVertex` gives every face incident to each selected topology vertex its

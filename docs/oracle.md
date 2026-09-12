@@ -55,6 +55,17 @@ reversed selections, cube corner/all-vertex edits, a non-manifold fan, and a
 fully separated triangle. Replay checks acceptance, added-vertex counts, ordered
 face coordinates, and sharing groups exactly, with the same raw-index limitation.
 
+The [edge-unweld fixture](../tools/rhino_oracle/fixtures/mesh_unweld_edge.json) has
+a [16-case Rhino 8.32 record](../tools/rhino_oracle/observations/mesh_unweld_edge.json).
+This probe invokes `Mesh.UnweldEdge`, not the interactive command. Besides radial
+fans and closed meshes, it covers partial sharing at one or both endpoints of a
+non-manifold edge. Rhino separates an endpoint only when all incident edge faces
+use one raw vertex there, preserving other existing sharing groups. Disconnected
+coincident contacts and unused coincident vertices do not prevent separation.
+These cases exposed and corrected native over-separation. Replay compares
+acceptance, added-vertex counts, face coordinates, and sharing groups exactly;
+raw-index numbering and stored normal parity are not established by this record.
+
 The [short-curve selection diagnostic](short-curve-selection-measurement.json)
 embeds four requests and responses (40 line lengths). `short_curve_selection`
 creates owned line objects, runs the actual `SelShortCrv` command, and records

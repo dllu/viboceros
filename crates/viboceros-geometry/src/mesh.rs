@@ -3103,7 +3103,8 @@ impl TriangleMesh {
     /// Naked and already-unwelded edges require no new seams, but a non-empty
     /// valid selection still compacts unused vertices as Rhino does. The
     /// returned count is the number of distinct edges that required a new
-    /// separation.
+    /// separation. Each endpoint is separated only if all incident edge faces
+    /// share one raw vertex there; existing partial sharing is preserved.
     pub fn unwelded_topology_edges(
         &self,
         edge_indices: &[usize],
@@ -3112,28 +3113,24 @@ impl TriangleMesh {
             return Ok((self.clone(), 0));
         }
         let data = self.topology_data();
+        let edge_count = data.edges.len();
+        if let Some(&edge) = edge_indices.iter().find(|&&edge| edge >= edge_count) {
+            return Err(GeometryError::MeshTopologyEdgeIndexOutOfRange { edge, edge_count });
+        }
         let edges = data
             .edges
             .iter()
             .map(|(&(first, second), incidence)| ([first, second], incidence))
             .collect::<Vec<_>>();
-        let mut selected_edges = vec![false; edges.len()];
+        let mut active_edges = vec![false; edge_count];
         for &edge in edge_indices {
-            let Some(selected) = selected_edges.get_mut(edge) else {
-                return Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
-                    edge,
-                    edge_count: edges.len(),
-                });
-            };
-            *selected = true;
+            active_edges[edge] = true;
         }
-        let active_edges = edges
-            .iter()
-            .zip(selected_edges)
-            .map(|((_, incidence), selected)| {
-                selected && incidence.count > 1 && !edge_uses_are_unwelded(incidence.uses())
-            })
-            .collect::<Vec<_>>();
+        for ((_, incidence), active) in edges.iter().zip(&mut active_edges) {
+            *active = *active
+                && (edge_endpoint_is_fully_shared(incidence, 0)
+                    || edge_endpoint_is_fully_shared(incidence, 1));
+        }
         let active_edge_count = active_edges.iter().filter(|&&active| active).count();
         if active_edge_count == 0 {
             return Ok((self.culled_unused_vertices().0, 0));
@@ -3145,8 +3142,10 @@ impl TriangleMesh {
             incident_edges[vertices[0]].push(edge);
             incident_edges[vertices[1]].push(edge);
             if active_edges[edge] {
-                affected_topological_vertices[vertices[0]] = true;
-                affected_topological_vertices[vertices[1]] = true;
+                for endpoint in 0..2 {
+                    affected_topological_vertices[vertices[endpoint]] |=
+                        edge_endpoint_is_fully_shared(edges[edge].1, endpoint);
+                }
             }
         }
         let face_edges = topology_face_edge_indices(self, &data);
@@ -3180,11 +3179,19 @@ impl TriangleMesh {
                 .map(|(local, &face)| (face, local))
                 .collect::<BTreeMap<_, _>>();
             let mut separated_edges = active_edges.clone();
+            // Rhino only separates an endpoint when every face along this
+            // edge uses the same raw vertex there. Existing partial sharing
+            // at a non-manifold endpoint is preserved, not fully separated.
+            for &edge in &incident_edges[topological_vertex] {
+                let (vertices, incidence) = edges[edge];
+                let endpoint = usize::from(vertices[1] == topological_vertex);
+                separated_edges[edge] &= edge_endpoint_is_fully_shared(incidence, endpoint);
+            }
             for group in &edge_groups[topological_vertex] {
                 let selected = group
                     .iter()
                     .enumerate()
-                    .filter_map(|(position, &edge)| active_edges[edge].then_some(position))
+                    .filter_map(|(position, &edge)| separated_edges[edge].then_some(position))
                     .collect::<Vec<_>>();
                 let closed_manifold = group.iter().all(|&edge| edges[edge].1.count == 2);
                 if closed_manifold && selected.len() == 1 {
@@ -4585,6 +4592,15 @@ fn compare_points_descending(left: &Point3, right: &Point3) -> std::cmp::Orderin
         })
         .find(|ordering| !ordering.is_eq())
         .unwrap_or(std::cmp::Ordering::Equal)
+}
+
+fn edge_endpoint_is_fully_shared(incidence: &EdgeIncidence, endpoint: usize) -> bool {
+    if incidence.count < 2 {
+        return false;
+    }
+    let mut uses = incidence.uses();
+    let first = uses.next().expect("a topology edge has an incident face");
+    uses.all(|edge_use| edge_use.raw_vertices[endpoint] == first.raw_vertices[endpoint])
 }
 
 fn edge_uses_are_unwelded(mut uses: impl Iterator<Item = EdgeUse>) -> bool {
@@ -8230,6 +8246,49 @@ mod tests {
     }
 
     #[test]
+    fn edge_unwelding_preserves_partially_shared_non_manifold_endpoints() {
+        for both_divided in [false, true] {
+            let mesh = TriangleMesh::try_new(
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(1.0, 0.0, 0.0),
+                    point(0.0, 1.0, 0.0),
+                    point(0.0, -1.0, 0.0),
+                    point(1.0, 0.0, 0.0),
+                    point(0.0, 0.0, 1.0),
+                    point(0.0, 0.0, 0.0),
+                ],
+                vec![
+                    [0, 1, 2],
+                    [1, 0, 3],
+                    [if both_divided { 6 } else { 0 }, 4, 5],
+                ],
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            let (output, count) = mesh.unwelded_topology_edges(&[0, 0]).unwrap();
+            assert_eq!(count, usize::from(!both_divided));
+            assert_eq!(output.vertices().len(), if both_divided { 7 } else { 8 });
+            let faces = output.triangles();
+            // The already divided B endpoint retains its two sharing groups.
+            assert_eq!(faces[0][1], faces[1][0]);
+            assert_ne!(faces[0][1], faces[2][1]);
+            assert_eq!(faces[0][0] == faces[1][1], both_divided);
+            assert_ne!(faces[0][0], faces[2][0]);
+            assert_ne!(faces[1][1], faces[2][0]);
+            for (original, rebuilt) in mesh.triangles().iter().zip(faces) {
+                assert_eq!(
+                    original.map(|raw| mesh.vertices()[raw as usize]),
+                    rebuilt.map(|raw| output.vertices()[raw as usize])
+                );
+            }
+            if both_divided {
+                assert_eq!(output, mesh);
+            }
+        }
+    }
+
+    #[test]
     fn unwelds_selected_topology_edges_in_rhino_order_and_compacts() {
         let mesh = TriangleMesh::try_new(
             vec![
@@ -8257,7 +8316,10 @@ mod tests {
             ]
         );
         assert_eq!(unwelded.triangles(), &[[2, 5, 0], [4, 3, 1]]);
-        assert_eq!(mesh.unwelded_topology_edges(&[0, 0]).unwrap().0, unwelded);
+        assert_eq!(
+            mesh.unwelded_topology_edges(&[0, 0]).unwrap(),
+            (unwelded.clone(), 1)
+        );
 
         let (empty, edge_count) = mesh.unwelded_topology_edges(&[]).unwrap();
         assert_eq!(edge_count, 0);
@@ -8267,13 +8329,21 @@ mod tests {
         assert_eq!(naked.vertices(), &mesh.vertices()[..4]);
         assert_eq!(naked.triangles(), mesh.triangles());
 
-        assert_eq!(
-            mesh.unwelded_topology_edges(&[5]),
-            Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
-                edge: 5,
-                edge_count: 5,
-            })
-        );
+        for (selection, invalid) in [
+            (vec![5], 5),
+            (vec![0, 5], 5),
+            (vec![usize::MAX, 5], usize::MAX),
+            (vec![5, usize::MAX], 5),
+            (vec![0, 0, usize::MAX], usize::MAX),
+        ] {
+            assert_eq!(
+                mesh.unwelded_topology_edges(&selection),
+                Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
+                    edge: invalid,
+                    edge_count: 5,
+                })
+            );
+        }
         let already_unwelded = TriangleMesh::try_new(
             unwelded.vertices().to_vec(),
             unwelded.triangles().to_vec(),

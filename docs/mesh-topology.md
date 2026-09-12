@@ -51,6 +51,10 @@ Duplicate selections count each edge only once; regression cases cover duplicate
 counts and mixed valid/invalid selection order.
 Selected-vertex welding likewise checks the first invalid index before allocating
 selection flags, including mixed valid/invalid and duplicate selections.
+Edge unwelding validates before copying edge references or allocating flags, then
+reuses its selection mask for active edges. Per-endpoint activation requires one
+raw vertex shared by all incident edge faces: partial non-manifold sharing is
+preserved, as confirmed by the expanded Rhino edge-unweld record and native tests.
 
 Shared welding compaction resolves every face to its representative before
 reusing the parent array as the compact-index map, eliminating a separate
