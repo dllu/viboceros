@@ -113,6 +113,83 @@ fn native_step_import_keeps_cavity_shells_in_one_document_object() {
         (16, 24, 12)
     );
     assert!((brep.signed_volume(Tolerance::DEFAULT).unwrap() - 992.).abs() < 1e-9);
+    let original = brep.clone();
+    let archive = directory.path().join("native cavity.3dm");
+    let before_export = format!("{document:?}");
+    registry
+        .execute(
+            &mut document,
+            &format!("Export3dm \"{}\"", archive.display()),
+        )
+        .unwrap();
+    assert_eq!(format!("{document:?}"), before_export);
+    let mut restored = Document::default();
+    registry
+        .execute(
+            &mut restored,
+            &format!("Import3dm \"{}\"", archive.display()),
+        )
+        .unwrap();
+    assert_eq!(restored.objects().len(), 1);
+    let Geometry::Brep(actual) = restored.objects().next().unwrap().geometry() else {
+        panic!("archive lost native B-rep")
+    };
+    assert_eq!(
+        (
+            actual.vertices().len(),
+            actual.edges().len(),
+            actual.faces().len()
+        ),
+        (16, 24, 12)
+    );
+    assert!((actual.signed_volume(Tolerance::DEFAULT).unwrap() - 992.).abs() < 1e-9);
+    assert!((actual.area(Tolerance::DEFAULT).unwrap() - 624.).abs() < 1e-9);
+    assert!(
+        original
+            .faces()
+            .iter()
+            .flat_map(|face| face.loops())
+            .flat_map(|boundary| boundary.trims())
+            .all(|trim| trim.iso() == viboceros_geometry::SurfaceIso::NotIso)
+    );
+    assert!(
+        actual
+            .faces()
+            .iter()
+            .flat_map(|face| face.loops())
+            .flat_map(|boundary| boundary.trims())
+            .any(|trim| trim.iso() != viboceros_geometry::SurfaceIso::NotIso)
+    );
+    for (vertex, old) in actual.vertices().iter().zip(original.vertices()) {
+        assert_eq!(vertex.point(), old.point());
+    }
+    for (edge, old) in actual.edges().iter().zip(original.edges()) {
+        assert_eq!(edge.vertices(), old.vertices());
+        assert_eq!(edge.curve(), old.curve());
+    }
+    for (face, old) in actual.faces().iter().zip(original.faces()) {
+        assert_eq!(face.is_reversed(), old.is_reversed());
+        assert_eq!(face.surface(), old.surface());
+        assert_eq!(face.loops().len(), old.loops().len());
+        for (boundary, old_boundary) in face.loops().iter().zip(old.loops()) {
+            assert_eq!(boundary.loop_type(), old_boundary.loop_type());
+            assert_eq!(boundary.trims().len(), old_boundary.trims().len());
+            for (trim, old_trim) in boundary.trims().iter().zip(old_boundary.trims()) {
+                assert_eq!(trim.vertices(), old_trim.vertices());
+                assert_eq!(trim.edge(), old_trim.edge());
+                assert_eq!(trim.is_reversed_3d(), old_trim.is_reversed_3d());
+                assert_eq!(trim.curve(), old_trim.curve());
+            }
+        }
+    }
+    let after_import = format!("{:?}", restored.objects().collect::<Vec<_>>());
+    registry.execute(&mut restored, "Undo").unwrap();
+    assert_eq!(restored.objects().len(), 0);
+    registry.execute(&mut restored, "Redo").unwrap();
+    assert_eq!(
+        format!("{:?}", restored.objects().collect::<Vec<_>>()),
+        after_import
+    );
 }
 
 #[test]

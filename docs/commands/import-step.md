@@ -31,5 +31,12 @@ record parsing before import. Both `ImportStep Native=Yes` and
 `ImportStp native=yes` fail on that later shell with the complete document and
 redo history unchanged; the previously undone command remains redoable.
 
+Imported native objects can be saved with `Export3dm`. The hollow-cube regression
+exports and reimports the object, checking surface/curve data, topology, cavity
+sense, area 624, volume 992, and Undo/Redo. Export leaves the source document
+unchanged. The 3DM writer derives isoparametric flags for trims marked `NotIso`
+using OpenNURBS' classification; STEP import does not currently populate those
+flags itself. This archive metadata adjustment does not alter trim geometry.
+
 See [file formats](../file-formats.md) and the
 [native STEP conversion boundary](../step-brep-boundary.md) for limitations.
