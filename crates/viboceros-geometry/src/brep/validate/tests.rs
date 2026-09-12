@@ -48,6 +48,8 @@ fn loop_winding_is_independent_of_linear_weights_and_handles_extreme_uv_ranges()
     for (radius, weights) in [
         (1., [1., 1e12]),
         (1., [1e12, 1.]),
+        (1., [-1., -1e12]),
+        (1., [-1e12, -1.]),
         (1e100, [1., 1e12]),
         (1e100, [1e12, 1.]),
         (f64::MAX, [1., 1.]),
@@ -102,6 +104,25 @@ fn loop_winding_is_independent_of_linear_weights_and_handles_extreme_uv_ranges()
             );
         }
     }
+}
+
+#[test]
+fn linear_loop_winding_shortcut_does_not_hide_a_rational_pole() {
+    let mut boundary = square().faces()[0].loops()[0].clone();
+    let trim = &mut boundary.trims[0];
+    let controls = trim
+        .curve
+        .control_points()
+        .iter()
+        .zip([1., -1.])
+        .map(|(control, weight)| WeightedPoint2::try_new(control.point(), weight).unwrap())
+        .collect();
+    trim.curve = NurbsCurve2::try_new_rational(1, controls, vec![0., 0., 1., 1.]).unwrap();
+    // Endpoints alone look like an ordinary side, but the midpoint has a pole.
+    assert!(trim.curve.start_point().is_ok());
+    assert!(trim.curve.end_point().is_ok());
+    assert!(trim.curve.evaluate(0.5).is_err());
+    assert!(sampled_loop_signed_area(&boundary).is_err());
 }
 
 fn p(x: Real, y: Real, z: Real) -> Point3 {

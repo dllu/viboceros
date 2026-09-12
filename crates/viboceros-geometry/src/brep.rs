@@ -9419,6 +9419,17 @@ fn sampled_loop_signed_area(face_loop: &BrepLoop) -> Result<Real, GeometryError>
         if points.is_empty() {
             points.push(trim.curve.start_point()?);
         }
+        let controls = trim.curve.control_points();
+        if trim.curve.degree() == 1
+            && controls.len() == 2
+            && controls[0].weight().is_sign_positive() == controls[1].weight().is_sign_positive()
+        {
+            // A pole-free rational linear span traces exactly its endpoint
+            // segment regardless of its speed. Interior samples add no area
+            // information, and can crowd one endpoint for unequal weights.
+            points.push(trim.curve.end_point()?);
+            continue;
+        }
         for (start, end) in trim.curve.spans() {
             for sample in 1..=LOOP_SAMPLES_PER_SPAN {
                 let fraction = sample as Real / LOOP_SAMPLES_PER_SPAN as Real;

@@ -207,6 +207,10 @@ STEP reader performs full model-space validation. This does not extend region
 validation to arbitrary curved trims or change other B-rep constructors.
 
 Native loop-winding validation also uses the range-safe UV normalization.
+Single degree-one trims with same-sign weights contribute only their endpoints:
+their exact path is a straight segment, so interior samples provide no additional
+area information. Curved trims and opposite-sign rational spans retain sampling;
+a regression ensures a rational midpoint pole is not bypassed by this shortcut.
 Regressions check both winding directions with weight ratios up to `1e12`,
 coordinates of magnitude `1e100`, and equal-weight loops spanning `-f64::MAX`
 to `f64::MAX`. This avoids overflowing raw coordinate differences while testing
