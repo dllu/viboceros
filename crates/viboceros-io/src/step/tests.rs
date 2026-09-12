@@ -3,6 +3,96 @@ use std::io::Cursor;
 use super::*;
 
 #[test]
+fn planar_hole_trims_survive_loading_but_native_import_fails_explicitly() {
+    use monstertruck::modeling::{Edge, Face, Plane, Shell, Vertex, Wire, builder};
+
+    let wire = |points: [[f64; 3]; 4]| {
+        let vertices = points.map(|p| Vertex::new(TruckPoint3::new(p[0], p[1], p[2])));
+        Wire::from(
+            (0..4)
+                .map(|i| builder::line(&vertices[i], &vertices[(i + 1) % 4]))
+                .collect::<Vec<Edge>>(),
+        )
+    };
+    let outer = wire([[0., 0., 0.], [10., 0., 0.], [10., 10., 0.], [0., 10., 0.]]);
+    let inner = wire([[2., 2., 0.], [2., 4., 0.], [4., 4., 0.], [4., 2., 0.]]);
+    for inner_first in [false, true] {
+        for reversed in [false, true] {
+            let boundaries = if inner_first {
+                vec![inner.clone(), outer.clone()]
+            } else {
+                vec![outer.clone(), inner.clone()]
+            };
+            let mut face = Face::new(
+                boundaries,
+                Plane::new(
+                    TruckPoint3::new(0., 0., 0.),
+                    TruckPoint3::new(1., 0., 0.),
+                    TruckPoint3::new(0., 1., 0.),
+                )
+                .into(),
+            );
+            if reversed {
+                face.invert();
+            }
+            let shell = Shell::from(vec![face]).compress();
+            let text = CompleteStepDisplay::new(
+                TruckStepModel::from(&shell),
+                StepHeaderDescriptor::default(),
+            )
+            .to_string();
+            let table = Table::from_step(&text).unwrap();
+            let id = *table.shell.keys().next().unwrap();
+            let (loaded, report) = reported_trimmed_shell(&table, id).unwrap();
+            assert_eq!(report.total_lost(), 0);
+            assert_eq!(
+                (
+                    loaded.vertices.len(),
+                    loaded.edges.len(),
+                    loaded.faces.len()
+                ),
+                (8, 8, 1)
+            );
+            let face = &loaded.faces[0];
+            assert_eq!(face.orientation, !reversed);
+            assert_eq!(face.boundaries.len(), 2);
+            let areas = face
+                .boundaries
+                .iter()
+                .map(|boundary| {
+                    assert_eq!(boundary.len(), 4);
+                    boundary
+                        .iter()
+                        .map(|edge_use| {
+                            let trim = edge_use.trim_curve.as_ref().expect("exact planar trim");
+                            let (start, end) = trim.range_tuple();
+                            let a = trim.curve().evaluate(start);
+                            let b = trim.curve().evaluate(end);
+                            (a.x * b.y - a.y * b.x) * 0.5
+                        })
+                        .sum::<f64>()
+                })
+                .collect::<Vec<_>>();
+            assert_eq!(
+                areas,
+                if inner_first {
+                    vec![-4., 100.]
+                } else {
+                    vec![100., -4.]
+                }
+            );
+            assert!(matches!(
+                read_step_planar_shells(Cursor::new(&text), Tolerance::DEFAULT),
+                Err(StepError::UnsupportedPlanarShell {
+                    reason: "multiple boundary loops are not yet supported",
+                    ..
+                })
+            ));
+        }
+    }
+}
+
+#[test]
 fn native_planar_unit_conversion_scales_geometry_but_preserves_uv_trims() {
     let text = cube_step();
     let source = read_step_planar_shells(Cursor::new(&text), Tolerance::DEFAULT).unwrap();

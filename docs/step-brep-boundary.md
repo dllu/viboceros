@@ -79,6 +79,21 @@ A native `BrepTrim` must preserve that boundary-oriented UV curve while setting
 break boundary orientation. This regression is a generated straight-edged cube,
 not evidence for all STEP trims, periodic seams, singularities, or Rhino parity.
 
+The planar-hole regression uses a 10-by-10 outer square and a clockwise
+2-by-2 inner square, both boundary orders, and both face senses. The loader
+retains all eight vertices and edges and all eight exact UV trims without
+reported losses. UV signed areas remain +100 and -4 regardless of face sense;
+the boundary list retains its source order, including inner-first input.
+The loader's `FaceBound` representation does not retain a distinct outer-bound
+flag. Consequently a converter must not assume that the first loop is outer.
+The native reader explicitly rejects all four multi-loop fixtures for now.
+
+Before enabling holes, conversion needs geometric classification and checks for
+containment, self-intersection, and intersections between loops. General native
+`Brep::try_new` validation currently verifies trim continuity, endpoint/surface
+agreement, edge-use types, and winding, but does not establish those planar
+region conditions. Passing it alone is not sufficient evidence for valid holes.
+
 ## Native representation requirements
 
 Native `BrepEdge` requires a `NurbsCurve`; `BrepFace` requires a `NurbsSurface`;
