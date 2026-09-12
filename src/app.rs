@@ -39,6 +39,7 @@ mod plane_primitives;
 mod point_grid;
 mod point_input;
 mod points;
+mod radius;
 mod toolbar;
 use point_input::{plane_radius_exceeds_tolerance, plane_rectangle_exceeds_tolerance};
 
@@ -704,9 +705,9 @@ impl InteractiveCommand {
             }
             Self::Radius {
                 diameter: false, ..
-            } => "Radius: pick a location on a selected curve (Esc to cancel)",
+            } => "Radius: pick a curve location (preselection limits curves; Esc cancels)",
             Self::Radius { diameter: true, .. } => {
-                "Diameter: pick a location on a selected curve (Esc to cancel)"
+                "Diameter: pick a curve location (preselection limits curves; Esc cancels)"
             }
             Self::DupFaceBorder { .. } => {
                 "DupFaceBorder: pick a face location on a selected surface or B-rep (Esc to cancel)"
@@ -2913,7 +2914,6 @@ impl VibocerosApp {
                 | InteractiveCommand::ExtrudeCurveToPoint { .. }
                 | InteractiveCommand::ExtractSrf { .. }
                 | InteractiveCommand::Curvature { .. }
-                | InteractiveCommand::Radius { .. }
                 | InteractiveCommand::DupFaceBorder { .. }
                 | InteractiveCommand::DupEdge { .. }
                 | InteractiveCommand::ExtractMeshFaces { .. }
@@ -4104,13 +4104,7 @@ impl VibocerosApp {
                 ));
             }
             InteractiveCommand::Radius { diameter, mark } => {
-                let name = if diameter { "Diameter" } else { "Radius" };
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "{name} Mark{name}={} {}",
-                    if mark { "Yes" } else { "No" },
-                    format_model_point(point)
-                ));
+                return self.finish_radius(point, diameter, mark);
             }
             InteractiveCommand::ExtractSrf {
                 copy,

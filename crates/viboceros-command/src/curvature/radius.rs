@@ -12,9 +12,9 @@ impl Command for RadiusCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let usage = if self.diameter {
-            "Diameter [MarkDiameter=Yes|No] point-on-selected-curve"
+            "Diameter [MarkDiameter=Yes|No] point-on-curve"
         } else {
-            "Radius [MarkRadius=Yes|No] point-on-selected-curve"
+            "Radius [MarkRadius=Yes|No] point-on-curve"
         };
         let mark_option = if self.diameter {
             "MarkDiameter"
@@ -37,20 +37,36 @@ impl Command for RadiusCommand {
             }
         }
         let point = point.ok_or(CommandError::Usage(usage))?;
-        if document.selected_object_count() == 0 {
-            return Err(CommandError::NoObjectsSelected);
-        }
+        let preselected = document.selected_object_count() != 0;
         let tolerance = document.tolerance();
         let mut best = None;
-        for object in document.selected_objects() {
-            let curve = geometry_curve_ref(object.geometry()).ok_or(CommandError::Usage(usage))?;
+        let candidates =
+            document
+                .selected_objects()
+                .chain(document.selectable_objects().take(if preselected {
+                    0
+                } else {
+                    usize::MAX
+                }));
+        for object in candidates {
+            let Some(curve) = geometry_curve_ref(object.geometry()) else {
+                if preselected {
+                    return Err(CommandError::Usage(usage));
+                }
+                continue;
+            };
             let parameter = curve.closest_parameter(point, tolerance)?;
             let distance = point.distance_to(curve.evaluate(parameter)?)?;
             if best.as_ref().is_none_or(|(d, _)| distance < *d) {
                 best = Some((distance, Target::Curve(curve, parameter)));
             }
         }
-        let evaluation = best.ok_or(CommandError::NoObjectsSelected)?.1.evaluate()?;
+        let evaluation = best
+            .ok_or(CommandError::Usage(
+                "Radius/Diameter requires an eligible curve",
+            ))?
+            .1
+            .evaluate()?;
         let Evaluation::Curve { curvature, .. } = &evaluation else {
             unreachable!()
         };
@@ -83,6 +99,57 @@ impl Command for RadiusCommand {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn unselected_radius_ignores_hidden_locked_and_noncurve_objects() {
+        let registry = CommandRegistry::with_builtins();
+        for exclusion in ["Hide", "Lock", "Layer Hide Excluded", "Layer Lock Excluded"] {
+            let mut doc = Document::default();
+            registry.execute(&mut doc, "Circle 0,0,0 2").unwrap();
+            registry.execute(&mut doc, "Layer New Excluded").unwrap();
+            registry
+                .execute(&mut doc, "Layer Current Excluded")
+                .unwrap();
+            registry.execute(&mut doc, "Circle 0,0,0 1").unwrap();
+            let excluded = doc.objects().last().unwrap().id();
+            registry.execute(&mut doc, "Layer Current Default").unwrap();
+            doc.select_object(excluded, viboceros_document::SelectionMode::Replace)
+                .unwrap();
+            registry.execute(&mut doc, exclusion).unwrap();
+            registry.execute(&mut doc, "SelNone").unwrap();
+            registry.execute(&mut doc, "Layer Current Default").unwrap();
+            registry.execute(&mut doc, "Point 1,0,0").unwrap();
+            let before = format!("{doc:?}");
+            assert_eq!(
+                registry.execute(&mut doc, "Radius 1,0,0").unwrap(),
+                "Radius = 2; Diameter = 4"
+            );
+            assert_eq!(format!("{doc:?}"), before);
+        }
+    }
+
+    #[test]
+    fn explicit_radius_selection_limits_candidates_and_empty_search_is_read_only() {
+        let registry = CommandRegistry::with_builtins();
+        let mut doc = Document::default();
+        let empty = format!("{doc:?}");
+        assert!(registry.execute(&mut doc, "Radius 0,0,0").is_err());
+        assert_eq!(format!("{doc:?}"), empty);
+        registry.execute(&mut doc, "Circle 0,0,0 2").unwrap();
+        registry.execute(&mut doc, "SelAll").unwrap();
+        registry.execute(&mut doc, "Circle 0,0,0 1").unwrap();
+        let before = format!("{doc:?}");
+        assert_eq!(
+            registry.execute(&mut doc, "Diameter 1,0,0").unwrap(),
+            "Radius = 2; Diameter = 4"
+        );
+        assert_eq!(format!("{doc:?}"), before);
+        registry.execute(&mut doc, "SelNone").unwrap();
+        assert_eq!(
+            registry.execute(&mut doc, "Diameter 1,0,0").unwrap(),
+            "Radius = 1; Diameter = 2"
+        );
+    }
 
     #[test]
     fn radius_and_diameter_measure_local_curvature_without_changing_history() {

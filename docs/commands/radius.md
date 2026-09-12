@@ -2,11 +2,15 @@
 
 [Command index](README.md)
 
-Select curves, then enter `Radius 2,0,0` or `Diameter 2,0,0`. With no coordinates,
+Enter `Radius 2,0,0` or `Diameter 2,0,0`. With no coordinates,
 the application prompts for one picked or typed point. The closest point on the
-nearest selected curve determines the evaluation location. Both commands report
+nearest eligible curve determines the evaluation location. With no preselection,
+all selectable curves are candidates: hidden/locked objects and hidden/locked
+layers are excluded, and non-curves are ignored. Preselect curves to restrict
+the search to those objects. Both commands report
 radius and diameter in model units. They do not change geometry, selection, or
-undo/redo history by default. Esc cancels the interactive prompt.
+undo/redo history by default. Esc cancels the interactive prompt. Failed point
+evaluations keep the prompt and previous point anchor intact for correction.
 
 These are local curvature measurements, not circle-fitting operations: radius
 is the reciprocal curvature magnitude and diameter is twice that value. Lines,
@@ -23,11 +27,13 @@ insertion; failed commands roll back atomically.
 
 Tests cover circles, lines, ellipse endpoint radii (1 and 8 for semiaxes 4 and 2),
 the ellipse's exact NURBS representation, nearest-curve selection, marker undo,
-invalid-input rollback, read-only history, and interactive cancellation.
+invalid-input rollback, read-only history, interactive cancellation, unrestricted
+point lookup, selection restriction, hidden/locked filtering, and failed-pick recovery.
 These are native analytic regressions, not live Rhino command captures.
 
 [Rhino's reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/radius.htm)
-also describes unrestricted cursor picking, `SelectCurve`, display `Units`,
+also describes cursor feedback, `SelectCurve`, display `Units`,
 `SubCrv`, and nested numeric input. Those workflows and live hover/status-bar
-curvature feedback are not implemented yet; currently preselect curves before
-starting either command. Mixed selections containing non-curves are rejected.
+curvature feedback are not implemented yet. Point lookup currently uses 3D
+nearest distance, not a screen-space hit aperture. Explicit mixed selections
+containing non-curves are rejected.
