@@ -12,6 +12,12 @@ radius and diameter in model units. They do not change geometry, selection, or
 undo/redo history by default. Esc cancels the interactive prompt. Failed point
 evaluations keep the prompt and previous point anchor intact for correction.
 
+Exception: bare `Radius` or `Diameter` immediately reports a single preselected
+circle or circular arc. This includes NURBS curves recognized by whole-span
+circularity bounds, not just native primitives. Non-circular or inconclusive
+NURBS curves still require a point. Explicit marking options also retain point
+input so the marker location is unambiguous. The shortcut does not create markers.
+
 These are local curvature measurements, not circle-fitting operations: radius
 is the reciprocal curvature magnitude and diameter is twice that value. Lines,
 polylines, and zero-curvature locations report `infinite`. Other supported inputs
@@ -44,7 +50,7 @@ tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/radius-comm
 
 Live prompt inspection also found that Rhino immediately reports a preselected
 circular arc's radius, whereas a preselected line still opens the picking prompt.
-The native UI currently asks for a point in both cases. Rhino's unrestricted
+The native UI now implements that distinction for one preselected curve. Rhino's unrestricted
 picker did not consume the world-coordinate token used by the probe, so this
 fixture does not establish parity for typed versus mouse-picked input. The probe
 cleans up its temporary source and restores prior selection, including failures;

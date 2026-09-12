@@ -1302,6 +1302,15 @@ impl VibocerosApp {
         };
         let arguments = tokens.collect::<Vec<_>>();
         let normalized = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
+        if matches!(normalized.as_str(), "radius" | "diameter")
+            && arguments.is_empty()
+            && viboceros_command::preselected_circular_radius(&self.document)
+                .ok()
+                .flatten()
+                .is_some()
+        {
+            return false;
+        }
         if normalized == "angle"
             && arguments.is_empty()
             && self.document.selected_object_ids().next().is_some()

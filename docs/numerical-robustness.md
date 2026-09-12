@@ -187,9 +187,25 @@ representable components alongside an overflowing dominant displacement.
 Four-point `Angle` and its interactive validation use this query. These extreme
 cases are analytic numerical regressions, not additional Rhino oracle captures.
 
+## Whole-span circularity
+
+`NurbsCurve::circular_radius` recognizes a circular locus with whole-span rational
+Bezier coefficient bounds. An endpoint curvature jet supplies a candidate center,
+plane, and radius; positive (or common negative) weights provide a denominator
+lower bound. Plane control distances and the Bernstein coefficients of
+`Q·Q - W²` bound the entire normalized locus, with a floating-point roundoff
+allowance. Inconclusive bounds do not trigger automatic radius reporting. This
+is a conservative floating-point recognition test, not an exact algebraic predicate.
+
+Tests cover rational arcs, degree elevation through degree 12, ellipse rejection,
+and a degree-nine rational perturbation whose position and first two derivatives
+agree with a circle at the endpoints and midpoint. Whole-span checks reject that
+perturbation even though a three-sample curvature test cannot distinguish it.
+
 ## Focused checks
 
 ```sh
+cargo test -p viboceros-geometry circularity
 cargo test -p viboceros-geometry point::
 cargo test -p viboceros-geometry vector::
 cargo test -p viboceros-geometry line::

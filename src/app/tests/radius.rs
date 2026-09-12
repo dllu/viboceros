@@ -1,6 +1,26 @@
 use super::*;
 
 #[test]
+fn bare_radius_reports_preselected_circles_but_prompts_for_lines() {
+    for name in ["Radius", "Diameter"] {
+        let mut app = test_app();
+        app.execute_command("Circle 0,0,0 2");
+        app.execute_command("SelAll");
+        let before = format!("{:?}", app.document);
+        app.command_input = name.into();
+        app.run_command();
+        assert!(app.active_command.is_none());
+        assert_eq!(app.command_log.back().unwrap(), "Radius = 2; Diameter = 4");
+        assert_eq!(format!("{:?}", app.document), before);
+        app.execute_command("Delete");
+        app.execute_command("Line 0,0,0 1,0,0");
+        app.execute_command("SelAll");
+        assert!(app.try_start_interactive_command(name));
+        assert!(app.active_command.is_some());
+    }
+}
+
+#[test]
 fn radius_without_preselection_keeps_failed_pick_open_then_measures() {
     for name in ["Radius", "Diameter"] {
         let mut app = test_app();
@@ -32,11 +52,11 @@ fn radius_and_diameter_point_input_report_mark_and_cancel() {
         app.execute_command("Circle 0,0,0 2");
         app.execute_command("SelAll");
         let before = format!("{:?}", app.document);
-        assert!(app.try_start_interactive_command(name));
+        assert!(app.try_start_interactive_command(&format!("{name} Mark{name}=No")));
         assert!(app.accept_drafting_point(point(2., 0., 0.)));
         assert_eq!(app.command_log.back().unwrap(), "Radius = 2; Diameter = 4");
         assert_eq!(format!("{:?}", app.document), before);
-        assert!(app.try_start_interactive_command(name));
+        assert!(app.try_start_interactive_command(&format!("{name} Mark{name}=No")));
         app.cancel_interactive_command(true);
         assert_eq!(format!("{:?}", app.document), before);
         assert!(app.try_start_interactive_command(&format!("{name} Mark{name}=Yes")));

@@ -5,12 +5,48 @@ pub(crate) struct RadiusCommand {
     pub diameter: bool,
 }
 
+/// A single preselected circular curve can be measured without a pick.
+pub fn preselected_circular_radius(document: &Document) -> Result<Option<f64>, CommandError> {
+    let mut objects = document.selected_objects();
+    let Some(object) = objects.next() else {
+        return Ok(None);
+    };
+    if objects.next().is_some() {
+        return Ok(None);
+    }
+    Ok(match object.geometry() {
+        Geometry::Circle(circle) => Some(circle.radius()),
+        Geometry::Arc(arc) => Some(arc.radius()),
+        Geometry::NurbsCurve(curve) => curve.circular_radius(document.tolerance())?,
+        Geometry::Ellipse(ellipse) if ellipse.radius_x() == ellipse.radius_y() => {
+            Some(ellipse.radius_x())
+        }
+        _ => None,
+    })
+}
+
+fn radius_report(radius: f64) -> Result<String, CommandError> {
+    let diameter = 2. * radius;
+    if !radius.is_finite() || !diameter.is_finite() {
+        return Err(GeometryError::Degenerate {
+            context: "unrepresentable curvature radius",
+        }
+        .into());
+    }
+    Ok(format!("Radius = {radius}; Diameter = {diameter}"))
+}
+
 impl Command for RadiusCommand {
     fn name(&self) -> &'static str {
         if self.diameter { "Diameter" } else { "Radius" }
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if arguments.is_empty()
+            && let Some(radius) = preselected_circular_radius(document)?
+        {
+            return radius_report(radius);
+        }
         let usage = if self.diameter {
             "Diameter [MarkDiameter=Yes|No] point-on-curve"
         } else {
@@ -99,6 +135,32 @@ impl Command for RadiusCommand {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn bare_radius_recognizes_preselected_native_and_nurbs_circles_read_only() {
+        let registry = CommandRegistry::with_builtins();
+        for nurbs in [false, true] {
+            let mut doc = Document::default();
+            registry.execute(&mut doc, "Circle 0,0,0 2").unwrap();
+            registry.execute(&mut doc, "SelAll").unwrap();
+            if nurbs {
+                registry.execute(&mut doc, "ToNURBS").unwrap();
+            }
+            let before = format!("{doc:?}");
+            for name in ["Radius", "Diameter"] {
+                let report = registry.execute(&mut doc, name).unwrap();
+                let radius: f64 = report
+                    .split_whitespace()
+                    .nth(2)
+                    .unwrap()
+                    .trim_end_matches(';')
+                    .parse()
+                    .unwrap();
+                assert!((radius - 2.).abs() < 1e-10, "{report}");
+                assert_eq!(format!("{doc:?}"), before);
+            }
+        }
+    }
 
     #[test]
     fn unselected_radius_ignores_hidden_locked_and_noncurve_objects() {
@@ -225,7 +287,7 @@ mod tests {
         assert_eq!(doc.objects().count(), 1);
         let before = format!("{doc:?}");
         for input in [
-            "Radius",
+            "Radius extra",
             "Radius MarkRadius=Maybe 2,0,0",
             "Radius 2,0,0 extra",
             "Diameter MarkRadius=Yes 2,0,0",

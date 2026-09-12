@@ -1,5 +1,6 @@
 use std::ops::RangeInclusive;
 mod arc_length;
+mod circularity;
 mod decompose;
 mod evaluate;
 mod integration_frame;
