@@ -52,6 +52,7 @@ fn explicit_linear_bspline_step_pcurves_import_without_losing_parameter_interval
     // Give the rational UV curve a matching rational 3D parameterization.
     // The loader checks sampled parameter correspondence before retaining p-curves.
     let mut rational_edges = std::collections::BTreeMap::new();
+    let mut polyline_edges = std::collections::BTreeMap::new();
     for edge in table.edge_curve.values() {
         let geometry = referenced_entity(&edge.edge_geometry, "geometry").unwrap();
         let control = |vertex| {
@@ -60,6 +61,10 @@ fn explicit_linear_bspline_step_pcurves_import_without_losing_parameter_interval
         };
         let start = control(&edge.edge_start);
         let end = control(&edge.edge_end);
+        polyline_edges.insert(
+            format!("#{geometry} ="),
+            format!("#{geometry} = POLYLINE('', (#{start},#{end}));"),
+        );
         rational_edges.insert(format!("#{geometry} ="), format!("#{geometry} = (BOUNDED_CURVE() B_SPLINE_CURVE(1,(#{start},#{end}),.UNSPECIFIED.,.F.,.F.) B_SPLINE_CURVE_WITH_KNOTS((2,2),(-3.,7.),.UNSPECIFIED.) CURVE() GEOMETRIC_REPRESENTATION_ITEM() RATIONAL_B_SPLINE_CURVE((1.,4.)) REPRESENTATION_ITEM(''));"));
     }
     let rational_text = text.lines().map(|line| {
@@ -71,7 +76,41 @@ fn explicit_linear_bspline_step_pcurves_import_without_losing_parameter_interval
         assert_eq!(ids.len(), 3);
         format!("#{} = (BOUNDED_CURVE() B_SPLINE_CURVE(1,(#{},#{}),.UNSPECIFIED.,.F.,.F.) B_SPLINE_CURVE_WITH_KNOTS((2,2),(-3.,7.),.UNSPECIFIED.) CURVE() GEOMETRIC_REPRESENTATION_ITEM() RATIONAL_B_SPLINE_CURVE((1.,4.)) REPRESENTATION_ITEM(''));", ids[0], ids[1], ids[2])
     }).collect::<Vec<_>>().join("\n");
-    for (text, rational) in [(text, false), (rational_text, true)] {
+    let polyline_text = text
+        .lines()
+        .map(|line| {
+            if let Some((_, replacement)) = polyline_edges
+                .iter()
+                .find(|(prefix, _)| line.starts_with(prefix.as_str()))
+            {
+                return replacement.clone();
+            }
+            if !line.contains(" = B_SPLINE_CURVE_WITH_KNOTS(") {
+                return line.to_owned();
+            }
+            let ids = line
+                .split('#')
+                .skip(1)
+                .map(|part| {
+                    part.chars()
+                        .take_while(char::is_ascii_digit)
+                        .collect::<String>()
+                        .parse::<u64>()
+                        .unwrap()
+                })
+                .collect::<Vec<_>>();
+            assert_eq!(ids.len(), 3);
+            format!("#{} = POLYLINE('', (#{},#{}));", ids[0], ids[1], ids[2])
+        })
+        .collect::<Vec<_>>()
+        .join("\n");
+    for (text, encoding) in [
+        (text, "bspline"),
+        (rational_text, "rational"),
+        (polyline_text, "polyline"),
+    ] {
+        let rational = encoding == "rational";
+        let polyline = encoding == "polyline";
         let parsed = Table::from_step(&text).unwrap();
         assert_eq!(parsed.entity_report.total(), 0);
         let shell = *parsed.shell.keys().next().unwrap();
@@ -83,17 +122,22 @@ fn explicit_linear_bspline_step_pcurves_import_without_losing_parameter_interval
             assert!(
                 if rational {
                     matches!(curve, Curve2D::NurbsCurve(_))
+                } else if polyline {
+                    matches!(curve, Curve2D::Polyline(_))
                 } else {
                     matches!(curve, Curve2D::BsplineCurve(_))
                 },
-                "rational={rational}: {curve:?}"
+                "encoding={encoding}: {curve:?}"
             );
         }
         let native = read_step_planar_shells(Cursor::new(text), Tolerance::DEFAULT).unwrap();
         let brep = &native[0].brep;
         assert!((brep.area(Tolerance::DEFAULT).unwrap() - 50.).abs() < 1e-10);
         for trim in brep.faces()[0].loops()[0].trims() {
-            assert_eq!(trim.curve().domain(), -3.0..=7.0);
+            assert_eq!(
+                trim.curve().domain(),
+                if polyline { 0.0..=1.0 } else { -3.0..=7.0 }
+            );
             if rational {
                 let mut weights = trim
                     .curve()

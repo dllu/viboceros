@@ -42,6 +42,9 @@ pub(super) fn linear_edge(curve: &Curve3D, shell: u64) -> Result<NurbsCurve, Ste
         _ => {
             let (points, knots) = match curve {
                 Curve3D::Line(line) => (vec![line.0, line.1], vec![0.0, 0.0, 1.0, 1.0]),
+                Curve3D::Polyline(curve) if curve.len() == 2 => {
+                    (curve.0.clone(), vec![0., 0., 1., 1.])
+                }
                 Curve3D::BsplineCurve(curve)
                     if curve.degree() == 1 && curve.control_points().len() == 2 =>
                 {
@@ -70,6 +73,10 @@ pub(super) fn linear_trim(curve: &Curve2D, shell: u64) -> Result<NurbsCurve2, St
         Curve2D::Line(line) => Ok(NurbsCurve2::try_line(
             Point2::try_new(line.0.x, line.0.y)?,
             Point2::try_new(line.1.x, line.1.y)?,
+        )?),
+        Curve2D::Polyline(curve) if curve.len() == 2 => Ok(NurbsCurve2::try_line(
+            Point2::try_new(curve[0].x, curve[0].y)?,
+            Point2::try_new(curve[1].x, curve[1].y)?,
         )?),
         Curve2D::BsplineCurve(curve)
             if curve.degree() == 1 && curve.control_points().len() == 2 =>
@@ -118,6 +125,48 @@ mod tests {
     use super::*;
     use monstertruck::meshing::prelude::ParametricCurve;
     use monstertruck::modeling::{BsplineCurve, KnotVector, Point2 as TruckPoint2};
+
+    #[test]
+    fn two_point_polylines_preserve_linear_edge_and_trim_evaluation() {
+        use monstertruck::meshing::prelude::PolylineCurve;
+        use monstertruck::modeling::Point3 as TruckPoint3;
+        for reversed in [false, true] {
+            let mut points = vec![
+                TruckPoint3::new(2., -5., 7.),
+                TruckPoint3::new(11., 4., -2.),
+            ];
+            if reversed {
+                points.reverse();
+            }
+            let uv = points.iter().map(|p| TruckPoint2::new(p.x, p.y)).collect();
+            let source_edge = Curve3D::Polyline(PolylineCurve(points));
+            let source_trim = Curve2D::Polyline(PolylineCurve(uv));
+            let edge = linear_edge(&source_edge, 456).unwrap();
+            let trim = linear_trim(&source_trim, 456).unwrap();
+            assert_eq!(edge.domain(), 0.0..=1.0);
+            assert_eq!(trim.domain(), 0.0..=1.0);
+            for i in 0..=8 {
+                let t = f64::from(i) / 8.;
+                let expected = source_edge.evaluate(t);
+                let actual = edge.evaluate(t).unwrap().to_array();
+                for (a, b) in actual.into_iter().zip([expected.x, expected.y, expected.z]) {
+                    assert!((a - b).abs() < 1e-12);
+                }
+                let expected = source_trim.evaluate(t);
+                let actual = trim.evaluate(t).unwrap();
+                assert!((actual.x() - expected.x).abs() < 1e-12);
+                assert!((actual.y() - expected.y).abs() < 1e-12);
+            }
+        }
+        for count in [0, 1, 3, 4] {
+            let points = (0..count)
+                .map(|i| TruckPoint3::new(f64::from(i), f64::from(i % 2), 0.))
+                .collect::<Vec<_>>();
+            let uv = points.iter().map(|p| TruckPoint2::new(p.x, p.y)).collect();
+            assert!(linear_edge(&Curve3D::Polyline(PolylineCurve(points)), 456).is_err());
+            assert!(linear_trim(&Curve2D::Polyline(PolylineCurve(uv)), 456).is_err());
+        }
+    }
 
     #[test]
     fn rational_edges_preserve_euclidean_controls_weights_and_parameterization() {

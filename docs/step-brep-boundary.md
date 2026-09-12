@@ -109,6 +109,13 @@ degree-one B-spline parameter curves verifies loss-free loading, retained
 evaluation stations on three intervals in both directions; curved and multispan
 B-spline trims remain explicitly unsupported.
 
+Two-point `POLYLINE` records are accepted for both 3D edges and UV trims, retaining
+their source `[0,1]` parameterization. The generated triangle regression covers
+explicit polyline surface curves and p-curves with no reported loading losses
+and area 50. Direct tests check both directions at nine stations and reject
+empty, one-point, and multi-segment polylines; longer polylines are not silently
+collapsed to their endpoint chord.
+
 Degree-one, two-control-point rational 3D edges and UV trims are also supported
 when their weights are finite and positive. Homogeneous source controls are
 converted to Euclidean controls with separate weights, retaining knots and
