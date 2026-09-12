@@ -38,6 +38,9 @@ angles are inclusive; face-angle interval bounds are strict.
 Unweld angle qualification and face-connectivity passes also stream full edge-use
 pairs. Pair order, raw endpoint indices, side indices, and winding flags are
 checked against indexed enumeration, including repeated face identifiers.
+[`mesh/edge_weld`](../crates/viboceros-geometry/src/mesh/edge_weld.rs) owns
+selected-edge welding and its selection, survivor-order, compaction, and seam
+regressions. Angle-based and selected-vertex welding remain separate operations.
 Selected-edge welding streams endpoint pairs without collecting edge uses or
 per-endpoint sets. Index-preserving unions retain the earliest raw vertex even
 when incidence order differs or raw indices repeat; unrelated coincident fans
