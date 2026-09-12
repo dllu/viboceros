@@ -1279,6 +1279,12 @@ impl VibocerosApp {
         };
         let arguments = tokens.collect::<Vec<_>>();
         let normalized = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
+        if normalized == "angle"
+            && arguments.is_empty()
+            && self.document.selected_object_ids().next().is_some()
+        {
+            return false;
+        }
         let command = if normalized == "distance" {
             let Some(command) = distance::start_command(&arguments, self.last_point) else {
                 return false;

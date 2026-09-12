@@ -1,6 +1,7 @@
-//! Four-point direction-angle query; no document or selection mutation.
+//! Four-point and selected-object angle queries; no document or selection mutation.
 use super::*;
 use crate::parse_point;
+mod objects;
 
 pub(crate) struct AngleCommand;
 
@@ -11,7 +12,31 @@ impl Command for AngleCommand {
     fn records_history(&self) -> bool {
         false
     }
-    fn run(&self, _document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+    fn object_selection_prompt(
+        &self,
+        arguments: &[&str],
+    ) -> Result<Option<crate::ObjectSelectionPrompt>, CommandError> {
+        if matches!(arguments, [mode] if crate::option_name_eq(mode, "TwoObjects")) {
+            return Ok(Some(crate::ObjectSelectionPrompt {
+                command: "Angle TwoObjects",
+                filter: crate::ObjectSelectionFilter::Beziers,
+                options: vec![],
+                menus: vec![],
+                choices: vec![],
+                workflow: crate::ObjectSelectionWorkflow::OptionsDuringSelection,
+            }));
+        }
+        Ok(None)
+    }
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if arguments.is_empty()
+            || matches!(arguments, [mode] if crate::option_name_eq(mode, "TwoObjects"))
+        {
+            return Ok(format!(
+                "Angle = {} degrees",
+                format_measurement(objects::measure(document)?)
+            ));
+        }
         let (a, first) = parse_point(arguments)?;
         let (b, second) = parse_point(&arguments[first..])?;
         let (c, third) = parse_point(&arguments[first + second..])?;

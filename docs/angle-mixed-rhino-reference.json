@@ -1,0 +1,29 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "steep",
+      "value": {
+        "history": "Python Script ( ResetEngine ): _Angle\nAngle = 63.435"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "parallel",
+      "value": {
+        "history": "Command: _Angle\nAngle = 0.000"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "normal",
+      "value": {
+        "history": "Command: _Angle\nAngle = 90.000"
+      }
+    }
+  ]
+}

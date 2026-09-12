@@ -1,6 +1,37 @@
 use super::*;
 
 #[test]
+fn angle_object_mode_supports_postselection_and_bare_preselection() {
+    use viboceros_document::SelectionMode;
+    let mut app = test_app();
+    app.execute_command("Line 0,0,0 1,0,0");
+    app.execute_command("Line 4,5,6 3,6,6");
+    let ids: Vec<_> = app.document.objects().map(|object| object.id()).collect();
+    app.execute_command("SelNone");
+    app.command_input = "Angle TwoObjects".into();
+    app.run_command();
+    assert!(app.object_prompt.is_some());
+    assert!(app.active_command.is_none());
+    app.select_prompt_objects([ids[0]], SelectionMode::Replace);
+    let incomplete = format!("{:?}", app.document);
+    assert!(app.try_continue_object_prompt(""));
+    assert!(app.object_prompt.is_some());
+    assert_eq!(format!("{:?}", app.document), incomplete);
+    app.select_prompt_objects([ids[1]], SelectionMode::Add);
+    let before = format!("{:?}", app.document);
+    assert!(app.try_continue_object_prompt(""));
+    assert!(app.object_prompt.is_none());
+    assert!(app.command_log.back().unwrap().starts_with("Angle ="));
+    assert_eq!(format!("{:?}", app.document), before);
+    app.command_input = "Angle".into();
+    app.run_command();
+    assert!(app.active_command.is_none());
+    assert!(app.object_prompt.is_none());
+    assert!(app.command_log.back().unwrap().starts_with("Angle ="));
+    assert_eq!(format!("{:?}", app.document), before);
+}
+
+#[test]
 fn angle_point_picking_rejects_zero_directions_without_model_history_changes() {
     let mut app = test_app();
     app.execute_command("Point 1,2,3");

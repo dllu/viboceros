@@ -5,7 +5,7 @@
 ## Angle
 
 Enter `Angle 0,0,0 1,0,0 4,5,6 4,6,6` to measure the angle between two
-directions, or enter `Angle` and pick/type the four endpoints in order. The
+directions, or enter `Angle` with no selection and pick/type the four endpoints in order. The
 result is an unsigned 3D angle in degrees in `[0,180]`, independent of CPlane
 orientation and the separation between the two lines. Reversing one direction
 changes the result to its supplement. The query does not alter geometry,
@@ -18,7 +18,7 @@ lose; no document-distance tolerance is used to reject a nonzero direction.
 An invalid second or fourth picked point leaves its prompt active for correction.
 
 This implements the four-point workflow in [Rhino's Angle documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/angle.htm).
-`TwoObjects` and `SubCrv` are not implemented. Seven live Rhino
+`SubCrv` is not implemented. Seven live Rhino
 8.32.26160.13001 probes cover parallel, opposite, perpendicular, acute, obtuse,
 and spatial directions, including a rotated/translated CPlane. The
 [captured reports](../angle-rhino-reference.json) agree with native command
@@ -36,7 +36,7 @@ angles, direction magnitudes from `1e-300` through `1e300`, interactive rejectio
 and unchanged document/history state.
 
 Separate [object-mode captures](../angle-objects-rhino-reference.json) establish
-an implementation distinction for the still-unimplemented `TwoObjects` mode:
+the orientation policy for `TwoObjects` mode:
 two preselected lines whose directed angle is 135 degrees report 45 degrees;
 reversing one line still reports 45. Planar surfaces with opposed/acute normal
 orientations likewise both report 45. Thus the directed four-point formula must
@@ -51,8 +51,28 @@ tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/angle-objec
 
 This oracle-only probe creates two temporary objects, deletes its owned objects,
 and restores prior selection even on failure. Mock tests cover partial
-construction and measurement failures. It does not yet enable object-mode
-measurement in Viboceros or establish general mixed-object semantics.
+construction and measurement failures.
+
+Use `Angle TwoObjects` to select two objects, or select two objects first and
+enter `Angle`. Supported inputs are straight curves (native lines or curves
+whose exact NURBS representation passes the kernel's linearity check) and
+planar NURBS surfaces or single-face B-reps. Planarity and linearity use document
+tolerance. Curved/nonplanar geometry, multi-face B-reps, and selections other
+than exactly two objects are rejected. Object picking changes selection as usual;
+the measurement itself preserves selection and geometry and creates no undo step.
+Failed postselection measurements keep the selection prompt open.
+
+Line/line and plane/plane results are the acute unoriented angle in `[0,90]`.
+Mixed inputs report the angle between the line and the plane, not its normal.
+Additional [mixed-object captures](../angle-mixed-rhino-reference.json) establish
+the distinction: a line with direction `(1,0,2)` and an XY plane report `63.435`,
+a parallel line reports zero, and a normal line reports 90. Native regressions
+cover both selection orders, small acute angles, single-face B-reps, linear
+NURBS curves, rejection paths, and these reported values.
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/angle-mixed-command.json --timeout 240
+```
 
 ## Distance
 
