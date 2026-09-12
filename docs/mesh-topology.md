@@ -50,6 +50,13 @@ flags, then traverses the topology map directly without copying edge references.
 Duplicate selections count each edge only once; regression cases cover duplicate
 counts and mixed valid/invalid selection order.
 
+Shared welding compaction resolves every face to its representative before
+reusing the parent array as the compact-index map, eliminating a separate
+source-sized `u32` allocation. The unchanged-mesh path keeps its smaller retained
+mask and returns before this rewrite. An independent partition reference checks
+1,000 combinations of earliest/latest survivors, chained parents, and unused
+source representatives; mixed triangle/quad tests check face kind and winding.
+
 ## Normals and area
 
 [`mesh/normals`](../crates/viboceros-geometry/src/mesh/normals.rs) shares direction

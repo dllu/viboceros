@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod area_tests;
+#[cfg(test)]
+mod compaction_tests;
 mod components;
 mod edge_collapse;
 mod edge_split;
@@ -3417,41 +3419,53 @@ impl TriangleMesh {
         Ok(Self::from_validated_parts(vertices, faces))
     }
 
+    /// Compacts coincident-vertex unions in source order. The parent forest
+    /// is consumed as scratch storage and must not be used afterward.
     fn compacted_with_vertex_parents(&self, parents: &mut [usize]) -> (Self, usize) {
         let mut retained = vec![false; self.vertices.len()];
+        let mut retained_count = 0;
         for face in &self.faces {
             for &vertex in face.indices() {
                 let representative = index_root(parents, vertex as usize);
-                retained[representative] = true;
+                if !retained[representative] {
+                    retained[representative] = true;
+                    retained_count += 1;
+                }
             }
         }
-        let retained_count = retained.iter().filter(|&&keep| keep).count();
         let removed = self.vertices.len() - retained_count;
         if removed == 0 {
             return (self.clone(), 0);
         }
 
-        let mut representative_remap = vec![0_u32; self.vertices.len()];
-        let mut vertices = Vec::with_capacity(retained_count);
-        for (source, (&point, keep)) in self.vertices.iter().zip(retained).enumerate() {
-            if !keep {
-                continue;
-            }
-            representative_remap[source] = u32::try_from(vertices.len())
-                .expect("a compacted mesh cannot have more vertices than its source");
-            vertices.push(point);
-        }
-        let faces = self
+        // Resolve all face references before reusing the parent forest as a
+        // representative-to-compact-index table. Rewriting a root earlier
+        // would corrupt later root searches (including unused source roots).
+        let mut faces = self
             .faces
             .iter()
             .copied()
             .map(|face| {
                 face.remapped(|vertex| {
-                    let representative = index_root(parents, vertex as usize);
-                    representative_remap[representative]
+                    u32::try_from(index_root(parents, vertex as usize))
+                        .expect("a representative is an existing source vertex")
                 })
             })
-            .collect();
+            .collect::<Vec<_>>();
+        let mut vertices = Vec::with_capacity(retained_count);
+        for (source, (&point, keep)) in self.vertices.iter().zip(retained).enumerate() {
+            if !keep {
+                continue;
+            }
+            parents[source] = vertices.len();
+            vertices.push(point);
+        }
+        for face in &mut faces {
+            *face = face.remapped(|representative| {
+                u32::try_from(parents[representative as usize])
+                    .expect("a compacted mesh cannot have more vertices than its source")
+            });
+        }
         (Self::from_validated_parts(vertices, faces), removed)
     }
 
