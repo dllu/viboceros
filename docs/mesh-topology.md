@@ -74,6 +74,11 @@ Angle-based non-manifold unwelding uses a [radial face walk](mesh-unweld-nonmani
 instead of joining all smooth pairs across a junction. Qualifying incoming edges
 separate walk faces, and singleton radial groups retain their traversal position.
 This resolves all 69 recorded non-manifold cases; their parity tests are enabled.
+[`mesh/radial`](../crates/viboceros-geometry/src/mesh/radial.rs) owns edge sorting,
+face walks, and component ordering, with colocated Rhino-backed regressions.
+Face-level first-occurrence order is distinct from cyclic component-root order:
+a component spanning a closed fan's start/end can rotate the final output order.
+A focused test preserves this distinction for earliest and latest root indices.
 
 Shared welding compaction resolves every face to its representative before
 reusing the parent array as the compact-index map, eliminating a separate

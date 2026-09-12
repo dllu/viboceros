@@ -1,4 +1,39 @@
+use super::super::{EdgeUse, Point3, Tolerance, TriangleMesh, topology_face_edge_indices};
 use super::*;
+
+#[test]
+fn cyclic_component_order_is_not_first_occurrence_face_order() {
+    let incidences = [[0, 2], [0, 1], [1, 2]].map(|faces| {
+        let mut incidence = EdgeIncidence::default();
+        for face in faces {
+            incidence.add_use(EdgeUse {
+                face,
+                side: 0,
+                forward: true,
+                raw_vertices: [0, 1],
+            });
+        }
+        incidence
+    });
+    let edges = incidences
+        .iter()
+        .enumerate()
+        .map(|(index, incidence)| ([0, index + 1], incidence))
+        .collect::<Vec<_>>();
+    let groups = vec![vec![0, 1, 2]];
+    let faces = [0, 1, 2];
+    let locals = BTreeMap::from([(0, 0), (1, 1), (2, 2)]);
+    assert_eq!(
+        radial_vertex_face_walk(&groups, &edges, &faces),
+        vec![(0, Some(0)), (1, Some(1)), (2, Some(2))]
+    );
+    for (mut parents, expected) in [(vec![0, 1, 0], vec![1, 0]), (vec![2, 1, 2], vec![1, 2])] {
+        assert_eq!(
+            ordered_vertex_face_components(&groups, &edges, &locals, &faces, &mut parents),
+            expected
+        );
+    }
+}
 
 #[test]
 fn angle_unweld_uses_radial_adjacency_instead_of_all_smooth_face_pairs() {

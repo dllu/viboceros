@@ -73,7 +73,7 @@ call. McNeel documents non-manifold edges as boundaries for this sort.
 The probe duplicates and disposes its mesh; it does not edit document objects.
 It is Rhino-only and is not a native `Operation` variant.
 
-The native `mesh::radial_tests` regression matches the flattened sorted edge
+The native `mesh::radial::tests` regression matches the flattened sorted edge
 lists at every vertex in all twelve cases, including all face orders and partial
 sharing. Python checks validate record incidence and membership against the
 source faces. This isolated the earlier mismatch to the grouping/rebuilding
@@ -81,7 +81,7 @@ stage rather than the radial edge sorter.
 
 ```sh
 tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/mesh_radial_topology.json --timeout 240
-cargo test -p viboceros-geometry radial_tests
+cargo test -p viboceros-geometry mesh::radial::
 ```
 
 ### Unweld parity regressions
