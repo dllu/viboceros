@@ -3,6 +3,38 @@ use std::io::Cursor;
 use super::*;
 
 #[test]
+fn unit_aware_export_accuracy_is_parseable_and_exact_across_finite_scales() {
+    let mesh = unit_test_mesh();
+    for accuracy in [f64::MIN_POSITIVE, 1e-100, 1e-6, 1.0, 1e21, 1e100, f64::MAX] {
+        let tolerance = Tolerance::try_new(accuracy, 1e-10, 1e-10).unwrap();
+        let mut output = Vec::new();
+        write_step_in_units(
+            &mut output,
+            std::slice::from_ref(&mesh),
+            &LengthUnitSystem::Millimeters,
+            tolerance,
+        )
+        .unwrap();
+        let text = String::from_utf8(output).unwrap();
+        // Parse the complete file, not just the real literal as a Rust float.
+        let table = Table::from_step(&text).unwrap();
+        assert_eq!(table.entity_report.total(), 0);
+        let literal = text
+            .split("LENGTH_MEASURE(")
+            .nth(1)
+            .unwrap()
+            .split(')')
+            .next()
+            .unwrap();
+        assert_eq!(
+            literal.parse::<f64>().unwrap().to_bits(),
+            accuracy.to_bits()
+        );
+        assert!(literal.split('E').next().unwrap().contains('.'));
+    }
+}
+
+#[test]
 fn step_real_format_preserves_finite_binary64_values_and_required_decimal_point() {
     use super::export_geometry::StepReal;
     for exponent in 0..2047_u64 {

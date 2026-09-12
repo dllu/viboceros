@@ -121,7 +121,10 @@ decoding tolerance. Unit-aware reads and import commands retain destination
 tolerances; see [tolerance settings and encoding limits](tolerances.md).
 
 Initial STEP interchange uses the Apache-2.0 Monstertruck kernel to read
-solid/shell B-reps and assemblies, apply instance transforms, and robustly
+solid/shell B-reps and assemblies. The independent `step/export` module owns
+mesh-to-shell construction, source-unit conversion, and staged destination
+writes; it shares the geometry-record adapters but not the importer's parsing
+or tessellation machinery. Imports apply instance transforms and robustly
 tessellate exact trimmed surfaces into validated display meshes. Tessellation
 extent samples use range-safe quarter stations with exact parameter
 endpoints. Relative extent sizing scales axis spans before computing the diagonal,
@@ -160,8 +163,11 @@ these return an explicit error instead of emitting invalid STEP directions.
 Regression tests cover huge meshes, including failure after a valid
 earlier mesh, and verify unchanged output streams and existing destinations.
 `ExportStep` writes the correspondingly converted absolute tolerance as
-the file's distance accuracy. Unitless and unset documents are rejected;
-conversion failures leave an existing destination unchanged. The low-level
+the file's distance accuracy. Full-file parsing tests check exact declared
+accuracy from `f64::MIN_POSITIVE`
+through `f64::MAX`, independently of coordinate magnitude.
+Unitless and unset documents are rejected; conversion failures leave an
+existing destination unchanged. The low-level
 `write_step`/`write_step_file` APIs interpret coordinates as millimetres;
 their `_in_units` counterparts accept explicit source units and tolerance.
 Editable STEP B-rep interchange and production
