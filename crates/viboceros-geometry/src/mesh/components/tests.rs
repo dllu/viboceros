@@ -5,6 +5,33 @@ fn p(x: f64, y: f64, z: f64) -> Point3 {
 }
 
 #[test]
+fn unwelded_predicate_matches_independent_pairwise_endpoint_distinctness() {
+    for count in 0..=4u32 {
+        for mut code in 0..16usize.pow(count) {
+            let uses = (0..count as usize)
+                .map(|face| {
+                    let raw_vertices = [(code % 4) as u32, ((code / 4) % 4) as u32];
+                    code /= 16;
+                    EdgeUse {
+                        face,
+                        side: face % 3,
+                        forward: face % 2 == 0,
+                        raw_vertices,
+                    }
+                })
+                .collect::<Vec<_>>();
+            let expected = uses.iter().enumerate().all(|(index, first)| {
+                uses[index + 1..].iter().all(|second| {
+                    first.raw_vertices[0] != second.raw_vertices[0]
+                        && first.raw_vertices[1] != second.raw_vertices[1]
+                })
+            });
+            assert_eq!(edge_uses_are_unwelded(uses.iter().copied()), expected);
+        }
+    }
+}
+
+#[test]
 fn component_order_and_limits_match_graph_traversal_for_every_graph_up_to_six_faces() {
     for count in 0..=6 {
         let edges = (0..count)

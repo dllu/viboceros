@@ -80,6 +80,10 @@ Component grouping stops at the first over-budget root, before allocating that
 component's face list. The exhaustive graph test checks every budget from zero
 through the face count, plus the unbounded case. Topology and root-map storage
 still scale with the input mesh; the output limit does not cap those costs.
+Explosion streams edge incidences without collecting a temporary vector per
+edge. The shared unwelded-edge predicate handles up to two incident faces without
+heap allocation and retains set-based checks for non-manifold incidences. An
+independent pairwise test exhausts endpoint-index assignments through four uses.
 The `split_disjoint_mesh` command module owns staged component results, fresh
 piece insertion, source deletion policy, attribute/group propagation, and selection.
 The separate `explode` command module owns multi-geometry decomposition staging,

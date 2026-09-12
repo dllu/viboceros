@@ -76,12 +76,13 @@ impl TriangleMesh {
         let mut parents = (0..self.faces.len()).collect::<Vec<_>>();
         let mut ranks = vec![0_u8; self.faces.len()];
         for incidence in data.edges.values() {
-            let uses = incidence.uses().collect::<Vec<_>>();
-            if uses.len() == 1 || edge_uses_are_unwelded(&uses) {
+            if incidence.count == 1 || edge_uses_are_unwelded(incidence.uses()) {
                 continue;
             }
-            for edge_use in &uses[1..] {
-                union_faces(&mut parents, &mut ranks, uses[0].face, edge_use.face);
+            let mut uses = incidence.uses();
+            let first = uses.next().expect("a welded edge has incident faces");
+            for edge_use in uses {
+                union_faces(&mut parents, &mut ranks, first.face, edge_use.face);
             }
         }
 

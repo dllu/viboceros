@@ -3434,9 +3434,7 @@ impl TriangleMesh {
             .iter()
             .zip(selected_edges)
             .map(|((_, incidence), selected)| {
-                selected
-                    && incidence.count > 1
-                    && !edge_uses_are_unwelded(&incidence.uses().collect::<Vec<_>>())
+                selected && incidence.count > 1 && !edge_uses_are_unwelded(incidence.uses())
             })
             .collect::<Vec<_>>();
         let active_edge_count = active_edges.iter().filter(|&&active| active).count();
@@ -4409,7 +4407,7 @@ fn mesh_edge_is_logical_boundary(
     break_angle_radians: Real,
 ) -> bool {
     let uses = incidence.uses().collect::<Vec<_>>();
-    if uses.len() == 1 || edge_uses_are_unwelded(&uses) {
+    if uses.len() == 1 || edge_uses_are_unwelded(uses.iter().copied()) {
         return true;
     }
     (0..uses.len() - 1).any(|left| {
@@ -4439,7 +4437,7 @@ fn mesh_edge_matches_filter(
     match filter {
         MeshEdgeFilter::Naked => incidence.count == 1,
         MeshEdgeFilter::Unwelded => {
-            incidence.count == 1 || edge_uses_are_unwelded(&incidence.uses().collect::<Vec<_>>())
+            incidence.count == 1 || edge_uses_are_unwelded(incidence.uses())
         }
         MeshEdgeFilter::FaceAngle {
             greater_than_radians,
@@ -4993,10 +4991,28 @@ fn compare_points_descending(left: &Point3, right: &Point3) -> std::cmp::Orderin
         .unwrap_or(std::cmp::Ordering::Equal)
 }
 
-fn edge_uses_are_unwelded(uses: &[EdgeUse]) -> bool {
-    let mut first_endpoint_indices = BTreeSet::new();
-    let mut second_endpoint_indices = BTreeSet::new();
-    for edge_use in uses {
+fn edge_uses_are_unwelded(mut uses: impl Iterator<Item = EdgeUse>) -> bool {
+    let Some(first) = uses.next() else {
+        return true;
+    };
+    let Some(second) = uses.next() else {
+        return true;
+    };
+    if first.raw_vertices[0] == second.raw_vertices[0]
+        || first.raw_vertices[1] == second.raw_vertices[1]
+    {
+        return false;
+    }
+    let Some(third) = uses.next() else {
+        return true;
+    };
+    // Ordinary boundary/manifold edges need no heap allocation. Preserve the
+    // all-incident-use rule for non-manifold edges with three or more faces.
+    let mut first_endpoint_indices =
+        BTreeSet::from([first.raw_vertices[0], second.raw_vertices[0]]);
+    let mut second_endpoint_indices =
+        BTreeSet::from([first.raw_vertices[1], second.raw_vertices[1]]);
+    for edge_use in std::iter::once(third).chain(uses) {
         if !first_endpoint_indices.insert(edge_use.raw_vertices[0])
             || !second_endpoint_indices.insert(edge_use.raw_vertices[1])
         {
@@ -5283,7 +5299,7 @@ mod tests {
                     || (data.topological_points[a] == second && data.topological_points[b] == first)
             })
             .expect("test topology edge exists");
-        incidence.count > 1 && edge_uses_are_unwelded(&incidence.uses().collect::<Vec<_>>())
+        incidence.count > 1 && edge_uses_are_unwelded(incidence.uses())
     }
 
     fn topology_edge_index_between(mesh: &TriangleMesh, first: Point3, second: Point3) -> usize {
