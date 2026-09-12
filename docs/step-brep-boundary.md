@@ -204,6 +204,11 @@ Regressions check both winding directions with weight ratios up to `1e12`,
 coordinates of magnitude `1e100`, and equal-weight loops spanning `-f64::MAX`
 to `f64::MAX`. This avoids overflowing raw coordinate differences while testing
 winding; it does not establish model-space area or meshing at those extremes.
+Normalization scale discovery scans the input directly without allocating a
+temporary array of relative coordinates. Tests cover every origin corner of a
+square from `f64::MIN_POSITIVE` through `f64::MAX`, as well as empty and repeated
+point inputs. The overflow fallback still scans the complete input in scaled
+coordinates; this removes temporary storage, not the output polygon allocation.
 
 ## Native representation requirements
 

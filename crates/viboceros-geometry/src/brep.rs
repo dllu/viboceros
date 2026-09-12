@@ -9299,20 +9299,18 @@ impl TrimParameterNormalization {
         let Some(origin) = parameters.first() else {
             return Ok(None);
         };
-        let direct_relative = parameters
-            .iter()
-            .map(|point| [point.x() - origin.x(), point.y() - origin.y()])
-            .collect::<Vec<_>>();
-        if direct_relative
-            .iter()
-            .flatten()
-            .all(|value| value.is_finite())
-        {
-            let relative_scale = direct_relative
-                .iter()
-                .flatten()
-                .map(|value| value.abs())
-                .fold(0.0, Real::max);
+        // Only the maximum is needed; do not allocate one temporary vector
+        // per face loop. An overflowing difference switches to scaled subtraction.
+        let direct_scale = parameters.iter().try_fold(0.0_f64, |scale, point| {
+            let dx = point.x() - origin.x();
+            let dy = point.y() - origin.y();
+            if dx.is_finite() && dy.is_finite() {
+                Some(scale.max(dx.abs()).max(dy.abs()))
+            } else {
+                None
+            }
+        });
+        if let Some(relative_scale) = direct_scale {
             return Ok((relative_scale > 0.0).then_some(Self {
                 coordinate_scale: 1.0,
                 origin: [origin.x(), origin.y()],

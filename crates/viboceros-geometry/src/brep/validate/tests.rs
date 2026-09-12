@@ -1,6 +1,49 @@
 use super::*;
 
 #[test]
+fn uv_normalization_handles_all_origin_corners_and_floating_point_scales() {
+    let unit = [[0., 0.], [1., 0.], [1., 1.], [0., 1.]];
+    for radius in [f64::MIN_POSITIVE, 1e-100, 1., 1e100, f64::MAX] {
+        for origin in 0..4 {
+            let corners = [
+                [-radius, -radius],
+                [radius, -radius],
+                [radius, radius],
+                [-radius, radius],
+            ];
+            let points = (0..4)
+                .map(|i| {
+                    let p = corners[(i + origin) % 4];
+                    Point2::try_new(p[0], p[1]).unwrap()
+                })
+                .collect::<Vec<_>>();
+            let normalization = TrimParameterNormalization::try_from_points(&points)
+                .unwrap()
+                .unwrap();
+            for (i, point) in points.iter().enumerate() {
+                let index = (i + origin) % 4;
+                let expected = [
+                    unit[index][0] - unit[origin][0],
+                    unit[index][1] - unit[origin][1],
+                ];
+                assert_eq!(normalization.normalize(*point).unwrap(), expected);
+            }
+        }
+    }
+    assert!(
+        TrimParameterNormalization::try_from_points(&[])
+            .unwrap()
+            .is_none()
+    );
+    let repeated = vec![Point2::try_new(1e100, -1e100).unwrap(); 4096];
+    assert!(
+        TrimParameterNormalization::try_from_points(&repeated)
+            .unwrap()
+            .is_none()
+    );
+}
+
+#[test]
 fn loop_winding_is_independent_of_linear_weights_and_handles_extreme_uv_ranges() {
     for (radius, weights) in [
         (1., [1., 1e12]),
