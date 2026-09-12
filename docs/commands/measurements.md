@@ -54,7 +54,10 @@ and restores prior selection even on failure. Mock tests cover partial
 construction and measurement failures.
 
 Use `Angle TwoObjects` to select two objects, or select two objects first and
-enter `Angle`. Supported inputs are straight curves (native lines or curves
+enter `Angle`. You can also enter `TwoObjects` at Angle's initial point prompt;
+this switches to object selection without creating a model undo step. Once a
+point has been accepted, a late `TwoObjects` request reports an error and retains
+the point workflow; cancel and restart to change modes. Supported inputs are straight curves (native lines or curves
 whose exact NURBS representation passes the kernel's linearity check) and
 planar NURBS surfaces or single-face B-reps. Planarity and linearity use document
 tolerance. Curved/nonplanar geometry, multi-face B-reps, and selections other

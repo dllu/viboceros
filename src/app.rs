@@ -27,6 +27,7 @@ use crate::viewport::{
 
 const MAX_LOG_ENTRIES: usize = 100;
 
+mod angle;
 mod construction_plane;
 mod curve_preview;
 mod curve_prompt;
@@ -463,7 +464,7 @@ impl InteractiveCommand {
         match self {
             Self::Angle {
                 points: [None, _, _],
-            } => "Angle: pick the first direction's start (Esc cancels)",
+            } => "Angle: pick the first direction's start (TwoObjects; Esc cancels)",
             Self::Angle {
                 points: [Some(_), None, _],
             } => "Angle: pick the first direction's end (Esc cancels)",
@@ -1190,7 +1191,10 @@ impl VibocerosApp {
         if self.try_continue_group_prompt(&input) {
             return;
         }
-        if self.try_continue_points(&input) || self.try_continue_distance(&input) {
+        if self.try_continue_points(&input)
+            || self.try_continue_distance(&input)
+            || self.try_continue_angle(&input)
+        {
             return;
         }
         if self.try_continue_point_grid_height(&input) {
@@ -1225,7 +1229,10 @@ impl VibocerosApp {
     }
 
     fn try_execute_command(&mut self, input: &str) -> bool {
-        if self.try_continue_points(input) || self.try_continue_distance(input) {
+        if self.try_continue_points(input)
+            || self.try_continue_distance(input)
+            || self.try_continue_angle(input)
+        {
             return true;
         }
         let active_plane = self.viewports[self.active_viewport].construction_plane();
