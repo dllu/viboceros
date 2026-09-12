@@ -160,11 +160,9 @@ pub(super) fn convert_shell(
                     .trim_curve
                     .as_ref()
                     .ok_or_else(|| unsupported("missing UV trim"))?;
-                let Curve2D::Line(line) = trim.curve().as_ref() else {
-                    return Err(unsupported("UV trim is not a line"));
-                };
-                let start = Point2::try_new(line.0.x, line.0.y)?;
-                let end = Point2::try_new(line.1.x, line.1.y)?;
+                let curve = linear_trim(trim.curve().as_ref(), id)?;
+                let start = curve.start_point()?;
+                let end = curve.end_point()?;
                 for point in [start, end] {
                     bounds[0] = bounds[0].min(point.x());
                     bounds[1] = bounds[1].max(point.x());
@@ -181,7 +179,7 @@ pub(super) fn convert_shell(
                     vertices,
                     Some(edge_use.index),
                     !edge_use.orientation,
-                    NurbsCurve2::try_line(start, end)?,
+                    curve,
                     if incidence[edge_use.index] == 2 {
                         BrepTrimType::Mated
                     } else {
@@ -217,4 +215,80 @@ pub(super) fn convert_shell(
         )?);
     }
     Brep::try_new(vertices, edges, faces, tolerance).map_err(StepError::from)
+}
+
+fn linear_trim(curve: &Curve2D, shell: u64) -> Result<NurbsCurve2, StepError> {
+    match curve {
+        Curve2D::Line(line) => Ok(NurbsCurve2::try_line(
+            Point2::try_new(line.0.x, line.0.y)?,
+            Point2::try_new(line.1.x, line.1.y)?,
+        )?),
+        Curve2D::BsplineCurve(curve)
+            if curve.degree() == 1 && curve.control_points().len() == 2 =>
+        {
+            Ok(NurbsCurve2::try_new(
+                1,
+                curve
+                    .control_points()
+                    .iter()
+                    .map(|p| Point2::try_new(p.x, p.y))
+                    .collect::<Result<Vec<_>, _>>()?,
+                curve.knot_vector().iter().copied().collect(),
+            )?)
+        }
+        _ => Err(StepError::UnsupportedPlanarShell {
+            shell,
+            reason: "UV trim is not a single linear span",
+        }),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use monstertruck::meshing::prelude::ParametricCurve;
+    use monstertruck::modeling::{BsplineCurve, KnotVector, Point2 as TruckPoint2};
+
+    #[test]
+    fn linear_bspline_uv_trims_preserve_domain_direction_and_evaluation() {
+        for interval in [[0., 1.], [-3., 7.], [100., 101.]] {
+            for reversed in [false, true] {
+                let mut points = vec![TruckPoint2::new(2., -5.), TruckPoint2::new(11., 4.)];
+                if reversed {
+                    points.reverse();
+                }
+                let source = Curve2D::BsplineCurve(BsplineCurve::new(
+                    KnotVector::from(vec![interval[0], interval[0], interval[1], interval[1]]),
+                    points,
+                ));
+                let native = linear_trim(&source, 123).unwrap();
+                assert_eq!(native.domain(), interval[0]..=interval[1]);
+                for station in 0..=8 {
+                    let t = interval[0] + (interval[1] - interval[0]) * f64::from(station) / 8.;
+                    let expected = source.evaluate(t);
+                    let actual = native.evaluate(t).unwrap();
+                    assert!((actual.x() - expected.x).abs() < 1e-12);
+                    assert!((actual.y() - expected.y).abs() < 1e-12);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn linear_trim_adapter_rejects_curved_and_multispan_bspline_trims() {
+        for knots in [vec![0., 0., 0., 1., 1., 1.], vec![0., 0., 0.5, 1., 1.]] {
+            let source = Curve2D::BsplineCurve(BsplineCurve::new(
+                KnotVector::from(knots),
+                vec![
+                    TruckPoint2::new(0., 0.),
+                    TruckPoint2::new(1., 1.),
+                    TruckPoint2::new(2., 0.),
+                ],
+            ));
+            assert!(matches!(
+                linear_trim(&source, 123),
+                Err(StepError::UnsupportedPlanarShell { shell: 123, .. })
+            ));
+        }
+    }
 }

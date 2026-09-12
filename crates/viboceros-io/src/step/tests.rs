@@ -4,6 +4,71 @@ use std::io::Cursor;
 use super::*;
 
 #[test]
+fn explicit_linear_bspline_step_pcurves_import_without_losing_parameter_intervals() {
+    let original = polygon_face_step(&[vec![[0., 0.], [10., 0.], [0., 10.]]], false);
+    let table = Table::from_step(&original).unwrap();
+    let plane = *table.plane.keys().next().unwrap();
+    let mut ids = table.edge_curve.keys().copied().collect::<Vec<_>>();
+    ids.sort_unstable();
+    let mut replacements = std::collections::BTreeMap::new();
+    let mut records = String::from(
+        "#99999 = (GEOMETRIC_REPRESENTATION_CONTEXT(2) REPRESENTATION_CONTEXT('',''));\n",
+    );
+    for (index, edge_id) in ids.into_iter().enumerate() {
+        let edge = &table.edge_curve[&edge_id];
+        assert!(edge.same_sense);
+        let start = referenced_entity(&edge.edge_start, "start").unwrap();
+        let end = referenced_entity(&edge.edge_end, "end").unwrap();
+        let geometry = referenced_entity(&edge.edge_geometry, "geometry").unwrap();
+        let coordinates = |vertex| {
+            let point =
+                referenced_entity(&table.vertex_point[&vertex].vertex_geometry, "point").unwrap();
+            table.cartesian_point[&point].coordinates.clone()
+        };
+        let a = coordinates(start);
+        let b = coordinates(end);
+        let base = 100000 + index * 10;
+        replacements.insert(
+            format!("#{edge_id} ="),
+            format!("#{edge_id} = EDGE_CURVE('', #{start}, #{end}, #{base}, .T.);"),
+        );
+        records.push_str(&format!(
+            "#{base} = SURFACE_CURVE('', #{geometry}, (#{pcurve}), .CURVE_3D.);\n#{pcurve} = PCURVE('', #{plane}, #{representation});\n#{representation} = DEFINITIONAL_REPRESENTATION('', (#{spline}), #99999);\n#{spline} = B_SPLINE_CURVE_WITH_KNOTS('', 1, (#{p0}, #{p1}), .UNSPECIFIED., .F., .F., (2,2), (-3.,7.), .UNSPECIFIED.);\n#{p0} = CARTESIAN_POINT('', ({ax:?},{ay:?}));\n#{p1} = CARTESIAN_POINT('', ({bx:?},{by:?}));\n",
+            pcurve=base+1, representation=base+2, spline=base+3, p0=base+4, p1=base+5,
+            ax=a[0], ay=a[1], bx=b[0], by=b[1],
+        ));
+    }
+    let mut text = original
+        .lines()
+        .map(|line| {
+            replacements
+                .iter()
+                .find(|(prefix, _)| line.starts_with(prefix.as_str()))
+                .map_or_else(|| line.to_owned(), |(_, replacement)| replacement.clone())
+        })
+        .collect::<Vec<_>>()
+        .join("\n");
+    text.insert_str(text.rfind("ENDSEC;").unwrap(), &records);
+    let parsed = Table::from_step(&text).unwrap();
+    assert_eq!(parsed.entity_report.total(), 0);
+    let shell = *parsed.shell.keys().next().unwrap();
+    let (loaded, report) = reported_trimmed_shell(&parsed, shell).unwrap();
+    assert_eq!(report.total_lost(), 0);
+    for edge in loaded.faces[0].boundaries.iter().flatten() {
+        assert!(matches!(
+            edge.trim_curve.as_ref().unwrap().curve().as_ref(),
+            monstertruck::step::load::step_geometry::Curve2D::BsplineCurve(_)
+        ));
+    }
+    let native = read_step_planar_shells(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    let brep = &native[0].brep;
+    assert!((brep.area(Tolerance::DEFAULT).unwrap() - 50.).abs() < 1e-10);
+    for trim in brep.faces()[0].loops()[0].trims() {
+        assert_eq!(trim.curve().domain(), -3.0..=7.0);
+    }
+}
+
+#[test]
 fn planar_hole_trims_survive_loading_and_native_conversion() {
     let outer = vec![[0., 0.], [10., 0.], [10., 10.], [0., 10.]];
     let inner = vec![[2., 2.], [2., 4.], [4., 4.], [4., 2.]];

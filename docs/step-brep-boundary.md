@@ -92,7 +92,9 @@ cubic volume scaling, identical UV loops, and unitless/error behavior.
 The supported subset has planar surfaces, one outer loop and any number of
 strictly disjoint, unnested inner loops per face, straight
 3D edges (including two-control-point degree-one B-splines and linear leaders
-of plane/plane intersections), and line UV trims. Plane control rectangles
+of plane/plane intersections), and straight UV trims represented as lines or
+two-control-point degree-one B-splines. B-spline trim knot vectors and parameter
+intervals are preserved, not normalized to a line's `[0,1]` interval. Plane control rectangles
 retain source UV coordinates. Shared edges, trim reversal, and face sense are
 kept distinct. Every result passes native `Brep::try_new` validation.
 
@@ -100,6 +102,12 @@ Unsupported curves/surfaces, invalid polygon regions, missing trims, non-manifol
 and reported source-shell topology losses fail the entire request. No mesh
 substitute is returned. General B-spline/NURBS surfaces and curved trims remain
 unimplemented in this path.
+
+A generated STEP triangle with explicit `SURFACE_CURVE`/`PCURVE` records and
+degree-one B-spline parameter curves verifies loss-free loading, retained
+`[-3,7]` trim intervals, and native area 50. Direct adapter tests compare nine
+evaluation stations on three intervals in both directions; curved and multispan
+B-spline trims remain explicitly unsupported.
 
 Tests cover a cube's 8 vertices, 12 edges, 6 faces, vertex bounds, area 286,
 and signed volume 315; correctly reversed face/bound orientations give volume
