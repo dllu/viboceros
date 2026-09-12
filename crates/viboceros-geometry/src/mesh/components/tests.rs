@@ -5,6 +5,75 @@ fn p(x: f64, y: f64, z: f64) -> Point3 {
 }
 
 #[test]
+fn streamed_face_angles_match_indexed_pairs_and_strict_filter_boundaries() {
+    let coordinates: [[f64; 3]; 5] = [
+        [1., 0., 0.],
+        [0., 1., 0.],
+        [0., 0., 1.],
+        [-1., 0., 0.],
+        [0., -1., 0.],
+    ];
+    let normals =
+        coordinates.map(|[x, y, z]| UnitVector3::try_new(x, y, z, Tolerance::DEFAULT).unwrap());
+    let thresholds = [
+        0.,
+        std::f64::consts::FRAC_PI_4,
+        std::f64::consts::FRAC_PI_2,
+        std::f64::consts::PI,
+    ];
+    for count in 0..=5 {
+        for offset in 0..5 {
+            let faces = (0..count)
+                .map(|index| (index * 2 + offset) % 5)
+                .collect::<Vec<_>>();
+            let mut expected_pairs = Vec::new();
+            let mut maximum: f64 = 0.;
+            for left in 0..count {
+                for right in left + 1..count {
+                    let a = coordinates[faces[left]];
+                    let b = coordinates[faces[right]];
+                    let angle = (a[0] * b[0] + a[1] * b[1] + a[2] * b[2]).acos();
+                    maximum = maximum.max(angle);
+                    expected_pairs.push((faces[left], faces[right]));
+                }
+            }
+            for unwelded in [false, true] {
+                let mut incidence = EdgeIncidence::default();
+                for (index, &face) in faces.iter().enumerate() {
+                    let vertex = if unwelded { index as u32 * 2 } else { 0 };
+                    incidence.add_use(EdgeUse {
+                        face,
+                        side: 0,
+                        forward: index % 2 == 0,
+                        raw_vertices: [vertex, vertex + 1],
+                    });
+                }
+                assert_eq!(incidence.face_pairs().collect::<Vec<_>>(), expected_pairs);
+                for lower in thresholds {
+                    assert_eq!(
+                        mesh_edge_is_logical_boundary(&incidence, &normals, lower),
+                        count <= 1 || unwelded || maximum >= lower
+                    );
+                    for upper in thresholds {
+                        assert_eq!(
+                            mesh_edge_matches_filter(
+                                &incidence,
+                                MeshEdgeFilter::FaceAngle {
+                                    greater_than_radians: lower,
+                                    less_than_radians: upper,
+                                },
+                                Some(&normals)
+                            ),
+                            count >= 2 && maximum > lower && maximum < upper
+                        );
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[test]
 fn unwelded_predicate_matches_independent_pairwise_endpoint_distinctness() {
     for count in 0..=4u32 {
         for mut code in 0..16usize.pow(count) {

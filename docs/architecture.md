@@ -84,6 +84,9 @@ Explosion streams edge incidences without collecting a temporary vector per
 edge. The shared unwelded-edge predicate handles up to two incident faces without
 heap allocation and retains set-based checks for non-manifold incidences. An
 independent pairwise test exhausts endpoint-index assignments through four uses.
+Logical-boundary and face-angle filters also stream incident-face pairs without
+temporary vectors. Indexed reference calculations cover boundary, manifold, and
+non-manifold edges, including inclusive break angles and strict filter bounds.
 The `split_disjoint_mesh` command module owns staged component results, fresh
 piece insertion, source deletion policy, attribute/group propagation, and selection.
 The separate `explode` command module owns multi-geometry decomposition staging,

@@ -198,6 +198,15 @@ impl EdgeIncidence {
             .chain(self.second_use)
             .chain(self.additional_uses.iter().copied())
     }
+
+    /// Unordered incident-face pairs in use order, without a temporary vector.
+    fn face_pairs(&self) -> impl Iterator<Item = (usize, usize)> + '_ {
+        self.uses().enumerate().flat_map(move |(index, first)| {
+            self.uses()
+                .skip(index + 1)
+                .map(move |second| (first.face, second.face))
+        })
+    }
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -4406,17 +4415,11 @@ fn mesh_edge_is_logical_boundary(
     face_normals: &[UnitVector3],
     break_angle_radians: Real,
 ) -> bool {
-    let uses = incidence.uses().collect::<Vec<_>>();
-    if uses.len() == 1 || edge_uses_are_unwelded(uses.iter().copied()) {
+    if incidence.count == 1 || edge_uses_are_unwelded(incidence.uses()) {
         return true;
     }
-    (0..uses.len() - 1).any(|left| {
-        (left + 1..uses.len()).any(|right| {
-            unit_vector_angle(
-                face_normals[uses[left].face],
-                face_normals[uses[right].face],
-            ) >= break_angle_radians
-        })
+    incidence.face_pairs().any(|(left, right)| {
+        unit_vector_angle(face_normals[left], face_normals[right]) >= break_angle_radians
     })
 }
 
@@ -4443,20 +4446,14 @@ fn mesh_edge_matches_filter(
             greater_than_radians,
             less_than_radians,
         } => {
-            let uses = incidence.uses().collect::<Vec<_>>();
-            if uses.len() < 2 {
+            if incidence.count < 2 {
                 return false;
             }
             let normals = face_normals.expect("face-angle filtering computes polygon normals");
-            let mut greatest_angle: Real = 0.0;
-            for left in 0..uses.len() - 1 {
-                for right in left + 1..uses.len() {
-                    greatest_angle = greatest_angle.max(unit_vector_angle(
-                        normals[uses[left].face],
-                        normals[uses[right].face],
-                    ));
-                }
-            }
+            let greatest_angle = incidence
+                .face_pairs()
+                .map(|(left, right)| unit_vector_angle(normals[left], normals[right]))
+                .fold(0.0, Real::max);
             greatest_angle > greater_than_radians && greatest_angle < less_than_radians
         }
     }
