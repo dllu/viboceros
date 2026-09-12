@@ -112,7 +112,7 @@ fn describe_units(units: &LengthUnitSystem) -> String {
     }
 }
 
-fn parse_units(input: &str) -> Option<LengthUnitSystem> {
+pub(super) fn parse_units(input: &str) -> Option<LengthUnitSystem> {
     use LengthUnitSystem::*;
     let normalized = input.to_ascii_lowercase().replace("metre", "meter");
     Some(match normalized.as_str() {

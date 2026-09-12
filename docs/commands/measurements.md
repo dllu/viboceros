@@ -14,8 +14,20 @@ or changed, and the query creates no geometry or history entry. Esc cancels poin
 picking. Non-finite inputs and unrepresentable distances are rejected.
 
 The reporting categories follow [Rhino's Distance documentation](https://docs.mcneel.com/rhino/8mac/help/en-us/commands/distance.htm).
-Display-unit overrides and nesting a measurement inside another command's numeric
-prompt are not implemented. Exact Rhino text formatting and angular conventions
+For a display-only conversion, use a trailing option such as
+`Distance 0,0,0 25.4,0,0 Units=Inches`. It accepts the standard unit names and
+abbreviations used by `Units`, including British spellings. The override scales
+the reported distance and axis deltas, appends the target unit name, and leaves
+angles and the document's unit setting unchanged. Custom physical source units
+are supported; unitless/unset sources or targets, overflowing results, and
+nonzero values that underflow to zero are rejected. Omit the option to report
+unchanged document coordinates, including unitless models. The override is
+applied after measurement, so distances and deltas must first be representable
+in document coordinates even when the requested display units would shrink them.
+The override is
+currently available in the complete typed command, not during point picking.
+Nesting a measurement inside another command's numeric prompt is not implemented.
+Exact Rhino text formatting and angular conventions
 at degenerate directions have not yet been checked against a live oracle.
 
 ## Selected-object measurements
