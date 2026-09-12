@@ -48,6 +48,13 @@ selections, a closed fan, vertex-only contact, non-manifold incidence, and two
 incident seams. It uses the same face-coordinate and sharing-group representation
 as edge welding, with exact replay and the same raw-index comparison limitation.
 
+The [vertex-unweld fixture](../tools/rhino_oracle/fixtures/mesh_unweld_vertex.json)
+also has a [ten-case Rhino 8.32 record](../tools/rhino_oracle/observations/mesh_unweld_vertex.json).
+It covers empty/naked/already-unwelded selections, a closed fan, duplicate and
+reversed selections, cube corner/all-vertex edits, a non-manifold fan, and a
+fully separated triangle. Replay checks acceptance, added-vertex counts, ordered
+face coordinates, and sharing groups exactly, with the same raw-index limitation.
+
 The [short-curve selection diagnostic](short-curve-selection-measurement.json)
 embeds four requests and responses (40 line lengths). `short_curve_selection`
 creates owned line objects, runs the actual `SelShortCrv` command, and records

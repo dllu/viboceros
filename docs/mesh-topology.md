@@ -60,6 +60,14 @@ mask and returns before this rewrite. An independent partition reference checks
 1,000 combinations of earliest/latest survivors, chained parents, and unused
 source representatives; mixed triangle/quad tests check face kind and winding.
 
+Angle-, edge-, and vertex-based unwelding share a face-component rebuilder.
+Replacement indices occupy four optional corner slots per face rather than a
+separately allocated tree map. Missing replacements remain explicit, without
+reserving an otherwise valid `u32` index as a sentinel. A 64-case mixed-face test
+checks ordered corner coordinates, face kind, complete vertex use, and pairwise
+sharing for every affected-location subset, grouped/separate components, and
+forward/reverse vertex rebuild order.
+
 ## Normals and area
 
 [`mesh/normals`](../crates/viboceros-geometry/src/mesh/normals.rs) shares direction

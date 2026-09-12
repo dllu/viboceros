@@ -7,6 +7,8 @@ mod edge_collapse;
 mod edge_split;
 mod edge_weld;
 mod normals;
+#[cfg(test)]
+mod rebuild_tests;
 mod union_find;
 use union_find::{index_root, union_faces, union_indices_keep_earlier, union_indices_keep_later};
 #[cfg(test)]
@@ -3380,12 +3382,15 @@ impl TriangleMesh {
             vertices.push(point);
         }
 
-        let mut face_replacements = vec![BTreeMap::<u32, u32>::new(); self.faces.len()];
+        // Faces have at most four corners. Corner-indexed slots avoid a tree
+        // allocation per face while keeping missing replacements explicit;
+        // every u32 value, including MAX, remains a valid replacement index.
+        let mut face_replacements = vec![[None; 4]; self.faces.len()];
         for (face_index, face) in self.faces.iter().enumerate() {
-            for &raw_vertex in face.indices() {
+            for (corner, &raw_vertex) in face.indices().iter().enumerate() {
                 let source = raw_vertex as usize;
                 if !affected_topological_vertices[data.topological_vertices[source]] {
-                    face_replacements[face_index].insert(raw_vertex, raw_remap[source]);
+                    face_replacements[face_index][corner] = Some(raw_remap[source]);
                 }
             }
         }
@@ -3396,13 +3401,14 @@ impl TriangleMesh {
                     .map_err(|_| GeometryError::TooManyMeshVertices)?;
                 vertices.push(data.topological_points[topological_vertex]);
                 for &face in component {
-                    let raw_vertex = self.faces[face]
+                    let corner = self.faces[face]
                         .indices()
                         .iter()
-                        .copied()
-                        .find(|&raw| data.topological_vertices[raw as usize] == topological_vertex)
+                        .position(|&raw| {
+                            data.topological_vertices[raw as usize] == topological_vertex
+                        })
                         .expect("an incident face contains its topology vertex");
-                    face_replacements[face].insert(raw_vertex, target);
+                    face_replacements[face][corner] = Some(target);
                 }
             }
         }
@@ -3413,9 +3419,11 @@ impl TriangleMesh {
             .copied()
             .enumerate()
             .map(|(face, polygon)| {
-                polygon.remapped(|raw| {
-                    *face_replacements[face]
-                        .get(&raw)
+                let mut corners = face_replacements[face].into_iter();
+                polygon.remapped(|_| {
+                    corners
+                        .next()
+                        .expect("a mesh face has at most four corners")
                         .expect("every unwelded face vertex has a replacement")
                 })
             })
