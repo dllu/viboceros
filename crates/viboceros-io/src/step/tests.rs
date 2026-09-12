@@ -1167,6 +1167,152 @@ fn assembly_step(parent_transform: Option<Matrix4>) -> String {
 }
 
 #[test]
+fn native_planar_instances_keep_solid_void_shells_and_their_sense() {
+    use monstertruck::modeling::{Shell, Solid};
+    let cube = |radius: f64| -> Solid {
+        primitive::cuboid(BoundingBox::from_iter([
+            TruckPoint3::new(-radius, -radius, -radius),
+            TruckPoint3::new(radius, radius, radius),
+        ]))
+    };
+    let outer = cube(5.);
+    let inner = cube(1.);
+    let cavity = Shell::from(
+        inner.boundaries()[0]
+            .iter()
+            .map(|face| face.inverse())
+            .collect::<Vec<_>>(),
+    );
+    let solid = Solid::new(vec![outer.boundaries()[0].clone(), cavity]).compress();
+    let text = CompleteStepDisplay::new(
+        TruckStepModel::from(&solid),
+        StepHeaderDescriptor::default(),
+    )
+    .to_string();
+    let imported = read_step_planar_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    assert_eq!(imported.instances.len(), 2);
+    assert_eq!(
+        imported.instances[0].placement_index,
+        imported.instances[1].placement_index
+    );
+    assert_eq!(
+        imported.instances[0].source_shape_id,
+        imported.instances[1].source_shape_id
+    );
+    assert_ne!(
+        imported.instances[0].source_shell_id,
+        imported.instances[1].source_shell_id
+    );
+    for (instance, expected) in imported.instances.iter().zip([1000., -8.]) {
+        assert!((instance.brep.signed_volume(Tolerance::DEFAULT).unwrap() - expected).abs() < 1e-9);
+    }
+}
+
+#[test]
+fn native_planar_instances_honor_oriented_surface_model_shells() {
+    let source = polygon_face_step(&[vec![[0., 0.], [10., 0.], [10., 10.], [0., 10.]]], false);
+    let table = Table::from_step(&source).unwrap();
+    let shape = *table.shell_based_surface_model.keys().next().unwrap();
+    let shell = *table.shell.keys().next().unwrap();
+    let original = read_step_planar_instances(Cursor::new(&source), Tolerance::DEFAULT).unwrap();
+    for (sense, reversed) in [(".T.", false), (".F.", true)] {
+        let mut text = source
+            .lines()
+            .map(|line| {
+                if line.contains("SHELL_BASED_SURFACE_MODEL(") {
+                    format!("#{shape} = SHELL_BASED_SURFACE_MODEL('', (#999999));")
+                } else {
+                    line.to_owned()
+                }
+            })
+            .collect::<Vec<_>>()
+            .join("\n");
+        let end = text.rfind("ENDSEC;").unwrap();
+        text.insert_str(
+            end,
+            &format!("#999999 = ORIENTED_OPEN_SHELL('', *, #{shell}, {sense});\n"),
+        );
+        let parsed = Table::from_step(&text).unwrap();
+        assert_eq!(parsed.entity_report.total(), 0);
+        let imported = read_step_planar_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+        assert_eq!(imported.instances.len(), 1);
+        let instance = &imported.instances[0];
+        assert_eq!(
+            (instance.source_shape_id, instance.source_shell_id),
+            (shape, 999999)
+        );
+        assert_eq!(instance.brep.faces()[0].is_reversed(), reversed);
+        assert_eq!(
+            instance.brep.faces()[0].loops(),
+            original.instances[0].brep.faces()[0].loops()
+        );
+        assert!((instance.brep.area(Tolerance::DEFAULT).unwrap() - 100.).abs() < 1e-10);
+    }
+}
+
+#[test]
+fn native_planar_instances_preserve_nested_placements_and_shared_source_ids() {
+    for nested in [false, true] {
+        let parent = nested.then_some(Matrix4::new(
+            0., 1., 0., 0., -1., 0., 0., 0., 0., 0., 1., 0., 100., 200., 300., 1.,
+        ));
+        let imported =
+            read_step_planar_instances(Cursor::new(assembly_step(parent)), Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(imported.instances.len(), 3);
+        assert_eq!(imported.report.unplaced_shape_count, 0);
+        assert!(imported.report.assembly_warning.is_none());
+        let source_shape = imported.instances[0].source_shape_id;
+        let source_shell = imported.instances[0].source_shell_id;
+        let mut placements = imported
+            .instances
+            .iter()
+            .map(|instance| instance.placement_index)
+            .collect::<Vec<_>>();
+        placements.sort_unstable();
+        placements.dedup();
+        assert_eq!(placements.len(), 3);
+        for i in 0..3 {
+            let name = format!("instance {i}");
+            let instance = imported
+                .instances
+                .iter()
+                .find(|instance| instance.name.as_deref() == Some(&name))
+                .unwrap();
+            assert_eq!(instance.source_shape_id, source_shape);
+            assert_eq!(instance.source_shell_id, source_shell);
+            let brep = &instance.brep;
+            assert_eq!(
+                (
+                    brep.vertices().len(),
+                    brep.edges().len(),
+                    brep.faces().len()
+                ),
+                (8, 12, 6)
+            );
+            for x in [-1., 4.] {
+                for y in [-2., 5.] {
+                    for z in [-3., 6.] {
+                        let expected = if nested {
+                            [100. - y, 200. + x + 10. * f64::from(i), 300. + z]
+                        } else {
+                            [x + 10. * f64::from(i), y, z]
+                        };
+                        assert!(
+                            brep.vertices()
+                                .iter()
+                                .any(|v| v.point().to_array() == expected)
+                        );
+                    }
+                }
+            }
+            assert!((brep.area(Tolerance::DEFAULT).unwrap() - 286.).abs() < 1e-9);
+            assert!((brep.signed_volume(Tolerance::DEFAULT).unwrap() - 315.).abs() < 1e-9);
+        }
+    }
+}
+
+#[test]
 fn instance_plan_resolves_nested_placements_without_loading_shell_geometry() {
     for nested in [false, true] {
         let parent = nested.then_some(Matrix4::new(

@@ -28,9 +28,36 @@ module. It resolves supported shape IDs, composed placement matrices, instance
 names, unplaced-shape fallback, and representation diagnostics before the mesh
 consumer loads geometry. Direct plan tests check all eight source cube corners
 for three instances, with and without a noncommuting parent rotation/translation;
-removing source shell records leaves the plan unchanged. The native source-shell
-reader does not consume this plan yet: shape-to-shell expansion, oriented shell
-sense, and per-instance native geometry validation still need integration.
+removing source shell records leaves the plan unchanged. The source-shell reader
+remains independent of placements; the native instance reader below consumes
+this plan.
+
+### Assembly-aware planar instances
+
+`read_step_planar_instances(reader, tolerance)` returns a `StepPlanarImport`
+containing placed native shell entries and the shared import diagnostics.
+Coordinates and tolerance are in file units; this API does not yet offer target
+unit conversion or document insertion. `ImportStep` remains mesh-based.
+
+Each entry retains `source_shape_id`, `source_shell_id` (the actual shell
+reference, including oriented wrappers), the occurrence name, and a
+`placement_index` shared by all shells of that shape occurrence. Solid outer
+and void shells retain source order and orientation; surface models expand to
+their referenced shells. These entries are shells, not independently classified
+solids; assembly occurrence grouping does not establish cavity containment.
+
+Source shells are converted once per referenced shell ID, transformed and
+validated separately for each placement, then released from the conversion
+cache after their last use. Unsupported shell geometry, topology loss, or invalid
+placement fails the request without returning partial geometry. Unplaced shapes
+and assembly/representation diagnostics follow the mesh reader's policy.
+Non-affine matrices are rejected instead of dropping their projective terms.
+
+Generated regressions check repeated and nested cube placements against every
+expected corner, area 286 and signed volume 315, and verify both senses of an
+oriented open-shell wrapper without changing UV loops. A hollow cube checks
+separate outer/void entries with signed volumes 1000 and -8. This is not yet
+evidence of general curved STEP or live Rhino assembly parity.
 
 `read_step_planar_shells_in_units(reader, &target_units, tolerance)` additionally
 resolves uniform file length units and returns native geometry in the requested

@@ -6,7 +6,9 @@ mod export_geometry;
 mod export_plane;
 pub use export::{write_step, write_step_file, write_step_file_in_units, write_step_in_units};
 mod instance_plan;
+mod native_instances;
 mod native_planar;
+pub use native_instances::{StepPlanarImport, StepPlanarInstance, read_step_planar_instances};
 mod units;
 pub use native_planar::{
     StepPlanarShell, read_step_planar_shells, read_step_planar_shells_in_units,

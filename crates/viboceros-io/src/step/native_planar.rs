@@ -61,152 +61,160 @@ fn convert_table(table: &Table, tolerance: Tolerance) -> Result<Vec<StepPlanarSh
     if ids.is_empty() {
         return Err(StepError::NoSupportedGeometry);
     }
-    let mut output = Vec::new();
-    for id in ids {
-        let unsupported = |reason| StepError::UnsupportedPlanarShell { shell: id, reason };
-        let (shell, report) = reported_trimmed_shell(table, id)?;
-        if report.total_lost() != 0 {
-            return Err(unsupported("source shell has topology losses"));
-        }
-        let vertices = shell
-            .vertices
-            .iter()
-            .map(|p| BrepVertex::try_new(Point3::try_new(p.x, p.y, p.z)?, tolerance.absolute()))
-            .collect::<Result<Vec<_>, _>>()?;
-        let mut edges = Vec::new();
-        for edge in &shell.edges {
-            let mut curve = &edge.curve;
-            loop {
-                match curve {
-                    Curve3D::SurfaceCurve(surface_curve) => curve = surface_curve.leader(),
-                    Curve3D::IntersectionCurve(intersection)
-                        if matches!(
-                            intersection.surface0().as_ref(),
-                            Surface::ElementarySurface(ElementarySurface::Plane(_))
-                        ) && matches!(
-                            intersection.surface1().as_ref(),
-                            Surface::ElementarySurface(ElementarySurface::Plane(_))
-                        ) =>
-                    {
-                        curve = intersection.leader()
-                    }
-                    _ => break,
-                }
-            }
-            let (points, knots) = match curve {
-                Curve3D::Line(line) => (vec![line.0, line.1], vec![0.0, 0.0, 1.0, 1.0]),
-                Curve3D::BsplineCurve(curve)
-                    if curve.degree() == 1 && curve.control_points().len() == 2 =>
-                {
-                    (
-                        curve.control_points().clone(),
-                        curve.knot_vector().iter().copied().collect(),
-                    )
-                }
-                _ => return Err(unsupported("3D edge is not a single linear span")),
-            };
-            let curve = NurbsCurve::try_new(
-                1,
-                points
-                    .into_iter()
-                    .map(|point| Point3::try_new(point.x, point.y, point.z))
-                    .collect::<Result<Vec<_>, _>>()?,
-                knots,
-            )?;
-            edges.push(BrepEdge::try_new(
-                [edge.vertices.0, edge.vertices.1],
-                curve,
-                tolerance.absolute(),
-            )?);
-        }
-        let mut incidence = vec![0; edges.len()];
-        for face in &shell.faces {
-            for edge in face.boundaries.iter().flatten() {
-                incidence[edge.index] += 1;
-            }
-        }
-        if incidence.iter().any(|&count| count > 2) {
-            return Err(unsupported("non-manifold edge"));
-        }
-        let mut faces = Vec::new();
-        for face in &shell.faces {
-            let Surface::ElementarySurface(ElementarySurface::Plane(plane)) = &face.surface else {
-                return Err(unsupported("surface is not a plane"));
-            };
-            let mut bounds = [
-                f64::INFINITY,
-                f64::NEG_INFINITY,
-                f64::INFINITY,
-                f64::NEG_INFINITY,
-            ];
-            let mut boundaries = Vec::new();
-            for boundary in &face.boundaries {
-                let mut trims = Vec::new();
-                for edge_use in boundary {
-                    let trim = edge_use
-                        .trim_curve
-                        .as_ref()
-                        .ok_or_else(|| unsupported("missing UV trim"))?;
-                    let Curve2D::Line(line) = trim.curve().as_ref() else {
-                        return Err(unsupported("UV trim is not a line"));
-                    };
-                    let start = Point2::try_new(line.0.x, line.0.y)?;
-                    let end = Point2::try_new(line.1.x, line.1.y)?;
-                    for point in [start, end] {
-                        bounds[0] = bounds[0].min(point.x());
-                        bounds[1] = bounds[1].max(point.x());
-                        bounds[2] = bounds[2].min(point.y());
-                        bounds[3] = bounds[3].max(point.y());
-                    }
-                    let endpoints = shell.edges[edge_use.index].vertices;
-                    let vertices = if edge_use.orientation {
-                        [endpoints.0, endpoints.1]
-                    } else {
-                        [endpoints.1, endpoints.0]
-                    };
-                    trims.push(BrepTrim::try_new(
-                        vertices,
-                        Some(edge_use.index),
-                        !edge_use.orientation,
-                        NurbsCurve2::try_line(start, end)?,
-                        if incidence[edge_use.index] == 2 {
-                            BrepTrimType::Mated
-                        } else {
-                            BrepTrimType::Boundary
-                        },
-                        SurfaceIso::NotIso,
-                        [0.0; 2],
-                    )?);
-                }
-                boundaries.push(trims);
-            }
-            let [u0, u1, v0, v1] = bounds;
-            let control_points = [(u0, v0), (u1, v0), (u0, v1), (u1, v1)]
-                .into_iter()
-                .map(|(u, v)| {
-                    let point = plane.evaluate(u, v);
-                    Point3::try_new(point.x, point.y, point.z)
-                })
-                .collect::<Result<Vec<_>, _>>()?;
-            let surface = NurbsSurface::try_new(
-                1,
-                1,
-                2,
-                2,
-                control_points,
-                vec![u0, u0, u1, u1],
-                vec![v0, v0, v1, v1],
-            )?;
-            faces.push(BrepFace::try_from_polygon_boundaries(
-                surface,
-                !face.orientation,
-                boundaries,
-            )?);
-        }
-        output.push(StepPlanarShell {
-            source_shell_id: id,
-            brep: Brep::try_new(vertices, edges, faces, tolerance)?,
-        });
+    ids.into_iter()
+        .map(|id| {
+            Ok(StepPlanarShell {
+                source_shell_id: id,
+                brep: convert_shell(table, id, tolerance)?,
+            })
+        })
+        .collect()
+}
+
+pub(super) fn convert_shell(
+    table: &Table,
+    id: u64,
+    tolerance: Tolerance,
+) -> Result<Brep, StepError> {
+    let unsupported = |reason| StepError::UnsupportedPlanarShell { shell: id, reason };
+    let (shell, report) = reported_trimmed_shell(table, id)?;
+    if report.total_lost() != 0 {
+        return Err(unsupported("source shell has topology losses"));
     }
-    Ok(output)
+    let vertices = shell
+        .vertices
+        .iter()
+        .map(|p| BrepVertex::try_new(Point3::try_new(p.x, p.y, p.z)?, tolerance.absolute()))
+        .collect::<Result<Vec<_>, _>>()?;
+    let mut edges = Vec::new();
+    for edge in &shell.edges {
+        let mut curve = &edge.curve;
+        loop {
+            match curve {
+                Curve3D::SurfaceCurve(surface_curve) => curve = surface_curve.leader(),
+                Curve3D::IntersectionCurve(intersection)
+                    if matches!(
+                        intersection.surface0().as_ref(),
+                        Surface::ElementarySurface(ElementarySurface::Plane(_))
+                    ) && matches!(
+                        intersection.surface1().as_ref(),
+                        Surface::ElementarySurface(ElementarySurface::Plane(_))
+                    ) =>
+                {
+                    curve = intersection.leader()
+                }
+                _ => break,
+            }
+        }
+        let (points, knots) = match curve {
+            Curve3D::Line(line) => (vec![line.0, line.1], vec![0.0, 0.0, 1.0, 1.0]),
+            Curve3D::BsplineCurve(curve)
+                if curve.degree() == 1 && curve.control_points().len() == 2 =>
+            {
+                (
+                    curve.control_points().clone(),
+                    curve.knot_vector().iter().copied().collect(),
+                )
+            }
+            _ => return Err(unsupported("3D edge is not a single linear span")),
+        };
+        let curve = NurbsCurve::try_new(
+            1,
+            points
+                .into_iter()
+                .map(|point| Point3::try_new(point.x, point.y, point.z))
+                .collect::<Result<Vec<_>, _>>()?,
+            knots,
+        )?;
+        edges.push(BrepEdge::try_new(
+            [edge.vertices.0, edge.vertices.1],
+            curve,
+            tolerance.absolute(),
+        )?);
+    }
+    let mut incidence = vec![0; edges.len()];
+    for face in &shell.faces {
+        for edge in face.boundaries.iter().flatten() {
+            incidence[edge.index] += 1;
+        }
+    }
+    if incidence.iter().any(|&count| count > 2) {
+        return Err(unsupported("non-manifold edge"));
+    }
+    let mut faces = Vec::new();
+    for face in &shell.faces {
+        let Surface::ElementarySurface(ElementarySurface::Plane(plane)) = &face.surface else {
+            return Err(unsupported("surface is not a plane"));
+        };
+        let mut bounds = [
+            f64::INFINITY,
+            f64::NEG_INFINITY,
+            f64::INFINITY,
+            f64::NEG_INFINITY,
+        ];
+        let mut boundaries = Vec::new();
+        for boundary in &face.boundaries {
+            let mut trims = Vec::new();
+            for edge_use in boundary {
+                let trim = edge_use
+                    .trim_curve
+                    .as_ref()
+                    .ok_or_else(|| unsupported("missing UV trim"))?;
+                let Curve2D::Line(line) = trim.curve().as_ref() else {
+                    return Err(unsupported("UV trim is not a line"));
+                };
+                let start = Point2::try_new(line.0.x, line.0.y)?;
+                let end = Point2::try_new(line.1.x, line.1.y)?;
+                for point in [start, end] {
+                    bounds[0] = bounds[0].min(point.x());
+                    bounds[1] = bounds[1].max(point.x());
+                    bounds[2] = bounds[2].min(point.y());
+                    bounds[3] = bounds[3].max(point.y());
+                }
+                let endpoints = shell.edges[edge_use.index].vertices;
+                let vertices = if edge_use.orientation {
+                    [endpoints.0, endpoints.1]
+                } else {
+                    [endpoints.1, endpoints.0]
+                };
+                trims.push(BrepTrim::try_new(
+                    vertices,
+                    Some(edge_use.index),
+                    !edge_use.orientation,
+                    NurbsCurve2::try_line(start, end)?,
+                    if incidence[edge_use.index] == 2 {
+                        BrepTrimType::Mated
+                    } else {
+                        BrepTrimType::Boundary
+                    },
+                    SurfaceIso::NotIso,
+                    [0.0; 2],
+                )?);
+            }
+            boundaries.push(trims);
+        }
+        let [u0, u1, v0, v1] = bounds;
+        let control_points = [(u0, v0), (u1, v0), (u0, v1), (u1, v1)]
+            .into_iter()
+            .map(|(u, v)| {
+                let point = plane.evaluate(u, v);
+                Point3::try_new(point.x, point.y, point.z)
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let surface = NurbsSurface::try_new(
+            1,
+            1,
+            2,
+            2,
+            control_points,
+            vec![u0, u0, u1, u1],
+            vec![v0, v0, v1, v1],
+        )?;
+        faces.push(BrepFace::try_from_polygon_boundaries(
+            surface,
+            !face.orientation,
+            boundaries,
+        )?);
+    }
+    Brep::try_new(vertices, edges, faces, tolerance).map_err(StepError::from)
 }

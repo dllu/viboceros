@@ -204,6 +204,10 @@ General editable STEP B-rep interchange is not implemented yet. The low-level
 to validated native B-reps without tessellation; its `_in_units` counterpart
 converts uniform file units into explicit target units. Neither provides assembly
 placement or document integration yet. `ImportStep` still imports meshes.
+The separate `read_step_planar_instances` API applies assembly placements in
+file units, retains occurrence names and grouping indices, and expands oriented
+outer/void and surface-model shells into native shell entries. It does not yet
+convert target units, assemble classified solids, or insert document objects.
 The native planar path supports straight-edged polygon holes, identifies the
 outer loop independently of source ordering, and rejects crossing, touching,
 outside, or nested hole boundaries before committing native topology.
