@@ -3081,16 +3081,8 @@ impl TriangleMesh {
                 vertex_faces,
                 &mut parents,
             );
-            for component in component_order {
-                let mut faces = Vec::new();
-                for &face in vertex_faces {
-                    let local = face_to_local[&face];
-                    if index_root(&mut parents, local) == component {
-                        faces.push(face);
-                    }
-                }
-                face_components[topological_vertex].push(faces);
-            }
+            face_components[topological_vertex] =
+                components::faces_in_component_order(vertex_faces, &mut parents, &component_order);
         }
         let vertex_order = (0..data.topological_vertex_count).collect::<Vec<_>>();
         Ok((
@@ -3242,15 +3234,8 @@ impl TriangleMesh {
                 &mut parents,
             );
             component_order.reverse();
-            for component in component_order {
-                let mut faces = Vec::new();
-                for &face in vertex_faces {
-                    if index_root(&mut parents, face_to_local[&face]) == component {
-                        faces.push(face);
-                    }
-                }
-                face_components[topological_vertex].push(faces);
-            }
+            face_components[topological_vertex] =
+                components::faces_in_component_order(vertex_faces, &mut parents, &component_order);
         }
 
         let vertex_order =

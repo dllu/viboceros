@@ -64,6 +64,12 @@ than cloning a whole-mesh edge mask for every vertex. Sorted incident edge IDs
 provide the radial-to-local mapping. A disconnected-panel regression checks
 sparse selections, untouched sharing, compaction, and ordered face geometry on
 up to 1,024 panels; no wall-clock performance threshold is asserted.
+Once radial component order is known, angle and edge unwelding share a single
+face-grouping pass. A dense root-to-output lookup replaces rescanning all incident
+faces for every component, while preserving source face order within groups.
+Tests compare 12,288 label/root-order combinations against an independent grouping
+reference and exercise fully separated planar fans of up to 257 faces through
+both unwelding operations.
 
 Shared welding compaction resolves every face to its representative before
 reusing the parent array as the compact-index map, eliminating a separate

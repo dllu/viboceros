@@ -1,6 +1,60 @@
 use super::*;
 
 #[test]
+fn ordered_grouping_matches_label_partitions_and_all_root_orders() {
+    let faces = [91, 5, 72, 18];
+    let permutations = (0..256)
+        .map(|code| std::array::from_fn::<_, 4, _>(|index| (code >> (2 * index)) & 3))
+        .filter(|order| order.iter().copied().collect::<BTreeSet<_>>().len() == 4)
+        .collect::<Vec<_>>();
+    assert_eq!(permutations.len(), 24);
+    for code in 0..256 {
+        let labels = std::array::from_fn::<_, 4, _>(|index| (code >> (2 * index)) & 3);
+        for reverse in [false, true] {
+            let mut parents = (0..4).collect::<Vec<_>>();
+            for label in 0..4 {
+                let mut members = (0..4)
+                    .filter(|&index| labels[index] == label)
+                    .collect::<Vec<_>>();
+                if reverse {
+                    members.reverse();
+                }
+                for pair in members.windows(2) {
+                    parents[pair[0]] = pair[1];
+                }
+            }
+            for permutation in &permutations {
+                let order = permutation
+                    .iter()
+                    .copied()
+                    .filter(|&index| parents[index] == index)
+                    .collect::<Vec<_>>();
+                let expected = order
+                    .iter()
+                    .map(|&root| {
+                        faces
+                            .iter()
+                            .enumerate()
+                            .filter_map(|(local, &face)| {
+                                (labels[local] == labels[root]).then_some(face)
+                            })
+                            .collect::<Vec<_>>()
+                    })
+                    .collect::<Vec<_>>();
+                assert_eq!(
+                    faces_in_component_order(&faces, &mut parents.clone(), &order),
+                    expected
+                );
+            }
+        }
+    }
+    assert_eq!(
+        faces_in_component_order(&[], &mut [], &[]),
+        Vec::<Vec<usize>>::new()
+    );
+}
+
+#[test]
 fn streamed_use_pairs_keep_order_and_all_metadata_even_with_repeated_faces() {
     for count in 0..=6 {
         let uses = (0..count)

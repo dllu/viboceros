@@ -4,6 +4,28 @@ use super::*;
 #[cfg(test)]
 mod tests;
 
+/// Groups local union-find members in the supplied root order while preserving
+/// the input face order within each component. Each face is visited once.
+pub(super) fn faces_in_component_order(
+    incident_faces: &[usize],
+    parents: &mut [usize],
+    component_order: &[usize],
+) -> Vec<Vec<usize>> {
+    let mut component_by_root = vec![usize::MAX; parents.len()];
+    for (component, &root) in component_order.iter().enumerate() {
+        component_by_root[root] = component;
+    }
+    let mut components = vec![Vec::new(); component_order.len()];
+    for (local, &face) in incident_faces.iter().enumerate() {
+        let root = index_root(parents, local);
+        components
+            .get_mut(component_by_root[root])
+            .expect("the component order includes every incident face root")
+            .push(face);
+    }
+    components
+}
+
 /// Group face indices in first-face order, independently of union root order.
 /// Roots are face indices, so a dense lookup avoids tree searches per face.
 /// Reject the first over-budget root before allocating its component list.

@@ -1,6 +1,44 @@
 use super::*;
 
 #[test]
+fn high_valence_fans_keep_all_faces_when_each_radial_edge_is_separated() {
+    for count in [3, 17, 257] {
+        let mut vertices = vec![Point3::try_new(0.0, 0.0, 0.0).unwrap()];
+        for index in 0..count {
+            let angle = std::f64::consts::TAU * index as f64 / count as f64;
+            vertices.push(Point3::try_new(angle.cos(), angle.sin(), 0.0).unwrap());
+        }
+        let triangles = (0..count)
+            .map(|index| [0, index as u32 + 1, ((index + 1) % count) as u32 + 1])
+            .collect();
+        let source = TriangleMesh::try_new(vertices, triangles, Tolerance::DEFAULT).unwrap();
+        let selected = (0..count).collect::<Vec<_>>();
+        for (output, separated) in [
+            source.unwelded_topology_edges(&selected).unwrap(),
+            source.unwelded_vertices(0.0).unwrap(),
+        ] {
+            assert_eq!(separated, count);
+            assert_eq!(output.vertices().len(), 3 * count);
+            assert_eq!(output.triangles().len(), count);
+            let used = output
+                .triangles()
+                .iter()
+                .flatten()
+                .copied()
+                .collect::<BTreeSet<_>>();
+            assert_eq!(used.len(), 3 * count);
+            for (original, rebuilt) in source.triangles().iter().zip(output.triangles()) {
+                assert_eq!(
+                    original.map(|raw| source.vertices()[raw as usize]),
+                    rebuilt.map(|raw| output.vertices()[raw as usize])
+                );
+            }
+            assert_eq!(source.area().unwrap(), output.area().unwrap());
+        }
+    }
+}
+
+#[test]
 fn sparse_selected_edges_across_disconnected_panels_keep_local_connectivity() {
     for panel_count in [1, 17, 257, 1024] {
         let mut vertices = Vec::new();
