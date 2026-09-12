@@ -51,6 +51,15 @@ Duplicate selections count each edge only once; regression cases cover duplicate
 counts and mixed valid/invalid selection order.
 Selected-vertex welding likewise checks the first invalid index before allocating
 selection flags, including mixed valid/invalid and duplicate selections.
+[`mesh/vertex_unweld`](../crates/viboceros-geometry/src/mesh/vertex_unweld.rs)
+owns selected-vertex unwelding and its triangle, quad, closed-fan, and
+non-manifold ordering regressions. It validates the first invalid index before
+allocating selection flags. Incident-face lists are populated only for selected
+vertices, and incident-edge lists only for affected vertices; unselected fans
+need no per-vertex incidence buffers. Topology construction, outer lookup arrays,
+and final rebuilding still scale with the source mesh. Sparse-selection tests
+cover up to 1,024 disconnected panels, checking counts, every ordered face's
+geometry, area, endpoint sharing, duplicate selections, and selection order.
 Edge unwelding validates before copying edge references or allocating flags, then
 reuses its selection mask for active edges. Per-endpoint activation requires one
 raw vertex shared by all incident edge faces: partial non-manifold sharing is
