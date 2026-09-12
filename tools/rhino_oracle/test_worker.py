@@ -11,6 +11,106 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_disposable_measurement_extracts_only_final_result_after_timer(self):
+        events = []
+        values = [SimpleNamespace(Dispose=lambda i=i: events.append(("dispose", i)))
+                  for i in range(4)]
+        def operation():
+            index = sum(event[0] == "operation" for event in events)
+            events.append(("operation", index))
+            return values[index]
+        def timer():
+            events.append(("timer", None))
+            return float(sum(event[0] == "timer" for event in events))
+        def record(value):
+            self.assertIs(value, values[3])
+            events.append(("record", 3))
+            return {"final": 3}
+        with patch.object(self.worker, "default_timer", side_effect=timer):
+            self.assertEqual(self.worker._measure_disposable(3, operation, record),
+                             ({"final": 3}, 1000000000))
+        self.assertEqual(events, [
+            ("operation", 0), ("timer", None),
+            ("operation", 1), ("dispose", 0),
+            ("operation", 2), ("dispose", 1),
+            ("operation", 3), ("dispose", 2),
+            ("timer", None), ("record", 3), ("dispose", 3),
+        ])
+
+    def test_disposable_measurement_cleans_up_on_operation_timer_or_record_failure(self):
+        for failure in ("warmup", "operation", "start", "stop", "record"):
+            with self.subTest(failure=failure):
+                first, second = Mock(), Mock()
+                error = ValueError("injected failure")
+                operation = Mock(side_effect=(
+                    [error] if failure == "warmup" else
+                    [first, error] if failure == "operation" else [first, second]))
+                timer = Mock(side_effect=(
+                    [error] if failure == "start" else
+                    [0, error] if failure == "stop" else [0, 1]))
+                record = Mock(side_effect=error if failure == "record" else None)
+                with patch.object(self.worker, "default_timer", timer), \
+                        self.assertRaisesRegex(ValueError, "injected failure"):
+                    self.worker._measure_disposable(1, operation, record)
+                self.assertEqual(first.Dispose.call_count, int(failure != "warmup"))
+                self.assertEqual(second.Dispose.call_count, int(failure in ("stop", "record")))
+                self.assertEqual(record.call_count, int(failure == "record"))
+
+    def test_angle_unweld_owns_meshes_and_records_only_once(self):
+        operation = {"op": "mesh_unweld", "vertices": [], "triangles": [],
+                     "angle_radians": 0.5, "modify_normals": False}
+        for failure in (None, "duplicate", "unweld", "warmup_unweld", "record"):
+            with self.subTest(failure=failure):
+                source = Mock()
+                source.Vertices.Count = 5
+                meshes = [Mock(), Mock(), Mock()]
+                for mesh in meshes:
+                    mesh.Vertices.Count = 8
+                source.DuplicateMesh.side_effect = (
+                    [meshes[0], None] if failure == "duplicate" else meshes)
+                if failure == "unweld":
+                    meshes[1].Unweld.side_effect = ValueError("injected failure")
+                if failure == "warmup_unweld":
+                    meshes[0].Unweld.side_effect = ValueError("injected failure")
+                with patch.object(self.worker, "_triangle_mesh", return_value=source), \
+                        patch.object(self.worker, "_mesh_value", return_value="geometry",
+                                     side_effect=ValueError("injected failure") if failure == "record" else None) as record:
+                    if failure is None:
+                        value, elapsed = self.worker._execute(operation, 2, 1e-10)
+                        self.assertEqual(value, {"added_vertices": 3, "mesh": "geometry"})
+                        self.assertGreaterEqual(elapsed, 0)
+                    else:
+                        with self.assertRaises(ValueError):
+                            self.worker._execute(operation, 2, 1e-10)
+                source.Dispose.assert_called_once_with()
+                used = 1 if failure in ("duplicate", "warmup_unweld") else 2 if failure == "unweld" else 3
+                for mesh in meshes[:used]:
+                    mesh.Dispose.assert_called_once_with()
+                    mesh.Unweld.assert_called_once_with(0.5, False)
+                for mesh in meshes[used:]:
+                    mesh.Dispose.assert_not_called()
+                    mesh.Unweld.assert_not_called()
+                self.assertEqual(record.call_count, int(failure in (None, "record")))
+                if record.called:
+                    record.assert_called_once_with(meshes[2])
+
+    def test_disposable_measurement_keeps_new_result_owned_if_old_disposal_fails(self):
+        first, second = Mock(), Mock()
+        first.Dispose.side_effect = ValueError("disposal failed")
+        record = Mock()
+        with self.assertRaisesRegex(ValueError, "disposal failed"):
+            self.worker._measure_disposable(1, Mock(side_effect=[first, second]), record)
+        first.Dispose.assert_called_once_with()
+        second.Dispose.assert_called_once_with()
+        record.assert_not_called()
+
+    def test_angle_unweld_validates_scalars_before_allocating_source(self):
+        for angle, normals in [(float("nan"), False), (0.5, 1)]:
+            with patch.object(self.worker, "_triangle_mesh") as build, self.assertRaises(ValueError):
+                self.worker._execute({"op": "mesh_unweld", "vertices": [], "triangles": [],
+                                      "angle_radians": angle, "modify_normals": normals}, 1, 1e-10)
+            build.assert_not_called()
+
     def test_points_probe_rejects_untrusted_events_before_document_access(self):
         for operation in [
             {"events":"1,2,3"}, {"events":["Delete"]},

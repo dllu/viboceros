@@ -147,6 +147,22 @@ def _measure(iterations, operation):
     return value, max(0, elapsed_ns)
 
 
+def _measure_disposable(iterations, operation, record):
+    # The operation owns any partial result on failure; successful results
+    # transfer here. Match native replacement timing and extract only once.
+    value = operation()
+    try:
+        started = default_timer()
+        for _unused in iteration_range(iterations):
+            replacement = operation()
+            previous, value = value, replacement
+            previous.Dispose()
+        elapsed_ns = int(round((default_timer() - started) * 1000000000.0))
+        return record(value), max(0, elapsed_ns)
+    finally:
+        value.Dispose()
+
+
 def _canonical_join_segments(curves):
     polylines = []
     for curve in curves:
@@ -8313,27 +8329,29 @@ def _execute(operation, iterations, tolerance):
             source.Dispose()
 
     if kind == "mesh_unweld":
-        source = _triangle_mesh(operation["vertices"], operation["triangles"])
         angle_radians = _finite(operation["angle_radians"], "mesh unweld angle")
         modify_normals = operation["modify_normals"]
         if not isinstance(modify_normals, bool):
-            source.Dispose()
             raise ValueError("mesh unweld modify_normals must be a boolean")
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
         def unweld_mesh():
             mesh = source.DuplicateMesh()
             if mesh is None:
                 raise ValueError("could not duplicate mesh")
             try:
-                before = int(mesh.Vertices.Count)
                 mesh.Unweld(angle_radians, modify_normals)
+                return mesh
+            except:
+                mesh.Dispose()
+                raise
+        try:
+            before = int(source.Vertices.Count)
+            def record_unwelded(mesh):
                 return {
                     "added_vertices": int(mesh.Vertices.Count) - before,
                     "mesh": _mesh_value(mesh),
                 }
-            finally:
-                mesh.Dispose()
-        try:
-            return _measure(iterations, unweld_mesh)
+            return _measure_disposable(iterations, unweld_mesh, record_unwelded)
         finally:
             source.Dispose()
 
