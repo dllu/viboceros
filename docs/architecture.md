@@ -106,6 +106,12 @@ The `mesh/edge_collapse` module owns endpoint merging, face reduction, compactio
 and final validation. Face reduction uses fixed-size index checks without per-quad
 collections; an independent distinct-vertex reference exhausts all triangle and
 quad index patterns over four labels, including collapsed sides and diagonals.
+The `mesh/edge_split` module owns split-point evaluation, seam policy, generated
+face ordering, and output sizing. It streams edge uses and checks the final
+vertex count against both address-space and `u32` index limits before fallibly
+reserving output vertex/face buffers. A wide-integer reference tests sizing at
+overflow boundaries without allocating huge meshes. Topology and replacement
+staging still scale with the source; this is not an overall memory budget.
 The `split_disjoint_mesh` command module owns staged component results, fresh
 piece insertion, source deletion policy, attribute/group propagation, and selection.
 The separate `explode` command module owns multi-geometry decomposition staging,
