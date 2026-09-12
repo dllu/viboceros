@@ -1,6 +1,24 @@
-# Length, Area, and Volume
+# Distance, Length, Area, and Volume
 
 [Command index](README.md)
+
+## Distance
+
+Enter `Distance 0,0,0 3,4,0`, or enter `Distance` and pick or type two points.
+The report includes distance in document units, world and active CPlane axis
+deltas, XY azimuth in degrees in `[0,360)`, and elevation in `[-90,90]`.
+Coincident points report zero distance and zero angles; vertical displacements
+use zero azimuth. Full command arguments are world coordinates; interactive
+typed points use the usual point-input coordinate modes. Selection is not needed
+or changed, and the query creates no geometry or history entry. Esc cancels point
+picking. Non-finite inputs and unrepresentable distances are rejected.
+
+The reporting categories follow [Rhino's Distance documentation](https://docs.mcneel.com/rhino/8mac/help/en-us/commands/distance.htm).
+Display-unit overrides and nesting a measurement inside another command's numeric
+prompt are not implemented. Exact Rhino text formatting and angular conventions
+at degenerate directions have not yet been checked against a live oracle.
+
+## Selected-object measurements
 
 Select objects, then enter `Length` (alias `Len`), `Area`, or `Volume` without
 arguments. Each command reports the selected count and aggregate measurement.

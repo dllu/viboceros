@@ -105,6 +105,9 @@ selection integration separate from accuracy-controlled arc-length measurement.
 The read-only [`measurements` command module](commands/measurements.md) owns
 Length, Area, and Volume, with shared streaming exact finite-value aggregation and
 separate nonnegative/signed policies. Its tests live beside the implementation.
+Its `distance` submodule handles read-only two-point distance, world/CPlane deltas,
+and angular reporting. The application supplies picked or typed points through
+the shared drafting path; neither implementation mutates document history.
 `curve/area` dispatches enclosed curve area to analytic formulas or the existing
 exact planar-face boundary integrator; temporary topology stays outside the document.
 

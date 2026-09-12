@@ -148,6 +148,9 @@ enum InteractiveCommand {
     Line {
         start: Option<Point3>,
     },
+    Distance {
+        start: Option<Point3>,
+    },
     Circle {
         center: Option<Point3>,
     },
@@ -383,6 +386,7 @@ impl InteractiveCommand {
             Self::Point => "Point",
             Self::Points => "Points",
             Self::Line { .. } => "Line",
+            Self::Distance { .. } => "Distance",
             Self::Circle { .. } => "Circle",
             Self::Sphere { .. } => "Sphere",
             Self::Ellipsoid { .. } => "Ellipsoid",
@@ -455,6 +459,8 @@ impl InteractiveCommand {
             Self::Line { start: None } => {
                 "Line: pick the start point in the viewport (Esc to cancel)"
             }
+            Self::Distance { start: None } => "Distance: pick the first point (Esc to cancel)",
+            Self::Distance { start: Some(_) } => "Distance: pick the second point (Esc to cancel)",
             Self::Line { start: Some(_) } => {
                 "Line: pick the end point in the viewport (Esc to cancel)"
             }
@@ -890,6 +896,7 @@ impl InteractiveCommand {
             Self::Point
             | Self::Points
             | Self::Line { start: None }
+            | Self::Distance { start: None }
             | Self::Circle { center: None }
             | Self::Sphere { center: None }
             | Self::Ellipsoid {
@@ -964,6 +971,7 @@ impl InteractiveCommand {
                 axis_start: None, ..
             } => None,
             Self::Line { start }
+            | Self::Distance { start }
             | Self::Circle { center: start }
             | Self::Sphere { center: start }
             | Self::Rectangle { first: start }
@@ -2764,6 +2772,7 @@ impl VibocerosApp {
                 "point" | "pt" => InteractiveCommand::Point,
                 "points" => InteractiveCommand::Points,
                 "line" | "l" => InteractiveCommand::Line { start: None },
+                "distance" => InteractiveCommand::Distance { start: None },
                 "circle" | "c" => InteractiveCommand::Circle { center: None },
                 "sphere" | "sph" => InteractiveCommand::Sphere { center: None },
                 "ellipsoid" => InteractiveCommand::Ellipsoid { points: [None; 3] },
@@ -2916,6 +2925,23 @@ impl VibocerosApp {
                         .prompt()
                         .to_owned(),
                 );
+            }
+            InteractiveCommand::Distance { start: None } => {
+                let next = InteractiveCommand::Distance { start: Some(point) };
+                self.active_command = Some(next);
+                self.push_log(next.prompt().to_owned());
+            }
+            InteractiveCommand::Distance { start: Some(start) } => {
+                if let Err(error) = start.distance_to(point) {
+                    self.push_log(format!("Error: {error}"));
+                    return false;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Distance {} {}",
+                    format_model_point(start),
+                    format_model_point(point)
+                ));
             }
             InteractiveCommand::Line { start: Some(start) } => {
                 if !start
@@ -5533,6 +5559,43 @@ mod tests {
         assert_eq!(line.start(), point(1.0, 2.0, 3.0));
         assert_eq!(line.end(), point(4.0, 6.0, 3.0));
         assert_eq!(app.document.undo_label(), Some("Line"));
+    }
+
+    #[test]
+    fn interactive_distance_accepts_typed_and_picked_points_without_model_edits() {
+        let mut app = test_app();
+        let before = format!("{:?}", app.document);
+        assert!(app.try_start_interactive_command("_Distance"));
+        assert!(app.try_continue_point_input("w1,2,3"));
+        assert_eq!(
+            app.active_command.unwrap().anchor(),
+            Some(point(1., 2., 3.))
+        );
+        assert!(app.accept_drafting_point(point(4., 6., 3.)));
+        assert_eq!(app.active_command, None);
+        assert!(app.command_log.back().unwrap().ends_with("Distance = 5"));
+        assert_eq!(format!("{:?}", app.document), before);
+
+        assert!(app.try_start_interactive_command("Distance"));
+        assert!(app.accept_drafting_point(point(1., 2., 3.)));
+        assert!(app.accept_drafting_point(point(1., 2., 3.)));
+        assert!(app.command_log.back().unwrap().ends_with("Distance = 0"));
+        assert_eq!(format!("{:?}", app.document), before);
+
+        assert!(app.try_start_interactive_command("Distance"));
+        assert!(app.accept_drafting_point(point(1., 2., 3.)));
+        app.cancel_interactive_command(true);
+        assert_eq!(app.active_command, None);
+        assert_eq!(format!("{:?}", app.document), before);
+
+        assert!(app.try_start_interactive_command("Distance"));
+        assert!(app.accept_drafting_point(point(-1e308, 0., 0.)));
+        assert!(!app.accept_drafting_point(point(1e308, 0., 0.)));
+        assert!(matches!(
+            app.active_command,
+            Some(InteractiveCommand::Distance { start: Some(_) })
+        ));
+        assert_eq!(format!("{:?}", app.document), before);
     }
 
     #[test]

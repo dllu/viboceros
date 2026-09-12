@@ -4,8 +4,10 @@ use super::{Command, CommandError, geometry_curve_ref, require_consumed};
 use viboceros_document::{Document, Geometry};
 use viboceros_geometry::{FiniteSum, GeometryError, Real, Tolerance};
 
+mod distance;
 #[cfg(test)]
 mod tests;
+pub(super) use distance::DistanceCommand;
 
 fn format_measurement(value: Real) -> String {
     if value == 0.0 {
