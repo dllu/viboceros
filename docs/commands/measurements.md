@@ -12,6 +12,10 @@ use zero azimuth. Full command arguments are world coordinates; interactive
 typed points use the usual point-input coordinate modes. Selection is not needed
 or changed, and the query creates no geometry or history entry. Esc cancels point
 picking. Non-finite inputs and unrepresentable distances are rejected.
+The accepted first point remains marked in each viewport while typing options;
+the shared drafting renderer draws a dashed segment to the live cursor.
+Clearing the first point with local `Undo`, completing, or cancelling removes
+the accepted-anchor marker.
 At the second-point prompt, `Undo` revises the first point without invoking
 document undo. It restores the relative-coordinate anchor from before the
 measurement and releases the first point's captured drafting plane. Both typed

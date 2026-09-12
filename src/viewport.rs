@@ -321,6 +321,14 @@ impl Viewport {
         self.paint_objects(&painter, rect, document, viewport_index);
         if drafting.active {
             self.paint_draft_points(&painter, rect, preview_polyline);
+            // Non-curve prompts (for example Distance) have an accepted anchor
+            // but no preview polyline. Keep it visible while typing elsewhere,
+            // independently of the hovered viewport's live drafting cursor.
+            if preview_polyline.is_empty()
+                && let Some(anchor) = drafting.anchor
+            {
+                self.paint_draft_points(&painter, rect, std::slice::from_ref(&anchor));
+            }
         }
         if drafting.active
             && let Some(curve) = input.preview_curve
@@ -425,7 +433,16 @@ mod tests {
         ] {
             let context = egui::Context::default();
             let mut viewport = Viewport::new(kind);
-            for (active, count) in [(true, 3), (true, 2), (true, 1), (true, 0), (false, 3)] {
+            for (active, count, anchor) in [
+                (true, 3, None),
+                (true, 2, None),
+                (true, 1, None),
+                (true, 0, None),
+                (false, 3, None),
+                (true, 0, Some(points[0])),
+                (true, 1, Some(points[0])),
+                (false, 0, Some(points[0])),
+            ] {
                 let output = context.run_ui(
                     egui::RawInput {
                         screen_rect: Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.))),
@@ -438,6 +455,7 @@ mod tests {
                             ViewportInput {
                                 drafting: DraftingInput {
                                     active,
+                                    anchor,
                                     ..Default::default()
                                 },
                                 ..Default::default()
@@ -475,7 +493,15 @@ mod tests {
                     if active { count.saturating_sub(1) } else { 0 },
                     "{kind:?}"
                 );
-                assert_eq!(markers, if active { count } else { 0 }, "{kind:?}");
+                let expected_markers = if active {
+                    count.max(usize::from(anchor.is_some()))
+                } else {
+                    0
+                };
+                assert_eq!(
+                    markers, expected_markers,
+                    "{kind:?}, count={count}, anchor={anchor:?}"
+                );
                 output.drop_without_applying_deltas();
             }
         }

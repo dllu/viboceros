@@ -12,6 +12,11 @@ The app's `viewport/drafting` module resolves the drafting cursor through the
 shared drafting kernel and draws construction-plane grids, accepted points,
 tracking guides, snap markers, and cursor labels. Guide clipping happens before
 dash tessellation, keeping distant anchors from causing unbounded allocations.
+Active non-curve prompts with an accepted anchor also draw its point marker when
+no preview polyline is present. This does not require viewport hover, so typing
+options does not hide the accepted input. Shape-level tests cover all four view
+kinds, anchor removal, completed prompts, and avoiding duplicate markers when a
+preview polyline already supplies them.
 The drafting kernel's grid snap uses a signed remainder and a local adjustment,
 avoiding overflowing grid indices for finite coordinates and fine spacing. It
 retains plane elevation, rounds halfway cases away from zero, and rejects a
