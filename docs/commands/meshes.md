@@ -190,6 +190,10 @@ Whole-mesh `Weld`, `Unweld`, `CombineIdenticalMeshVertices`, and
 `CullUnusedMeshVertices` likewise borrow selected inputs while staging new
 geometry, without an extra input snapshot. This does not remove the allocations
 needed to construct results or retain document history.
+The shared topology-source adapter also borrows meshes for edge/vertex weld
+and unweld, edge swap, collapse, and split staging. Hole filling borrows its
+already-owned input through that adapter instead of making another mesh copy.
+These borrows end before document mutation; staged results remain owned.
 
 `WeldEdge` merges the raw endpoint sets incident to selected exact-location
 mesh topology edges. Use `Edges=0,2`, `Edges=All`, or omit the selector to pick

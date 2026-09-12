@@ -12631,7 +12631,7 @@ impl Command for WeldEdgeCommand {
                 };
                 Ok(MeshTopologySource {
                     id: object.id(),
-                    mesh: mesh.clone(),
+                    mesh,
                 })
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
@@ -12651,7 +12651,7 @@ impl Command for WeldEdgeCommand {
             let (welded, welded_edges) = source.mesh.welded_topology_edges(&edge_indices)?;
             welded_edge_count += welded_edges;
             removed_vertex_count += source.mesh.vertices().len() - welded.vertices().len();
-            if welded != source.mesh {
+            if &welded != source.mesh {
                 replacements.push((source.id, Geometry::Mesh(welded)));
             }
         }
@@ -12667,7 +12667,7 @@ impl Command for WeldEdgeCommand {
 }
 
 fn selected_weld_edges(
-    sources: &[MeshTopologySource],
+    sources: &[MeshTopologySource<'_>],
     selection: &WeldEdgeSelection,
     tolerance: Tolerance,
 ) -> Result<Vec<(usize, Vec<usize>)>, CommandError> {
@@ -12785,7 +12785,7 @@ impl Command for WeldVerticesCommand {
                 };
                 Ok(MeshTopologySource {
                     id: object.id(),
-                    mesh: mesh.clone(),
+                    mesh,
                 })
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
@@ -12805,7 +12805,7 @@ impl Command for WeldVerticesCommand {
             let (welded, welded_edges) = source.mesh.welded_topology_vertices(&vertex_indices)?;
             welded_edge_count += welded_edges;
             removed_vertex_count += source.mesh.vertices().len() - welded.vertices().len();
-            if welded != source.mesh {
+            if &welded != source.mesh {
                 replacements.push((source.id, Geometry::Mesh(welded)));
             }
         }
@@ -12821,7 +12821,7 @@ impl Command for WeldVerticesCommand {
 }
 
 fn selected_weld_vertices(
-    sources: &[MeshTopologySource],
+    sources: &[MeshTopologySource<'_>],
     selection: &WeldVerticesSelection,
 ) -> Result<Vec<(usize, Vec<usize>)>, CommandError> {
     match selection {
@@ -13019,9 +13019,9 @@ struct UnweldEdgeOptions {
     selection: UnweldEdgeSelection,
 }
 
-struct MeshTopologySource {
+struct MeshTopologySource<'a> {
     id: ObjectId,
-    mesh: TriangleMesh,
+    mesh: &'a TriangleMesh,
 }
 
 struct UnweldEdgeCommand;
@@ -13045,7 +13045,7 @@ impl Command for UnweldEdgeCommand {
                 };
                 Ok(MeshTopologySource {
                     id: object.id(),
-                    mesh: mesh.clone(),
+                    mesh,
                 })
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
@@ -13063,7 +13063,7 @@ impl Command for UnweldEdgeCommand {
             let source = &sources[source_index];
             let (unwelded, separated) = source.mesh.unwelded_topology_edges(&edge_indices)?;
             separated_edge_count += separated;
-            if unwelded != source.mesh {
+            if &unwelded != source.mesh {
                 replacements.push((source.id, Geometry::Mesh(unwelded)));
             }
         }
@@ -13079,7 +13079,7 @@ impl Command for UnweldEdgeCommand {
 }
 
 fn selected_unweld_edges(
-    sources: &[MeshTopologySource],
+    sources: &[MeshTopologySource<'_>],
     selection: &UnweldEdgeSelection,
     tolerance: Tolerance,
 ) -> Result<Vec<(usize, Vec<usize>)>, CommandError> {
@@ -13214,7 +13214,7 @@ impl Command for UnweldVertexCommand {
                 };
                 Ok(MeshTopologySource {
                     id: object.id(),
-                    mesh: mesh.clone(),
+                    mesh,
                 })
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
@@ -13232,7 +13232,7 @@ impl Command for UnweldVertexCommand {
             let source = &sources[source_index];
             let (unwelded, separated) = source.mesh.unwelded_topology_vertices(&vertex_indices)?;
             separated_vertex_count += separated;
-            if unwelded != source.mesh {
+            if &unwelded != source.mesh {
                 replacements.push((source.id, Geometry::Mesh(unwelded)));
             }
         }
@@ -13248,7 +13248,7 @@ impl Command for UnweldVertexCommand {
 }
 
 fn selected_unweld_vertices(
-    sources: &[MeshTopologySource],
+    sources: &[MeshTopologySource<'_>],
     selection: &UnweldVertexSelection,
 ) -> Result<Vec<(usize, Vec<usize>)>, CommandError> {
     match selection {
@@ -14174,7 +14174,7 @@ impl Command for SwapMeshEdgeCommand {
                 };
                 Ok(MeshTopologySource {
                     id: object.id(),
-                    mesh: mesh.clone(),
+                    mesh,
                 })
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
@@ -14207,7 +14207,7 @@ impl Command for SwapMeshEdgeCommand {
 }
 
 fn selected_swap_mesh_edges(
-    sources: &[MeshTopologySource],
+    sources: &[MeshTopologySource<'_>],
     selection: &MeshTopologyEdgeSelection,
     tolerance: Tolerance,
 ) -> Result<Vec<(usize, usize)>, CommandError> {
@@ -14237,7 +14237,7 @@ fn selected_swap_mesh_edges(
 }
 
 fn closest_mesh_topology_edge(
-    sources: &[MeshTopologySource],
+    sources: &[MeshTopologySource<'_>],
     target: Point3,
     tolerance: Tolerance,
 ) -> Result<Option<(usize, usize)>, GeometryError> {
@@ -14327,7 +14327,7 @@ impl Command for CollapseMeshEdgeCommand {
                 };
                 Ok(MeshTopologySource {
                     id: object.id(),
-                    mesh: mesh.clone(),
+                    mesh,
                 })
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
@@ -14372,7 +14372,7 @@ impl Command for CollapseMeshEdgeCommand {
 }
 
 fn selected_collapse_mesh_edges(
-    sources: &[MeshTopologySource],
+    sources: &[MeshTopologySource<'_>],
     selection: &MeshTopologyEdgeSelection,
     tolerance: Tolerance,
 ) -> Result<Vec<(usize, usize)>, CommandError> {
@@ -14433,7 +14433,7 @@ impl Command for SplitMeshEdgeCommand {
                 };
                 Ok(MeshTopologySource {
                     id: object.id(),
-                    mesh: mesh.clone(),
+                    mesh,
                 })
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
@@ -14462,7 +14462,7 @@ impl Command for SplitMeshEdgeCommand {
 }
 
 fn selected_split_mesh_edges(
-    sources: &[MeshTopologySource],
+    sources: &[MeshTopologySource<'_>],
     selection: &SplitMeshEdgeSelection,
     tolerance: Tolerance,
 ) -> Result<Vec<(usize, usize, Real)>, CommandError> {
@@ -14613,7 +14613,7 @@ impl Command for FillMeshHoleCommand {
             .iter()
             .map(|source| MeshTopologySource {
                 id: source.id,
-                mesh: source.mesh.clone(),
+                mesh: &source.mesh,
             })
             .collect::<Vec<_>>();
         let selections = selected_fill_mesh_hole_edges(
@@ -14679,7 +14679,7 @@ impl Command for FillMeshHoleCommand {
 }
 
 fn selected_fill_mesh_hole_edges(
-    sources: &[MeshTopologySource],
+    sources: &[MeshTopologySource<'_>],
     selection: &MeshTopologyEdgeSelection,
     tolerance: Tolerance,
 ) -> Result<Vec<(usize, usize)>, CommandError> {
