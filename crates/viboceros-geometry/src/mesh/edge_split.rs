@@ -4,6 +4,19 @@ use super::*;
 #[cfg(test)]
 mod tests;
 
+/// Each incident triangle produces two candidates, and each quad produces
+/// three, before endpoint-coincident candidates are removed.
+fn replacement_count(triangles: usize, quads: usize) -> Result<usize, GeometryError> {
+    triangles
+        .checked_mul(2)
+        .and_then(|triangles| {
+            quads
+                .checked_mul(3)
+                .and_then(|quads| triangles.checked_add(quads))
+        })
+        .ok_or(GeometryError::TooManyMeshFaces)
+}
+
 /// Include the unused split point retained by the welded endpoint path.
 fn output_vertex_count(
     retained: usize,
@@ -77,8 +90,16 @@ impl TriangleMesh {
         let welded = incidence
             .uses()
             .all(|edge_use| edge_use.raw_vertices == first_raw_edge);
-        let mut affected_faces = vec![false; self.faces.len()];
+        let quad_count = incidence
+            .uses()
+            .filter(|edge_use| matches!(self.faces[edge_use.face], MeshFace::Quad(_)))
+            .count();
+        let candidate_count = replacement_count(incidence.count - quad_count, quad_count)?;
         let mut generated = Vec::<([Option<u32>; 3], bool)>::new();
+        generated
+            .try_reserve_exact(candidate_count)
+            .map_err(|_| GeometryError::TooManyMeshFaces)?;
+        let mut affected_faces = vec![false; self.faces.len()];
         for edge_use in incidence.uses() {
             affected_faces[edge_use.face] = true;
             let [from, to] = edge_use.raw_vertices;
@@ -109,6 +130,7 @@ impl TriangleMesh {
                 }
             }
         }
+        debug_assert_eq!(generated.len(), candidate_count);
         generated.retain(|(vertices, _)| {
             let [a, b, c] =
                 vertices.map(|raw| raw.map_or(split_point, |raw| self.vertices[raw as usize]));

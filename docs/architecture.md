@@ -112,6 +112,11 @@ vertex count against both address-space and `u32` index limits before fallibly
 reserving output vertex/face buffers. A wide-integer reference tests sizing at
 overflow boundaries without allocating huge meshes. Topology and replacement
 staging still scale with the source; this is not an overall memory budget.
+Replacement staging checks `2 * incident_triangles + 3 * incident_quads` and
+reserves candidate storage fallibly before generating faces. Endpoint-coincident
+candidates are removed afterwards; final output counts use that filtered list.
+The edge-split module also contains the source-order, seam, endpoint, and invalid
+input regressions, alongside wide-integer staging/output sizing tests.
 The `split_disjoint_mesh` command module owns staged component results, fresh
 piece insertion, source deletion policy, attribute/group propagation, and selection.
 The separate `explode` command module owns multi-geometry decomposition staging,
