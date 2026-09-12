@@ -1,4 +1,14 @@
+//! Exact replay of recorded Rhino mesh edge and vertex edits.
 use super::*;
+
+#[test]
+fn permanent_vertex_weld_fixture_matches_recorded_rhino_geometry_and_partitions() {
+    assert_recorded_geometry(
+        include_str!("../../../tools/rhino_oracle/fixtures/mesh_weld_vertex.json"),
+        include_str!("../../../tools/rhino_oracle/observations/mesh_weld_vertex.json"),
+        10,
+    );
+}
 
 #[test]
 fn permanent_edge_weld_fixture_matches_recorded_rhino_geometry_and_partitions() {

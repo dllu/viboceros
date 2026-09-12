@@ -49,10 +49,13 @@ Welding validates the selection's first invalid index before allocating selectio
 flags, then traverses the topology map directly without copying edge references.
 Duplicate selections count each edge only once; regression cases cover duplicate
 counts and mixed valid/invalid selection order.
+Selected-vertex welding likewise checks the first invalid index before allocating
+selection flags, including mixed valid/invalid and duplicate selections.
 
 Shared welding compaction resolves every face to its representative before
 reusing the parent array as the compact-index map, eliminating a separate
-source-sized `u32` allocation. The unchanged-mesh path keeps its smaller retained
+source-sized `u32` allocation. Compaction takes ownership of that array, preventing
+callers from reusing the rewritten forest. The unchanged-mesh path keeps its smaller retained
 mask and returns before this rewrite. An independent partition reference checks
 1,000 combinations of earliest/latest survivors, chained parents, and unused
 source representatives; mixed triangle/quad tests check face kind and winding.
@@ -124,11 +127,11 @@ overall memory budget or a guarantee of recovery from every out-of-memory condit
 - [Area tests](../crates/viboceros-geometry/src/mesh/area_tests.rs): intermediate versus final overflow and the smallest positive area.
 - [Collapse tests](../crates/viboceros-geometry/src/mesh/edge_collapse/tests.rs): all 320 triangle/quad index patterns over four labels, plus source order, seams, validation, and midpoint cases.
 - [Split tests](../crates/viboceros-geometry/src/mesh/edge_split/tests.rs): wide-integer sizing references, compact representation, endpoints, unaffected-face order, and a 450-case planar side/winding/seam matrix with independent signed-area determinants. Area preservation is not assumed for endpoint duplication or warped quads.
-- [Rhino edge-edit replay](../crates/viboceros-oracle/src/mesh_edge_replay_tests.rs): split/collapse acceptance, coordinates, indices, and ordering; weld face geometry, vertex counts, and sharing groups. See [oracle details](oracle.md) for the different record representations.
+- [Rhino mesh-edit replay](../crates/viboceros-oracle/src/mesh_edit_replay_tests.rs): split/collapse acceptance, coordinates, indices, and ordering; edge/vertex weld face geometry, vertex counts, and sharing groups. See [oracle details](oracle.md) for the different record representations.
 
 Run the focused kernel and recorded split checks with:
 
 ```sh
 cargo test -p viboceros-geometry mesh::
-cargo test -p viboceros-oracle mesh_edge_replay_tests
+cargo test -p viboceros-oracle mesh_edit_replay_tests
 ```

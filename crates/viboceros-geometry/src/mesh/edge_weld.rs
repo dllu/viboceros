@@ -54,7 +54,7 @@ impl TriangleMesh {
             }
             welded_edge_count += usize::from(divided_endpoint);
         }
-        let (welded, _) = self.compacted_with_vertex_parents(&mut parents);
+        let (welded, _) = self.compacted_with_vertex_parents(parents);
         Ok((welded, welded_edge_count))
     }
 }

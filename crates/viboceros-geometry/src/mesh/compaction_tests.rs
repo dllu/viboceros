@@ -60,7 +60,7 @@ fn welding_compaction_matches_independent_partition_reference() {
                     })
                 })
                 .collect::<Vec<_>>();
-            let (compacted, removed) = mesh.compacted_with_vertex_parents(&mut parents);
+            let (compacted, removed) = mesh.compacted_with_vertex_parents(parents);
             assert_eq!(compacted.vertices(), expected_vertices);
             assert_eq!(compacted.triangles(), expected_triangles);
             assert_eq!(removed, 9 - representatives.len());
@@ -83,7 +83,7 @@ fn welding_compaction_preserves_quad_kind_and_unchanged_meshes() {
         Tolerance::DEFAULT,
     )
     .unwrap();
-    let (compacted, removed) = mesh.compacted_with_vertex_parents(&mut [4, 5, 6, 7, 4, 5, 6, 7]);
+    let (compacted, removed) = mesh.compacted_with_vertex_parents(vec![4, 5, 6, 7, 4, 5, 6, 7]);
     assert_eq!(removed, 4);
     assert_eq!(compacted.vertices(), points);
     assert_eq!(
@@ -91,7 +91,7 @@ fn welding_compaction_preserves_quad_kind_and_unchanged_meshes() {
         &[MeshFace::Quad([0, 1, 2, 3]), MeshFace::Triangle([2, 1, 0])]
     );
     assert_eq!(
-        compacted.compacted_with_vertex_parents(&mut [0, 1, 2, 3]),
+        compacted.compacted_with_vertex_parents(vec![0, 1, 2, 3]),
         (compacted.clone(), 0)
     );
 }

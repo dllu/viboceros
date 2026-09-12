@@ -2886,7 +2886,7 @@ impl TriangleMesh {
             }
         }
 
-        Ok(self.compacted_with_vertex_parents(&mut parents))
+        Ok(self.compacted_with_vertex_parents(parents))
     }
 
     /// Welds joined mesh seams incident to selected exact-location topology
@@ -2907,15 +2907,19 @@ impl TriangleMesh {
             return Ok((self.clone(), 0));
         }
         let data = self.topology_data();
-        let mut selected_vertices = vec![false; data.topological_vertex_count];
+        let vertex_count = data.topological_vertex_count;
+        if let Some(&vertex) = vertex_indices
+            .iter()
+            .find(|&&vertex| vertex >= vertex_count)
+        {
+            return Err(GeometryError::MeshTopologyVertexIndexOutOfRange {
+                vertex,
+                vertex_count,
+            });
+        }
+        let mut selected_vertices = vec![false; vertex_count];
         for &vertex in vertex_indices {
-            let Some(selected) = selected_vertices.get_mut(vertex) else {
-                return Err(GeometryError::MeshTopologyVertexIndexOutOfRange {
-                    vertex,
-                    vertex_count: data.topological_vertex_count,
-                });
-            };
-            *selected = true;
+            selected_vertices[vertex] = true;
         }
 
         let mut parents = (0..self.vertices.len()).collect::<Vec<_>>();
@@ -2945,7 +2949,7 @@ impl TriangleMesh {
             }
             welded_edge_count += 1;
         }
-        let (welded, _) = self.compacted_with_vertex_parents(&mut parents);
+        let (welded, _) = self.compacted_with_vertex_parents(parents);
         Ok((welded, welded_edge_count))
     }
 
@@ -3419,14 +3423,14 @@ impl TriangleMesh {
         Ok(Self::from_validated_parts(vertices, faces))
     }
 
-    /// Compacts coincident-vertex unions in source order. The parent forest
-    /// is consumed as scratch storage and must not be used afterward.
-    fn compacted_with_vertex_parents(&self, parents: &mut [usize]) -> (Self, usize) {
+    /// Compacts coincident-vertex unions in source order, consuming the parent
+    /// forest as scratch storage so it cannot be reused after remapping.
+    fn compacted_with_vertex_parents(&self, mut parents: Vec<usize>) -> (Self, usize) {
         let mut retained = vec![false; self.vertices.len()];
         let mut retained_count = 0;
         for face in &self.faces {
             for &vertex in face.indices() {
-                let representative = index_root(parents, vertex as usize);
+                let representative = index_root(&mut parents, vertex as usize);
                 if !retained[representative] {
                     retained[representative] = true;
                     retained_count += 1;
@@ -3447,7 +3451,7 @@ impl TriangleMesh {
             .copied()
             .map(|face| {
                 face.remapped(|vertex| {
-                    u32::try_from(index_root(parents, vertex as usize))
+                    u32::try_from(index_root(&mut parents, vertex as usize))
                         .expect("a representative is an existing source vertex")
                 })
             })
@@ -8042,13 +8046,21 @@ mod tests {
             seam.welded_topology_vertices(&[]).unwrap(),
             (seam.clone(), 0)
         );
-        assert_eq!(
-            seam.welded_topology_vertices(&[5]),
-            Err(GeometryError::MeshTopologyVertexIndexOutOfRange {
-                vertex: 5,
-                vertex_count: 5,
-            })
-        );
+        for (selection, invalid) in [
+            (vec![5], 5),
+            (vec![0, 5], 5),
+            (vec![usize::MAX, 5], usize::MAX),
+            (vec![5, usize::MAX], 5),
+            (vec![0, 0, usize::MAX], usize::MAX),
+        ] {
+            assert_eq!(
+                seam.welded_topology_vertices(&selection),
+                Err(GeometryError::MeshTopologyVertexIndexOutOfRange {
+                    vertex: invalid,
+                    vertex_count: 5,
+                })
+            );
+        }
 
         let two_seams = TriangleMesh::try_new(
             vec![

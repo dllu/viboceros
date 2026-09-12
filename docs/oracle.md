@@ -24,7 +24,7 @@ in all three cases. These dyadic-coordinate fixtures need no comparison epsilon.
 
 The [edge-collapse fixture](../tools/rhino_oracle/fixtures/mesh_collapse_edge.json)
 has a [15-case Rhino 8.32 record](../tools/rhino_oracle/observations/mesh_collapse_edge.json).
-The shared edge-edit replay checks exact acceptance, coordinates, face indices,
+The shared mesh-edit replay checks exact acceptance, coordinates, face indices,
 and ordering. Cases include empty results, triangle/quad reduction, seams,
 non-manifold edges, unused vertices, and disconnected coincident endpoint fans.
 The added coincident-peer case confirms that peers outside the selected edge
@@ -39,6 +39,14 @@ unused vertices, and disjoint seams. Replay compares acceptance, removed-vertex
 counts, ordered face coordinates, and vertex-to-face sharing groups exactly.
 Unlike split/collapse records, this representation does not compare raw index
 numbering or identify which coincident source index survives.
+
+The [vertex-weld fixture](../tools/rhino_oracle/fixtures/mesh_weld_vertex.json) has
+a [ten-case Rhino 8.32 record](../tools/rhino_oracle/observations/mesh_weld_vertex.json).
+It exercises the actual `WeldVertices` command using selected topology vertices:
+both seam endpoints, reversed selection order, empty/naked/already-welded
+selections, a closed fan, vertex-only contact, non-manifold incidence, and two
+incident seams. It uses the same face-coordinate and sharing-group representation
+as edge welding, with exact replay and the same raw-index comparison limitation.
 
 The [short-curve selection diagnostic](short-curve-selection-measurement.json)
 embeds four requests and responses (40 line lengths). `short_curve_selection`
