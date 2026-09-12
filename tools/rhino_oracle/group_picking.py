@@ -16,8 +16,12 @@ def validate_request(request):
         raise OracleProtocolError("group picking requires 1 to 128 cases")
     seen = set()
     for operation in operations:
-        if operation.get("op") != "group_picking":
+        if operation.get("op") not in ("group_picking", "mesh_split_picking"):
             raise OracleProtocolError("group picking requires a dedicated request")
+        if operation.get("op") == "mesh_split_picking" and any(
+            operation.get(field) for field in ("move", "recall_previous", "recall_last", "last_steps", "add_to_group_sources")
+        ):
+            raise OracleProtocolError("mesh split picking cannot combine other commands")
         name = operation.get("id")
         if not isinstance(name, str) or re.fullmatch(r"[A-Za-z0-9_-]{1,100}", name) is None or name in seen:
             raise OracleProtocolError("invalid or duplicated group picking id")

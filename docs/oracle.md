@@ -133,6 +133,22 @@ This matters for command macros, which read document settings rather than an API
 tolerance argument. See [Rhino's document tolerance API](https://developer.rhino3d.com/api/rhinocommon/rhino.rhinodoc/modelabsolutetolerance).
 Older command comparisons made before this synchronization need revalidation.
 
+`mesh_split_picking.json` is a **Rhino-only diagnostic**, not yet a native compare
+operation. It uses the same owned-window idle-click mechanism with three disjoint
+meshes, then invokes the actual `SplitDisjointMesh` command. Five cases cover
+ordinary groups and either hidden/locked source. Run it with:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/mesh_split_picking.json --timeout 240
+```
+
+The checked-in `tools/rhino_oracle/observations/mesh_split_picking.json` records
+Rhino 8.32.26160.13001 on 2026-09-12: source identity, selection, object mode,
+group memberships, vertices and face counts, including the untouched third mesh.
+It exposes [known native identity/object-count differences](commands/meshes.md).
+Deleted sources are removed from cleanup tracking; surviving original and newly
+created mesh IDs are explicitly tracked and cleaned up in the private document.
+
 `group_picking.json` is a dedicated, untimed three-line fixture: an idle-event
 worker returns control to Rhino's normal UI loop, then the host clicks projected
 line locations in the newly owned window and acknowledges each click atomically.

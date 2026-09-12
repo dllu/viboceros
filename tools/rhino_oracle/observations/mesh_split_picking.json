@@ -1,0 +1,1076 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "split-normal-0",
+      "value": {
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Normal",
+          "Normal",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [],
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ],
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          0,
+          1
+        ],
+        "split_succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "split-locked-0",
+      "value": {
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Locked",
+          "Normal",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Locked",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [
+              0
+            ],
+            "mode": "Locked",
+            "original_identity": true,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Locked",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [],
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ],
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          0,
+          1
+        ],
+        "split_succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "split-locked-1",
+      "value": {
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Normal",
+          "Locked",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Locked",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [
+              0
+            ],
+            "mode": "Locked",
+            "original_identity": true,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ],
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Locked",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [],
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ],
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          0,
+          1
+        ],
+        "split_succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "split-hidden-0",
+      "value": {
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Hidden",
+          "Normal",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Hidden",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [
+              0
+            ],
+            "mode": "Hidden",
+            "original_identity": true,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Hidden",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [],
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ],
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          0,
+          1
+        ],
+        "split_succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "split-hidden-1",
+      "value": {
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Normal",
+          "Hidden",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Hidden",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [
+              0
+            ],
+            "mode": "Hidden",
+            "original_identity": true,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ],
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "mode": "Hidden",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [],
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ],
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          0,
+          1
+        ],
+        "split_succeeded": true
+      }
+    }
+  ]
+}

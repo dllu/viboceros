@@ -250,6 +250,16 @@ Native regression tests cover both restrictions, either source order, rejected
 arguments with redo history, and exact object/group undo and redo. This edge-case
 coverage is not a claim of live Rhino command parity.
 
+**Known identity mismatch (live Rhino 8.32, 2026-09-12):** the dedicated
+[`mesh_split_picking` probe](../oracle.md) observes normal split sources being
+deleted, with new IDs for every piece. Hidden/locked group-selected sources stay
+intact while new pieces with the same mode and group are added. All pieces and
+the retained restricted source remain selected. Viboceros currently replaces
+the first piece in place for every source, so its identity policy and restricted
+source object counts need correction; its native tests currently encode that
+mismatch. The geometry-only `SplitDisjointPieces` probe cannot verify this
+document-command behavior.
+
 `ExtractDuplicateMeshFaces` separates all but one face from each duplicate
 class. Face equality uses exact vertex locations and ignores raw indices,
 cyclic ordering, and winding; attributes and group membership are preserved.

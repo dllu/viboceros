@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Dedicated idle-event worker; host validates its bounded three-line cases."""
+"""Dedicated idle-event worker; host validates bounded three-object cases."""
 import Rhino
 import System
 import os
@@ -121,7 +121,21 @@ def on_idle(sender, event):
         if state['stage'] == 'setup':
             document.Objects.UnselectAll()
             for i in range(3):
-                state['ids'].append(document.Objects.AddLine(Rhino.Geometry.Point3d(i*5,0,0), Rhino.Geometry.Point3d(i*5,2,0)))
+                if operation.get('op') == 'mesh_split_picking':
+                    mesh = Rhino.Geometry.Mesh()
+                    attributes = Rhino.DocObjects.ObjectAttributes()
+                    try:
+                        for x, y in [(0,0), (2,0), (0,2), (0,4), (2,4), (0,6)]:
+                            mesh.Vertices.Add(i*5+x, y, 0)
+                        mesh.Faces.AddFace(0,1,2)
+                        mesh.Faces.AddFace(3,4,5)
+                        attributes.Name = 'source-%d' % i
+                        state['ids'].append(document.Objects.AddMesh(mesh, attributes))
+                    finally:
+                        attributes.Dispose()
+                        mesh.Dispose()
+                else:
+                    state['ids'].append(document.Objects.AddLine(Rhino.Geometry.Point3d(i*5,0,0), Rhino.Geometry.Point3d(i*5,2,0)))
             ids = state['ids']
             for members in operation['groups']:
                 state['groups'].append(document.Groups.Add([ids[i] for i in members]))
@@ -182,6 +196,27 @@ def on_idle(sender, event):
         elif time.time() >= state['ready']:
             ids = state['ids']
             value = dict(selected=[i for i,key in enumerate(ids) if document.Objects.FindId(key).IsSelected(False)], modes=[str(document.Objects.FindId(key).Attributes.Mode) for key in ids], layers=[dict(visible=document.Layers[document.Objects.FindId(key).Attributes.LayerIndex].IsVisible, locked=document.Layers[document.Objects.FindId(key).Attributes.LayerIndex].IsLocked) for key in ids])
+            if operation.get('op') == 'mesh_split_picking':
+                original_ids = list(ids)
+                value['split_succeeded'] = bool(Rhino.RhinoApp.RunScript('_SplitDisjointMesh', False)) if value['selected'] else None
+                records = []
+                # This newly owned document contains only our three sources.
+                settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+                settings.ObjectTypeFilter = Rhino.DocObjects.ObjectType.Mesh
+                settings.HiddenObjects = True
+                settings.LockedObjects = True
+                live_ids = []
+                for obj in document.Objects.GetObjectList(settings):
+                    live_ids.append(obj.Id)
+                    if obj.Id not in state['ids']: state['ids'].append(obj.Id)
+                    records.append(dict(source=obj.Attributes.Name,
+                        original_identity=obj.Id in original_ids,
+                        selected=bool(obj.IsSelected(False)), mode=str(obj.Attributes.Mode),
+                        groups=[state['groups'].index(group) for group in (obj.Attributes.GetGroupList() or [])],
+                        faces=int(obj.Geometry.Faces.Count),
+                        vertices=[[float(v.X), float(v.Y), float(v.Z)] for v in obj.Geometry.Vertices]))
+                value['outputs'] = sorted(records, key=lambda record: (record['source'], record['vertices']))
+                state['ids'] = live_ids  # Deleted source IDs need no cleanup.
             if operation.get('add_to_group_sources') is not None:
                 value['memberships'] = [[state['groups'].index(group) for group in (document.Objects.FindId(key).Attributes.GetGroupList() or [])] for key in ids]
             if operation.get('move'):

@@ -1,0 +1,73 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "mesh_split_picking",
+      "id": "split-normal-0",
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 1
+    },
+    {
+      "op": "mesh_split_picking",
+      "id": "split-locked-0",
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 1,
+      "locked": [
+        0
+      ]
+    },
+    {
+      "op": "mesh_split_picking",
+      "id": "split-locked-1",
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 0,
+      "locked": [
+        1
+      ]
+    },
+    {
+      "op": "mesh_split_picking",
+      "id": "split-hidden-0",
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 1,
+      "hidden": [
+        0
+      ]
+    },
+    {
+      "op": "mesh_split_picking",
+      "id": "split-hidden-1",
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 0,
+      "hidden": [
+        1
+      ]
+    }
+  ]
+}

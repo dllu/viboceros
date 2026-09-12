@@ -12,6 +12,40 @@ from .group_picking import IdlePicker, validate_request
 
 
 class GroupPickingTests(unittest.TestCase):
+    def test_mesh_split_observations_cover_identity_modes_and_untouched_source(self):
+        root = Path(__file__).parent
+        request = json.loads((root / "fixtures/mesh_split_picking.json").read_text())
+        observed = json.loads((root / "observations/mesh_split_picking.json").read_text())
+        self.assertEqual([op["id"] for op in request["operations"]],
+                         [result["id"] for result in observed["results"]])
+        for op, result in zip(request["operations"], observed["results"]):
+            value = result["value"]
+            self.assertTrue(value["split_succeeded"])
+            self.assertEqual(value["selected"], [0, 1])
+            for source in range(3):
+                outputs = [obj for obj in value["outputs"] if obj["source"] == "source-%d" % source]
+                restricted = source in op.get("hidden", []) or source in op.get("locked", [])
+                originals = [obj for obj in outputs if obj["original_identity"]]
+                self.assertEqual(len(originals), int(restricted or source == 2))
+                self.assertEqual(len(outputs), 1 if source == 2 else 2 + int(restricted))
+                expected_mode = "Hidden" if source in op.get("hidden", []) else "Locked" if restricted else "Normal"
+                for obj in outputs:
+                    self.assertEqual(obj["mode"], expected_mode)
+                    self.assertEqual(obj["selected"], source != 2)
+                    self.assertEqual(obj["groups"], [] if source == 2 else [0])
+                    self.assertEqual(obj["faces"], 2 if obj["original_identity"] else 1)
+                    self.assertEqual(len(obj["vertices"]), 3 * obj["faces"])
+
+    def test_mesh_split_picking_request_rejects_incompatible_commands(self):
+        request = json.loads(Path(__file__).with_name("fixtures").joinpath("mesh_split_picking.json").read_text())
+        validate_request(request)
+        for changes in [dict(move=True), dict(recall_previous=True), dict(recall_last=True),
+                        dict(last_steps=[dict(kind="undo")]), dict(add_to_group_sources=[0])]:
+            invalid = copy.deepcopy(request)
+            invalid["operations"][0].update(changes)
+            with self.subTest(changes=changes), self.assertRaises(OracleProtocolError):
+                validate_request(invalid)
+
     def test_permanent_request_and_rejected_modes(self):
         request = json.loads(Path(__file__).with_name("fixtures").joinpath("group_picking.json").read_text())
         validate_request(request)
