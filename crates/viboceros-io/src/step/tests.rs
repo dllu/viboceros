@@ -3,6 +3,51 @@ use std::io::Cursor;
 use super::*;
 
 #[test]
+fn tessellation_sampling_preserves_finite_extreme_parameter_ranges() {
+    for (start, end) in [
+        (-f64::MAX, f64::MAX),
+        (f64::MAX, -f64::MAX),
+        (f64::MAX / 2.0, f64::MAX),
+        (-f64::MAX, -f64::MAX / 2.0),
+        (0.0, 1.0),
+        (1.0, 1.0),
+        (-1.0, 1.0),
+    ] {
+        let samples =
+            std::array::from_fn::<_, 5, _>(|index| sample_parameter(start, end, index as u32));
+        assert_eq!(samples[0], start);
+        assert_eq!(samples[4], end);
+        assert!(samples.iter().all(|value| value.is_finite()
+            && *value >= start.min(end)
+            && *value <= start.max(end)));
+        assert!(samples.windows(2).all(|pair| if start <= end {
+            pair[0] <= pair[1]
+        } else {
+            pair[0] >= pair[1]
+        }));
+    }
+    assert_eq!(sample_parameter(-f64::MAX, f64::MAX, 2), 0.0);
+    assert_eq!(sample_parameter(-f64::MAX, f64::MAX, 1), -f64::MAX / 2.0);
+}
+
+#[test]
+fn relative_tessellation_extent_scales_before_overflow() {
+    assert_eq!(SampledExtent::default().relative_diameter(), 0.0);
+    for scale in [1.0, f64::MAX / 2.0, f64::MAX] {
+        let mut extent = SampledExtent::default();
+        extent.push(TruckPoint3::new(-scale, -scale, -scale));
+        extent.push(TruckPoint3::new(scale, scale, scale));
+        let expected = (scale * RELATIVE_MESH_TOLERANCE) * (2.0 * 3.0_f64.sqrt());
+        let actual = extent.relative_diameter();
+        assert!(actual.is_finite() && actual > 0.0);
+        assert!((actual / expected - 1.0).abs() < 1e-14);
+    }
+    let mut singleton = SampledExtent::default();
+    singleton.push(TruckPoint3::new(f64::MAX, f64::MAX, f64::MAX));
+    assert_eq!(singleton.relative_diameter(), 0.0);
+}
+
+#[test]
 fn unsupported_data_section_counts_return_errors_in_both_readers() {
     let cube = cube_step();
     let empty = format!("{}END-ISO-10303-21;", cube.split("DATA;").next().unwrap());

@@ -620,7 +620,7 @@ fn tessellation_tolerance<'a>(
         for edge in &shell.edges {
             let (start, end) = edge.curve.range_tuple();
             for sample in 0..=4 {
-                let parameter = start + (end - start) * f64::from(sample) / 4.0;
+                let parameter = sample_parameter(start, end, sample);
                 extent.push(edge.curve.evaluate(parameter));
             }
         }
@@ -630,17 +630,44 @@ fn tessellation_tolerance<'a>(
                 continue;
             };
             for u_sample in 0..=4 {
-                let u = u_start + (u_end - u_start) * f64::from(u_sample) / 4.0;
+                let u = sample_parameter(u_start, u_end, u_sample);
                 for v_sample in 0..=4 {
-                    let v = v_start + (v_end - v_start) * f64::from(v_sample) / 4.0;
+                    let v = sample_parameter(v_start, v_end, v_sample);
                     extent.push(face.surface.evaluate(u, v));
                 }
             }
         }
     }
-    (extent.diameter() * RELATIVE_MESH_TOLERANCE)
+    extent
+        .relative_diameter()
         .max(document_tolerance.absolute())
         .max(monstertruck::core::tolerance::TOLERANCE)
+}
+
+// The five sampling stations include the exact endpoints. Opposite-sign
+// finite bounds may have an unrepresentable difference, even though every
+// interpolated parameter is representable.
+fn sample_parameter(start: f64, end: f64, sample: u32) -> f64 {
+    debug_assert!(sample <= 4);
+    match sample {
+        0 => start,
+        4 => end,
+        _ => {
+            let fraction = f64::from(sample) / 4.0;
+            let span = end - start;
+            if span.is_finite() {
+                start + span * fraction
+            } else {
+                let midpoint = start * 0.5 + end * 0.5;
+                match sample {
+                    1 => start * 0.5 + midpoint * 0.5,
+                    2 => midpoint,
+                    3 => midpoint * 0.5 + end * 0.5,
+                    _ => unreachable!("interior quarter station"),
+                }
+            }
+        }
+    }
 }
 
 struct SampledExtent {
@@ -670,13 +697,21 @@ impl SampledExtent {
         self.count += 1;
     }
 
-    fn diameter(&self) -> f64 {
+    fn relative_diameter(&self) -> f64 {
         if self.count == 0 {
             0.0
         } else {
-            (self.maximum[0] - self.minimum[0])
-                .hypot(self.maximum[1] - self.minimum[1])
-                .hypot(self.maximum[2] - self.minimum[2])
+            let spans = std::array::from_fn::<_, 3, _>(|axis| {
+                let span = self.maximum[axis] - self.minimum[axis];
+                if span.is_finite() {
+                    span * RELATIVE_MESH_TOLERANCE
+                } else {
+                    self.maximum[axis] * RELATIVE_MESH_TOLERANCE
+                        - self.minimum[axis] * RELATIVE_MESH_TOLERANCE
+                }
+            });
+            // Scale before both subtraction overflow and diagonal overflow.
+            spans[0].hypot(spans[1]).hypot(spans[2])
         }
     }
 }

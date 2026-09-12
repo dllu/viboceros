@@ -122,7 +122,13 @@ tolerances; see [tolerance settings and encoding limits](tolerances.md).
 
 Initial STEP interchange uses the Apache-2.0 Monstertruck kernel to read
 solid/shell B-reps and assemblies, apply instance transforms, and robustly
-tessellate exact trimmed surfaces into validated display meshes. Repeated
+tessellate exact trimmed surfaces into validated display meshes. Tessellation
+extent samples use range-safe quarter stations with exact parameter
+endpoints. Relative extent sizing scales axis spans before computing the diagonal,
+avoiding overflow when finite endpoints span more than the binary64 range.
+Unit tests cover extreme opposite-sign parameter domains and finite coordinates
+up to `f64::MAX`; these validate tolerance setup, not the downstream kernel's
+ability to tessellate arbitrary geometry at those scales. Repeated
 assembly instances share source-space tessellation during each import, but
 each transformed mesh is validated independently. Cached tessellations are
 released after their last instance; shell-conversion losses are reported
