@@ -201,6 +201,8 @@ existing destination unchanged. The low-level
 their `_in_units` counterparts accept explicit source units and tolerance.
 Editable STEP B-rep interchange and production
 surface and solid modelling are not implemented yet.
+The [native B-rep conversion boundary](step-brep-boundary.md) records the retained
+source topology/trim evidence and the representation work still required.
 
 Assembly regression tests include repeated parts beneath a translated,
 rotated parent, with expected corner coordinates checked independently of

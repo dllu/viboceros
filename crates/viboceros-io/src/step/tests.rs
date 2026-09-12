@@ -3,6 +3,70 @@ use std::io::Cursor;
 use super::*;
 
 #[test]
+fn parsed_cube_retains_shared_edges_and_face_local_trim_availability() {
+    let table = Table::from_step(&cube_step()).unwrap();
+    let shell_id = *table.shell.keys().next().unwrap();
+    let (shell, report) = reported_trimmed_shell(&table, shell_id).unwrap();
+    assert_eq!(report.total_lost(), 0);
+    assert_eq!(
+        (shell.vertices.len(), shell.edges.len(), shell.faces.len()),
+        (8, 12, 6)
+    );
+    let mut uses = vec![Vec::new(); shell.edges.len()];
+    let mut trim_count = 0;
+    for face in &shell.faces {
+        assert_eq!(face.boundaries.len(), 1);
+        assert_eq!(face.boundaries[0].len(), 4);
+        for (side, edge_use) in face.boundaries[0].iter().enumerate() {
+            uses[edge_use.index].push(edge_use.orientation);
+            trim_count += usize::from(edge_use.trim_curve.is_some());
+            let edge = &shell.edges[edge_use.index];
+            let trim = edge_use
+                .trim_curve
+                .as_ref()
+                .expect("cube face has an exact UV trim");
+            let (trim_start, trim_end) = trim.range_tuple();
+            let directed = if edge_use.orientation {
+                edge.vertices
+            } else {
+                (edge.vertices.1, edge.vertices.0)
+            };
+            for station in 0..=4 {
+                let fraction = f64::from(station) / 4.0;
+                let parameter = trim_start + (trim_end - trim_start) * fraction;
+                let uv = trim.curve().evaluate(parameter);
+                let actual = face.surface.evaluate(uv.x, uv.y);
+                let expected = shell.vertices[directed.0]
+                    + (shell.vertices[directed.1] - shell.vertices[directed.0]) * fraction;
+                let error = actual - expected;
+                assert!(error.x.hypot(error.y).hypot(error.z) < 1e-12);
+            }
+            let next_use = &face.boundaries[0][(side + 1) % 4];
+            let next = &shell.edges[next_use.index];
+            let end = if edge_use.orientation {
+                edge.vertices.1
+            } else {
+                edge.vertices.0
+            };
+            let start = if next_use.orientation {
+                next.vertices.0
+            } else {
+                next.vertices.1
+            };
+            assert_eq!(end, start);
+        }
+    }
+    for (edge, orientations) in shell.edges.iter().zip(uses) {
+        assert_eq!(orientations.len(), 2);
+        assert_ne!(orientations[0], orientations[1]);
+        let (start, end) = edge.curve.range_tuple();
+        assert_eq!(edge.curve.evaluate(start), shell.vertices[edge.vertices.0]);
+        assert_eq!(edge.curve.evaluate(end), shell.vertices[edge.vertices.1]);
+    }
+    assert_eq!(trim_count, 24);
+}
+
+#[test]
 fn unit_aware_export_accuracy_is_parseable_and_exact_across_finite_scales() {
     let mesh = unit_test_mesh();
     for accuracy in [f64::MIN_POSITIVE, 1e-100, 1e-6, 1.0, 1e21, 1e100, f64::MAX] {
