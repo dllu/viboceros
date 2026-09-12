@@ -125,6 +125,28 @@ fn linear_loop_winding_shortcut_does_not_hide_a_rational_pole() {
     assert!(sampled_loop_signed_area(&boundary).is_err());
 }
 
+#[test]
+fn linear_loop_winding_rejects_poles_between_sample_stations() {
+    for weights in [[1., -2.], [-2., 1.], [1e-100, -2e-100], [1e100, -2e100]] {
+        let mut boundary = square().faces()[0].loops()[0].clone();
+        let trim = &mut boundary.trims[0];
+        let controls = trim
+            .curve
+            .control_points()
+            .iter()
+            .zip(weights)
+            .map(|(control, weight)| WeightedPoint2::try_new(control.point(), weight).unwrap())
+            .collect();
+        trim.curve = NurbsCurve2::try_new_rational(1, controls, vec![-3., -3., 7., 7.]).unwrap();
+        // Its denominator is linear with opposite-sign endpoint values: a
+        // zero lies at one third or two thirds, outside the quarter samples.
+        for i in 0..=4 {
+            assert!(trim.curve.evaluate(-3. + 2.5 * f64::from(i)).is_ok());
+        }
+        assert!(sampled_loop_signed_area(&boundary).is_err(), "{weights:?}");
+    }
+}
+
 fn p(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }

@@ -209,8 +209,10 @@ validation to arbitrary curved trims or change other B-rep constructors.
 Native loop-winding validation also uses the range-safe UV normalization.
 Single degree-one trims with same-sign weights contribute only their endpoints:
 their exact path is a straight segment, so interior samples provide no additional
-area information. Curved trims and opposite-sign rational spans retain sampling;
-a regression ensures a rational midpoint pole is not bypassed by this shortcut.
+area information. Opposite-sign weights on a single linear span imply an interior
+denominator zero and are rejected directly, including poles between sample
+stations. Curved and multi-span trims retain sampling; this is not a general
+rational pole detector for those curves.
 Regressions check both winding directions with weight ratios up to `1e12`,
 coordinates of magnitude `1e100`, and equal-weight loops spanning `-f64::MAX`
 to `f64::MAX`. This avoids overflowing raw coordinate differences while testing

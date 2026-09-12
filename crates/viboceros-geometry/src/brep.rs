@@ -9420,10 +9420,12 @@ fn sampled_loop_signed_area(face_loop: &BrepLoop) -> Result<Real, GeometryError>
             points.push(trim.curve.start_point()?);
         }
         let controls = trim.curve.control_points();
-        if trim.curve.degree() == 1
-            && controls.len() == 2
-            && controls[0].weight().is_sign_positive() == controls[1].weight().is_sign_positive()
-        {
+        if trim.curve.degree() == 1 && controls.len() == 2 {
+            if controls[0].weight().is_sign_positive() != controls[1].weight().is_sign_positive() {
+                // The linear denominator changes sign inside the span.
+                // Sampling cannot reliably detect its zero between stations.
+                return invalid("a linear p-curve has a rational pole");
+            }
             // A pole-free rational linear span traces exactly its endpoint
             // segment regardless of its speed. Interior samples add no area
             // information, and can crowd one endpoint for unequal weights.
