@@ -13407,28 +13407,19 @@ impl Command for SplitDisjointMeshCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         require_consumed(arguments, 0, "SplitDisjointMesh")?;
-        let selected_ids = document.selected_object_ids().collect::<Vec<_>>();
-        if selected_ids.is_empty() {
+        if document.selected_object_count() == 0 {
             return Err(CommandError::NoObjectsSelected);
         }
-        let inputs = selected_ids
-            .into_iter()
-            .map(|id| {
-                let object = document
-                    .object(id)
-                    .expect("selected object identities belong to the document");
+        let mut inputs = document
+            .selected_objects()
+            .map(|object| {
                 let Geometry::Mesh(mesh) = object.geometry() else {
                     return Err(CommandError::UnsupportedSplitDisjointMeshGeometry);
                 };
-                let group_ids = document
-                    .object(id)
-                    .expect("validated source object")
-                    .group_ids()
-                    .to_vec();
                 Ok(SplitMeshInput {
-                    id,
+                    id: object.id(),
                     attributes: object.attributes().clone(),
-                    group_ids,
+                    group_ids: object.group_ids().to_vec(),
                     pieces: mesh.disjoint_pieces(),
                 })
             })
@@ -13444,11 +13435,16 @@ impl Command for SplitDisjointMeshCommand {
             .map(|input| input.pieces.len())
             .sum::<usize>();
 
-        let replacements = inputs
-            .iter()
-            .filter(|input| input.pieces.len() > 1)
-            .map(|input| (input.id, Geometry::Mesh(input.pieces[0].clone())))
-            .collect::<Vec<_>>();
+        let mut replacements = Vec::with_capacity(split_mesh_count);
+        for input in &mut inputs {
+            if input.pieces.len() > 1 {
+                // Move the first piece into the original object. The remaining
+                // pieces retain their order and become new objects below.
+                replacements.push((input.id, Geometry::Mesh(input.pieces.remove(0))));
+            } else {
+                input.pieces.clear();
+            }
+        }
         let replaced = document.replace_object_geometries(replacements)?;
         debug_assert_eq!(replaced, split_mesh_count);
 
@@ -13456,10 +13452,7 @@ impl Command for SplitDisjointMeshCommand {
 
         for input in inputs {
             output_ids.push(input.id);
-            if input.pieces.len() <= 1 {
-                continue;
-            }
-            for piece in input.pieces.into_iter().skip(1) {
+            for piece in input.pieces {
                 let id = document.add_geometry_with_attributes(
                     Geometry::Mesh(piece),
                     input.attributes.clone(),

@@ -1,6 +1,46 @@
 use super::*;
 
 #[test]
+fn split_disjoint_mesh_moves_first_piece_and_keeps_remaining_face_order() {
+    let mut document = Document::default();
+    let registry = CommandRegistry::with_builtins();
+    let vertices = [30., 0., 20.]
+        .into_iter()
+        .flat_map(|x| [[x, 0., 0.], [x + 1., 0., 0.], [x, 1., 0.]])
+        .map(|p| Point3::try_from(p).unwrap())
+        .collect();
+    let mesh = TriangleMesh::try_new(
+        vertices,
+        vec![[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+        document.tolerance(),
+    )
+    .unwrap();
+    let id = document.add_geometry(Geometry::Mesh(mesh.clone())).unwrap();
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    registry
+        .execute(&mut document, "SplitDisjointMesh")
+        .unwrap();
+    assert_eq!(document.objects().next().unwrap().id(), id);
+    assert_eq!(document.objects().len(), 3);
+    for (object, expected_x) in document.objects().zip([30., 0., 20.]) {
+        let Geometry::Mesh(piece) = object.geometry() else {
+            panic!("mesh expected")
+        };
+        assert_eq!(piece.vertices()[0].x(), expected_x);
+        assert_eq!(piece.face_count(), 1);
+    }
+    let after = document.objects().cloned().collect::<Vec<_>>();
+    registry.execute(&mut document, "Undo").unwrap();
+    assert_eq!(document.objects().len(), 1);
+    assert_eq!(
+        document.object(id).unwrap().geometry(),
+        &Geometry::Mesh(mesh)
+    );
+    registry.execute(&mut document, "Redo").unwrap();
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
+}
+
+#[test]
 fn collapse_locked_group_peers_follow_explicit_deletion_policy_and_restore_on_undo() {
     let registry = CommandRegistry::with_builtins();
     for locked_index in [0, 2] {
