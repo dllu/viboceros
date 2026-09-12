@@ -39,7 +39,10 @@ Tests cover overflowing coordinate differences and overflowing norms separately.
 The override is available in complete typed commands and at either interactive
 point prompt: enter `Units=Inches` (or another physical unit), then continue
 picking. `Units=Model_Units` clears the override. Unit choices preserve accepted
-points and survive local `Undo`, but reset for each new measurement. Invalid
+points. You can also start with `Distance Units=Inches`; underscore-prefixed
+macro forms such as `_Distance _Units=_Inches` are accepted. Complete commands
+containing both coordinates still execute directly instead of opening a prompt.
+Unit choices survive local `Undo`, but reset for each new measurement. Invalid
 choices leave the prompt unchanged; failed final conversions retain the first
 point so units or the second point can be corrected.
 Nesting a measurement inside another command's numeric prompt is not implemented.

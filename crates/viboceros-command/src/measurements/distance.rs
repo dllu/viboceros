@@ -7,6 +7,7 @@ pub(crate) struct DistanceCommand;
 /// Validates an interactive display-unit choice and returns its canonical
 /// command token. `None` means the document's current units, without conversion.
 pub fn distance_display_units(input: &str) -> Result<Option<&'static str>, CommandError> {
+    let input = input.trim_start_matches('_');
     if input.eq_ignore_ascii_case("Model_Units") {
         return Ok(None);
     }
@@ -73,7 +74,7 @@ impl Command for DistanceCommand {
                 let (name, value) = option
                     .split_once('=')
                     .ok_or(CommandError::Usage("Distance start end [Units=name]"))?;
-                if !name.eq_ignore_ascii_case("Units") {
+                if !crate::option_name_eq(name, "Units") {
                     return Err(CommandError::Usage("Distance start end [Units=name]"));
                 }
                 distance_display_units(value)?.and_then(crate::model_units::parse_units)

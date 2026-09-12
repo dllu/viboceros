@@ -1,6 +1,32 @@
 //! Measurement-local input revision, separate from document undo/redo.
 use super::*;
 
+pub(super) fn start_command(
+    arguments: &[&str],
+    previous_last: Option<Point3>,
+) -> Option<InteractiveCommand> {
+    let display_units = match arguments {
+        [] => None,
+        [option] => {
+            let (name, value) = option.split_once('=')?;
+            if !name
+                .trim_start_matches(['_', '-'])
+                .eq_ignore_ascii_case("Units")
+            {
+                return None;
+            }
+            viboceros_command::distance_display_units(value).ok()?
+        }
+        // Coordinates belong to the complete command's parser, not startup.
+        _ => return None,
+    };
+    Some(InteractiveCommand::Distance {
+        start: None,
+        previous_last,
+        display_units,
+    })
+}
+
 impl VibocerosApp {
     pub(super) fn finish_distance(
         &mut self,

@@ -1259,7 +1259,12 @@ impl VibocerosApp {
         };
         let arguments = tokens.collect::<Vec<_>>();
         let normalized = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
-        let command = if normalized == "pointgrid" {
+        let command = if normalized == "distance" {
+            let Some(command) = distance::start_command(&arguments, self.last_point) else {
+                return false;
+            };
+            command
+        } else if normalized == "pointgrid" {
             let Ok(options) = viboceros_command::PointGridOptions::parse(&arguments) else {
                 return false;
             };
@@ -2779,11 +2784,6 @@ impl VibocerosApp {
                 "point" | "pt" => InteractiveCommand::Point,
                 "points" => InteractiveCommand::Points,
                 "line" | "l" => InteractiveCommand::Line { start: None },
-                "distance" => InteractiveCommand::Distance {
-                    start: None,
-                    previous_last: self.last_point,
-                    display_units: None,
-                },
                 "circle" | "c" => InteractiveCommand::Circle { center: None },
                 "sphere" | "sph" => InteractiveCommand::Sphere { center: None },
                 "ellipsoid" => InteractiveCommand::Ellipsoid { points: [None; 3] },

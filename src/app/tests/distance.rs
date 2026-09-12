@@ -1,6 +1,57 @@
 use super::*;
 
 #[test]
+fn distance_startup_options_share_unit_validation_without_swallowing_complete_commands() {
+    let mut app = test_app();
+    let before = format!("{:?}", app.document);
+    for input in ["Distance Units=in", "_Distance _Units=_Inches"] {
+        app.command_input = input.into();
+        app.run_command();
+        assert!(matches!(
+            app.active_command,
+            Some(InteractiveCommand::Distance {
+                start: None,
+                display_units: Some("Inches"),
+                ..
+            })
+        ));
+        assert!(app.accept_drafting_point(point(0., 0., 0.)));
+        assert!(app.accept_drafting_point(point(254., 0., 0.)));
+        assert!(app.command_log.back().unwrap().ends_with("Inches"));
+        assert_eq!(format!("{:?}", app.document), before);
+    }
+    assert!(app.try_start_interactive_command("Distance Units=Model_Units"));
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::Distance {
+            display_units: None,
+            ..
+        })
+    ));
+    app.cancel_interactive_command(false);
+    for input in [
+        "Distance Units=Unknown",
+        "Distance Units=m Units=in",
+        "Distance 0,0 3,4",
+        "Distance 0,0 3,4 Units=cm",
+    ] {
+        assert!(!app.try_start_interactive_command(input), "{input}");
+        assert_eq!(app.active_command, None);
+        assert_eq!(format!("{:?}", app.document), before);
+    }
+    app.command_input = "_Distance 0,0 3,4 _Units=_Centimeters".into();
+    app.run_command();
+    assert_eq!(app.active_command, None);
+    assert!(
+        app.command_log
+            .back()
+            .unwrap()
+            .ends_with("Distance = 0.5 Centimetres")
+    );
+    assert_eq!(format!("{:?}", app.document), before);
+}
+
+#[test]
 fn distance_display_options_preserve_points_and_survive_local_undo() {
     let mut app = test_app();
     let before = format!("{:?}", app.document);
