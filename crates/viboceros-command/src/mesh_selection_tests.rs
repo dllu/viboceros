@@ -1,6 +1,70 @@
 use super::*;
 
 #[test]
+fn collapse_locked_group_peers_follow_explicit_deletion_policy_and_restore_on_undo() {
+    let registry = CommandRegistry::with_builtins();
+    for locked_index in [0, 2] {
+        let mut document = Document::default();
+        let vertices = [[0., 0., 0.], [2., 0., 0.], [0., 2., 0.], [0., 0., 2.]]
+            .map(|p| Point3::try_from(p).unwrap())
+            .to_vec();
+        let ids = [false, true, false].map(|solid| {
+            let faces = if solid {
+                vec![[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3]]
+            } else {
+                vec![[0, 1, 2]]
+            };
+            let mesh =
+                TriangleMesh::try_new(vertices.clone(), faces, document.tolerance()).unwrap();
+            document.add_geometry(Geometry::Mesh(mesh)).unwrap()
+        });
+        document.add_group(None, ids).unwrap();
+        document
+            .set_objects_locked([ids[locked_index]], true)
+            .unwrap();
+        document
+            .add_geometry(Geometry::Point(Point3::try_new(99., 0., 0.).unwrap()))
+            .unwrap();
+        document.undo().unwrap();
+        document
+            .select_object(ids[1], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(document.selected_object_count(), 3);
+        assert!(document.can_redo());
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let groups = document.groups().cloned().collect::<Vec<_>>();
+        let selection = document.selected_object_ids().collect::<Vec<_>>();
+        let result = registry.execute(&mut document, "CollapseMeshEdge Edge=0");
+        assert_eq!(
+            result.unwrap(),
+            "Collapsed 3 mesh edge(s) in 3 mesh(es); deleted 2 empty mesh(es)"
+        );
+        assert!(!document.can_redo());
+        assert!(document.object(ids[locked_index]).is_none());
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [ids[1]]);
+        let after = document.objects().cloned().collect::<Vec<_>>();
+        let after_groups = document.groups().cloned().collect::<Vec<_>>();
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+        assert_eq!(document.groups().cloned().collect::<Vec<_>>(), groups);
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            selection
+        );
+        assert!(
+            document
+                .object(ids[locked_index])
+                .unwrap()
+                .attributes()
+                .is_locked()
+        );
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
+        assert_eq!(document.groups().cloned().collect::<Vec<_>>(), after_groups);
+    }
+}
+
+#[test]
 fn collapse_mixed_replacements_and_deletions_replays_exactly() {
     let mut document = Document::default();
     let registry = CommandRegistry::with_builtins();

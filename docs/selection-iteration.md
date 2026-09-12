@@ -26,6 +26,11 @@ callback failure leaves the document unchanged.
 batch deletion for empty meshes, without cloning surviving results a second
 time. Mixed-outcome coverage checks unrelated object order, retained groups
 and selection, and exact undo/redo replay.
+The native explicit-deletion policy permits hidden/locked IDs. A collapse
+regression covers locked, group-selected peers whose empty results are removed,
+then restores their lock state, geometry, groups, and selection through Undo.
+It also checks that a successful collapse replaces an existing redo branch.
+This command-level history check is not a separate live Rhino parity probe.
 `Distribute` carries borrowed objects from this iterator into rigid-unit
 grouping, local bounds, and transform staging, avoiding later per-ID scans.
 Units follow the first selected member's action order and each object's top
