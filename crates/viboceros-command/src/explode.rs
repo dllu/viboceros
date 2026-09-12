@@ -1,42 +1,10 @@
 use super::*;
 
+mod parts;
 mod summary;
 use summary::{ExplodeSummary, PartKind};
 
 pub(super) struct ExplodeCommand;
-
-enum ExplodedParts {
-    Lines(Vec<LineSegment>),
-    Curves(Vec<viboceros_geometry::CurveSegment3>),
-    Points(Vec<Point3>),
-    Surfaces(Vec<Brep>),
-    Meshes(Vec<TriangleMesh>),
-}
-
-impl ExplodedParts {
-    fn report(&self) -> (PartKind, usize) {
-        match self {
-            Self::Lines(parts) => (PartKind::Polyline, parts.len()),
-            Self::Curves(parts) => (PartKind::Polycurve, parts.len()),
-            Self::Points(parts) => (PartKind::PointCloud, parts.len()),
-            Self::Surfaces(parts) => (PartKind::Polysurface, parts.len()),
-            Self::Meshes(parts) => (PartKind::Mesh, parts.len()),
-        }
-    }
-
-    fn into_geometries(self) -> Vec<Geometry> {
-        match self {
-            Self::Lines(parts) => parts.into_iter().map(Geometry::Line).collect(),
-            Self::Curves(parts) => parts
-                .into_iter()
-                .map(|part| Geometry::from(part.into_curve()))
-                .collect(),
-            Self::Points(parts) => parts.into_iter().map(Geometry::Point).collect(),
-            Self::Surfaces(parts) => parts.into_iter().map(Geometry::Brep).collect(),
-            Self::Meshes(parts) => parts.into_iter().map(Geometry::Mesh).collect(),
-        }
-    }
-}
 
 impl Command for ExplodeCommand {
     fn name(&self) -> &'static str {
@@ -74,50 +42,7 @@ impl Command for ExplodeCommand {
         let mut unchanged_ids = Vec::new();
         let mut deleted_sources = Vec::new();
         for (id, geometry, delete_source) in &selected {
-            let parts = match geometry {
-                Geometry::PolyCurve(curve) => {
-                    let mut parts = Vec::new();
-                    for (index, segment) in curve.segments().iter().enumerate() {
-                        let segment = segment.try_reparameterized(curve.segment_domain(index)?)?;
-                        if let viboceros_geometry::CurveSegment3::Polyline(polyline) = segment {
-                            parts.extend(
-                                polyline
-                                    .segments()
-                                    .map(viboceros_geometry::CurveSegment3::Line),
-                            );
-                        } else {
-                            parts.push(segment);
-                        }
-                    }
-                    parts.reverse();
-                    Some(ExplodedParts::Curves(parts))
-                }
-                Geometry::Polyline(polyline) => {
-                    let mut parts = polyline.segments().collect::<Vec<_>>();
-                    parts.reverse();
-                    Some(ExplodedParts::Lines(parts))
-                }
-                Geometry::PointCloud(cloud) => {
-                    let mut parts = cloud.points().to_vec();
-                    parts.reverse();
-                    Some(ExplodedParts::Points(parts))
-                }
-                Geometry::Brep(brep) if brep.faces().len() > 1 => {
-                    let mut parts = brep.explode_faces(document.tolerance())?;
-                    parts.reverse();
-                    Some(ExplodedParts::Surfaces(parts))
-                }
-                Geometry::Mesh(mesh) => {
-                    let mut parts = mesh.explode_pieces();
-                    if parts.len() <= 1 {
-                        None
-                    } else {
-                        parts.reverse();
-                        Some(ExplodedParts::Meshes(parts))
-                    }
-                }
-                _ => None,
-            };
+            let parts = parts::decompose(geometry, document.tolerance())?;
             let Some(parts) = parts else {
                 unchanged_ids.push(*id);
                 continue;

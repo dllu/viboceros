@@ -79,6 +79,9 @@ The separate `explode` command module owns multi-geometry decomposition staging,
 output summaries, source removal, and result selection.
 Its `summary` module accumulates bounded category counts during staging and
 formats the fixed-order report, without rescanning generated parts per category.
+Its document-independent `parts` module owns command-specific component order,
+polycurve flattening and parameter intervals, and conversion to output geometry.
+Selection, source retention, attributes, groups, and history stay in the command.
 The command-owned `object_selection` module supplies typed filters and boolean
 options to the separate [app object-prompt adapter](object-selection.md).
 `selection_commands` owns basic, action-history, attribute, and duplicate
