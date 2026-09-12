@@ -11,33 +11,36 @@ mod tests;
 
 /// Reproduces `ON_MeshTopology::SortVertexEdges`: each returned group is one
 /// radial fan, starting at a naked/non-manifold edge when one is present.
+/// Incident edge indices must be strictly increasing, as produced by topology
+/// map traversal. Priority lists retain this order without removing entries.
 pub(super) fn radially_sorted_vertex_edges(
     topological_vertex: usize,
     incident_edges: &[usize],
     edges: &[([usize; 2], &EdgeIncidence)],
     face_edges: &[Vec<usize>],
 ) -> Vec<Vec<usize>> {
+    debug_assert!(incident_edges.windows(2).all(|pair| pair[0] < pair[1]));
     let mut naked = Vec::new();
     let mut manifold = Vec::new();
     let mut non_manifold = Vec::new();
-    for &edge in incident_edges {
+    for (local, &edge) in incident_edges.iter().enumerate() {
         let (vertices, incidence) = edges[edge];
         debug_assert!(vertices.contains(&topological_vertex));
         match incidence.count {
-            1 => naked.push(edge),
-            2 => manifold.push(edge),
-            _ => non_manifold.push(edge),
+            1 => naked.push(local),
+            2 => manifold.push(local),
+            _ => non_manifold.push(local),
         }
     }
-    naked.extend(non_manifold);
+    let mut pending = vec![true; incident_edges.len()];
 
     let mut groups = Vec::new();
-    while !naked.is_empty() || !manifold.is_empty() {
-        let first = if naked.is_empty() {
-            manifold.remove(0)
-        } else {
-            naked.remove(0)
-        };
+    for local in naked.into_iter().chain(non_manifold).chain(manifold) {
+        if !pending[local] {
+            continue;
+        }
+        pending[local] = false;
+        let first = incident_edges[local];
         let mut group = vec![first];
         let mut current = first;
         let mut group_direction = 0_i8;
@@ -59,16 +62,11 @@ pub(super) fn radially_sorted_vertex_edges(
                     (edge_use.side + 1) % side_count
                 };
                 let candidate = face_edges[edge_use.face][next_side];
-                let removed = if let Some(index) = naked.iter().position(|&edge| edge == candidate)
-                {
-                    naked.remove(index);
-                    true
-                } else if let Some(index) = manifold.iter().position(|&edge| edge == candidate) {
-                    manifold.remove(index);
-                    true
-                } else {
-                    false
-                };
+                let removed = incident_edges.binary_search(&candidate).is_ok_and(|local| {
+                    let was_pending = pending[local];
+                    pending[local] = false;
+                    was_pending
+                });
                 if removed {
                     if group_direction == 0 {
                         group_direction = direction;

@@ -2,6 +2,54 @@ use super::super::{EdgeUse, Point3, Tolerance, TriangleMesh, topology_face_edge_
 use super::*;
 
 #[test]
+fn high_valence_sorting_preserves_closed_fans_and_many_boundary_groups() {
+    for count in [3, 17, 257, 1024] {
+        for disconnected in [false, true] {
+            let mut vertices = vec![Point3::try_new(0.0, 0.0, 0.0).unwrap()];
+            let mut triangles = Vec::new();
+            if disconnected {
+                for index in 0..count {
+                    let x = (index + 1) as f64;
+                    vertices.push(Point3::try_new(x, 0.0, 0.0).unwrap());
+                    vertices.push(Point3::try_new(x, 1.0, 0.0).unwrap());
+                    triangles.push([0, 2 * index as u32 + 1, 2 * index as u32 + 2]);
+                }
+            } else {
+                for index in 0..count {
+                    let angle = std::f64::consts::TAU * index as f64 / count as f64;
+                    vertices.push(Point3::try_new(angle.cos(), angle.sin(), 0.0).unwrap());
+                    triangles.push([0, index as u32 + 1, ((index + 1) % count) as u32 + 1]);
+                }
+            }
+            let mesh = TriangleMesh::try_new(vertices, triangles, Tolerance::DEFAULT).unwrap();
+            let data = mesh.topology_data();
+            let edges = data
+                .edges
+                .iter()
+                .map(|(&(a, b), incidence)| ([a, b], incidence))
+                .collect::<Vec<_>>();
+            let face_edges = topology_face_edge_indices(&mesh, &data);
+            let incident = edges
+                .iter()
+                .enumerate()
+                .filter_map(|(index, (endpoints, _))| endpoints.contains(&0).then_some(index))
+                .collect::<Vec<_>>();
+            let expected = if disconnected {
+                (0..count)
+                    .map(|index| vec![2 * index, 2 * index + 1])
+                    .collect::<Vec<_>>()
+            } else {
+                vec![(0..count).collect::<Vec<_>>()]
+            };
+            assert_eq!(
+                radially_sorted_vertex_edges(0, &incident, &edges, &face_edges),
+                expected
+            );
+        }
+    }
+}
+
+#[test]
 fn cyclic_component_order_is_not_first_occurrence_face_order() {
     let incidences = [[0, 2], [0, 1], [1, 2]].map(|faces| {
         let mut incidence = EdgeIncidence::default();

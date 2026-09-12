@@ -79,6 +79,11 @@ face walks, and component ordering, with colocated Rhino-backed regressions.
 Face-level first-occurrence order is distinct from cyclic component-root order:
 a component spanning a closed fan's start/end can rotate the final output order.
 A focused test preserves this distinction for earliest and latest root indices.
+The sorter uses immutable priority lists and an incident-edge pending mask rather
+than repeated vector removals. Candidate edges use binary search over strictly
+increasing incident indices; all topology callers supply this ordering. Tests
+check both closed fans and many disconnected boundary fans up to 1,024 faces,
+alongside the public Rhino radial-order records. No timing threshold is assumed.
 
 Shared welding compaction resolves every face to its representative before
 reusing the parent array as the compact-index map, eliminating a separate
