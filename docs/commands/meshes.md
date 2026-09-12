@@ -242,23 +242,25 @@ preserving the source order and identity of every referenced vertex, including
 coincident vertices, as well as object metadata, face order, and winding.
 
 `SplitDisjointMesh` separates exact-location edge-connected components (a lone
-shared vertex does not connect them), retaining the first object identity and
-copying attributes and group membership to additional pieces.
+shared vertex does not connect them), creating fresh IDs for every piece and
+copying source attributes and group membership. Ordinary split sources are
+deleted; hidden/locked group-selected sources remain intact alongside their
+new pieces. Connected sources remain unchanged.
 Output selection uses selectable pieces as group-pick seeds, allowing hidden or
 locked peers already selected through a group to remain editable and selected.
 Native regression tests cover both restrictions, either source order, rejected
-arguments with redo history, and exact object/group undo and redo. This edge-case
-coverage is not a claim of live Rhino command parity.
+arguments with redo history, and exact object/group undo and redo.
 
-**Known identity mismatch (live Rhino 8.32, 2026-09-12):** the dedicated
+**Live Rhino 8.32 evidence (2026-09-12):** the dedicated
 [`mesh_split_picking` probe](../oracle.md) observes normal split sources being
 deleted, with new IDs for every piece. Hidden/locked group-selected sources stay
 intact while new pieces with the same mode and group are added. All pieces and
-the retained restricted source remain selected. Viboceros currently replaces
-the first piece in place for every source, so its identity policy and restricted
-source object counts need correction; its native tests currently encode that
-mismatch. The geometry-only `SplitDisjointPieces` probe cannot verify this
-document-command behavior.
+the retained restricted source remain selected. The native regression
+`split_disjoint_mesh_matches_live_rhino_picking_observations` compares all five
+recorded cases exactly: coordinates, face counts, identity retention, modes,
+groups, and selection, including an untouched third mesh. It does not verify
+document table order, overlapping groups, layer restrictions, or Rhino undo/redo.
+The geometry-only `SplitDisjointPieces` probe cannot verify this document behavior.
 
 `ExtractDuplicateMeshFaces` separates all but one face from each duplicate
 class. Face equality uses exact vertex locations and ignores raw indices,

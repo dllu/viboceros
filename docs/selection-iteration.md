@@ -25,9 +25,9 @@ membership slice, as well as value preservation and failure behavior.
 A 20-mesh regression crosses the indexed-iterator threshold in non-table action
 order, includes a hidden group-selected peer, and checks that a late extraction
 callback failure leaves the document unchanged.
-`SplitDisjointMesh` also stages from borrowed selected objects. It moves the
-first component into replacement staging and retains the remaining components
-for insertion, rather than cloning the first component. Tests cover mixed
+`SplitDisjointMesh` also stages from borrowed selected objects. It moves all
+components into fresh objects, preserving restricted sources and batch-deleting
+ordinary split sources after assigning output groups. Tests cover mixed
 connected/disconnected inputs and three-piece source-face ordering through
 undo/redo.
 `CollapseMeshEdge` consumes staged results into owned replacements and one

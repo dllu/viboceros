@@ -29531,7 +29531,7 @@ mod tests {
     }
 
     #[test]
-    fn splits_disjoint_meshes_with_identity_attributes_groups_and_undo() {
+    fn splits_disjoint_meshes_with_fresh_ids_attributes_groups_and_undo() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         registry
@@ -29580,21 +29580,23 @@ mod tests {
         assert_eq!(document.undo_label(), Some("SplitDisjointMesh"));
         assert_eq!(document.objects().len(), 3);
         assert_eq!(document.selected_object_count(), 3);
-        let third = document
+        assert!(document.object(first).is_none());
+        let pieces = document
             .objects()
             .map(|object| object.id())
-            .find(|id| *id != first && *id != second)
-            .unwrap();
-        assert_eq!(document.object(third).unwrap().attributes(), &attributes);
+            .filter(|id| *id != second)
+            .collect::<Vec<_>>();
+        assert_eq!(pieces.len(), 2);
         assert_eq!(
             document
                 .group_by_name("Assembly")
                 .unwrap()
                 .members()
                 .collect::<BTreeSet<_>>(),
-            BTreeSet::from([first, second, third])
+            BTreeSet::from([pieces[0], second, pieces[1]])
         );
-        for id in [first, third] {
+        for id in pieces {
+            assert_eq!(document.object(id).unwrap().attributes(), &attributes);
             let Geometry::Mesh(piece) = document.object(id).unwrap().geometry() else {
                 panic!("expected split mesh piece")
             };

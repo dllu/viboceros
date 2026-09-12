@@ -71,8 +71,8 @@ scratch array, avoiding per-component initialization of a source-sized array.
 Both operations share face-indexed component grouping, avoiding per-face tree
 lookups while retaining first-face order. An independent graph traversal checks
 the grouping against every undirected graph of up to six faces in two union orders.
-The `split_disjoint_mesh` command module owns staged component results and their
-document replacement, attribute/group propagation, and output selection.
+The `split_disjoint_mesh` command module owns staged component results, fresh
+piece insertion, source deletion policy, attribute/group propagation, and selection.
 The command-owned `object_selection` module supplies typed filters and boolean
 options to the separate [app object-prompt adapter](object-selection.md).
 `selection_commands` owns basic, action-history, attribute, and duplicate

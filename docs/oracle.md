@@ -145,7 +145,10 @@ tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/mesh_split_
 The checked-in `tools/rhino_oracle/observations/mesh_split_picking.json` records
 Rhino 8.32.26160.13001 on 2026-09-12: source identity, selection, object mode,
 group memberships, vertices and face counts, including the untouched third mesh.
-It exposes [known native identity/object-count differences](commands/meshes.md).
+A native command regression now compares those five recorded output sets exactly;
+see the [verified fields and remaining limits](commands/meshes.md). The oracle CLI
+still has no native `mesh_split_picking` operation; this is an offline observation
+comparison in `cargo test -p viboceros-command split_disjoint_mesh_matches_live`.
 Deleted sources are removed from cleanup tracking; surviving original and newly
 created mesh IDs are explicitly tracked and cleaned up in the private document.
 

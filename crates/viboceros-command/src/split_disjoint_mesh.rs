@@ -12,7 +12,11 @@ impl Command for SplitDisjointMeshCommand {
         if document.selected_object_count() == 0 {
             return Err(CommandError::NoObjectsSelected);
         }
-        let mut inputs = document
+        let selectable_sources = document
+            .selectable_objects()
+            .map(|object| object.id())
+            .collect::<BTreeSet<_>>();
+        let inputs = document
             .selected_objects()
             .map(|object| {
                 let Geometry::Mesh(mesh) = object.geometry() else {
@@ -37,23 +41,21 @@ impl Command for SplitDisjointMeshCommand {
             .map(|input| input.pieces.len())
             .sum::<usize>();
 
-        let mut replacements = Vec::with_capacity(split_mesh_count);
-        for input in &mut inputs {
-            if input.pieces.len() > 1 {
-                // Move the first piece into the original object. The remaining
-                // pieces retain their order and become new objects below.
-                replacements.push((input.id, Geometry::Mesh(input.pieces.remove(0))));
-            } else {
-                input.pieces.clear();
-            }
-        }
-        let replaced = document.replace_object_geometries(replacements)?;
-        debug_assert_eq!(replaced, split_mesh_count);
-
-        let mut output_ids = Vec::with_capacity(inputs.len() + piece_count - split_mesh_count);
+        let mut deleted_sources = Vec::with_capacity(split_mesh_count);
+        let mut output_ids = Vec::with_capacity(inputs.len() + piece_count);
 
         for input in inputs {
-            output_ids.push(input.id);
+            if input.pieces.len() <= 1 {
+                output_ids.push(input.id);
+                continue;
+            }
+            // Rhino creates fresh IDs for every piece. Its command retains
+            // hidden/locked sources picked through a selectable group peer.
+            if selectable_sources.contains(&input.id) {
+                deleted_sources.push(input.id);
+            } else {
+                output_ids.push(input.id);
+            }
             for piece in input.pieces {
                 let id = document.add_geometry_with_attributes(
                     Geometry::Mesh(piece),
@@ -63,6 +65,10 @@ impl Command for SplitDisjointMeshCommand {
                 document.set_object_group_memberships(id, input.group_ids.iter().copied())?;
             }
         }
+
+        // Attach all output memberships before deleting sources, so source
+        // groups never become temporarily empty during the command.
+        document.delete_objects(deleted_sources)?;
 
         // Locked/hidden peers can be edited through a selected group. They
         // cannot seed a new pick; selectable outputs expand their groups to
