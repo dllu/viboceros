@@ -84,6 +84,10 @@ than repeated vector removals. Candidate edges use binary search over strictly
 increasing incident indices; all topology callers supply this ordering. Tests
 check both closed fans and many disconnected boundary fans up to 1,024 faces,
 alongside the public Rhino radial-order records. No timing threshold is assumed.
+Shared-face lookup merges ascending incident-face streams instead of testing
+every pair. Topology construction preserves the required face-index order.
+Tests cover all 65,536 pairs of eight-face subsets, repeated indices, disjoint
+4,096-face streams, and a shared final index at `usize::MAX`.
 
 Shared welding compaction resolves every face to its representative before
 reusing the parent array as the compact-index map, eliminating a separate

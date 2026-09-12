@@ -89,13 +89,23 @@ pub(super) fn radially_sorted_vertex_edges(
     groups
 }
 
+/// Topology construction appends uses in ascending face-index order. Merging
+/// the two streams finds the first shared face without a Cartesian scan.
 fn shared_edge_face(first: &EdgeIncidence, second: &EdgeIncidence) -> Option<usize> {
-    first.uses().find_map(|first_use| {
-        second
-            .uses()
-            .any(|second_use| second_use.face == first_use.face)
-            .then_some(first_use.face)
-    })
+    let mut first = first.uses();
+    let mut second = second.uses();
+    let mut left = first.next()?.face;
+    let mut right = second.next()?.face;
+    loop {
+        if left == right {
+            return Some(left);
+        }
+        if left < right {
+            left = first.next()?.face;
+        } else {
+            right = second.next()?.face;
+        }
+    }
 }
 
 /// First occurrences in radial traversal order, with each incoming edge.

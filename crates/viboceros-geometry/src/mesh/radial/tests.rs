@@ -1,6 +1,49 @@
 use super::super::{EdgeUse, Point3, Tolerance, TriangleMesh, topology_face_edge_indices};
 use super::*;
 
+fn incidence_with_faces(faces: impl IntoIterator<Item = usize>) -> EdgeIncidence {
+    let mut incidence = EdgeIncidence::default();
+    for face in faces {
+        incidence.add_use(EdgeUse {
+            face,
+            side: 0,
+            forward: true,
+            raw_vertices: [0, 1],
+        });
+    }
+    incidence
+}
+
+#[test]
+fn shared_face_merge_matches_all_eight_face_subset_pairs() {
+    let incidences = (0..256)
+        .map(|mask| incidence_with_faces((0..8).filter(|&face| mask & (1 << face) != 0)))
+        .collect::<Vec<_>>();
+    for (left_mask, left) in incidences.iter().enumerate() {
+        for (right_mask, right) in incidences.iter().enumerate() {
+            let expected = (0..8).find(|&face| left_mask & right_mask & (1 << face) != 0);
+            assert_eq!(shared_edge_face(left, right), expected);
+        }
+    }
+}
+
+#[test]
+fn shared_face_merge_handles_long_disjoint_streams_duplicates_and_extreme_indices() {
+    let even = incidence_with_faces((0..8192).step_by(2));
+    let odd = incidence_with_faces((1..8192).step_by(2));
+    assert_eq!(shared_edge_face(&even, &odd), None);
+    let even_with_tail = incidence_with_faces((0..8192).step_by(2).chain([usize::MAX]));
+    let odd_with_tail = incidence_with_faces((1..8192).step_by(2).chain([usize::MAX]));
+    assert_eq!(
+        shared_edge_face(&even_with_tail, &odd_with_tail),
+        Some(usize::MAX)
+    );
+    let repeated = incidence_with_faces([0, 0, 2, 2, usize::MAX]);
+    let other = incidence_with_faces([1, 2, 2, 3, usize::MAX]);
+    assert_eq!(shared_edge_face(&repeated, &other), Some(2));
+    assert_eq!(shared_edge_face(&other, &repeated), Some(2));
+}
+
 #[test]
 fn high_valence_sorting_preserves_closed_fans_and_many_boundary_groups() {
     for count in [3, 17, 257, 1024] {

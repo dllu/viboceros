@@ -3538,6 +3538,8 @@ impl TriangleMesh {
         }
 
         let mut edges = BTreeMap::<(usize, usize), EdgeIncidence>::new();
+        // Keep incident uses in face-index order; radial shared-face lookup
+        // merges these ordered streams without sorting or pairwise searches.
         for (face_index, face) in self.faces.iter().enumerate() {
             let indices = face.indices();
             for side in 0..indices.len() {
