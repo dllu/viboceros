@@ -2,6 +2,24 @@
 use super::*;
 
 #[test]
+fn four_face_angle_unweld_matches_recorded_rhino_geometry_and_order() {
+    assert_recorded_geometry(
+        include_str!("../../../tools/rhino_oracle/fixtures/mesh_unweld_four_faces.json"),
+        include_str!("../../../tools/rhino_oracle/observations/mesh_unweld_four_faces.json"),
+        24,
+    );
+}
+
+#[test]
+fn vertex_reordered_angle_unweld_matches_recorded_rhino_geometry_and_order() {
+    assert_recorded_geometry(
+        include_str!("../../../tools/rhino_oracle/fixtures/mesh_unweld_vertex_order.json"),
+        include_str!("../../../tools/rhino_oracle/observations/mesh_unweld_vertex_order.json"),
+        6,
+    );
+}
+
+#[test]
 fn permanent_angle_unweld_fixture_matches_recorded_rhino_geometry_and_order() {
     assert_recorded_geometry(
         include_str!("../../../tools/rhino_oracle/fixtures/mesh_unweld.json"),
@@ -11,7 +29,6 @@ fn permanent_angle_unweld_fixture_matches_recorded_rhino_geometry_and_order() {
 }
 
 #[test]
-#[ignore = "known Rhino non-manifold angle-unweld face-order mismatch; see docs/mesh-unweld-nonmanifold.md"]
 fn nonmanifold_angle_unweld_matches_recorded_rhino_geometry_and_order() {
     assert_recorded_geometry(
         include_str!("../../../tools/rhino_oracle/fixtures/mesh_unweld_nonmanifold.json"),
@@ -21,7 +38,6 @@ fn nonmanifold_angle_unweld_matches_recorded_rhino_geometry_and_order() {
 }
 
 #[test]
-#[ignore = "known Rhino non-manifold angle-unweld threshold mismatch; see docs/mesh-unweld-nonmanifold.md"]
 fn nonmanifold_angle_unweld_thresholds_match_recorded_rhino_geometry_and_order() {
     assert_recorded_geometry(
         include_str!(

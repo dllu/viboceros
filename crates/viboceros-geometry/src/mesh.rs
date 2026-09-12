@@ -3047,6 +3047,9 @@ impl TriangleMesh {
             let mut ranks = vec![0_u8; vertex_faces.len()];
             for &edge in &incident_edges[topological_vertex] {
                 let (edge_vertices, incidence) = edges[edge];
+                if incidence.count > 2 {
+                    continue;
+                }
                 let endpoint = if edge_vertices[0] == topological_vertex {
                     Some(0)
                 } else if edge_vertices[1] == topological_vertex {
@@ -3058,6 +3061,8 @@ impl TriangleMesh {
                     continue;
                 };
                 for (left, right) in incidence.use_pairs() {
+                    let left_local = face_to_local[&left.face];
+                    let right_local = face_to_local[&right.face];
                     if left.raw_vertices[endpoint] != right.raw_vertices[endpoint] {
                         continue;
                     }
@@ -3066,11 +3071,52 @@ impl TriangleMesh {
                         .dot(face_normals[right.face].as_vector())?
                         .clamp(-1.0, 1.0);
                     if dot > maximum_dot {
+                        union_faces(&mut parents, &mut ranks, left_local, right_local);
+                    }
+                }
+            }
+            if incident_edges[topological_vertex]
+                .iter()
+                .any(|&edge| edges[edge].1.count > 2)
+            {
+                // A non-manifold junction follows the radial face walk, not
+                // all pairwise smooth connections across the edge. Qualifying
+                // incoming edges split the walk; subsequent adjacent faces can
+                // share only when their normals and existing raw indices agree.
+                let walk =
+                    radial_vertex_face_walk(&edge_groups[topological_vertex], &edges, vertex_faces);
+                for pair in walk.windows(2) {
+                    let (left, _) = pair[0];
+                    let (right, incoming) = pair[1];
+                    let Some(incoming) = incoming else {
+                        continue;
+                    };
+                    if qualifying_edges[incoming] {
+                        continue;
+                    }
+                    let raw_at_vertex = |face: usize| {
+                        self.faces[face]
+                            .indices()
+                            .iter()
+                            .copied()
+                            .find(|&raw| {
+                                data.topological_vertices[raw as usize] == topological_vertex
+                            })
+                            .expect("an incident face contains its topology vertex")
+                    };
+                    if raw_at_vertex(left) != raw_at_vertex(right) {
+                        continue;
+                    }
+                    let dot = face_normals[left]
+                        .as_vector()
+                        .dot(face_normals[right].as_vector())?
+                        .clamp(-1.0, 1.0);
+                    if dot > maximum_dot {
                         union_faces(
                             &mut parents,
                             &mut ranks,
-                            face_to_local[&left.face],
-                            face_to_local[&right.face],
+                            face_to_local[&left],
+                            face_to_local[&right],
                         );
                     }
                 }
@@ -4750,6 +4796,56 @@ fn shared_edge_face(first: &EdgeIncidence, second: &EdgeIncidence) -> Option<usi
     })
 }
 
+/// First occurrences in radial traversal order, with each incoming edge.
+/// Singleton groups carry faces too; falling back to source face order for
+/// those groups loses Rhino's non-manifold component ordering.
+fn radial_vertex_face_walk(
+    edge_groups: &[Vec<usize>],
+    edges: &[([usize; 2], &EdgeIncidence)],
+    incident_faces: &[usize],
+) -> Vec<(usize, Option<usize>)> {
+    let mut walk = Vec::new();
+    let mut seen = BTreeSet::new();
+    for group in edge_groups {
+        let mut faces = Vec::new();
+        if group.len() == 1 {
+            faces.extend(
+                edges[group[0]]
+                    .1
+                    .uses()
+                    .map(|edge_use| (edge_use.face, Some(group[0]))),
+            );
+        } else {
+            for (first, second) in group
+                .iter()
+                .copied()
+                .zip(group.iter().copied().cycle().skip(1))
+                .take(group.len())
+            {
+                if let Some(face) = shared_edge_face(edges[first].1, edges[second].1)
+                    && faces.last().is_none_or(|&(previous, _)| previous != face)
+                {
+                    faces.push((face, Some(first)));
+                }
+            }
+            if faces.len() > 1 && faces.first().unwrap().0 == faces.last().unwrap().0 {
+                faces.remove(0);
+            }
+        }
+        for entry in faces {
+            if seen.insert(entry.0) {
+                walk.push(entry);
+            }
+        }
+    }
+    for &face in incident_faces {
+        if seen.insert(face) {
+            walk.push((face, None));
+        }
+    }
+    walk
+}
+
 fn ordered_vertex_face_components(
     edge_groups: &[Vec<usize>],
     edges: &[([usize; 2], &EdgeIncidence)],
@@ -4761,6 +4857,13 @@ fn ordered_vertex_face_components(
     let mut seen = BTreeSet::new();
     for edge_group in edge_groups {
         let mut radial_roots = Vec::new();
+        if edge_group.len() == 1 {
+            for edge_use in edges[edge_group[0]].1.uses() {
+                if let Some(&local) = face_to_local.get(&edge_use.face) {
+                    radial_roots.push(index_root(parents, local));
+                }
+            }
+        }
         let mut add_shared_root = |first: usize, second: usize| {
             let Some(face) = shared_edge_face(edges[first].1, edges[second].1) else {
                 return;

@@ -1,6 +1,66 @@
 use super::*;
 
 #[test]
+fn angle_unweld_uses_radial_adjacency_instead_of_all_smooth_face_pairs() {
+    for (order, expected_groups) in [
+        ([0, 1, 2, 3], [[0, 1, 2, 2], [0, 1, 2, 2]]),
+        ([0, 2, 1, 3], [[0, 0, 1, 2], [0, 1, 2, 3]]),
+    ] {
+        let vertices = [
+            [0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, -1.0, 0.0],
+            [0.0, 0.0, 1.0],
+            [0.0, 0.0, -1.0],
+        ]
+        .map(|[x, y, z]| Point3::try_new(x, y, z).unwrap())
+        .to_vec();
+        let faces = [[0, 1, 2], [1, 0, 3], [0, 1, 4], [1, 0, 5]];
+        let source = TriangleMesh::try_new(
+            vertices,
+            order.map(|index| faces[index]).to_vec(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (output, count) = source
+            .unwelded_vertices(std::f64::consts::FRAC_PI_4)
+            .unwrap();
+        assert_eq!(count, 1);
+        let mut raw = [[0; 2]; 4];
+        for (face, &original_index) in order.iter().enumerate() {
+            let original = source.triangles()[face];
+            let rebuilt = output.triangles()[face];
+            assert_eq!(
+                original.map(|index| source.vertices()[index as usize]),
+                rebuilt.map(|index| output.vertices()[index as usize])
+            );
+            for (corner, &index) in original.iter().enumerate() {
+                if index < 2 {
+                    raw[original_index][index as usize] = rebuilt[corner];
+                }
+            }
+        }
+        for (endpoint, groups) in expected_groups.iter().enumerate() {
+            for left in 0..4 {
+                for right in 0..4 {
+                    assert_eq!(
+                        raw[left][endpoint] == raw[right][endpoint],
+                        groups[left] == groups[right]
+                    );
+                }
+            }
+        }
+        let expected_vertices = 4 + expected_groups
+            .iter()
+            .map(|groups| groups.iter().collect::<BTreeSet<_>>().len())
+            .sum::<usize>();
+        assert_eq!(output.vertices().len(), expected_vertices);
+        assert_eq!(output.area().unwrap(), source.area().unwrap());
+    }
+}
+
+#[test]
 fn non_manifold_radial_order_matches_public_rhino_topology_measurements() {
     // Exact ConnectedEdges results after SortEdges from the twelve-case
     // tools/rhino_oracle/observations/mesh_radial_topology.json record.

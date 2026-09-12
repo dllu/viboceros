@@ -60,11 +60,13 @@ The [angle-unweld fixture](../tools/rhino_oracle/fixtures/mesh_unweld.json) has 
 Replay checks exact raw vertex coordinates, face indices, ordering, and added
 vertex counts for zero/positive flat thresholds, equal/above right-angle
 thresholds, already-unwelded faces, and cube creases. Separate non-manifold probes
-exposed an [unresolved face-order-dependent mismatch](mesh-unweld-nonmanifold.md);
-their two parity tests are explicitly ignored and are not passing coverage.
+exposed a [face-order-dependent mismatch](mesh-unweld-nonmanifold.md), now corrected
+by radial face traversal and singleton-group ordering. All 69 non-manifold cases
+are enabled parity regressions, including 24 four-face permutations and six
+source-vertex reorderings; the earlier two ignored tests are enabled again.
 The Rhino-only `mesh_radial_topology` probe records public edge ordering and
-incidence separately; its twelve cases match the native radial sorter and narrow
-the investigation to subsequent grouping/rebuilding.
+incidence separately; its twelve cases match the native radial sorter and isolated
+the original discrepancy to subsequent grouping/rebuilding.
 
 The [edge-unweld fixture](../tools/rhino_oracle/fixtures/mesh_unweld_edge.json) has
 a [19-case Rhino 8.32 record](../tools/rhino_oracle/observations/mesh_unweld_edge.json).
