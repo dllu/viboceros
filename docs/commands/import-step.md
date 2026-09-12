@@ -37,6 +37,10 @@ sense, area 624, volume 992, and Undo/Redo. Export leaves the source document
 unchanged. The 3DM writer derives isoparametric flags for trims marked `NotIso`
 using OpenNURBS' classification; STEP import does not currently populate those
 flags itself. This archive metadata adjustment does not alter trim geometry.
+Additional round-trip checks cover polygon holes in either face orientation and
+explicit linear B-spline, rational B-spline, and two-point polyline trims. They
+verify exact control data and parameter intervals, topology and face sense, plus
+interior isocurve classification on hole boundaries.
 
 See [file formats](../file-formats.md) and the
 [native STEP conversion boundary](../step-brep-boundary.md) for limitations.

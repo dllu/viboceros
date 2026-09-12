@@ -162,7 +162,75 @@ fn explicit_linear_bspline_step_pcurves_import_without_losing_parameter_interval
                 );
             }
         }
+        assert_planar_brep_archive_round_trip(brep);
     }
+}
+
+fn assert_planar_brep_archive_round_trip(
+    brep: &viboceros_geometry::Brep,
+) -> viboceros_geometry::Brep {
+    use crate::{
+        ThreeDmGeometry, ThreeDmLayer, ThreeDmModel, ThreeDmObject, read_3dm_file, write_3dm_file,
+    };
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("native STEP face.3dm");
+    let model = ThreeDmModel::new(
+        vec![ThreeDmLayer {
+            name: "STEP".into(),
+            color: [10, 20, 30],
+            visible: true,
+            locked: false,
+        }],
+        vec![],
+        vec![ThreeDmObject::new(ThreeDmGeometry::Brep(brep.clone()), 0)],
+    );
+    write_3dm_file(&path, &model).unwrap();
+    let mut restored = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+    assert_eq!(restored.unsupported_object_count(), 0);
+    assert_eq!(restored.objects.len(), 1);
+    let ThreeDmGeometry::Brep(actual) = restored.objects.pop().unwrap().geometry else {
+        panic!("lost B-rep")
+    };
+    assert_eq!(
+        (
+            actual.vertices().len(),
+            actual.edges().len(),
+            actual.faces().len()
+        ),
+        (
+            brep.vertices().len(),
+            brep.edges().len(),
+            brep.faces().len()
+        )
+    );
+    assert!(
+        (actual.area(Tolerance::DEFAULT).unwrap() - brep.area(Tolerance::DEFAULT).unwrap()).abs()
+            < 1e-9
+    );
+    for (vertex, old) in actual.vertices().iter().zip(brep.vertices()) {
+        assert_eq!(vertex.point(), old.point());
+    }
+    for (edge, old) in actual.edges().iter().zip(brep.edges()) {
+        assert_eq!(edge.vertices(), old.vertices());
+        assert_eq!(edge.curve(), old.curve());
+    }
+    for (face, old) in actual.faces().iter().zip(brep.faces()) {
+        assert_eq!(face.surface(), old.surface());
+        assert_eq!(face.is_reversed(), old.is_reversed());
+        assert_eq!(face.loops().len(), old.loops().len());
+        for (boundary, old_boundary) in face.loops().iter().zip(old.loops()) {
+            assert_eq!(boundary.loop_type(), old_boundary.loop_type());
+            assert_eq!(boundary.trims().len(), old_boundary.trims().len());
+            for (trim, old_trim) in boundary.trims().iter().zip(old_boundary.trims()) {
+                assert_eq!(trim.vertices(), old_trim.vertices());
+                assert_eq!(trim.edge(), old_trim.edge());
+                assert_eq!(trim.curve(), old_trim.curve());
+                assert_eq!(trim.is_reversed_3d(), old_trim.is_reversed_3d());
+                assert_eq!(trim.trim_type(), old_trim.trim_type());
+            }
+        }
+    }
+    actual
 }
 
 #[test]
@@ -238,6 +306,17 @@ fn planar_hole_trims_survive_loading_and_native_conversion() {
             );
             assert!((brep.area(Tolerance::DEFAULT).unwrap() - 96.0).abs() < 1e-10);
             assert!(brep.signed_volume(Tolerance::DEFAULT).is_err());
+            let archived = assert_planar_brep_archive_round_trip(brep);
+            assert!(
+                archived.faces()[0].loops()[1]
+                    .trims()
+                    .iter()
+                    .all(|trim| matches!(
+                        trim.iso(),
+                        viboceros_geometry::SurfaceIso::InteriorUConstant
+                            | viboceros_geometry::SurfaceIso::InteriorVConstant
+                    ))
+            );
         }
     }
 }
