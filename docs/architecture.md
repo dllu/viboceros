@@ -67,74 +67,10 @@ and mesh-to-B-rep construction. Its replacement order is handled by the document
 containing only moved IDs and original indices. Geometry, memberships, and
 selection action order are independent of chronological object order.
 [`MeshToNURB`](commands/mesh-to-nurb.md) has a separate command module and option
-memory. Geometry connectivity and component extraction live in `mesh/components`;
-disjoint splitting and mesh explosion share a single reusable vertex-remap
-scratch array, avoiding per-component initialization of a source-sized array.
-Both operations share face-indexed component grouping, avoiding per-face tree
-lookups while retaining first-face order. An independent graph traversal checks
-the grouping against every undirected graph of up to six faces in two union orders.
-`TriangleMesh::try_explode_pieces` and `try_disjoint_pieces` share a component
-limit check before remapping geometry; commands pass their remaining output
-budgets. The unbounded mesh APIs share these implementations.
-Component grouping stops at the first over-budget root, before allocating that
-component's face list. The exhaustive graph test checks every budget from zero
-through the face count, plus the unbounded case. Topology and root-map storage
-still scale with the input mesh; the output limit does not cap those costs.
-Explosion streams edge incidences without collecting a temporary vector per
-edge. The shared unwelded-edge predicate handles up to two incident faces without
-heap allocation and retains set-based checks for non-manifold incidences. An
-independent pairwise test exhausts endpoint-index assignments through four uses.
-Logical-boundary and face-angle filters also stream incident-face pairs without
-temporary vectors. Indexed reference calculations cover boundary, manifold, and
-non-manifold edges, including inclusive break angles and strict filter bounds.
-The `mesh/normals` module shares direction calculation between triangulated-facet
-and polygon-normal APIs, with explicit tests of their different indexing.
-Polygon normals normalize triangle edges or quad diagonals before crossing them,
-so finite, valid meshes do not require representable face areas to compute a
-direction. Analytic normal and angle-filter regressions cover uniform scales
-from `1e-200` through `1e200`, including reversed winding. These are numerical
-invariance tests, not claims of Rhino parity at extreme scales.
-Mesh area retains its compensated facet sum and ordinary cross-product fast
-path. If a facet's cross product or full magnitude overflows, an exact binary
-accumulator applies the half factor before rounding its components. Tests cover
-both intermediate-overflow paths, genuinely unrepresentable areas, and the
-smallest positive binary64 area; these are native numerical guarantees.
-Topology-edge collapse uses the common point midpoint routine. Triangle/quad
-regressions preserve constant subnormal offsets, check signed subnormal ties,
-and avoid overflow for large constant offsets without changing source ordering.
-The `mesh/edge_collapse` module owns endpoint merging, face reduction, compaction,
-and final validation. Face reduction uses fixed-size index checks without per-quad
-collections; an independent distinct-vertex reference exhausts all triangle and
-quad index patterns over four labels, including collapsed sides and diagonals.
-The `mesh/edge_split` module owns split-point evaluation, seam policy, generated
-face ordering, and output sizing. It streams edge uses and checks the final
-vertex count against both address-space and `u32` index limits before fallibly
-reserving output vertex/face buffers. A wide-integer reference tests sizing at
-overflow boundaries without allocating huge meshes. Topology and replacement
-staging still scale with the source; this is not an overall memory budget.
-Replacement staging checks `2 * incident_triangles + 3 * incident_quads` and
-reserves candidate storage fallibly before generating faces. Endpoint-coincident
-candidates are removed afterwards; final output counts use that filtered list.
-Each staged `SplitTriangle` stores two raw indices, a typed split-point position,
-and winding. This is smaller than three optional indices plus winding, preserves
-the full `u32` index range, and keeps canonical vertex insertion separate from
-final face orientation. A representation test covers both positions/windings;
-the 27-case Rhino replay checks exact output geometry and ordering.
-Retained faces are streamed from the source for vertex marking and final remapping,
-without an intermediate face vector. A mixed-face regression checks unaffected
-face ordering and the different retention policy at interior versus endpoint splits.
-Vertex retention uses the remap table first as 0/1 marks, then overwrites retained
-slots with output indices during source-order compaction, avoiding a separate
-vertex-sized flag array. The affected-face and remap buffers reserve fallibly too.
-Topology construction still has its own allocations; these checks do not promise
-recovery from every process-wide out-of-memory condition.
-The edge-split module also contains the source-order, seam, endpoint, and invalid
-input regressions, alongside wide-integer staging/output sizing tests.
-A 450-case planar split matrix covers every triangle/quad side pairing, both
-windings, full/partial/no endpoint welding, and three interior parameters.
-Independent 2D determinants check signed area and each replacement's winding;
-output counts and split-point multiplicity check seam handling. These invariants
-exclude endpoint duplication and do not assume warped-quad area preservation.
+memory. Mesh connectivity, polygon normals, edge collapse, and edge splitting
+have separate kernel modules. They preserve raw-vertex seam distinctions while
+sharing exact-location topology. See [mesh topology and editing](mesh-topology.md)
+for allocation policy, numerical boundaries, and independent/Rhino regression coverage.
 The `split_disjoint_mesh` command module owns staged component results, fresh
 piece insertion, source deletion policy, attribute/group propagation, and selection.
 The separate `explode` command module owns multi-geometry decomposition staging,

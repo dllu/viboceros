@@ -2,6 +2,9 @@
 
 [Command reference](README.md) · [Project overview](../../README.md)
 
+Kernel ownership, numerical limits, allocation policy, and regression evidence
+are documented in [mesh topology and editing](../mesh-topology.md).
+
 ## Meshing and mesh primitives
 
 `Mesh` creates editable polygon meshes from selected NURBS surfaces and B-reps

@@ -2,6 +2,9 @@
 
 [Architecture](architecture.md) · [NURBS numerical policy](nurbs-numerics.md)
 
+For mesh-specific normal, area, midpoint, and topology-editing checks, see
+[mesh topology and editing](mesh-topology.md).
+
 These policies concern primitive binary64 arithmetic. They do not establish
 global Rhino parity, exact arithmetic for every geometry operation, or uniform
 accuracy for ill-conditioned inputs. Finite-value and degeneracy validation
