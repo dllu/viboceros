@@ -30,6 +30,17 @@ fn mesh_staging_retains_action_order_group_peers_and_read_only_failures() {
     let before = format!("{document:?}");
     let unsupported = || CommandError::Usage("expected mesh");
     let sources = selected_mesh_face_sources(&document, unsupported).unwrap();
+    let topology = selected_mesh_topology_sources(&document, unsupported).unwrap();
+    assert_eq!(
+        topology.iter().map(|source| source.id).collect::<Vec<_>>(),
+        expected
+    );
+    for source in topology {
+        let Geometry::Mesh(mesh) = document.object(source.id).unwrap().geometry() else {
+            unreachable!()
+        };
+        assert!(std::ptr::eq(source.mesh, mesh));
+    }
     assert_eq!(
         sources.iter().map(|source| source.id).collect::<Vec<_>>(),
         expected
@@ -63,4 +74,19 @@ fn mesh_staging_retains_action_order_group_peers_and_read_only_failures() {
     );
     assert_eq!(calls, 3);
     assert_eq!(format!("{document:?}"), before);
+    let point = document
+        .add_geometry(Geometry::Point(Point3::try_new(0., 0., 0.).unwrap()))
+        .unwrap();
+    document.select_object(point, SelectionMode::Add).unwrap();
+    let before = format!("{document:?}");
+    assert!(matches!(
+        selected_mesh_topology_sources(&document, unsupported),
+        Err(CommandError::Usage("expected mesh"))
+    ));
+    assert_eq!(format!("{document:?}"), before);
+    document.clear_selection();
+    assert!(matches!(
+        selected_mesh_topology_sources(&document, unsupported),
+        Err(CommandError::NoObjectsSelected)
+    ));
 }

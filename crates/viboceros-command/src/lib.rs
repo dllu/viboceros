@@ -12623,21 +12623,8 @@ impl Command for WeldEdgeCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let selection = parse_weld_edge_arguments(arguments)?;
-        let sources = document
-            .selected_objects()
-            .map(|object| {
-                let Geometry::Mesh(mesh) = object.geometry() else {
-                    return Err(CommandError::UnsupportedWeldEdgeGeometry);
-                };
-                Ok(MeshTopologySource {
-                    id: object.id(),
-                    mesh,
-                })
-            })
-            .collect::<Result<Vec<_>, CommandError>>()?;
-        if sources.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
+        let sources =
+            selected_mesh_topology_sources(document, || CommandError::UnsupportedWeldEdgeGeometry)?;
 
         let selections = selected_weld_edges(&sources, &selection, document.tolerance())?;
         let mesh_count = sources.len();
@@ -12777,21 +12764,9 @@ impl Command for WeldVerticesCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let selection = parse_weld_vertices_arguments(arguments)?;
-        let sources = document
-            .selected_objects()
-            .map(|object| {
-                let Geometry::Mesh(mesh) = object.geometry() else {
-                    return Err(CommandError::UnsupportedWeldVerticesGeometry);
-                };
-                Ok(MeshTopologySource {
-                    id: object.id(),
-                    mesh,
-                })
-            })
-            .collect::<Result<Vec<_>, CommandError>>()?;
-        if sources.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
+        let sources = selected_mesh_topology_sources(document, || {
+            CommandError::UnsupportedWeldVerticesGeometry
+        })?;
 
         let selections = selected_weld_vertices(&sources, &selection)?;
         let mesh_count = sources.len();
@@ -13024,6 +12999,28 @@ struct MeshTopologySource<'a> {
     mesh: &'a TriangleMesh,
 }
 
+fn selected_mesh_topology_sources(
+    document: &Document,
+    unsupported_geometry: impl Fn() -> CommandError,
+) -> Result<Vec<MeshTopologySource<'_>>, CommandError> {
+    let sources = document
+        .selected_objects()
+        .map(|object| {
+            let Geometry::Mesh(mesh) = object.geometry() else {
+                return Err(unsupported_geometry());
+            };
+            Ok(MeshTopologySource {
+                id: object.id(),
+                mesh,
+            })
+        })
+        .collect::<Result<Vec<_>, CommandError>>()?;
+    if sources.is_empty() {
+        return Err(CommandError::NoObjectsSelected);
+    }
+    Ok(sources)
+}
+
 struct UnweldEdgeCommand;
 
 impl Command for UnweldEdgeCommand {
@@ -13037,21 +13034,9 @@ impl Command for UnweldEdgeCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let options = parse_unweld_edge_arguments(arguments)?;
-        let sources = document
-            .selected_objects()
-            .map(|object| {
-                let Geometry::Mesh(mesh) = object.geometry() else {
-                    return Err(CommandError::UnsupportedUnweldEdgeGeometry);
-                };
-                Ok(MeshTopologySource {
-                    id: object.id(),
-                    mesh,
-                })
-            })
-            .collect::<Result<Vec<_>, CommandError>>()?;
-        if sources.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
+        let sources = selected_mesh_topology_sources(document, || {
+            CommandError::UnsupportedUnweldEdgeGeometry
+        })?;
 
         let selections = selected_unweld_edges(&sources, &options.selection, document.tolerance())?;
         let mesh_count = sources.len();
@@ -13206,21 +13191,9 @@ impl Command for UnweldVertexCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let options = parse_unweld_vertex_arguments(arguments)?;
-        let sources = document
-            .selected_objects()
-            .map(|object| {
-                let Geometry::Mesh(mesh) = object.geometry() else {
-                    return Err(CommandError::UnsupportedUnweldVertexGeometry);
-                };
-                Ok(MeshTopologySource {
-                    id: object.id(),
-                    mesh,
-                })
-            })
-            .collect::<Result<Vec<_>, CommandError>>()?;
-        if sources.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
+        let sources = selected_mesh_topology_sources(document, || {
+            CommandError::UnsupportedUnweldVertexGeometry
+        })?;
 
         let selections = selected_unweld_vertices(&sources, &options.selection)?;
         let mesh_count = sources.len();
@@ -14166,21 +14139,9 @@ impl Command for SwapMeshEdgeCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let selection = parse_mesh_topology_edge_arguments(arguments, SWAP_MESH_EDGE_USAGE)?;
-        let sources = document
-            .selected_objects()
-            .map(|object| {
-                let Geometry::Mesh(mesh) = object.geometry() else {
-                    return Err(CommandError::UnsupportedSwapMeshEdgeGeometry);
-                };
-                Ok(MeshTopologySource {
-                    id: object.id(),
-                    mesh,
-                })
-            })
-            .collect::<Result<Vec<_>, CommandError>>()?;
-        if sources.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
+        let sources = selected_mesh_topology_sources(document, || {
+            CommandError::UnsupportedSwapMeshEdgeGeometry
+        })?;
 
         let selections = selected_swap_mesh_edges(&sources, &selection, document.tolerance())?;
         let mesh_count = sources.len();
@@ -14319,21 +14280,9 @@ impl Command for CollapseMeshEdgeCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let selection = parse_mesh_topology_edge_arguments(arguments, COLLAPSE_MESH_EDGE_USAGE)?;
-        let sources = document
-            .selected_objects()
-            .map(|object| {
-                let Geometry::Mesh(mesh) = object.geometry() else {
-                    return Err(CommandError::UnsupportedCollapseMeshEdgeGeometry);
-                };
-                Ok(MeshTopologySource {
-                    id: object.id(),
-                    mesh,
-                })
-            })
-            .collect::<Result<Vec<_>, CommandError>>()?;
-        if sources.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
+        let sources = selected_mesh_topology_sources(document, || {
+            CommandError::UnsupportedCollapseMeshEdgeGeometry
+        })?;
 
         let selections = selected_collapse_mesh_edges(&sources, &selection, document.tolerance())?;
         let plans = selections
@@ -14425,21 +14374,9 @@ impl Command for SplitMeshEdgeCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let selection = parse_split_mesh_edge_arguments(arguments)?;
-        let sources = document
-            .selected_objects()
-            .map(|object| {
-                let Geometry::Mesh(mesh) = object.geometry() else {
-                    return Err(CommandError::UnsupportedSplitMeshEdgeGeometry);
-                };
-                Ok(MeshTopologySource {
-                    id: object.id(),
-                    mesh,
-                })
-            })
-            .collect::<Result<Vec<_>, CommandError>>()?;
-        if sources.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
+        let sources = selected_mesh_topology_sources(document, || {
+            CommandError::UnsupportedSplitMeshEdgeGeometry
+        })?;
 
         let selections = selected_split_mesh_edges(&sources, &selection, document.tolerance())?;
         let replacements = selections
