@@ -492,7 +492,7 @@ fn tessellate_shape(
             boundaries.push(inner);
         }
         let solid = CompressedTrimmedSolid { boundaries };
-        let mesh_tolerance = tessellation_tolerance(solid.boundaries.iter(), tolerance);
+        let mesh_tolerance = tessellation_tolerance(solid.boundaries.iter(), tolerance)?;
         let tessellation = solid.robust_triangulation(mesh_tolerance);
         reject_dropped_faces(
             shape_id,
@@ -513,7 +513,7 @@ fn tessellate_shape(
             record_topology_report(report, &shell_report);
             shells.push(shell);
         }
-        let mesh_tolerance = tessellation_tolerance(shells.iter(), tolerance);
+        let mesh_tolerance = tessellation_tolerance(shells.iter(), tolerance)?;
         let mut polygon = PolygonMesh::default();
         let mut face_offset = 0;
         for shell in shells {
@@ -611,17 +611,17 @@ fn is_placement_item(table: &Table, id: u64) -> bool {
 fn tessellation_tolerance<'a>(
     shells: impl Iterator<Item = &'a StepCompressedTrimmedShell>,
     document_tolerance: Tolerance,
-) -> f64 {
+) -> Result<f64, StepError> {
     let mut extent = SampledExtent::default();
     for shell in shells {
         for point in &shell.vertices {
-            extent.push(*point);
+            extent.push(*point)?;
         }
         for edge in &shell.edges {
             let (start, end) = edge.curve.range_tuple();
             for sample in 0..=4 {
                 let parameter = sample_parameter(start, end, sample);
-                extent.push(edge.curve.evaluate(parameter));
+                extent.push(edge.curve.evaluate(parameter))?;
             }
         }
         for face in &shell.faces {
@@ -633,15 +633,15 @@ fn tessellation_tolerance<'a>(
                 let u = sample_parameter(u_start, u_end, u_sample);
                 for v_sample in 0..=4 {
                     let v = sample_parameter(v_start, v_end, v_sample);
-                    extent.push(face.surface.evaluate(u, v));
+                    extent.push(face.surface.evaluate(u, v))?;
                 }
             }
         }
     }
-    extent
+    Ok(extent
         .relative_diameter()
         .max(document_tolerance.absolute())
-        .max(monstertruck::core::tolerance::TOLERANCE)
+        .max(monstertruck::core::tolerance::TOLERANCE))
 }
 
 // The five sampling stations include the exact endpoints. Opposite-sign
@@ -687,7 +687,10 @@ impl Default for SampledExtent {
 }
 
 impl SampledExtent {
-    fn push(&mut self, point: monstertruck::core::cgmath64::Point3) {
+    fn push(&mut self, point: monstertruck::core::cgmath64::Point3) -> Result<(), GeometryError> {
+        // f64::min/max ignore NaNs. Validate the complete point before
+        // updating any axis so a failed sample cannot silently shrink bounds.
+        Point3::try_new(point.x, point.y, point.z)?;
         self.minimum[0] = self.minimum[0].min(point.x);
         self.minimum[1] = self.minimum[1].min(point.y);
         self.minimum[2] = self.minimum[2].min(point.z);
@@ -695,6 +698,7 @@ impl SampledExtent {
         self.maximum[1] = self.maximum[1].max(point.y);
         self.maximum[2] = self.maximum[2].max(point.z);
         self.count += 1;
+        Ok(())
     }
 
     fn relative_diameter(&self) -> f64 {

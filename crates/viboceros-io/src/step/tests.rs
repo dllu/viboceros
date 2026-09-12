@@ -35,16 +35,61 @@ fn relative_tessellation_extent_scales_before_overflow() {
     assert_eq!(SampledExtent::default().relative_diameter(), 0.0);
     for scale in [1.0, f64::MAX / 2.0, f64::MAX] {
         let mut extent = SampledExtent::default();
-        extent.push(TruckPoint3::new(-scale, -scale, -scale));
-        extent.push(TruckPoint3::new(scale, scale, scale));
+        extent
+            .push(TruckPoint3::new(-scale, -scale, -scale))
+            .unwrap();
+        extent.push(TruckPoint3::new(scale, scale, scale)).unwrap();
         let expected = (scale * RELATIVE_MESH_TOLERANCE) * (2.0 * 3.0_f64.sqrt());
         let actual = extent.relative_diameter();
         assert!(actual.is_finite() && actual > 0.0);
         assert!((actual / expected - 1.0).abs() < 1e-14);
     }
     let mut singleton = SampledExtent::default();
-    singleton.push(TruckPoint3::new(f64::MAX, f64::MAX, f64::MAX));
+    singleton
+        .push(TruckPoint3::new(f64::MAX, f64::MAX, f64::MAX))
+        .unwrap();
     assert_eq!(singleton.relative_diameter(), 0.0);
+}
+
+#[test]
+fn sampled_extent_rejects_nonfinite_coordinates_without_partial_updates() {
+    for axis in 0..3 {
+        for value in [f64::NAN, f64::INFINITY, f64::NEG_INFINITY] {
+            let mut extent = SampledExtent::default();
+            extent.push(TruckPoint3::new(1.0, 2.0, 3.0)).unwrap();
+            let mut coordinates = [-99.0; 3];
+            coordinates[axis] = value;
+            assert!(
+                extent
+                    .push(TruckPoint3::new(
+                        coordinates[0],
+                        coordinates[1],
+                        coordinates[2]
+                    ))
+                    .is_err()
+            );
+            assert_eq!(extent.minimum, [1.0, 2.0, 3.0]);
+            assert_eq!(extent.maximum, [1.0, 2.0, 3.0]);
+            assert_eq!(extent.count, 1);
+        }
+    }
+}
+
+#[test]
+fn tessellation_setup_propagates_invalid_shell_samples() {
+    let table = Table::from_step(&cube_step()).unwrap();
+    let id = *table.shell.keys().next().unwrap();
+    let (mut shell, _) = reported_trimmed_shell(&table, id).unwrap();
+    assert!(
+        tessellation_tolerance(std::iter::once(&shell), Tolerance::DEFAULT)
+            .unwrap()
+            .is_finite()
+    );
+    shell.vertices[0].z = f64::NAN;
+    assert!(matches!(
+        tessellation_tolerance(std::iter::once(&shell), Tolerance::DEFAULT),
+        Err(StepError::Geometry(_))
+    ));
 }
 
 #[test]

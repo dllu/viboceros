@@ -128,7 +128,10 @@ endpoints. Relative extent sizing scales axis spans before computing the diagona
 avoiding overflow when finite endpoints span more than the binary64 range.
 Unit tests cover extreme opposite-sign parameter domains and finite coordinates
 up to `f64::MAX`; these validate tolerance setup, not the downstream kernel's
-ability to tessellate arbitrary geometry at those scales. Repeated
+ability to tessellate arbitrary geometry at those scales. Extent
+sampling rejects non-finite vertex, curve, or surface points before tessellation;
+the extent accumulator validates every coordinate before changing its bounds,
+so NaNs cannot silently disappear through floating-point min/max. Repeated
 assembly instances share source-space tessellation during each import, but
 each transformed mesh is validated independently. Cached tessellations are
 released after their last instance; shell-conversion losses are reported
