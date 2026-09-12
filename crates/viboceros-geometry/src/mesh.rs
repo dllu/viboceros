@@ -2916,16 +2916,17 @@ impl TriangleMesh {
             if !selected {
                 continue;
             }
-            let uses = incidence.uses().collect::<Vec<_>>();
+            let mut uses = incidence.uses();
+            let first = uses.next().expect("a topology edge has an incident face");
             let mut divided_endpoint = false;
-            for endpoint in 0..2 {
-                let raw_vertices = uses
-                    .iter()
-                    .map(|edge_use| edge_use.raw_vertices[endpoint] as usize)
-                    .collect::<BTreeSet<_>>();
-                divided_endpoint |= raw_vertices.len() > 1;
-                if let Some(&first) = raw_vertices.first() {
-                    for &raw in raw_vertices.iter().skip(1) {
+            for edge_use in uses {
+                for endpoint in 0..2 {
+                    let first = first.raw_vertices[endpoint] as usize;
+                    let raw = edge_use.raw_vertices[endpoint] as usize;
+                    // Index-preserving unions retain the minimum raw index
+                    // independently of traversal order or repeated uses.
+                    if first != raw {
+                        divided_endpoint = true;
                         union_indices_keep_earlier(&mut parents, first, raw);
                     }
                 }

@@ -35,6 +35,10 @@ Explosion streams edge incidences. The unwelded-edge predicate needs no heap
 allocation for up to two incident faces and uses sets for non-manifold cases.
 Logical-boundary and face-angle filters stream incident-face pairs too. Break
 angles are inclusive; face-angle interval bounds are strict.
+Selected-edge welding streams endpoint pairs without collecting edge uses or
+per-endpoint sets. Index-preserving unions retain the earliest raw vertex even
+when incidence order differs or raw indices repeat; unrelated coincident fans
+remain separate.
 
 ## Normals and area
 
