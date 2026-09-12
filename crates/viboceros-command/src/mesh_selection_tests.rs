@@ -33,7 +33,7 @@ fn collapse_locked_group_peers_follow_explicit_deletion_policy_and_restore_on_un
         assert!(document.can_redo());
         let before = document.objects().cloned().collect::<Vec<_>>();
         let groups = document.groups().cloned().collect::<Vec<_>>();
-        let selection = document.selected_object_ids().collect::<Vec<_>>();
+        let selection = document.selected_object_ids().collect::<BTreeSet<_>>();
         let result = registry.execute(&mut document, "CollapseMeshEdge Edge=0");
         assert_eq!(
             result.unwrap(),
@@ -47,8 +47,10 @@ fn collapse_locked_group_peers_follow_explicit_deletion_policy_and_restore_on_un
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
         assert_eq!(document.groups().cloned().collect::<Vec<_>>(), groups);
+        // History exchanges selected membership; it does not rewind the
+        // action order of surviving versus restored objects.
         assert_eq!(
-            document.selected_object_ids().collect::<Vec<_>>(),
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
             selection
         );
         assert!(
