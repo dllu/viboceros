@@ -13,6 +13,7 @@ use crate::{
     WeightedPoint2, WeightedPoint3, require_finite,
 };
 
+mod combine;
 mod incidence;
 mod loft;
 mod mass_properties;

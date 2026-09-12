@@ -14,6 +14,7 @@ fn file_commands_preserve_repeated_spaces_in_quoted_and_unquoted_paths() {
         ("ExportStl Ascii", "ImportStl", "stl"),
         ("ExportStl Binary", "ImportStl", "stl"),
         ("ExportStep", "ImportStep", "step"),
+        ("ExportStep", "ImportStep Native=Yes", "step"),
         ("Export3dm", "Import3dm", "3dm"),
     ] {
         for quoted in [false, true] {
@@ -52,6 +53,7 @@ fn malformed_filename_quotes_fail_before_document_history_changes() {
         "ImportStl",
         "ExportStl",
         "ImportStep",
+        "ImportStep Native=Yes",
         "ExportStep",
         "Import3dm",
         "Export3dm",
@@ -63,6 +65,123 @@ fn malformed_filename_quotes_fail_before_document_history_changes() {
             ));
             assert_eq!(format!("{document:?}"), before);
         }
+    }
+}
+
+#[test]
+fn native_step_import_keeps_cavity_shells_in_one_document_object() {
+    use monstertruck::modeling::{BoundingBox, Point3 as TruckPoint, Shell, Solid, primitive};
+    use monstertruck::step::save::{CompleteStepDisplay, StepHeaderDescriptor, StepModel};
+    let cube = |radius: f64| -> Solid {
+        primitive::cuboid(BoundingBox::from_iter([
+            TruckPoint::new(-radius, -radius, -radius),
+            TruckPoint::new(radius, radius, radius),
+        ]))
+    };
+    let outer = cube(5.);
+    let inner = cube(1.);
+    let cavity = Shell::from(
+        inner.boundaries()[0]
+            .iter()
+            .map(|face| face.inverse())
+            .collect::<Vec<_>>(),
+    );
+    let solid = Solid::new(vec![outer.boundaries()[0].clone(), cavity]).compress();
+    let text = CompleteStepDisplay::new(StepModel::from(&solid), StepHeaderDescriptor::default())
+        .to_string();
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("cavity.step");
+    std::fs::write(&path, text).unwrap();
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry
+        .execute(
+            &mut document,
+            &format!("ImportStep Native=Yes {}", path.display()),
+        )
+        .unwrap();
+    assert_eq!(document.objects().len(), 1);
+    let Geometry::Brep(brep) = document.objects().next().unwrap().geometry() else {
+        panic!("lost native B-rep")
+    };
+    assert_eq!(
+        (
+            brep.vertices().len(),
+            brep.edges().len(),
+            brep.faces().len()
+        ),
+        (16, 24, 12)
+    );
+    assert!((brep.signed_volume(Tolerance::DEFAULT).unwrap() - 992.).abs() < 1e-9);
+}
+
+#[test]
+fn native_step_import_converts_units_and_replays_as_editable_breps() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("native  part.step");
+    let registry = CommandRegistry::with_builtins();
+    let mut source =
+        Document::with_units(Tolerance::DEFAULT, viboceros_io::LengthUnitSystem::Inches).unwrap();
+    source.add_geometry(triangle(1.)).unwrap();
+    registry
+        .execute(&mut source, &format!("ExportStep \"{}\"", path.display()))
+        .unwrap();
+    let mut target = Document::with_units(
+        Tolerance::DEFAULT,
+        viboceros_io::LengthUnitSystem::Millimeters,
+    )
+    .unwrap();
+    let message = registry
+        .execute(
+            &mut target,
+            &format!("ImportStep Native=Yes \"{}\"", path.display()),
+        )
+        .unwrap();
+    assert!(message.contains("1 native planar STEP object"));
+    assert_eq!(target.undo_label(), Some("ImportStep"));
+    let object = target.objects().next().unwrap();
+    let Geometry::Brep(brep) = object.geometry() else {
+        panic!("native import produced a mesh")
+    };
+    assert_eq!(
+        (
+            brep.vertices().len(),
+            brep.edges().len(),
+            brep.faces().len()
+        ),
+        (3, 3, 1)
+    );
+    assert!((brep.area(Tolerance::DEFAULT).unwrap() - 0.125 * 25.4 * 25.4).abs() < 1e-9);
+    assert!(brep.vertices().iter().any(|v| {
+        v.point()
+            .is_near(Point3::try_new(25.4, 0., 0.).unwrap(), Tolerance::DEFAULT)
+    }));
+    let snapshot = format!("{:?}", target.objects().collect::<Vec<_>>());
+    registry.execute(&mut target, "Undo").unwrap();
+    assert_eq!(target.objects().len(), 0);
+    registry.execute(&mut target, "Redo").unwrap();
+    assert_eq!(
+        format!("{:?}", target.objects().collect::<Vec<_>>()),
+        snapshot
+    );
+}
+
+#[test]
+fn failed_native_step_import_preserves_document_and_redo_history() {
+    let registry = CommandRegistry::with_builtins();
+    let directory = tempfile::tempdir().unwrap();
+    let invalid = directory.path().join("invalid.step");
+    std::fs::write(&invalid, "not a STEP file").unwrap();
+    let mut document = Document::default();
+    registry.execute(&mut document, "Point 1,2,3").unwrap();
+    registry.execute(&mut document, "Undo").unwrap();
+    let before = format!("{document:?}");
+    for command in [
+        "ImportStep Native=Yes".to_owned(),
+        format!("ImportStep Native=Yes \"{}\"", invalid.display()),
+    ] {
+        assert!(registry.execute(&mut document, &command).is_err());
+        assert_eq!(format!("{document:?}"), before);
     }
 }
 

@@ -85,6 +85,16 @@ pub(super) struct ImportStepCommand;
 
 impl Command for ImportStepCommand {
     fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
+        let input = input.trim();
+        let end = input.find(char::is_whitespace).unwrap_or(input.len());
+        if input[..end].eq_ignore_ascii_case("Native=Yes") {
+            let mut arguments = paths::parse(&input[end..], false)?;
+            if arguments.is_empty() {
+                return Err(CommandError::Usage("ImportStep Native=Yes path"));
+            }
+            arguments.insert(0, "Native=Yes");
+            return Ok(arguments);
+        }
         paths::parse(input, false)
     }
 
@@ -99,6 +109,9 @@ impl Command for ImportStepCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         if arguments.is_empty() {
             return Err(CommandError::Usage("ImportStep path"));
+        }
+        if arguments.len() == 2 && arguments[0] == "Native=Yes" {
+            return import_native_step(document, arguments[1]);
         }
         let path = arguments.join(" ");
         let import =
@@ -122,6 +135,46 @@ impl Command for ImportStepCommand {
             "Imported {object_count} STEP mesh object(s) ({triangle_count} triangles) from '{path}' ({warning_count} conversion warning(s))"
         ))
     }
+}
+
+fn import_native_step(document: &mut Document, path: &str) -> Result<String, CommandError> {
+    let reader = std::fs::File::open(path).map_err(viboceros_io::StepError::from)?;
+    let imported = viboceros_io::read_step_planar_instances_in_units(
+        reader,
+        document.units(),
+        document.tolerance(),
+    )?;
+    let warnings = imported.report.warning_count();
+    let mut occurrences = BTreeMap::<usize, (Option<String>, Vec<viboceros_geometry::Brep>)>::new();
+    for instance in imported.instances {
+        occurrences
+            .entry(instance.placement_index)
+            .or_insert_with(|| (instance.name, Vec::new()))
+            .1
+            .push(instance.brep);
+    }
+    // Preflight all combined occurrences before inserting the first object.
+    let objects = occurrences
+        .into_values()
+        .map(|(name, shells)| {
+            Ok((
+                name,
+                viboceros_geometry::Brep::try_combine(shells, document.tolerance())?,
+            ))
+        })
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    let count = objects.len();
+    let layer = document.current_layer_id();
+    for (name, brep) in objects {
+        let mut attributes = ObjectAttributes::on_layer(layer);
+        if let Some(name) = name {
+            attributes = attributes.with_name(name);
+        }
+        document.add_geometry_with_attributes(Geometry::Brep(brep), attributes)?;
+    }
+    Ok(format!(
+        "Imported {count} native planar STEP object(s) from '{path}' ({warnings} conversion warning(s))"
+    ))
 }
 
 pub(super) struct ExportStepCommand;

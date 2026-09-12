@@ -203,7 +203,10 @@ General editable STEP B-rep interchange is not implemented yet. The low-level
 `read_step_planar_shells` API converts supported planar source shell definitions
 to validated native B-reps without tessellation; its `_in_units` counterpart
 converts uniform file units into explicit target units. Neither provides assembly
-placement or document integration yet. `ImportStep` still imports meshes.
+placement or document integration themselves. `ImportStep` defaults to meshes;
+[`ImportStep Native=Yes`](commands/import-step.md) imports the supported planar
+subset as editable B-reps, combining each occurrence's outer/cavity shells into
+one document object while retaining topology and orientation.
 The separate `read_step_planar_instances` API applies assembly placements in
 file units, retains occurrence names and grouping indices, and expands oriented
 outer/void and surface-model shells into native shell entries. It does not yet

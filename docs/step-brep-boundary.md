@@ -2,9 +2,11 @@
 
 [File-format support](file-formats.md) · [Native B-rep geometry](../crates/viboceros-geometry/src/brep.rs)
 
-The `ImportStep` command currently produces display meshes. A low-level
+The `ImportStep` command defaults to display meshes. `ImportStep Native=Yes`
+imports the supported planar subset as editable document B-reps. A low-level
 `read_step_planar_shells` API now produces validated native planar B-reps from
-source shell definitions; it is not yet integrated into document import.
+source shell definitions; the command uses the assembly-aware unit-converting
+reader described below. See [ImportStep](commands/import-step.md).
 The mesh route must not be relabeled as an exact B-rep import: tessellation
 discards the source surface definitions, shared curve identities, and UV trims.
 
@@ -42,7 +44,8 @@ resolves uniform file units and scales the fully placed geometry, including
 assembly translations. Tolerance is in target units; source geometry and
 placement validation use the corresponding source tolerance. Both paths retain
 UV trims, shell sense, occurrence grouping, and diagnostics. Neither inserts
-document objects; `ImportStep` remains mesh-based.
+document objects themselves; `ImportStep Native=Yes` inserts their combined
+occurrences on the current layer as one undoable command.
 
 Each entry retains `source_shape_id`, `source_shell_id` (the actual shell
 reference, including oriented wrappers), the occurrence name, and a
