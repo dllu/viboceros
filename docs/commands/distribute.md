@@ -123,3 +123,11 @@ sum of endpoint, offset, and spacing; it does not require the interval width
 itself to be representable. A four-interval regression covers a stationary
 interval spanning opposite extreme coordinates, with automatic and explicit
 zero gaps. No unused next position is computed beyond the final interval.
+
+An independent integer-reference test checks 36,864 spacing plans for 3, 5,
+and 9 units at scales `2^-500`, `1`, and `2^500`. It derives gap layouts from
+total/prefix widths and center layouts from exact integer centers, rather than
+repeating the planner's running-position algorithm. Cases include overlapping
+and zero-width intervals, automatic spacing, and signed explicit spacing.
+The chosen power-of-two denominators make all reference answers exactly
+representable; these checks do not assert correct rounding for arbitrary inputs.

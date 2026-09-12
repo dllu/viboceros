@@ -73,6 +73,79 @@ mod tests {
     use super::*;
 
     #[test]
+    fn plans_match_independent_integer_layout_equations() {
+        let mut state = 0x3b76_8d24_69af_102eu64;
+        let mut next = || {
+            state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
+            (state >> 32) as i64
+        };
+        for count in [3, 5, 9] {
+            // A common integer denominator represents centers and automatic
+            // spacing exactly. Power-of-two counts-minus-one keep every
+            // expected result exactly representable in binary floating point.
+            let denominator = 2 * (count - 1) as i64;
+            for _ in 0..512 {
+                let mut starts = (0..count).map(|_| next() % 41 - 20).collect::<Vec<_>>();
+                starts.sort_unstable();
+                let intervals = starts
+                    .iter()
+                    .map(|start| [*start * denominator, (*start + next() % 11) * denominator])
+                    .collect::<Vec<_>>();
+                for mode in [Mode::Gap, Mode::Center] {
+                    for explicit in [None, Some(-3), Some(0), Some(5)] {
+                        let center = |[a, b]: [i64; 2]| (a + b) / 2;
+                        let total_width: i64 = intervals.iter().map(|[a, b]| b - a).sum();
+                        let spacing = explicit.map(|value| value * denominator).unwrap_or_else(
+                            || match mode {
+                                Mode::Center => {
+                                    (center(intervals[count - 1]) - center(intervals[0]))
+                                        / (count - 1) as i64
+                                }
+                                Mode::Gap => {
+                                    (intervals[count - 1][1] - intervals[0][0] - total_width)
+                                        / (count - 1) as i64
+                                }
+                            },
+                        );
+                        let expected = (0..count)
+                            .map(|i| match mode {
+                                Mode::Center => {
+                                    center(intervals[0]) + i as i64 * spacing - center(intervals[i])
+                                }
+                                Mode::Gap => {
+                                    intervals[0][0]
+                                        + intervals[..i].iter().map(|[a, b]| b - a).sum::<i64>()
+                                        + i as i64 * spacing
+                                        - intervals[i][0]
+                                }
+                            })
+                            .collect::<Vec<_>>();
+                        for exponent in [-500, 0, 500] {
+                            let scale = 2_f64.powi(exponent);
+                            let to_real = |value: i64| value as f64 / denominator as f64 * scale;
+                            let floating = intervals
+                                .iter()
+                                .map(|pair| pair.map(to_real))
+                                .collect::<Vec<_>>();
+                            let (actual, actual_spacing) = offsets(
+                                &floating,
+                                mode,
+                                explicit.map(|value| value as f64 * scale),
+                            )
+                            .unwrap();
+                            assert_eq!(actual_spacing, to_real(spacing));
+                            assert_eq!(
+                                actual,
+                                expected.iter().copied().map(to_real).collect::<Vec<_>>()
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
     fn gap_planner_does_not_require_representable_interval_widths() {
         for huge in [2_f64.powi(1023), f64::MAX] {
             let intervals = [[-huge; 2], [-huge, huge], [huge; 2], [huge; 2]];
