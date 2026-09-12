@@ -1,5 +1,122 @@
 use super::*;
 
+#[test]
+fn interior_splits_preserve_planar_area_and_winding_for_every_side_and_seam() {
+    for corners in [3, 4] {
+        for upper_rotation in 0..corners {
+            for lower_rotation in 0..corners {
+                for reverse in [false, true] {
+                    // Shared endpoints, one shared endpoint, and no shared endpoints.
+                    for seam in 0..3 {
+                        for parameter in [0.125, 0.5, 0.875] {
+                            let mut vertices = if corners == 3 {
+                                vec![point(0., 0., 0.), point(4., 0., 0.), point(0., 3., 0.)]
+                            } else {
+                                vec![
+                                    point(0., 0., 0.),
+                                    point(4., 0., 0.),
+                                    point(4., 3., 0.),
+                                    point(0., 3., 0.),
+                                ]
+                            };
+                            let mut upper = (0..corners as u32).collect::<Vec<_>>();
+                            let mut lower = Vec::new();
+                            for (endpoint, source) in [1, 0].into_iter().enumerate() {
+                                if seam == 0 || (seam == 1 && endpoint == 0) {
+                                    lower.push(source as u32);
+                                } else {
+                                    lower.push(vertices.len() as u32);
+                                    vertices.push(vertices[source]);
+                                }
+                            }
+                            let lower_corners = if corners == 3 {
+                                vec![point(4., -3., 0.)]
+                            } else {
+                                vec![point(0., -3., 0.), point(4., -3., 0.)]
+                            };
+                            for point in lower_corners {
+                                lower.push(vertices.len() as u32);
+                                vertices.push(point);
+                            }
+                            upper.rotate_left(upper_rotation);
+                            lower.rotate_left(lower_rotation);
+                            if reverse {
+                                upper.reverse();
+                                lower.reverse();
+                            }
+                            let face = |indices: Vec<u32>| {
+                                if corners == 3 {
+                                    MeshFace::Triangle(indices.try_into().unwrap())
+                                } else {
+                                    MeshFace::Quad(indices.try_into().unwrap())
+                                }
+                            };
+                            let mesh = TriangleMesh::try_new_faces(
+                                vertices,
+                                vec![face(upper), face(lower)],
+                                Tolerance::DEFAULT,
+                            )
+                            .unwrap();
+                            let edge = topology_edge_index_between(
+                                &mesh,
+                                point(0., 0., 0.),
+                                point(4., 0., 0.),
+                            );
+                            let split = mesh
+                                .split_topology_edge(edge, parameter, Tolerance::DEFAULT)
+                                .unwrap()
+                                .unwrap();
+                            let context = format!(
+                                "corners={corners}, rotations={upper_rotation}/{lower_rotation}, reverse={reverse}, seam={seam}, t={parameter}"
+                            );
+                            let sign = if reverse { -1.0 } else { 1.0 };
+                            let expected_area = if corners == 3 { 12.0 } else { 24.0 };
+                            let mut twice_signed_area = 0.0;
+                            for triangle in split.triangles() {
+                                let [a, b, c] = triangle.map(|raw| split.vertices()[raw as usize]);
+                                let determinant = (b.x() - a.x()) * (c.y() - a.y())
+                                    - (b.y() - a.y()) * (c.x() - a.x());
+                                assert!(sign * determinant > 0.0, "{context}");
+                                twice_signed_area += determinant;
+                            }
+                            assert_eq!(twice_signed_area, sign * 2.0 * expected_area, "{context}");
+                            assert_eq!(split.area().unwrap(), expected_area, "{context}");
+                            assert_eq!(split.faces().len(), 2 * (corners - 1), "{context}");
+                            let split_point = point(4.0 * parameter, 0., 0.);
+                            let copies = split
+                                .vertices()
+                                .iter()
+                                .filter(|&&p| p == split_point)
+                                .count();
+                            assert_eq!(
+                                copies,
+                                if seam == 0 { 1 } else { split.faces().len() },
+                                "{context}"
+                            );
+                            assert_eq!(
+                                split.vertices().len(),
+                                if seam == 0 {
+                                    2 * corners - 1
+                                } else {
+                                    6 * (corners - 1)
+                                },
+                                "{context}"
+                            );
+                            assert!(
+                                split
+                                    .vertices()
+                                    .iter()
+                                    .all(|p| *p == split_point || mesh.vertices().contains(p)),
+                                "{context}"
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 fn point(x: f64, y: f64, z: f64) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }

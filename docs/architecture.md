@@ -117,6 +117,11 @@ reserves candidate storage fallibly before generating faces. Endpoint-coincident
 candidates are removed afterwards; final output counts use that filtered list.
 The edge-split module also contains the source-order, seam, endpoint, and invalid
 input regressions, alongside wide-integer staging/output sizing tests.
+A 450-case planar split matrix covers every triangle/quad side pairing, both
+windings, full/partial/no endpoint welding, and three interior parameters.
+Independent 2D determinants check signed area and each replacement's winding;
+output counts and split-point multiplicity check seam handling. These invariants
+exclude endpoint duplication and do not assume warped-quad area preservation.
 The `split_disjoint_mesh` command module owns staged component results, fresh
 piece insertion, source deletion policy, attribute/group propagation, and selection.
 The separate `explode` command module owns multi-geometry decomposition staging,
