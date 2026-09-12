@@ -6,7 +6,7 @@
 
 Enter `Distance 0,0,0 3,4,0`, or enter `Distance` and pick or type two points.
 The report includes distance in document units, world and active CPlane axis
-deltas, XY azimuth in degrees in `[0,360)`, and elevation in `[-90,90]`.
+deltas, signed XY azimuth in degrees in `[-180,180]`, and elevation in `[-90,90]`.
 Coincident points report zero distance and zero angles; vertical displacements
 use zero azimuth. Full command arguments are world coordinates; interactive
 typed points use the usual point-input coordinate modes. Selection is not needed
@@ -29,8 +29,19 @@ Tests cover overflowing coordinate differences and overflowing norms separately.
 The override is
 currently available in the complete typed command, not during point picking.
 Nesting a measurement inside another command's numeric prompt is not implemented.
-Exact Rhino text formatting and angular conventions
-at degenerate directions have not yet been checked against a live oracle.
+Six live command probes on Rhino 8.32.26160.13001 cover positive deltas,
+negative X/Y, vertical up/down, and a translated/rotated CPlane. The
+[captured output](../distance-rhino-reference.json) established the signed
+azimuth convention and supplies regression values at Rhino's printed precision.
+Exact text formatting, coincident points, and signed-zero branch-cut cases are
+not covered by this comparison. Reproduce the Rhino-only capture with:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/distance-command.json --timeout 240
+```
+
+This probe captures public command history, restores its CPlane on success or
+failure, and reports no performance timing. It runs in an oracle-owned session.
 
 ## Selected-object measurements
 

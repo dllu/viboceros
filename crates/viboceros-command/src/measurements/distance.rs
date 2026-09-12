@@ -131,9 +131,7 @@ fn describe_scaled(name: &str, delta: [Real; 3], scale: Real) -> Result<String, 
     let azimuth = if x == 0. && y == 0. {
         0.
     } else {
-        let angle = y.atan2(x).to_degrees().rem_euclid(360.);
-        // rem_euclid can round a tiny negative angle up to its divisor.
-        if angle == 360. { 0. } else { angle }
+        y.atan2(x).to_degrees()
     };
     let elevation = if delta == [0.; 3] {
         0.
@@ -293,8 +291,32 @@ mod tests {
             assert_eq!(value, expected);
         }
         assert!(describe("World", [0., 0., 1.]).contains("xy = 0 elevation = 90"));
-        assert!(describe("World", [0., -1., 0.]).contains("xy = 270 elevation = 0"));
-        assert!(describe("World", [1., -f64::MIN_POSITIVE, 0.]).contains("xy = 0 elevation = 0"));
+        assert!(describe("World", [0., -1., 0.]).contains("xy = -90 elevation = 0"));
+    }
+
+    #[test]
+    fn distance_angles_match_captured_rhino_command_output() {
+        // Rhino 8.32.26160.13001, docs/distance-rhino-reference.json.
+        // The public command prints three decimal places, hence this bound.
+        for (delta, expected) in [
+            ([3., 4., 12.], [53.130, 67.380]),
+            ([0., -1., 0.], [-90., 0.]),
+            ([-1., 0., 0.], [180., 0.]),
+            ([0., 0., 1.], [0., 90.]),
+            ([0., 0., -1.], [0., -90.]),
+            ([4., 12., 3.], [71.565, 13.342]),
+        ] {
+            let output = describe("World", delta);
+            let values: Vec<f64> = output
+                .split_whitespace()
+                .filter_map(|word| word.parse().ok())
+                .collect();
+            assert_eq!(values.len(), 5);
+            for i in 0..2 {
+                assert!((values[i] - expected[i]).abs() <= 0.0005, "{output}");
+            }
+            assert_eq!(&values[2..], &delta);
+        }
     }
 
     #[test]

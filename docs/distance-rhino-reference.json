@@ -1,0 +1,50 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "positive",
+      "value": {
+        "history": "Python Script ( ResetEngine ): _Distance\nFirst point for distance ( Units=Model_Units ): w1,2,3\nSecond point for distance ( Units=Model_Units  Undo ): w4,6,15\nCPlane angles and deltas:\txy = 53.130  elevation = 67.380  \tdx = 3.000  dy = 4.000  dz = 12.000\nWorld angles and deltas: \txy = 53.130  elevation = 67.380  \tdx = 3.000  dy = 4.000  dz = 12.000\nDistance = 13.000 millimeters"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "negative-y",
+      "value": {
+        "history": "Command: _Distance\nFirst point for distance ( Units=Model_Units ): w0,0,0\nSecond point for distance ( Units=Model_Units  Undo ): w0,-1,0\nCPlane angles and deltas:\txy = -90.000  elevation = 0.000  \tdx = 0.000  dy = -1.000  dz = 0.000\nWorld angles and deltas: \txy = -90.000  elevation = 0.000  \tdx = 0.000  dy = -1.000  dz = 0.000\nDistance = 1.000 millimeter"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "negative-x",
+      "value": {
+        "history": "Command: _Distance\nFirst point for distance ( Units=Model_Units ): w0,0,0\nSecond point for distance ( Units=Model_Units  Undo ): w-1,0,0\nCPlane angles and deltas:\txy = 180.000  elevation = 0.000  \tdx = -1.000  dy = 0.000  dz = 0.000\nWorld angles and deltas: \txy = 180.000  elevation = 0.000  \tdx = -1.000  dy = 0.000  dz = 0.000\nDistance = 1.000 millimeter"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "up",
+      "value": {
+        "history": "Command: _Distance\nFirst point for distance ( Units=Model_Units ): w0,0,0\nSecond point for distance ( Units=Model_Units  Undo ): w0,0,1\nCPlane angles and deltas:\txy = 0.000  elevation = 90.000  \tdx = 0.000  dy = 0.000  dz = 1.000\nWorld angles and deltas: \txy = 0.000  elevation = 90.000  \tdx = 0.000  dy = 0.000  dz = 1.000\nDistance = 1.000 millimeter"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "down",
+      "value": {
+        "history": "Command: _Distance\nFirst point for distance ( Units=Model_Units ): w0,0,0\nSecond point for distance ( Units=Model_Units  Undo ): w0,0,-1\nCPlane angles and deltas:\txy = 0.000  elevation = -90.000  \tdx = 0.000  dy = 0.000  dz = -1.000\nWorld angles and deltas: \txy = 0.000  elevation = -90.000  \tdx = 0.000  dy = 0.000  dz = -1.000\nDistance = 1.000 millimeter"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "rotated",
+      "value": {
+        "history": "Command: _Distance\nFirst point for distance ( Units=Model_Units ): w1,2,3\nSecond point for distance ( Units=Model_Units  Undo ): w4,6,15\nCPlane angles and deltas:\txy = 71.565  elevation = 13.342  \tdx = 4.000  dy = 12.000  dz = 3.000\nWorld angles and deltas: \txy = 53.130  elevation = 67.380  \tdx = 3.000  dy = 4.000  dz = 12.000\nDistance = 13.000 millimeters"
+      }
+    }
+  ]
+}

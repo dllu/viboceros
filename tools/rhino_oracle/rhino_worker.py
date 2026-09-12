@@ -2134,6 +2134,35 @@ def _curvature_marker(geometry, tolerance):
     return {"kind": "other_curve", "samples": [_xyz(geometry.PointAt(geometry.Domain.ParameterAt(i/12.0))) for i in range(13)]}
 
 
+def _distance_command(operation):
+    """Capture public command output in the oracle-owned document, without geometry edits."""
+    document = Rhino.RhinoDoc.ActiveDoc
+    viewport = document.Views.ActiveView.ActiveViewport
+    original_plane = viewport.ConstructionPlane()
+    plane = Rhino.Geometry.Plane(
+        _point(operation.get("origin", [0, 0, 0])),
+        _vector(operation.get("x_axis", [1, 0, 0])),
+        _vector(operation.get("y_axis", [0, 1, 0])))
+    if not plane.IsValid:
+        raise ValueError("invalid distance construction plane")
+    macro = "! _Distance w%s w%s" % (
+        _command_point(operation["start"]), _command_point(operation["end"]))
+    marker = "Viboceros distance probe " + str(System.Guid.NewGuid())
+    try:
+        viewport.SetConstructionPlane(plane)
+        Rhino.RhinoApp.WriteLine(marker)
+        succeeded = bool(Rhino.RhinoApp.RunScript(macro, True))
+        parts = Rhino.RhinoApp.CommandHistoryWindowText.split(marker, 1)
+        if not succeeded or len(parts) != 2:
+            raise ValueError("distance command failed or history marker was lost")
+        history = parts[1].strip()
+        if "Distance =" not in history:
+            raise ValueError("distance command produced no measurement: %s" % history[-3000:])
+        return {"history": history}, 0
+    finally:
+        viewport.SetConstructionPlane(original_plane)
+
+
 def _curvature_command(operation, iterations, tolerance):
     curve = "curve" in operation
     if curve == ("surface" in operation):
@@ -4416,6 +4445,8 @@ def _execute(operation, iterations, tolerance):
         return _surface_jets(operation, iterations, True)
     if kind == "curvature_command":
         return _curvature_command(operation, iterations, tolerance)
+    if kind == "distance_command":
+        return _distance_command(operation)
     if kind == "three_dm_curve_interchange":
         return _three_dm_curve_interchange(operation, iterations)
     if kind == "three_dm_brep_interchange":

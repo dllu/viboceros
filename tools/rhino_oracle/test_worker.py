@@ -11,6 +11,44 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_distance_probe_restores_plane_and_requires_new_measurement_output(self):
+        for success, output, valid in [
+            (True, "Distance = 5 millimeters", True),
+            (False, "Distance = 5 millimeters", False),
+            (True, "Command failed", False),
+        ]:
+            with self.subTest(success=success, output=output):
+                viewport = SimpleNamespace(
+                    ConstructionPlane=lambda: "original", SetConstructionPlane=Mock())
+                app = SimpleNamespace(CommandHistoryWindowText="")
+                def write(marker):
+                    app.CommandHistoryWindowText = marker + "\n"
+                def run(macro, echo):
+                    self.assertEqual(macro, "! _Distance w0,0,0 w3,4,0")
+                    self.assertTrue(echo)
+                    app.CommandHistoryWindowText += output
+                    return success
+                app.WriteLine, app.RunScript = write, run
+                rhino = SimpleNamespace(
+                    RhinoDoc=SimpleNamespace(ActiveDoc=SimpleNamespace(
+                        Views=SimpleNamespace(ActiveView=SimpleNamespace(ActiveViewport=viewport)))),
+                    RhinoApp=app,
+                    Geometry=SimpleNamespace(Plane=lambda *args: SimpleNamespace(IsValid=True)),
+                )
+                with patch.object(self.worker, "Rhino", rhino), \
+                     patch.object(self.worker, "System", SimpleNamespace(Guid=SimpleNamespace(NewGuid=lambda: "marker"))), \
+                     patch.object(self.worker, "_point", lambda value: value), \
+                     patch.object(self.worker, "_vector", lambda value: value), \
+                     patch.object(self.worker, "_command_point", lambda value: ",".join(map(str, value))):
+                    operation = {"start": [0,0,0], "end": [3,4,0]}
+                    if valid:
+                        self.assertEqual(self.worker._distance_command(operation), ({"history": output}, 0))
+                    else:
+                        with self.assertRaises(ValueError):
+                            self.worker._distance_command(operation)
+                self.assertEqual(viewport.SetConstructionPlane.call_count, 2)
+                self.assertEqual(viewport.SetConstructionPlane.call_args.args, ("original",))
+
     def test_disposable_measurement_extracts_only_final_result_after_timer(self):
         events = []
         values = [SimpleNamespace(Dispose=lambda i=i: events.append(("dispose", i)))

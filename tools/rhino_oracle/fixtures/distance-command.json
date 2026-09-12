@@ -1,0 +1,12 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"op": "distance_command", "id": "positive", "start": [1,2,3], "end": [4,6,15]},
+    {"op": "distance_command", "id": "negative-y", "start": [0,0,0], "end": [0,-1,0]},
+    {"op": "distance_command", "id": "negative-x", "start": [0,0,0], "end": [-1,0,0]},
+    {"op": "distance_command", "id": "up", "start": [0,0,0], "end": [0,0,1]},
+    {"op": "distance_command", "id": "down", "start": [0,0,0], "end": [0,0,-1]},
+    {"op": "distance_command", "id": "rotated", "start": [1,2,3], "end": [4,6,15], "origin": [10,-20,30], "x_axis": [0,1,0], "y_axis": [0,0,1]}
+  ]
+}
