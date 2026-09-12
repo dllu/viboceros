@@ -3,6 +3,53 @@ use super::*;
 use std::collections::BTreeSet;
 
 #[test]
+fn face_walk_matches_component_order_when_every_face_is_separate() {
+    let faces = [3, 19, usize::MAX];
+    let locals = BTreeMap::from([(3, 0), (19, 1), (usize::MAX, 2)]);
+    let groupings = [
+        vec![vec![0, 1, 2, 3]],
+        vec![vec![3, 2, 1, 0]],
+        vec![vec![0, 1], vec![2, 3]],
+        vec![vec![0], vec![1, 2], vec![3]],
+        vec![vec![3], vec![2], vec![1], vec![0]],
+        vec![],
+    ];
+    // All subsets of three sparse face IDs on each of four edges, covering
+    // shared faces, non-manifold uses, singleton groups, and unseen fallbacks.
+    // Edge uses are unique and ascending, as in constructed mesh topology.
+    for code in 0..4096 {
+        let incidences =
+            std::array::from_fn::<_, 4, _>(|edge| {
+                incidence_with_faces(faces.into_iter().enumerate().filter_map(|(bit, face)| {
+                    (code & (1 << (3 * edge + bit)) != 0).then_some(face)
+                }))
+            });
+        let edges = incidences
+            .iter()
+            .enumerate()
+            .map(|(edge, incidence)| ([0, edge + 1], incidence))
+            .collect::<Vec<_>>();
+        for groups in &groupings {
+            let walk = radial_vertex_face_walk(groups, &edges, &faces)
+                .into_iter()
+                .map(|(face, _)| face)
+                .collect::<Vec<_>>();
+            let components =
+                ordered_vertex_face_components(groups, &edges, &locals, &faces, &mut [0, 1, 2])
+                    .into_iter()
+                    .map(|local| faces[local])
+                    .collect::<Vec<_>>();
+            assert_eq!(walk, components, "incidences={code}, groups={groups:?}");
+            assert_eq!(
+                walk.iter().copied().collect::<BTreeSet<_>>(),
+                BTreeSet::from(faces)
+            );
+            assert_eq!(walk.len(), faces.len());
+        }
+    }
+}
+
+#[test]
 fn face_walk_seen_flags_use_local_indices_for_sparse_and_fallback_faces() {
     let incidences = [
         incidence_with_faces([42, 900]),

@@ -60,6 +60,12 @@ need no per-vertex incidence buffers. Topology construction, outer lookup arrays
 and final rebuilding still scale with the source mesh. Sparse-selection tests
 cover up to 1,024 disconnected panels, checking counts, every ordered face's
 geometry, area, endpoint sharing, duplicate selections, and selection order.
+Since selected-vertex Unweld gives each face its own component, it uses the
+shared radial face walk directly, without an identity union forest or a
+face-to-local tree. A 24,576-case incidence/grouping matrix verifies that this
+walk matches identity-component ordering, including sparse face IDs, singleton
+groups, non-manifold incidences, and fallback faces. This equivalence does not
+apply when angle/edge Unweld joins multiple faces into one component.
 Edge unwelding validates before copying edge references or allocating flags, then
 reuses its selection mask for active edges. Per-endpoint activation requires one
 raw vertex shared by all incident edge faces: partial non-manifold sharing is

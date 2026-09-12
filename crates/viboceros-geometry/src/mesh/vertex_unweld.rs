@@ -1,8 +1,8 @@
 //! Face-local separation at selected exact-location topology vertices.
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeSet;
 
 use super::{
-    GeometryError, TriangleMesh, ordered_vertex_face_components, radially_sorted_vertex_edges,
+    GeometryError, TriangleMesh, radial_vertex_face_walk, radially_sorted_vertex_edges,
     topology_face_edge_indices,
 };
 
@@ -103,26 +103,17 @@ impl TriangleMesh {
                 continue;
             }
             let faces = &incident_faces[topological_vertex];
-            let face_to_local = faces
-                .iter()
-                .enumerate()
-                .map(|(local, &face)| (face, local))
-                .collect::<BTreeMap<_, _>>();
             let edge_groups = radially_sorted_vertex_edges(
                 topological_vertex,
                 &incident_edges[topological_vertex],
                 &edges,
                 &face_edges,
             );
-            let mut parents = (0..faces.len()).collect::<Vec<_>>();
-            for component in ordered_vertex_face_components(
-                &edge_groups,
-                &edges,
-                &face_to_local,
-                faces,
-                &mut parents,
-            ) {
-                face_components[topological_vertex].push(vec![faces[component]]);
+            // Each face is its own component: no union forest or face-to-local
+            // tree is needed. The face walk preserves the same radial order
+            // as component ordering with identity parents.
+            for (face, _) in radial_vertex_face_walk(&edge_groups, &edges, faces) {
+                face_components[topological_vertex].push(vec![face]);
             }
         }
 
