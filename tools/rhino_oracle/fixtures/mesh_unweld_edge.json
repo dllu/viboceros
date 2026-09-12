@@ -4,6 +4,30 @@
   "operations": [
     {
       "op": "mesh_unweld_edge",
+      "id": "nonmanifold-partial-endpoint-reversed-face-order",
+      "edge_indices": [0],
+      "modify_normals": false,
+      "vertices": [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, -1, 0], [1, 0, 0], [0, 0, 1]],
+      "triangles": [[0, 4, 5], [1, 0, 3], [0, 1, 2]]
+    },
+    {
+      "op": "mesh_unweld_edge",
+      "id": "nonmanifold-first-endpoint-partial",
+      "edge_indices": [0],
+      "modify_normals": true,
+      "vertices": [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 0], [0, 0, 1]],
+      "triangles": [[0, 1, 2], [1, 0, 3], [4, 1, 5]]
+    },
+    {
+      "op": "mesh_unweld_edge",
+      "id": "nonmanifold-first-endpoint-partial-reversed-face-order",
+      "edge_indices": [0, 0],
+      "modify_normals": false,
+      "vertices": [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 0], [0, 0, 1]],
+      "triangles": [[4, 1, 5], [1, 0, 3], [0, 1, 2]]
+    },
+    {
+      "op": "mesh_unweld_edge",
       "id": "nonmanifold-both-partially-shared",
       "edge_indices": [0],
       "modify_normals": false,

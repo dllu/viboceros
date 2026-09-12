@@ -55,6 +55,10 @@ Edge unwelding validates before copying edge references or allocating flags, the
 reuses its selection mask for active edges. Per-endpoint activation requires one
 raw vertex shared by all incident edge faces: partial non-manifold sharing is
 preserved, as confirmed by the expanded Rhino edge-unweld record and native tests.
+A 300-case native matrix checks all five partitions of three incident faces at
+each endpoint, all six face permutations, and both winding directions. It checks
+vertex counts, unchanged ordered face geometry, area, and every endpoint-sharing
+relationship against partition labels independent of the topology implementation.
 
 Shared welding compaction resolves every face to its representative before
 reusing the parent array as the compact-index map, eliminating a separate

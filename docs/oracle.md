@@ -56,12 +56,14 @@ fully separated triangle. Replay checks acceptance, added-vertex counts, ordered
 face coordinates, and sharing groups exactly, with the same raw-index limitation.
 
 The [edge-unweld fixture](../tools/rhino_oracle/fixtures/mesh_unweld_edge.json) has
-a [16-case Rhino 8.32 record](../tools/rhino_oracle/observations/mesh_unweld_edge.json).
+a [19-case Rhino 8.32 record](../tools/rhino_oracle/observations/mesh_unweld_edge.json).
 This probe invokes `Mesh.UnweldEdge`, not the interactive command. Besides radial
 fans and closed meshes, it covers partial sharing at one or both endpoints of a
 non-manifold edge. Rhino separates an endpoint only when all incident edge faces
 use one raw vertex there, preserving other existing sharing groups. Disconnected
 coincident contacts and unused coincident vertices do not prevent separation.
+Reversed face-order and swapped-endpoint probes confirm that partial sharing is
+preserved even when the first two incident faces use different raw indices.
 These cases exposed and corrected native over-separation. Replay compares
 acceptance, added-vertex counts, face coordinates, and sharing groups exactly;
 raw-index numbering and stored normal parity are not established by this record.

@@ -1,0 +1,97 @@
+use super::*;
+
+#[test]
+fn non_manifold_endpoint_partitions_survive_face_permutation_and_winding() {
+    let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+    let vertices = vec![
+        point(0.0, 0.0, 0.0),
+        point(1.0, 0.0, 0.0),
+        point(0.0, 0.0, 0.0),
+        point(1.0, 0.0, 0.0),
+        point(0.0, 0.0, 0.0),
+        point(1.0, 0.0, 0.0),
+        point(0.0, 1.0, 0.0),
+        point(0.0, -1.0, 0.0),
+        point(0.0, 0.0, 1.0),
+        point(99.0, 99.0, 99.0),
+    ];
+    let partitions = [[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 1, 1], [0, 1, 2]];
+    let orders = [
+        [0, 1, 2],
+        [0, 2, 1],
+        [1, 0, 2],
+        [1, 2, 0],
+        [2, 0, 1],
+        [2, 1, 0],
+    ];
+    for first in partitions {
+        for second in partitions {
+            let labels = [first, second];
+            let fully_shared = labels.map(|partition| partition == [0, 0, 0]);
+            let expected_count = usize::from(fully_shared.iter().any(|&shared| shared));
+            let expected_vertices = 3 + labels
+                .iter()
+                .zip(fully_shared)
+                .map(|(partition, shared)| {
+                    if shared {
+                        3
+                    } else {
+                        partition.iter().collect::<BTreeSet<_>>().len()
+                    }
+                })
+                .sum::<usize>();
+            for order in orders {
+                for reversed in [false, true] {
+                    let triangles = order
+                        .map(|face| {
+                            let mut triangle =
+                                [2 * first[face], 2 * second[face] + 1, 6 + face as u32];
+                            if (face == 1) != reversed {
+                                triangle.swap(0, 1);
+                            }
+                            triangle
+                        })
+                        .to_vec();
+                    let source =
+                        TriangleMesh::try_new(vertices.clone(), triangles, Tolerance::DEFAULT)
+                            .unwrap();
+                    let (output, count) = source.unwelded_topology_edges(&[0, 0]).unwrap();
+                    assert_eq!(count, expected_count);
+                    assert_eq!(output.vertices().len(), expected_vertices);
+                    let mut output_endpoints = [[0; 2]; 3];
+                    for (output_face, (&original_face, triangle)) in
+                        order.iter().zip(source.triangles()).enumerate()
+                    {
+                        let rebuilt = output.triangles()[output_face];
+                        assert_eq!(
+                            triangle.map(|raw| source.vertices()[raw as usize]),
+                            rebuilt.map(|raw| output.vertices()[raw as usize])
+                        );
+                        for (corner, &raw) in triangle.iter().enumerate() {
+                            if raw < 6 {
+                                output_endpoints[original_face][raw as usize % 2] = rebuilt[corner];
+                            }
+                        }
+                    }
+                    for endpoint in 0..2 {
+                        for left in 0..3 {
+                            for right in 0..3 {
+                                let expected_shared = if fully_shared[endpoint] {
+                                    left == right
+                                } else {
+                                    labels[endpoint][left] == labels[endpoint][right]
+                                };
+                                assert_eq!(
+                                    output_endpoints[left][endpoint]
+                                        == output_endpoints[right][endpoint],
+                                    expected_shared
+                                );
+                            }
+                        }
+                    }
+                    assert_eq!(source.area().unwrap(), output.area().unwrap());
+                }
+            }
+        }
+    }
+}

@@ -5,6 +5,8 @@ mod compaction_tests;
 mod components;
 mod edge_collapse;
 mod edge_split;
+#[cfg(test)]
+mod edge_unweld_tests;
 mod edge_weld;
 mod normals;
 mod rebuild;

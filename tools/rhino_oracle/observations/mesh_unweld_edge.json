@@ -5,7 +5,415 @@
   "protocol_version": 1,
   "results": [
     {
-      "elapsed_ns": 167152405,
+      "elapsed_ns": 189331055,
+      "id": "nonmanifold-partial-endpoint-reversed-face-order",
+      "value": {
+        "accepted": true,
+        "added_vertices": 2,
+        "mesh": {
+          "face_points": [
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          ],
+          "vertex_count": 8,
+          "vertex_face_groups": [
+            {
+              "face_groups": [
+                [
+                  1
+                ]
+              ],
+              "point": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            },
+            {
+              "face_groups": [
+                [
+                  0
+                ],
+                [
+                  1
+                ],
+                [
+                  2
+                ]
+              ],
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "face_groups": [
+                [
+                  0
+                ]
+              ],
+              "point": [
+                0.0,
+                0.0,
+                1.0
+              ]
+            },
+            {
+              "face_groups": [
+                [
+                  2
+                ]
+              ],
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            {
+              "face_groups": [
+                [
+                  0
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 40184021,
+      "id": "nonmanifold-first-endpoint-partial",
+      "value": {
+        "accepted": true,
+        "added_vertices": 2,
+        "mesh": {
+          "face_points": [
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          ],
+          "vertex_count": 8,
+          "vertex_face_groups": [
+            {
+              "face_groups": [
+                [
+                  1
+                ]
+              ],
+              "point": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            },
+            {
+              "face_groups": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  2
+                ]
+              ],
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "face_groups": [
+                [
+                  2
+                ]
+              ],
+              "point": [
+                0.0,
+                0.0,
+                1.0
+              ]
+            },
+            {
+              "face_groups": [
+                [
+                  0
+                ]
+              ],
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            {
+              "face_groups": [
+                [
+                  0
+                ],
+                [
+                  1
+                ],
+                [
+                  2
+                ]
+              ],
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 29571533,
+      "id": "nonmanifold-first-endpoint-partial-reversed-face-order",
+      "value": {
+        "accepted": true,
+        "added_vertices": 2,
+        "mesh": {
+          "face_points": [
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          ],
+          "vertex_count": 8,
+          "vertex_face_groups": [
+            {
+              "face_groups": [
+                [
+                  1
+                ]
+              ],
+              "point": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            },
+            {
+              "face_groups": [
+                [
+                  0
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "face_groups": [
+                [
+                  0
+                ]
+              ],
+              "point": [
+                0.0,
+                0.0,
+                1.0
+              ]
+            },
+            {
+              "face_groups": [
+                [
+                  2
+                ]
+              ],
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            {
+              "face_groups": [
+                [
+                  0
+                ],
+                [
+                  1
+                ],
+                [
+                  2
+                ]
+              ],
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 32676697,
       "id": "nonmanifold-both-partially-shared",
       "value": {
         "accepted": true,
@@ -139,7 +547,7 @@
       }
     },
     {
-      "elapsed_ns": 65574646,
+      "elapsed_ns": 32257080,
       "id": "coincident-vertex-only-contact",
       "value": {
         "accepted": true,
@@ -286,7 +694,7 @@
       }
     },
     {
-      "elapsed_ns": 66215515,
+      "elapsed_ns": 20439148,
       "id": "unused-coincident-endpoint",
       "value": {
         "accepted": true,
@@ -389,7 +797,7 @@
       }
     },
     {
-      "elapsed_ns": 23406982,
+      "elapsed_ns": 21263123,
       "id": "half-welded-endpoints",
       "value": {
         "accepted": true,
@@ -492,7 +900,7 @@
       }
     },
     {
-      "elapsed_ns": 30616760,
+      "elapsed_ns": 26374817,
       "id": "nonmanifold-partially-shared-endpoints",
       "value": {
         "accepted": true,
@@ -628,7 +1036,7 @@
       }
     },
     {
-      "elapsed_ns": 18875122,
+      "elapsed_ns": 15907288,
       "id": "empty-selection",
       "value": {
         "accepted": false,
@@ -727,7 +1135,7 @@
       }
     },
     {
-      "elapsed_ns": 20736694,
+      "elapsed_ns": 19706726,
       "id": "flat-interior",
       "value": {
         "accepted": true,
@@ -830,7 +1238,7 @@
       }
     },
     {
-      "elapsed_ns": 17272949,
+      "elapsed_ns": 23399353,
       "id": "flat-naked",
       "value": {
         "accepted": true,
@@ -929,7 +1337,7 @@
       }
     },
     {
-      "elapsed_ns": 18302917,
+      "elapsed_ns": 21903992,
       "id": "already-unwelded",
       "value": {
         "accepted": true,
@@ -1032,7 +1440,7 @@
       }
     },
     {
-      "elapsed_ns": 33851624,
+      "elapsed_ns": 34934998,
       "id": "closed-fan-one",
       "value": {
         "accepted": true,
@@ -1186,7 +1594,7 @@
       }
     },
     {
-      "elapsed_ns": 31448364,
+      "elapsed_ns": 36697388,
       "id": "closed-fan-opposite",
       "value": {
         "accepted": true,
@@ -1342,7 +1750,7 @@
       }
     },
     {
-      "elapsed_ns": 38726807,
+      "elapsed_ns": 35354614,
       "id": "closed-fan-adjacent",
       "value": {
         "accepted": true,
@@ -1498,7 +1906,7 @@
       }
     },
     {
-      "elapsed_ns": 85739136,
+      "elapsed_ns": 96298218,
       "id": "cube-bottom-loop",
       "value": {
         "accepted": true,
@@ -1849,7 +2257,7 @@
       }
     },
     {
-      "elapsed_ns": 95718384,
+      "elapsed_ns": 92430115,
       "id": "cube-all-sharp",
       "value": {
         "accepted": true,
@@ -2224,7 +2632,7 @@
       }
     },
     {
-      "elapsed_ns": 50094604,
+      "elapsed_ns": 37109375,
       "id": "tetrahedron-all",
       "value": {
         "accepted": true,
@@ -2379,7 +2787,7 @@
       }
     },
     {
-      "elapsed_ns": 31066895,
+      "elapsed_ns": 27725220,
       "id": "nonmanifold-edge",
       "value": {
         "accepted": true,
