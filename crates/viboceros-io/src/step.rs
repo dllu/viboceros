@@ -1,13 +1,17 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::io::{Read, Write};
 use std::path::Path;
+mod export_geometry;
+mod export_plane;
+use export_geometry::{ExportLine, ExportPoint};
 mod units;
+use export_plane::ExportPlane;
 
 use monstertruck::core::cgmath64::{InnerSpace, Matrix4, SquareMatrix, Transform};
 use monstertruck::meshing::prelude::{
     BoundedCurve, MeshedShape, ParametricCurve, ParametricSurface, PolygonMesh, RobustMeshableShape,
 };
-use monstertruck::modeling::{Curve, Line, Plane, Point3 as TruckPoint3, Surface};
+use monstertruck::modeling::Point3 as TruckPoint3;
 use monstertruck::step::load::convert::StepCompressedTrimmedShell;
 use monstertruck::step::load::step_p21::{ast::Name, tables::PlaceHolder};
 use monstertruck::step::load::{LoadError, LossCategory, ShellLoadReport, Table};
@@ -292,7 +296,7 @@ fn write_step_staged(
 
 fn mesh_to_shell(
     mesh: &TriangleMesh,
-) -> Result<CompressedShell<TruckPoint3, Curve, Surface>, StepError> {
+) -> Result<CompressedShell<ExportPoint, ExportLine, ExportPlane>, StepError> {
     let vertices = mesh
         .vertices()
         .iter()
@@ -308,14 +312,10 @@ fn mesh_to_shell(
             vertices[triangle[1] as usize],
             vertices[triangle[2] as usize],
         ];
-        let plane = Plane::new(points[0], points[1], points[2]);
-        // Mirror the serializer's derived direction/magnitude calculations.
+        let plane = ExportPlane::from_triangle(mesh, face)?;
+        // Mirror the serializer's line direction/magnitude calculations.
         // Native mesh validity does not guarantee these third-party arithmetic
         // paths stay representable. Preflight every shell before writing.
-        let normal = plane.normal();
-        if !normal.magnitude2().is_finite() || normal.magnitude2() == 0.0 {
-            return Err(StepError::InvalidExportDirections { face });
-        }
         for edge in 0..3 {
             let magnitude = (points[(edge + 1) % 3] - points[edge]).magnitude();
             if !magnitude.is_finite() || magnitude == 0.0 {
@@ -340,7 +340,7 @@ fn mesh_to_shell(
                     let endpoints = (key.0 as usize, key.1 as usize);
                     edges.push(CompressedEdge {
                         vertices: endpoints,
-                        curve: Curve::Line(Line(vertices[endpoints.0], vertices[endpoints.1])),
+                        curve: ExportLine(vertices[endpoints.0], vertices[endpoints.1]),
                     });
                     index
                 });
@@ -353,12 +353,12 @@ fn mesh_to_shell(
         faces.push(CompressedFace {
             boundaries: vec![boundary],
             orientation: true,
-            surface: Surface::Plane(plane),
+            surface: plane,
         });
     }
 
     Ok(CompressedShell {
-        vertices,
+        vertices: vertices.into_iter().map(ExportPoint).collect(),
         edges,
         faces,
         vertex_stable_ids: None,

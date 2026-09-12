@@ -142,11 +142,20 @@ exact outer and inner p-curves are sampled into a constrained UV triangulation
 so holes remain open, with interior knot-span samples refining nonplanar
 trimmed surfaces. STEP writes the results as faceted shells with shared
 topology and planar faces. `ExportStep` converts physical document units to
-millimetres. Before writing any data, export checks the current serializer's
-derived plane normals and line magnitudes for finite, nonzero values. Some
+millimetres. The `step/export_plane` adapter writes plane placements using
+the native kernel's scale-safe facet normals and reference directions. Parsed
+STEP regression records check finite unit directions and reversed winding from
+mesh scales `1e-100` through `1e100`, including translated origins. This tests
+serialization, not downstream tessellation or Rhino parity at those scales.
+The `step/export_geometry` adapter writes coordinates, directions, and line
+lengths with an explicit decimal point and uppercase exponent. This fixes
+unparseable records such as a bare `1e21` coordinate. A 12,282-value binary64
+matrix checks exact numeric round trips, including subnormals and signed zero.
+Before writing any data, export checks the current line serializer's
+derived magnitudes for finite, nonzero values. Some
 valid extreme-scale native meshes exceed that serializer's arithmetic range;
 these return an explicit error instead of emitting invalid STEP directions.
-Regression tests cover tiny and huge meshes, including failure after a valid
+Regression tests cover huge meshes, including failure after a valid
 earlier mesh, and verify unchanged output streams and existing destinations.
 `ExportStep` writes the correspondingly converted absolute tolerance as
 the file's distance accuracy. Unitless and unset documents are rejected;

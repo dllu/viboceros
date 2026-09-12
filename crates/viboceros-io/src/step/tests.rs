@@ -3,11 +3,69 @@ use std::io::Cursor;
 use super::*;
 
 #[test]
+fn step_real_format_preserves_finite_binary64_values_and_required_decimal_point() {
+    use super::export_geometry::StepReal;
+    for exponent in 0..2047_u64 {
+        for fraction in [0, 1, (1_u64 << 52) - 1] {
+            for sign in [0, 1_u64 << 63] {
+                let value = f64::from_bits(sign | (exponent << 52) | fraction);
+                let text = StepReal(value).to_string();
+                let (mantissa, _) = text.split_once('E').unwrap();
+                assert!(mantissa.contains('.'));
+                assert_eq!(text.parse::<f64>().unwrap().to_bits(), value.to_bits());
+            }
+        }
+    }
+}
+
+#[test]
+fn exported_plane_directions_remain_unit_length_across_mesh_scales() {
+    for scale in [1e-100, 1e-20, 1.0, 1e20, 1e100] {
+        for flipped in [false, true] {
+            let mesh = TriangleMesh::try_new(
+                vec![
+                    Point3::try_new(10.0 * scale, 20.0 * scale, 30.0 * scale).unwrap(),
+                    Point3::try_new(11.0 * scale, 20.0 * scale, 30.0 * scale).unwrap(),
+                    Point3::try_new(10.0 * scale, 21.0 * scale, 30.0 * scale).unwrap(),
+                ],
+                vec![if flipped { [0, 2, 1] } else { [0, 1, 2] }],
+                Tolerance::MESH_VALIDATION,
+            )
+            .unwrap();
+            let mut output = Vec::new();
+            write_step(&mut output, &[mesh]).unwrap();
+            let text = String::from_utf8(output).unwrap();
+            let table = Table::from_step(&text).unwrap_or_else(|error| panic!("{error}\n{text}"));
+            assert_eq!(table.entity_report.total(), 0);
+            assert_eq!(table.plane.len(), 1);
+            assert_eq!(table.direction.len(), 5);
+            for direction in table.direction.values() {
+                let ratios = &direction.direction_ratios;
+                assert_eq!(ratios.len(), 3);
+                assert!(ratios.iter().all(|value| value.is_finite()));
+                let length = ratios[0].hypot(ratios[1]).hypot(ratios[2]);
+                assert!(
+                    (length - 1.0).abs() < 1e-12,
+                    "scale={scale}, direction={ratios:?}"
+                );
+            }
+            let normal = vec![0.0, 0.0, if flipped { -1.0 } else { 1.0 }];
+            assert!(
+                table
+                    .direction
+                    .values()
+                    .any(|direction| direction.direction_ratios == normal)
+            );
+        }
+    }
+}
+
+#[test]
 fn unrepresentable_export_directions_preserve_stream_and_destination() {
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("existing.step");
     std::fs::write(&path, b"original").unwrap();
-    for scale in [1e-100, 1e100, 1e160] {
+    for scale in [1e160, 1e200] {
         let mesh = TriangleMesh::try_new(
             vec![
                 Point3::try_new(0.0, 0.0, 0.0).unwrap(),
