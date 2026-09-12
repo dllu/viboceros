@@ -178,6 +178,12 @@ matrix checks exact numeric round trips, including subnormals and signed zero.
 Geometry-number formatting uses a checked 32-byte stack buffer rather than a
 temporary heap string per value. Buffer overflow returns a formatting error
 without truncation or partial append; output-stream buffering is separate.
+Path-based STEP exports buffer record writes and explicitly flush before syncing
+and committing the staged file. Fault-injection tests check buffered write and
+flush errors; staged-file tests check callback failure, cleanup, and successful
+flush-before-commit. A counting sink receives one write for 1,000 four-byte
+fragments. This is a write-count regression, not a wall-clock benchmark.
+Low-level stream exports leave buffering and flushing to their caller.
 The line adapter precomputes finite lengths and unit directions with the native
 kernel's scale-safe norm and normalization, once per unique exported edge.
 Formatting does not repeat geometric arithmetic. Some

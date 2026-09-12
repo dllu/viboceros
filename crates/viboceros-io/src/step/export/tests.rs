@@ -6,6 +6,82 @@ fn point(x: f64, y: f64) -> Point3 {
     Point3::try_new(x, y, 0.0).unwrap()
 }
 
+#[test]
+fn buffered_export_batches_small_writes_and_propagates_flush_failures() {
+    #[derive(Default)]
+    struct Sink {
+        bytes: Vec<u8>,
+        writes: usize,
+        fail_write: bool,
+        fail_flush: bool,
+    }
+    impl std::io::Write for Sink {
+        fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+            self.writes += 1;
+            if self.fail_write {
+                return Err(std::io::Error::other("write failed"));
+            }
+            self.bytes.extend_from_slice(bytes);
+            Ok(bytes.len())
+        }
+        fn flush(&mut self) -> std::io::Result<()> {
+            if self.fail_flush {
+                Err(std::io::Error::other("flush failed"))
+            } else {
+                Ok(())
+            }
+        }
+    }
+    let mut sink = Sink::default();
+    write_buffered(&mut sink, |writer| {
+        for _ in 0..1000 {
+            writer.write_all(b"STEP")?;
+        }
+        assert_eq!(writer.get_ref().writes, 0);
+        Ok(())
+    })
+    .unwrap();
+    assert_eq!(sink.writes, 1);
+    assert_eq!(sink.bytes, b"STEP".repeat(1000));
+    for fail_write in [false, true] {
+        let mut sink = Sink {
+            fail_write,
+            fail_flush: !fail_write,
+            ..Sink::default()
+        };
+        let error = write_buffered(&mut sink, |writer| {
+            writer.write_all(b"buffered")?;
+            assert_eq!(writer.get_ref().writes, 0);
+            Ok(())
+        })
+        .unwrap_err();
+        assert!(matches!(error, StepError::Io(_)));
+    }
+}
+
+#[test]
+fn staged_buffer_flushes_before_commit_and_preserves_destination_on_callback_failure() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("model.step");
+    std::fs::write(&path, b"original").unwrap();
+    let result = write_step_staged(&path, |writer| {
+        writer.write_all(b"partial")?;
+        assert_eq!(writer.get_ref().metadata()?.len(), 0);
+        Err(StepError::Io(std::io::Error::other("callback failed")))
+    });
+    assert!(result.is_err());
+    assert_eq!(std::fs::read(&path).unwrap(), b"original");
+    assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 1);
+    write_step_staged(&path, |writer| {
+        writer.write_all(b"complete")?;
+        assert_eq!(writer.get_ref().metadata()?.len(), 0);
+        Ok(())
+    })
+    .unwrap();
+    assert_eq!(std::fs::read(&path).unwrap(), b"complete");
+    assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 1);
+}
+
 fn check_boundary_topology(mesh: &TriangleMesh, expected_edges: usize) {
     let shell = mesh_to_shell(mesh).unwrap();
     assert_eq!(shell.edges.len(), expected_edges);

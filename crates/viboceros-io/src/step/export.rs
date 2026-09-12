@@ -1,6 +1,6 @@
 //! Mesh-to-STEP construction, unit conversion, and staged destination writes.
 use std::collections::{BTreeMap, btree_map::Entry};
-use std::io::Write;
+use std::io::{BufWriter, Write};
 use std::path::Path;
 
 use monstertruck::step::save::{
@@ -105,11 +105,23 @@ pub fn write_step_file_in_units(
 
 fn write_step_staged(
     destination: &Path,
-    write: impl FnOnce(&std::fs::File) -> Result<(), StepError>,
+    write: impl FnOnce(&mut BufWriter<&std::fs::File>) -> Result<(), StepError>,
 ) -> Result<(), StepError> {
     let staged = crate::staged_file::StagedFile::new(destination, ".step.tmp")?;
-    write(staged.file())?;
+    write_buffered(staged.file(), write)?;
     staged.commit()?;
+    Ok(())
+}
+
+fn write_buffered<W: Write>(
+    destination: W,
+    write: impl FnOnce(&mut BufWriter<W>) -> Result<(), StepError>,
+) -> Result<(), StepError> {
+    let mut writer = BufWriter::new(destination);
+    write(&mut writer)?;
+    // Drop ignores flush failures. Propagate them before the staged file can
+    // be synchronized and committed over the destination.
+    writer.flush()?;
     Ok(())
 }
 
