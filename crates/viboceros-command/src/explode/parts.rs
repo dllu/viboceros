@@ -33,6 +33,30 @@ impl ExplodedParts {
     }
 }
 
+/// Count cheap, exact outputs before materializing geometry. Mesh connectivity
+/// still needs decomposition; a single B-rep face is not an Explode input.
+pub(super) fn known_output_count(geometry: &Geometry) -> Result<Option<usize>, CommandError> {
+    Ok(match geometry {
+        Geometry::PolyCurve(curve) => {
+            Some(curve.segments().iter().try_fold(0usize, |count, segment| {
+                let added = match segment {
+                    viboceros_geometry::CurveSegment3::Polyline(polyline) => {
+                        polyline.segment_count()
+                    }
+                    _ => 1,
+                };
+                count
+                    .checked_add(added)
+                    .ok_or_else(|| too_many_span_outputs("Explode"))
+            })?)
+        }
+        Geometry::Polyline(polyline) => Some(polyline.segment_count()),
+        Geometry::PointCloud(cloud) => Some(cloud.points().len()),
+        Geometry::Brep(brep) if brep.faces().len() > 1 => Some(brep.faces().len()),
+        _ => None,
+    })
+}
+
 /// Pure decomposition: no document mutation, selection, attributes, or history.
 pub(super) fn decompose(
     geometry: &Geometry,
@@ -104,6 +128,7 @@ mod tests {
         )
         .unwrap();
         let source = Geometry::PolyCurve(curve.clone());
+        assert_eq!(known_output_count(&source).unwrap(), Some(3));
         let parts = decompose(&source, Tolerance::DEFAULT).unwrap().unwrap();
         assert!(matches!(parts.report(), (PartKind::Polycurve, 3)));
         let geometries = parts.into_geometries();
@@ -127,6 +152,7 @@ mod tests {
     fn points_and_polylines_reverse_parts_without_reversing_geometry() {
         let points = vec![p(0., 0.), p(2., 1.), p(4., 0.)];
         let cloud = Geometry::PointCloud(PointCloud3::try_new(points.clone()).unwrap());
+        assert_eq!(known_output_count(&cloud).unwrap(), Some(3));
         let parts = decompose(&cloud, Tolerance::DEFAULT).unwrap().unwrap();
         assert!(matches!(parts.report(), (PartKind::PointCloud, 3)));
         assert_eq!(
@@ -139,6 +165,10 @@ mod tests {
                 .collect::<Vec<_>>()
         );
         let polyline = Polyline3::try_new(points, Tolerance::DEFAULT).unwrap();
+        assert_eq!(
+            known_output_count(&Geometry::Polyline(polyline.clone())).unwrap(),
+            Some(2)
+        );
         let expected = polyline.segments().map(Geometry::Line).collect::<Vec<_>>();
         let parts = decompose(&Geometry::Polyline(polyline), Tolerance::DEFAULT)
             .unwrap()
@@ -153,6 +183,7 @@ mod tests {
             Geometry::Line(LineSegment::try_new(p(0., 0.), p(1., 0.), Tolerance::DEFAULT).unwrap()),
         ] {
             assert!(decompose(&geometry, Tolerance::DEFAULT).unwrap().is_none());
+            assert_eq!(known_output_count(&geometry).unwrap(), None);
         }
     }
 }

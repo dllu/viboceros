@@ -17,12 +17,15 @@ pub(super) struct ExplodeSummary {
 }
 
 impl ExplodeSummary {
-    pub(super) fn record(&mut self, kind: PartKind, count: usize) -> Result<(), CommandError> {
-        let total = self
-            .total
+    pub(super) fn check_add(&self, count: usize) -> Result<usize, CommandError> {
+        self.total
             .checked_add(count)
             .filter(|total| *total <= MAX_SPAN_OUTPUT_OBJECTS)
-            .ok_or_else(|| too_many_span_outputs("Explode"))?;
+            .ok_or_else(|| too_many_span_outputs("Explode"))
+    }
+
+    pub(super) fn record(&mut self, kind: PartKind, count: usize) -> Result<(), CommandError> {
+        let total = self.check_add(count)?;
         let index = kind as usize;
         self.sources[index] += 1;
         self.outputs[index] += count;
@@ -88,6 +91,10 @@ mod tests {
         summary
             .record(PartKind::Mesh, MAX_SPAN_OUTPUT_OBJECTS - 1)
             .unwrap();
+        let before = format!("{summary:?}");
+        assert_eq!(summary.check_add(1).unwrap(), MAX_SPAN_OUTPUT_OBJECTS);
+        assert!(summary.check_add(2).is_err());
+        assert_eq!(format!("{summary:?}"), before);
         summary.record(PartKind::Mesh, 1).unwrap();
         assert_eq!(
             summary.message(0),

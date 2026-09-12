@@ -76,6 +76,13 @@ existing group in its original membership order. Preselected outputs, including
 exploded point-cloud members, remain selected without selecting untouched group
 peers.
 
+Explode's one-million-output guard pre-counts point-cloud members, polyline
+segments, flattened polycurve segments, and B-rep faces before materializing
+their parts, including outputs already staged from earlier sources. Mesh output
+counts are still checked after connectivity decomposition. A million-plus-one
+point-cloud regression verifies rejection without changing source storage,
+selection, or the existing redo entry.
+
 **Verified mesh restriction behavior (Rhino 8.32, 2026-09-12):** 16 live
 [`mesh_explode_picking` cases](../oracle.md) cover object restrictions, layer
 restrictions, and overlapping groups. Rhino retains object-hidden/object-locked

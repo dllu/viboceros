@@ -4,6 +4,9 @@ mod parts;
 mod summary;
 use summary::{ExplodeSummary, PartKind};
 
+#[cfg(test)]
+mod tests;
+
 pub(super) struct ExplodeCommand;
 
 impl Command for ExplodeCommand {
@@ -42,6 +45,9 @@ impl Command for ExplodeCommand {
         let mut unchanged_ids = Vec::new();
         let mut deleted_sources = Vec::new();
         for (id, geometry, delete_source) in &selected {
+            if let Some(count) = parts::known_output_count(geometry)? {
+                summary.check_add(count)?;
+            }
             let parts = parts::decompose(geometry, document.tolerance())?;
             let Some(parts) = parts else {
                 unchanged_ids.push(*id);
