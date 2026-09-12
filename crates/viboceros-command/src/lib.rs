@@ -13671,11 +13671,11 @@ struct ExtractMeshFacesOptions {
 
 struct ExtractMeshFacesCommand;
 
-struct MeshFaceSource {
+struct MeshFaceSource<'a> {
     id: ObjectId,
-    mesh: TriangleMesh,
-    attributes: ObjectAttributes,
-    group_ids: Vec<GroupId>,
+    mesh: &'a TriangleMesh,
+    attributes: &'a ObjectAttributes,
+    group_ids: &'a [GroupId],
 }
 
 struct ExtractMeshFacesPlan {
@@ -13721,7 +13721,7 @@ impl Command for ExtractMeshFacesCommand {
                 remainder,
                 extracted,
                 attributes: source.attributes.clone(),
-                group_ids: source.group_ids.clone(),
+                group_ids: source.group_ids.to_vec(),
             });
         }
         let source_count = plans.len();
@@ -13766,7 +13766,7 @@ impl Command for ExtractMeshFacesCommand {
 fn selected_mesh_face_sources(
     document: &Document,
     unsupported_geometry: impl Fn() -> CommandError,
-) -> Result<Vec<MeshFaceSource>, CommandError> {
+) -> Result<Vec<MeshFaceSource<'_>>, CommandError> {
     document
         .selected_objects()
         .map(|object| {
@@ -13774,19 +13774,18 @@ fn selected_mesh_face_sources(
             let Geometry::Mesh(mesh) = object.geometry() else {
                 return Err(unsupported_geometry());
             };
-            let group_ids = object.group_ids().to_vec();
             Ok(MeshFaceSource {
                 id,
-                mesh: mesh.clone(),
-                attributes: object.attributes().clone(),
-                group_ids,
+                mesh,
+                attributes: object.attributes(),
+                group_ids: object.group_ids(),
             })
         })
         .collect()
 }
 
 fn selected_mesh_faces(
-    sources: &[MeshFaceSource],
+    sources: &[MeshFaceSource<'_>],
     selection: &FaceSelection,
     command: FaceEditCommand,
 ) -> Result<Vec<(usize, Vec<usize>)>, CommandError> {

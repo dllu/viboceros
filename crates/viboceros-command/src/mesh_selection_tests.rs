@@ -173,10 +173,16 @@ fn mesh_staging_retains_action_order_group_peers_and_read_only_failures() {
     );
     for (source, input) in sources.iter().zip(&inputs) {
         let object = document.object(source.id).unwrap();
+        let Geometry::Mesh(mesh) = object.geometry() else {
+            unreachable!()
+        };
+        assert!(std::ptr::eq(source.mesh, mesh));
+        assert!(std::ptr::eq(source.attributes, object.attributes()));
+        assert!(std::ptr::eq(source.group_ids, object.group_ids()));
         assert_eq!(Geometry::Mesh(source.mesh.clone()), *object.geometry());
-        assert_eq!(source.attributes, *object.attributes());
+        assert_eq!(source.attributes, object.attributes());
         assert_eq!(source.group_ids, object.group_ids());
-        assert_eq!(input.attributes, source.attributes);
+        assert_eq!(input.attributes, *source.attributes);
         assert_eq!(input.group_ids, source.group_ids);
         assert!(input.extraction.is_none());
     }

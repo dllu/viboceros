@@ -19,6 +19,9 @@ selection, or history state. Each iterator owns its lookup; there is no persiste
 cache to invalidate. PointCloud command-first creation uses this shared path.
 Mesh-face source and extraction staging also use it, reusing each borrowed
 object's geometry, attributes, and memberships instead of resolving the ID twice.
+Face-extraction source records borrow all three until owned output plans have
+been built. Tests check pointer identity for the mesh, attributes, and ordered
+membership slice, as well as value preservation and failure behavior.
 A 20-mesh regression crosses the indexed-iterator threshold in non-table action
 order, includes a hidden group-selected peer, and checks that a late extraction
 callback failure leaves the document unchanged.
