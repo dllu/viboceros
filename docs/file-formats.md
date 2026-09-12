@@ -160,6 +160,11 @@ are copied and references remapped. Tests cover 257 interleaved panels and a
 two-component export/import round trip. One disconnected mesh can therefore
 import back as multiple objects. Non-manifold connected shells are not repaired
 or certified by this partitioning.
+Connectivity uses ranked unions with path compression over edge incidences,
+without allocating per-face neighbor lists. An independent graph traversal
+checks all 1,100 graphs on zero through five faces, including deterministic
+component/face order, original curve identities, vertex remapping, and edge-use
+orientation. These abstract incidence tests complement the geometric fixtures.
 The `step/export_plane` adapter writes plane placements using
 the native kernel's scale-safe facet normals and reference directions. Parsed
 STEP regression records check finite unit directions and reversed winding from

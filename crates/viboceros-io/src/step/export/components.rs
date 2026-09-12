@@ -2,39 +2,52 @@
 use monstertruck::topology::compress::CompressedShell;
 use std::collections::BTreeMap;
 
+#[cfg(test)]
+mod tests;
+
+fn root(parents: &mut [usize], mut face: usize) -> usize {
+    while parents[face] != face {
+        parents[face] = parents[parents[face]];
+        face = parents[face];
+    }
+    face
+}
+
 pub(super) fn partition<P: Copy, C, S>(
     shell: CompressedShell<P, C, S>,
 ) -> Vec<CompressedShell<P, C, S>> {
     let mut first_face = vec![None::<usize>; shell.edges.len()];
-    let mut neighbors = vec![Vec::new(); shell.faces.len()];
+    let mut parents = (0..shell.faces.len()).collect::<Vec<_>>();
+    let mut ranks = vec![0_u8; shell.faces.len()];
     for (face, item) in shell.faces.iter().enumerate() {
         for edge in item.boundaries.iter().flatten() {
             if let Some(first) = first_face[edge.index] {
-                neighbors[face].push(first);
-                neighbors[first].push(face);
+                let mut left = root(&mut parents, first);
+                let mut right = root(&mut parents, face);
+                if left != right {
+                    if ranks[left] < ranks[right] {
+                        std::mem::swap(&mut left, &mut right);
+                    }
+                    parents[right] = left;
+                    if ranks[left] == ranks[right] {
+                        ranks[left] += 1;
+                    }
+                }
             } else {
                 first_face[edge.index] = Some(face);
             }
         }
     }
     let mut component = vec![usize::MAX; shell.faces.len()];
+    let mut component_by_root = vec![usize::MAX; shell.faces.len()];
     let mut count = 0;
-    let mut pending = Vec::new();
-    for face in 0..shell.faces.len() {
-        if component[face] != usize::MAX {
-            continue;
+    for (face, group) in component.iter_mut().enumerate() {
+        let root = root(&mut parents, face);
+        if component_by_root[root] == usize::MAX {
+            component_by_root[root] = count;
+            count += 1;
         }
-        component[face] = count;
-        pending.push(face);
-        while let Some(current) = pending.pop() {
-            for &next in &neighbors[current] {
-                if component[next] == usize::MAX {
-                    component[next] = count;
-                    pending.push(next);
-                }
-            }
-        }
-        count += 1;
+        *group = component_by_root[root];
     }
     if count == 1 {
         return vec![shell];
