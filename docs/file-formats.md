@@ -199,8 +199,10 @@ Unitless and unset documents are rejected; conversion failures leave an
 existing destination unchanged. The low-level
 `write_step`/`write_step_file` APIs interpret coordinates as millimetres;
 their `_in_units` counterparts accept explicit source units and tolerance.
-Editable STEP B-rep interchange and production
-surface and solid modelling are not implemented yet.
+General editable STEP B-rep interchange is not implemented yet. The low-level
+`read_step_planar_shells` API converts supported planar source shell definitions
+to validated native B-reps without tessellation; it does not yet provide assembly
+placement, unit conversion, or document integration. `ImportStep` still imports meshes.
 The [native B-rep conversion boundary](step-brep-boundary.md) records the retained
 source topology/trim evidence and the representation work still required.
 

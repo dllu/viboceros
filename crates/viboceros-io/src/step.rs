@@ -5,7 +5,9 @@ mod export;
 mod export_geometry;
 mod export_plane;
 pub use export::{write_step, write_step_file, write_step_file_in_units, write_step_in_units};
+mod native_planar;
 mod units;
+pub use native_planar::{StepPlanarShell, read_step_planar_shells};
 
 use monstertruck::core::cgmath64::{Matrix4, SquareMatrix, Transform};
 use monstertruck::meshing::prelude::{
@@ -71,6 +73,8 @@ pub struct StepImport {
 
 #[derive(Debug, Error)]
 pub enum StepError {
+    #[error("STEP shell #{shell} cannot be converted to a native planar B-rep: {reason}")]
+    UnsupportedPlanarShell { shell: u64, reason: &'static str },
     #[error(transparent)]
     Io(#[from] std::io::Error),
 

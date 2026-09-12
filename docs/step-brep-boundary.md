@@ -2,9 +2,45 @@
 
 [File-format support](file-formats.md) · [Native B-rep geometry](../crates/viboceros-geometry/src/brep.rs)
 
-STEP import currently produces display meshes, not editable native B-reps.
+The `ImportStep` command currently produces display meshes. A low-level
+`read_step_planar_shells` API now produces validated native planar B-reps from
+source shell definitions; it is not yet integrated into document import.
 The mesh route must not be relabeled as an exact B-rep import: tessellation
 discards the source surface definitions, shared curve identities, and UV trims.
+
+## Implemented planar source-shell reader
+
+```rust
+let shells = viboceros_io::read_step_planar_shells(
+    std::fs::File::open("part.step")?,
+    viboceros_geometry::Tolerance::DEFAULT,
+)?;
+// Each entry has source_shell_id and an editable native brep.
+```
+
+Results are source shell definitions in entity-ID order, in file coordinates.
+This API does not expand assembly instances, apply oriented-shell wrappers, or
+convert length units; its tolerance is in source units. It is a conversion
+building block, not a replacement for the existing assembly-aware importer.
+
+The supported subset has planar surfaces, one outer loop per face, straight
+3D edges (including two-control-point degree-one B-splines and linear leaders
+of plane/plane intersections), and line UV trims. Plane control rectangles
+retain source UV coordinates. Shared edges, trim reversal, and face sense are
+kept distinct. Every result passes native `Brep::try_new` validation.
+
+Unsupported curves/surfaces, multiple loops, missing trims, non-manifold edges,
+and reported source-shell topology losses fail the entire request. No mesh
+substitute is returned. General B-spline/NURBS surfaces and curved trims remain
+unimplemented in this path.
+
+Tests cover a cube's 8 vertices, 12 edges, 6 faces, vertex bounds, area 286,
+and signed volume 315; correctly reversed face/bound orientations give volume
+-315. Open triangles retain area and reject solid-volume queries, and a curved
+surface fixture is rejected. A unit-declaration change leaves source-coordinate
+results unchanged. These are generated fixtures, not live Rhino measurements.
+Conservative surface-control bounds can exceed trimmed-face bounds and must not
+be confused with exact object extents.
 
 ## Verified source data
 
@@ -41,9 +77,9 @@ include elementary surfaces, sweeps, B-splines, and NURBS. Merely converting a
 surface's geometric locus is insufficient: its UV parameterization must match
 every trim, or trims must undergo the same verified parameter mapping.
 
-An implementation therefore still needs exact representation adapters, trim
+Beyond the implemented planar subset, conversion still needs representation adapters, trim
 parameter/orientation conversion, shared topology construction, and explicit
 handling of missing or unrepresentable data. Assembly transforms, unit conversion,
 import loss reporting, and document transactions must also cover the native path.
-The current mesh import remains available, but is not proof of any of these
-unimplemented native-conversion requirements.
+The current mesh import remains available, but does not establish those remaining
+native-conversion requirements.

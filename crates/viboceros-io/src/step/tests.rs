@@ -3,6 +3,109 @@ use std::io::Cursor;
 use super::*;
 
 #[test]
+fn native_planar_reader_preserves_cube_brep_geometry_without_tessellation() {
+    let shells = read_step_planar_shells(Cursor::new(cube_step()), Tolerance::DEFAULT).unwrap();
+    assert_eq!(shells.len(), 1);
+    let brep = &shells[0].brep;
+    assert_eq!(
+        (
+            brep.vertices().len(),
+            brep.edges().len(),
+            brep.faces().len()
+        ),
+        (8, 12, 6)
+    );
+    // Plane control rectangles may extend beyond oblique UV trim loops.
+    let bounds = viboceros_geometry::BoundingBox3::from_points(
+        brep.vertices().iter().map(|vertex| vertex.point()),
+    )
+    .unwrap();
+    assert_eq!(bounds.min(), Point3::try_new(-1.0, -2.0, -3.0).unwrap());
+    assert_eq!(bounds.max(), Point3::try_new(4.0, 5.0, 6.0).unwrap());
+    assert!((brep.area(Tolerance::DEFAULT).unwrap() - 286.0).abs() < 1e-10);
+    assert!((brep.signed_volume(Tolerance::DEFAULT).unwrap() - 315.0).abs() < 1e-10);
+    let metres = cube_step().replace("SI_UNIT(.MILLI.,.METRE.)", "SI_UNIT($,.METRE.)");
+    assert_eq!(
+        read_step_planar_shells(Cursor::new(metres), Tolerance::DEFAULT).unwrap(),
+        shells
+    );
+}
+
+#[test]
+fn native_planar_reader_preserves_open_triangle_and_rejects_curved_surfaces() {
+    for reversed in [false, true] {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(2.0, 3.0, 4.0).unwrap(),
+                Point3::try_new(4.0, 3.0, 4.0).unwrap(),
+                Point3::try_new(2.0, 6.0, 4.0).unwrap(),
+            ],
+            vec![if reversed { [0, 2, 1] } else { [0, 1, 2] }],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut bytes = Vec::new();
+        write_step(&mut bytes, &[mesh]).unwrap();
+        let text = String::from_utf8(bytes).unwrap();
+        let shells = read_step_planar_shells(Cursor::new(&text), Tolerance::DEFAULT).unwrap();
+        assert_eq!(shells.len(), 1);
+        let brep = &shells[0].brep;
+        assert_eq!(
+            (
+                brep.vertices().len(),
+                brep.edges().len(),
+                brep.faces().len()
+            ),
+            (3, 3, 1)
+        );
+        assert!((brep.area(Tolerance::DEFAULT).unwrap() - 3.0).abs() < 1e-12);
+        assert!(brep.signed_volume(Tolerance::DEFAULT).is_err());
+        let curved = text
+            .lines()
+            .map(|line| {
+                if line.contains(" = PLANE(") {
+                    line.replace(" = PLANE(", " = CYLINDRICAL_SURFACE(")
+                        .replace(");", ", 1.0);")
+                } else {
+                    line.to_owned()
+                }
+            })
+            .collect::<Vec<_>>()
+            .join("\n");
+        assert_eq!(Table::from_step(&curved).unwrap().entity_report.total(), 0);
+        assert!(matches!(
+            read_step_planar_shells(Cursor::new(curved), Tolerance::DEFAULT),
+            Err(StepError::UnsupportedPlanarShell { .. })
+        ));
+    }
+}
+
+#[test]
+fn native_planar_reader_preserves_face_reversal_in_signed_volume() {
+    let reversed = cube_step()
+        .lines()
+        .map(|line| {
+            // Reverse the face and its face-relative bound together. Changing
+            // same_sense alone would leave an incorrectly oriented outer loop.
+            if line.contains(" = ADVANCED_FACE(") || line.contains(" = FACE_BOUND(") {
+                if let Some(prefix) = line.strip_suffix(".T.);") {
+                    format!("{prefix}.F.);")
+                } else if let Some(prefix) = line.strip_suffix(".F.);") {
+                    format!("{prefix}.T.);")
+                } else {
+                    panic!("unexpected face record")
+                }
+            } else {
+                line.to_owned()
+            }
+        })
+        .collect::<Vec<_>>()
+        .join("\n");
+    let shells = read_step_planar_shells(Cursor::new(reversed), Tolerance::DEFAULT).unwrap();
+    assert!((shells[0].brep.signed_volume(Tolerance::DEFAULT).unwrap() + 315.0).abs() < 1e-10);
+}
+
+#[test]
 fn parsed_cube_retains_shared_edges_and_face_local_trim_availability() {
     let table = Table::from_step(&cube_step()).unwrap();
     let shell_id = *table.shell.keys().next().unwrap();
