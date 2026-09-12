@@ -3,19 +3,9 @@ use std::io::Cursor;
 use super::*;
 
 #[test]
-fn planar_hole_trims_survive_loading_but_native_import_fails_explicitly() {
-    use monstertruck::modeling::{Edge, Face, Plane, Shell, Vertex, Wire, builder};
-
-    let wire = |points: [[f64; 3]; 4]| {
-        let vertices = points.map(|p| Vertex::new(TruckPoint3::new(p[0], p[1], p[2])));
-        Wire::from(
-            (0..4)
-                .map(|i| builder::line(&vertices[i], &vertices[(i + 1) % 4]))
-                .collect::<Vec<Edge>>(),
-        )
-    };
-    let outer = wire([[0., 0., 0.], [10., 0., 0.], [10., 10., 0.], [0., 10., 0.]]);
-    let inner = wire([[2., 2., 0.], [2., 4., 0.], [4., 4., 0.], [4., 2., 0.]]);
+fn planar_hole_trims_survive_loading_and_native_conversion() {
+    let outer = vec![[0., 0.], [10., 0.], [10., 10.], [0., 10.]];
+    let inner = vec![[2., 2.], [2., 4.], [4., 4.], [4., 2.]];
     for inner_first in [false, true] {
         for reversed in [false, true] {
             let boundaries = if inner_first {
@@ -23,24 +13,7 @@ fn planar_hole_trims_survive_loading_but_native_import_fails_explicitly() {
             } else {
                 vec![outer.clone(), inner.clone()]
             };
-            let mut face = Face::new(
-                boundaries,
-                Plane::new(
-                    TruckPoint3::new(0., 0., 0.),
-                    TruckPoint3::new(1., 0., 0.),
-                    TruckPoint3::new(0., 1., 0.),
-                )
-                .into(),
-            );
-            if reversed {
-                face.invert();
-            }
-            let shell = Shell::from(vec![face]).compress();
-            let text = CompleteStepDisplay::new(
-                TruckStepModel::from(&shell),
-                StepHeaderDescriptor::default(),
-            )
-            .to_string();
+            let text = polygon_face_step(&boundaries, reversed);
             let table = Table::from_step(&text).unwrap();
             let id = *table.shell.keys().next().unwrap();
             let (loaded, report) = reported_trimmed_shell(&table, id).unwrap();
@@ -81,14 +54,108 @@ fn planar_hole_trims_survive_loading_but_native_import_fails_explicitly() {
                     vec![100., -4.]
                 }
             );
-            assert!(matches!(
-                read_step_planar_shells(Cursor::new(&text), Tolerance::DEFAULT),
-                Err(StepError::UnsupportedPlanarShell {
-                    reason: "multiple boundary loops are not yet supported",
-                    ..
-                })
-            ));
+            let native = read_step_planar_shells(Cursor::new(&text), Tolerance::DEFAULT).unwrap();
+            let brep = &native[0].brep;
+            assert_eq!(
+                (
+                    brep.vertices().len(),
+                    brep.edges().len(),
+                    brep.faces().len()
+                ),
+                (8, 8, 1)
+            );
+            assert_eq!(brep.faces()[0].is_reversed(), reversed);
+            assert_eq!(
+                brep.faces()[0].loops()[0].loop_type(),
+                viboceros_geometry::BrepLoopType::Outer
+            );
+            assert_eq!(
+                brep.faces()[0].loops()[1].loop_type(),
+                viboceros_geometry::BrepLoopType::Inner
+            );
+            assert!((brep.area(Tolerance::DEFAULT).unwrap() - 96.0).abs() < 1e-10);
+            assert!(brep.signed_volume(Tolerance::DEFAULT).is_err());
         }
+    }
+}
+
+fn polygon_face_step(boundaries: &[Vec<[f64; 2]>], reversed: bool) -> String {
+    use monstertruck::modeling::{Edge, Face, Plane, Shell, Vertex, Wire, builder};
+    let boundaries = boundaries
+        .iter()
+        .map(|points| {
+            let vertices = points
+                .iter()
+                .map(|p| Vertex::new(TruckPoint3::new(p[0], p[1], 0.)))
+                .collect::<Vec<_>>();
+            Wire::from(
+                (0..points.len())
+                    .map(|i| builder::line(&vertices[i], &vertices[(i + 1) % points.len()]))
+                    .collect::<Vec<Edge>>(),
+            )
+        })
+        .collect::<Vec<_>>();
+    let mut face = Face::new(
+        boundaries,
+        Plane::new(
+            TruckPoint3::new(0., 0., 0.),
+            TruckPoint3::new(1., 0., 0.),
+            TruckPoint3::new(0., 1., 0.),
+        )
+        .into(),
+    );
+    if reversed {
+        face.invert();
+    }
+    let shell = Shell::from(vec![face]).compress();
+    CompleteStepDisplay::new(
+        TruckStepModel::from(&shell),
+        StepHeaderDescriptor::default(),
+    )
+    .to_string()
+}
+
+#[test]
+fn planar_step_multiple_holes_convert_and_invalid_regions_fail() {
+    let outer = vec![[0., 0.], [10., 0.], [10., 10.], [0., 10.]];
+    let a = vec![[1., 1.], [1., 3.], [3., 3.], [3., 1.]];
+    let b = vec![[5., 5.], [5., 8.], [8., 8.], [8., 5.]];
+    let text = polygon_face_step(&[a.clone(), outer.clone(), b], false);
+    let native = read_step_planar_shells_in_units(
+        Cursor::new(text),
+        &LengthUnitSystem::Centimeters,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let brep = &native[0].brep;
+    assert_eq!(
+        (
+            brep.vertices().len(),
+            brep.edges().len(),
+            brep.faces()[0].loops().len()
+        ),
+        (12, 12, 3)
+    );
+    assert!((brep.area(Tolerance::DEFAULT).unwrap() - 0.87).abs() < 1e-12);
+    for hole in [
+        vec![[11., 1.], [11., 2.], [12., 2.], [12., 1.]],
+        vec![[0., 1.], [0., 2.], [2., 2.], [2., 1.]],
+        vec![[2., 2.], [2., 4.], [4., 4.], [4., 2.]],
+        vec![[1.5, 1.5], [1.5, 2.], [2., 2.], [2., 1.5]],
+    ] {
+        let text = polygon_face_step(&[outer.clone(), a.clone(), hole], false);
+        let table = Table::from_step(&text).unwrap();
+        let id = *table.shell.keys().next().unwrap();
+        assert_eq!(
+            reported_trimmed_shell(&table, id).unwrap().1.total_lost(),
+            0
+        );
+        assert!(matches!(
+            read_step_planar_shells(Cursor::new(text), Tolerance::DEFAULT),
+            Err(StepError::Geometry(
+                GeometryError::InvalidPlanarFaceBoundary
+            ))
+        ));
     }
 }
 

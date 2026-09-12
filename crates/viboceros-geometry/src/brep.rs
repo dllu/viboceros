@@ -17,6 +17,7 @@ mod incidence;
 mod loft;
 mod mass_properties;
 mod morph;
+mod polygon_boundaries;
 mod surface_grid;
 mod tessellation;
 mod tolerance;

@@ -38,13 +38,14 @@ the common `LengthUnitSystem` policy; unset is an error. Tests check millimetres
 centimetres, metres, kilometres, and microns, including quadratic area scaling,
 cubic volume scaling, identical UV loops, and unitless/error behavior.
 
-The supported subset has planar surfaces, one outer loop per face, straight
+The supported subset has planar surfaces, one outer loop and any number of
+strictly disjoint, unnested inner loops per face, straight
 3D edges (including two-control-point degree-one B-splines and linear leaders
 of plane/plane intersections), and line UV trims. Plane control rectangles
 retain source UV coordinates. Shared edges, trim reversal, and face sense are
 kept distinct. Every result passes native `Brep::try_new` validation.
 
-Unsupported curves/surfaces, multiple loops, missing trims, non-manifold edges,
+Unsupported curves/surfaces, invalid polygon regions, missing trims, non-manifold edges,
 and reported source-shell topology losses fail the entire request. No mesh
 substitute is returned. General B-spline/NURBS surfaces and curved trims remain
 unimplemented in this path.
@@ -86,13 +87,30 @@ reported losses. UV signed areas remain +100 and -4 regardless of face sense;
 the boundary list retains its source order, including inner-first input.
 The loader's `FaceBound` representation does not retain a distinct outer-bound
 flag. Consequently a converter must not assume that the first loop is outer.
-The native reader explicitly rejects all four multi-loop fixtures for now.
+The native reader converts all four fixtures to eight-vertex, eight-edge native
+faces with area 96, preserving face sense. A two-hole fixture additionally checks
+12 shared edges, three loops, and area 0.87 after millimetre-to-centimetre conversion.
 
-Before enabling holes, conversion needs geometric classification and checks for
-containment, self-intersection, and intersections between loops. General native
+`BrepFace::try_from_polygon_boundaries` classifies the unique counterclockwise
+outer boundary and moves it to the front without modifying any source trim.
+It verifies degree-one, single-span UV curves, closure, nonzero sides and area,
+absence of backtracking and self-intersections, strict hole containment, and
+absence of hole intersections or nesting. Touching and numerically unresolved
+regions are conservatively rejected. Normalized UV coordinates prevent raw
+coordinate products from overflowing; an X-interval sweep prunes disjoint side
+pairs (worst-case intersection checking remains quadratic). No tessellation is
+used in this check or to replace imported geometry.
+
+Tests include concave boundaries, collinear subdivisions, scale/translation
+changes, malformed closure, and 1,176 rectangle-hole/order combinations checked
+against independent interval predicates. STEP fixtures with outside, touching,
+overlapping, or nested holes fail despite loss-free source-shell conversion.
+General native
 `Brep::try_new` validation currently verifies trim continuity, endpoint/surface
 agreement, edge-use types, and winding, but does not establish those planar
-region conditions. Passing it alone is not sufficient evidence for valid holes.
+region conditions; the polygon constructor establishes them before the native
+STEP reader performs full model-space validation. This does not extend region
+validation to arbitrary curved trims or change other B-rep constructors.
 
 ## Native representation requirements
 

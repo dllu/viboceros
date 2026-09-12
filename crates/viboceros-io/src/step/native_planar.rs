@@ -4,9 +4,8 @@ use monstertruck::meshing::prelude::ParametricSurface;
 use monstertruck::step::load::step_geometry::{Curve2D, Curve3D, ElementarySurface, Surface};
 use std::io::Read;
 use viboceros_geometry::{
-    AffineTransform3, Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType,
-    BrepVertex, LengthUnitSystem, NurbsCurve, NurbsCurve2, NurbsSurface, Point2, Point3,
-    SurfaceIso, Tolerance,
+    AffineTransform3, Brep, BrepEdge, BrepFace, BrepTrim, BrepTrimType, BrepVertex,
+    LengthUnitSystem, NurbsCurve, NurbsCurve2, NurbsSurface, Point2, Point3, SurfaceIso, Tolerance,
 };
 
 /// An editable planar shell definition, before assembly placement.
@@ -134,51 +133,52 @@ fn convert_table(table: &Table, tolerance: Tolerance) -> Result<Vec<StepPlanarSh
             let Surface::ElementarySurface(ElementarySurface::Plane(plane)) = &face.surface else {
                 return Err(unsupported("surface is not a plane"));
             };
-            if face.boundaries.len() != 1 {
-                return Err(unsupported("multiple boundary loops are not yet supported"));
-            }
             let mut bounds = [
                 f64::INFINITY,
                 f64::NEG_INFINITY,
                 f64::INFINITY,
                 f64::NEG_INFINITY,
             ];
-            let mut trims = Vec::new();
-            for edge_use in &face.boundaries[0] {
-                let trim = edge_use
-                    .trim_curve
-                    .as_ref()
-                    .ok_or_else(|| unsupported("missing UV trim"))?;
-                let Curve2D::Line(line) = trim.curve().as_ref() else {
-                    return Err(unsupported("UV trim is not a line"));
-                };
-                let start = Point2::try_new(line.0.x, line.0.y)?;
-                let end = Point2::try_new(line.1.x, line.1.y)?;
-                for point in [start, end] {
-                    bounds[0] = bounds[0].min(point.x());
-                    bounds[1] = bounds[1].max(point.x());
-                    bounds[2] = bounds[2].min(point.y());
-                    bounds[3] = bounds[3].max(point.y());
-                }
-                let endpoints = shell.edges[edge_use.index].vertices;
-                let vertices = if edge_use.orientation {
-                    [endpoints.0, endpoints.1]
-                } else {
-                    [endpoints.1, endpoints.0]
-                };
-                trims.push(BrepTrim::try_new(
-                    vertices,
-                    Some(edge_use.index),
-                    !edge_use.orientation,
-                    NurbsCurve2::try_line(start, end)?,
-                    if incidence[edge_use.index] == 2 {
-                        BrepTrimType::Mated
+            let mut boundaries = Vec::new();
+            for boundary in &face.boundaries {
+                let mut trims = Vec::new();
+                for edge_use in boundary {
+                    let trim = edge_use
+                        .trim_curve
+                        .as_ref()
+                        .ok_or_else(|| unsupported("missing UV trim"))?;
+                    let Curve2D::Line(line) = trim.curve().as_ref() else {
+                        return Err(unsupported("UV trim is not a line"));
+                    };
+                    let start = Point2::try_new(line.0.x, line.0.y)?;
+                    let end = Point2::try_new(line.1.x, line.1.y)?;
+                    for point in [start, end] {
+                        bounds[0] = bounds[0].min(point.x());
+                        bounds[1] = bounds[1].max(point.x());
+                        bounds[2] = bounds[2].min(point.y());
+                        bounds[3] = bounds[3].max(point.y());
+                    }
+                    let endpoints = shell.edges[edge_use.index].vertices;
+                    let vertices = if edge_use.orientation {
+                        [endpoints.0, endpoints.1]
                     } else {
-                        BrepTrimType::Boundary
-                    },
-                    SurfaceIso::NotIso,
-                    [0.0; 2],
-                )?);
+                        [endpoints.1, endpoints.0]
+                    };
+                    trims.push(BrepTrim::try_new(
+                        vertices,
+                        Some(edge_use.index),
+                        !edge_use.orientation,
+                        NurbsCurve2::try_line(start, end)?,
+                        if incidence[edge_use.index] == 2 {
+                            BrepTrimType::Mated
+                        } else {
+                            BrepTrimType::Boundary
+                        },
+                        SurfaceIso::NotIso,
+                        [0.0; 2],
+                    )?);
+                }
+                boundaries.push(trims);
             }
             let [u0, u1, v0, v1] = bounds;
             let control_points = [(u0, v0), (u1, v0), (u0, v1), (u1, v1)]
@@ -197,10 +197,10 @@ fn convert_table(table: &Table, tolerance: Tolerance) -> Result<Vec<StepPlanarSh
                 vec![u0, u0, u1, u1],
                 vec![v0, v0, v1, v1],
             )?;
-            faces.push(BrepFace::try_new(
+            faces.push(BrepFace::try_from_polygon_boundaries(
                 surface,
                 !face.orientation,
-                vec![BrepLoop::try_new(BrepLoopType::Outer, trims)?],
+                boundaries,
             )?);
         }
         output.push(StepPlanarShell {
