@@ -150,7 +150,7 @@ class OracleClient:
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
         interaction = None
-        if any(operation.get("op") in ("group_picking", "mesh_split_picking") for operation in request.get("operations", [])):
+        if any(operation.get("op") in ("group_picking", "mesh_split_picking", "mesh_explode_picking") for operation in request.get("operations", [])):
             from .group_picking import IdlePicker, validate_request
             validate_request(request)
             worker_source = Path(__file__).with_name("group_picking_worker.py")

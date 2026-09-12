@@ -1,0 +1,193 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "mesh_explode_picking",
+      "id": "explode-normal-0",
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 1
+    },
+    {
+      "op": "mesh_explode_picking",
+      "id": "explode-locked-0",
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 1,
+      "locked": [
+        0
+      ]
+    },
+    {
+      "op": "mesh_explode_picking",
+      "id": "explode-locked-1",
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 0,
+      "locked": [
+        1
+      ]
+    },
+    {
+      "op": "mesh_explode_picking",
+      "id": "explode-hidden-0",
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 1,
+      "hidden": [
+        0
+      ]
+    },
+    {
+      "op": "mesh_explode_picking",
+      "id": "explode-hidden-1",
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 0,
+      "hidden": [
+        1
+      ]
+    },
+    {
+      "op": "mesh_explode_picking",
+      "id": "explode-layer-locked",
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 0,
+      "layer_mode": "locked"
+    },
+    {
+      "op": "mesh_explode_picking",
+      "id": "explode-layer-hidden",
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 0,
+      "layer_mode": "hidden"
+    },
+    {
+      "op": "mesh_explode_picking",
+      "id": "explode-overlap-false-0",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "reverse_bridge": false
+    },
+    {
+      "op": "mesh_explode_picking",
+      "id": "explode-overlap-false-1",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "reverse_bridge": false
+    },
+    {
+      "op": "mesh_explode_picking",
+      "id": "explode-overlap-false-2",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "reverse_bridge": false
+    },
+    {
+      "op": "mesh_explode_picking",
+      "id": "explode-overlap-true-0",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 0,
+      "reverse_bridge": true
+    },
+    {
+      "op": "mesh_explode_picking",
+      "id": "explode-overlap-true-1",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 1,
+      "reverse_bridge": true
+    },
+    {
+      "op": "mesh_explode_picking",
+      "id": "explode-overlap-true-2",
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "seed": 2,
+      "reverse_bridge": true
+    }
+  ]
+}

@@ -121,7 +121,7 @@ def on_idle(sender, event):
         if state['stage'] == 'setup':
             document.Objects.UnselectAll()
             for i in range(3):
-                if operation.get('op') == 'mesh_split_picking':
+                if operation.get('op') in ('mesh_split_picking', 'mesh_explode_picking'):
                     mesh = Rhino.Geometry.Mesh()
                     attributes = Rhino.DocObjects.ObjectAttributes()
                     try:
@@ -196,9 +196,10 @@ def on_idle(sender, event):
         elif time.time() >= state['ready']:
             ids = state['ids']
             value = dict(selected=[i for i,key in enumerate(ids) if document.Objects.FindId(key).IsSelected(False)], modes=[str(document.Objects.FindId(key).Attributes.Mode) for key in ids], layers=[dict(visible=document.Layers[document.Objects.FindId(key).Attributes.LayerIndex].IsVisible, locked=document.Layers[document.Objects.FindId(key).Attributes.LayerIndex].IsLocked) for key in ids])
-            if operation.get('op') == 'mesh_split_picking':
+            if operation.get('op') in ('mesh_split_picking', 'mesh_explode_picking'):
                 original_ids = list(ids)
-                value['split_succeeded'] = bool(Rhino.RhinoApp.RunScript('_SplitDisjointMesh', False)) if value['selected'] else None
+                explode = operation['op'] == 'mesh_explode_picking'
+                value['explode_succeeded' if explode else 'split_succeeded'] = bool(Rhino.RhinoApp.RunScript('_Explode' if explode else '_SplitDisjointMesh', False)) if value['selected'] else None
                 records = []
                 # This newly owned document contains only our three sources.
                 settings = Rhino.DocObjects.ObjectEnumeratorSettings()

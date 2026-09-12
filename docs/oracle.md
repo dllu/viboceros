@@ -153,6 +153,14 @@ comparison in `cargo test -p viboceros-command split_disjoint_mesh_matches_live`
 Deleted sources are removed from cleanup tracking; surviving original and newly
 created mesh IDs are explicitly tracked and cleaned up in the private document.
 
+`mesh_explode_picking.json` is another Rhino-only diagnostic, using the same 13
+mesh setups but invoking `Explode`. Run it with the preceding `rhino` command,
+substituting this fixture name. Its checked-in observations record retained
+restricted sources as **unselected**, unlike SplitDisjointMesh. Python tests
+compare every recorded field between the two diagnostic sets, allowing only
+the command success field name and original-source selection difference.
+See the [known native Explode mismatch](commands/editing.md).
+
 `group_picking.json` is a dedicated, untimed three-line fixture: an idle-event
 worker returns control to Rhino's normal UI loop, then the host clicks projected
 line locations in the newly owned window and acknowledges each click atomically.

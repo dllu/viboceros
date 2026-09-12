@@ -1,0 +1,2722 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "explode-normal-0",
+      "value": {
+        "explode_succeeded": true,
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Normal",
+          "Normal",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ],
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "explode-locked-0",
+      "value": {
+        "explode_succeeded": true,
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Locked",
+          "Normal",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Locked",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Locked",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Locked",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ],
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "explode-locked-1",
+      "value": {
+        "explode_succeeded": true,
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Normal",
+          "Locked",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Locked",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Locked",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ],
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Locked",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ],
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "explode-hidden-0",
+      "value": {
+        "explode_succeeded": true,
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Hidden",
+          "Normal",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Hidden",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Hidden",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Hidden",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ],
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "explode-hidden-1",
+      "value": {
+        "explode_succeeded": true,
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Normal",
+          "Hidden",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Hidden",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Hidden",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ],
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Hidden",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ],
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "explode-layer-locked",
+      "value": {
+        "explode_succeeded": true,
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": true,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Normal",
+          "Normal",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": true,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [
+              0
+            ],
+            "layer_locked": true,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ],
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": true,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ],
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "explode-layer-hidden",
+      "value": {
+        "explode_succeeded": true,
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": false
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Normal",
+          "Normal",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": false,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": false,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ],
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "explode-overlap-false-0",
+      "value": {
+        "explode_succeeded": true,
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Normal",
+          "Normal",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0,
+              1
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0,
+              1
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [
+              1
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ],
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "explode-overlap-false-1",
+      "value": {
+        "explode_succeeded": true,
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Normal",
+          "Normal",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 2,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0,
+              1
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0,
+              1
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              1
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              1
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "explode-overlap-false-2",
+      "value": {
+        "explode_succeeded": true,
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Normal",
+          "Normal",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 2,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0,
+              1
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0,
+              1
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              1
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              1
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "explode-overlap-true-0",
+      "value": {
+        "explode_succeeded": true,
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Normal",
+          "Normal",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              1,
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              1,
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [
+              1
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ],
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "explode-overlap-true-1",
+      "value": {
+        "explode_succeeded": true,
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Normal",
+          "Normal",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              1,
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              1,
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [
+              1
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ],
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "explode-overlap-true-2",
+      "value": {
+        "explode_succeeded": true,
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Normal",
+          "Normal",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 2,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              1,
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              1,
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              1
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              1
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          1,
+          2
+        ]
+      }
+    }
+  ]
+}

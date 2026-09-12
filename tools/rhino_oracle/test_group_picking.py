@@ -12,6 +12,29 @@ from .group_picking import IdlePicker, validate_request
 
 
 class GroupPickingTests(unittest.TestCase):
+    def test_mesh_explode_observations_differ_from_split_in_retained_source_selection(self):
+        root = Path(__file__).parent
+        request = json.loads((root / "fixtures/mesh_explode_picking.json").read_text())
+        observed = json.loads((root / "observations/mesh_explode_picking.json").read_text())
+        split = json.loads((root / "observations/mesh_split_picking.json").read_text())
+        validate_request(request)
+        self.assertEqual(len(request["operations"]), 13)
+        self.assertEqual(len(observed["results"]), 13)
+        self.assertEqual(len(split["results"]), 13)
+        for op, result, reference in zip(request["operations"], observed["results"], split["results"]):
+            self.assertEqual(op["id"], result["id"])
+            self.assertEqual(result["id"], reference["id"].replace("split-", "explode-", 1))
+            value = result["value"]
+            expected = copy.deepcopy(reference["value"])
+            expected["explode_succeeded"] = expected.pop("split_succeeded")
+            for output in expected["outputs"]:
+                if output["original_identity"]:
+                    output["selected"] = False
+            self.assertEqual(value, expected)
+        invalid = copy.deepcopy(request)
+        invalid["operations"][0]["move"] = True
+        with self.assertRaises(OracleProtocolError): validate_request(invalid)
+
     def test_mesh_split_observations_cover_identity_modes_and_untouched_source(self):
         root = Path(__file__).parent
         request = json.loads((root / "fixtures/mesh_split_picking.json").read_text())

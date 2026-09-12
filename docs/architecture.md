@@ -75,6 +75,8 @@ lookups while retaining first-face order. An independent graph traversal checks
 the grouping against every undirected graph of up to six faces in two union orders.
 The `split_disjoint_mesh` command module owns staged component results, fresh
 piece insertion, source deletion policy, attribute/group propagation, and selection.
+The separate `explode` command module owns multi-geometry decomposition staging,
+output summaries, source removal, and result selection.
 The command-owned `object_selection` module supplies typed filters and boolean
 options to the separate [app object-prompt adapter](object-selection.md).
 `selection_commands` owns basic, action-history, attribute, and duplicate
