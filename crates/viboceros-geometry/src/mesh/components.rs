@@ -14,7 +14,7 @@ fn component_faces(
     let mut component_by_root = vec![usize::MAX; parents.len()];
     let mut components = Vec::<Vec<usize>>::new();
     for face in 0..parents.len() {
-        let root = face_root(parents, face);
+        let root = index_root(parents, face);
         let component = &mut component_by_root[root];
         if *component == usize::MAX {
             if components.len() == maximum {

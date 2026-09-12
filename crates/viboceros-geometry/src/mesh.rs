@@ -4,6 +4,8 @@ mod components;
 mod edge_collapse;
 mod edge_split;
 mod normals;
+mod union_find;
+use union_find::{index_root, union_faces, union_indices_keep_earlier, union_indices_keep_later};
 #[cfg(test)]
 mod transform_tests;
 
@@ -2457,7 +2459,7 @@ impl TriangleMesh {
                         let face = faces
                             .binary_search(&edge_use.face)
                             .expect("an incident edge face is present at its vertex");
-                        face_root(&mut parents, face)
+                        index_root(&mut parents, face)
                     })
                     .collect::<Vec<_>>();
                 if edge_records[edge].1.count == 1 {
@@ -3129,7 +3131,7 @@ impl TriangleMesh {
                 let mut faces = Vec::new();
                 for &face in vertex_faces {
                     let local = face_to_local[&face];
-                    if face_root(&mut parents, local) == component {
+                    if index_root(&mut parents, local) == component {
                         faces.push(face);
                     }
                 }
@@ -3273,7 +3275,7 @@ impl TriangleMesh {
             for component in component_order {
                 let mut faces = Vec::new();
                 for &face in vertex_faces {
-                    if face_root(&mut parents, face_to_local[&face]) == component {
+                    if index_root(&mut parents, face_to_local[&face]) == component {
                         faces.push(face);
                     }
                 }
@@ -4858,7 +4860,7 @@ fn ordered_vertex_face_components(
             let Some(&local) = face_to_local.get(&face) else {
                 return;
             };
-            let root = face_root(parents, local);
+            let root = index_root(parents, local);
             if radial_roots.last().copied() != Some(root) {
                 radial_roots.push(root);
             }
@@ -4879,76 +4881,12 @@ fn ordered_vertex_face_components(
         }
     }
     for &face in incident_faces {
-        let root = face_root(parents, face_to_local[&face]);
+        let root = index_root(parents, face_to_local[&face]);
         if seen.insert(root) {
             order.push(root);
         }
     }
     order
-}
-
-fn face_root(parents: &mut [usize], face: usize) -> usize {
-    let mut root = face;
-    while parents[root] != root {
-        root = parents[root];
-    }
-    let mut current = face;
-    while parents[current] != current {
-        let next = parents[current];
-        parents[current] = root;
-        current = next;
-    }
-    root
-}
-
-fn union_faces(parents: &mut [usize], ranks: &mut [u8], first: usize, second: usize) {
-    let first_root = face_root(parents, first);
-    let second_root = face_root(parents, second);
-    if first_root == second_root {
-        return;
-    }
-    match ranks[first_root].cmp(&ranks[second_root]) {
-        std::cmp::Ordering::Less => parents[first_root] = second_root,
-        std::cmp::Ordering::Greater => parents[second_root] = first_root,
-        std::cmp::Ordering::Equal => {
-            parents[second_root] = first_root;
-            ranks[first_root] += 1;
-        }
-    }
-}
-
-fn index_root(parents: &mut [usize], index: usize) -> usize {
-    let mut root = index;
-    while parents[root] != root {
-        root = parents[root];
-    }
-    let mut current = index;
-    while parents[current] != current {
-        let next = parents[current];
-        parents[current] = root;
-        current = next;
-    }
-    root
-}
-
-fn union_indices_keep_later(parents: &mut [usize], first: usize, second: usize) {
-    let first = index_root(parents, first);
-    let second = index_root(parents, second);
-    if first < second {
-        parents[first] = second;
-    } else if second < first {
-        parents[second] = first;
-    }
-}
-
-fn union_indices_keep_earlier(parents: &mut [usize], first: usize, second: usize) {
-    let first = index_root(parents, first);
-    let second = index_root(parents, second);
-    if first < second {
-        parents[second] = first;
-    } else if second < first {
-        parents[first] = second;
-    }
 }
 
 #[cfg(test)]

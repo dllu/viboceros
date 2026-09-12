@@ -5,6 +5,12 @@
 The kernel distinguishes stored raw vertices from exact-location topology
 vertices. Coincident raw vertices can remain separate across unwelded seams.
 Stored faces are triangles or quads; triangulated facets are a separate view.
+[`mesh/union_find`](../crates/viboceros-geometry/src/mesh/union_find.rs) shares
+iterative path compression across face grouping and raw-vertex merging. Face
+unions use rank; raw-vertex unions explicitly retain the earliest or latest index.
+An independent label-partition reference checks all 69,905 union sequences of
+length zero through four on four indices, including repeated/self unions. Long
+chains in both directions verify complete compression without recursion.
 Command selection, source retention, groups, and history belong to the command
 and document crates, not these geometry modules.
 
