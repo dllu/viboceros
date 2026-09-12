@@ -1,5 +1,8 @@
 use super::*;
 
+mod summary;
+use summary::{ExplodeSummary, PartKind};
+
 pub(super) struct ExplodeCommand;
 
 enum ExplodedParts {
@@ -11,13 +14,13 @@ enum ExplodedParts {
 }
 
 impl ExplodedParts {
-    fn output_count(&self) -> usize {
+    fn report(&self) -> (PartKind, usize) {
         match self {
-            Self::Lines(parts) => parts.len(),
-            Self::Curves(parts) => parts.len(),
-            Self::Points(parts) => parts.len(),
-            Self::Surfaces(parts) => parts.len(),
-            Self::Meshes(parts) => parts.len(),
+            Self::Lines(parts) => (PartKind::Polyline, parts.len()),
+            Self::Curves(parts) => (PartKind::Polycurve, parts.len()),
+            Self::Points(parts) => (PartKind::PointCloud, parts.len()),
+            Self::Surfaces(parts) => (PartKind::Polysurface, parts.len()),
+            Self::Meshes(parts) => (PartKind::Mesh, parts.len()),
         }
     }
 
@@ -67,7 +70,9 @@ impl Command for ExplodeCommand {
             return Err(CommandError::NoObjectsSelected);
         }
         let mut exploded = Vec::new();
-        let mut output_count = 0_usize;
+        let mut summary = ExplodeSummary::default();
+        let mut unchanged_ids = Vec::new();
+        let mut deleted_sources = Vec::new();
         for (id, geometry, delete_source) in &selected {
             let parts = match geometry {
                 Geometry::PolyCurve(curve) => {
@@ -114,100 +119,21 @@ impl Command for ExplodeCommand {
                 _ => None,
             };
             let Some(parts) = parts else {
+                unchanged_ids.push(*id);
                 continue;
             };
-            output_count = output_count
-                .checked_add(parts.output_count())
-                .filter(|count| *count <= MAX_SPAN_OUTPUT_OBJECTS)
-                .ok_or_else(|| too_many_span_outputs("Explode"))?;
-            exploded.push((*id, parts, *delete_source));
+            let (kind, count) = parts.report();
+            summary.record(kind, count)?;
+            if *delete_source {
+                deleted_sources.push(*id);
+            }
+            exploded.push((*id, parts));
         }
         if exploded.is_empty() {
             return Err(CommandError::NoExplodableObjects);
         }
-        let exploded_ids = exploded
-            .iter()
-            .map(|(id, _, _)| *id)
-            .collect::<BTreeSet<_>>();
-        let unchanged_ids = selected
-            .iter()
-            .filter(|(id, _, _)| !exploded_ids.contains(id))
-            .map(|(id, _, _)| *id)
-            .collect::<Vec<_>>();
-        let polyline_count = exploded
-            .iter()
-            .filter(|(_, parts, _)| matches!(parts, ExplodedParts::Lines(_)))
-            .count();
-        let point_cloud_count = exploded
-            .iter()
-            .filter(|(_, parts, _)| matches!(parts, ExplodedParts::Points(_)))
-            .count();
-        let polycurve_count = exploded
-            .iter()
-            .filter(|(_, parts, _)| matches!(parts, ExplodedParts::Curves(_)))
-            .count();
-        let curve_count = exploded
-            .iter()
-            .map(|(_, parts, _)| match parts {
-                ExplodedParts::Curves(curves) => curves.len(),
-                _ => 0,
-            })
-            .sum::<usize>();
-        let polysurface_count = exploded
-            .iter()
-            .filter(|(_, parts, _)| matches!(parts, ExplodedParts::Surfaces(_)))
-            .count();
-        let mesh_count = exploded
-            .iter()
-            .filter(|(_, parts, _)| matches!(parts, ExplodedParts::Meshes(_)))
-            .count();
-        let line_count = exploded
-            .iter()
-            .map(|(_, parts, _)| match parts {
-                ExplodedParts::Lines(lines) => lines.len(),
-                ExplodedParts::Points(_)
-                | ExplodedParts::Curves(_)
-                | ExplodedParts::Surfaces(_)
-                | ExplodedParts::Meshes(_) => 0,
-            })
-            .sum::<usize>();
-        let point_count = exploded
-            .iter()
-            .map(|(_, parts, _)| match parts {
-                ExplodedParts::Lines(_)
-                | ExplodedParts::Curves(_)
-                | ExplodedParts::Surfaces(_)
-                | ExplodedParts::Meshes(_) => 0,
-                ExplodedParts::Points(points) => points.len(),
-            })
-            .sum::<usize>();
-        let surface_count = exploded
-            .iter()
-            .map(|(_, parts, _)| match parts {
-                ExplodedParts::Surfaces(surfaces) => surfaces.len(),
-                ExplodedParts::Lines(_)
-                | ExplodedParts::Curves(_)
-                | ExplodedParts::Points(_)
-                | ExplodedParts::Meshes(_) => 0,
-            })
-            .sum::<usize>();
-        let mesh_part_count = exploded
-            .iter()
-            .map(|(_, parts, _)| match parts {
-                ExplodedParts::Meshes(meshes) => meshes.len(),
-                ExplodedParts::Lines(_)
-                | ExplodedParts::Curves(_)
-                | ExplodedParts::Points(_)
-                | ExplodedParts::Surfaces(_) => 0,
-            })
-            .sum::<usize>();
-        let unchanged_count = selected.len() - exploded_ids.len();
-        let deleted_sources = exploded
-            .iter()
-            .filter(|(_, _, delete)| *delete)
-            .map(|(id, _, _)| *id)
-            .collect::<Vec<_>>();
-        let pieces = exploded.into_iter().flat_map(|(source, parts, _)| {
+        let unchanged_count = unchanged_ids.len();
+        let pieces = exploded.into_iter().flat_map(|(source, parts)| {
             parts
                 .into_geometries()
                 .into_iter()
@@ -222,42 +148,6 @@ impl Command for ExplodeCommand {
         // Retained restricted sources stay unselected, and overlapping groups
         // must not pull untouched peers into the output selection.
         document.select_command_results(unchanged_ids.into_iter().chain(selected_result_ids))?;
-        let mut summaries = Vec::new();
-        if polycurve_count > 0 {
-            summaries.push(format!(
-                "{polycurve_count} polycurve(s) into {curve_count} curve(s)"
-            ));
-        }
-        if polyline_count > 0 {
-            summaries.push(format!(
-                "{polyline_count} polyline(s) into {line_count} line(s)"
-            ));
-        }
-        if point_cloud_count > 0 {
-            summaries.push(format!(
-                "{point_cloud_count} point cloud(s) into {point_count} point(s)"
-            ));
-        }
-        if polysurface_count > 0 {
-            summaries.push(format!(
-                "{polysurface_count} polysurface(s) into {surface_count} surface(s)"
-            ));
-        }
-        if mesh_count > 0 {
-            summaries.push(format!(
-                "{mesh_count} mesh(es) into {mesh_part_count} part(s)"
-            ));
-        }
-        let last = summaries
-            .pop()
-            .expect("at least one selected object was exploded");
-        let summary = if summaries.is_empty() {
-            last
-        } else {
-            format!("{} and {last}", summaries.join(", "))
-        };
-        Ok(format!(
-            "Exploded {summary}; {unchanged_count} object(s) unchanged"
-        ))
+        Ok(summary.message(unchanged_count))
     }
 }
