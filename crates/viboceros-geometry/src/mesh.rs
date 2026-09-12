@@ -2017,11 +2017,7 @@ impl TriangleMesh {
         };
         let first = data.topological_points[first_topology_vertex];
         let second = data.topological_points[second_topology_vertex];
-        let midpoint = Point3::try_new(
-            first.x() * 0.5 + second.x() * 0.5,
-            first.y() * 0.5 + second.y() * 0.5,
-            first.z() * 0.5 + second.z() * 0.5,
-        )?;
+        let midpoint = first.midpoint(second)?;
 
         let mut parents = (0..self.vertices.len()).collect::<Vec<_>>();
         for edge_use in incidence.uses() {
@@ -6868,6 +6864,51 @@ mod tests {
                 edge_count: mesh.topology().edge_count(),
             })
         );
+    }
+
+    #[test]
+    fn collapse_midpoint_preserves_small_offsets_and_rounds_subnormal_ties() {
+        let tiny = f64::from_bits(1);
+        for (first_z, second_z, expected_z) in [
+            (tiny, tiny, tiny),
+            (tiny, 2.0 * tiny, 2.0 * tiny),
+            (-tiny, -2.0 * tiny, -2.0 * tiny),
+            (-tiny, 2.0 * tiny, 0.0),
+            (1e308, 1e308, 1e308),
+        ] {
+            for quad in [false, true] {
+                let vertices = vec![
+                    point(0.0, 0.0, first_z),
+                    point(2.0, 0.0, second_z),
+                    point(2.0, 2.0, second_z),
+                    point(0.0, 2.0, first_z),
+                ];
+                let first = vertices[0];
+                let second = vertices[1];
+                let faces = if quad {
+                    vec![MeshFace::Quad([0, 1, 2, 3])]
+                } else {
+                    vec![MeshFace::Triangle([0, 1, 2]), MeshFace::Triangle([0, 2, 3])]
+                };
+                let mesh =
+                    TriangleMesh::try_new_faces(vertices, faces, Tolerance::DEFAULT).unwrap();
+                let edge = topology_edge_index_between(&mesh, first, second);
+                let collapsed = mesh
+                    .collapse_topology_edge(edge, Tolerance::DEFAULT)
+                    .unwrap()
+                    .unwrap();
+                assert_eq!(
+                    collapsed.vertices(),
+                    &[
+                        point(1.0, 0.0, expected_z),
+                        point(2.0, 2.0, second_z),
+                        point(0.0, 2.0, first_z),
+                    ],
+                    "first_z={first_z:e}, second_z={second_z:e}, quad={quad}"
+                );
+                assert_eq!(collapsed.faces().len(), 1);
+            }
+        }
     }
 
     #[test]

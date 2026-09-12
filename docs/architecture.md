@@ -99,6 +99,9 @@ path. If a facet's cross product or full magnitude overflows, an exact binary
 accumulator applies the half factor before rounding its components. Tests cover
 both intermediate-overflow paths, genuinely unrepresentable areas, and the
 smallest positive binary64 area; these are native numerical guarantees.
+Topology-edge collapse uses the common point midpoint routine. Triangle/quad
+regressions preserve constant subnormal offsets, check signed subnormal ties,
+and avoid overflow for large constant offsets without changing source ordering.
 The `split_disjoint_mesh` command module owns staged component results, fresh
 piece insertion, source deletion policy, attribute/group propagation, and selection.
 The separate `explode` command module owns multi-geometry decomposition staging,
