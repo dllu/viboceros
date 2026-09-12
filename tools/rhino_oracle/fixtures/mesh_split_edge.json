@@ -4,6 +4,30 @@
   "operations": [
     {
       "op": "mesh_split_edge",
+      "id": "non-manifold-mixed-welded",
+      "parameter": 0.375,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [0, -3, 0], [4, -3, 0], [4, 0, 3], [0, 0, 3]],
+      "faces": [[0, 1, 2], [1, 0, 3, 4], [0, 1, 5, 6]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "non-manifold-mixed-partially-welded",
+      "parameter": 0.375,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [0, -3, 0], [4, -3, 0], [4, 0, 3], [0, 0, 3], [4, 0, 0]],
+      "faces": [[0, 1, 2], [1, 0, 3, 4], [0, 7, 5, 6]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "non-manifold-mixed-unwelded",
+      "parameter": 0.375,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [0, -3, 0], [4, -3, 0], [4, 0, 3], [0, 0, 3], [4, 0, 0], [0, 0, 0], [0, 0, 0], [4, 0, 0]],
+      "faces": [[0, 1, 2], [7, 8, 3, 4], [9, 10, 5, 6]]
+    },
+    {
+      "op": "mesh_split_edge",
       "id": "tetrahedron-quarter",
       "parameter": 0.25,
       "edge_points": [[0, 0, 0], [4, 0, 0]],

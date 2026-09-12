@@ -1,5 +1,8 @@
 //! Versioned compatibility-probe protocol used to compare Viboceros with Rhino.
 
+#[cfg(test)]
+mod mesh_edge_split_tests;
+
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::hint::black_box;

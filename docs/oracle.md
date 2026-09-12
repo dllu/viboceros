@@ -13,6 +13,15 @@ and probe results retain double precision; the default `1e-10` comparison
 threshold is tighter than this Rhino collection's storage precision.
 Extreme-scale native tests are separate from these ordinary-scale Rhino records.
 
+The [edge-split fixture](../tools/rhino_oracle/fixtures/mesh_split_edge.json)
+has a [27-case Rhino 8.32 record](../tools/rhino_oracle/observations/mesh_split_edge.json).
+A native replay checks exact acceptance, face indices, vertex coordinates, and
+ordering for all cases, including endpoint/outside parameters, surviving fans,
+orientation conflicts, and mixed triangle/quad non-manifold incidences.
+For the three-face mixed incidence, full welding produces eight vertices;
+partial or no endpoint welding produces 24, with eight replacement triangles
+in all three cases. These dyadic-coordinate fixtures need no comparison epsilon.
+
 The [short-curve selection diagnostic](short-curve-selection-measurement.json)
 embeds four requests and responses (40 line lengths). `short_curve_selection`
 creates owned line objects, runs the actual `SelShortCrv` command, and records
