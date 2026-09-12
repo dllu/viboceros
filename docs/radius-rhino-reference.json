@@ -1,0 +1,49 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "circle-radius",
+      "value": {
+        "curvature": 0.4999999999999999,
+        "diameter": 4.000000000000001,
+        "history": "Python Script ( ResetEngine ): _Radius\nDiameter = 4.000 millimeters\nRadius = 2.000 millimeters",
+        "parameter": 0.0,
+        "radius": 2.0000000000000004
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "ellipse-major",
+      "value": {
+        "curvature": 0.9999999999999998,
+        "diameter": 2.0000000000000004,
+        "parameter": 0.0,
+        "radius": 1.0000000000000002
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "ellipse-minor-diameter",
+      "value": {
+        "curvature": 0.12499999999999997,
+        "diameter": 16.000000000000004,
+        "parameter": 1.0,
+        "radius": 8.000000000000002
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "line-radius",
+      "value": {
+        "curvature": 0.0,
+        "diameter": null,
+        "parameter": 0.4,
+        "radius": null
+      }
+    }
+  ]
+}

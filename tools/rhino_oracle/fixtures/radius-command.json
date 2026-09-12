@@ -1,0 +1,18 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"op":"radius_command", "id":"circle-radius", "capture_command":true, "point":[2,0,0],
+     "curve":{"degree":2,"knots":[0,0,0,1,1,1],"control_points":[
+       {"point":[2,0,0],"weight":1},{"point":[2,2,0],"weight":0.7071067811865476},{"point":[0,2,0],"weight":1}]}},
+    {"op":"radius_command", "id":"ellipse-major", "point":[4,0,0],
+     "curve":{"degree":2,"knots":[0,0,0,1,1,1],"control_points":[
+       {"point":[4,0,0],"weight":1},{"point":[4,2,0],"weight":0.7071067811865476},{"point":[0,2,0],"weight":1}]}},
+    {"op":"radius_command", "id":"ellipse-minor-diameter", "diameter":true,"point":[0,2,0],
+     "curve":{"degree":2,"knots":[0,0,0,1,1,1],"control_points":[
+       {"point":[4,0,0],"weight":1},{"point":[4,2,0],"weight":0.7071067811865476},{"point":[0,2,0],"weight":1}]}},
+    {"op":"radius_command", "id":"line-radius", "point":[2,0,0],
+     "curve":{"degree":1,"knots":[0,0,1,1],"control_points":[
+       {"point":[0,0,0],"weight":1},{"point":[5,0,0],"weight":1}]}}
+  ]
+}

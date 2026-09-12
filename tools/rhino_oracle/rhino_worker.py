@@ -2178,6 +2178,42 @@ def _measurement_history(name, macro):
     return {"history": history}, 0
 
 
+def _radius_command(operation):
+    name = "Diameter" if operation.get("diameter", False) else "Radius"
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    selected = [obj.Id for obj in document.Objects.GetObjectList(settings) if obj.IsSelected(False)]
+    geometry = _nurbs_curve_from_definition(operation["curve"])
+    source = System.Guid.Empty
+    try:
+        document.Objects.UnselectAll()
+        source = document.Objects.AddCurve(geometry)
+        if source == System.Guid.Empty:
+            raise ValueError("could not add radius source")
+        found, parameter = geometry.ClosestPoint(_point(operation["point"]))
+        if not found:
+            raise ValueError("could not locate radius evaluation point")
+        curvature = geometry.CurvatureAt(parameter).Length
+        result = {"parameter": parameter, "curvature": curvature,
+                  "radius": None if curvature == 0 else 1.0 / curvature,
+                  "diameter": None if curvature == 0 else 2.0 / curvature}
+        if operation.get("capture_command", False):
+            # Circular preselection reports immediately. General
+            # pointwise evaluation above is separate public-API evidence.
+            document.Objects.Select(source)
+            report, _ = _measurement_history(name, "! _" + name)
+            result.update(report)
+        return result, 0
+    finally:
+        if source != System.Guid.Empty:
+            document.Objects.Delete(source, True)
+        document.Objects.UnselectAll()
+        for object_id in selected:
+            document.Objects.Select(object_id)
+        geometry.Dispose()
+
+
 def _angle_objects_command(operation):
     definitions = operation["objects"]
     if len(definitions) != 2:
@@ -4506,6 +4542,8 @@ def _execute(operation, iterations, tolerance):
         return _angle_command(operation)
     if kind == "angle_objects_command":
         return _angle_objects_command(operation)
+    if kind == "radius_command":
+        return _radius_command(operation)
     if kind == "three_dm_curve_interchange":
         return _three_dm_curve_interchange(operation, iterations)
     if kind == "three_dm_brep_interchange":

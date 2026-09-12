@@ -11,6 +11,39 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_radius_probe_disposes_source_and_restores_selection_on_failure(self):
+        for failure in [None, "construction", "measurement"]:
+            with self.subTest(failure=failure):
+                geometry = Mock()
+                geometry.ClosestPoint.return_value = (True, 0.5)
+                geometry.CurvatureAt.return_value = SimpleNamespace(Length=0.5)
+                table = Mock()
+                table.GetObjectList.return_value = [SimpleNamespace(Id="old", IsSelected=lambda _: True)]
+                table.AddCurve.side_effect = ValueError("construction") if failure == "construction" else None
+                table.AddCurve.return_value = "source"
+                rhino = SimpleNamespace(
+                    RhinoDoc=SimpleNamespace(ActiveDoc=SimpleNamespace(Objects=table)),
+                    DocObjects=SimpleNamespace(ObjectEnumeratorSettings=lambda: SimpleNamespace()))
+                capture = Mock(side_effect=ValueError("measurement") if failure == "measurement" else None,
+                               return_value=({"history": "Radius = 2"}, 0))
+                with patch.object(self.worker, "Rhino", rhino), \
+                     patch.object(self.worker, "System", SimpleNamespace(Guid=SimpleNamespace(Empty="empty"))), \
+                     patch.object(self.worker, "_nurbs_curve_from_definition", return_value=geometry), \
+                     patch.object(self.worker, "_point", lambda value: value), \
+                     patch.object(self.worker, "_measurement_history", capture):
+                    operation = {"curve": {}, "point": [2,0,0], "capture_command": True}
+                    if failure:
+                        with self.assertRaisesRegex(ValueError, failure):
+                            self.worker._radius_command(operation)
+                    else:
+                        self.assertEqual(self.worker._radius_command(operation), ({"history": "Radius = 2", "parameter": 0.5, "curvature": 0.5, "radius": 2., "diameter": 4.}, 0))
+                geometry.Dispose.assert_called_once_with()
+                if failure != "construction":
+                    capture.assert_called_once_with("Radius", "! _Radius")
+                self.assertEqual(table.Delete.call_count, int(failure != "construction"))
+                self.assertEqual(table.Select.call_args.args, ("old",))
+                self.assertEqual(table.UnselectAll.call_count, 2)
+
     def test_object_angle_probe_cleans_owned_objects_and_restores_selection(self):
         for failure in (None, "construction", "measurement"):
             with self.subTest(failure=failure):

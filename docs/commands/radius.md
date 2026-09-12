@@ -29,7 +29,26 @@ Tests cover circles, lines, ellipse endpoint radii (1 and 8 for semiaxes 4 and 2
 the ellipse's exact NURBS representation, nearest-curve selection, marker undo,
 invalid-input rollback, read-only history, interactive cancellation, unrestricted
 point lookup, selection restriction, hidden/locked filtering, and failed-pick recovery.
-These are native analytic regressions, not live Rhino command captures.
+The [live Rhino 8.32.26160.13001 reference](../radius-rhino-reference.json)
+independently evaluates rational quadratic circular/elliptical arcs through
+RhinoCommon `ClosestPoint` and `CurvatureAt`. Its radii are approximately 2, 1,
+and 8; the existing native analytic/NURBS tests agree within `1e-10` model units.
+The line returns zero curvature; JSON `null` radius/diameter denotes infinity.
+Only the circular-arc case includes actual command text, reporting radius 2 and
+diameter 4. The ellipse and line values are public-API evidence, not command captures.
+The probe's zero elapsed times are not performance measurements.
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/radius-command.json --timeout 240
+```
+
+Live prompt inspection also found that Rhino immediately reports a preselected
+circular arc's radius, whereas a preselected line still opens the picking prompt.
+The native UI currently asks for a point in both cases. Rhino's unrestricted
+picker did not consume the world-coordinate token used by the probe, so this
+fixture does not establish parity for typed versus mouse-picked input. The probe
+cleans up its temporary source and restores prior selection, including failures;
+mock tests exercise construction and command-capture failures.
 
 [Rhino's reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/radius.htm)
 also describes cursor feedback, `SelectCurve`, display `Units`,
