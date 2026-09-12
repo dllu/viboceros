@@ -152,6 +152,7 @@ enum InteractiveCommand {
     Distance {
         start: Option<Point3>,
         previous_last: Option<Point3>,
+        display_units: Option<&'static str>,
     },
     Circle {
         center: Option<Point3>,
@@ -461,9 +462,11 @@ impl InteractiveCommand {
             Self::Line { start: None } => {
                 "Line: pick the start point in the viewport (Esc to cancel)"
             }
-            Self::Distance { start: None, .. } => "Distance: pick the first point (Esc to cancel)",
+            Self::Distance { start: None, .. } => {
+                "Distance: pick the first point (Units=name; Esc cancels)"
+            }
             Self::Distance { start: Some(_), .. } => {
-                "Distance: pick the second point (Undo revises the first; Esc cancels)"
+                "Distance: pick the second point (Units=name; Undo revises the first; Esc cancels)"
             }
             Self::Line { start: Some(_) } => {
                 "Line: pick the end point in the viewport (Esc to cancel)"
@@ -2779,6 +2782,7 @@ impl VibocerosApp {
                 "distance" => InteractiveCommand::Distance {
                     start: None,
                     previous_last: self.last_point,
+                    display_units: None,
                 },
                 "circle" | "c" => InteractiveCommand::Circle { center: None },
                 "sphere" | "sph" => InteractiveCommand::Sphere { center: None },
@@ -2936,27 +2940,22 @@ impl VibocerosApp {
             InteractiveCommand::Distance {
                 start: None,
                 previous_last,
+                display_units,
             } => {
                 let next = InteractiveCommand::Distance {
                     start: Some(point),
                     previous_last,
+                    display_units,
                 };
                 self.active_command = Some(next);
                 self.push_log(next.prompt().to_owned());
             }
             InteractiveCommand::Distance {
-                start: Some(start), ..
+                start: Some(start),
+                display_units,
+                ..
             } => {
-                if let Err(error) = start.distance_to(point) {
-                    self.push_log(format!("Error: {error}"));
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Distance {} {}",
-                    format_model_point(start),
-                    format_model_point(point)
-                ));
+                return self.finish_distance(start, point, display_units, plane);
             }
             InteractiveCommand::Line { start: Some(start) } => {
                 if !start

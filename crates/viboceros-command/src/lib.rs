@@ -54,6 +54,7 @@ use selection_commands::{
     SelLayerCommand, SelNameCommand, SelNoneCommand, SelPrevCommand, SelectDuplicateCommand,
 };
 mod measurements;
+pub use measurements::distance_display_units;
 use measurements::{AreaCommand, DistanceCommand, LengthCommand, VolumeCommand};
 mod grouping;
 mod remove_from_group;

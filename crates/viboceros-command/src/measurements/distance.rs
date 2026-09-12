@@ -4,6 +4,48 @@ use crate::{CommandContext, parse_point};
 
 pub(crate) struct DistanceCommand;
 
+/// Validates an interactive display-unit choice and returns its canonical
+/// command token. `None` means the document's current units, without conversion.
+pub fn distance_display_units(input: &str) -> Result<Option<&'static str>, CommandError> {
+    if input.eq_ignore_ascii_case("Model_Units") {
+        return Ok(None);
+    }
+    let units = crate::model_units::parse_units(input)
+        .ok_or(CommandError::Usage("unknown distance display units"))?;
+    let name = match units {
+        viboceros_geometry::LengthUnitSystem::Microns => "Microns",
+        viboceros_geometry::LengthUnitSystem::Millimeters => "Millimeters",
+        viboceros_geometry::LengthUnitSystem::Centimeters => "Centimeters",
+        viboceros_geometry::LengthUnitSystem::Meters => "Meters",
+        viboceros_geometry::LengthUnitSystem::Kilometers => "Kilometers",
+        viboceros_geometry::LengthUnitSystem::Microinches => "Microinches",
+        viboceros_geometry::LengthUnitSystem::Mils => "Mils",
+        viboceros_geometry::LengthUnitSystem::Inches => "Inches",
+        viboceros_geometry::LengthUnitSystem::Feet => "Feet",
+        viboceros_geometry::LengthUnitSystem::Miles => "Miles",
+        viboceros_geometry::LengthUnitSystem::Angstroms => "Angstroms",
+        viboceros_geometry::LengthUnitSystem::Nanometers => "Nanometers",
+        viboceros_geometry::LengthUnitSystem::Decimeters => "Decimeters",
+        viboceros_geometry::LengthUnitSystem::Dekameters => "Dekameters",
+        viboceros_geometry::LengthUnitSystem::Hectometers => "Hectometers",
+        viboceros_geometry::LengthUnitSystem::Megameters => "Megameters",
+        viboceros_geometry::LengthUnitSystem::Gigameters => "Gigameters",
+        viboceros_geometry::LengthUnitSystem::Yards => "Yards",
+        viboceros_geometry::LengthUnitSystem::PrinterPoints => "PrinterPoints",
+        viboceros_geometry::LengthUnitSystem::PrinterPicas => "PrinterPicas",
+        viboceros_geometry::LengthUnitSystem::NauticalMiles => "NauticalMiles",
+        viboceros_geometry::LengthUnitSystem::AstronomicalUnits => "AstronomicalUnits",
+        viboceros_geometry::LengthUnitSystem::LightYears => "LightYears",
+        viboceros_geometry::LengthUnitSystem::Parsecs => "Parsecs",
+        _ => {
+            return Err(CommandError::Usage(
+                "distance display units must be physical units or Model_Units",
+            ));
+        }
+    };
+    Ok(Some(name))
+}
+
 impl Command for DistanceCommand {
     fn name(&self) -> &'static str {
         "Distance"
@@ -34,10 +76,7 @@ impl Command for DistanceCommand {
                 if !name.eq_ignore_ascii_case("Units") {
                     return Err(CommandError::Usage("Distance start end [Units=name]"));
                 }
-                Some(
-                    crate::model_units::parse_units(value)
-                        .ok_or(CommandError::Usage("unknown display units"))?,
-                )
+                distance_display_units(value)?.and_then(crate::model_units::parse_units)
             }
             _ => return Err(CommandError::Usage("Distance start end [Units=name]")),
         };

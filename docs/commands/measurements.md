@@ -32,8 +32,12 @@ normally applied after measurement. If the source-unit distance overflows and
 the requested conversion reduces magnitude, an exact scaled-projection fallback
 converts before rounding and measures the finite display-space displacement.
 Tests cover overflowing coordinate differences and overflowing norms separately.
-The override is
-currently available in the complete typed command, not during point picking.
+The override is available in complete typed commands and at either interactive
+point prompt: enter `Units=Inches` (or another physical unit), then continue
+picking. `Units=Model_Units` clears the override. Unit choices preserve accepted
+points and survive local `Undo`, but reset for each new measurement. Invalid
+choices leave the prompt unchanged; failed final conversions retain the first
+point so units or the second point can be corrected.
 Nesting a measurement inside another command's numeric prompt is not implemented.
 Six live command probes on Rhino 8.32.26160.13001 cover positive deltas,
 negative X/Y, vertical up/down, and a translated/rotated CPlane. The
