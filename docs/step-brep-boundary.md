@@ -23,6 +23,15 @@ This API does not expand assembly instances, apply oriented-shell wrappers, or
 convert length units; its tolerance is in source units. It is a conversion
 building block, not a replacement for the existing assembly-aware importer.
 
+Assembly discovery now lives in a geometry-independent `step/instance_plan`
+module. It resolves supported shape IDs, composed placement matrices, instance
+names, unplaced-shape fallback, and representation diagnostics before the mesh
+consumer loads geometry. Direct plan tests check all eight source cube corners
+for three instances, with and without a noncommuting parent rotation/translation;
+removing source shell records leaves the plan unchanged. The native source-shell
+reader does not consume this plan yet: shape-to-shell expansion, oriented shell
+sense, and per-instance native geometry validation still need integration.
+
 `read_step_planar_shells_in_units(reader, &target_units, tolerance)` additionally
 resolves uniform file length units and returns native geometry in the requested
 target units. Its tolerance is expressed in target units; source validation uses

@@ -1,17 +1,18 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 use std::io::Read;
 use std::path::Path;
 mod export;
 mod export_geometry;
 mod export_plane;
 pub use export::{write_step, write_step_file, write_step_file_in_units, write_step_in_units};
+mod instance_plan;
 mod native_planar;
 mod units;
 pub use native_planar::{
     StepPlanarShell, read_step_planar_shells, read_step_planar_shells_in_units,
 };
 
-use monstertruck::core::cgmath64::{Matrix4, SquareMatrix, Transform};
+use monstertruck::core::cgmath64::{Matrix4, Transform};
 use monstertruck::meshing::prelude::{
     BoundedCurve, MeshedShape, ParametricCurve, ParametricSurface, PolygonMesh, RobustMeshableShape,
 };
@@ -193,87 +194,25 @@ pub fn read_step_file_in_units(
 }
 
 fn import_table(table: &Table, tolerance: Tolerance) -> Result<StepImport, StepError> {
-    let mut report = StepImportReport {
-        swallowed_entity_count: table.entity_report.total(),
-        ..Default::default()
-    };
-    let mut instances = Vec::new();
-    let mut placed_shapes = BTreeSet::new();
-
-    match table.step_assy() {
-        Ok(assembly) => {
-            for top in assembly.top_nodes() {
-                for path in assembly.paths_iter(top.index()) {
-                    let node = path.terminal_node();
-                    let transform = path.edges().iter().try_fold(
-                        Matrix4::identity(),
-                        |accumulated, edge| {
-                            Matrix4::try_from(edge.matrix())
-                                .map(|matrix| accumulated * matrix)
-                                .map_err(|error| {
-                                    StepError::InvalidAssemblyTransform(error.to_string())
-                                })
-                        },
-                    )?;
-                    let mut shape_ids = node.shape().iter().copied().collect::<BTreeSet<_>>();
-                    if let Some(representation) = table.shape_representation_of_node(node.entity())
-                    {
-                        let (_, relationship_report) =
-                            table.solids_via_shape_relationship(representation);
-                        record_relationship_report(&mut report, &relationship_report);
-                        let (related_shapes, skipped) =
-                            related_supported_shapes(table, representation);
-                        shape_ids.extend(related_shapes);
-                        report.skipped_representation_item_count += skipped;
-                    }
-                    let name = path
-                        .edges()
-                        .last()
-                        .and_then(|edge| nonempty_name(&edge.attributes().name))
-                        .or_else(|| nonempty_name(&node.attributes().name));
-                    for shape_id in shape_ids {
-                        if table.manifold_solid_brep.contains_key(&shape_id)
-                            || table.shell_based_surface_model.contains_key(&shape_id)
-                        {
-                            placed_shapes.insert(shape_id);
-                            instances.push((shape_id, transform, name.clone()));
-                        } else if !is_placement_item(table, shape_id) {
-                            report.skipped_representation_item_count += 1;
-                        }
-                    }
-                }
-            }
-        }
-        Err(error) => {
-            report.assembly_warning = Some(error.to_string());
-        }
-    }
-
-    let mut supported_shape_ids = table
-        .manifold_solid_brep
-        .keys()
-        .chain(table.shell_based_surface_model.keys())
-        .copied()
-        .collect::<Vec<_>>();
-    supported_shape_ids.sort_unstable();
-    supported_shape_ids.dedup();
-    for shape_id in supported_shape_ids {
-        if placed_shapes.contains(&shape_id) {
-            continue;
-        }
-        report.unplaced_shape_count += 1;
-        instances.push((shape_id, Matrix4::identity(), None));
-    }
+    let instance_plan::InstancePlan {
+        instances,
+        mut report,
+    } = instance_plan::build(table)?;
 
     // Retain source polygons only until their final placement, rather than
     // keeping a second copy of every unique shape throughout the import.
     let mut remaining = BTreeMap::<u64, usize>::new();
-    for (shape, _, _) in &instances {
-        *remaining.entry(*shape).or_default() += 1;
+    for instance in &instances {
+        *remaining.entry(instance.shape_id).or_default() += 1;
     }
     let mut tessellations = BTreeMap::new();
     let mut objects = Vec::with_capacity(instances.len());
-    for (shape_id, transform, name) in instances {
+    for instance_plan::ShapeInstance {
+        shape_id,
+        transform,
+        name,
+    } in instances
+    {
         if let Some(mesh) = import_shape(
             table,
             shape_id,
@@ -409,52 +348,6 @@ fn reported_trimmed_shell(
             "failed to resolve shell #{shell_id}"
         ))))
     }
-}
-
-fn related_supported_shapes(table: &Table, source_representation: u64) -> (BTreeSet<u64>, usize) {
-    let mut relationships = table
-        .shape_representation_relationship
-        .iter()
-        .filter(|(_, relationship)| {
-            matches!(
-                &relationship.rep_1,
-                PlaceHolder::Ref(Name::Entity(id)) if *id == source_representation
-            )
-        })
-        .collect::<Vec<_>>();
-    relationships.sort_unstable_by_key(|(id, _)| **id);
-
-    let mut shapes = BTreeSet::new();
-    let mut skipped = 0;
-    for (_, relationship) in relationships {
-        let PlaceHolder::Ref(Name::Entity(target_id)) = &relationship.rep_2 else {
-            continue;
-        };
-        let Some(target) = table.shape_representation.get(target_id) else {
-            continue;
-        };
-        for item in &target.items {
-            let PlaceHolder::Ref(Name::Entity(item_id)) = item else {
-                skipped += 1;
-                continue;
-            };
-            if table.manifold_solid_brep.contains_key(item_id)
-                || table.shell_based_surface_model.contains_key(item_id)
-            {
-                shapes.insert(*item_id);
-            } else if !is_placement_item(table, *item_id) {
-                skipped += 1;
-            }
-        }
-    }
-    (shapes, skipped)
-}
-
-fn is_placement_item(table: &Table, id: u64) -> bool {
-    table.placement.contains_key(&id)
-        || table.axis1_placement.contains_key(&id)
-        || table.axis2_placement_2d.contains_key(&id)
-        || table.axis2_placement_3d.contains_key(&id)
 }
 
 fn tessellation_tolerance<'a>(
@@ -628,11 +521,6 @@ fn record_relationship_report(report: &mut StepImportReport, shell_report: &Shel
         report.lost_topology_item_count += lost;
         report.topology_warnings.push(shell_report.to_string());
     }
-}
-
-fn nonempty_name(name: &str) -> Option<String> {
-    let name = name.trim();
-    (!name.is_empty()).then(|| name.to_owned())
 }
 
 #[cfg(test)]

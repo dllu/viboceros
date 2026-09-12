@@ -1,3 +1,4 @@
+use monstertruck::core::cgmath64::SquareMatrix;
 use std::io::Cursor;
 
 use super::*;
@@ -1163,6 +1164,50 @@ fn assembly_step(parent_transform: Option<Matrix4>) -> String {
         );
     }
     CompleteStepDisplay::new(StepDesign::new(assembly), StepHeaderDescriptor::default()).to_string()
+}
+
+#[test]
+fn instance_plan_resolves_nested_placements_without_loading_shell_geometry() {
+    for nested in [false, true] {
+        let parent = nested.then_some(Matrix4::new(
+            0., 1., 0., 0., -1., 0., 0., 0., 0., 0., 1., 0., 100., 200., 300., 1.,
+        ));
+        let mut table = Table::from_step(&assembly_step(parent)).unwrap();
+        let shape_id = *table.manifold_solid_brep.keys().next().unwrap();
+        let plan = instance_plan::build(&table).unwrap();
+        assert_eq!(plan.instances.len(), 3);
+        assert_eq!(plan.report.unplaced_shape_count, 0);
+        assert_eq!(plan.report.swallowed_entity_count, 0);
+        assert!(plan.report.assembly_warning.is_none());
+        for i in 0..3 {
+            let name = format!("instance {i}");
+            let instance = plan
+                .instances
+                .iter()
+                .find(|instance| instance.name.as_deref() == Some(&name))
+                .unwrap();
+            assert_eq!(instance.shape_id, shape_id);
+            for x in [-1., 4.] {
+                for y in [-2., 5.] {
+                    for z in [-3., 6.] {
+                        let point = instance
+                            .transform
+                            .transform_point(TruckPoint3::new(x, y, z));
+                        let expected = if nested {
+                            [100. - y, 200. + x + 10. * f64::from(i), 300. + z]
+                        } else {
+                            [x + 10. * f64::from(i), y, z]
+                        };
+                        assert_eq!([point.x, point.y, point.z], expected);
+                    }
+                }
+            }
+        }
+        // A placement plan depends on shape references, not whether the shell
+        // can be decoded or tessellated. Geometry validation belongs to its consumer.
+        table.shell.clear();
+        assert_eq!(instance_plan::build(&table).unwrap(), plan);
+    }
 }
 
 #[test]
