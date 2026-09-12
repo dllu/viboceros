@@ -30,6 +30,20 @@ range. It rounds only the final sum, nearest with ties to even. Up to six produc
 fit in 66 limbs; separate positive and negative magnitudes retain small terms
 until large terms cancel.
 
+Scaled frame projections use a separate 99-limb accumulator at quantum
+`2^-3222` for products of three binary64 factors. It applies the scale before
+rounding, allowing a finite display-space projection even when the unscaled
+point displacement or projection overflows. `Distance` uses this path when a
+reducing display-unit conversion can recover an overflowing model-unit distance.
+An independent 256-case reference uses Python's arbitrary-precision `Fraction`
+arithmetic and checks every result bit, including signed zero and infinity.
+Cases include full-range operands, exact cancellation, and controlled exponent
+sums near normal/subnormal and overflow boundaries. The generator is
+`tools/numerics/generate_scaled_dot_reference.py`; it emits the committed
+`vector/exact_dot/scaled_reference.txt` fixture without changing files.
+Normal Rust tests need no Python runtime or additional arithmetic dependency.
+This validates these scalar projections, not global geometry accuracy.
+
 Cross products use compensated two-product determinants with component-local
 fallbacks. They do not normalize all components together, which could erase
 small components unrelated to a large one. The determinant fallback shares the

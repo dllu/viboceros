@@ -64,6 +64,31 @@ mod tests {
     use super::dot;
 
     #[test]
+    fn scaled_dot_matches_independent_fraction_reference_bit_for_bit() {
+        let mut count = 0;
+        for line in include_str!("exact_dot/scaled_reference.txt")
+            .lines()
+            .filter(|line| !line.starts_with('#'))
+        {
+            let fields = line
+                .split_whitespace()
+                .map(|word| u64::from_str_radix(word, 16).unwrap())
+                .collect::<Vec<_>>();
+            assert_eq!(fields.len(), 14);
+            let left = std::array::from_fn::<_, 6, _>(|i| f64::from_bits(fields[i]));
+            let right = std::array::from_fn::<_, 6, _>(|i| f64::from_bits(fields[i + 6]));
+            let scale = f64::from_bits(fields[12]);
+            assert_eq!(
+                super::scaled_dot(left, right, scale).to_bits(),
+                fields[13],
+                "case {count}: {line}"
+            );
+            count += 1;
+        }
+        assert_eq!(count, 256);
+    }
+
+    #[test]
     fn scaled_dot_preserves_overflow_cancellation_and_subnormal_products() {
         use super::scaled_dot;
         assert_eq!(scaled_dot([f64::MAX, f64::MAX], [1., 1.], 0.5), f64::MAX);
