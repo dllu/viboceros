@@ -51,6 +51,13 @@ impl TriangleMesh {
     /// distinct raw index at both endpoints. A lone shared vertex never joins
     /// parts. Results retain source face order and preserve logical quads.
     pub fn explode_pieces(&self) -> Vec<Self> {
+        self.try_explode_pieces(usize::MAX)
+            .expect("component count cannot exceed the number of source faces")
+    }
+
+    /// Like `explode_pieces`, but rejects an excessive component count after
+    /// connectivity analysis and before copying any component geometry.
+    pub fn try_explode_pieces(&self, maximum: usize) -> Result<Vec<Self>, GeometryError> {
         let data = self.topology_data();
         let mut parents = (0..self.faces.len()).collect::<Vec<_>>();
         let mut ranks = vec![0_u8; self.faces.len()];
@@ -64,7 +71,11 @@ impl TriangleMesh {
             }
         }
 
-        self.pieces_from_faces(component_faces(&mut parents))
+        let components = component_faces(&mut parents);
+        if components.len() > maximum {
+            return Err(GeometryError::MeshComponentLimit { maximum });
+        }
+        Ok(self.pieces_from_faces(components))
     }
 
     /// Reuse one raw-vertex map across components. Allocating a complete map

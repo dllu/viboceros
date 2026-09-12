@@ -79,7 +79,9 @@ peers.
 Explode's one-million-output guard pre-counts point-cloud members, polyline
 segments, flattened polycurve segments, and B-rep faces before materializing
 their parts, including outputs already staged from earlier sources. Mesh output
-counts are still checked after connectivity decomposition. A million-plus-one
+counts are checked after connectivity analysis but before copying component
+geometry. A connected mesh still creates no output when the budget is exhausted.
+A million-plus-one
 point-cloud regression verifies rejection without changing source storage,
 selection, or the existing redo entry.
 

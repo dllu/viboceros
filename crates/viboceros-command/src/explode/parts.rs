@@ -58,10 +58,12 @@ pub(super) fn known_output_count(geometry: &Geometry) -> Result<Option<usize>, C
 }
 
 /// Pure decomposition: no document mutation, selection, attributes, or history.
+/// The budget bounds mesh parts; other output counts are preflighted by callers.
 pub(super) fn decompose(
     geometry: &Geometry,
     tolerance: Tolerance,
-) -> Result<Option<ExplodedParts>, GeometryError> {
+    maximum: usize,
+) -> Result<Option<ExplodedParts>, CommandError> {
     Ok(match geometry {
         Geometry::PolyCurve(curve) => {
             let mut parts = Vec::new();
@@ -96,7 +98,16 @@ pub(super) fn decompose(
             Some(ExplodedParts::Surfaces(parts))
         }
         Geometry::Mesh(mesh) => {
-            let mut parts = mesh.explode_pieces();
+            // A connected mesh creates no command output, even when the
+            // remaining budget is zero. Allow its single analysis component.
+            let mut parts =
+                mesh.try_explode_pieces(maximum.max(1))
+                    .map_err(|error| match error {
+                        GeometryError::MeshComponentLimit { .. } => {
+                            too_many_span_outputs("Explode")
+                        }
+                        other => CommandError::from(other),
+                    })?;
             if parts.len() <= 1 {
                 None
             } else {
@@ -118,6 +129,46 @@ mod tests {
     }
 
     #[test]
+    fn mesh_budget_rejects_extra_components_but_allows_connected_noops() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                p(0., 0.),
+                p(1., 0.),
+                p(0., 1.),
+                p(3., 0.),
+                p(4., 0.),
+                p(3., 1.),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let connected = Geometry::Mesh(mesh.explode_pieces().remove(0));
+        assert!(
+            decompose(&connected, Tolerance::DEFAULT, 0)
+                .unwrap()
+                .is_none()
+        );
+        let source = Geometry::Mesh(mesh);
+        for maximum in [0, 1] {
+            assert!(matches!(
+                decompose(&source, Tolerance::DEFAULT, maximum),
+                Err(CommandError::TooManySpanOutputObjects {
+                    command: "Explode",
+                    ..
+                })
+            ));
+        }
+        let parts = decompose(&source, Tolerance::DEFAULT, 2).unwrap().unwrap();
+        assert!(matches!(parts.report(), (PartKind::Mesh, 2)));
+        let geometries = parts.into_geometries();
+        let Geometry::Mesh(first) = &geometries[0] else {
+            panic!("mesh expected")
+        };
+        assert_eq!(first.vertices()[0], p(3., 0.));
+    }
+
+    #[test]
     fn polycurve_flattening_keeps_outer_domains_and_reverses_only_part_order() {
         let line = LineSegment::try_new(p(0., 0.), p(1., 0.), Tolerance::DEFAULT).unwrap();
         let polyline =
@@ -129,7 +180,9 @@ mod tests {
         .unwrap();
         let source = Geometry::PolyCurve(curve.clone());
         assert_eq!(known_output_count(&source).unwrap(), Some(3));
-        let parts = decompose(&source, Tolerance::DEFAULT).unwrap().unwrap();
+        let parts = decompose(&source, Tolerance::DEFAULT, usize::MAX)
+            .unwrap()
+            .unwrap();
         assert!(matches!(parts.report(), (PartKind::Polycurve, 3)));
         let geometries = parts.into_geometries();
         let domains = [1. ..=4., -2. ..=1., -6. ..=-2.];
@@ -153,7 +206,9 @@ mod tests {
         let points = vec![p(0., 0.), p(2., 1.), p(4., 0.)];
         let cloud = Geometry::PointCloud(PointCloud3::try_new(points.clone()).unwrap());
         assert_eq!(known_output_count(&cloud).unwrap(), Some(3));
-        let parts = decompose(&cloud, Tolerance::DEFAULT).unwrap().unwrap();
+        let parts = decompose(&cloud, Tolerance::DEFAULT, usize::MAX)
+            .unwrap()
+            .unwrap();
         assert!(matches!(parts.report(), (PartKind::PointCloud, 3)));
         assert_eq!(
             parts.into_geometries(),
@@ -170,9 +225,13 @@ mod tests {
             Some(2)
         );
         let expected = polyline.segments().map(Geometry::Line).collect::<Vec<_>>();
-        let parts = decompose(&Geometry::Polyline(polyline), Tolerance::DEFAULT)
-            .unwrap()
-            .unwrap();
+        let parts = decompose(
+            &Geometry::Polyline(polyline),
+            Tolerance::DEFAULT,
+            usize::MAX,
+        )
+        .unwrap()
+        .unwrap();
         assert!(matches!(parts.report(), (PartKind::Polyline, 2)));
         assert_eq!(
             parts.into_geometries(),
@@ -182,7 +241,11 @@ mod tests {
             Geometry::Point(p(0., 0.)),
             Geometry::Line(LineSegment::try_new(p(0., 0.), p(1., 0.), Tolerance::DEFAULT).unwrap()),
         ] {
-            assert!(decompose(&geometry, Tolerance::DEFAULT).unwrap().is_none());
+            assert!(
+                decompose(&geometry, Tolerance::DEFAULT, usize::MAX)
+                    .unwrap()
+                    .is_none()
+            );
             assert_eq!(known_output_count(&geometry).unwrap(), None);
         }
     }

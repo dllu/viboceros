@@ -17,6 +17,10 @@ pub(super) struct ExplodeSummary {
 }
 
 impl ExplodeSummary {
+    pub(super) fn remaining(&self) -> usize {
+        MAX_SPAN_OUTPUT_OBJECTS - self.total
+    }
+
     pub(super) fn check_add(&self, count: usize) -> Result<usize, CommandError> {
         self.total
             .checked_add(count)

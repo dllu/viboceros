@@ -48,7 +48,7 @@ impl Command for ExplodeCommand {
             if let Some(count) = parts::known_output_count(geometry)? {
                 summary.check_add(count)?;
             }
-            let parts = parts::decompose(geometry, document.tolerance())?;
+            let parts = parts::decompose(geometry, document.tolerance(), summary.remaining())?;
             let Some(parts) = parts else {
                 unchanged_ids.push(*id);
                 continue;

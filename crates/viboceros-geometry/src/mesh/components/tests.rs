@@ -123,4 +123,13 @@ fn component_remapping_preserves_quads_duplicate_raw_vertices_and_face_order() {
     assert_eq!(pieces[1].faces(), &[MeshFace::Triangle([0, 1, 2])]);
     // Sharing one raw endpoint leaves this seam welded for Explode too.
     assert_eq!(mesh.explode_pieces(), pieces);
+    for maximum in [0, 1] {
+        assert_eq!(
+            mesh.try_explode_pieces(maximum),
+            Err(GeometryError::MeshComponentLimit { maximum })
+        );
+    }
+    for maximum in [2, 3, usize::MAX] {
+        assert_eq!(mesh.try_explode_pieces(maximum).unwrap(), pieces);
+    }
 }

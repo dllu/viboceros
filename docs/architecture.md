@@ -73,6 +73,9 @@ scratch array, avoiding per-component initialization of a source-sized array.
 Both operations share face-indexed component grouping, avoiding per-face tree
 lookups while retaining first-face order. An independent graph traversal checks
 the grouping against every undirected graph of up to six faces in two union orders.
+`TriangleMesh::try_explode_pieces` applies a component limit before remapping
+component geometry; the command passes its remaining output budget. The
+unbounded mesh API shares this implementation.
 The `split_disjoint_mesh` command module owns staged component results, fresh
 piece insertion, source deletion policy, attribute/group propagation, and selection.
 The separate `explode` command module owns multi-geometry decomposition staging,
