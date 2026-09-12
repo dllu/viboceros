@@ -117,10 +117,14 @@ impl Document {
 
     /// Selection is transient: replay must not discard an unchanged peer
     /// merely because its selectable group companion was deselected by Explode.
+    /// Normally selectable objects need no exception to eligibility cleanup.
     pub(super) fn selection_untouched_by_history(
         &self,
         entry: &HistoryEntry,
     ) -> BTreeSet<ObjectId> {
+        if self.selection.is_empty() {
+            return BTreeSet::new();
+        }
         let changed_layers = entry
             .edits
             .iter()
@@ -131,10 +135,18 @@ impl Document {
                 _ => None,
             })
             .collect::<BTreeSet<_>>();
+        let selectable_layers = self
+            .layers()
+            .filter(|layer| layer.is_visible() && !layer.is_locked())
+            .map(|layer| layer.id())
+            .collect::<BTreeSet<_>>();
         self.selected_objects()
             .filter(|object| {
                 !entry.object_ids.contains(&object.id())
                     && !changed_layers.contains(&object.attributes().layer_id())
+                    && (!object.attributes().is_visible()
+                        || object.attributes().is_locked()
+                        || !selectable_layers.contains(&object.attributes().layer_id()))
             })
             .map(|object| object.id())
             .collect()
@@ -212,6 +224,41 @@ impl Document {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn replay_preservation_tracks_only_restricted_untouched_objects_and_layers() {
+        let mut document = Document::default();
+        let ids = [0., 1., 2.].map(|x| {
+            document
+                .add_geometry(Geometry::Point(Point3::try_new(x, 0., 0.).unwrap()))
+                .unwrap()
+        });
+        let layer = document.add_layer("Restricted", ColorRgb::BLACK).unwrap();
+        document.set_objects_layer([ids[2]], layer).unwrap();
+        document.set_objects_locked([ids[1]], true).unwrap();
+        document.set_layer_locked(layer, true).unwrap();
+        document.select_command_results(ids).unwrap();
+        let check = |document: &Document, expected: BTreeSet<ObjectId>| {
+            let before = format!("{document:?}");
+            let entry = document.history.undo.last().unwrap();
+            assert_eq!(document.selection_untouched_by_history(entry), expected);
+            assert_eq!(format!("{document:?}"), before);
+        };
+        document
+            .add_geometry(Geometry::Point(Point3::try_new(99., 0., 0.).unwrap()))
+            .unwrap();
+        check(&document, BTreeSet::from([ids[1], ids[2]]));
+        document
+            .set_object_names([(ids[1], Some("Edited".into()))])
+            .unwrap();
+        check(&document, BTreeSet::from([ids[2]]));
+        document.rename_layer(layer, "Edited layer").unwrap();
+        check(&document, BTreeSet::from([ids[1]]));
+        document.select_command_results([ids[0]]).unwrap();
+        check(&document, BTreeSet::new());
+        document.select_command_results([]).unwrap();
+        check(&document, BTreeSet::new());
+    }
 
     #[test]
     fn replay_preserves_untouched_restricted_peers_but_prunes_changed_layers() {

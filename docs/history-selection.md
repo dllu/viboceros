@@ -13,6 +13,9 @@ edited by the entry, and objects on layers changed by the entry, still undergo
 normal eligibility pruning. A live mixed-mesh probe confirms that a locked
 connected mesh remains selected through Explode undo/redo while the restored
 exploded source is unselected. SplitDisjointMesh restores that source selected.
+Only restricted peers enter the temporary preservation set; normally selectable
+objects use ordinary cleanup. A read-only regression checks object-edit and
+layer-edit exclusions, normal selections, and empty selections.
 Successful transaction rollback restores its original selection snapshot without
 eligibility pruning, so rejecting a command cannot discard an unchanged locked
 peer or alter selection memories and the redo stack.
