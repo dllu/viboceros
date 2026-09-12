@@ -1,5 +1,5 @@
 //! Mesh-to-STEP construction, unit conversion, and staged destination writes.
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, btree_map::Entry};
 use std::io::Write;
 use std::path::Path;
 
@@ -14,6 +14,9 @@ use viboceros_geometry::{AffineTransform3, LengthUnitSystem, Point3, Tolerance, 
 use super::export_geometry::{ExportLine, ExportPoint};
 use super::export_plane::ExportPlane;
 use super::{StepError, TruckPoint3};
+
+#[cfg(test)]
+mod tests;
 
 /// Writes validated triangle meshes as STEP shell-based surface models. Mesh
 /// edges are shared topologically and every triangle is an oriented planar
@@ -136,22 +139,23 @@ fn mesh_to_shell(
                 } else {
                     (end, start)
                 };
-                let index = if let Some(&index) = edge_indices.get(&key) {
-                    index
-                } else {
-                    let index = edges.len();
-                    let endpoints = (key.0 as usize, key.1 as usize);
-                    let curve = ExportLine::try_new(
-                        mesh.vertices()[endpoints.0],
-                        mesh.vertices()[endpoints.1],
-                    )
-                    .map_err(|_| StepError::InvalidExportDirections { face })?;
-                    edges.push(CompressedEdge {
-                        vertices: endpoints,
-                        curve,
-                    });
-                    edge_indices.insert(key, index);
-                    index
+                let index = match edge_indices.entry(key) {
+                    Entry::Occupied(entry) => *entry.get(),
+                    Entry::Vacant(entry) => {
+                        let index = edges.len();
+                        let endpoints = (key.0 as usize, key.1 as usize);
+                        let curve = ExportLine::try_new(
+                            mesh.vertices()[endpoints.0],
+                            mesh.vertices()[endpoints.1],
+                        )
+                        .map_err(|_| StepError::InvalidExportDirections { face })?;
+                        edges.push(CompressedEdge {
+                            vertices: endpoints,
+                            curve,
+                        });
+                        entry.insert(index);
+                        index
+                    }
                 };
                 Ok(CompressedEdgeIndex {
                     index,

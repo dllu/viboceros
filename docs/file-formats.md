@@ -145,7 +145,13 @@ exact outer and inner p-curves are sampled into a constrained UV triangulation
 so holes remain open, with interior knot-span samples refining nonplanar
 trimmed surfaces. STEP writes the results as faceted shells with shared
 topology and planar faces. `ExportStep` converts physical document units to
-millimetres. The `step/export_plane` adapter writes plane placements using
+millimetres. Edge sharing follows raw vertex indices: coincident but unwelded
+seams remain separate. Sixteen endpoint-sharing/winding/order cases check every
+directed face boundary against source triangle indices; two quad cases check
+the shared triangulation diagonal and opposite edge-use orientations. The
+generated STEP files are also parsed and checked for face/edge record counts.
+These establish the exporter's topology policy, not Rhino seam-conversion parity.
+The `step/export_plane` adapter writes plane placements using
 the native kernel's scale-safe facet normals and reference directions. Parsed
 STEP regression records check finite unit directions and reversed winding from
 mesh scales `1e-200` through `1e200`, including translated origins. Parsed line
