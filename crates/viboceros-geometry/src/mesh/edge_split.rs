@@ -138,7 +138,11 @@ impl TriangleMesh {
         generated
             .try_reserve_exact(candidate_count)
             .map_err(|_| GeometryError::TooManyMeshFaces)?;
-        let mut affected_faces = vec![false; self.faces.len()];
+        let mut affected_faces = Vec::new();
+        affected_faces
+            .try_reserve_exact(self.faces.len())
+            .map_err(|_| GeometryError::TooManyMeshFaces)?;
+        affected_faces.resize(self.faces.len(), false);
         for edge_use in incidence.uses() {
             affected_faces[edge_use.face] = true;
             let [from, to] = edge_use.raw_vertices;
@@ -196,23 +200,37 @@ impl TriangleMesh {
                         || (split_at_endpoint && matches!(face, MeshFace::Triangle(_))))
                     .then_some(face)
                 });
-        let mut used = vec![false; self.vertices.len()];
+        // First use this table as 0/1 retention marks. During the source-order
+        // compaction pass, replace each mark with its final output index.
+        // Unused slots are never looked up afterwards, so no u32 sentinel is needed.
+        let mut raw_remap = Vec::new();
+        raw_remap
+            .try_reserve_exact(self.vertices.len())
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        raw_remap.resize(self.vertices.len(), 0_u32);
+        let mut retained_vertex_count = 0;
+        let mut retain_vertex = |raw: u32| {
+            let mark = &mut raw_remap[raw as usize];
+            if *mark == 0 {
+                *mark = 1;
+                retained_vertex_count += 1;
+            }
+        };
         let mut retained_face_count: usize = 0;
         for face in retained_faces.clone() {
             retained_face_count += 1;
             for &raw in face.indices() {
-                used[raw as usize] = true;
+                retain_vertex(raw);
             }
         }
         if welded {
             for candidate in &generated {
                 for raw in candidate.raw_vertices {
-                    used[raw as usize] = true;
+                    retain_vertex(raw);
                 }
             }
         }
 
-        let retained_vertex_count = used.iter().filter(|&&retain| retain).count();
         let vertex_count = output_vertex_count(retained_vertex_count, generated.len(), welded)?;
         let face_count = retained_face_count
             .checked_add(generated.len())
@@ -225,12 +243,11 @@ impl TriangleMesh {
         faces
             .try_reserve_exact(face_count)
             .map_err(|_| GeometryError::TooManyMeshFaces)?;
-        let mut raw_remap = vec![0_u32; self.vertices.len()];
-        for (raw, (&point, retain)) in self.vertices.iter().zip(used).enumerate() {
-            if !retain {
+        for (&point, mapped) in self.vertices.iter().zip(&mut raw_remap) {
+            if *mapped == 0 {
                 continue;
             }
-            raw_remap[raw] =
+            *mapped =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
             vertices.push(point);
         }

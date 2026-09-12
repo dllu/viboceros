@@ -123,6 +123,11 @@ the 27-case Rhino replay checks exact output geometry and ordering.
 Retained faces are streamed from the source for vertex marking and final remapping,
 without an intermediate face vector. A mixed-face regression checks unaffected
 face ordering and the different retention policy at interior versus endpoint splits.
+Vertex retention uses the remap table first as 0/1 marks, then overwrites retained
+slots with output indices during source-order compaction, avoiding a separate
+vertex-sized flag array. The affected-face and remap buffers reserve fallibly too.
+Topology construction still has its own allocations; these checks do not promise
+recovery from every process-wide out-of-memory condition.
 The edge-split module also contains the source-order, seam, endpoint, and invalid
 input regressions, alongside wide-integer staging/output sizing tests.
 A 450-case planar split matrix covers every triangle/quad side pairing, both
