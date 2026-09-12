@@ -122,6 +122,13 @@ rational UV parameterization paired with a uniformly parameterized 3D line can
 instead produce a reconstructed line trim. This work does not establish general
 rational curved-edge or curved-surface import.
 
+The `native_planar/curves` module owns these 3D-edge and UV-trim adapters,
+including wrapper unwrapping and homogeneous-coordinate conversion. The shell
+reader handles shared topology, surface construction, incidence and final
+validation. Direct rational 3D-edge tests verify controls, weights, orientation
+and nine evaluation stations independently, and reject invalid weights,
+unrepresentable Euclidean controls, curved spans, and multispan curves.
+
 Tests cover a cube's 8 vertices, 12 edges, 6 faces, vertex bounds, area 286,
 and signed volume 315; correctly reversed face/bound orientations give volume
 -315. Open triangles retain area and reject solid-volume queries, and a curved
