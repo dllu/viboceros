@@ -68,6 +68,8 @@ selection action order are independent of chronological object order.
 memory. Geometry connectivity and component extraction live in `mesh/components`;
 disjoint splitting and mesh explosion share a single reusable vertex-remap
 scratch array, avoiding per-component initialization of a source-sized array.
+The `split_disjoint_mesh` command module owns staged component results and their
+document replacement, attribute/group propagation, and output selection.
 The command-owned `object_selection` module supplies typed filters and boolean
 options to the separate [app object-prompt adapter](object-selection.md).
 `selection_commands` owns basic, action-history, attribute, and duplicate
