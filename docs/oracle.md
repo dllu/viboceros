@@ -22,6 +22,15 @@ For the three-face mixed incidence, full welding produces eight vertices;
 partial or no endpoint welding produces 24, with eight replacement triangles
 in all three cases. These dyadic-coordinate fixtures need no comparison epsilon.
 
+The [edge-collapse fixture](../tools/rhino_oracle/fixtures/mesh_collapse_edge.json)
+has a [15-case Rhino 8.32 record](../tools/rhino_oracle/observations/mesh_collapse_edge.json).
+The shared edge-edit replay checks exact acceptance, coordinates, face indices,
+and ordering. Cases include empty results, triangle/quad reduction, seams,
+non-manifold edges, unused vertices, and disconnected coincident endpoint fans.
+The added coincident-peer case confirms that peers outside the selected edge
+move to its midpoint without merging their separate raw vertices. These ordinary
+coordinate records do not establish parity for subnormal midpoint rounding.
+
 The [short-curve selection diagnostic](short-curve-selection-measurement.json)
 embeds four requests and responses (40 line lengths). `short_curve_selection`
 creates owned line objects, runs the actual `SelShortCrv` command, and records

@@ -1,0 +1,458 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 7560730,
+      "id": "coincident-peers-and-unused-endpoints",
+      "value": {
+        "accepted": true,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ],
+          "vertices": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -2.0,
+              1.0,
+              0.0
+            ],
+            [
+              -2.0,
+              -1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              -1.0,
+              0.0
+            ],
+            [
+              4.0,
+              1.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 1358032,
+      "id": "tetrahedron-edge",
+      "value": {
+        "accepted": true,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              1,
+              0,
+              2
+            ]
+          ],
+          "vertices": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              2.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 213623,
+      "id": "square-diagonal",
+      "value": {
+        "accepted": true,
+        "mesh": null
+      }
+    },
+    {
+      "elapsed_ns": 205994,
+      "id": "square-boundary",
+      "value": {
+        "accepted": true,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "vertices": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 1564026,
+      "id": "triangle-quad-edge",
+      "value": {
+        "accepted": true,
+        "mesh": {
+          "faces": [
+            [
+              2,
+              1,
+              0
+            ]
+          ],
+          "vertices": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 1190186,
+      "id": "quad-boundary-edge",
+      "value": {
+        "accepted": true,
+        "mesh": {
+          "faces": [
+            [
+              1,
+              2,
+              0
+            ]
+          ],
+          "vertices": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 358582,
+      "id": "unwelded-shared-edge",
+      "value": {
+        "accepted": true,
+        "mesh": null
+      }
+    },
+    {
+      "elapsed_ns": 381470,
+      "id": "partially-welded-edge",
+      "value": {
+        "accepted": true,
+        "mesh": null
+      }
+    },
+    {
+      "elapsed_ns": 152588,
+      "id": "non-manifold-edge",
+      "value": {
+        "accepted": true,
+        "mesh": null
+      }
+    },
+    {
+      "elapsed_ns": 328064,
+      "id": "unused-vertices-and-disjoint-face",
+      "value": {
+        "accepted": true,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "vertices": [
+            [
+              10.0,
+              0.0,
+              0.0
+            ],
+            [
+              12.0,
+              0.0,
+              0.0
+            ],
+            [
+              10.0,
+              2.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 343323,
+      "id": "separate-endpoint-fans",
+      "value": {
+        "accepted": true,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              3,
+              4
+            ]
+          ],
+          "vertices": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ],
+            [
+              -2.0,
+              1.0,
+              0.0
+            ],
+            [
+              4.0,
+              1.0,
+              0.0
+            ],
+            [
+              2.0,
+              3.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 457764,
+      "id": "unwelded-edge-with-surviving-fans",
+      "value": {
+        "accepted": true,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              4,
+              1
+            ],
+            [
+              2,
+              3,
+              5
+            ]
+          ],
+          "vertices": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              1.0,
+              0.0
+            ],
+            [
+              4.0,
+              -1.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 228882,
+      "id": "quad-edge-at-second-side",
+      "value": {
+        "accepted": true,
+        "mesh": {
+          "faces": [
+            [
+              2,
+              0,
+              1
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 335693,
+      "id": "disconnected-coincident-endpoint-fans",
+      "value": {
+        "accepted": true,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ],
+          "vertices": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -2.0,
+              1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              3.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              3.0,
+              3.0,
+              0.0
+            ],
+            [
+              4.0,
+              1.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 99182,
+      "id": "opposite-quad-vertices",
+      "value": {
+        "accepted": true,
+        "mesh": null
+      }
+    }
+  ]
+}
