@@ -544,6 +544,11 @@ pub enum Operation {
         control_points: Vec<ControlPoint>,
         knots: Vec<f64>,
     },
+    MeshFaceNormals {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+    },
     MeshUnifyNormals {
         id: String,
         vertices: Vec<[f64; 3]>,
@@ -1655,6 +1660,7 @@ impl Operation {
             | Self::NurbsCurveTopology { id, .. }
             | Self::NurbsCurveClassification { id, .. }
             | Self::NurbsCurveExtractPoints { id, .. }
+            | Self::MeshFaceNormals { id, .. }
             | Self::MeshUnifyNormals { id, .. }
             | Self::MeshDisjointPieces { id, .. }
             | Self::MeshCombineIdenticalVertices { id, .. }
@@ -2484,6 +2490,32 @@ fn execute(
                 measure(iterations, || black_box(&curve).extract_point_locations())?;
             (
                 json!(points.into_iter().map(Point3::to_array).collect::<Vec<_>>()),
+                elapsed,
+            )
+        }
+        Operation::MeshFaceNormals {
+            vertices, faces, ..
+        } => {
+            let mesh = TriangleMesh::try_new_faces(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                polygon_mesh_faces(faces)?,
+                tolerance,
+            )?;
+            let (normals, elapsed) =
+                measure(iterations, || black_box(&mesh).polygon_face_normals())?;
+            (
+                json!(
+                    normals
+                        .into_iter()
+                        .map(|normal| {
+                            let vector = normal.as_vector();
+                            [vector.x(), vector.y(), vector.z()]
+                        })
+                        .collect::<Vec<_>>()
+                ),
                 elapsed,
             )
         }
@@ -13365,6 +13397,65 @@ mod tests {
                 [1.0, 2.0, 3.0]
             ])
         );
+    }
+
+    #[test]
+    fn face_normal_fixture_matches_analytic_directions_and_recorded_rhino_floats() {
+        let input: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/mesh_face_normals.json"
+        ))
+        .unwrap();
+        let response = run_request(&input).unwrap();
+        let observed: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/mesh_face_normals.json"
+        ))
+        .unwrap();
+        let observed = observed["results"].as_array().unwrap();
+        assert_eq!(response.results.len(), 3);
+        assert_eq!(observed.len(), response.results.len());
+        for (index, result) in response.results.iter().enumerate() {
+            assert_eq!(observed[index]["id"], result.id);
+            let recorded = observed[index]["value"].as_array().unwrap();
+            let expected: Vec<[f64; 3]> = if index == 1 {
+                vec![
+                    [-1., -2., 4.],
+                    [-1., -2., 4.],
+                    [-1., -2., 4.],
+                    [-1., -2., 4.],
+                    [1., 2., -4.],
+                ]
+            } else {
+                vec![[0., -1., 1.], [-1., 0., 2.], [-1., -2., 4.]]
+            };
+            let actual = result.value.as_array().unwrap();
+            assert_eq!(actual.len(), expected.len());
+            assert_eq!(recorded.len(), actual.len());
+            for (normal, recorded) in actual.iter().zip(recorded) {
+                let normal = normal.as_array().unwrap();
+                let recorded = recorded.as_array().unwrap();
+                assert_eq!(normal.len(), 3);
+                assert_eq!(recorded.len(), 3);
+                for (component, recorded) in normal.iter().zip(recorded) {
+                    // Rhino's FaceNormals collection stores Vector3f values;
+                    // compare that representation exactly, keeping native f64s.
+                    assert_eq!(
+                        component.as_f64().unwrap() as f32 as f64,
+                        recorded.as_f64().unwrap()
+                    );
+                }
+            }
+            for (actual, expected) in actual.iter().zip(expected) {
+                let length = (expected[0] * expected[0]
+                    + expected[1] * expected[1]
+                    + expected[2] * expected[2])
+                    .sqrt();
+                for (actual, expected) in actual.as_array().unwrap().iter().zip(expected) {
+                    assert!(
+                        (actual.as_f64().unwrap() - expected / length).abs() <= 4.0 * f64::EPSILON
+                    );
+                }
+            }
+        }
     }
 
     #[test]

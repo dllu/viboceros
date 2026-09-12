@@ -1,0 +1,24 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "mesh_face_normals",
+      "id": "mixed-planar-and-warped-faces",
+      "vertices": [[0, 0, 0], [2, 0, 0], [2, 1, 1], [0, 1, 0]],
+      "faces": [[0, 1, 2], [0, 2, 3], [0, 1, 2, 3]]
+    },
+    {
+      "op": "mesh_face_normals",
+      "id": "warped-cyclic-and-reversed-winding",
+      "vertices": [[0, 0, 0], [2, 0, 0], [2, 1, 1], [0, 1, 0]],
+      "faces": [[0, 1, 2, 3], [1, 2, 3, 0], [2, 3, 0, 1], [3, 0, 1, 2], [3, 2, 1, 0]]
+    },
+    {
+      "op": "mesh_face_normals",
+      "id": "warped-scaled-translated",
+      "vertices": [[10, -20, 30], [210, -20, 30], [210, 80, 130], [10, 80, 30]],
+      "faces": [[0, 1, 2], [0, 2, 3], [0, 1, 2, 3]]
+    }
+  ]
+}

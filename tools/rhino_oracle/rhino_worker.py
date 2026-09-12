@@ -8172,6 +8172,19 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, reverse_curve)
 
+    if kind == "mesh_face_normals":
+        mesh = _polygon_mesh(operation["vertices"], operation["faces"])
+
+        def compute_face_normals():
+            if not mesh.FaceNormals.ComputeFaceNormals():
+                raise ValueError("mesh face normal computation failed")
+            return [_xyz(mesh.FaceNormals[index]) for index in range(mesh.Faces.Count)]
+
+        try:
+            return _measure(iterations, compute_face_normals)
+        finally:
+            mesh.Dispose()
+
     if kind == "mesh_unify_normals":
         source = _triangle_mesh(operation["vertices"], operation["triangles"])
 

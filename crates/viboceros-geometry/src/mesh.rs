@@ -3888,7 +3888,10 @@ impl TriangleMesh {
         }
     }
 
-    fn polygon_face_normals(&self) -> Result<Vec<UnitVector3>, GeometryError> {
+    /// Unit normals in stored polygon-face order (one per triangle or quad).
+    /// Non-planar quads use the oriented cross product of their diagonals,
+    /// not an unweighted average of their triangulation's unit normals.
+    pub fn polygon_face_normals(&self) -> Result<Vec<UnitVector3>, GeometryError> {
         self.faces
             .iter()
             .map(|face| {
@@ -3912,6 +3915,8 @@ impl TriangleMesh {
             .collect()
     }
 
+    /// Unit normal of a triangulated facet, indexed into [`Self::triangles`].
+    /// For one normal per original polygon, use [`Self::polygon_face_normals`].
     pub fn face_normal(&self, index: usize) -> Result<UnitVector3, GeometryError> {
         let points = self
             .triangle_points(index)

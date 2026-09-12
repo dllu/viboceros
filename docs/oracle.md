@@ -2,6 +2,17 @@
 
 [Project overview](../README.md)
 
+The `mesh_face_normals` probe returns one normal per stored triangle or quad.
+Its [fixture](../tools/rhino_oracle/fixtures/mesh_face_normals.json) and
+[Rhino 8.32 record](../tools/rhino_oracle/observations/mesh_face_normals.json)
+cover mixed face types, warped quads, cyclic/reversed winding, and a translated,
+uniformly scaled copy. The native regression checks independent analytic unit
+directions to `4 * f64::EPSILON`, then checks exact equality with Rhino after
+conversion to its `Vector3f` face-normal storage representation. Native geometry
+and probe results retain double precision; the default `1e-10` comparison
+threshold is tighter than this Rhino collection's storage precision.
+Extreme-scale native tests are separate from these ordinary-scale Rhino records.
+
 The [short-curve selection diagnostic](short-curve-selection-measurement.json)
 embeds four requests and responses (40 line lengths). `short_curve_selection`
 creates owned line objects, runs the actual `SelShortCrv` command, and records
