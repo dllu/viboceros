@@ -6,8 +6,8 @@ interface, four viewports, snapping, layers, groups, and undo/redo.
 
 This is an early implementation. It supports analytic and NURBS geometry,
 trimmed B-reps, polygon meshes, and an expanding command set. 3DM and STL
-interchange are available; STEP currently imports tessellated geometry and
-exports faceted shells. Full Rhino compatibility is still in progress.
+interchange are available; STEP imports meshes or native straight-edged planar
+B-reps and exports faceted shells. Full Rhino compatibility is still in progress.
 
 ## Build and run
 

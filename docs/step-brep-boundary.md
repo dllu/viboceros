@@ -213,6 +213,11 @@ area information. Opposite-sign weights on a single linear span imply an interio
 denominator zero and are rejected directly, including poles between sample
 stations. Curved and multi-span trims retain sampling; this is not a general
 rational pole detector for those curves.
+Separately, boundary continuity validation checks every nonempty degree-one
+span of both 3D edges and lifted UV curves for opposite-sign weights. Zero-width
+spans at full-multiplicity knots are skipped: a sign change between separate
+one-sided pieces is not an interpolated denominator zero. Regression tests
+distinguish these valid joins from poles in either span of a linear B-spline.
 Regressions check both winding directions with weight ratios up to `1e12`,
 coordinates of magnitude `1e100`, and equal-weight loops spanning `-f64::MAX`
 to `f64::MAX`. This avoids overflowing raw coordinate differences while testing

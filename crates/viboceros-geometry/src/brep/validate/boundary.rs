@@ -86,6 +86,20 @@ pub(super) fn continuous(
     near: impl Fn([Real; 3]) -> bool,
 ) -> Result<(), GeometryError> {
     let domain = curve.domain();
+    if curve.degree() == 1 {
+        let controls = curve.control_points();
+        // On a nonempty degree-one span the denominator interpolates just
+        // these two weights. Opposite signs prove a zero, independently of
+        // sample placement. Skip zero-width spans at full-multiplicity knots:
+        // their two controls belong to separate one-sided curve pieces.
+        for (index, pair) in controls.windows(2).enumerate() {
+            if curve.knots()[index + 1] < curve.knots()[index + 2]
+                && pair[0].weight().is_sign_positive() != pair[1].weight().is_sign_positive()
+            {
+                return invalid("a linear B-rep boundary span has a rational pole");
+            }
+        }
+    }
     for group in curve.knots().chunk_by(|a, b| a == b) {
         let parameter = group[0];
         if group.len() > curve.degree() && parameter > *domain.start() && parameter < *domain.end()

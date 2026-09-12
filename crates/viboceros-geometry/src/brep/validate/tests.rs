@@ -151,6 +151,37 @@ fn p(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }
 
+#[test]
+fn boundary_continuity_rejects_linear_poles_but_allows_sign_changes_across_full_knots() {
+    let make_curve = |weights: &[Real], knots: Vec<Real>, xs: &[Real]| {
+        NurbsCurve::try_new_rational(
+            1,
+            weights
+                .iter()
+                .zip(xs)
+                .map(|(&weight, &x)| WeightedPoint3::try_new(p(x, 0., 0.), weight).unwrap())
+                .collect(),
+            knots,
+        )
+        .unwrap()
+    };
+    for weights in [[1., 1., -2.], [1., -2., -2.], [-2., 1., -2.]] {
+        let curve = make_curve(&weights, vec![-3., -3., 2., 7., 7.], &[0., 1., 2.]);
+        assert!(
+            boundary::continuous(&curve, |_| true).is_err(),
+            "{weights:?}"
+        );
+    }
+    // Full interior multiplicity separates the spans: opposite signs on
+    // opposite sides of that knot do not imply an interpolated zero.
+    let curve = make_curve(
+        &[1., 2., -3., -4.],
+        vec![-3., -3., 2., 2., 7., 7.],
+        &[0., 1., 1., 2.],
+    );
+    assert!(boundary::continuous(&curve, |delta| delta == [0.; 3]).is_ok());
+}
+
 fn square() -> Brep {
     Brep::try_surface_face(
         NurbsSurface::try_bilinear([
