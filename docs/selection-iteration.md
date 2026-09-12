@@ -27,7 +27,12 @@ order, includes a hidden group-selected peer, and checks that a late extraction
 callback failure leaves the document unchanged.
 `SplitDisjointMesh` also stages from borrowed selected objects. It moves all
 components into fresh objects, preserving restricted sources and batch-deleting
-ordinary split sources after assigning output groups. Tests cover mixed
+ordinary split sources after assigning output groups. All pieces use one
+`copy_object_pieces_into_source_groups` batch: repeated source IDs retain every
+piece, while source editability and group validity are checked before insertion.
+The document regression checks 128 interleaved pieces, locked-layer inheritance,
+history replay, and atomic late missing/locked/invalid-membership failures in
+standalone and caller-owned transactions. Command tests cover mixed
 connected/disconnected inputs and three-piece source-face ordering through
 undo/redo.
 `CollapseMeshEdge` consumes staged results into owned replacements and one

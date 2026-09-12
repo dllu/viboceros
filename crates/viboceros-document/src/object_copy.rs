@@ -2,6 +2,9 @@
 
 use super::*;
 
+#[cfg(test)]
+mod tests;
+
 impl Document {
     pub fn copy_objects_transformed(
         &mut self,
@@ -99,6 +102,31 @@ impl Document {
         self.copy_object_geometries_with_order(copies, true)
     }
 
+    /// Copies every supplied piece in input order, including repeated source
+    /// IDs. Each piece inherits its source's attributes and ordered groups.
+    /// All distinct sources are validated before insertion; selected restricted
+    /// group peers are editable under the ordinary source-editing policy.
+    pub fn copy_object_pieces_into_source_groups(
+        &mut self,
+        pieces: impl IntoIterator<Item = (ObjectId, Geometry)>,
+    ) -> Result<Vec<ObjectId>, DocumentError> {
+        let pieces = pieces.into_iter().collect::<Vec<_>>();
+        let indices = self.resolve_object_indices(pieces.iter().map(|(id, _)| *id))?;
+        for &index in &indices {
+            self.ensure_object_editable(&self.objects[index])?;
+        }
+        self.validate_memberships_at_indices(&indices)?;
+        let by_id = indices
+            .into_iter()
+            .map(|index| (self.objects[index].id, index))
+            .collect::<BTreeMap<_, _>>();
+        self.commit_source_group_copies(
+            pieces
+                .into_iter()
+                .map(|(id, geometry)| (by_id[&id], geometry)),
+        )
+    }
+
     fn copy_object_geometries_with_order(
         &mut self,
         copies: impl IntoIterator<Item = (ObjectId, Geometry)>,
@@ -128,6 +156,22 @@ impl Document {
             staged.sort_unstable_by_key(|(_, rank, _)| *rank);
         }
 
+        self.commit_source_group_copies(
+            staged
+                .into_iter()
+                .map(|(index, _, geometry)| (index, geometry)),
+        )
+    }
+
+    // Source indices, editability, and memberships must have been validated;
+    // only appends may change the object table before memberships are assigned.
+    fn commit_source_group_copies(
+        &mut self,
+        staged: impl ExactSizeIterator<Item = (usize, Geometry)>,
+    ) -> Result<Vec<ObjectId>, DocumentError> {
+        if staged.len() == 0 {
+            return Ok(Vec::new());
+        }
         self.objects
             .try_reserve_exact(staged.len())
             .map_err(|_| DocumentError::TooManyObjectCopies)?;
@@ -137,7 +181,7 @@ impl Document {
         }
 
         let mut copied = Vec::with_capacity(staged.len());
-        for (source_index, _, geometry) in staged {
+        for (source_index, geometry) in staged {
             let source = &self.objects[source_index];
             let attributes = source.attributes.clone();
             let copy_id = ObjectId::new();

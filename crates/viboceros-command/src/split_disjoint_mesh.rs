@@ -45,6 +45,7 @@ impl Command for SplitDisjointMeshCommand {
 
         let mut deleted_sources = Vec::with_capacity(split_mesh_count);
         let mut output_ids = Vec::with_capacity(inputs.len() + piece_count);
+        let mut pieces = Vec::with_capacity(piece_count);
 
         for input in inputs {
             if input.pieces.len() <= 1 {
@@ -60,14 +61,13 @@ impl Command for SplitDisjointMeshCommand {
                 output_ids.push(input.id);
             }
             for piece in input.pieces {
-                // Source-derived copies can inherit a locked layer from an
-                // editable group-selected peer; arbitrary new geometry cannot.
-                output_ids.extend(document.copy_object_geometries_into_source_groups([(
-                    input.id,
-                    Geometry::Mesh(piece),
-                )])?);
+                pieces.push((input.id, Geometry::Mesh(piece)));
             }
         }
+
+        // Source-derived copies can inherit a locked layer from an editable
+        // group-selected peer. Validate all sources once before insertion.
+        output_ids.extend(document.copy_object_pieces_into_source_groups(pieces)?);
 
         // Attach all output memberships before deleting sources, so source
         // groups never become temporarily empty during the command.
