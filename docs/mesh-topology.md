@@ -110,7 +110,7 @@ overall memory budget or a guarantee of recovery from every out-of-memory condit
 - [Area tests](../crates/viboceros-geometry/src/mesh/area_tests.rs): intermediate versus final overflow and the smallest positive area.
 - [Collapse tests](../crates/viboceros-geometry/src/mesh/edge_collapse/tests.rs): all 320 triangle/quad index patterns over four labels, plus source order, seams, validation, and midpoint cases.
 - [Split tests](../crates/viboceros-geometry/src/mesh/edge_split/tests.rs): wide-integer sizing references, compact representation, endpoints, unaffected-face order, and a 450-case planar side/winding/seam matrix with independent signed-area determinants. Area preservation is not assumed for endpoint duplication or warped quads.
-- [Rhino edge-edit replay](../crates/viboceros-oracle/src/mesh_edge_replay_tests.rs): exact acceptance, coordinates, indices, and ordering for recorded split and collapse cases. See [oracle details](oracle.md).
+- [Rhino edge-edit replay](../crates/viboceros-oracle/src/mesh_edge_replay_tests.rs): split/collapse acceptance, coordinates, indices, and ordering; weld face geometry, vertex counts, and sharing groups. See [oracle details](oracle.md) for the different record representations.
 
 Run the focused kernel and recorded split checks with:
 

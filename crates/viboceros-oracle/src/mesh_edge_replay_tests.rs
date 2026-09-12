@@ -1,6 +1,15 @@
 use super::*;
 
 #[test]
+fn permanent_edge_weld_fixture_matches_recorded_rhino_geometry_and_partitions() {
+    assert_recorded_geometry(
+        include_str!("../../../tools/rhino_oracle/fixtures/mesh_weld_edge.json"),
+        include_str!("../../../tools/rhino_oracle/observations/mesh_weld_edge.json"),
+        9,
+    );
+}
+
+#[test]
 fn permanent_edge_split_fixture_matches_recorded_rhino_geometry_and_order() {
     assert_recorded_geometry(
         include_str!("../../../tools/rhino_oracle/fixtures/mesh_split_edge.json"),

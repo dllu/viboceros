@@ -4,6 +4,13 @@
   "operations": [
     {
       "op": "mesh_weld_edge",
+      "id": "nonmanifold-reversed-face-order",
+      "edge_indices": [0],
+      "vertices": [[0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 0, 0], [0, 0, 0], [0, -1, 0], [0, 0, 0], [1, 0, 0], [0, 0, 1], [99, 99, 99]],
+      "triangles": [[6, 7, 8], [3, 4, 5], [0, 1, 2]]
+    },
+    {
+      "op": "mesh_weld_edge",
       "id": "empty-selection",
       "edge_indices": [],
       "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [4, 0, 0], [0, 0, 0], [0, -3, 0], [99, 99, 99]],

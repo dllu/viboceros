@@ -31,6 +31,15 @@ The added coincident-peer case confirms that peers outside the selected edge
 move to its midpoint without merging their separate raw vertices. These ordinary
 coordinate records do not establish parity for subnormal midpoint rounding.
 
+The [edge-weld fixture](../tools/rhino_oracle/fixtures/mesh_weld_edge.json) has a
+[nine-case Rhino record](../tools/rhino_oracle/observations/mesh_weld_edge.json).
+It exercises the actual `WeldEdge` command with selected edge subobjects,
+including reversed non-manifold face order, partial seams, empty/naked selections,
+unused vertices, and disjoint seams. Replay compares acceptance, removed-vertex
+counts, ordered face coordinates, and vertex-to-face sharing groups exactly.
+Unlike split/collapse records, this representation does not compare raw index
+numbering or identify which coincident source index survives.
+
 The [short-curve selection diagnostic](short-curve-selection-measurement.json)
 embeds four requests and responses (40 line lengths). `short_curve_selection`
 creates owned line objects, runs the actual `SelShortCrv` command, and records
