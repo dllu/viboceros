@@ -55,6 +55,14 @@ reversed selections, cube corner/all-vertex edits, a non-manifold fan, and a
 fully separated triangle. Replay checks acceptance, added-vertex counts, ordered
 face coordinates, and sharing groups exactly, with the same raw-index limitation.
 
+The [angle-unweld fixture](../tools/rhino_oracle/fixtures/mesh_unweld.json) has a
+[six-case Rhino 8.32 record](../tools/rhino_oracle/observations/mesh_unweld.json).
+Replay checks exact raw vertex coordinates, face indices, ordering, and added
+vertex counts for zero/positive flat thresholds, equal/above right-angle
+thresholds, already-unwelded faces, and cube creases. Separate non-manifold probes
+exposed an [unresolved face-order-dependent mismatch](mesh-unweld-nonmanifold.md);
+their two parity tests are explicitly ignored and are not passing coverage.
+
 The [edge-unweld fixture](../tools/rhino_oracle/fixtures/mesh_unweld_edge.json) has
 a [19-case Rhino 8.32 record](../tools/rhino_oracle/observations/mesh_unweld_edge.json).
 This probe invokes `Mesh.UnweldEdge`, not the interactive command. Besides radial

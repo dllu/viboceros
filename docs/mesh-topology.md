@@ -70,6 +70,10 @@ faces for every component, while preserving source face order within groups.
 Tests compare 12,288 label/root-order combinations against an independent grouping
 reference and exercise fully separated planar fans of up to 257 faces through
 both unwelding operations.
+Angle-based unwelding still has an [unresolved non-manifold compatibility gap](mesh-unweld-nonmanifold.md):
+Rhino's measured sharing depends on face order and is not reproduced by the
+current all-pairs normal-angle connectivity rule. Its diagnostic replay tests
+are explicitly ignored; the selected-edge unweld records do not prove this path.
 
 Shared welding compaction resolves every face to its representative before
 reusing the parent array as the compact-index map, eliminating a separate

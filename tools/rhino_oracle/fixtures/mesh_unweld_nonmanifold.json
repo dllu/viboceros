@@ -1,0 +1,1926 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "mesh_unweld",
+      "id": "shared-012-normals-false",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          1,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "shared-012-normals-true",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": true,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          1,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "shared-021-normals-false",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          4
+        ],
+        [
+          1,
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "shared-021-normals-true",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": true,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          4
+        ],
+        [
+          1,
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "shared-102-normals-false",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "triangles": [
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "shared-102-normals-true",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": true,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "triangles": [
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "shared-120-normals-false",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "triangles": [
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          1,
+          4
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "shared-120-normals-true",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": true,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "triangles": [
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          1,
+          4
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "shared-201-normals-false",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          1,
+          4
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "shared-201-normals-true",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": true,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          1,
+          4
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "shared-210-normals-false",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          1,
+          4
+        ],
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "shared-210-normals-true",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": true,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          1,
+          4
+        ],
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_a-012-normals-false",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_a-012-normals-true",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": true,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_a-021-normals-false",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          1,
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_a-021-normals-true",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": true,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          1,
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_a-102-normals-false",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_a-102-normals-true",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": true,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_a-120-normals-false",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_a-120-normals-true",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": true,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_a-201-normals-false",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_a-201-normals-true",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": true,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_a-210-normals-false",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_a-210-normals-true",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": true,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_b-012-normals-false",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          5,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_b-012-normals-true",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": true,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          5,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_b-021-normals-false",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          5,
+          4
+        ],
+        [
+          1,
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_b-021-normals-true",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": true,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          5,
+          4
+        ],
+        [
+          1,
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_b-102-normals-false",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          5,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_b-102-normals-true",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": true,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          5,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_b-120-normals-false",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          5,
+          4
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_b-120-normals-true",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": true,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          5,
+          4
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_b-201-normals-false",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          5,
+          4
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_b-201-normals-true",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": true,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          5,
+          4
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_b-210-normals-false",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          5,
+          4
+        ],
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "partial_b-210-normals-true",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": true,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "triangles": [
+        [
+          0,
+          5,
+          4
+        ],
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ]
+    }
+  ]
+}
