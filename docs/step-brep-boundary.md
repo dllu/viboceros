@@ -109,6 +109,19 @@ degree-one B-spline parameter curves verifies loss-free loading, retained
 evaluation stations on three intervals in both directions; curved and multispan
 B-spline trims remain explicitly unsupported.
 
+Degree-one, two-control-point rational 3D edges and UV trims are also supported
+when their weights are finite and positive. Homogeneous source controls are
+converted to Euclidean controls with separate weights, retaining knots and
+nonuniform parameterization. Direct trim tests use weight ratios 1:4 and 4:1
+at scales from `1e-100` to `1e100`, compare against an independent rational
+interpolation formula, and reject zero, negative, or non-finite weights.
+The STEP triangle regression also covers matching rational 3D/UV curves,
+preserving weights 1 and 4, `[-3,7]` intervals, and area 50. The source loader
+checks parameter correspondence before retaining explicit p-curves; an unmatched
+rational UV parameterization paired with a uniformly parameterized 3D line can
+instead produce a reconstructed line trim. This work does not establish general
+rational curved-edge or curved-surface import.
+
 Tests cover a cube's 8 vertices, 12 edges, 6 faces, vertex bounds, area 286,
 and signed volume 315; correctly reversed face/bound orientations give volume
 -315. Open triangles retain area and reject solid-volume queries, and a curved
