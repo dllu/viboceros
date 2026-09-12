@@ -199,6 +199,12 @@ region conditions; the polygon constructor establishes them before the native
 STEP reader performs full model-space validation. This does not extend region
 validation to arbitrary curved trims or change other B-rep constructors.
 
+Native loop-winding validation also uses the range-safe UV normalization.
+Regressions check both winding directions with weight ratios up to `1e12`,
+coordinates of magnitude `1e100`, and equal-weight loops spanning `-f64::MAX`
+to `f64::MAX`. This avoids overflowing raw coordinate differences while testing
+winding; it does not establish model-space area or meshing at those extremes.
+
 ## Native representation requirements
 
 Native `BrepEdge` requires a `NurbsCurve`; `BrepFace` requires a `NurbsSurface`;

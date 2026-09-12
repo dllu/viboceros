@@ -9429,28 +9429,14 @@ fn sampled_loop_signed_area(face_loop: &BrepLoop) -> Result<Real, GeometryError>
             }
         }
     }
-    let origin = points[0];
-    let relative = points
-        .iter()
-        .map(|point| [point.x() - origin.x(), point.y() - origin.y()])
-        .collect::<Vec<_>>();
-    require_finite(
-        relative.iter().flatten().copied(),
-        "B-rep p-loop coordinates",
-    )?;
-    let scale = relative
-        .iter()
-        .flat_map(|point| point.iter())
-        .map(|value| value.abs())
-        .fold(0.0, Real::max);
-    if scale == 0.0 {
+    let Some(normalized) = normalized_trim_polygon(&points)? else {
         return invalid("a p-loop encloses no parameter-space area");
-    }
+    };
     let mut sum = 0.0;
     let mut correction = 0.0;
-    for index in 0..relative.len() {
-        let first = relative[index].map(|value| value / scale);
-        let second = relative[(index + 1) % relative.len()].map(|value| value / scale);
+    for index in 0..normalized.len() {
+        let first = normalized[index];
+        let second = normalized[(index + 1) % normalized.len()];
         let cross = first[0].mul_add(second[1], -first[1] * second[0]);
         let next = sum + cross;
         if sum.abs() >= cross.abs() {

@@ -1,5 +1,66 @@
 use super::*;
 
+#[test]
+fn loop_winding_is_independent_of_linear_weights_and_handles_extreme_uv_ranges() {
+    for (radius, weights) in [
+        (1., [1., 1e12]),
+        (1., [1e12, 1.]),
+        (1e100, [1., 1e12]),
+        (1e100, [1e12, 1.]),
+        (f64::MAX, [1., 1.]),
+    ] {
+        for reversed in [false, true] {
+            let mut points = [
+                [-radius, -radius],
+                [radius, -radius],
+                [radius, radius],
+                [-radius, radius],
+            ];
+            if reversed {
+                points.reverse();
+            }
+            let trims = (0..4)
+                .map(|i| {
+                    let j = (i + 1) % 4;
+                    let controls = [points[i], points[j]]
+                        .into_iter()
+                        .zip(weights)
+                        .map(|(p, w)| {
+                            WeightedPoint2::try_new(Point2::try_new(p[0], p[1]).unwrap(), w)
+                                .unwrap()
+                        })
+                        .collect();
+                    BrepTrim::try_new(
+                        [i, j],
+                        Some(i),
+                        false,
+                        NurbsCurve2::try_new_rational(1, controls, vec![0., 0., 1., 1.]).unwrap(),
+                        BrepTrimType::Boundary,
+                        SurfaceIso::NotIso,
+                        [0.; 2],
+                    )
+                    .unwrap()
+                })
+                .collect();
+            let face_loop = BrepLoop::try_new(
+                if reversed {
+                    BrepLoopType::Inner
+                } else {
+                    BrepLoopType::Outer
+                },
+                trims,
+            )
+            .unwrap();
+            let area = sampled_loop_signed_area(&face_loop).unwrap();
+            let expected = if reversed { -2. } else { 2. };
+            assert!(
+                (area - expected).abs() < 1e-12,
+                "radius={radius}, weights={weights:?}"
+            );
+        }
+    }
+}
+
 fn p(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }
