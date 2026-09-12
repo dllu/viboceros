@@ -5,7 +5,7 @@ fn p(x: f64, y: f64, z: f64) -> Point3 {
 }
 
 #[test]
-fn component_order_matches_graph_traversal_for_every_graph_up_to_six_faces() {
+fn component_order_and_limits_match_graph_traversal_for_every_graph_up_to_six_faces() {
     for count in 0..=6 {
         let edges = (0..count)
             .flat_map(|a| (a + 1..count).map(move |b| (a, b)))
@@ -55,7 +55,14 @@ fn component_order_matches_graph_traversal_for_every_graph_up_to_six_faces() {
                         union_faces(&mut parents, &mut ranks, a, b);
                     }
                 }
-                assert_eq!(component_faces(&mut parents), expected);
+                for maximum in (0..=count).chain([usize::MAX]) {
+                    let result = component_faces(&mut parents, maximum);
+                    if expected.len() <= maximum {
+                        assert_eq!(result.unwrap(), expected);
+                    } else {
+                        assert_eq!(result, Err(GeometryError::MeshComponentLimit { maximum }));
+                    }
+                }
             }
         }
     }

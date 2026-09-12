@@ -6,19 +6,26 @@ mod tests;
 
 /// Group face indices in first-face order, independently of union root order.
 /// Roots are face indices, so a dense lookup avoids tree searches per face.
-fn component_faces(parents: &mut [usize]) -> Vec<Vec<usize>> {
+/// Reject the first over-budget root before allocating its component list.
+fn component_faces(
+    parents: &mut [usize],
+    maximum: usize,
+) -> Result<Vec<Vec<usize>>, GeometryError> {
     let mut component_by_root = vec![usize::MAX; parents.len()];
     let mut components = Vec::<Vec<usize>>::new();
     for face in 0..parents.len() {
         let root = face_root(parents, face);
         let component = &mut component_by_root[root];
         if *component == usize::MAX {
+            if components.len() == maximum {
+                return Err(GeometryError::MeshComponentLimit { maximum });
+            }
             *component = components.len();
             components.push(Vec::new());
         }
         components[*component].push(face);
     }
-    components
+    Ok(components)
 }
 
 impl TriangleMesh {
@@ -46,7 +53,7 @@ impl TriangleMesh {
             }
         }
 
-        self.pieces_from_faces_limited(component_faces(&mut parents), maximum)
+        Ok(self.pieces_from_faces(component_faces(&mut parents, maximum)?))
     }
 
     /// Splits the mesh into the parts Rhino's `Explode` command sees across
@@ -78,18 +85,7 @@ impl TriangleMesh {
             }
         }
 
-        self.pieces_from_faces_limited(component_faces(&mut parents), maximum)
-    }
-
-    fn pieces_from_faces_limited(
-        &self,
-        components: Vec<Vec<usize>>,
-        maximum: usize,
-    ) -> Result<Vec<Self>, GeometryError> {
-        if components.len() > maximum {
-            return Err(GeometryError::MeshComponentLimit { maximum });
-        }
-        Ok(self.pieces_from_faces(components))
+        Ok(self.pieces_from_faces(component_faces(&mut parents, maximum)?))
     }
 
     /// Reuse one raw-vertex map across components. Allocating a complete map

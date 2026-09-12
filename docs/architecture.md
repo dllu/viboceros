@@ -76,6 +76,10 @@ the grouping against every undirected graph of up to six faces in two union orde
 `TriangleMesh::try_explode_pieces` and `try_disjoint_pieces` share a component
 limit check before remapping geometry; commands pass their remaining output
 budgets. The unbounded mesh APIs share these implementations.
+Component grouping stops at the first over-budget root, before allocating that
+component's face list. The exhaustive graph test checks every budget from zero
+through the face count, plus the unbounded case. Topology and root-map storage
+still scale with the input mesh; the output limit does not cap those costs.
 The `split_disjoint_mesh` command module owns staged component results, fresh
 piece insertion, source deletion policy, attribute/group propagation, and selection.
 The separate `explode` command module owns multi-geometry decomposition staging,
