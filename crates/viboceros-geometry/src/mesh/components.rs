@@ -26,6 +26,13 @@ impl TriangleMesh {
     /// shared vertex does not connect faces. Each result retains source face
     /// order and compacts referenced raw vertices in first-use order.
     pub fn disjoint_pieces(&self) -> Vec<Self> {
+        self.try_disjoint_pieces(usize::MAX)
+            .expect("component count cannot exceed the number of source faces")
+    }
+
+    /// Like `disjoint_pieces`, rejecting an excessive component count after
+    /// connectivity analysis and before copying component geometry.
+    pub fn try_disjoint_pieces(&self, maximum: usize) -> Result<Vec<Self>, GeometryError> {
         let data = self.topology_data();
         let mut parents = (0..self.faces.len()).collect::<Vec<_>>();
         let mut ranks = vec![0_u8; self.faces.len()];
@@ -39,7 +46,7 @@ impl TriangleMesh {
             }
         }
 
-        self.pieces_from_faces(component_faces(&mut parents))
+        self.pieces_from_faces_limited(component_faces(&mut parents), maximum)
     }
 
     /// Splits the mesh into the parts Rhino's `Explode` command sees across
@@ -71,7 +78,14 @@ impl TriangleMesh {
             }
         }
 
-        let components = component_faces(&mut parents);
+        self.pieces_from_faces_limited(component_faces(&mut parents), maximum)
+    }
+
+    fn pieces_from_faces_limited(
+        &self,
+        components: Vec<Vec<usize>>,
+        maximum: usize,
+    ) -> Result<Vec<Self>, GeometryError> {
         if components.len() > maximum {
             return Err(GeometryError::MeshComponentLimit { maximum });
         }

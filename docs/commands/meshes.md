@@ -251,6 +251,10 @@ Output selection is exact: pieces and retained selected sources are selected,
 including restricted results, without expanding overlapping groups.
 Native regression tests cover both restrictions, either source order, rejected
 arguments with redo history, and exact object/group undo and redo.
+Native output staging has a cumulative one-million-piece safety limit. Mesh
+connectivity is analyzed before the limit is checked, but component geometry is
+not copied for an over-budget source. Connected sources consume no piece budget.
+This is a native resource guard, not a measured Rhino limit.
 
 **Live Rhino 8.32 evidence (2026-09-12):** the dedicated
 [`mesh_split_picking` probe](../oracle.md) observes normal split sources being

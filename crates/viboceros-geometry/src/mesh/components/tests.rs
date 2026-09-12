@@ -128,8 +128,13 @@ fn component_remapping_preserves_quads_duplicate_raw_vertices_and_face_order() {
             mesh.try_explode_pieces(maximum),
             Err(GeometryError::MeshComponentLimit { maximum })
         );
+        assert_eq!(
+            mesh.try_disjoint_pieces(maximum),
+            Err(GeometryError::MeshComponentLimit { maximum })
+        );
     }
     for maximum in [2, 3, usize::MAX] {
         assert_eq!(mesh.try_explode_pieces(maximum).unwrap(), pieces);
+        assert_eq!(mesh.try_disjoint_pieces(maximum).unwrap(), pieces);
     }
 }

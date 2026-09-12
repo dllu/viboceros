@@ -1,6 +1,62 @@
 use super::*;
 
 #[test]
+fn staging_enforces_a_cumulative_piece_budget_without_counting_connected_meshes() {
+    let mut document = Document::default();
+    let ids = [2, 1, 3].map(|count| {
+        let vertices = (0..count)
+            .flat_map(|index| {
+                let x = f64::from(index) * 3.;
+                [[x, 0., 0.], [x + 1., 0., 0.], [x, 1., 0.]]
+            })
+            .map(|p| Point3::try_from(p).unwrap())
+            .collect();
+        let faces = (0..count as u32)
+            .map(|index| [index * 3, index * 3 + 1, index * 3 + 2])
+            .collect();
+        document
+            .add_geometry(Geometry::Mesh(
+                TriangleMesh::try_new(vertices, faces, document.tolerance()).unwrap(),
+            ))
+            .unwrap()
+    });
+    document
+        .add_geometry(Geometry::Point(Point3::try_new(99., 0., 0.).unwrap()))
+        .unwrap();
+    document.undo().unwrap();
+    for id in ids {
+        document.select_object(id, SelectionMode::Add).unwrap();
+    }
+    let before = format!("{document:?}");
+    assert!(matches!(
+        stage_disjoint_meshes(&document, 4),
+        Err(CommandError::TooManySpanOutputObjects {
+            command: "SplitDisjointMesh",
+            ..
+        })
+    ));
+    assert_eq!(format!("{document:?}"), before);
+    let (staged, count) = stage_disjoint_meshes(&document, 5).unwrap();
+    assert_eq!(count, 5);
+    assert_eq!(
+        staged
+            .iter()
+            .map(|input| input.pieces.len())
+            .collect::<Vec<_>>(),
+        [2, 1, 3]
+    );
+    assert_eq!(format!("{document:?}"), before);
+    document
+        .select_object(ids[1], SelectionMode::Replace)
+        .unwrap();
+    let (staged, count) = stage_disjoint_meshes(&document, 0).unwrap();
+    assert_eq!(count, 0);
+    assert_eq!(staged.len(), 1);
+    assert_eq!(staged[0].pieces.len(), 1);
+    assert!(document.can_redo());
+}
+
+#[test]
 fn split_disjoint_mesh_reselects_restricted_group_peers_and_replays_exactly() {
     let registry = CommandRegistry::with_builtins();
     for (hidden, locked_index) in [(false, 0), (false, 1), (true, 0), (true, 1)] {
