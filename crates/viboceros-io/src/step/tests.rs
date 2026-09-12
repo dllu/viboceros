@@ -3,6 +3,39 @@ use std::io::Cursor;
 use super::*;
 
 #[test]
+fn unrepresentable_export_directions_preserve_stream_and_destination() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("existing.step");
+    std::fs::write(&path, b"original").unwrap();
+    for scale in [1e-100, 1e100, 1e160] {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(scale, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, scale, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::MESH_VALIDATION,
+        )
+        .unwrap();
+        // A valid earlier mesh must not cause partial output before a later
+        // mesh fails its serialization preflight.
+        let meshes = [unit_test_mesh(), mesh];
+        let mut stream = b"original".to_vec();
+        assert!(matches!(
+            write_step(&mut stream, &meshes),
+            Err(StepError::InvalidExportDirections { face: 0 })
+        ));
+        assert_eq!(stream, b"original");
+        assert!(matches!(
+            write_step_file(&path, &meshes),
+            Err(StepError::InvalidExportDirections { face: 0 })
+        ));
+        assert_eq!(std::fs::read(&path).unwrap(), b"original");
+    }
+}
+
+#[test]
 fn tessellation_sampling_preserves_finite_extreme_parameter_ranges() {
     for (start, end) in [
         (-f64::MAX, f64::MAX),

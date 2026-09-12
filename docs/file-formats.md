@@ -142,7 +142,13 @@ exact outer and inner p-curves are sampled into a constrained UV triangulation
 so holes remain open, with interior knot-span samples refining nonplanar
 trimmed surfaces. STEP writes the results as faceted shells with shared
 topology and planar faces. `ExportStep` converts physical document units to
-millimetres and writes the correspondingly converted absolute tolerance as
+millimetres. Before writing any data, export checks the current serializer's
+derived plane normals and line magnitudes for finite, nonzero values. Some
+valid extreme-scale native meshes exceed that serializer's arithmetic range;
+these return an explicit error instead of emitting invalid STEP directions.
+Regression tests cover tiny and huge meshes, including failure after a valid
+earlier mesh, and verify unchanged output streams and existing destinations.
+`ExportStep` writes the correspondingly converted absolute tolerance as
 the file's distance accuracy. Unitless and unset documents are rejected;
 conversion failures leave an existing destination unchanged. The low-level
 `write_step`/`write_step_file` APIs interpret coordinates as millimetres;

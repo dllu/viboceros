@@ -3,7 +3,7 @@ use std::io::{Read, Write};
 use std::path::Path;
 mod units;
 
-use monstertruck::core::cgmath64::{Matrix4, SquareMatrix, Transform};
+use monstertruck::core::cgmath64::{InnerSpace, Matrix4, SquareMatrix, Transform};
 use monstertruck::meshing::prelude::{
     BoundedCurve, MeshedShape, ParametricCurve, ParametricSurface, PolygonMesh, RobustMeshableShape,
 };
@@ -110,6 +110,11 @@ pub enum StepError {
 
     #[error("at least one triangle mesh is required for STEP export")]
     NoMeshesToWrite,
+
+    #[error(
+        "STEP exporter cannot represent directions for mesh triangle {face} at this coordinate scale"
+    )]
+    InvalidExportDirections { face: usize },
 }
 
 pub fn read_step<R: Read>(reader: R, tolerance: Tolerance) -> Result<StepImport, StepError> {
@@ -212,7 +217,10 @@ fn write_step_with_accuracy<W: Write>(
     if meshes.is_empty() {
         return Err(StepError::NoMeshesToWrite);
     }
-    let shells = meshes.iter().map(mesh_to_shell).collect::<Vec<_>>();
+    let shells = meshes
+        .iter()
+        .map(mesh_to_shell)
+        .collect::<Result<Vec<_>, _>>()?;
     let models = StepModels::from_iter(&shells).with_measurement_context(StepMeasurementContext {
         distance_accuracy_value: accuracy,
         ..Default::default()
@@ -282,7 +290,9 @@ fn write_step_staged(
     Ok(())
 }
 
-fn mesh_to_shell(mesh: &TriangleMesh) -> CompressedShell<TruckPoint3, Curve, Surface> {
+fn mesh_to_shell(
+    mesh: &TriangleMesh,
+) -> Result<CompressedShell<TruckPoint3, Curve, Surface>, StepError> {
     let vertices = mesh
         .vertices()
         .iter()
@@ -292,7 +302,26 @@ fn mesh_to_shell(mesh: &TriangleMesh) -> CompressedShell<TruckPoint3, Curve, Sur
     let mut edges = Vec::new();
     let mut faces = Vec::with_capacity(mesh.triangles().len());
 
-    for triangle in mesh.triangles() {
+    for (face, triangle) in mesh.triangles().iter().enumerate() {
+        let points = [
+            vertices[triangle[0] as usize],
+            vertices[triangle[1] as usize],
+            vertices[triangle[2] as usize],
+        ];
+        let plane = Plane::new(points[0], points[1], points[2]);
+        // Mirror the serializer's derived direction/magnitude calculations.
+        // Native mesh validity does not guarantee these third-party arithmetic
+        // paths stay representable. Preflight every shell before writing.
+        let normal = plane.normal();
+        if !normal.magnitude2().is_finite() || normal.magnitude2() == 0.0 {
+            return Err(StepError::InvalidExportDirections { face });
+        }
+        for edge in 0..3 {
+            let magnitude = (points[(edge + 1) % 3] - points[edge]).magnitude();
+            if !magnitude.is_finite() || magnitude == 0.0 {
+                return Err(StepError::InvalidExportDirections { face });
+            }
+        }
         let directed_edges = [
             (triangle[0], triangle[1]),
             (triangle[1], triangle[2]),
@@ -321,26 +350,21 @@ fn mesh_to_shell(mesh: &TriangleMesh) -> CompressedShell<TruckPoint3, Curve, Sur
                 }
             })
             .collect();
-        let points = [
-            vertices[triangle[0] as usize],
-            vertices[triangle[1] as usize],
-            vertices[triangle[2] as usize],
-        ];
         faces.push(CompressedFace {
             boundaries: vec![boundary],
             orientation: true,
-            surface: Surface::Plane(Plane::new(points[0], points[1], points[2])),
+            surface: Surface::Plane(plane),
         });
     }
 
-    CompressedShell {
+    Ok(CompressedShell {
         vertices,
         edges,
         faces,
         vertex_stable_ids: None,
         edge_stable_ids: None,
         face_stable_ids: None,
-    }
+    })
 }
 
 fn import_table(table: &Table, tolerance: Tolerance) -> Result<StepImport, StepError> {
