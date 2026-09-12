@@ -208,15 +208,20 @@ impl EdgeIncidence {
 
     /// Unordered incident-face pairs in use order, without a temporary vector.
     fn face_pairs(&self) -> impl Iterator<Item = (usize, usize)> + '_ {
+        self.use_pairs()
+            .map(|(first, second)| (first.face, second.face))
+    }
+
+    fn use_pairs(&self) -> impl Iterator<Item = (EdgeUse, EdgeUse)> + '_ {
         self.uses().enumerate().flat_map(move |(index, first)| {
             self.uses()
                 .skip(index + 1)
-                .map(move |second| (first.face, second.face))
+                .map(move |second| (first, second))
         })
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct EdgeUse {
     face: usize,
     side: usize,
@@ -3024,17 +3029,14 @@ impl TriangleMesh {
             .collect::<Vec<_>>();
         let mut qualifying_edges = vec![false; edges.len()];
         for (edge_index, (_, incidence)) in edges.iter().enumerate() {
-            let uses = incidence.uses().collect::<Vec<_>>();
-            'pairs: for left in 0..uses.len().saturating_sub(1) {
-                for right in left + 1..uses.len() {
-                    let dot = face_normals[uses[left].face]
-                        .as_vector()
-                        .dot(face_normals[uses[right].face].as_vector())?
-                        .clamp(-1.0, 1.0);
-                    if dot <= maximum_dot {
-                        qualifying_edges[edge_index] = true;
-                        break 'pairs;
-                    }
+            for (left, right) in incidence.face_pairs() {
+                let dot = face_normals[left]
+                    .as_vector()
+                    .dot(face_normals[right].as_vector())?
+                    .clamp(-1.0, 1.0);
+                if dot <= maximum_dot {
+                    qualifying_edges[edge_index] = true;
+                    break;
                 }
             }
         }
@@ -3099,24 +3101,21 @@ impl TriangleMesh {
                 let Some(endpoint) = endpoint else {
                     continue;
                 };
-                let uses = incidence.uses().collect::<Vec<_>>();
-                for left in 0..uses.len().saturating_sub(1) {
-                    for right in left + 1..uses.len() {
-                        if uses[left].raw_vertices[endpoint] != uses[right].raw_vertices[endpoint] {
-                            continue;
-                        }
-                        let dot = face_normals[uses[left].face]
-                            .as_vector()
-                            .dot(face_normals[uses[right].face].as_vector())?
-                            .clamp(-1.0, 1.0);
-                        if dot > maximum_dot {
-                            union_faces(
-                                &mut parents,
-                                &mut ranks,
-                                face_to_local[&uses[left].face],
-                                face_to_local[&uses[right].face],
-                            );
-                        }
+                for (left, right) in incidence.use_pairs() {
+                    if left.raw_vertices[endpoint] != right.raw_vertices[endpoint] {
+                        continue;
+                    }
+                    let dot = face_normals[left.face]
+                        .as_vector()
+                        .dot(face_normals[right.face].as_vector())?
+                        .clamp(-1.0, 1.0);
+                    if dot > maximum_dot {
+                        union_faces(
+                            &mut parents,
+                            &mut ranks,
+                            face_to_local[&left.face],
+                            face_to_local[&right.face],
+                        );
                     }
                 }
             }
@@ -3250,17 +3249,14 @@ impl TriangleMesh {
                 let (edge_vertices, incidence) = edges[edge];
                 let endpoint = usize::from(edge_vertices[1] == topological_vertex);
                 debug_assert_eq!(edge_vertices[endpoint], topological_vertex);
-                let uses = incidence.uses().collect::<Vec<_>>();
-                for left in 0..uses.len().saturating_sub(1) {
-                    for right in left + 1..uses.len() {
-                        if uses[left].raw_vertices[endpoint] == uses[right].raw_vertices[endpoint] {
-                            union_faces(
-                                &mut parents,
-                                &mut ranks,
-                                face_to_local[&uses[left].face],
-                                face_to_local[&uses[right].face],
-                            );
-                        }
+                for (left, right) in incidence.use_pairs() {
+                    if left.raw_vertices[endpoint] == right.raw_vertices[endpoint] {
+                        union_faces(
+                            &mut parents,
+                            &mut ranks,
+                            face_to_local[&left.face],
+                            face_to_local[&right.face],
+                        );
                     }
                 }
             }

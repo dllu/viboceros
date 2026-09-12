@@ -1,5 +1,30 @@
 use super::*;
 
+#[test]
+fn streamed_use_pairs_keep_order_and_all_metadata_even_with_repeated_faces() {
+    for count in 0..=6 {
+        let uses = (0..count)
+            .map(|index| EdgeUse {
+                face: index % 2,
+                side: index % 4,
+                forward: index % 2 == 0,
+                raw_vertices: [index as u32 * 2, index as u32 * 2 + 1],
+            })
+            .collect::<Vec<_>>();
+        let mut incidence = EdgeIncidence::default();
+        for &edge_use in &uses {
+            incidence.add_use(edge_use);
+        }
+        let mut expected = Vec::new();
+        for first in 0..count {
+            for second in first + 1..count {
+                expected.push((uses[first], uses[second]));
+            }
+        }
+        assert_eq!(incidence.use_pairs().collect::<Vec<_>>(), expected);
+    }
+}
+
 fn p(x: f64, y: f64, z: f64) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }
