@@ -9,6 +9,29 @@
 const LIMBS: usize = 66;
 use crate::binary_accumulator::{add_product, decompose, finish};
 
+/// Scale the exact sum before rounding. Three binary64 factors need quantum
+/// 2^-3222 and at most 6297 bits for six products; 99 limbs provide 6336.
+pub(super) fn scaled_dot<const N: usize>(left: [f64; N], right: [f64; N], scale: f64) -> f64 {
+    assert!(N <= 6, "exact scaled dot accumulator capacity");
+    let mut positive = [0; 99];
+    let mut negative = [0; 99];
+    let (c, c_shift) = decompose(scale);
+    for (a, b) in left.into_iter().zip(right) {
+        let (a_bits, a_shift) = decompose(a);
+        let (b_bits, b_shift) = decompose(b);
+        let product = u128::from(a_bits) * u128::from(b_bits);
+        let target = if a.is_sign_negative() ^ b.is_sign_negative() ^ scale.is_sign_negative() {
+            &mut negative
+        } else {
+            &mut positive
+        };
+        let shift = a_shift + b_shift + c_shift;
+        add_product(target, u128::from(product as u64) * u128::from(c), shift);
+        add_product(target, (product >> 64) * u128::from(c), shift + 64);
+    }
+    finish::<99, 3222>(positive, negative)
+}
+
 pub(super) fn dot<const N: usize>(left: [f64; N], right: [f64; N]) -> f64 {
     dot_with_quantum::<N, 2148>(left, right)
 }
@@ -39,6 +62,36 @@ fn dot_with_quantum<const N: usize, const QUANTUM: usize>(left: [f64; N], right:
 #[cfg(test)]
 mod tests {
     use super::dot;
+
+    #[test]
+    fn scaled_dot_preserves_overflow_cancellation_and_subnormal_products() {
+        use super::scaled_dot;
+        assert_eq!(scaled_dot([f64::MAX, f64::MAX], [1., 1.], 0.5), f64::MAX);
+        assert_eq!(
+            scaled_dot([f64::MAX, -f64::MAX, 1.], [f64::MAX, f64::MAX, 1.], 0.25),
+            0.25
+        );
+        assert_eq!(
+            scaled_dot([f64::from_bits(1)], [0.5], 2.),
+            f64::from_bits(1)
+        );
+        assert_eq!(scaled_dot([f64::MAX], [2.], 1.), f64::INFINITY);
+        assert_eq!(
+            scaled_dot([f64::MAX], [f64::MAX], -f64::MAX),
+            f64::NEG_INFINITY
+        );
+        assert_eq!(scaled_dot([2.], [-3.], -0.5), 3.);
+        assert_eq!(scaled_dot([f64::MAX], [f64::MAX], 0.), 0.);
+        for a in -30_i128..=30 {
+            for b in -30_i128..=30 {
+                let expected = (a * b - (a + 1) * (b - 1)) * 17;
+                assert_eq!(
+                    scaled_dot([a as f64, -(a + 1) as f64], [b as f64, (b - 1) as f64], 17.),
+                    expected as f64
+                );
+            }
+        }
+    }
 
     #[test]
     fn half_dot_applies_scaling_before_final_overflow_and_underflow_rounding() {

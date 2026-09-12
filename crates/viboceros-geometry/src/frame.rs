@@ -168,6 +168,38 @@ impl Frame3 {
         Ok(coordinates)
     }
 
+    /// Scales frame coordinates before rounding, without requiring the unscaled
+    /// displacement or projection to fit in binary64. Products and cancellation
+    /// are accumulated exactly; only the final coordinates are rounded.
+    /// A nonzero unscaled coordinate that rounds to zero after nonzero scaling
+    /// is rejected rather than silently collapsed.
+    pub fn scaled_coordinates_of(
+        self,
+        point: Point3,
+        scale: f64,
+    ) -> Result<[f64; 3], GeometryError> {
+        crate::require_finite([scale], "frame coordinate scale")?;
+        let coordinates = self.axes().map(|axis| {
+            axis.as_vector()
+                .scaled_dot_point_difference(point, self.origin, scale)
+        });
+        crate::require_finite(coordinates, "scaled frame coordinates")?;
+        if scale != 0.
+            && self
+                .axes()
+                .into_iter()
+                .zip(coordinates)
+                .any(|(axis, value)| {
+                    value == 0. && axis.as_vector().dot_point_difference(point, self.origin) != 0.
+                })
+        {
+            return Err(GeometryError::Degenerate {
+                context: "scaled frame coordinate underflow",
+            });
+        }
+        Ok(coordinates)
+    }
+
     /// Evaluates finite local coordinates without forming huge world-space axes.
     pub fn point_at(self, coordinates: [f64; 3]) -> Result<Point3, GeometryError> {
         let coordinates = Vector3::try_from(coordinates)?;
@@ -194,6 +226,32 @@ impl Frame3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn scaled_frame_coordinates_convert_before_overflow_and_retain_cancellation() {
+        let frame = Frame3::try_from_x_and_normal(
+            point(-f64::MAX, -f64::MAX, 0.),
+            Vector3::try_new(1., 1., 0.).unwrap(),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let end = point(f64::MAX, f64::MAX, 1.);
+        assert!(frame.coordinates_of(end).is_err());
+        let result = frame.scaled_coordinates_of(end, 0.25).unwrap();
+        assert_eq!(
+            result,
+            [f64::MAX * frame.x_axis().as_vector().x(), 0., 0.25]
+        );
+        assert_eq!(frame.scaled_coordinates_of(end, 0.).unwrap(), [0.; 3]);
+        assert!(frame.scaled_coordinates_of(end, f64::NAN).is_err());
+        let origin_frame = frame.with_origin(point(0., 0., 0.));
+        assert!(
+            origin_frame
+                .scaled_coordinates_of(point(0., 0., f64::from_bits(1)), 0.5)
+                .is_err()
+        );
+    }
 
     #[test]
     fn frame_point_evaluation_combines_translation_before_overflow_validation() {

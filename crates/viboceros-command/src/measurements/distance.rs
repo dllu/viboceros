@@ -64,7 +64,30 @@ impl Command for DistanceCommand {
         } else {
             1.
         };
-        let distance = start.distance_to(end)?;
+        let distance = match start.distance_to(end) {
+            Ok(distance) => distance,
+            Err(_) if scale < 1. => {
+                let local = context
+                    .construction_plane
+                    .with_origin(start)
+                    .scaled_coordinates_of(end, scale)?;
+                let world = CommandContext::default()
+                    .construction_plane
+                    .with_origin(start)
+                    .scaled_coordinates_of(end, scale)?;
+                let distance = viboceros_geometry::Vector3::try_from(world)?.length()?;
+                return Ok(format!(
+                    "{}\n{}\nDistance = {}{}",
+                    describe_scaled("CPlane", local, 1.)?,
+                    describe_scaled("World", world, 1.)?,
+                    format_measurement(distance),
+                    target
+                        .map(|units| format!(" {}", units.name()))
+                        .unwrap_or_default(),
+                ));
+            }
+            Err(error) => return Err(error.into()),
+        };
         // Project the displacement directly. Subtracting two coordinates
         // measured from a remote CPlane origin would lose small differences.
         let local = context
@@ -136,6 +159,23 @@ mod tests {
     use super::*;
     use crate::CommandRegistry;
     use viboceros_geometry::{Frame3, Point3, Vector3};
+
+    #[test]
+    fn display_conversion_precedes_source_distance_overflow() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let before = format!("{document:?}");
+        for input in [
+            "Distance -1e308,0 1e308,0 Units=km",
+            "Distance 0,0,0 1.2e308,1.6e308,0 Units=km",
+        ] {
+            let report = registry.execute(&mut document, input).unwrap();
+            let fields: Vec<_> = report.lines().last().unwrap().split_whitespace().collect();
+            let distance: f64 = fields[2].parse().unwrap();
+            assert!((distance / 2e302 - 1.).abs() < 3e-16, "{report}");
+            assert_eq!(format!("{document:?}"), before);
+        }
+    }
 
     #[test]
     fn display_units_scale_only_reported_lengths_and_preserve_history() {

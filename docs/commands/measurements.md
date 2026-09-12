@@ -22,8 +22,10 @@ angles and the document's unit setting unchanged. Custom physical source units
 are supported; unitless/unset sources or targets, overflowing results, and
 nonzero values that underflow to zero are rejected. Omit the option to report
 unchanged document coordinates, including unitless models. The override is
-applied after measurement, so distances and deltas must first be representable
-in document coordinates even when the requested display units would shrink them.
+normally applied after measurement. If the source-unit distance overflows and
+the requested conversion reduces magnitude, an exact scaled-projection fallback
+converts before rounding and measures the finite display-space displacement.
+Tests cover overflowing coordinate differences and overflowing norms separately.
 The override is
 currently available in the complete typed command, not during point picking.
 Nesting a measurement inside another command's numeric prompt is not implemented.

@@ -99,6 +99,27 @@ impl Vector3 {
         )
     }
 
+    pub(crate) fn scaled_dot_point_difference(
+        self,
+        end: crate::Point3,
+        start: crate::Point3,
+        scale: Real,
+    ) -> Real {
+        let [x, y, z] = self.to_array();
+        exact_dot::scaled_dot(
+            [
+                end.x(),
+                end.y(),
+                end.z(),
+                -start.x(),
+                -start.y(),
+                -start.z(),
+            ],
+            [x, y, z, x, y, z],
+            scale,
+        )
+    }
+
     pub fn cross(self, other: Self) -> Result<Self, GeometryError> {
         // Each determinant chooses its own fast or exact path. No normalization
         // of unrelated coordinates can erase a component's small remainder.
