@@ -14298,21 +14298,17 @@ impl Command for CollapseMeshEdgeCommand {
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
         let collapsed_edge_count = plans.len();
-        let deleted_mesh_count = plans
-            .iter()
-            .filter(|(_, remainder)| remainder.is_none())
-            .count();
-        let changed_mesh_count =
-            document.replace_object_geometries(plans.iter().filter_map(|(id, remainder)| {
-                remainder
-                    .as_ref()
-                    .map(|mesh| (*id, Geometry::Mesh(mesh.clone())))
-            }))?;
+        let mut replacements = Vec::new();
+        let mut deleted = Vec::new();
         for (id, remainder) in plans {
-            if remainder.is_none() {
-                document.delete_object(id)?;
+            if let Some(mesh) = remainder {
+                replacements.push((id, Geometry::Mesh(mesh)));
+            } else {
+                deleted.push(id);
             }
         }
+        let changed_mesh_count = document.replace_object_geometries(replacements)?;
+        let deleted_mesh_count = document.delete_objects(deleted)?;
         Ok(format!(
             "Collapsed {collapsed_edge_count} mesh edge(s) in {} mesh(es); deleted {deleted_mesh_count} empty mesh(es)",
             changed_mesh_count + deleted_mesh_count

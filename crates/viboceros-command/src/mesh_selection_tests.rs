@@ -1,6 +1,60 @@
 use super::*;
 
 #[test]
+fn collapse_mixed_replacements_and_deletions_replays_exactly() {
+    let mut document = Document::default();
+    let registry = CommandRegistry::with_builtins();
+    let vertices = [[0., 0., 0.], [2., 0., 0.], [0., 2., 0.], [0., 0., 2.]]
+        .map(|p| Point3::try_from(p).unwrap())
+        .to_vec();
+    let mut ids = Vec::new();
+    for solid in [false, true, false] {
+        let faces = if solid {
+            vec![[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3]]
+        } else {
+            vec![[0, 1, 2]]
+        };
+        let mesh = TriangleMesh::try_new(vertices.clone(), faces, document.tolerance()).unwrap();
+        ids.push(document.add_geometry(Geometry::Mesh(mesh)).unwrap());
+        document
+            .add_geometry(Geometry::Point(Point3::try_new(99., 99., 99.).unwrap()))
+            .unwrap();
+    }
+    let group = document.add_group(None, ids.iter().copied()).unwrap();
+    document
+        .select_objects_direct(ids.iter().copied(), SelectionMode::Replace)
+        .unwrap();
+    let before = document.objects().cloned().collect::<Vec<_>>();
+    let groups = document.groups().cloned().collect::<Vec<_>>();
+    assert_eq!(
+        registry
+            .execute(&mut document, "CollapseMeshEdge Edge=0")
+            .unwrap(),
+        "Collapsed 3 mesh edge(s) in 3 mesh(es); deleted 2 empty mesh(es)"
+    );
+    assert!(document.object(ids[0]).is_none());
+    assert!(document.object(ids[2]).is_none());
+    let Geometry::Mesh(mesh) = document.object(ids[1]).unwrap().geometry() else {
+        panic!("mesh expected")
+    };
+    assert_eq!(mesh.face_count(), 2);
+    assert_eq!(
+        document.group(group).unwrap().members().collect::<Vec<_>>(),
+        [ids[1]]
+    );
+    assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [ids[1]]);
+    let after = document.objects().cloned().collect::<Vec<_>>();
+    let after_groups = document.groups().cloned().collect::<Vec<_>>();
+    registry.execute(&mut document, "Undo").unwrap();
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    assert_eq!(document.groups().cloned().collect::<Vec<_>>(), groups);
+    registry.execute(&mut document, "Redo").unwrap();
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
+    assert_eq!(document.groups().cloned().collect::<Vec<_>>(), after_groups);
+    assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [ids[1]]);
+}
+
+#[test]
 fn mesh_staging_retains_action_order_group_peers_and_read_only_failures() {
     let mut document = Document::default();
     let ids = (0..20)
