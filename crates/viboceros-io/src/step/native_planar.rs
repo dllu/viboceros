@@ -4,11 +4,13 @@ use monstertruck::meshing::prelude::ParametricSurface;
 use monstertruck::step::load::step_geometry::{Curve2D, Curve3D, ElementarySurface, Surface};
 use std::io::Read;
 use viboceros_geometry::{
-    Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex,
-    NurbsCurve, NurbsCurve2, NurbsSurface, Point2, Point3, SurfaceIso, Tolerance,
+    AffineTransform3, Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType,
+    BrepVertex, LengthUnitSystem, NurbsCurve, NurbsCurve2, NurbsSurface, Point2, Point3,
+    SurfaceIso, Tolerance,
 };
 
-/// An editable planar shell definition, before assembly placement or unit conversion.
+/// An editable planar shell definition, before assembly placement.
+/// Coordinates are source units or the explicit target units of the reader used.
 #[derive(Clone, Debug, PartialEq)]
 pub struct StepPlanarShell {
     pub source_shell_id: u64,
@@ -26,6 +28,35 @@ pub fn read_step_planar_shells<R: Read>(
     let data = read_data_section(reader)?;
     let table = Table::from_data_section(&data);
     drop(data);
+    convert_table(&table, tolerance)
+}
+
+/// Reads supported planar shell definitions in explicit target units.
+/// Tolerance is in target units. Mixed/missing file units and invalid targets
+/// are rejected; UV trims stay in the source surface parameterization.
+/// A unitless target preserves source coordinates, matching the mesh reader.
+/// Assembly instances and oriented-shell wrappers are not expanded.
+pub fn read_step_planar_shells_in_units<R: Read>(
+    reader: R,
+    target: &LengthUnitSystem,
+    tolerance: Tolerance,
+) -> Result<Vec<StepPlanarShell>, StepError> {
+    let data = read_data_section(reader)?;
+    let (scale, source_tolerance) = super::units::conversion_to_target(&data, target, tolerance)?;
+    let table = Table::from_data_section(&data);
+    drop(data);
+    let mut shells = convert_table(&table, source_tolerance)?;
+    if scale != 1.0 {
+        let transform =
+            AffineTransform3::try_uniform_scale(Point3::try_new(0.0, 0.0, 0.0)?, scale)?;
+        for shell in &mut shells {
+            shell.brep = shell.brep.transformed(transform, tolerance)?;
+        }
+    }
+    Ok(shells)
+}
+
+fn convert_table(table: &Table, tolerance: Tolerance) -> Result<Vec<StepPlanarShell>, StepError> {
     let mut ids = table.shell.keys().copied().collect::<Vec<_>>();
     ids.sort_unstable();
     if ids.is_empty() {
@@ -34,7 +65,7 @@ pub fn read_step_planar_shells<R: Read>(
     let mut output = Vec::new();
     for id in ids {
         let unsupported = |reason| StepError::UnsupportedPlanarShell { shell: id, reason };
-        let (shell, report) = reported_trimmed_shell(&table, id)?;
+        let (shell, report) = reported_trimmed_shell(table, id)?;
         if report.total_lost() != 0 {
             return Err(unsupported("source shell has topology losses"));
         }

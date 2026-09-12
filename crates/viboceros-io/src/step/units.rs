@@ -4,6 +4,25 @@ use monstertruck::step::load::step_p21::ast::{
     DataSection, EntityInstance, Name, Parameter, Record,
 };
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
+use viboceros_geometry::{LengthUnitSystem, Tolerance};
+
+pub(super) fn conversion_to_target(
+    data: &DataSection,
+    target: &LengthUnitSystem,
+    tolerance: Tolerance,
+) -> Result<(f64, Tolerance), StepError> {
+    let source = LengthUnitSystem::Custom {
+        name: "STEP file units".into(),
+        meters_per_unit: uniform_meters_per_unit(data)?,
+    };
+    let scale = source.scale_to(target)?;
+    let source_tolerance = Tolerance::try_new(
+        tolerance.absolute() / scale,
+        tolerance.relative(),
+        tolerance.angular(),
+    )?;
+    Ok((scale, source_tolerance))
+}
 
 fn invalid(message: &str) -> StepError {
     StepError::InvalidLengthUnits(message.into())

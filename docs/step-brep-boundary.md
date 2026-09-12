@@ -23,6 +23,21 @@ This API does not expand assembly instances, apply oriented-shell wrappers, or
 convert length units; its tolerance is in source units. It is a conversion
 building block, not a replacement for the existing assembly-aware importer.
 
+`read_step_planar_shells_in_units(reader, &target_units, tolerance)` additionally
+resolves uniform file length units and returns native geometry in the requested
+target units. Its tolerance is expressed in target units; source validation uses
+the corresponding source tolerance. The geometry transform scales vertices,
+shared edge curves, surface control points, and model-space tolerances, while
+preserving UV trims and face sense. Assembly expansion and oriented-shell wrappers
+remain outside this API.
+
+Both mesh and native unit-aware readers share unit resolution and tolerance
+conversion. Missing, mixed, cyclic, or invalid file units and invalid targets
+fail before conversion. A unitless target preserves source coordinates, matching
+the common `LengthUnitSystem` policy; unset is an error. Tests check millimetres,
+centimetres, metres, kilometres, and microns, including quadratic area scaling,
+cubic volume scaling, identical UV loops, and unitless/error behavior.
+
 The supported subset has planar surfaces, one outer loop per face, straight
 3D edges (including two-control-point degree-one B-splines and linear leaders
 of plane/plane intersections), and line UV trims. Plane control rectangles

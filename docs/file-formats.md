@@ -201,8 +201,9 @@ existing destination unchanged. The low-level
 their `_in_units` counterparts accept explicit source units and tolerance.
 General editable STEP B-rep interchange is not implemented yet. The low-level
 `read_step_planar_shells` API converts supported planar source shell definitions
-to validated native B-reps without tessellation; it does not yet provide assembly
-placement, unit conversion, or document integration. `ImportStep` still imports meshes.
+to validated native B-reps without tessellation; its `_in_units` counterpart
+converts uniform file units into explicit target units. Neither provides assembly
+placement or document integration yet. `ImportStep` still imports meshes.
 The [native B-rep conversion boundary](step-brep-boundary.md) records the retained
 source topology/trim evidence and the representation work still required.
 

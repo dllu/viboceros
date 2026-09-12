@@ -3,6 +3,90 @@ use std::io::Cursor;
 use super::*;
 
 #[test]
+fn native_planar_unit_conversion_scales_geometry_but_preserves_uv_trims() {
+    let text = cube_step();
+    let source = read_step_planar_shells(Cursor::new(&text), Tolerance::DEFAULT).unwrap();
+    for (target, scale) in [
+        (LengthUnitSystem::Millimeters, 1.0),
+        (LengthUnitSystem::Centimeters, 0.1),
+        (LengthUnitSystem::Meters, 0.001),
+        (LengthUnitSystem::Kilometers, 1e-6),
+        (LengthUnitSystem::Microns, 1000.0),
+    ] {
+        let converted =
+            read_step_planar_shells_in_units(Cursor::new(&text), &target, Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(converted.len(), 1);
+        assert_eq!(converted[0].source_shell_id, source[0].source_shell_id);
+        let actual = &converted[0].brep;
+        let original = &source[0].brep;
+        assert_eq!(
+            (
+                actual.vertices().len(),
+                actual.edges().len(),
+                actual.faces().len()
+            ),
+            (8, 12, 6)
+        );
+        for (vertex, old) in actual.vertices().iter().zip(original.vertices()) {
+            let expected = old.point().to_array().map(|coordinate| coordinate * scale);
+            for (coordinate, expected) in vertex.point().to_array().into_iter().zip(expected) {
+                assert!((coordinate - expected).abs() <= expected.abs() * 1e-12);
+            }
+        }
+        for (face, old) in actual.faces().iter().zip(original.faces()) {
+            assert_eq!(face.loops(), old.loops());
+            assert_eq!(face.is_reversed(), old.is_reversed());
+        }
+        assert!(
+            (actual.area(Tolerance::DEFAULT).unwrap() / (286.0 * scale * scale) - 1.0).abs()
+                < 1e-10
+        );
+        assert!(
+            (actual.signed_volume(Tolerance::DEFAULT).unwrap() / (315.0 * scale * scale * scale)
+                - 1.0)
+                .abs()
+                < 1e-10
+        );
+    }
+}
+
+#[test]
+fn native_planar_unit_reader_rejects_missing_or_invalid_units_and_preserves_unitless_coordinates() {
+    let text = cube_step();
+    for target in [
+        LengthUnitSystem::Unset,
+        LengthUnitSystem::Custom {
+            name: "invalid".into(),
+            meters_per_unit: f64::NAN,
+        },
+    ] {
+        assert!(matches!(
+            read_step_planar_shells_in_units(Cursor::new(&text), &target, Tolerance::DEFAULT),
+            Err(StepError::Units(_))
+        ));
+    }
+    assert_eq!(
+        read_step_planar_shells_in_units(
+            Cursor::new(&text),
+            &LengthUnitSystem::None,
+            Tolerance::DEFAULT
+        )
+        .unwrap(),
+        read_step_planar_shells(Cursor::new(&text), Tolerance::DEFAULT).unwrap(),
+    );
+    let missing = text.replace("SI_UNIT(.MILLI.,.METRE.)", "SI_UNIT($,.RADIAN.)");
+    assert!(matches!(
+        read_step_planar_shells_in_units(
+            Cursor::new(missing),
+            &LengthUnitSystem::Millimeters,
+            Tolerance::DEFAULT
+        ),
+        Err(StepError::InvalidLengthUnits(_))
+    ));
+}
+
+#[test]
 fn native_planar_reader_preserves_cube_brep_geometry_without_tessellation() {
     let shells = read_step_planar_shells(Cursor::new(cube_step()), Tolerance::DEFAULT).unwrap();
     assert_eq!(shells.len(), 1);

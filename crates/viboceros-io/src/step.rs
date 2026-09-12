@@ -7,7 +7,9 @@ mod export_plane;
 pub use export::{write_step, write_step_file, write_step_file_in_units, write_step_in_units};
 mod native_planar;
 mod units;
-pub use native_planar::{StepPlanarShell, read_step_planar_shells};
+pub use native_planar::{
+    StepPlanarShell, read_step_planar_shells, read_step_planar_shells_in_units,
+};
 
 use monstertruck::core::cgmath64::{Matrix4, SquareMatrix, Transform};
 use monstertruck::meshing::prelude::{
@@ -164,16 +166,7 @@ pub fn read_step_in_units<R: Read>(
     tolerance: Tolerance,
 ) -> Result<StepImport, StepError> {
     let data = read_data_section(reader)?;
-    let source = LengthUnitSystem::Custom {
-        name: "STEP file units".into(),
-        meters_per_unit: units::uniform_meters_per_unit(&data)?,
-    };
-    let scale = source.scale_to(target)?;
-    let source_tolerance = Tolerance::try_new(
-        tolerance.absolute() / scale,
-        tolerance.relative(),
-        tolerance.angular(),
-    )?;
+    let (scale, source_tolerance) = units::conversion_to_target(&data, target, tolerance)?;
     let table = Table::from_data_section(&data);
     // The table owns its geometry. Do not retain a second parsed copy of a
     // potentially large STEP file while tessellating its shapes.
