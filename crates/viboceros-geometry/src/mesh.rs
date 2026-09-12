@@ -1,3 +1,5 @@
+#[cfg(test)]
+mod area_tests;
 mod components;
 mod normals;
 #[cfg(test)]
@@ -3896,7 +3898,7 @@ impl TriangleMesh {
                 .expect("a validated mesh has valid triangle indices");
             let first = points[0].vector_to(points[1])?;
             let second = points[0].vector_to(points[2])?;
-            let area = first.cross(second)?.length()? * 0.5;
+            let area = first.half_cross_length(second)?;
             require_finite([area], "mesh face area")?;
             let next = sum + area;
             if sum.abs() >= area.abs() {

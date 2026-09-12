@@ -10,6 +10,15 @@ const LIMBS: usize = 66;
 use crate::binary_accumulator::{add_product, decompose, finish};
 
 pub(super) fn dot<const N: usize>(left: [f64; N], right: [f64; N]) -> f64 {
+    dot_with_quantum::<N, 2148>(left, right)
+}
+
+/// Divide the exact sum by two before rounding, including at overflow boundaries.
+pub(super) fn half_dot<const N: usize>(left: [f64; N], right: [f64; N]) -> f64 {
+    dot_with_quantum::<N, 2149>(left, right)
+}
+
+fn dot_with_quantum<const N: usize, const QUANTUM: usize>(left: [f64; N], right: [f64; N]) -> f64 {
     assert!(N <= 6, "exact dot accumulator capacity");
     let mut positive = [0; LIMBS];
     let mut negative = [0; LIMBS];
@@ -24,12 +33,27 @@ pub(super) fn dot<const N: usize>(left: [f64; N], right: [f64; N]) -> f64 {
         };
         add_product(target, product, a_shift + b_shift);
     }
-    finish::<LIMBS, 2148>(positive, negative)
+    finish::<LIMBS, QUANTUM>(positive, negative)
 }
 
 #[cfg(test)]
 mod tests {
     use super::dot;
+
+    #[test]
+    fn half_dot_applies_scaling_before_final_overflow_and_underflow_rounding() {
+        let huge = 2.0f64.powi(512);
+        assert_eq!(super::half_dot([huge], [huge]), 2.0f64.powi(1023));
+        assert_eq!(super::half_dot([huge, -huge], [huge, huge]), 0.0);
+        let tiny = f64::from_bits(1);
+        assert_eq!(super::half_dot([tiny], [1.0]), 0.0);
+        assert_eq!(super::half_dot([tiny, tiny], [1.0, 1.0]), tiny);
+        assert_eq!(
+            super::half_dot([tiny, tiny, tiny], [1.0; 3]),
+            f64::from_bits(2)
+        );
+        assert_eq!(super::half_dot([f64::MAX], [4.0]), f64::INFINITY);
+    }
 
     #[test]
     fn six_products_preserve_cancellation_and_integer_sums() {

@@ -116,6 +116,23 @@ impl Vector3 {
         Self::try_new(self.x() * scale, self.y() * scale, self.z() * scale)
     }
 
+    /// Half the cross-product magnitude, without requiring the full magnitude
+    /// or its components to fit in binary64. Ordinary inputs stay on the fast path.
+    pub(crate) fn half_cross_length(self, other: Self) -> Result<Real, GeometryError> {
+        if let Ok(length) = self.cross(other).and_then(Self::length) {
+            return Ok(length * 0.5);
+        }
+        let half_determinant =
+            |a: Real, b: Real, c: Real, d: Real| exact_dot::half_dot([a, -c], [b, d]);
+        let components = [
+            half_determinant(self.y(), other.z(), self.z(), other.y()),
+            half_determinant(self.z(), other.x(), self.x(), other.z()),
+            half_determinant(self.x(), other.y(), self.y(), other.x()),
+        ];
+        require_finite(components, "half cross product")?;
+        Self::try_from(components)?.length()
+    }
+
     pub fn normalized(self, tolerance: Tolerance) -> Result<UnitVector3, GeometryError> {
         let scale = self.x().abs().max(self.y().abs()).max(self.z().abs());
         if scale == 0.0 {

@@ -94,6 +94,11 @@ so finite, valid meshes do not require representable face areas to compute a
 direction. Analytic normal and angle-filter regressions cover uniform scales
 from `1e-200` through `1e200`, including reversed winding. These are numerical
 invariance tests, not claims of Rhino parity at extreme scales.
+Mesh area retains its compensated facet sum and ordinary cross-product fast
+path. If a facet's cross product or full magnitude overflows, an exact binary
+accumulator applies the half factor before rounding its components. Tests cover
+both intermediate-overflow paths, genuinely unrepresentable areas, and the
+smallest positive binary64 area; these are native numerical guarantees.
 The `split_disjoint_mesh` command module owns staged component results, fresh
 piece insertion, source deletion policy, attribute/group propagation, and selection.
 The separate `explode` command module owns multi-geometry decomposition staging,
