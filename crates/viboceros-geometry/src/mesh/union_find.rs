@@ -14,6 +14,8 @@ pub(super) fn union_faces(parents: &mut [usize], ranks: &mut [u8], first: usize,
         std::cmp::Ordering::Greater => parents[second_root] = first_root,
         std::cmp::Ordering::Equal => {
             parents[second_root] = first_root;
+            // A rank-r root represents at least 2^r indices. Thus valid
+            // usize-sized forests cannot exhaust the u8 rank range.
             ranks[first_root] += 1;
         }
     }

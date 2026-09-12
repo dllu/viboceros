@@ -11,6 +11,10 @@ unions use rank; raw-vertex unions explicitly retain the earliest or latest inde
 An independent label-partition reference checks all 69,905 union sequences of
 length zero through four on four indices, including repeated/self unions. Long
 chains in both directions verify complete compression without recursion.
+Rank-based unions are checked after every step of all four-operation sequences
+on four indices: component equivalence, unchanged ranks for redundant unions,
+strictly increasing parent ranks, and the `component_size >= 2^rank` bound.
+Balanced trees through 16,384 indices attain that bound before compression.
 Command selection, source retention, groups, and history belong to the command
 and document crates, not these geometry modules.
 
