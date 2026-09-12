@@ -67,14 +67,6 @@ impl TriangleMesh {
                 edge_use.raw_vertices[1] as usize,
             );
         }
-        let mut moved_vertices = self.vertices.clone();
-        for (raw_vertex, &topology_vertex) in data.topological_vertices.iter().enumerate() {
-            if topology_vertex == first_topology_vertex || topology_vertex == second_topology_vertex
-            {
-                moved_vertices[raw_vertex] = midpoint;
-            }
-        }
-
         let mut faces = Vec::with_capacity(self.faces.len());
         for face in self.faces.iter().copied() {
             let remapped = face.remapped(|raw| {
@@ -98,13 +90,22 @@ impl TriangleMesh {
         let retained_vertex_count = used.iter().filter(|&&retain| retain).count();
         let mut raw_remap = vec![0_u32; self.vertices.len()];
         let mut vertices = Vec::with_capacity(retained_vertex_count);
-        for (raw, (&point, retain)) in moved_vertices.iter().zip(used).enumerate() {
+        for (raw, (&point, retain)) in self.vertices.iter().zip(used).enumerate() {
             if !retain {
                 continue;
             }
             raw_remap[raw] =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
-            vertices.push(point);
+            let topology_vertex = data.topological_vertices[raw];
+            vertices.push(
+                if topology_vertex == first_topology_vertex
+                    || topology_vertex == second_topology_vertex
+                {
+                    midpoint
+                } else {
+                    point
+                },
+            );
         }
         let faces = faces
             .into_iter()

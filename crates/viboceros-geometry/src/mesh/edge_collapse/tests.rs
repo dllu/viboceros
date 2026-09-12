@@ -2,6 +2,45 @@ use super::*;
 use std::collections::BTreeSet;
 
 #[test]
+fn collapse_moves_retained_coincident_peers_without_merging_their_raw_vertices() {
+    let mesh = TriangleMesh::try_new(
+        vec![
+            point(99., 99., 0.),
+            point(0., 0., 0.),
+            point(2., 0., 0.),
+            point(0., 2., 0.),
+            point(0., 0., 0.),
+            point(-2., 1., 0.),
+            point(-2., -1., 0.),
+            point(2., 0., 0.),
+            point(4., -1., 0.),
+            point(4., 1., 0.),
+            point(0., 0., 0.),
+        ],
+        vec![[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let edge = topology_edge_index_between(&mesh, point(0., 0., 0.), point(2., 0., 0.));
+    let collapsed = mesh
+        .collapse_topology_edge(edge, Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        collapsed.vertices(),
+        &[
+            point(1., 0., 0.),
+            point(-2., 1., 0.),
+            point(-2., -1., 0.),
+            point(1., 0., 0.),
+            point(4., -1., 0.),
+            point(4., 1., 0.),
+        ]
+    );
+    assert_eq!(collapsed.triangles(), &[[0, 1, 2], [3, 4, 5]]);
+}
+
+#[test]
 fn face_reduction_matches_distinct_vertex_reference_for_every_index_pattern() {
     for count in [3, 4] {
         for mut code in 0..4usize.pow(count) {

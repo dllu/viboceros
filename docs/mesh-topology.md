@@ -52,6 +52,9 @@ endpoint merging, face reduction, compaction, and final validation. The common
 point-midpoint routine preserves constant subnormal offsets and handles signed
 rounding ties and large offsets. Surviving faces and compacted vertices retain
 source ordering; independent seam components remain distinct.
+Moved positions are computed while emitting retained vertices, without cloning
+and updating the entire source vertex array first. Coincident raw peers outside
+the selected edge still move to its midpoint but are not merged merely by position.
 
 Face reduction uses fixed-size index checks without per-quad collections.
 Index-degenerate triangles disappear; a single collapsed quad side produces a
