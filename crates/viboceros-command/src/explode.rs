@@ -46,13 +46,20 @@ impl Command for ExplodeCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         require_consumed(arguments, 0, "Explode")?;
+        let locked_layers = document
+            .layers()
+            .filter(|layer| layer.is_locked())
+            .map(|layer| layer.id())
+            .collect::<BTreeSet<_>>();
         let selected = document
             .selected_objects()
             .map(|object| {
                 (
                     object.id(),
-                    object.geometry().clone(),
-                    object.attributes().clone(),
+                    object.geometry(),
+                    object.attributes().is_visible()
+                        && !object.attributes().is_locked()
+                        && !locked_layers.contains(&object.attributes().layer_id()),
                 )
             })
             .collect::<Vec<_>>();
@@ -61,7 +68,7 @@ impl Command for ExplodeCommand {
         }
         let mut exploded = Vec::new();
         let mut output_count = 0_usize;
-        for (id, geometry, attributes) in &selected {
+        for (id, geometry, delete_source) in &selected {
             let parts = match geometry {
                 Geometry::PolyCurve(curve) => {
                     let mut parts = Vec::new();
@@ -113,7 +120,7 @@ impl Command for ExplodeCommand {
                 .checked_add(parts.output_count())
                 .filter(|count| *count <= MAX_SPAN_OUTPUT_OBJECTS)
                 .ok_or_else(|| too_many_span_outputs("Explode"))?;
-            exploded.push((*id, parts, attributes.clone()));
+            exploded.push((*id, parts, *delete_source));
         }
         if exploded.is_empty() {
             return Err(CommandError::NoExplodableObjects);
@@ -194,42 +201,27 @@ impl Command for ExplodeCommand {
                 | ExplodedParts::Surfaces(_) => 0,
             })
             .sum::<usize>();
-        let source_groups = exploded
-            .iter()
-            .map(|(source, _, _)| {
-                let groups = document
-                    .object(*source)
-                    .expect("validated source object")
-                    .group_ids()
-                    .to_vec();
-                (*source, groups)
-            })
-            .collect::<BTreeMap<_, _>>();
-
-        // Rhino consumes Explode's source selection before deleting its inputs.
-        document.select_objects_direct(exploded_ids.iter().copied(), SelectionMode::Remove)?;
-        let mut selected_result_ids = Vec::with_capacity(output_count);
-        for (source, parts, attributes) in exploded {
-            let geometries = parts.into_geometries();
-            let mut part_ids = Vec::with_capacity(geometries.len());
-            for geometry in geometries {
-                let id = document.add_geometry_with_attributes(geometry, attributes.clone())?;
-                part_ids.push(id);
-                selected_result_ids.push(id);
-            }
-            for group in &source_groups[&source] {
-                document.add_group_members(*group, part_ids.iter().copied())?;
-            }
-            document.delete_object(source)?;
-        }
-        // Command outputs do not expand selection to untouched group peers.
-        document.select_objects_direct(
-            unchanged_ids
-                .into_iter()
-                .chain(selected_result_ids.iter().copied()),
-            SelectionMode::Replace,
-        )?;
         let unchanged_count = selected.len() - exploded_ids.len();
+        let deleted_sources = exploded
+            .iter()
+            .filter(|(_, _, delete)| *delete)
+            .map(|(id, _, _)| *id)
+            .collect::<Vec<_>>();
+        let pieces = exploded.into_iter().flat_map(|(source, parts, _)| {
+            parts
+                .into_geometries()
+                .into_iter()
+                .map(move |geometry| (source, geometry))
+        });
+        // Copy while restricted sources remain selected/editable, then consume
+        // source selection before recording their deletion (Rhino's Explode
+        // history policy). Fresh pieces inherit attributes and ordered groups.
+        let selected_result_ids = document.copy_object_pieces_into_source_groups(pieces)?;
+        document.select_command_results(unchanged_ids.iter().copied())?;
+        document.delete_objects(deleted_sources)?;
+        // Retained restricted sources stay unselected, and overlapping groups
+        // must not pull untouched peers into the output selection.
+        document.select_command_results(unchanged_ids.into_iter().chain(selected_result_ids))?;
         let mut summaries = Vec::new();
         if polycurve_count > 0 {
             summaries.push(format!(

@@ -159,7 +159,10 @@ substituting this fixture name. Its checked-in observations record retained
 restricted sources as **unselected**, unlike SplitDisjointMesh. Python tests
 compare every recorded field between the two diagnostic sets, allowing only
 the command success field name and original-source selection difference.
-See the [known native Explode mismatch](commands/editing.md).
+The shared native test adapter in `mesh_decomposition_tests.rs` compares both
+commands against their respective recorded output sets; run
+`cargo test -p viboceros-command mesh_decomposition_tests`.
+See the [verified native Explode behavior and limits](commands/editing.md).
 
 `group_picking.json` is a dedicated, untimed three-line fixture: an idle-event
 worker returns control to Rhino's normal UI loop, then the host clicks projected

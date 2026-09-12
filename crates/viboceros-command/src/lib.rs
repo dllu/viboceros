@@ -29,6 +29,8 @@ pub use object_selection::{
     ObjectSelectionPrompt, ObjectSelectionWorkflow, SelectionToggle,
 };
 mod explode;
+#[cfg(test)]
+mod mesh_decomposition_tests;
 mod remembered;
 mod single_spans;
 mod split_disjoint_mesh;
