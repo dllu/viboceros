@@ -1,0 +1,43 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "lines-obtuse",
+      "value": {
+        "history": "Python Script ( ResetEngine ): _Angle\nAngle = 45.000"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "lines-reversed",
+      "value": {
+        "history": "Command: _Angle\nAngle = 45.000"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "planes-obtuse",
+      "value": {
+        "history": "Command: _Angle\nAngle = 45.000"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "planes-reversed",
+      "value": {
+        "history": "Command: _Angle\nAngle = 45.000"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "line-plane",
+      "value": {
+        "history": "Command: _Angle\nAngle = 45.000"
+      }
+    }
+  ]
+}

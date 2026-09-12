@@ -35,6 +35,25 @@ Kernel and command tests additionally cover analytic angles, small
 angles, direction magnitudes from `1e-300` through `1e300`, interactive rejection,
 and unchanged document/history state.
 
+Separate [object-mode captures](../angle-objects-rhino-reference.json) establish
+an implementation distinction for the still-unimplemented `TwoObjects` mode:
+two preselected lines whose directed angle is 135 degrees report 45 degrees;
+reversing one line still reports 45. Planar surfaces with opposed/acute normal
+orientations likewise both report 45. Thus the directed four-point formula must
+not be reused unchanged for these objects. A mixed line/plane case reports 45,
+but that symmetric input does not distinguish a normal angle from its complement.
+The preselection macro is simply `_Angle`: adding `_TwoObjects` after it becomes
+an unknown command because Rhino has already completed the measurement.
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/angle-objects-command.json --timeout 240
+```
+
+This oracle-only probe creates two temporary objects, deletes its owned objects,
+and restores prior selection even on failure. Mock tests cover partial
+construction and measurement failures. It does not yet enable object-mode
+measurement in Viboceros or establish general mixed-object semantics.
+
 ## Distance
 
 Enter `Distance 0,0,0 3,4,0`, or enter `Distance` and pick or type two points.

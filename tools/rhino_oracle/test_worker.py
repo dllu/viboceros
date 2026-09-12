@@ -11,6 +11,35 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_object_angle_probe_cleans_owned_objects_and_restores_selection(self):
+        for failure in (None, "construction", "measurement"):
+            with self.subTest(failure=failure):
+                table = SimpleNamespace(
+                    GetObjectList=lambda settings: [SimpleNamespace(Id="old", IsSelected=lambda _: True)],
+                    UnselectAll=Mock(), Select=Mock(), Delete=Mock(),
+                    AddLine=Mock(side_effect=["first", ValueError("construction")] if failure == "construction" else ["first", "second"]))
+                rhino = SimpleNamespace(
+                    RhinoDoc=SimpleNamespace(ActiveDoc=SimpleNamespace(Objects=table)),
+                    DocObjects=SimpleNamespace(ObjectEnumeratorSettings=lambda: SimpleNamespace()),
+                )
+                operation = {"objects": [{"kind": "line", "start": [0,0,0], "end": [1,0,0]}] * 2}
+                capture = Mock(side_effect=ValueError("measurement") if failure == "measurement" else None,
+                               return_value=({"history": "Angle = 0"}, 0))
+                with patch.object(self.worker, "Rhino", rhino), \
+                     patch.object(self.worker, "System", SimpleNamespace(Guid=SimpleNamespace(Empty="empty"))), \
+                     patch.object(self.worker, "_point", lambda value: value), \
+                     patch.object(self.worker, "_measurement_history", capture):
+                    if failure:
+                        with self.assertRaisesRegex(ValueError, failure):
+                            self.worker._angle_objects_command(operation)
+                    else:
+                        self.assertEqual(self.worker._angle_objects_command(operation), ({"history": "Angle = 0"}, 0))
+                self.assertEqual([call.args for call in table.Delete.call_args_list],
+                                 [("first", True)] if failure == "construction" else [("second", True), ("first", True)])
+                self.assertEqual(table.Select.call_args.args, ("old",))
+                self.assertEqual(table.UnselectAll.call_count, 2)
+                self.assertEqual(capture.call_count, int(failure != "construction"))
+
     def test_angle_probe_validates_point_count_before_shared_history_capture(self):
         operation = {"points": [[0,0,0], [1,0,0], [0,0,0], [0,1,0]]}
         with patch.object(self.worker, "_point_measurement_command", return_value=({"history": "Angle = 90"}, 0)) as capture:

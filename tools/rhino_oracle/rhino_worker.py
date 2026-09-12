@@ -2157,20 +2157,65 @@ def _point_measurement_command(name, points, operation):
     if not plane.IsValid:
         raise ValueError("invalid measurement construction plane")
     macro = "! _" + name + " " + " ".join("w" + _command_point(point) for point in points)
-    marker = "Viboceros measurement probe " + str(System.Guid.NewGuid())
     try:
         viewport.SetConstructionPlane(plane)
-        Rhino.RhinoApp.WriteLine(marker)
-        succeeded = bool(Rhino.RhinoApp.RunScript(macro, True))
-        parts = Rhino.RhinoApp.CommandHistoryWindowText.split(marker, 1)
-        if not succeeded or len(parts) != 2:
-            raise ValueError("measurement command failed or history marker was lost")
-        history = parts[1].strip()
-        if name + " =" not in history:
-            raise ValueError("measurement command produced no measurement: %s" % history[-3000:])
-        return {"history": history}, 0
+        return _measurement_history(name, macro)
     finally:
         viewport.SetConstructionPlane(original_plane)
+
+
+def _measurement_history(name, macro):
+    marker = "Viboceros measurement probe " + str(System.Guid.NewGuid())
+    Rhino.RhinoApp.WriteLine(marker)
+    succeeded = bool(Rhino.RhinoApp.RunScript(macro, True))
+    parts = Rhino.RhinoApp.CommandHistoryWindowText.split(marker, 1)
+    if not succeeded or len(parts) != 2:
+        raise ValueError("measurement command failed or history marker was lost: %s" %
+                         Rhino.RhinoApp.CommandHistoryWindowText[-3000:])
+    history = parts[1].strip()
+    if name + " =" not in history:
+        raise ValueError("measurement command produced no measurement: %s" % history[-3000:])
+    return {"history": history}, 0
+
+
+def _angle_objects_command(operation):
+    definitions = operation["objects"]
+    if len(definitions) != 2:
+        raise ValueError("object angle needs exactly two objects")
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    selected = [obj.Id for obj in document.Objects.GetObjectList(settings) if obj.IsSelected(False)]
+    owned = []
+    try:
+        document.Objects.UnselectAll()
+        for definition in definitions:
+            if definition["kind"] == "line":
+                object_id = document.Objects.AddLine(_point(definition["start"]), _point(definition["end"]))
+            elif definition["kind"] == "plane":
+                plane = Rhino.Geometry.Plane(_point(definition["origin"]), _vector(definition["normal"]))
+                if not plane.IsValid:
+                    raise ValueError("invalid angle plane")
+                surface = Rhino.Geometry.PlaneSurface(plane, Rhino.Geometry.Interval(0, 1), Rhino.Geometry.Interval(0, 1))
+                try:
+                    object_id = document.Objects.AddSurface(surface)
+                finally:
+                    surface.Dispose()
+            else:
+                raise ValueError("unsupported angle object kind")
+            if object_id == System.Guid.Empty:
+                raise ValueError("could not add angle object")
+            owned.append(object_id)
+            document.Objects.Select(object_id)
+        # Two preselected objects enter object mode automatically. Appending
+        # TwoObjects would be parsed as a new command after Angle completes.
+        return _measurement_history("Angle", "! _Angle")
+    finally:
+        for object_id in reversed(owned):
+            document.Objects.Delete(object_id, True)
+        document.Objects.UnselectAll()
+        for object_id in selected:
+            document.Objects.Select(object_id)
 
 
 def _curvature_command(operation, iterations, tolerance):
@@ -4459,6 +4504,8 @@ def _execute(operation, iterations, tolerance):
         return _distance_command(operation)
     if kind == "angle_command":
         return _angle_command(operation)
+    if kind == "angle_objects_command":
+        return _angle_objects_command(operation)
     if kind == "three_dm_curve_interchange":
         return _three_dm_curve_interchange(operation, iterations)
     if kind == "three_dm_brep_interchange":
