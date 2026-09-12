@@ -11,6 +11,16 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_angle_probe_validates_point_count_before_shared_history_capture(self):
+        operation = {"points": [[0,0,0], [1,0,0], [0,0,0], [0,1,0]]}
+        with patch.object(self.worker, "_point_measurement_command", return_value=({"history": "Angle = 90"}, 0)) as capture:
+            self.assertEqual(self.worker._angle_command(operation), ({"history": "Angle = 90"}, 0))
+            capture.assert_called_once_with("Angle", operation["points"], operation)
+            for count in [0, 1, 2, 3, 5]:
+                with self.assertRaisesRegex(ValueError, "four points"):
+                    self.worker._angle_command({"points": [[0,0,0]] * count})
+            self.assertEqual(capture.call_count, 1)
+
     def test_distance_probe_restores_plane_and_requires_new_measurement_output(self):
         for success, output, valid in [
             (True, "Distance = 5 millimeters", True),

@@ -1,0 +1,13 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"op":"angle_command","id":"parallel","points":[[0,0,0],[1,0,0],[4,5,6],[5,5,6]]},
+    {"op":"angle_command","id":"opposite","points":[[0,0,0],[1,0,0],[4,5,6],[3,5,6]]},
+    {"op":"angle_command","id":"right","points":[[0,0,0],[1,0,0],[4,5,6],[4,6,6]]},
+    {"op":"angle_command","id":"acute","points":[[0,0,0],[1,0,0],[0,0,0],[1,1,0]]},
+    {"op":"angle_command","id":"obtuse","points":[[0,0,0],[1,0,0],[0,0,0],[-1,1,0]]},
+    {"op":"angle_command","id":"spatial","points":[[0,0,0],[0,0,1],[0,0,0],[1,1,1]]},
+    {"op":"angle_command","id":"rotated-cplane","points":[[0,0,0],[0,0,1],[0,0,0],[1,1,1]],"origin":[10,-20,30],"x_axis":[0,1,0],"y_axis":[0,0,1]}
+  ]
+}

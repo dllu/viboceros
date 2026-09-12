@@ -2135,6 +2135,17 @@ def _curvature_marker(geometry, tolerance):
 
 
 def _distance_command(operation):
+    return _point_measurement_command("Distance", [operation["start"], operation["end"]], operation)
+
+
+def _angle_command(operation):
+    points = operation["points"]
+    if len(points) != 4:
+        raise ValueError("angle command requires four points")
+    return _point_measurement_command("Angle", points, operation)
+
+
+def _point_measurement_command(name, points, operation):
     """Capture public command output in the oracle-owned document, without geometry edits."""
     document = Rhino.RhinoDoc.ActiveDoc
     viewport = document.Views.ActiveView.ActiveViewport
@@ -2144,20 +2155,19 @@ def _distance_command(operation):
         _vector(operation.get("x_axis", [1, 0, 0])),
         _vector(operation.get("y_axis", [0, 1, 0])))
     if not plane.IsValid:
-        raise ValueError("invalid distance construction plane")
-    macro = "! _Distance w%s w%s" % (
-        _command_point(operation["start"]), _command_point(operation["end"]))
-    marker = "Viboceros distance probe " + str(System.Guid.NewGuid())
+        raise ValueError("invalid measurement construction plane")
+    macro = "! _" + name + " " + " ".join("w" + _command_point(point) for point in points)
+    marker = "Viboceros measurement probe " + str(System.Guid.NewGuid())
     try:
         viewport.SetConstructionPlane(plane)
         Rhino.RhinoApp.WriteLine(marker)
         succeeded = bool(Rhino.RhinoApp.RunScript(macro, True))
         parts = Rhino.RhinoApp.CommandHistoryWindowText.split(marker, 1)
         if not succeeded or len(parts) != 2:
-            raise ValueError("distance command failed or history marker was lost")
+            raise ValueError("measurement command failed or history marker was lost")
         history = parts[1].strip()
-        if "Distance =" not in history:
-            raise ValueError("distance command produced no measurement: %s" % history[-3000:])
+        if name + " =" not in history:
+            raise ValueError("measurement command produced no measurement: %s" % history[-3000:])
         return {"history": history}, 0
     finally:
         viewport.SetConstructionPlane(original_plane)
@@ -4447,6 +4457,8 @@ def _execute(operation, iterations, tolerance):
         return _curvature_command(operation, iterations, tolerance)
     if kind == "distance_command":
         return _distance_command(operation)
+    if kind == "angle_command":
+        return _angle_command(operation)
     if kind == "three_dm_curve_interchange":
         return _three_dm_curve_interchange(operation, iterations)
     if kind == "three_dm_brep_interchange":

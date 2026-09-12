@@ -18,8 +18,20 @@ lose; no document-distance tolerance is used to reject a nonzero direction.
 An invalid second or fourth picked point leaves its prompt active for correction.
 
 This implements the four-point workflow in [Rhino's Angle documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/angle.htm).
-`TwoObjects` and `SubCrv` are not implemented, and live Rhino output parity for
-this command has not yet been established. Tests cover analytic angles, small
+`TwoObjects` and `SubCrv` are not implemented. Seven live Rhino
+8.32.26160.13001 probes cover parallel, opposite, perpendicular, acute, obtuse,
+and spatial directions, including a rotated/translated CPlane. The
+[captured reports](../angle-rhino-reference.json) agree with native command
+results within Rhino's three-decimal display precision. The probes do not
+establish parity for degenerate inputs or extreme numeric ranges. Reproduce with:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/angle-command.json --timeout 240
+```
+
+The capture shares bounded command-history extraction and CPlane restoration
+with the Distance probe; it creates no geometry and reports no performance timing.
+Kernel and command tests additionally cover analytic angles, small
 angles, direction magnitudes from `1e-300` through `1e300`, interactive rejection,
 and unchanged document/history state.
 

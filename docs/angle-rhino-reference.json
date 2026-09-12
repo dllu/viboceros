@@ -1,0 +1,57 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "parallel",
+      "value": {
+        "history": "Python Script ( ResetEngine ): _Angle\nStart of first line ( TwoObjects ): w0,0,0\nEnd of first line: w1,0,0\nStart of second line: w4,5,6\nEnd of second line: w5,5,6\nAngle = 0.000"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "opposite",
+      "value": {
+        "history": "Command: _Angle\nStart of first line ( TwoObjects ): w0,0,0\nEnd of first line: w1,0,0\nStart of second line: w4,5,6\nEnd of second line: w3,5,6\nAngle = 180.000"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "right",
+      "value": {
+        "history": "Command: _Angle\nStart of first line ( TwoObjects ): w0,0,0\nEnd of first line: w1,0,0\nStart of second line: w4,5,6\nEnd of second line: w4,6,6\nAngle = 90.000"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "acute",
+      "value": {
+        "history": "Command: _Angle\nStart of first line ( TwoObjects ): w0,0,0\nEnd of first line: w1,0,0\nStart of second line: w0,0,0\nEnd of second line: w1,1,0\nAngle = 45.000"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "obtuse",
+      "value": {
+        "history": "Command: _Angle\nStart of first line ( TwoObjects ): w0,0,0\nEnd of first line: w1,0,0\nStart of second line: w0,0,0\nEnd of second line: w-1,1,0\nAngle = 135.000"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "spatial",
+      "value": {
+        "history": "Command: _Angle\nStart of first line ( TwoObjects ): w0,0,0\nEnd of first line: w0,0,1\nStart of second line: w0,0,0\nEnd of second line: w1,1,1\nAngle = 54.736"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "rotated-cplane",
+      "value": {
+        "history": "Command: _Angle\nStart of first line ( TwoObjects ): w0,0,0\nEnd of first line: w0,0,1\nStart of second line: w0,0,0\nEnd of second line: w1,1,1\nAngle = 54.736"
+      }
+    }
+  ]
+}
