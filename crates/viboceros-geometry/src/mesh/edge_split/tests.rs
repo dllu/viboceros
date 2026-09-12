@@ -1,6 +1,34 @@
 use super::*;
 
 #[test]
+fn compact_candidates_preserve_full_index_range_split_position_and_winding() {
+    assert!(std::mem::size_of::<SplitTriangle>() < std::mem::size_of::<([Option<u32>; 3], bool)>());
+    for first in [0, 1, u32::MAX] {
+        for second in [0, 1, u32::MAX] {
+            for forward in [false, true] {
+                for (position, expected) in [
+                    (SplitPosition::Middle, [Some(first), None, Some(second)]),
+                    (SplitPosition::Last, [Some(first), Some(second), None]),
+                ] {
+                    let candidate = SplitTriangle::new([first, second], position, forward);
+                    assert_eq!(candidate.canonical_vertices(), expected);
+                    let vertices = expected.map(|raw| raw.unwrap_or(7));
+                    let oriented = if forward {
+                        vertices
+                    } else {
+                        [vertices[0], vertices[2], vertices[1]]
+                    };
+                    assert_eq!(
+                        candidate.oriented_face(vertices),
+                        MeshFace::Triangle(oriented)
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
 fn interior_splits_preserve_planar_area_and_winding_for_every_side_and_seam() {
     for corners in [3, 4] {
         for upper_rotation in 0..corners {

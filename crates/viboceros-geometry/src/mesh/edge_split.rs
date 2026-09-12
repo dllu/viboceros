@@ -4,6 +4,45 @@ use super::*;
 #[cfg(test)]
 mod tests;
 
+#[derive(Clone, Copy)]
+enum SplitPosition {
+    Middle,
+    Last,
+}
+
+/// Every candidate contains two original vertices and exactly one split point.
+/// Retain canonical insertion order separately from final face winding.
+struct SplitTriangle {
+    raw_vertices: [u32; 2],
+    split_position: SplitPosition,
+    forward: bool,
+}
+
+impl SplitTriangle {
+    fn new(raw_vertices: [u32; 2], split_position: SplitPosition, forward: bool) -> Self {
+        Self {
+            raw_vertices,
+            split_position,
+            forward,
+        }
+    }
+
+    fn canonical_vertices(&self) -> [Option<u32>; 3] {
+        let [first, second] = self.raw_vertices.map(Some);
+        match self.split_position {
+            SplitPosition::Middle => [first, None, second],
+            SplitPosition::Last => [first, second, None],
+        }
+    }
+
+    fn oriented_face(&self, mut triangle: [u32; 3]) -> MeshFace {
+        if !self.forward {
+            triangle.swap(1, 2);
+        }
+        MeshFace::Triangle(triangle)
+    }
+}
+
 /// Each incident triangle produces two candidates, and each quad produces
 /// three, before endpoint-coincident candidates are removed.
 fn replacement_count(triangles: usize, quads: usize) -> Result<usize, GeometryError> {
@@ -95,7 +134,7 @@ impl TriangleMesh {
             .filter(|edge_use| matches!(self.faces[edge_use.face], MeshFace::Quad(_)))
             .count();
         let candidate_count = replacement_count(incidence.count - quad_count, quad_count)?;
-        let mut generated = Vec::<([Option<u32>; 3], bool)>::new();
+        let mut generated = Vec::<SplitTriangle>::new();
         generated
             .try_reserve_exact(candidate_count)
             .map_err(|_| GeometryError::TooManyMeshFaces)?;
@@ -107,8 +146,8 @@ impl TriangleMesh {
                 MeshFace::Triangle(indices) => {
                     let opposite = indices[(edge_use.side + 2) % 3];
                     generated.extend([
-                        ([Some(opposite), Some(from), None], edge_use.forward),
-                        ([Some(opposite), None, Some(to)], edge_use.forward),
+                        SplitTriangle::new([opposite, from], SplitPosition::Last, edge_use.forward),
+                        SplitTriangle::new([opposite, to], SplitPosition::Middle, edge_use.forward),
                     ]);
                 }
                 MeshFace::Quad(indices) => {
@@ -120,20 +159,30 @@ impl TriangleMesh {
                         (after_edge, before_edge)
                     };
                     generated.extend([
-                        (
-                            [Some(from_opposite), None, Some(to_opposite)],
+                        SplitTriangle::new(
+                            [from_opposite, to_opposite],
+                            SplitPosition::Middle,
                             edge_use.forward,
                         ),
-                        ([Some(from_opposite), Some(from), None], edge_use.forward),
-                        ([Some(to_opposite), None, Some(to)], edge_use.forward),
+                        SplitTriangle::new(
+                            [from_opposite, from],
+                            SplitPosition::Last,
+                            edge_use.forward,
+                        ),
+                        SplitTriangle::new(
+                            [to_opposite, to],
+                            SplitPosition::Middle,
+                            edge_use.forward,
+                        ),
                     ]);
                 }
             }
         }
         debug_assert_eq!(generated.len(), candidate_count);
-        generated.retain(|(vertices, _)| {
-            let [a, b, c] =
-                vertices.map(|raw| raw.map_or(split_point, |raw| self.vertices[raw as usize]));
+        generated.retain(|candidate| {
+            let [a, b, c] = candidate
+                .canonical_vertices()
+                .map(|raw| raw.map_or(split_point, |raw| self.vertices[raw as usize]));
             a != b && b != c && c != a
         });
 
@@ -155,9 +204,9 @@ impl TriangleMesh {
             }
         }
         if welded {
-            for (vertices, _) in &generated {
-                for raw in vertices.iter().flatten() {
-                    used[*raw as usize] = true;
+            for candidate in &generated {
+                for raw in candidate.raw_vertices {
+                    used[raw as usize] = true;
                 }
             }
         }
@@ -195,26 +244,21 @@ impl TriangleMesh {
             let split_vertex =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
             vertices.push(split_point);
-            faces.extend(generated.into_iter().map(|(canonical, forward)| {
-                let mut triangle =
-                    canonical.map(|raw| raw.map_or(split_vertex, |raw| raw_remap[raw as usize]));
-                if !forward {
-                    triangle.swap(1, 2);
-                }
-                MeshFace::Triangle(triangle)
+            faces.extend(generated.into_iter().map(|candidate| {
+                let triangle = candidate
+                    .canonical_vertices()
+                    .map(|raw| raw.map_or(split_vertex, |raw| raw_remap[raw as usize]));
+                candidate.oriented_face(triangle)
             }));
         } else {
-            for (canonical, forward) in generated {
+            for candidate in generated {
                 let mut triangle = [0_u32; 3];
-                for (target, raw) in triangle.iter_mut().zip(canonical) {
+                for (target, raw) in triangle.iter_mut().zip(candidate.canonical_vertices()) {
                     *target = u32::try_from(vertices.len())
                         .map_err(|_| GeometryError::TooManyMeshVertices)?;
                     vertices.push(raw.map_or(split_point, |raw| self.vertices[raw as usize]));
                 }
-                if !forward {
-                    triangle.swap(1, 2);
-                }
-                faces.push(MeshFace::Triangle(triangle));
+                faces.push(candidate.oriented_face(triangle));
             }
         }
         Ok(Some(Self::try_new_faces(vertices, faces, tolerance)?))

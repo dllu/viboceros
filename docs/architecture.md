@@ -115,6 +115,11 @@ staging still scale with the source; this is not an overall memory budget.
 Replacement staging checks `2 * incident_triangles + 3 * incident_quads` and
 reserves candidate storage fallibly before generating faces. Endpoint-coincident
 candidates are removed afterwards; final output counts use that filtered list.
+Each staged `SplitTriangle` stores two raw indices, a typed split-point position,
+and winding. This is smaller than three optional indices plus winding, preserves
+the full `u32` index range, and keeps canonical vertex insertion separate from
+final face orientation. A representation test covers both positions/windings;
+the 27-case Rhino replay checks exact output geometry and ordering.
 The edge-split module also contains the source-order, seam, endpoint, and invalid
 input regressions, alongside wide-integer staging/output sizing tests.
 A 450-case planar split matrix covers every triangle/quad side pairing, both
