@@ -4,7 +4,9 @@ use super::{Command, CommandError, geometry_curve_ref, require_consumed};
 use viboceros_document::{Document, Geometry};
 use viboceros_geometry::{FiniteSum, GeometryError, Real, Tolerance};
 
+mod angle;
 mod distance;
+pub(super) use angle::AngleCommand;
 #[cfg(test)]
 mod tests;
 pub(super) use distance::DistanceCommand;

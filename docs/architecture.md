@@ -108,6 +108,9 @@ separate nonnegative/signed policies. Its tests live beside the implementation.
 Its `distance` submodule handles read-only two-point distance, world/CPlane deltas,
 and angular reporting. The application supplies picked or typed points through
 the shared drafting path; neither implementation mutates document history.
+Its `angle` submodule owns the four-point Angle query and delegates direction
+comparison to `Vector3::angle_to`; its interactive adapter validates each
+direction endpoint before advancing the prompt.
 `curve/area` dispatches enclosed curve area to analytic formulas or the existing
 exact planar-face boundary integrator; temporary topology stays outside the document.
 

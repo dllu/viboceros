@@ -144,6 +144,9 @@ impl InteractiveScaleKind {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
+    Angle {
+        points: [Option<Point3>; 3],
+    },
     Point,
     Points,
     Line {
@@ -386,6 +389,7 @@ enum InteractiveCommand {
 impl InteractiveCommand {
     const fn name(self) -> &'static str {
         match self {
+            Self::Angle { .. } => "Angle",
             Self::Point => "Point",
             Self::Points => "Points",
             Self::Line { .. } => "Line",
@@ -457,6 +461,16 @@ impl InteractiveCommand {
 
     const fn prompt(self) -> &'static str {
         match self {
+            Self::Angle {
+                points: [None, _, _],
+            } => "Angle: pick the first direction's start (Esc cancels)",
+            Self::Angle {
+                points: [Some(_), None, _],
+            } => "Angle: pick the first direction's end (Esc cancels)",
+            Self::Angle {
+                points: [Some(_), Some(_), None],
+            } => "Angle: pick the second direction's start (Esc cancels)",
+            Self::Angle { .. } => "Angle: pick the second direction's end (Esc cancels)",
             Self::Point => "Point: pick a location in the viewport (Esc to cancel)",
             Self::Points => "Points: pick locations; Undo removes the last; Enter or Esc finishes",
             Self::Line { start: None } => {
@@ -900,6 +914,12 @@ impl InteractiveCommand {
 
     const fn anchor(self) -> Option<Point3> {
         match self {
+            Self::Angle {
+                points: [start, None, _],
+            } => start,
+            Self::Angle {
+                points: [_, Some(_), start],
+            } => start,
             Self::Point
             | Self::Points
             | Self::Line { start: None }
@@ -2781,6 +2801,7 @@ impl VibocerosApp {
                 return false;
             }
             match normalized.as_str() {
+                "angle" => InteractiveCommand::Angle { points: [None; 3] },
                 "point" | "pt" => InteractiveCommand::Point,
                 "points" => InteractiveCommand::Points,
                 "line" | "l" => InteractiveCommand::Line { start: None },
@@ -2923,6 +2944,35 @@ impl VibocerosApp {
             .drafting_plane
             .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane());
         match command {
+            InteractiveCommand::Angle { mut points } => {
+                let index = points.iter().position(Option::is_none).unwrap_or(3);
+                if index == 1 || index == 3 {
+                    let start = points[index - 1].unwrap();
+                    if let Err(error) = start
+                        .vector_to(point)
+                        .and_then(|vector| vector.normalized_nonzero())
+                    {
+                        self.push_log(format!("Error: {error}"));
+                        return false;
+                    }
+                }
+                if index < 3 {
+                    points[index] = Some(point);
+                    let next = InteractiveCommand::Angle { points };
+                    self.active_command = Some(next);
+                    self.push_log(next.prompt().to_owned());
+                } else {
+                    let [a, b, c] = points.map(Option::unwrap);
+                    self.active_command = None;
+                    self.execute_command(&format!(
+                        "Angle {} {} {} {}",
+                        format_model_point(a),
+                        format_model_point(b),
+                        format_model_point(c),
+                        format_model_point(point)
+                    ));
+                }
+            }
             InteractiveCommand::Points => return self.apply_points_point(point),
             InteractiveCommand::Point => {
                 self.active_command = None;
@@ -5273,6 +5323,7 @@ fn point_is_near_axis(
 
 #[cfg(test)]
 mod tests {
+    mod angle;
     mod bezier_selection;
     mod construction_plane;
     mod distance;

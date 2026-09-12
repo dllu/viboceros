@@ -21,7 +21,7 @@ Rhino's complete command set is still a work in progress.
 - [Object and group distribution](distribute.md)
 - [Splitting curves and surfaces](split.md)
 - [Extraction, measurement, and intersections](editing.md)
-- [Distance, length, area, and volume queries](measurements.md)
+- [Angle, distance, length, area, and volume queries](measurements.md)
 - [Selection, attributes, layers, and groups](document.md)
 - [Model units](units.md)
 - [Model tolerances](../tolerances.md)

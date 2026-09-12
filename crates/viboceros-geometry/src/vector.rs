@@ -171,6 +171,15 @@ impl Vector3 {
         self.normalized_with_scale(scale, scaled_length)
     }
 
+    /// Unsigned angle in radians in [0, pi] between nonzero finite directions.
+    /// Normalization prevents overflow, while atan2 retains small angles that
+    /// acos of a rounded dot product would collapse to zero.
+    pub fn angle_to(self, other: Self) -> Result<Real, GeometryError> {
+        let a = self.normalized_nonzero()?.as_vector();
+        let b = other.normalized_nonzero()?.as_vector();
+        Ok(a.cross(b)?.length()?.atan2(a.dot(b)?))
+    }
+
     /// Returns the direction of any mathematically non-zero finite vector.
     /// Geometry constructors should normally use [`Self::normalized`] so they
     /// honor model tolerance; this is for recomputing derived data from an
@@ -351,6 +360,41 @@ impl TryFrom<[Real; 3]> for Vector3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn direction_angles_retain_small_angles_and_ignore_vector_magnitude() {
+        for scale in [1e-300, 1., 1e300] {
+            let a = Vector3::try_new(scale, 0., 0.).unwrap();
+            for (coordinates, expected) in [
+                ([1., 0., 0.], 0.),
+                ([-1., 0., 0.], std::f64::consts::PI),
+                ([0., 0., 1.], std::f64::consts::FRAC_PI_2),
+                ([1., 1., 0.], std::f64::consts::FRAC_PI_4),
+                ([1., 1e-12, 0.], 1e-12_f64.atan()),
+            ] {
+                let b = Vector3::try_from(coordinates.map(|v| v * scale)).unwrap();
+                // The tiny Y component can be subnormal after scaling. Use
+                // the angle of the encoded input, not the unrounded product.
+                let expected = if coordinates[1] == 1e-12 {
+                    (b.y() / b.x()).atan()
+                } else {
+                    expected
+                };
+                let actual = a.angle_to(b).unwrap();
+                assert!(
+                    (actual - expected).abs() <= expected.abs() * 1e-14,
+                    "{scale}, {coordinates:?}: {actual}"
+                );
+                assert_eq!(actual, b.angle_to(a).unwrap());
+            }
+        }
+        assert!(
+            Vector3::try_new(0., 0., 0.)
+                .unwrap()
+                .angle_to(Vector3::try_new(1., 0., 0.).unwrap())
+                .is_err()
+        );
+    }
 
     #[test]
     fn translated_dot_retains_small_terms_before_origin_cancellation() {

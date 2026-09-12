@@ -1,6 +1,27 @@
-# Distance, Length, Area, and Volume
+# Angle, Distance, Length, Area, and Volume
 
 [Command index](README.md)
+
+## Angle
+
+Enter `Angle 0,0,0 1,0,0 4,5,6 4,6,6` to measure the angle between two
+directions, or enter `Angle` and pick/type the four endpoints in order. The
+result is an unsigned 3D angle in degrees in `[0,180]`, independent of CPlane
+orientation and the separation between the two lines. Reversing one direction
+changes the result to its supplement. The query does not alter geometry,
+selection, or model undo/redo. Esc cancels interactive input.
+
+Both directions must be nonzero and have representable coordinate differences.
+Normalization handles finite directions whose norms would overflow. The
+cross/dot `atan2` formula retains small angles that a rounded-dot `acos` would
+lose; no document-distance tolerance is used to reject a nonzero direction.
+An invalid second or fourth picked point leaves its prompt active for correction.
+
+This implements the four-point workflow in [Rhino's Angle documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/angle.htm).
+`TwoObjects` and `SubCrv` are not implemented, and live Rhino output parity for
+this command has not yet been established. Tests cover analytic angles, small
+angles, direction magnitudes from `1e-300` through `1e300`, interactive rejection,
+and unchanged document/history state.
 
 ## Distance
 
