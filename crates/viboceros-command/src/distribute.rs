@@ -3,8 +3,10 @@ use crate::{
     Command, CommandContext, CommandError, option_name_eq, parse_finite_real, parse_point,
 };
 use std::collections::BTreeMap;
+mod planner;
+use planner::offsets;
 use viboceros_document::{Document, GroupId, Object, ObjectId};
-use viboceros_geometry::{AffineTransform3, Frame3, GeometryError, Point3, Tolerance, Vector3};
+use viboceros_geometry::{AffineTransform3, Frame3, GeometryError, Point3, Tolerance};
 #[cfg(test)]
 mod tests;
 
@@ -242,68 +244,4 @@ fn units(document: &Document) -> Vec<Vec<&Object>> {
         result[slot].push(object);
     }
     result
-}
-
-fn offsets(
-    intervals: &[[f64; 2]],
-    mode: Mode,
-    explicit: Option<f64>,
-) -> Result<(Vec<f64>, f64), GeometryError> {
-    let center = |[a, b]: [f64; 2]| a.midpoint(b);
-    let count = intervals.len();
-    let divisor = (count - 1) as f64;
-    let spacing = explicit.unwrap_or_else(|| match mode {
-        Mode::Center => {
-            divided_difference(center(intervals[count - 1]), center(intervals[0]), divisor)
-        }
-        Mode::Gap => {
-            // Average existing gaps avoids subtracting two large total widths.
-            let mut sum = 0.;
-            let mut correction = 0.;
-            for pair in intervals.windows(2) {
-                let gap = divided_difference(pair[1][0], pair[0][1], divisor);
-                let adjusted = gap - correction;
-                let next = sum + adjusted;
-                correction = (next - sum) - adjusted;
-                sum = next;
-            }
-            sum
-        }
-    });
-    let mut offsets = vec![0.; count];
-    let mut next_min = intervals[0][1] + spacing;
-    for i in 1..count {
-        offsets[i] = match mode {
-            Mode::Center => spacing.mul_add(i as f64, center(intervals[0])) - center(intervals[i]),
-            Mode::Gap => next_min - intervals[i][0],
-        };
-        if mode == Mode::Gap && i + 1 < count {
-            // Advance from the translated far end rather than materializing
-            // an interval width, which may overflow for finite endpoints.
-            // The compensated sum also permits cancellation with spacing.
-            next_min = Vector3::try_new(intervals[i][1], offsets[i], spacing)?
-                .dot(Vector3::try_new(1., 1., 1.)?)?;
-        }
-    }
-    if explicit.is_none() {
-        offsets[count - 1] = 0.;
-    }
-    // Reuse the validated scalar/vector boundary; no nonfinite displacement
-    // is allowed to reach document geometry or to be hidden by a no-op.
-    Vector3::try_new(spacing, 0., 0.)?;
-    for value in &offsets {
-        Vector3::try_new(*value, 0., 0.)?;
-    }
-    Ok((offsets, spacing))
-}
-
-// Keep ordinary subtraction rounding, but scale first when the difference
-// alone overflows. Distribution has at least three units, so divisor >= 2.
-fn divided_difference(a: f64, b: f64, divisor: f64) -> f64 {
-    let difference = a - b;
-    if difference.is_finite() {
-        difference / divisor
-    } else {
-        a / divisor - b / divisor
-    }
 }

@@ -58,6 +58,10 @@ without partial geometry or an undo entry.
 
 The independent `viboceros-command::distribute` module shares the
 geometry-local `object_bounds` query with [BoundingBox](bounding-box.md).
+Its private `planner` submodule owns interval spacing and displacement
+calculation, with focused ordinary, overflow, and subnormal regression tests.
+It receives finite intervals in leading-edge order after command validation
+has established at least three units; it does not access the document.
 Translation precedes rotation, avoiding cancellation from a distant CPlane
 origin. It uses tight curve, surface, and retained trimmed-face bounds, not
 control nets or display meshes. Their existing [numerical limits](../trimmed-face-bounds.md)
