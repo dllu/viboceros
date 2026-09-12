@@ -113,6 +113,9 @@ Its `angle` submodule owns the four-point Angle query, using range-safe
 unoriented straight-curve/planar-surface angles. The interactive adapter validates
 each direction endpoint before advancing; `src/app/angle.rs` routes the initial
 `TwoObjects` option into the shared selection workflow.
+`curvature/radius` implements local Radius/Diameter reports and reuses Curvature's
+differential evaluation and marker construction rather than fitting circles or
+duplicating marker topology. The application supplies one selected-curve pick.
 `curve/area` dispatches enclosed curve area to analytic formulas or the existing
 exact planar-face boundary integrator; temporary topology stays outside the document.
 

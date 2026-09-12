@@ -263,6 +263,10 @@ enum InteractiveCommand {
     Curvature {
         mark: bool,
     },
+    Radius {
+        diameter: bool,
+        mark: bool,
+    },
     DupFaceBorder {
         output_on_current_layer: bool,
     },
@@ -418,6 +422,10 @@ impl InteractiveCommand {
             Self::SrfPt { .. } => "SrfPt",
             Self::ExtractSrf { .. } => "ExtractSrf",
             Self::Curvature { .. } => "Curvature",
+            Self::Radius {
+                diameter: false, ..
+            } => "Radius",
+            Self::Radius { diameter: true, .. } => "Diameter",
             Self::DupFaceBorder { .. } => "DupFaceBorder",
             Self::DupEdge { .. } => "DupEdge",
             Self::ExtractMeshFaces { .. } => "ExtractMeshFaces",
@@ -694,6 +702,12 @@ impl InteractiveCommand {
             Self::Curvature { .. } => {
                 "Curvature: pick a location on the selected curve or surface (Esc to cancel)"
             }
+            Self::Radius {
+                diameter: false, ..
+            } => "Radius: pick a location on a selected curve (Esc to cancel)",
+            Self::Radius { diameter: true, .. } => {
+                "Diameter: pick a location on a selected curve (Esc to cancel)"
+            }
             Self::DupFaceBorder { .. } => {
                 "DupFaceBorder: pick a face location on a selected surface or B-rep (Esc to cancel)"
             }
@@ -955,6 +969,7 @@ impl InteractiveCommand {
             }
             | Self::ExtractSrf { .. }
             | Self::Curvature { .. }
+            | Self::Radius { .. }
             | Self::DupFaceBorder { .. }
             | Self::DupEdge { .. }
             | Self::ExtractMeshFaces { .. }
@@ -2080,15 +2095,20 @@ impl VibocerosApp {
                 sweep_degrees,
                 delete_input,
             }
-        } else if normalized == "curvature" {
+        } else if matches!(normalized.as_str(), "curvature" | "radius" | "diameter") {
             let mut mark = false;
+            let mark_option = match normalized.as_str() {
+                "radius" => "MarkRadius",
+                "diameter" => "MarkDiameter",
+                _ => "MarkCurvature",
+            };
             for option in arguments {
                 let Some((name, value)) = option.split_once('=') else {
                     return false;
                 };
                 if !name
                     .trim_start_matches(['_', '-'])
-                    .eq_ignore_ascii_case("MarkCurvature")
+                    .eq_ignore_ascii_case(mark_option)
                 {
                     return false;
                 }
@@ -2100,7 +2120,14 @@ impl VibocerosApp {
                     return false;
                 };
             }
-            InteractiveCommand::Curvature { mark }
+            if normalized == "curvature" {
+                InteractiveCommand::Curvature { mark }
+            } else {
+                InteractiveCommand::Radius {
+                    diameter: normalized == "diameter",
+                    mark,
+                }
+            }
         } else if matches!(normalized.as_str(), "extractsrf" | "extractsurface") {
             let mut copy = false;
             let mut output_on_current_layer = false;
@@ -2886,6 +2913,7 @@ impl VibocerosApp {
                 | InteractiveCommand::ExtrudeCurveToPoint { .. }
                 | InteractiveCommand::ExtractSrf { .. }
                 | InteractiveCommand::Curvature { .. }
+                | InteractiveCommand::Radius { .. }
                 | InteractiveCommand::DupFaceBorder { .. }
                 | InteractiveCommand::DupEdge { .. }
                 | InteractiveCommand::ExtractMeshFaces { .. }
@@ -4071,6 +4099,15 @@ impl VibocerosApp {
                 self.active_command = None;
                 self.execute_command(&format!(
                     "Curvature MarkCurvature={} {}",
+                    if mark { "Yes" } else { "No" },
+                    format_model_point(point)
+                ));
+            }
+            InteractiveCommand::Radius { diameter, mark } => {
+                let name = if diameter { "Diameter" } else { "Radius" };
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "{name} Mark{name}={} {}",
                     if mark { "Yes" } else { "No" },
                     format_model_point(point)
                 ));
@@ -5346,6 +5383,7 @@ mod tests {
     mod point_grid;
     mod point_input;
     mod points;
+    mod radius;
     mod rhino_curve_prompt;
     mod single_span_selection;
     use super::*;
