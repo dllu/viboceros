@@ -38,7 +38,7 @@ undo/redo.
 `Explode` also borrows source geometry and batches source-derived pieces, then
 uses exact command-result selection. Unlike SplitDisjointMesh, it consumes the
 selection of retained restricted inputs; neither command expands output picks
-to untouched overlapping-group peers. Both match 13 recorded Rhino mesh cases.
+to untouched overlapping-group peers. Both match 16 recorded Rhino mesh cases.
 `CollapseMeshEdge` consumes staged results into owned replacements and one
 batch deletion for empty meshes, without cloning surviving results a second
 time. Mixed-outcome coverage checks unrelated object order, retained groups

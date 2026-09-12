@@ -76,11 +76,12 @@ existing group in its original membership order. Preselected outputs, including
 exploded point-cloud members, remain selected without selecting untouched group
 peers.
 
-**Verified mesh restriction behavior (Rhino 8.32, 2026-09-12):** 13 live
+**Verified mesh restriction behavior (Rhino 8.32, 2026-09-12):** 16 live
 [`mesh_explode_picking` cases](../oracle.md) cover object restrictions, layer
 restrictions, and overlapping groups. Rhino retains object-hidden/object-locked
 and layer-locked sources but deselects them; new pieces inherit attributes and
 ordered groups and remain selected. Hidden-layer-only sources are deleted.
+Connected sources, including locked peers, are not decomposed and stay selected.
 This differs from `SplitDisjointMesh`, which keeps retained sources selected.
 The native command now matches those recorded outputs exactly, including
 identity retention, coordinates, face counts, object/layer modes, ordered groups,
@@ -88,7 +89,9 @@ and selection. It borrows source geometry and batches source-derived copies
 before deselecting inputs and deleting ordinary sources. Two native undo/redo
 cycles additionally check exact objects, groups and selection membership.
 These mesh observations do not establish restricted-source behavior for curves,
-point clouds, or polysurfaces, nor Rhino undo/redo or document table order.
+point clouds, or polysurfaces, nor document table order. One locked-connected
+mixed case records actual Rhino Undo/Redo selection: the unchanged peer remains
+selected even though the restored exploded source is unselected.
 
 See [Length, Area, and Volume](measurements.md) for read-only measurement
 commands, supported geometry, and signed-volume behavior. The separate

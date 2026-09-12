@@ -128,7 +128,10 @@ def on_idle(sender, event):
                         for x, y in [(0,0), (2,0), (0,2), (0,4), (2,4), (0,6)]:
                             mesh.Vertices.Add(i*5+x, y, 0)
                         mesh.Faces.AddFace(0,1,2)
-                        mesh.Faces.AddFace(3,4,5)
+                        if i in operation.get('connected', []):
+                            mesh.Faces.AddFace(1,3,2)
+                        else:
+                            mesh.Faces.AddFace(3,4,5)
                         attributes.Name = 'source-%d' % i
                         state['ids'].append(document.Objects.AddMesh(mesh, attributes))
                     finally:
@@ -220,6 +223,17 @@ def on_idle(sender, event):
                         vertices=[[float(v.X), float(v.Y), float(v.Z)] for v in obj.Geometry.Vertices]))
                 value['outputs'] = sorted(records, key=lambda record: (record['source'], record['vertices']))
                 state['ids'] = live_ids  # Deleted source IDs need no cleanup.
+                if operation.get('history'):
+                    value['history_selection'] = []
+                    for command in ('_Undo', '_Redo'):
+                        if not Rhino.RhinoApp.RunScript(command, False):
+                            raise ValueError('mesh history command failed: ' + command)
+                        objects = list(document.Objects.GetObjectList(settings))
+                        state['ids'] = [obj.Id for obj in objects]
+                        value['history_selection'].append(sorted([
+                            dict(source=obj.Attributes.Name, original_identity=obj.Id in original_ids,
+                                 selected=bool(obj.IsSelected(False))) for obj in objects
+                        ], key=lambda record: (record['source'], record['original_identity'], record['selected'])))
             if operation.get('add_to_group_sources') is not None:
                 value['memberships'] = [[state['groups'].index(group) for group in (document.Objects.FindId(key).Attributes.GetGroupList() or [])] for key in ids]
             if operation.get('move'):

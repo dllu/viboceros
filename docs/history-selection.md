@@ -7,6 +7,16 @@ or changed object. Selection of unrelated objects remains untouched. Changes
 made to selection before Undo become the selection restored by Redo; replay does
 not force the command's original output selection back onto those objects.
 
+Replay cleanup preserves selected objects untouched by the entry, including
+restricted peers whose selectable companions have become unselected. Objects
+edited by the entry, and objects on layers changed by the entry, still undergo
+normal eligibility pruning. A live mixed-mesh probe confirms that a locked
+connected mesh remains selected through Explode undo/redo while the restored
+exploded source is unselected. SplitDisjointMesh restores that source selected.
+Successful transaction rollback restores its original selection snapshot without
+eligibility pruning, so rejecting a command cannot discard an unchanged locked
+peer or alter selection memories and the redo stack.
+
 The selection at the actual object edit matters:
 
 | Command | Source after Undo | Output after Redo |

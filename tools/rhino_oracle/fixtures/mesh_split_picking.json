@@ -188,6 +188,52 @@
       ],
       "seed": 2,
       "reverse_bridge": true
+    },
+    {
+      "op": "mesh_split_picking",
+      "id": "split-connected-0-false",
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 1,
+      "connected": [
+        0
+      ]
+    },
+    {
+      "op": "mesh_split_picking",
+      "id": "split-connected-1-false",
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 0,
+      "connected": [
+        1
+      ]
+    },
+    {
+      "op": "mesh_split_picking",
+      "id": "split-connected-0-true",
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ],
+      "seed": 1,
+      "connected": [
+        0
+      ],
+      "locked": [
+        0
+      ],
+      "history": true
     }
   ]
 }

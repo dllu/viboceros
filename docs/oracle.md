@@ -135,9 +135,10 @@ Older command comparisons made before this synchronization need revalidation.
 
 `mesh_split_picking.json` is a **Rhino-only diagnostic**, not yet a native compare
 operation. It uses the same owned-window idle-click mechanism with three disjoint
-meshes, then invokes the actual `SplitDisjointMesh` command. Thirteen cases cover
+meshes, then invokes the actual `SplitDisjointMesh` command. Sixteen cases cover
 ordinary and overlapping groups, ordered bridge memberships, hidden/locked
-objects, and hidden/locked layers. Run it with:
+objects, hidden/locked layers, and connected meshes mixed with splittable peers.
+Run it with:
 
 ```sh
 tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/mesh_split_picking.json --timeout 240
@@ -146,19 +147,22 @@ tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/mesh_split_
 The checked-in `tools/rhino_oracle/observations/mesh_split_picking.json` records
 Rhino 8.32.26160.13001 on 2026-09-12: source identity, selection, object mode,
 group memberships, layer modes, vertices and face counts, including untouched peers.
-A native command regression compares those 13 recorded output sets exactly;
+A native command regression compares those 16 recorded output sets exactly;
 see the [verified fields and remaining limits](commands/meshes.md). The oracle CLI
 still has no native `mesh_split_picking` operation; this is an offline observation
 comparison in `cargo test -p viboceros-command split_disjoint_mesh_matches_live`.
 Deleted sources are removed from cleanup tracking; surviving original and newly
 created mesh IDs are explicitly tracked and cleaned up in the private document.
 
-`mesh_explode_picking.json` is another Rhino-only diagnostic, using the same 13
+`mesh_explode_picking.json` is another Rhino-only diagnostic, using the same 16
 mesh setups but invoking `Explode`. Run it with the preceding `rhino` command,
 substituting this fixture name. Its checked-in observations record retained
-restricted sources as **unselected**, unlike SplitDisjointMesh. Python tests
-compare every recorded field between the two diagnostic sets, allowing only
-the command success field name and original-source selection difference.
+restricted decomposed sources as **unselected**, unlike SplitDisjointMesh.
+Connected sources remain selected in both commands. Python tests compare their
+output records, allowing only the command success field name and decomposed
+original-source selection difference. One mixed locked-connected case per
+command also records selection and identity retention after actual Undo/Redo.
+Those history selections are checked separately, including the unchanged peer.
 The shared native test adapter in `mesh_decomposition_tests.rs` compares both
 commands against their respective recorded output sets; run
 `cargo test -p viboceros-command mesh_decomposition_tests`.

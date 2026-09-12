@@ -441,7 +441,12 @@ impl Document {
         self.selection_order = transaction.selection_order_before;
         self.previous_selection = transaction.previous_selection_before;
         self.previous_selection_order = transaction.previous_selection_order_before;
-        self.prune_selection_after_history();
+        // Successful rollback restores a previously valid selection snapshot,
+        // including untouched restricted peers. Eligibility pruning here would
+        // turn a rejected command into a selection change.
+        if result.is_err() {
+            self.prune_selection_after_history_preserving(&BTreeSet::new());
+        }
         result?;
         Ok(changed)
     }
@@ -468,6 +473,7 @@ impl Document {
         let Some(mut entry) = self.history.undo.pop() else {
             return Ok(None);
         };
+        let unchanged_selection = self.selection_untouched_by_history(&entry);
         for index in (0..entry.edits.len()).rev() {
             if let Err(error) = entry.edits[index].undo(self) {
                 for restore in index + 1..entry.edits.len() {
@@ -480,7 +486,7 @@ impl Document {
         let label = entry.label.clone();
         self.update_last_changed_objects(&entry);
         self.history.redo.push(entry);
-        self.prune_selection_after_history();
+        self.prune_selection_after_history_preserving(&unchanged_selection);
         Ok(Some(label))
     }
 
@@ -490,6 +496,7 @@ impl Document {
         let Some(mut entry) = self.history.redo.pop() else {
             return Ok(None);
         };
+        let unchanged_selection = self.selection_untouched_by_history(&entry);
         for index in 0..entry.edits.len() {
             if let Err(error) = entry.edits[index].redo(self) {
                 for restore in (0..index).rev() {
@@ -502,7 +509,7 @@ impl Document {
         let label = entry.label.clone();
         self.update_last_changed_objects(&entry);
         self.push_replayed_undo(entry);
-        self.prune_selection_after_history();
+        self.prune_selection_after_history_preserving(&unchanged_selection);
         Ok(Some(label))
     }
 

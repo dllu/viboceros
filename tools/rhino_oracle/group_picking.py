@@ -41,6 +41,13 @@ def validate_request(request):
                 or any(operation.get(field) for field in ('move', 'recall_previous', 'recall_last', 'last_steps', 'hidden', 'locked', 'layer_mode'))):
                 raise OracleProtocolError('invalid AddToGroup picking case')
         for field in ("locked", "hidden"): indices(operation.get(field, []))
+        indices(operation.get("connected", []))
+        if type(operation.get("history", False)) is not bool or (
+            operation.get("history") and operation.get("op") == "group_picking"
+        ):
+            raise OracleProtocolError("history requires a mesh decomposition probe")
+        if operation.get("connected") and operation.get("op") == "group_picking":
+            raise OracleProtocolError("connected meshes require a mesh decomposition probe")
         if set(operation.get("locked", [])).intersection(operation.get("hidden", [])):
             raise OracleProtocolError("object mode cannot be both hidden and locked")
         if type(operation.get("reverse_bridge", False)) is not bool or operation.get("layer_mode") not in (None, "locked", "hidden"):

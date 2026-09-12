@@ -115,11 +115,40 @@ impl Document {
         Ok(())
     }
 
-    pub(super) fn prune_selection_after_history(&mut self) {
+    /// Selection is transient: replay must not discard an unchanged peer
+    /// merely because its selectable group companion was deselected by Explode.
+    pub(super) fn selection_untouched_by_history(
+        &self,
+        entry: &HistoryEntry,
+    ) -> BTreeSet<ObjectId> {
+        let changed_layers = entry
+            .edits
+            .iter()
+            .filter_map(|edit| match edit {
+                Edit::LayerChanged { id, .. }
+                | Edit::LayerInserted { id, .. }
+                | Edit::LayerRemoved { id, .. } => Some(*id),
+                _ => None,
+            })
+            .collect::<BTreeSet<_>>();
+        self.selected_objects()
+            .filter(|object| {
+                !entry.object_ids.contains(&object.id())
+                    && !changed_layers.contains(&object.attributes().layer_id())
+            })
+            .map(|object| object.id())
+            .collect()
+    }
+
+    pub(super) fn prune_selection_after_history_preserving(
+        &mut self,
+        unchanged: &BTreeSet<ObjectId>,
+    ) {
         let mut seen = BTreeSet::new();
         self.selection_order
             .retain(|id| self.selection.contains(id) && seen.insert(*id));
-        let allowed = self.selectable_clusters(self.selection.iter().copied());
+        let mut allowed = self.selectable_clusters(self.selection.iter().copied());
+        allowed.extend(unchanged);
         let next = self.selection.intersection(&allowed).copied().collect();
         self.update_selection(next);
     }
@@ -183,6 +212,35 @@ impl Document {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn replay_preserves_untouched_restricted_peers_but_prunes_changed_layers() {
+        let mut document = Document::default();
+        let layer = document.add_layer("Restricted", ColorRgb::BLACK).unwrap();
+        let peer = document
+            .add_geometry_with_attributes(
+                Geometry::Point(Point3::try_new(0., 0., 0.).unwrap()),
+                ObjectAttributes::on_layer(layer),
+            )
+            .unwrap();
+        document.set_layer_locked(layer, true).unwrap();
+        let other = document
+            .add_geometry(Geometry::Point(Point3::try_new(1., 0., 0.).unwrap()))
+            .unwrap();
+        document.select_command_results([peer]).unwrap();
+        document.undo().unwrap();
+        assert!(document.object(other).is_none());
+        assert!(document.is_selected(peer));
+        document.redo().unwrap();
+        assert!(document.object(other).is_some());
+        assert!(document.is_selected(peer));
+        assert!(!document.is_selected(other));
+        document.set_layer_locked(layer, false).unwrap();
+        assert!(document.is_selected(peer));
+        document.undo().unwrap();
+        assert!(document.layer(layer).unwrap().is_locked());
+        assert!(!document.is_selected(peer));
+    }
 
     #[test]
     fn command_results_are_exact_allow_restricted_outputs_and_validate_before_mutation() {

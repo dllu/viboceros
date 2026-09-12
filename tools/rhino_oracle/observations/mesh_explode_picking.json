@@ -2717,6 +2717,575 @@
           2
         ]
       }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "explode-connected-0-false",
+      "value": {
+        "explode_succeeded": true,
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Normal",
+          "Normal",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 2,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ],
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "explode-connected-1-false",
+      "value": {
+        "explode_succeeded": true,
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Normal",
+          "Normal",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ],
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ],
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "explode-connected-0-true",
+      "value": {
+        "explode_succeeded": true,
+        "history_selection": [
+          [
+            {
+              "original_identity": true,
+              "selected": true,
+              "source": "source-0"
+            },
+            {
+              "original_identity": true,
+              "selected": false,
+              "source": "source-1"
+            },
+            {
+              "original_identity": true,
+              "selected": false,
+              "source": "source-2"
+            }
+          ],
+          [
+            {
+              "original_identity": true,
+              "selected": true,
+              "source": "source-0"
+            },
+            {
+              "original_identity": false,
+              "selected": true,
+              "source": "source-1"
+            },
+            {
+              "original_identity": false,
+              "selected": true,
+              "source": "source-1"
+            },
+            {
+              "original_identity": true,
+              "selected": false,
+              "source": "source-2"
+            }
+          ]
+        ],
+        "layers": [
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          },
+          {
+            "locked": false,
+            "visible": true
+          }
+        ],
+        "modes": [
+          "Locked",
+          "Normal",
+          "Normal"
+        ],
+        "outputs": [
+          {
+            "faces": 2,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Locked",
+            "original_identity": true,
+            "selected": true,
+            "source": "source-0",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                0,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                5,
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 1,
+            "groups": [
+              0
+            ],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": false,
+            "selected": true,
+            "source": "source-1",
+            "vertices": [
+              [
+                5,
+                4,
+                0
+              ],
+              [
+                7,
+                4,
+                0
+              ],
+              [
+                5,
+                6,
+                0
+              ]
+            ]
+          },
+          {
+            "faces": 2,
+            "groups": [],
+            "layer_locked": false,
+            "layer_visible": true,
+            "mode": "Normal",
+            "original_identity": true,
+            "selected": false,
+            "source": "source-2",
+            "vertices": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0
+              ],
+              [
+                10,
+                2,
+                0
+              ],
+              [
+                10,
+                4,
+                0
+              ],
+              [
+                12,
+                4,
+                0
+              ],
+              [
+                10,
+                6,
+                0
+              ]
+            ]
+          }
+        ],
+        "selected": [
+          0,
+          1
+        ]
+      }
     }
   ]
 }

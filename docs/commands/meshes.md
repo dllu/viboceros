@@ -257,16 +257,17 @@ arguments with redo history, and exact object/group undo and redo.
 deleted, with new IDs for every piece. Hidden/locked group-selected sources stay
 intact while new pieces with the same mode and group are added. All pieces and
 the retained restricted source remain selected. The native regression
-`split_disjoint_mesh_matches_live_rhino_picking_observations` compares all 13
+`split_disjoint_mesh_matches_live_rhino_picking_observations` compares all 16
 recorded cases exactly: coordinates, face counts, identity retention, modes,
 layer visibility/locking, ordered groups, and selection, including untouched
 peers. Coverage includes every seed in a two-group overlap in both bridge
 membership orders, and hidden/locked layers. It does not verify document table
-order, combinations of object and layer restrictions, or Rhino undo/redo.
-The same 13 native setups also run two complete undo/redo cycles, comparing
+order or combinations of object and layer restrictions. Mixed connected sources
+remain selected; one locked-connected case also verifies live Undo/Redo selection.
+The same 16 native setups also run two complete undo/redo cycles, comparing
 object identity, geometry, attributes, table order, group records, and selection
-membership before and after each replay. These are native history invariants,
-not recorded Rhino history observations. The recorded-case comparison adapter
+membership before and after each replay. Object/group replay is a native invariant;
+selection uses live history observations where available. The comparison adapter
 in `mesh_decomposition_tests.rs` is shared with Explode; other split-specific
 tests live beside the command in `split_disjoint_mesh/tests.rs`.
 The geometry-only `SplitDisjointPieces` probe cannot verify this document behavior.

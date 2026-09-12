@@ -18,17 +18,29 @@ class GroupPickingTests(unittest.TestCase):
         observed = json.loads((root / "observations/mesh_explode_picking.json").read_text())
         split = json.loads((root / "observations/mesh_split_picking.json").read_text())
         validate_request(request)
-        self.assertEqual(len(request["operations"]), 13)
-        self.assertEqual(len(observed["results"]), 13)
-        self.assertEqual(len(split["results"]), 13)
+        self.assertEqual(len(request["operations"]), 16)
+        self.assertEqual(len(observed["results"]), 16)
+        self.assertEqual(len(split["results"]), 16)
         for op, result, reference in zip(request["operations"], observed["results"], split["results"]):
             self.assertEqual(op["id"], result["id"])
             self.assertEqual(result["id"], reference["id"].replace("split-", "explode-", 1))
             value = result["value"]
             expected = copy.deepcopy(reference["value"])
+            if op.get("history"):
+                for states, undo_selected in [(value["history_selection"], 1), (expected["history_selection"], 2)]:
+                    self.assertEqual(len(states), 2)
+                    self.assertEqual([len(state) for state in states], [3, 4])
+                    self.assertEqual([sum(obj["selected"] for obj in state) for state in states], [undo_selected, 3])
+                    for state in states:
+                        locked = [obj for obj in state if obj["source"] == "source-0"]
+                        self.assertEqual(locked, [dict(source="source-0", original_identity=True, selected=True)])
+            expected.pop("history_selection", None)
+            value = dict(value)
+            value.pop("history_selection", None)
             expected["explode_succeeded"] = expected.pop("split_succeeded")
             for output in expected["outputs"]:
-                if output["original_identity"]:
+                source = int(output["source"].removeprefix("source-"))
+                if output["original_identity"] and source not in op.get("connected", []):
                     output["selected"] = False
             self.assertEqual(value, expected)
         invalid = copy.deepcopy(request)
@@ -53,14 +65,14 @@ class GroupPickingTests(unittest.TestCase):
                 outputs = [obj for obj in value["outputs"] if obj["source"] == "source-%d" % source]
                 restricted = source in op.get("hidden", []) or source in op.get("locked", [])
                 retained = restricted or (source == 1 and op.get("layer_mode") == "locked")
-                split = source in selected
+                split = source in selected and source not in op.get("connected", [])
                 originals = [obj for obj in outputs if obj["original_identity"]]
                 self.assertEqual(len(originals), int(retained or not split))
                 self.assertEqual(len(outputs), 2 + int(retained) if split else 1)
                 expected_mode = "Hidden" if source in op.get("hidden", []) else "Locked" if restricted else "Normal"
                 for obj in outputs:
                     self.assertEqual(obj["mode"], expected_mode)
-                    self.assertEqual(obj["selected"], split)
+                    self.assertEqual(obj["selected"], source in selected)
                     self.assertEqual(obj["groups"], memberships[source])
                     self.assertEqual(obj["layer_visible"], not (source == 1 and op.get("layer_mode") == "hidden"))
                     self.assertEqual(obj["layer_locked"], source == 1 and op.get("layer_mode") == "locked")
@@ -71,6 +83,8 @@ class GroupPickingTests(unittest.TestCase):
         request = json.loads(Path(__file__).with_name("fixtures").joinpath("mesh_split_picking.json").read_text())
         validate_request(request)
         for changes in [dict(move=True), dict(recall_previous=True), dict(recall_last=True),
+                        dict(history="Yes"),
+                        dict(connected=[3]), dict(connected=[True]), dict(connected=[0,0]),
                         dict(last_steps=[dict(kind="undo")]), dict(add_to_group_sources=[0])]:
             invalid = copy.deepcopy(request)
             invalid["operations"][0].update(changes)
@@ -83,6 +97,7 @@ class GroupPickingTests(unittest.TestCase):
         for name in ("last_selection.json", "last_selection_history.json", "deletion_recall.json", "add_to_group_picking.json"):
             validate_request(json.loads(Path(__file__).with_name("fixtures").joinpath(name).read_text()))
         for changes in [dict(seed=True), dict(seed=3), dict(groups=[[0, 0]]),
+                        dict(connected=[0]), dict(history=True),
                         dict(groups=[[False]]), dict(groups=[[3]]), dict(locked=[1, 1]),
                         dict(hidden=[-1]), dict(locked=[1], hidden=[1]),
                         dict(layer_mode="other"), dict(reverse_bridge=1), dict(move="Yes"),

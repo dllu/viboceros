@@ -41,8 +41,12 @@ fn assert_recorded_decomposition(command: &str, request: &str, response: &str) {
             let vertices = [[0., 0.], [2., 0.], [0., 2.], [0., 4.], [2., 4.], [0., 6.]]
                 .map(|[x, y]| Point3::try_new(f64::from(source) * 5. + x, y, 0.).unwrap())
                 .to_vec();
+            let connected = operation["connected"]
+                .as_array()
+                .is_some_and(|indices| indices.contains(&json!(source)));
+            let second = if connected { [1, 3, 2] } else { [3, 4, 5] };
             let mesh =
-                TriangleMesh::try_new(vertices, vec![[0, 1, 2], [3, 4, 5]], document.tolerance())
+                TriangleMesh::try_new(vertices, vec![[0, 1, 2], second], document.tolerance())
                     .unwrap();
             let attributes = ObjectAttributes::on_layer(document.current_layer_id())
                 .with_name(format!("source-{source}"));
@@ -120,7 +124,15 @@ fn assert_recorded_decomposition(command: &str, request: &str, response: &str) {
         let before_objects = document.objects().cloned().collect::<Vec<_>>();
         let before_groups = document.groups().cloned().collect::<Vec<_>>();
         let before_selection = if command == "Explode" {
-            BTreeSet::new()
+            selected
+                .iter()
+                .filter(|index| {
+                    operation["connected"]
+                        .as_array()
+                        .is_some_and(|indices| indices.contains(&json!(index)))
+                })
+                .map(|index| ids[*index])
+                .collect()
         } else {
             document.selected_object_ids().collect::<BTreeSet<_>>()
         };
@@ -155,8 +167,9 @@ fn assert_recorded_decomposition(command: &str, request: &str, response: &str) {
         actual.sort_by_key(Value::to_string);
         expected.sort_by_key(Value::to_string);
         assert_eq!(actual, expected, "{}", operation["id"]);
-        // Native history invariants are separate from the recorded Rhino
-        // output comparison: that probe does not measure Rhino undo/redo.
+        // Objects/groups use native replay invariants. Selection uses live
+        // history observations where available, rather than assuming that an
+        // unchanged restricted object must keep its selection through replay.
         let after_objects = document.objects().cloned().collect::<Vec<_>>();
         let after_groups = document.groups().cloned().collect::<Vec<_>>();
         let after_selection = document.selected_object_ids().collect::<BTreeSet<_>>();
@@ -174,12 +187,23 @@ fn assert_recorded_decomposition(command: &str, request: &str, response: &str) {
                 "{}",
                 operation["id"]
             );
-            assert_eq!(
-                document.selected_object_ids().collect::<BTreeSet<_>>(),
-                before_selection,
-                "{}",
-                operation["id"]
+            if let Some(history) = result["value"].get("history_selection") {
+                assert_history_selection(&document, &ids, &history[0]);
+            } else {
+                assert_eq!(
+                    document.selected_object_ids().collect::<BTreeSet<_>>(),
+                    before_selection,
+                    "{}",
+                    operation["id"]
+                );
+            }
+            let before_rejected_command = format!("{document:?}");
+            assert!(
+                registry
+                    .execute(&mut document, &format!("{command} unexpected"))
+                    .is_err()
             );
+            assert_eq!(format!("{document:?}"), before_rejected_command);
             registry.execute(&mut document, "Redo").unwrap();
             assert_eq!(
                 document.objects().cloned().collect::<Vec<_>>(),
@@ -193,12 +217,33 @@ fn assert_recorded_decomposition(command: &str, request: &str, response: &str) {
                 "{}",
                 operation["id"]
             );
-            assert_eq!(
-                document.selected_object_ids().collect::<BTreeSet<_>>(),
-                after_selection,
-                "{}",
-                operation["id"]
-            );
+            if let Some(history) = result["value"].get("history_selection") {
+                assert_history_selection(&document, &ids, &history[1]);
+            } else {
+                assert_eq!(
+                    document.selected_object_ids().collect::<BTreeSet<_>>(),
+                    after_selection,
+                    "{}",
+                    operation["id"]
+                );
+            }
         }
     }
+}
+
+fn assert_history_selection(document: &Document, originals: &[ObjectId], expected: &Value) {
+    let mut actual = document
+        .objects()
+        .map(|object| {
+            json!({
+                "source": object.attributes().name().unwrap(),
+                "original_identity": originals.contains(&object.id()),
+                "selected": document.is_selected(object.id()),
+            })
+        })
+        .collect::<Vec<_>>();
+    let mut expected = expected.as_array().unwrap().clone();
+    actual.sort_by_key(Value::to_string);
+    expected.sort_by_key(Value::to_string);
+    assert_eq!(actual, expected);
 }
