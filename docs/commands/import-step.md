@@ -25,6 +25,11 @@ Geometry is converted and combined before insertion. Import is one undoable
 command; failures preserve the document and its undo/redo history. Tests cover
 quoted/repeated-space paths, physical unit conversion, editable object type,
 Undo/Redo, malformed files, and a hollow cube imported as one object of volume 992.
+A mixed-file regression begins with two supported shells, changes only the
+later shell's plane to an unsupported cylinder, and verifies loss-free STEP
+record parsing before import. Both `ImportStep Native=Yes` and
+`ImportStp native=yes` fail on that later shell with the complete document and
+redo history unchanged; the previously undone command remains redoable.
 
 See [file formats](../file-formats.md) and the
 [native STEP conversion boundary](../step-brep-boundary.md) for limitations.

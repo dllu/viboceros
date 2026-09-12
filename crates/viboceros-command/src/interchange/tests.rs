@@ -167,6 +167,67 @@ fn native_step_import_converts_units_and_replays_as_editable_breps() {
 }
 
 #[test]
+fn mixed_native_step_import_rejects_unsupported_later_shell_without_partial_changes() {
+    use monstertruck::step::load::Table;
+    let registry = CommandRegistry::with_builtins();
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("mixed native.step");
+    let mut source = Document::default();
+    source.add_geometry(triangle(0.)).unwrap();
+    source.add_geometry(triangle(10.)).unwrap();
+    registry
+        .execute(&mut source, &format!("ExportStep \"{}\"", path.display()))
+        .unwrap();
+    let original = std::fs::read_to_string(&path).unwrap();
+    let supported = viboceros_io::read_step_planar_instances(
+        std::io::Cursor::new(&original),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    assert_eq!(supported.instances.len(), 2);
+    let last_shell = supported.instances[1].source_shell_id;
+    let table = Table::from_step(&original).unwrap();
+    let plane = *table.plane.keys().max().unwrap();
+    let prefix = format!("#{plane} = PLANE(");
+    let mut replaced = 0;
+    let mixed = original
+        .lines()
+        .map(|line| {
+            if line.starts_with(&prefix) {
+                replaced += 1;
+                line.replacen("PLANE(", "CYLINDRICAL_SURFACE(", 1)
+                    .replace(");", ", 1.);")
+            } else {
+                line.to_owned()
+            }
+        })
+        .collect::<Vec<_>>()
+        .join("\n");
+    assert_eq!(replaced, 1);
+    let parsed = Table::from_step(&mixed).unwrap();
+    assert_eq!(
+        parsed.entity_report.total(),
+        0,
+        "fixture must parse without swallowed records"
+    );
+    std::fs::write(&path, mixed).unwrap();
+    let mut document = Document::default();
+    registry.execute(&mut document, "Point 1,2,3").unwrap();
+    registry.execute(&mut document, "Point 4,5,6").unwrap();
+    registry.execute(&mut document, "Undo").unwrap();
+    let before = format!("{document:?}");
+    for command in ["ImportStep Native=Yes", "ImportStp native=yes"] {
+        let result = registry.execute(&mut document, &format!("{command} \"{}\"", path.display()));
+        assert!(
+            matches!(result, Err(CommandError::Step(viboceros_io::StepError::UnsupportedPlanarShell { shell, .. })) if shell == last_shell)
+        );
+        assert_eq!(format!("{document:?}"), before);
+    }
+    registry.execute(&mut document, "Redo").unwrap();
+    assert_eq!(document.objects().len(), 2);
+}
+
+#[test]
 fn failed_native_step_import_preserves_document_and_redo_history() {
     let registry = CommandRegistry::with_builtins();
     let directory = tempfile::tempdir().unwrap();
