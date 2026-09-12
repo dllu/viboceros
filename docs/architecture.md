@@ -120,6 +120,9 @@ and winding. This is smaller than three optional indices plus winding, preserves
 the full `u32` index range, and keeps canonical vertex insertion separate from
 final face orientation. A representation test covers both positions/windings;
 the 27-case Rhino replay checks exact output geometry and ordering.
+Retained faces are streamed from the source for vertex marking and final remapping,
+without an intermediate face vector. A mixed-face regression checks unaffected
+face ordering and the different retention policy at interior versus endpoint splits.
 The edge-split module also contains the source-order, seam, endpoint, and invalid
 input regressions, alongside wide-integer staging/output sizing tests.
 A 450-case planar split matrix covers every triangle/quad side pairing, both

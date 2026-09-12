@@ -1,6 +1,61 @@
 use super::*;
 
 #[test]
+fn retained_mixed_faces_stay_in_source_order_at_interior_and_endpoint_splits() {
+    let vertices = [
+        [10., 0., 0.],
+        [12., 0., 0.],
+        [10., 2., 0.],
+        [0., 0., 0.],
+        [4., 0., 0.],
+        [0., 4., 0.],
+        [20., 0., 0.],
+        [22., 0., 0.],
+        [22., 2., 0.],
+        [20., 2., 0.],
+        [0., -4., 0.],
+        [4., -4., 0.],
+        [30., 0., 0.],
+        [32., 0., 0.],
+        [30., 2., 0.],
+    ]
+    .map(|[x, y, z]| point(x, y, z))
+    .to_vec();
+    let faces = vec![
+        MeshFace::Triangle([0, 1, 2]),
+        MeshFace::Triangle([3, 4, 5]),
+        MeshFace::Quad([6, 7, 8, 9]),
+        MeshFace::Quad([4, 3, 10, 11]),
+        MeshFace::Triangle([12, 13, 14]),
+    ];
+    let mesh = TriangleMesh::try_new_faces(vertices, faces, Tolerance::DEFAULT).unwrap();
+    let edge = topology_edge_index_between(&mesh, point(0., 0., 0.), point(4., 0., 0.));
+    for parameter in [0.0, 0.25, 1.0] {
+        let split = mesh
+            .split_topology_edge(edge, parameter, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        let endpoint = parameter == 0.0 || parameter == 1.0;
+        let retained = if endpoint {
+            vec![0, 1, 2, 4]
+        } else {
+            vec![0, 2, 4]
+        };
+        let expected = retained
+            .iter()
+            .map(|&index| mesh.faces()[index])
+            .collect::<Vec<_>>();
+        assert_eq!(&split.faces()[..expected.len()], expected.as_slice());
+        assert_eq!(
+            split.faces().len(),
+            retained.len() + if endpoint { 3 } else { 5 }
+        );
+        assert_eq!(&split.vertices()[..mesh.vertices().len()], mesh.vertices());
+        assert_eq!(split.vertices().len(), mesh.vertices().len() + 1);
+    }
+}
+
+#[test]
 fn compact_candidates_preserve_full_index_range_split_position_and_winding() {
     assert!(std::mem::size_of::<SplitTriangle>() < std::mem::size_of::<([Option<u32>; 3], bool)>());
     for first in [0, 1, u32::MAX] {

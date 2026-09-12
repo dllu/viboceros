@@ -186,19 +186,20 @@ impl TriangleMesh {
             a != b && b != c && c != a
         });
 
-        let retained_faces = self
-            .faces
-            .iter()
-            .copied()
-            .enumerate()
-            .filter_map(|(face_index, face)| {
-                (!affected_faces[face_index]
-                    || (split_at_endpoint && matches!(face, MeshFace::Triangle(_))))
-                .then_some(face)
-            })
-            .collect::<Vec<_>>();
+        let retained_faces =
+            self.faces
+                .iter()
+                .copied()
+                .enumerate()
+                .filter_map(|(face_index, face)| {
+                    (!affected_faces[face_index]
+                        || (split_at_endpoint && matches!(face, MeshFace::Triangle(_))))
+                    .then_some(face)
+                });
         let mut used = vec![false; self.vertices.len()];
-        for face in &retained_faces {
+        let mut retained_face_count: usize = 0;
+        for face in retained_faces.clone() {
+            retained_face_count += 1;
             for &raw in face.indices() {
                 used[raw as usize] = true;
             }
@@ -213,8 +214,7 @@ impl TriangleMesh {
 
         let retained_vertex_count = used.iter().filter(|&&retain| retain).count();
         let vertex_count = output_vertex_count(retained_vertex_count, generated.len(), welded)?;
-        let face_count = retained_faces
-            .len()
+        let face_count = retained_face_count
             .checked_add(generated.len())
             .ok_or(GeometryError::TooManyMeshFaces)?;
         let mut vertices = Vec::new();
@@ -234,11 +234,7 @@ impl TriangleMesh {
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
             vertices.push(point);
         }
-        faces.extend(
-            retained_faces
-                .into_iter()
-                .map(|face| face.remapped(|raw| raw_remap[raw as usize])),
-        );
+        faces.extend(retained_faces.map(|face| face.remapped(|raw| raw_remap[raw as usize])));
 
         if welded {
             let split_vertex =
