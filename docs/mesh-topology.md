@@ -42,6 +42,10 @@ Selected-edge welding streams endpoint pairs without collecting edge uses or
 per-endpoint sets. Index-preserving unions retain the earliest raw vertex even
 when incidence order differs or raw indices repeat; unrelated coincident fans
 remain separate.
+Welding validates the selection's first invalid index before allocating selection
+flags, then traverses the topology map directly without copying edge references.
+Duplicate selections count each edge only once; regression cases cover duplicate
+counts and mixed valid/invalid selection order.
 
 ## Normals and area
 

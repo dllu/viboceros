@@ -2903,21 +2903,18 @@ impl TriangleMesh {
             return Ok((self.clone(), 0));
         }
         let data = self.topology_data();
-        let edges = data.edges.values().collect::<Vec<_>>();
-        let mut selected_edges = vec![false; edges.len()];
+        let edge_count = data.edges.len();
+        if let Some(&edge) = edge_indices.iter().find(|&&edge| edge >= edge_count) {
+            return Err(GeometryError::MeshTopologyEdgeIndexOutOfRange { edge, edge_count });
+        }
+        let mut selected_edges = vec![false; edge_count];
         for &edge in edge_indices {
-            let Some(selected) = selected_edges.get_mut(edge) else {
-                return Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
-                    edge,
-                    edge_count: edges.len(),
-                });
-            };
-            *selected = true;
+            selected_edges[edge] = true;
         }
 
         let mut parents = (0..self.vertices.len()).collect::<Vec<_>>();
         let mut welded_edge_count = 0;
-        for (incidence, selected) in edges.into_iter().zip(selected_edges) {
+        for (incidence, selected) in data.edges.values().zip(selected_edges) {
             if !selected {
                 continue;
             }
@@ -8038,17 +8035,28 @@ mod tests {
             ]
         );
         assert_eq!(welded.triangles(), &[[0, 1, 2], [1, 0, 3]]);
-        assert_eq!(mesh.welded_topology_edges(&[0, 0]).unwrap().0, welded);
+        assert_eq!(
+            mesh.welded_topology_edges(&[0, 0]).unwrap(),
+            (welded.clone(), 1)
+        );
 
         let (empty, edge_count) = mesh.welded_topology_edges(&[]).unwrap();
         assert_eq!((empty, edge_count), (mesh.clone(), 0));
-        assert_eq!(
-            mesh.welded_topology_edges(&[5]),
-            Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
-                edge: 5,
-                edge_count: 5,
-            })
-        );
+        for (indices, invalid) in [
+            (vec![5], 5),
+            (vec![0, 5], 5),
+            (vec![usize::MAX, 5], usize::MAX),
+            (vec![5, usize::MAX], 5),
+            (vec![0, 0, usize::MAX], usize::MAX),
+        ] {
+            assert_eq!(
+                mesh.welded_topology_edges(&indices),
+                Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
+                    edge: invalid,
+                    edge_count: 5
+                })
+            );
+        }
 
         let already_welded = TriangleMesh::try_new(
             vec![
