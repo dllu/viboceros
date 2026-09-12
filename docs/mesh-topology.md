@@ -88,6 +88,10 @@ Shared-face lookup merges ascending incident-face streams instead of testing
 every pair. Topology construction preserves the required face-index order.
 Tests cover all 65,536 pairs of eight-face subsets, repeated indices, disjoint
 4,096-face streams, and a shared final index at `usize::MAX`.
+Visited-face and visited-component membership use local boolean arrays, not
+tree nodes. Sparse face IDs map through the sorted incident-face list; union
+roots index the local parent array directly. Tests cover sparse/fallback IDs and
+2,048 partition/root/rotation combinations without changing cyclic output order.
 
 Shared welding compaction resolves every face to its representative before
 reusing the parent array as the compact-index map, eliminating a separate

@@ -4,7 +4,7 @@
 //! instead removes a repeated cyclic root after grouping, which can rotate the
 //! output order. These two traversals must not be collapsed into one dedup pass.
 use super::{EdgeIncidence, index_root};
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 
 #[cfg(test)]
 mod tests;
@@ -111,13 +111,15 @@ fn shared_edge_face(first: &EdgeIncidence, second: &EdgeIncidence) -> Option<usi
 /// First occurrences in radial traversal order, with each incoming edge.
 /// Singleton groups carry faces too; falling back to source face order for
 /// those groups loses Rhino's non-manifold component ordering.
+/// Incident face indices must be strictly increasing, as in topology traversal.
 pub(super) fn radial_vertex_face_walk(
     edge_groups: &[Vec<usize>],
     edges: &[([usize; 2], &EdgeIncidence)],
     incident_faces: &[usize],
 ) -> Vec<(usize, Option<usize>)> {
+    debug_assert!(incident_faces.windows(2).all(|pair| pair[0] < pair[1]));
     let mut walk = Vec::new();
-    let mut seen = BTreeSet::new();
+    let mut seen = vec![false; incident_faces.len()];
     for group in edge_groups {
         let mut faces = Vec::new();
         if group.len() == 1 {
@@ -145,13 +147,16 @@ pub(super) fn radial_vertex_face_walk(
             }
         }
         for entry in faces {
-            if seen.insert(entry.0) {
+            let local = incident_faces
+                .binary_search(&entry.0)
+                .expect("a radial face belongs to the incident face list");
+            if !std::mem::replace(&mut seen[local], true) {
                 walk.push(entry);
             }
         }
     }
-    for &face in incident_faces {
-        if seen.insert(face) {
+    for (local, &face) in incident_faces.iter().enumerate() {
+        if !seen[local] {
             walk.push((face, None));
         }
     }
@@ -166,7 +171,7 @@ pub(super) fn ordered_vertex_face_components(
     parents: &mut [usize],
 ) -> Vec<usize> {
     let mut order = Vec::new();
-    let mut seen = BTreeSet::new();
+    let mut seen = vec![false; parents.len()];
     for edge_group in edge_groups {
         let mut radial_roots = Vec::new();
         if edge_group.len() == 1 {
@@ -198,14 +203,14 @@ pub(super) fn ordered_vertex_face_components(
             radial_roots.remove(0);
         }
         for root in radial_roots {
-            if seen.insert(root) {
+            if !std::mem::replace(&mut seen[root], true) {
                 order.push(root);
             }
         }
     }
     for &face in incident_faces {
         let root = index_root(parents, face_to_local[&face]);
-        if seen.insert(root) {
+        if !std::mem::replace(&mut seen[root], true) {
             order.push(root);
         }
     }

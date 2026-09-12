@@ -1,5 +1,77 @@
 use super::super::{EdgeUse, Point3, Tolerance, TriangleMesh, topology_face_edge_indices};
 use super::*;
+use std::collections::BTreeSet;
+
+#[test]
+fn face_walk_seen_flags_use_local_indices_for_sparse_and_fallback_faces() {
+    let incidences = [
+        incidence_with_faces([42, 900]),
+        incidence_with_faces([42]),
+        incidence_with_faces([900]),
+    ];
+    let edges = incidences
+        .iter()
+        .enumerate()
+        .map(|(index, incidence)| ([0, index + 1], incidence))
+        .collect::<Vec<_>>();
+    let groups = vec![vec![0, 1], vec![2], vec![2]];
+    assert_eq!(
+        radial_vertex_face_walk(&groups, &edges, &[42, 900, usize::MAX]),
+        vec![(42, Some(0)), (900, Some(2)), (usize::MAX, None)]
+    );
+    assert_eq!(radial_vertex_face_walk(&[], &[], &[]), Vec::new());
+}
+
+#[test]
+fn cyclic_component_seen_flags_match_label_order_for_all_four_face_partitions() {
+    let incidences = [[0, 3], [0, 1], [1, 2], [2, 3]].map(incidence_with_faces);
+    let edges = incidences
+        .iter()
+        .enumerate()
+        .map(|(index, incidence)| ([0, index + 1], incidence))
+        .collect::<Vec<_>>();
+    let faces = [0, 1, 2, 3];
+    let locals = BTreeMap::from([(0, 0), (1, 1), (2, 2), (3, 3)]);
+    for code in 0..256 {
+        let labels = std::array::from_fn::<_, 4, _>(|index| (code >> (2 * index)) & 3);
+        for latest in [false, true] {
+            let representatives = std::array::from_fn::<_, 4, _>(|label| {
+                let mut members = (0..4).filter(|&index| labels[index] == label);
+                if latest {
+                    members.next_back()
+                } else {
+                    members.next()
+                }
+            });
+            for rotation in 0..4 {
+                let group = (0..4)
+                    .map(|index| (index + rotation) % 4)
+                    .collect::<Vec<_>>();
+                let mut runs = Vec::new();
+                for &face in &group {
+                    if runs.last().copied() != Some(labels[face]) {
+                        runs.push(labels[face]);
+                    }
+                }
+                if runs.len() > 1 && runs.first() == runs.last() {
+                    runs.remove(0);
+                }
+                let mut expected = Vec::new();
+                for label in runs {
+                    let root = representatives[label].unwrap();
+                    if !expected.contains(&root) {
+                        expected.push(root);
+                    }
+                }
+                let mut parents = labels.map(|label| representatives[label].unwrap());
+                assert_eq!(
+                    ordered_vertex_face_components(&[group], &edges, &locals, &faces, &mut parents),
+                    expected
+                );
+            }
+        }
+    }
+}
 
 fn incidence_with_faces(faces: impl IntoIterator<Item = usize>) -> EdgeIncidence {
     let mut incidence = EdgeIncidence::default();
