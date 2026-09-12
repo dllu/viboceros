@@ -506,8 +506,27 @@ fn step_unit_conversion_retains_meshes_smaller_than_model_tolerance() {
     )
     .unwrap();
     let restored = read_step(Cursor::new(exported), Tolerance::DEFAULT).unwrap();
-    assert_eq!(restored.objects.len(), 1);
-    let mesh = &restored.objects[0].mesh;
+    // The imported cube has raw seams between its six meshed faces. Export
+    // preserves those seams as six edge-connected shells, not one disconnected
+    // shell. Reassemble only for the aggregate geometry/units assertions.
+    assert_eq!(restored.objects.len(), 6);
+    let mut vertices = Vec::new();
+    let mut triangles = Vec::new();
+    for object in &restored.objects {
+        assert_eq!(object.mesh.triangles().len(), 2);
+        assert_eq!(object.mesh.topology().boundary_edge_count(), 4);
+        let offset = vertices.len() as u32;
+        vertices.extend_from_slice(object.mesh.vertices());
+        triangles.extend(
+            object
+                .mesh
+                .triangles()
+                .iter()
+                .map(|face| face.map(|raw| raw + offset)),
+        );
+    }
+    let mesh = TriangleMesh::try_new(vertices, triangles, Tolerance::MESH_VALIDATION).unwrap();
+    assert_eq!(mesh.area().unwrap(), 286.0);
     assert!(mesh.bounds().min().is_near(
         Point3::try_new(-1.0, -2.0, -3.0).unwrap(),
         Tolerance::DEFAULT

@@ -151,6 +151,15 @@ directed face boundary against source triangle indices; two quad cases check
 the shared triangulation diagonal and opposite edge-use orientations. The
 generated STEP files are also parsed and checked for face/edge record counts.
 These establish the exporter's topology policy, not Rhino seam-conversion parity.
+Before serialization, the exporter partitions faces by shared raw edges into
+separate shells, in first-face order, retaining face order within each piece.
+This follows the [STEP connected-face-set shell hierarchy](https://steptools.com/docs/stp_aim/html/t_connected_face_set.html).
+Coordinate-only seam contacts and lone shared vertices do not join components.
+Edges and faces are moved into component-local tables; shared point-only vertices
+are copied and references remapped. Tests cover 257 interleaved panels and a
+two-component export/import round trip. One disconnected mesh can therefore
+import back as multiple objects. Non-manifold connected shells are not repaired
+or certified by this partitioning.
 The `step/export_plane` adapter writes plane placements using
 the native kernel's scale-safe facet normals and reference directions. Parsed
 STEP regression records check finite unit directions and reversed winding from

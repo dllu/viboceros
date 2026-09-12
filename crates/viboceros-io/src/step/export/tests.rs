@@ -40,11 +40,76 @@ fn check_boundary_topology(mesh: &TriangleMesh, expected_edges: usize) {
     let text = String::from_utf8(bytes).unwrap();
     let table = Table::from_step(&text).unwrap();
     assert_eq!(table.entity_report.total(), 0);
+    assert_eq!(table.shell.len(), if expected_edges == 5 { 1 } else { 2 });
     assert_eq!(text.matches("EDGE_CURVE(").count(), expected_edges);
     assert_eq!(
         text.matches("ADVANCED_FACE(").count(),
         mesh.triangles().len()
     );
+}
+
+#[test]
+fn disconnected_panels_partition_and_remap_in_first_face_order() {
+    for count in [2, 17, 257] {
+        let mut vertices = Vec::new();
+        for panel in 0..count {
+            let x = panel as f64 * 10.0;
+            vertices.extend([
+                point(x, 0.0),
+                point(x + 2.0, 0.0),
+                point(x + 2.0, 1.0),
+                point(x, 1.0),
+            ]);
+        }
+        let mut triangles = Vec::new();
+        for side in 0..2 {
+            for panel in 0..count {
+                let base = (4 * panel) as u32;
+                triangles.push(if side == 0 {
+                    [base, base + 1, base + 2]
+                } else {
+                    [base, base + 2, base + 3]
+                });
+            }
+        }
+        let mesh = TriangleMesh::try_new(vertices, triangles, Tolerance::DEFAULT).unwrap();
+        let pieces = components::partition(mesh_to_shell(&mesh).unwrap());
+        assert_eq!(pieces.len(), count);
+        for (panel, piece) in pieces.iter().enumerate() {
+            assert_eq!(
+                (piece.vertices.len(), piece.edges.len(), piece.faces.len()),
+                (4, 5, 2)
+            );
+            for (side, face) in piece.faces.iter().enumerate() {
+                for (corner, edge_use) in face.boundaries[0].iter().enumerate() {
+                    let edge = &piece.edges[edge_use.index];
+                    let raw = if edge_use.orientation {
+                        edge.vertices.0
+                    } else {
+                        edge.vertices.1
+                    };
+                    let actual = piece.vertices[raw].0;
+                    let expected =
+                        mesh.vertices()[mesh.triangles()[side * count + panel][corner] as usize];
+                    assert_eq!(
+                        [actual.x, actual.y, actual.z],
+                        [expected.x(), expected.y(), expected.z()]
+                    );
+                }
+            }
+        }
+        if count == 2 {
+            let mut bytes = Vec::new();
+            write_step(&mut bytes, &[mesh]).unwrap();
+            let imported =
+                crate::read_step(std::io::Cursor::new(bytes), Tolerance::DEFAULT).unwrap();
+            assert_eq!(imported.objects.len(), 2);
+            for object in imported.objects {
+                assert_eq!(object.mesh.triangles().len(), 2);
+                assert_eq!(object.mesh.area().unwrap(), 2.0);
+            }
+        }
+    }
 }
 
 #[test]

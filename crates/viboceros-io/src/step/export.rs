@@ -14,6 +14,7 @@ use viboceros_geometry::{AffineTransform3, LengthUnitSystem, Point3, Tolerance, 
 use super::export_geometry::{ExportLine, ExportPoint};
 use super::export_plane::ExportPlane;
 use super::{StepError, TruckPoint3};
+mod components;
 
 #[cfg(test)]
 mod tests;
@@ -39,10 +40,10 @@ fn write_step_with_accuracy<W: Write>(
     if meshes.is_empty() {
         return Err(StepError::NoMeshesToWrite);
     }
-    let shells = meshes
-        .iter()
-        .map(mesh_to_shell)
-        .collect::<Result<Vec<_>, _>>()?;
+    let mut shells = Vec::new();
+    for mesh in meshes {
+        shells.extend(components::partition(mesh_to_shell(mesh)?));
+    }
     let models = StepModels::from_iter(&shells).with_measurement_context(StepMeasurementContext {
         distance_accuracy_value: accuracy,
         ..Default::default()

@@ -42231,8 +42231,25 @@ mod tests {
             .unwrap();
         assert!(export_message.contains("12 triangles"));
         let exported = read_step_file(&output, document.tolerance()).unwrap();
-        assert_eq!(exported.objects.len(), 1);
-        assert_eq!(exported.objects[0].mesh.triangles().len(), 12);
+        // Raw seams in the imported face meshes become separate connected
+        // STEP shells. This changes file piece count, not the source document.
+        assert_eq!(exported.objects.len(), 6);
+        assert!(
+            exported
+                .objects
+                .iter()
+                .all(|object| object.mesh.triangles().len() == 2)
+        );
+        assert_eq!(
+            exported
+                .objects
+                .iter()
+                .map(|object| object.mesh.area().unwrap())
+                .sum::<f64>(),
+            52.0
+        );
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.undo_label(), Some("ImportStep"));
 
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().len(), 0);
