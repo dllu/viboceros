@@ -14504,10 +14504,10 @@ struct FillMeshHoleOptions {
     join_mesh: bool,
 }
 
-struct FillMeshHoleSource {
+struct FillMeshHoleSource<'a> {
     id: ObjectId,
-    mesh: TriangleMesh,
-    attributes: ObjectAttributes,
+    mesh: &'a TriangleMesh,
+    attributes: &'a ObjectAttributes,
 }
 
 struct FillMeshHolePlan {
@@ -14534,8 +14534,8 @@ impl Command for FillMeshHoleCommand {
                 };
                 Ok(FillMeshHoleSource {
                     id: object.id(),
-                    mesh: mesh.clone(),
-                    attributes: object.attributes().clone(),
+                    mesh,
+                    attributes: object.attributes(),
                 })
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
@@ -14546,7 +14546,7 @@ impl Command for FillMeshHoleCommand {
             .iter()
             .map(|source| MeshTopologySource {
                 id: source.id,
-                mesh: &source.mesh,
+                mesh: source.mesh,
             })
             .collect::<Vec<_>>();
         let selections = selected_fill_mesh_hole_edges(

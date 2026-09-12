@@ -191,8 +191,9 @@ Whole-mesh `Weld`, `Unweld`, `CombineIdenticalMeshVertices`, and
 geometry, without an extra input snapshot. This does not remove the allocations
 needed to construct results or retain document history.
 The shared topology-source adapter also borrows meshes for edge/vertex weld
-and unweld, edge swap, collapse, and split staging. Hole filling borrows its
-already-owned input through that adapter instead of making another mesh copy.
+and unweld, edge swap, collapse, and split staging. Hole filling borrows the
+document mesh and attributes through staging, copying attributes only into
+owned output plans and passing the same borrowed mesh to topology selection.
 These borrows end before document mutation; staged results remain owned.
 A shared topology-source validator preserves selection action order and
 command-specific unsupported-geometry errors, rejecting an empty selection
