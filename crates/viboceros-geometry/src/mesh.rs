@@ -1,5 +1,7 @@
 mod components;
 #[cfg(test)]
+mod normal_tests;
+#[cfg(test)]
 mod transform_tests;
 
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
@@ -3889,15 +3891,23 @@ impl TriangleMesh {
     fn polygon_face_normals(&self) -> Result<Vec<UnitVector3>, GeometryError> {
         self.faces
             .iter()
-            .map(|face| match *face {
-                MeshFace::Triangle([a, b, c]) => self.vertices[a as usize]
-                    .vector_to(self.vertices[b as usize])?
-                    .cross(self.vertices[a as usize].vector_to(self.vertices[c as usize])?)?
-                    .normalized_nonzero(),
-                MeshFace::Quad([a, b, c, d]) => self.vertices[a as usize]
-                    .vector_to(self.vertices[c as usize])?
-                    .cross(self.vertices[b as usize].vector_to(self.vertices[d as usize])?)?
-                    .normalized_nonzero(),
+            .map(|face| {
+                let (first, second) = match *face {
+                    MeshFace::Triangle([a, b, c]) => ([a, b], [a, c]),
+                    MeshFace::Quad([a, b, c, d]) => ([a, c], [b, d]),
+                };
+                // Only the direction is needed. Normalize each edge/diagonal
+                // before crossing, so a valid face need not have a representable
+                // area (its square scale can overflow or underflow).
+                let direction = |[start, end]: [u32; 2]| {
+                    self.vertices[start as usize]
+                        .vector_to(self.vertices[end as usize])?
+                        .normalized_nonzero()
+                };
+                direction(first)?
+                    .as_vector()
+                    .cross(direction(second)?.as_vector())?
+                    .normalized_nonzero()
             })
             .collect()
     }
