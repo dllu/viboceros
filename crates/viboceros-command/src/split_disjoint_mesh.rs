@@ -64,7 +64,17 @@ impl Command for SplitDisjointMeshCommand {
             }
         }
 
-        replace_selection(document, output_ids)?;
+        // Locked/hidden peers can be edited through a selected group. They
+        // cannot seed a new pick; selectable outputs expand their groups to
+        // include those peers and their new pieces instead.
+        let selectable = document
+            .selectable_objects()
+            .map(|object| object.id())
+            .collect::<BTreeSet<_>>();
+        replace_selection(
+            document,
+            output_ids.into_iter().filter(|id| selectable.contains(id)),
+        )?;
         Ok(format!(
             "Split {split_mesh_count} mesh(es) into {piece_count} piece(s); {unchanged_mesh_count} mesh(es) unchanged"
         ))

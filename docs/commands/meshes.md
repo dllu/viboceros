@@ -244,6 +244,11 @@ coincident vertices, as well as object metadata, face order, and winding.
 `SplitDisjointMesh` separates exact-location edge-connected components (a lone
 shared vertex does not connect them), retaining the first object identity and
 copying attributes and group membership to additional pieces.
+Output selection uses selectable pieces as group-pick seeds, allowing hidden or
+locked peers already selected through a group to remain editable and selected.
+Native regression tests cover both restrictions, either source order, rejected
+arguments with redo history, and exact object/group undo and redo. This edge-case
+coverage is not a claim of live Rhino command parity.
 
 `ExtractDuplicateMeshFaces` separates all but one face from each duplicate
 class. Face equality uses exact vertex locations and ignores raw indices,

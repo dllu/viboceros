@@ -1,6 +1,94 @@
 use super::*;
 
 #[test]
+fn split_disjoint_mesh_reselects_restricted_group_peers_and_replays_exactly() {
+    let registry = CommandRegistry::with_builtins();
+    for (hidden, locked_index) in [(false, 0), (false, 1), (true, 0), (true, 1)] {
+        let mut document = Document::default();
+        let mesh = TriangleMesh::try_new(
+            [
+                [0., 0., 0.],
+                [1., 0., 0.],
+                [0., 1., 0.],
+                [3., 0., 0.],
+                [4., 0., 0.],
+                [3., 1., 0.],
+            ]
+            .map(|p| Point3::try_from(p).unwrap())
+            .to_vec(),
+            vec![[0, 1, 2], [3, 4, 5]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let ids = [0, 1].map(|_| document.add_geometry(Geometry::Mesh(mesh.clone())).unwrap());
+        document.add_group(None, ids).unwrap();
+        if hidden {
+            document
+                .set_objects_visibility([ids[locked_index]], false)
+                .unwrap();
+        } else {
+            document
+                .set_objects_locked([ids[locked_index]], true)
+                .unwrap();
+        }
+        document
+            .add_geometry(Geometry::Point(Point3::try_new(0., 0., 0.).unwrap()))
+            .unwrap();
+        document.undo().unwrap();
+        document
+            .select_object(ids[1 - locked_index], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(document.selected_object_count(), 2);
+        assert!(document.can_redo());
+        let before = format!("{document:?}");
+        assert!(
+            registry
+                .execute(&mut document, "SplitDisjointMesh unexpected")
+                .is_err()
+        );
+        assert_eq!(format!("{document:?}"), before);
+        let before_objects = document.objects().cloned().collect::<Vec<_>>();
+        let before_groups = document.groups().cloned().collect::<Vec<_>>();
+        assert_eq!(
+            registry
+                .execute(&mut document, "SplitDisjointMesh")
+                .unwrap(),
+            "Split 2 mesh(es) into 4 piece(s); 0 mesh(es) unchanged"
+        );
+        assert!(!document.can_redo());
+        assert_eq!(document.objects().len(), 4);
+        assert_eq!(document.selected_object_count(), 4);
+        assert_eq!(document.selectable_objects().count(), 2);
+        for object in document.objects() {
+            let Geometry::Mesh(piece) = object.geometry() else {
+                panic!("mesh expected")
+            };
+            assert_eq!(piece.face_count(), 1);
+            assert_eq!(object.group_ids(), before_objects[0].group_ids());
+        }
+        let after = document.objects().cloned().collect::<Vec<_>>();
+        let after_groups = document.groups().cloned().collect::<Vec<_>>();
+        document.undo().unwrap();
+        assert_eq!(
+            document.objects().cloned().collect::<Vec<_>>(),
+            before_objects
+        );
+        assert_eq!(
+            document.groups().cloned().collect::<Vec<_>>(),
+            before_groups
+        );
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            ids.into_iter().collect()
+        );
+        document.redo().unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
+        assert_eq!(document.groups().cloned().collect::<Vec<_>>(), after_groups);
+        assert_eq!(document.selected_object_count(), 4);
+    }
+}
+
+#[test]
 fn split_disjoint_mesh_moves_first_piece_and_keeps_remaining_face_order() {
     let mut document = Document::default();
     let registry = CommandRegistry::with_builtins();

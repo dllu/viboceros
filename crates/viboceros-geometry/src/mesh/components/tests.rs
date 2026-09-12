@@ -5,6 +5,63 @@ fn p(x: f64, y: f64, z: f64) -> Point3 {
 }
 
 #[test]
+fn component_order_matches_graph_traversal_for_every_graph_up_to_six_faces() {
+    for count in 0..=6 {
+        let edges = (0..count)
+            .flat_map(|a| (a + 1..count).map(move |b| (a, b)))
+            .collect::<Vec<_>>();
+        for mask in 0..1usize << edges.len() {
+            let mut adjacent = vec![Vec::new(); count];
+            for (bit, &(a, b)) in edges.iter().enumerate() {
+                if mask & (1 << bit) != 0 {
+                    adjacent[a].push(b);
+                    adjacent[b].push(a);
+                }
+            }
+            // Independent traversal, with no union-find or root lookup.
+            let mut visited = vec![false; count];
+            let mut expected = Vec::new();
+            for start in 0..count {
+                if visited[start] {
+                    continue;
+                }
+                let mut stack = vec![start];
+                let mut component = Vec::new();
+                visited[start] = true;
+                while let Some(face) = stack.pop() {
+                    component.push(face);
+                    for &neighbor in &adjacent[face] {
+                        if !visited[neighbor] {
+                            visited[neighbor] = true;
+                            stack.push(neighbor);
+                        }
+                    }
+                }
+                component.sort_unstable();
+                expected.push(component);
+            }
+            for reverse in [false, true] {
+                let mut parents = (0..count).collect::<Vec<_>>();
+                let mut ranks = vec![0; count];
+                for step in 0..edges.len() {
+                    let bit = if reverse {
+                        edges.len() - 1 - step
+                    } else {
+                        step
+                    };
+                    if mask & (1 << bit) != 0 {
+                        let (a, b) = edges[bit];
+                        let (a, b) = if reverse { (b, a) } else { (a, b) };
+                        union_faces(&mut parents, &mut ranks, a, b);
+                    }
+                }
+                assert_eq!(component_faces(&mut parents), expected);
+            }
+        }
+    }
+}
+
+#[test]
 fn many_components_with_a_shared_vertex_reset_only_their_own_remap_entries() {
     let mut vertices = vec![p(0., 0., 0.), p(999., 999., 999.)];
     let mut faces = Vec::new();

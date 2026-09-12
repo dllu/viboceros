@@ -4,6 +4,23 @@ use super::*;
 #[cfg(test)]
 mod tests;
 
+/// Group face indices in first-face order, independently of union root order.
+/// Roots are face indices, so a dense lookup avoids tree searches per face.
+fn component_faces(parents: &mut [usize]) -> Vec<Vec<usize>> {
+    let mut component_by_root = vec![usize::MAX; parents.len()];
+    let mut components = Vec::<Vec<usize>>::new();
+    for face in 0..parents.len() {
+        let root = face_root(parents, face);
+        let component = &mut component_by_root[root];
+        if *component == usize::MAX {
+            *component = components.len();
+            components.push(Vec::new());
+        }
+        components[*component].push(face);
+    }
+    components
+}
+
 impl TriangleMesh {
     /// Splits the mesh into exact-location edge-connected components. A lone
     /// shared vertex does not connect faces. Each result retains source face
@@ -22,19 +39,7 @@ impl TriangleMesh {
             }
         }
 
-        let mut component_by_root = BTreeMap::new();
-        let mut component_faces = Vec::<Vec<usize>>::new();
-        for face in 0..self.faces.len() {
-            let root = face_root(&mut parents, face);
-            let component_count = component_faces.len();
-            let component = *component_by_root.entry(root).or_insert_with(|| {
-                component_faces.push(Vec::new());
-                component_count
-            });
-            component_faces[component].push(face);
-        }
-
-        self.pieces_from_faces(component_faces)
+        self.pieces_from_faces(component_faces(&mut parents))
     }
 
     /// Splits the mesh into the parts Rhino's `Explode` command sees across
@@ -59,19 +64,7 @@ impl TriangleMesh {
             }
         }
 
-        let mut component_by_root = BTreeMap::new();
-        let mut component_faces = Vec::<Vec<usize>>::new();
-        for face in 0..self.faces.len() {
-            let root = face_root(&mut parents, face);
-            let component_count = component_faces.len();
-            let component = *component_by_root.entry(root).or_insert_with(|| {
-                component_faces.push(Vec::new());
-                component_count
-            });
-            component_faces[component].push(face);
-        }
-
-        self.pieces_from_faces(component_faces)
+        self.pieces_from_faces(component_faces(&mut parents))
     }
 
     /// Reuse one raw-vertex map across components. Allocating a complete map

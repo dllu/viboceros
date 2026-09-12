@@ -68,6 +68,9 @@ selection action order are independent of chronological object order.
 memory. Geometry connectivity and component extraction live in `mesh/components`;
 disjoint splitting and mesh explosion share a single reusable vertex-remap
 scratch array, avoiding per-component initialization of a source-sized array.
+Both operations share face-indexed component grouping, avoiding per-face tree
+lookups while retaining first-face order. An independent graph traversal checks
+the grouping against every undirected graph of up to six faces in two union orders.
 The `split_disjoint_mesh` command module owns staged component results and their
 document replacement, attribute/group propagation, and output selection.
 The command-owned `object_selection` module supplies typed filters and boolean
