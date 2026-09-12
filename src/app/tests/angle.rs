@@ -1,6 +1,24 @@
 use super::*;
 
 #[test]
+fn angle_point_picking_accepts_finite_points_with_overflowing_differences() {
+    let mut app = test_app();
+    let before = format!("{:?}", app.document);
+    assert!(app.try_start_interactive_command("Angle"));
+    for p in [
+        point(-1e308, 0., 0.),
+        point(1e308, 0., 0.),
+        point(0., -1e308, 0.),
+        point(0., 1e308, 0.),
+    ] {
+        assert!(app.accept_drafting_point(p));
+    }
+    assert!(app.active_command.is_none());
+    assert_eq!(app.command_log.back().unwrap(), "Angle = 90 degrees");
+    assert_eq!(format!("{:?}", app.document), before);
+}
+
+#[test]
 fn angle_object_mode_supports_postselection_and_bare_preselection() {
     use viboceros_document::SelectionMode;
     let mut app = test_app();

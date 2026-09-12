@@ -176,9 +176,21 @@ parameters, true result overflow, and an interior sample that previously rounded
 onto an endpoint. These are targeted guarantees, not a claim of correctly rounded
 interpolation for every binary64 input.
 
+## Point-to-point directions
+
+`Point3::direction_to` normalizes the difference between distinct finite points.
+When subtraction overflows, it halves both endpoints before subtracting; this
+retains the direction without requiring the displacement or distance to fit in
+binary64. Ordinary and subnormal displacements use the unscaled path. Tests cover
+opposite extreme coordinates, reversal, coincident-point rejection, and small
+representable components alongside an overflowing dominant displacement.
+Four-point `Angle` and its interactive validation use this query. These extreme
+cases are analytic numerical regressions, not additional Rhino oracle captures.
+
 ## Focused checks
 
 ```sh
+cargo test -p viboceros-geometry point::
 cargo test -p viboceros-geometry vector::
 cargo test -p viboceros-geometry line::
 cargo test -p viboceros-geometry plane::

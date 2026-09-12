@@ -46,7 +46,11 @@ impl Command for AngleCommand {
             first + second + third + fourth,
             "Angle first_start first_end second_start second_end",
         )?;
-        let angle = a.vector_to(b)?.angle_to(c.vector_to(d)?)?.to_degrees();
+        let angle = a
+            .direction_to(b)?
+            .as_vector()
+            .angle_to(c.direction_to(d)?.as_vector())?
+            .to_degrees();
         Ok(format!("Angle = {} degrees", format_measurement(angle)))
     }
 }
@@ -55,6 +59,24 @@ impl Command for AngleCommand {
 mod tests {
     use super::*;
     use crate::CommandRegistry;
+
+    #[test]
+    fn four_point_angles_do_not_require_representable_endpoint_differences() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let before = format!("{document:?}");
+        for (input, expected) in [
+            ("Angle -1e308,0,0 1e308,0,0 0,-1e308,0 0,1e308,0", 90.),
+            ("Angle -1e308,0,0 1e308,0,0 1e308,0,0 -1e308,0,0", 180.),
+            ("Angle -1e308,-1e308,0 1e308,1e308,0 0,0,0 1,0,0", 45.),
+            ("Angle 0,0,0 5e-324,0,0 0,0,0 0,5e-324,0", 90.),
+        ] {
+            let output = registry.execute(&mut document, input).unwrap();
+            let angle: f64 = output.split_whitespace().nth(2).unwrap().parse().unwrap();
+            assert!((angle - expected).abs() < 1e-12, "{output}");
+            assert_eq!(format!("{document:?}"), before);
+        }
+    }
 
     #[test]
     fn four_point_reports_match_captured_rhino_angles() {

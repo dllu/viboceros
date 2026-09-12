@@ -11,8 +11,8 @@ orientation and the separation between the two lines. Reversing one direction
 changes the result to its supplement. The query does not alter geometry,
 selection, or model undo/redo. Esc cancels interactive input.
 
-Both directions must be nonzero and have representable coordinate differences.
-Normalization handles finite directions whose norms would overflow. The
+Both directions must be nonzero. Range-safe endpoint subtraction and
+normalization also handle finite endpoints whose differences or norms would overflow. The
 cross/dot `atan2` formula retains small angles that a rounded-dot `acos` would
 lose; no document-distance tolerance is used to reject a nonzero direction.
 An invalid second or fourth picked point leaves its prompt active for correction.

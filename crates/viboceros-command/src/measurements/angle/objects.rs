@@ -44,7 +44,7 @@ fn direction(geometry: &Geometry, tolerance: Tolerance) -> Result<(Vector3, bool
         return Ok((plane.normal().as_vector(), true));
     }
     if let Geometry::Line(line) = geometry {
-        return Ok((line.start().vector_to(line.end())?, false));
+        return Ok((line.start().direction_to(line.end())?.as_vector(), false));
     }
     if let Some(curve) = geometry.nurbs_curve_representation()?
         && curve.is_linear(tolerance)?
@@ -52,7 +52,8 @@ fn direction(geometry: &Geometry, tolerance: Tolerance) -> Result<(Vector3, bool
         return Ok((
             curve
                 .evaluate(*curve.domain().start())?
-                .vector_to(curve.evaluate(*curve.domain().end())?)?,
+                .direction_to(curve.evaluate(*curve.domain().end())?)?
+                .as_vector(),
             false,
         ));
     }

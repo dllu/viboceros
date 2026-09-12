@@ -1,4 +1,4 @@
-use crate::{GeometryError, Real, Tolerance, Vector3, require_finite};
+use crate::{GeometryError, Real, Tolerance, UnitVector3, Vector3, require_finite};
 
 /// A finite point in three-dimensional model space.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -54,6 +54,25 @@ impl Point3 {
         )
     }
 
+    /// Unit direction between distinct finite points, even when their difference
+    /// cannot fit in binary64. This query does not apply model-distance tolerance.
+    pub fn direction_to(self, other: Self) -> Result<UnitVector3, GeometryError> {
+        let difference = match self.vector_to(other) {
+            Ok(vector) => vector,
+            Err(_) => {
+                // An overflowing difference implies a huge dominant component.
+                // Halving before subtraction bounds every component by MAX;
+                // any subnormal loss here is below the unit direction's range.
+                Vector3::try_new(
+                    other.x() * 0.5 - self.x() * 0.5,
+                    other.y() * 0.5 - self.y() * 0.5,
+                    other.z() * 0.5 - self.z() * 0.5,
+                )?
+            }
+        };
+        difference.normalized_nonzero()
+    }
+
     pub fn is_near(self, other: Self, tolerance: Tolerance) -> bool {
         self.distance_to(other)
             .is_ok_and(|distance| distance <= tolerance.absolute())
@@ -79,6 +98,32 @@ impl TryFrom<[Real; 3]> for Point3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn point_directions_handle_overflow_subnormals_and_reversal() {
+        for scale in [Real::from_bits(1), 1.0, Real::MAX] {
+            let a = Point3::try_new(-scale, 0., scale).unwrap();
+            let b = Point3::try_new(scale, scale, -scale).unwrap();
+            let forward = a.direction_to(b).unwrap().as_vector().to_array();
+            let backward = b.direction_to(a).unwrap().as_vector().to_array();
+            for ((actual, reverse), expected) in
+                forward
+                    .into_iter()
+                    .zip(backward)
+                    .zip([2. / 3., 1. / 3., -2. / 3.])
+            {
+                assert!((actual - expected).abs() <= Real::EPSILON);
+                assert_eq!(actual, -reverse);
+            }
+            assert!(a.direction_to(a).is_err());
+        }
+        // A small but representable component must survive the overflow path.
+        let a = Point3::try_new(-Real::MAX, 0., 0.).unwrap();
+        let b = Point3::try_new(Real::MAX, 1., 0.).unwrap();
+        let direction = a.direction_to(b).unwrap().as_vector();
+        assert_eq!(direction.x(), 1.);
+        assert_eq!(direction.y(), 0.5 / Real::MAX);
+    }
 
     #[test]
     fn midpoint_is_symmetric_and_handles_subnormal_and_extreme_coordinates() {

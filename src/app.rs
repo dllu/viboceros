@@ -2954,10 +2954,7 @@ impl VibocerosApp {
                 let index = points.iter().position(Option::is_none).unwrap_or(3);
                 if index == 1 || index == 3 {
                     let start = points[index - 1].unwrap();
-                    if let Err(error) = start
-                        .vector_to(point)
-                        .and_then(|vector| vector.normalized_nonzero())
-                    {
+                    if let Err(error) = start.direction_to(point) {
                         self.push_log(format!("Error: {error}"));
                         return false;
                     }
