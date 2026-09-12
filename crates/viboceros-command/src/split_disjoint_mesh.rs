@@ -1,5 +1,8 @@
 use super::*;
 
+#[cfg(test)]
+mod tests;
+
 pub(super) struct SplitDisjointMeshCommand;
 
 impl Command for SplitDisjointMeshCommand {

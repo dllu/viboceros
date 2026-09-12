@@ -263,6 +263,11 @@ layer visibility/locking, ordered groups, and selection, including untouched
 peers. Coverage includes every seed in a two-group overlap in both bridge
 membership orders, and hidden/locked layers. It does not verify document table
 order, combinations of object and layer restrictions, or Rhino undo/redo.
+The same 13 native setups also run two complete undo/redo cycles, comparing
+object identity, geometry, attributes, table order, group records, and selection
+membership before and after each replay. These are native history invariants,
+not recorded Rhino history observations. Split-specific tests live beside the
+command in `split_disjoint_mesh/tests.rs`.
 The geometry-only `SplitDisjointPieces` probe cannot verify this document behavior.
 
 `ExtractDuplicateMeshFaces` separates all but one face from each duplicate
