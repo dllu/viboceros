@@ -102,6 +102,10 @@ smallest positive binary64 area; these are native numerical guarantees.
 Topology-edge collapse uses the common point midpoint routine. Triangle/quad
 regressions preserve constant subnormal offsets, check signed subnormal ties,
 and avoid overflow for large constant offsets without changing source ordering.
+The `mesh/edge_collapse` module owns endpoint merging, face reduction, compaction,
+and final validation. Face reduction uses fixed-size index checks without per-quad
+collections; an independent distinct-vertex reference exhausts all triangle and
+quad index patterns over four labels, including collapsed sides and diagonals.
 The `split_disjoint_mesh` command module owns staged component results, fresh
 piece insertion, source deletion policy, attribute/group propagation, and selection.
 The separate `explode` command module owns multi-geometry decomposition staging,
