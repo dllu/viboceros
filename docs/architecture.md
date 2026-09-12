@@ -87,6 +87,8 @@ independent pairwise test exhausts endpoint-index assignments through four uses.
 Logical-boundary and face-angle filters also stream incident-face pairs without
 temporary vectors. Indexed reference calculations cover boundary, manifold, and
 non-manifold edges, including inclusive break angles and strict filter bounds.
+The `mesh/normals` module shares direction calculation between triangulated-facet
+and polygon-normal APIs, with explicit tests of their different indexing.
 Polygon normals normalize triangle edges or quad diagonals before crossing them,
 so finite, valid meshes do not require representable face areas to compute a
 direction. Analytic normal and angle-filter regressions cover uniform scales

@@ -1,6 +1,5 @@
 mod components;
-#[cfg(test)]
-mod normal_tests;
+mod normals;
 #[cfg(test)]
 mod transform_tests;
 
@@ -3886,47 +3885,6 @@ impl TriangleMesh {
             topological_vertices,
             edges,
         }
-    }
-
-    /// Unit normals in stored polygon-face order (one per triangle or quad).
-    /// Non-planar quads use the oriented cross product of their diagonals,
-    /// not an unweighted average of their triangulation's unit normals.
-    pub fn polygon_face_normals(&self) -> Result<Vec<UnitVector3>, GeometryError> {
-        self.faces
-            .iter()
-            .map(|face| {
-                let (first, second) = match *face {
-                    MeshFace::Triangle([a, b, c]) => ([a, b], [a, c]),
-                    MeshFace::Quad([a, b, c, d]) => ([a, c], [b, d]),
-                };
-                // Only the direction is needed. Normalize each edge/diagonal
-                // before crossing, so a valid face need not have a representable
-                // area (its square scale can overflow or underflow).
-                let direction = |[start, end]: [u32; 2]| {
-                    self.vertices[start as usize]
-                        .vector_to(self.vertices[end as usize])?
-                        .normalized_nonzero()
-                };
-                direction(first)?
-                    .as_vector()
-                    .cross(direction(second)?.as_vector())?
-                    .normalized_nonzero()
-            })
-            .collect()
-    }
-
-    /// Unit normal of a triangulated facet, indexed into [`Self::triangles`].
-    /// For one normal per original polygon, use [`Self::polygon_face_normals`].
-    pub fn face_normal(&self, index: usize) -> Result<UnitVector3, GeometryError> {
-        let points = self
-            .triangle_points(index)
-            .ok_or(GeometryError::TriangleIndexOutOfRange { triangle: index })?;
-        let first = points[0].vector_to(points[1])?.normalized_nonzero()?;
-        let second = points[0].vector_to(points[2])?.normalized_nonzero()?;
-        first
-            .as_vector()
-            .cross(second.as_vector())?
-            .normalized_nonzero()
     }
 
     pub fn area(&self) -> Result<Real, GeometryError> {
