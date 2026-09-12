@@ -251,6 +251,28 @@ def _mesh_triangles(mesh):
     return triangles
 
 
+def _mesh_radial_topology_value(mesh):
+    """Inspect public topology before/after radial sorting; no geometry edits."""
+    edges = []
+    for index in range(mesh.TopologyEdges.Count):
+        endpoints = mesh.TopologyEdges.GetTopologyVertices(index)
+        edges.append({
+            "vertices": [int(endpoints.I), int(endpoints.J)],
+            "faces": [int(face) for face in mesh.TopologyEdges.GetConnectedFaces(index)],
+        })
+    vertices = []
+    for index in range(mesh.TopologyVertices.Count):
+        before = list(mesh.TopologyVertices.ConnectedEdges(index) or [])
+        sorted_ok = bool(mesh.TopologyVertices.SortEdges(index))
+        vertices.append({
+            "mesh_vertices": [int(raw) for raw in mesh.TopologyVertices.MeshVertexIndices(index)],
+            "edges_before": [int(edge) for edge in before],
+            "edges_after": [int(edge) for edge in (mesh.TopologyVertices.ConnectedEdges(index) or [])],
+            "sorted": sorted_ok,
+        })
+    return {"edges": edges, "vertices": vertices}
+
+
 def _mesh_value(mesh):
     return {
         "triangles": _mesh_triangles(mesh),
@@ -8171,6 +8193,23 @@ def _execute(operation, iterations, tolerance):
                 reversed_curve.Dispose()
 
         return _measure(iterations, reverse_curve)
+
+    if kind == "mesh_radial_topology":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+
+        def radial_topology():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                return _mesh_radial_topology_value(mesh)
+            finally:
+                mesh.Dispose()
+
+        try:
+            return _measure(iterations, radial_topology)
+        finally:
+            source.Dispose()
 
     if kind == "mesh_face_normals":
         mesh = _polygon_mesh(operation["vertices"], operation["faces"])

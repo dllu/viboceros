@@ -38,6 +38,30 @@ not part of these records.
 
 ## Running the diagnostic
 
+### Radial sorting checked separately
+
+The [12-case topology request](../tools/rhino_oracle/fixtures/mesh_radial_topology.json)
+and [Rhino response](../tools/rhino_oracle/observations/mesh_radial_topology.json)
+record raw-vertex membership, edge-face incidence, and edge order before/after
+the public [`TopologyVertices.SortEdges`](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.collections.meshtopologyvertexlist/sortedges)
+call. McNeel documents non-manifold edges as boundaries for this sort.
+The probe duplicates and disposes its mesh; it does not edit document objects.
+It is Rhino-only and is not a native `Operation` variant.
+
+The native `mesh::radial_tests` regression matches the flattened sorted edge
+lists at every vertex in all twelve cases, including all face orders and partial
+sharing. Python checks validate record incidence and membership against the
+source faces. Thus the observed angle-unweld mismatch remains downstream of
+radial ordering for these probes. This does not establish a universal rule for
+Rhino's non-manifold face grouping.
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/mesh_radial_topology.json --timeout 240
+cargo test -p viboceros-geometry radial_tests
+```
+
+### Unresolved unweld parity
+
 The two native parity tests are explicitly ignored while this gap remains:
 
 ```sh
@@ -47,6 +71,7 @@ tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/mesh_unwe
 
 The tests are expected to fail with the current implementation. Do not replace
 their expected results with native output or interpret the normal suite's green
-status as proof of non-manifold angle-unweld compatibility. The next investigation
-should compare public Rhino topology/radial traversal outputs and sequential
-vertex rebuilding against these measurements before changing connectivity rules.
+status as proof of non-manifold angle-unweld compatibility. With radial sorting
+matched for the recorded inputs, the next investigation should distinguish
+ordered face grouping from sequential vertex rebuilding before changing
+connectivity rules.

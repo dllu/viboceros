@@ -9,6 +9,8 @@ mod edge_split;
 mod edge_unweld_tests;
 mod edge_weld;
 mod normals;
+#[cfg(test)]
+mod radial_tests;
 mod rebuild;
 mod union_find;
 use union_find::{index_root, union_faces, union_indices_keep_earlier, union_indices_keep_later};
