@@ -175,6 +175,9 @@ The `step/export_geometry` adapter writes coordinates, directions, and line
 lengths with an explicit decimal point and uppercase exponent. This fixes
 unparseable records such as a bare `1e21` coordinate. A 12,282-value binary64
 matrix checks exact numeric round trips, including subnormals and signed zero.
+Geometry-number formatting uses a checked 32-byte stack buffer rather than a
+temporary heap string per value. Buffer overflow returns a formatting error
+without truncation or partial append; output-stream buffering is separate.
 The line adapter precomputes finite lengths and unit directions with the native
 kernel's scale-safe norm and normalization, once per unique exported edge.
 Formatting does not repeat geometric arithmetic. Some
