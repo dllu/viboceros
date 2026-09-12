@@ -30,6 +30,7 @@ const MAX_LOG_ENTRIES: usize = 100;
 mod construction_plane;
 mod curve_preview;
 mod curve_prompt;
+mod distance;
 mod group_prompt;
 mod interface;
 mod object_selection;
@@ -150,6 +151,7 @@ enum InteractiveCommand {
     },
     Distance {
         start: Option<Point3>,
+        previous_last: Option<Point3>,
     },
     Circle {
         center: Option<Point3>,
@@ -459,8 +461,10 @@ impl InteractiveCommand {
             Self::Line { start: None } => {
                 "Line: pick the start point in the viewport (Esc to cancel)"
             }
-            Self::Distance { start: None } => "Distance: pick the first point (Esc to cancel)",
-            Self::Distance { start: Some(_) } => "Distance: pick the second point (Esc to cancel)",
+            Self::Distance { start: None, .. } => "Distance: pick the first point (Esc to cancel)",
+            Self::Distance { start: Some(_), .. } => {
+                "Distance: pick the second point (Undo revises the first; Esc cancels)"
+            }
             Self::Line { start: Some(_) } => {
                 "Line: pick the end point in the viewport (Esc to cancel)"
             }
@@ -896,7 +900,7 @@ impl InteractiveCommand {
             Self::Point
             | Self::Points
             | Self::Line { start: None }
-            | Self::Distance { start: None }
+            | Self::Distance { start: None, .. }
             | Self::Circle { center: None }
             | Self::Sphere { center: None }
             | Self::Ellipsoid {
@@ -971,7 +975,7 @@ impl InteractiveCommand {
                 axis_start: None, ..
             } => None,
             Self::Line { start }
-            | Self::Distance { start }
+            | Self::Distance { start, .. }
             | Self::Circle { center: start }
             | Self::Sphere { center: start }
             | Self::Rectangle { first: start }
@@ -1163,7 +1167,7 @@ impl VibocerosApp {
         if self.try_continue_group_prompt(&input) {
             return;
         }
-        if self.try_continue_points(&input) {
+        if self.try_continue_points(&input) || self.try_continue_distance(&input) {
             return;
         }
         if self.try_continue_point_grid_height(&input) {
@@ -1198,7 +1202,7 @@ impl VibocerosApp {
     }
 
     fn try_execute_command(&mut self, input: &str) -> bool {
-        if self.try_continue_points(input) {
+        if self.try_continue_points(input) || self.try_continue_distance(input) {
             return true;
         }
         let active_plane = self.viewports[self.active_viewport].construction_plane();
@@ -2772,7 +2776,10 @@ impl VibocerosApp {
                 "point" | "pt" => InteractiveCommand::Point,
                 "points" => InteractiveCommand::Points,
                 "line" | "l" => InteractiveCommand::Line { start: None },
-                "distance" => InteractiveCommand::Distance { start: None },
+                "distance" => InteractiveCommand::Distance {
+                    start: None,
+                    previous_last: self.last_point,
+                },
                 "circle" | "c" => InteractiveCommand::Circle { center: None },
                 "sphere" | "sph" => InteractiveCommand::Sphere { center: None },
                 "ellipsoid" => InteractiveCommand::Ellipsoid { points: [None; 3] },
@@ -2926,12 +2933,20 @@ impl VibocerosApp {
                         .to_owned(),
                 );
             }
-            InteractiveCommand::Distance { start: None } => {
-                let next = InteractiveCommand::Distance { start: Some(point) };
+            InteractiveCommand::Distance {
+                start: None,
+                previous_last,
+            } => {
+                let next = InteractiveCommand::Distance {
+                    start: Some(point),
+                    previous_last,
+                };
                 self.active_command = Some(next);
                 self.push_log(next.prompt().to_owned());
             }
-            InteractiveCommand::Distance { start: Some(start) } => {
+            InteractiveCommand::Distance {
+                start: Some(start), ..
+            } => {
                 if let Err(error) = start.distance_to(point) {
                     self.push_log(format!("Error: {error}"));
                     return false;
@@ -5261,6 +5276,7 @@ fn point_is_near_axis(
 mod tests {
     mod bezier_selection;
     mod construction_plane;
+    mod distance;
     mod distribute;
     mod group_prompt;
     mod interface;
@@ -5593,7 +5609,7 @@ mod tests {
         assert!(!app.accept_drafting_point(point(1e308, 0., 0.)));
         assert!(matches!(
             app.active_command,
-            Some(InteractiveCommand::Distance { start: Some(_) })
+            Some(InteractiveCommand::Distance { start: Some(_), .. })
         ));
         assert_eq!(format!("{:?}", app.document), before);
     }
