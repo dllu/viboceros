@@ -7,7 +7,7 @@ use export_geometry::{ExportLine, ExportPoint};
 mod units;
 use export_plane::ExportPlane;
 
-use monstertruck::core::cgmath64::{InnerSpace, Matrix4, SquareMatrix, Transform};
+use monstertruck::core::cgmath64::{Matrix4, SquareMatrix, Transform};
 use monstertruck::meshing::prelude::{
     BoundedCurve, MeshedShape, ParametricCurve, ParametricSurface, PolygonMesh, RobustMeshableShape,
 };
@@ -307,21 +307,7 @@ fn mesh_to_shell(
     let mut faces = Vec::with_capacity(mesh.triangles().len());
 
     for (face, triangle) in mesh.triangles().iter().enumerate() {
-        let points = [
-            vertices[triangle[0] as usize],
-            vertices[triangle[1] as usize],
-            vertices[triangle[2] as usize],
-        ];
         let plane = ExportPlane::from_triangle(mesh, face)?;
-        // Mirror the serializer's line direction/magnitude calculations.
-        // Native mesh validity does not guarantee these third-party arithmetic
-        // paths stay representable. Preflight every shell before writing.
-        for edge in 0..3 {
-            let magnitude = (points[(edge + 1) % 3] - points[edge]).magnitude();
-            if !magnitude.is_finite() || magnitude == 0.0 {
-                return Err(StepError::InvalidExportDirections { face });
-            }
-        }
         let directed_edges = [
             (triangle[0], triangle[1]),
             (triangle[1], triangle[2]),
@@ -335,21 +321,29 @@ fn mesh_to_shell(
                 } else {
                     (end, start)
                 };
-                let index = *edge_indices.entry(key).or_insert_with(|| {
+                let index = if let Some(&index) = edge_indices.get(&key) {
+                    index
+                } else {
                     let index = edges.len();
                     let endpoints = (key.0 as usize, key.1 as usize);
+                    let curve = ExportLine::try_new(
+                        mesh.vertices()[endpoints.0],
+                        mesh.vertices()[endpoints.1],
+                    )
+                    .map_err(|_| StepError::InvalidExportDirections { face })?;
                     edges.push(CompressedEdge {
                         vertices: endpoints,
-                        curve: ExportLine(vertices[endpoints.0], vertices[endpoints.1]),
+                        curve,
                     });
+                    edge_indices.insert(key, index);
                     index
-                });
-                CompressedEdgeIndex {
+                };
+                Ok(CompressedEdgeIndex {
                     index,
                     orientation: (start, end) == key,
-                }
+                })
             })
-            .collect();
+            .collect::<Result<Vec<_>, StepError>>()?;
         faces.push(CompressedFace {
             boundaries: vec![boundary],
             orientation: true,

@@ -145,15 +145,17 @@ topology and planar faces. `ExportStep` converts physical document units to
 millimetres. The `step/export_plane` adapter writes plane placements using
 the native kernel's scale-safe facet normals and reference directions. Parsed
 STEP regression records check finite unit directions and reversed winding from
-mesh scales `1e-100` through `1e100`, including translated origins. This tests
+mesh scales `1e-200` through `1e200`, including translated origins. Parsed line
+magnitudes also match independent triangle edge lengths. This tests
 serialization, not downstream tessellation or Rhino parity at those scales.
 The `step/export_geometry` adapter writes coordinates, directions, and line
 lengths with an explicit decimal point and uppercase exponent. This fixes
 unparseable records such as a bare `1e21` coordinate. A 12,282-value binary64
 matrix checks exact numeric round trips, including subnormals and signed zero.
-Before writing any data, export checks the current line serializer's
-derived magnitudes for finite, nonzero values. Some
-valid extreme-scale native meshes exceed that serializer's arithmetic range;
+The line adapter precomputes finite lengths and unit directions with the native
+kernel's scale-safe norm and normalization, once per unique exported edge.
+Formatting does not repeat geometric arithmetic. Some
+valid extreme-scale native meshes have edge differences or lengths beyond binary64;
 these return an explicit error instead of emitting invalid STEP directions.
 Regression tests cover huge meshes, including failure after a valid
 earlier mesh, and verify unchanged output streams and existing destinations.

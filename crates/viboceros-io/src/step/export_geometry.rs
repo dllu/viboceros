@@ -1,8 +1,9 @@
 //! Mesh export records with explicit STEP real-number syntax.
 use super::TruckPoint3;
-use monstertruck::core::cgmath64::{InnerSpace, Vector3};
+use monstertruck::core::cgmath64::Vector3;
 use monstertruck::step::save::{StepCurve, StepDisplay, StepFormat, StepLength};
 use std::fmt;
+use viboceros_geometry::{GeometryError, Point3};
 
 pub(super) struct StepReal(pub f64);
 impl fmt::Display for StepReal {
@@ -46,7 +47,23 @@ impl StepFormat for ExportDirection {
         )
     }
 }
-pub(super) struct ExportLine(pub TruckPoint3, pub TruckPoint3);
+pub(super) struct ExportLine {
+    origin: TruckPoint3,
+    direction: Vector3,
+    length: f64,
+}
+impl ExportLine {
+    pub(super) fn try_new(start: Point3, end: Point3) -> Result<Self, GeometryError> {
+        let vector = start.vector_to(end)?;
+        let length = vector.length()?;
+        let direction = vector.normalized_nonzero()?.as_vector();
+        Ok(Self {
+            origin: TruckPoint3::new(start.x(), start.y(), start.z()),
+            direction: Vector3::new(direction.x(), direction.y(), direction.z()),
+            length,
+        })
+    }
+}
 impl StepLength for ExportLine {
     fn step_length(&self) -> usize {
         4
@@ -55,21 +72,23 @@ impl StepLength for ExportLine {
 impl StepCurve for ExportLine {}
 impl StepFormat for ExportLine {
     fn fmt(&self, index: usize, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let vector = self.1 - self.0;
-        let length = vector.magnitude();
         writeln!(f, "#{index} = LINE('', #{}, #{});", index + 1, index + 2)?;
-        write!(f, "{}", StepDisplay::new(ExportPoint(self.0), index + 1))?;
+        write!(
+            f,
+            "{}",
+            StepDisplay::new(ExportPoint(self.origin), index + 1)
+        )?;
         writeln!(
             f,
             "#{} = VECTOR('', #{}, {});",
             index + 2,
             index + 3,
-            StepReal(length)
+            StepReal(self.length)
         )?;
         write!(
             f,
             "{}",
-            StepDisplay::new(ExportDirection(vector / length), index + 3)
+            StepDisplay::new(ExportDirection(self.direction), index + 3)
         )
     }
 }

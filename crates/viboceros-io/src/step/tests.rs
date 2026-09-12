@@ -20,7 +20,7 @@ fn step_real_format_preserves_finite_binary64_values_and_required_decimal_point(
 
 #[test]
 fn exported_plane_directions_remain_unit_length_across_mesh_scales() {
-    for scale in [1e-100, 1e-20, 1.0, 1e20, 1e100] {
+    for scale in [1e-200, 1e-100, 1e-20, 1.0, 1e20, 1e100, 1e200] {
         for flipped in [false, true] {
             let mesh = TriangleMesh::try_new(
                 vec![
@@ -39,6 +39,21 @@ fn exported_plane_directions_remain_unit_length_across_mesh_scales() {
             assert_eq!(table.entity_report.total(), 0);
             assert_eq!(table.plane.len(), 1);
             assert_eq!(table.direction.len(), 5);
+            let mut lengths = table
+                .vector
+                .values()
+                .map(|vector| vector.magnitude)
+                .collect::<Vec<_>>();
+            lengths.sort_by(f64::total_cmp);
+            assert_eq!(lengths.len(), 3);
+            for (actual, expected) in
+                lengths
+                    .into_iter()
+                    .zip([scale, scale, scale * 2.0_f64.sqrt()])
+            {
+                assert!(actual.is_finite() && actual > 0.0);
+                assert!((actual / expected - 1.0).abs() < 1e-12);
+            }
             for direction in table.direction.values() {
                 let ratios = &direction.direction_ratios;
                 assert_eq!(ratios.len(), 3);
@@ -65,7 +80,7 @@ fn unrepresentable_export_directions_preserve_stream_and_destination() {
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("existing.step");
     std::fs::write(&path, b"original").unwrap();
-    for scale in [1e160, 1e200] {
+    for scale in [f64::MAX, f64::MAX * 0.9] {
         let mesh = TriangleMesh::try_new(
             vec![
                 Point3::try_new(0.0, 0.0, 0.0).unwrap(),
