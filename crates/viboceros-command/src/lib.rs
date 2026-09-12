@@ -12545,7 +12545,7 @@ impl Command for WeldCommand {
         let angle_degrees = parse_weld_angle(arguments)?;
         let selected = document
             .selected_objects()
-            .map(|object| (object.id(), object.geometry().clone()))
+            .map(|object| (object.id(), object.geometry()))
             .collect::<Vec<_>>();
         if selected.is_empty() {
             return Err(CommandError::NoObjectsSelected);
@@ -12926,7 +12926,7 @@ impl Command for UnweldCommand {
         let options = parse_unweld_arguments(arguments)?;
         let selected = document
             .selected_objects()
-            .map(|object| (object.id(), object.geometry().clone()))
+            .map(|object| (object.id(), object.geometry()))
             .collect::<Vec<_>>();
         if selected.is_empty() {
             return Err(CommandError::NoObjectsSelected);
@@ -12941,7 +12941,7 @@ impl Command for UnweldCommand {
             };
             let (unwelded, edges) = mesh.unwelded_vertices(options.angle_degrees.to_radians())?;
             qualifying_edge_count += edges;
-            if unwelded != mesh {
+            if &unwelded != mesh {
                 replacements.push((id, Geometry::Mesh(unwelded)));
             }
         }
@@ -13356,7 +13356,7 @@ impl Command for CombineIdenticalMeshVerticesCommand {
         require_consumed(arguments, 0, "CombineIdenticalMeshVertices")?;
         let selected = document
             .selected_objects()
-            .map(|object| (object.id(), object.geometry().clone()))
+            .map(|object| (object.id(), object.geometry()))
             .collect::<Vec<_>>();
         if selected.is_empty() {
             return Err(CommandError::NoObjectsSelected);
@@ -13396,7 +13396,7 @@ impl Command for CullUnusedMeshVerticesCommand {
         require_consumed(arguments, 0, "CullUnusedMeshVertices")?;
         let selected = document
             .selected_objects()
-            .map(|object| (object.id(), object.geometry().clone()))
+            .map(|object| (object.id(), object.geometry()))
             .collect::<Vec<_>>();
         if selected.is_empty() {
             return Err(CommandError::NoObjectsSelected);

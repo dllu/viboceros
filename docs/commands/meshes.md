@@ -186,6 +186,10 @@ edge and their normal angle is within the supplied 0-to-180-degree tolerance.
 It matches Rhino's survivor ordering, compacts unused vertices, never merges a
 vertex-only contact, and preserves object identity, metadata, groups, and
 selection. The default is 180 degrees; `Angle=90` is also accepted.
+Whole-mesh `Weld`, `Unweld`, `CombineIdenticalMeshVertices`, and
+`CullUnusedMeshVertices` likewise borrow selected inputs while staging new
+geometry, without an extra input snapshot. This does not remove the allocations
+needed to construct results or retain document history.
 
 `WeldEdge` merges the raw endpoint sets incident to selected exact-location
 mesh topology edges. Use `Edges=0,2`, `Edges=All`, or omit the selector to pick
