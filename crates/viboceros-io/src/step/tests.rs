@@ -116,6 +116,30 @@ fn polygon_face_step(boundaries: &[Vec<[f64; 2]>], reversed: bool) -> String {
 }
 
 #[test]
+fn native_planar_step_retains_small_holes() {
+    for size in [1e-4, 1e-6, 1e-8, 1e-10] {
+        let text = polygon_face_step(
+            &[
+                vec![[0., 0.], [10., 0.], [10., 10.], [0., 10.]],
+                vec![
+                    [4., 4.],
+                    [4., 4. + size],
+                    [4. + size, 4. + size],
+                    [4. + size, 4.],
+                ],
+            ],
+            false,
+        );
+        let shells = read_step_planar_shells(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+        let brep = &shells[0].brep;
+        assert_eq!((brep.vertices().len(), brep.edges().len()), (8, 8));
+        let loops = brep.faces()[0].loops();
+        assert_eq!(loops.len(), 2);
+        assert_eq!(loops[1].trims().len(), 4);
+    }
+}
+
+#[test]
 fn planar_step_multiple_holes_convert_and_invalid_regions_fail() {
     let outer = vec![[0., 0.], [10., 0.], [10., 10.], [0., 10.]];
     let a = vec![[1., 1.], [1., 3.], [3., 3.], [3., 1.]];

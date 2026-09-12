@@ -47,6 +47,24 @@ impl BrepFace {
         let mut outer = None;
         for (loop_index, (boundary, range)) in boundaries.iter().zip(&ranges).enumerate() {
             let polygon = &points[range.clone()];
+            let loop_scale = polygon
+                .iter()
+                .flat_map(|point| {
+                    [
+                        (point[0] - polygon[0][0]).abs(),
+                        (point[1] - polygon[0][1]).abs(),
+                    ]
+                })
+                .fold(0.0, Real::max);
+            if loop_scale <= epsilon {
+                return Err(invalid());
+            }
+            let local = |point: [Real; 2]| {
+                [
+                    (point[0] - polygon[0][0]) / loop_scale,
+                    (point[1] - polygon[0][1]) / loop_scale,
+                ]
+            };
             let mut area = 0.0;
             let mut correction = 0.0;
             for (i, trim) in boundary.iter().enumerate() {
@@ -63,23 +81,13 @@ impl BrepFace {
                 neumaier_add(
                     &mut area,
                     &mut correction,
-                    polygon_cross(polygon[0], polygon[i], polygon[j]),
+                    polygon_cross([0.0; 2], local(polygon[i]), local(polygon[j])),
                 );
                 // Adjacent sides may continue straight, but must not backtrack.
                 let k = (j + 1) % polygon.len();
-                if point_on_trim_segment(
-                    polygon[k],
-                    polygon[i],
-                    polygon[j],
-                    polygon_cross(polygon[i], polygon[j], polygon[k]),
-                    epsilon,
-                ) || point_on_trim_segment(
-                    polygon[i],
-                    polygon[j],
-                    polygon[k],
-                    polygon_cross(polygon[j], polygon[k], polygon[i]),
-                    epsilon,
-                ) {
+                if on_segment(polygon[k], polygon[i], polygon[j], epsilon)
+                    || on_segment(polygon[i], polygon[j], polygon[k], epsilon)
+                {
                     return Err(invalid());
                 }
             }
@@ -131,14 +139,13 @@ impl BrepFace {
             if i == outer {
                 continue;
             }
-            if !point_in_trim_polygon(points[range.start], &points[ranges[outer].clone()], epsilon)
-            {
+            if !inside_polygon(points[range.start], &points[ranges[outer].clone()], epsilon) {
                 return Err(invalid());
             }
             for (j, other) in ranges.iter().enumerate() {
                 if j != i
                     && j != outer
-                    && point_in_trim_polygon(points[range.start], &points[other.clone()], epsilon)
+                    && inside_polygon(points[range.start], &points[other.clone()], epsilon)
                 {
                     return Err(invalid());
                 }
@@ -172,16 +179,53 @@ fn sides_touch(a: [Real; 2], b: [Real; 2], c: [Real; 2], d: [Real; 2], epsilon: 
         return false;
     }
     let crosses = [
-        polygon_cross(a, b, c),
-        polygon_cross(a, b, d),
-        polygon_cross(c, d, a),
-        polygon_cross(c, d, b),
+        line_distance(c, a, b),
+        line_distance(d, a, b),
+        line_distance(a, c, d),
+        line_distance(b, c, d),
     ];
-    point_on_trim_segment(c, a, b, crosses[0], epsilon)
-        || point_on_trim_segment(d, a, b, crosses[1], epsilon)
-        || point_on_trim_segment(a, c, d, crosses[2], epsilon)
-        || point_on_trim_segment(b, c, d, crosses[3], epsilon)
+    on_segment(c, a, b, epsilon)
+        || on_segment(d, a, b, epsilon)
+        || on_segment(a, c, d, epsilon)
+        || on_segment(b, c, d, epsilon)
         || ((crosses[0] > 0.0) != (crosses[1] > 0.0) && (crosses[2] > 0.0) != (crosses[3] > 0.0))
+}
+
+// Coordinates are globally normalized and zero-length sides were rejected.
+// A cross product has area units: divide the side direction by its length so
+// the comparison uses the same distance epsilon for short and long sides.
+fn line_distance(point: [Real; 2], start: [Real; 2], end: [Real; 2]) -> Real {
+    let dx = end[0] - start[0];
+    let dy = end[1] - start[1];
+    let length = dx.hypot(dy);
+    (dx / length).mul_add(point[1] - start[1], -(dy / length) * (point[0] - start[0]))
+}
+
+fn on_segment(point: [Real; 2], start: [Real; 2], end: [Real; 2], epsilon: Real) -> bool {
+    (0..2).all(|axis| {
+        point[axis] >= start[axis].min(end[axis]) - epsilon
+            && point[axis] <= start[axis].max(end[axis]) + epsilon
+    }) && line_distance(point, start, end).abs() <= epsilon
+}
+
+fn inside_polygon(point: [Real; 2], polygon: &[[Real; 2]], epsilon: Real) -> bool {
+    let mut winding = 0_i64;
+    for i in 0..polygon.len() {
+        let start = polygon[i];
+        let end = polygon[(i + 1) % polygon.len()];
+        if on_segment(point, start, end, epsilon) {
+            return true;
+        }
+        let distance = line_distance(point, start, end);
+        if start[1] <= point[1] {
+            if end[1] > point[1] && distance > epsilon {
+                winding += 1;
+            }
+        } else if end[1] <= point[1] && distance < -epsilon {
+            winding -= 1;
+        }
+    }
+    winding != 0
 }
 
 #[cfg(test)]
@@ -410,6 +454,34 @@ mod tests {
                     }
                 }
             }
+        }
+    }
+
+    #[test]
+    fn small_holes_are_validated_at_their_own_area_scale() {
+        for size in [1e-4, 1e-6, 1e-8, 1e-10] {
+            let square = |x: Real, y: Real, width: Real| {
+                boundary(&[
+                    [x, y],
+                    [x, y + width],
+                    [x + width, y + width],
+                    [x + width, y],
+                ])
+            };
+            let hole = square(4., 4., size);
+            for boundaries in [vec![outer(), hole.clone()], vec![hole.clone(), outer()]] {
+                assert!(face(boundaries).is_ok(), "size {size}");
+            }
+            let nested = square(4. + size * 0.25, 4. + size * 0.25, size * 0.5);
+            assert!(
+                face(vec![outer(), hole.clone(), nested]).is_err(),
+                "nested {size}"
+            );
+            let disjoint = square(4. + size * 2., 4., size);
+            assert!(
+                face(vec![outer(), hole, disjoint]).is_ok(),
+                "disjoint {size}"
+            );
         }
     }
 }

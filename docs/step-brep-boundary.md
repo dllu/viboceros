@@ -105,6 +105,14 @@ Tests include concave boundaries, collinear subdivisions, scale/translation
 changes, malformed closure, and 1,176 rectangle-hole/order combinations checked
 against independent interval predicates. STEP fixtures with outside, touching,
 overlapping, or nested holes fail despite loss-free source-shell conversion.
+Winding area is normalized separately for each loop, so a small hole is not
+compared against the whole face's area. Contact and containment predicates use
+signed line distances, not area-valued cross products compared to a length
+epsilon. Regressions cover hole widths from `1e-4` through `1e-10` inside a
+10-wide face, including both loop orders, separate nearby holes, and rejection
+of nested holes; STEP decoding retains all eight vertices and edges. These
+checks establish conversion and region validation, not downstream meshing
+accuracy for features below the modelling tolerance.
 General native
 `Brep::try_new` validation currently verifies trim continuity, endpoint/surface
 agreement, edge-use types, and winding, but does not establish those planar
