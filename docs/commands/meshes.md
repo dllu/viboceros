@@ -176,6 +176,10 @@ and mesh types as `Flip`; standalone surface-normal orientation is not yet a
 separate property in the native surface model. `Flip` (aliases `Reverse` and `Rev`)
 reverses selected curve directions or every face in selected meshes without
 changing object identities, attributes, groups, or closed-curve seams.
+These three commands borrow selected input geometry while constructing their
+replacement results, avoiding an extra copy of every mesh, curve, or surface
+before the geometry operation. All results are still staged before document
+mutation; the document retains its normal undo/redo states.
 
 `Weld` merges exactly coincident endpoints only where mesh faces share a whole
 edge and their normal angle is within the supplied 0-to-180-degree tolerance.

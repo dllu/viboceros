@@ -12375,7 +12375,7 @@ impl Command for DirectionCommand {
         let edit = parse_direction_edit(arguments)?;
         let selected = document
             .selected_objects()
-            .map(|object| (object.id(), object.geometry().clone()))
+            .map(|object| (object.id(), object.geometry()))
             .collect::<Vec<_>>();
         if selected.is_empty() {
             return Err(CommandError::NoObjectsSelected);
@@ -12445,7 +12445,7 @@ fn parse_direction_edit(arguments: &[&str]) -> Result<DirectionEdit, CommandErro
 }
 
 fn flipped_geometry(
-    geometry: Geometry,
+    geometry: &Geometry,
     tolerance: Tolerance,
 ) -> Result<Option<Geometry>, GeometryError> {
     Ok(match geometry {
@@ -12476,7 +12476,7 @@ impl Command for FlipCommand {
         require_consumed(arguments, 0, "Flip")?;
         let selected = document
             .selected_objects()
-            .map(|object| (object.id(), object.geometry().clone()))
+            .map(|object| (object.id(), object.geometry()))
             .collect::<Vec<_>>();
         if selected.is_empty() {
             return Err(CommandError::NoObjectsSelected);
@@ -12505,7 +12505,7 @@ impl Command for UnifyMeshNormalsCommand {
         require_consumed(arguments, 0, "UnifyMeshNormals")?;
         let selected = document
             .selected_objects()
-            .map(|object| (object.id(), object.geometry().clone()))
+            .map(|object| (object.id(), object.geometry()))
             .collect::<Vec<_>>();
         if selected.is_empty() {
             return Err(CommandError::NoObjectsSelected);
