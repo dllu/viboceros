@@ -92,6 +92,17 @@ class OracleClientTests(unittest.TestCase):
         self.assertEqual(report.operations[0].viboceros_ns_per_iteration, 10.0)
         self.assertEqual(report.operations[0].rhino_to_viboceros_ratio, 4.0)
 
+    def test_serialized_report_explains_raw_timing_ratios(self) -> None:
+        report = compare_responses(
+            _response("viboceros", 1, 100), _response("rhino", 1, 400)
+        )
+        serialized = report.as_dict()
+        self.assertEqual(serialized["timing_note"], report.timing_note)
+        self.assertIn("not kernel speedups", report.timing_note)
+        self.assertIn("geometry extraction", report.timing_note)
+        self.assertTrue(serialized["passed"])
+        self.assertEqual(serialized["operations"][0]["rhino_to_viboceros_ratio"], 4.0)
+
     def test_reports_out_of_epsilon_and_structural_differences(self) -> None:
         viboceros = _response("viboceros", {"point": [1.0, 2.0], "flag": True})
         rhino = _response("rhino", {"point": [1.0, 2.1], "other": True})

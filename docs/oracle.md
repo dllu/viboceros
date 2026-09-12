@@ -806,6 +806,27 @@ Set `VIBOCEROS_RHINO_LAUNCHER` to use another launcher. McNeel's documented
 has an owned-window fallback that requires `wmctrl` and `xdotool` and never
 targets a pre-existing Rhino process. Set `VIBOCEROS_RHINO_UI_FALLBACK=0` to
 disable it. The `viboceros` and `rhino` modes run either side independently.
-Timings cover repeated API calls after one warm-up and exclude process startup,
-fixture construction, and JSON I/O; Rhino timings include its public
-Python/RhinoCommon bridge.
+
+## Timing interpretation
+
+The comparison report's `rhino_to_viboceros_ratio` is a ratio of raw harness
+elapsed times, **not a kernel speedup**. Its `timing_note` is included in both
+the Python report and the CLI's JSON output to keep that qualification with
+exported comparisons. Correctness checks do not depend on timing ratios.
+
+The generic measurement helpers run one warm-up before timing repeated calls.
+Process startup and transport JSON I/O are outside those loops, but the work
+inside a call varies by probe and engine. For example, Rhino's `mesh_unweld`
+probe duplicates the source mesh, performs the edit, extracts result geometry
+into Python containers, and disposes the duplicate on every timed iteration.
+The native `mesh_unweld` probe times the owned geometry result and replacement
+of the previous result, then extracts the final result into JSON values outside the
+loop. Thus excluding JSON encoding does **not** exclude result extraction.
+Source mesh construction is outside both `mesh_unweld` loops.
+
+Rhino measurements also include its Python/RhinoCommon bridge and, on this
+development host, FEX/Wine overhead. Existing recorded responses retain their
+original timings; geometry replay tests do not compare those elapsed times.
+Before making a kernel-performance claim, audit the specific operation's
+timing boundaries, match copying/extraction/cleanup work, use release-mode
+native builds and sufficient iterations, and report the host/emulation setup.

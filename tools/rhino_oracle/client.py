@@ -30,7 +30,7 @@ class OracleProtocolError(OracleError):
 
 @dataclass(frozen=True)
 class OperationComparison:
-    """Correctness and timing comparison for one geometry operation."""
+    """Correctness and raw harness timings, not a kernel-speed comparison."""
 
     id: str
     passed: bool
@@ -52,6 +52,17 @@ class ComparisonReport:
     operations: tuple[OperationComparison, ...]
 
     @property
+    def timing_note(self) -> str:
+        """Explain the limits of the reported elapsed-time ratios."""
+
+        return (
+            "Timings are harness measurements, not kernel speedups. Timed work "
+            "may differ between engines (including geometry extraction and "
+            "cleanup); Rhino includes the Python/RhinoCommon bridge and any "
+            "host emulation overhead. See docs/oracle.md#timing-interpretation."
+        )
+
+    @property
     def max_absolute_error(self) -> float:
         """Return the largest numeric difference in the batch."""
 
@@ -65,6 +76,7 @@ class ComparisonReport:
 
         result = asdict(self)
         result["max_absolute_error"] = self.max_absolute_error
+        result["timing_note"] = self.timing_note
         return result
 
 
