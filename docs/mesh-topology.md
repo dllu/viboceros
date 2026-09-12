@@ -55,6 +55,10 @@ source ordering; independent seam components remain distinct.
 Moved positions are computed while emitting retained vertices, without cloning
 and updating the entire source vertex array first. Coincident raw peers outside
 the selected edge still move to its midpoint but are not merged merely by position.
+After surviving faces resolve their union roots, the parent table is reused for
+retention marks and final vertex indices. This avoids separate used-vertex and
+remap arrays. Faces are remapped in place, and parent/face/output-vertex buffers
+reserve fallibly; topology construction retains its separate allocation policy.
 
 Face reduction uses fixed-size index checks without per-quad collections.
 Index-degenerate triangles disappear; a single collapsed quad side produces a

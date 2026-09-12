@@ -59,7 +59,11 @@ impl TriangleMesh {
         let second = data.topological_points[second_topology_vertex];
         let midpoint = first.midpoint(second)?;
 
-        let mut parents = (0..self.vertices.len()).collect::<Vec<_>>();
+        let mut parents = Vec::new();
+        parents
+            .try_reserve_exact(self.vertices.len())
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        parents.extend(0..self.vertices.len());
         for edge_use in incidence.uses() {
             union_indices_keep_earlier(
                 &mut parents,
@@ -67,7 +71,10 @@ impl TriangleMesh {
                 edge_use.raw_vertices[1] as usize,
             );
         }
-        let mut faces = Vec::with_capacity(self.faces.len());
+        let mut faces = Vec::new();
+        faces
+            .try_reserve_exact(self.faces.len())
+            .map_err(|_| GeometryError::TooManyMeshFaces)?;
         for face in self.faces.iter().copied() {
             let remapped = face.remapped(|raw| {
                 u32::try_from(index_root(&mut parents, raw as usize))
@@ -81,21 +88,28 @@ impl TriangleMesh {
             return Ok(None);
         }
 
-        let mut used = vec![false; self.vertices.len()];
+        // Every surviving face now refers directly to a union root. Reuse the
+        // no-longer-needed parent table as retention marks, then output indices.
+        let mut raw_remap = parents;
+        raw_remap.fill(0);
+        let mut retained_vertex_count = 0;
         for face in &faces {
             for &raw in face.indices() {
-                used[raw as usize] = true;
+                if raw_remap[raw as usize] == 0 {
+                    raw_remap[raw as usize] = 1;
+                    retained_vertex_count += 1;
+                }
             }
         }
-        let retained_vertex_count = used.iter().filter(|&&retain| retain).count();
-        let mut raw_remap = vec![0_u32; self.vertices.len()];
-        let mut vertices = Vec::with_capacity(retained_vertex_count);
-        for (raw, (&point, retain)) in self.vertices.iter().zip(used).enumerate() {
-            if !retain {
+        let mut vertices = Vec::new();
+        vertices
+            .try_reserve_exact(retained_vertex_count)
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        for (raw, (&point, mapped)) in self.vertices.iter().zip(&mut raw_remap).enumerate() {
+            if *mapped == 0 {
                 continue;
             }
-            raw_remap[raw] =
-                u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
+            *mapped = vertices.len();
             let topology_vertex = data.topological_vertices[raw];
             vertices.push(
                 if topology_vertex == first_topology_vertex
@@ -107,10 +121,12 @@ impl TriangleMesh {
                 },
             );
         }
-        let faces = faces
-            .into_iter()
-            .map(|face| face.remapped(|raw| raw_remap[raw as usize]))
-            .collect();
+        for face in &mut faces {
+            *face = face.remapped(|raw| {
+                u32::try_from(raw_remap[raw as usize])
+                    .expect("compaction cannot exceed the validated source vertex count")
+            });
+        }
         Ok(Some(Self::try_new_faces(vertices, faces, tolerance)?))
     }
 }
