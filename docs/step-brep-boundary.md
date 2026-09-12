@@ -36,8 +36,13 @@ this plan.
 
 `read_step_planar_instances(reader, tolerance)` returns a `StepPlanarImport`
 containing placed native shell entries and the shared import diagnostics.
-Coordinates and tolerance are in file units; this API does not yet offer target
-unit conversion or document insertion. `ImportStep` remains mesh-based.
+Coordinates and tolerance are in file units. Its
+`read_step_planar_instances_in_units(reader, &target_units, tolerance)` counterpart
+resolves uniform file units and scales the fully placed geometry, including
+assembly translations. Tolerance is in target units; source geometry and
+placement validation use the corresponding source tolerance. Both paths retain
+UV trims, shell sense, occurrence grouping, and diagnostics. Neither inserts
+document objects; `ImportStep` remains mesh-based.
 
 Each entry retains `source_shape_id`, `source_shell_id` (the actual shell
 reference, including oriented wrappers), the occurrence name, and a
@@ -52,12 +57,19 @@ cache after their last use. Unsupported shell geometry, topology loss, or invali
 placement fails the request without returning partial geometry. Unplaced shapes
 and assembly/representation diagnostics follow the mesh reader's policy.
 Non-affine matrices are rejected instead of dropping their projective terms.
+Placed occurrences are sorted by source shape ID, name, and matrix coefficients
+before assigning placement indices, avoiding hash-dependent assembly traversal
+order. Unplaced shapes follow in source-ID order. Equal keys remain separate
+occurrences. Repeated-parse tests cover both distinct and duplicate names.
 
 Generated regressions check repeated and nested cube placements against every
 expected corner, area 286 and signed volume 315, and verify both senses of an
 oriented open-shell wrapper without changing UV loops. A hollow cube checks
 separate outer/void entries with signed volumes 1000 and -8. This is not yet
 evidence of general curved STEP or live Rhino assembly parity.
+Unit-aware instance tests cover millimetres, centimetres, metres, kilometres,
+and microns, checking all placed vertices, quadratic area and cubic volume
+scaling, identical UV loops and metadata, and unitless/invalid-unit behavior.
 
 `read_step_planar_shells_in_units(reader, &target_units, tolerance)` additionally
 resolves uniform file length units and returns native geometry in the requested

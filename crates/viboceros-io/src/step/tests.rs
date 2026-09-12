@@ -1167,6 +1167,117 @@ fn assembly_step(parent_transform: Option<Matrix4>) -> String {
 }
 
 #[test]
+fn instance_plan_order_is_stable_across_parses_with_duplicate_names() {
+    let original = assembly_step(None);
+    let duplicate_names = original
+        .replace("instance 0", "same name")
+        .replace("instance 1", "same name")
+        .replace("instance 2", "same name");
+    for text in [original, duplicate_names] {
+        let expected = instance_plan::build(&Table::from_step(&text).unwrap()).unwrap();
+        assert_eq!(expected.instances.len(), 3);
+        for _ in 0..32 {
+            let actual = instance_plan::build(&Table::from_step(&text).unwrap()).unwrap();
+            assert_eq!(actual, expected);
+        }
+    }
+}
+
+#[test]
+fn native_instance_units_scale_nested_placements_and_preserve_uv_and_metadata() {
+    let parent = Matrix4::new(
+        0., 1., 0., 0., -1., 0., 0., 0., 0., 0., 1., 0., 100., 200., 300., 1.,
+    );
+    let text = assembly_step(Some(parent));
+    let source = read_step_planar_instances(Cursor::new(&text), Tolerance::DEFAULT).unwrap();
+    for (target, scale) in [
+        (LengthUnitSystem::Millimeters, 1.),
+        (LengthUnitSystem::Centimeters, 0.1),
+        (LengthUnitSystem::Meters, 0.001),
+        (LengthUnitSystem::Kilometers, 1e-6),
+        (LengthUnitSystem::Microns, 1000.),
+    ] {
+        let imported =
+            read_step_planar_instances_in_units(Cursor::new(&text), &target, Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(imported.report, source.report);
+        assert_eq!(imported.instances.len(), source.instances.len());
+        for (actual, original) in imported.instances.iter().zip(&source.instances) {
+            assert_eq!(
+                (
+                    actual.placement_index,
+                    actual.source_shape_id,
+                    actual.source_shell_id,
+                    &actual.name
+                ),
+                (
+                    original.placement_index,
+                    original.source_shape_id,
+                    original.source_shell_id,
+                    &original.name
+                )
+            );
+            for (vertex, old) in actual.brep.vertices().iter().zip(original.brep.vertices()) {
+                for (coordinate, expected) in vertex
+                    .point()
+                    .to_array()
+                    .into_iter()
+                    .zip(old.point().to_array().map(|v| v * scale))
+                {
+                    assert!((coordinate - expected).abs() <= expected.abs() * 1e-12);
+                }
+            }
+            for (face, old) in actual.brep.faces().iter().zip(original.brep.faces()) {
+                assert_eq!(face.loops(), old.loops());
+                assert_eq!(face.is_reversed(), old.is_reversed());
+            }
+            assert!(
+                (actual.brep.area(Tolerance::DEFAULT).unwrap() / (286. * scale * scale) - 1.).abs()
+                    < 1e-9
+            );
+            assert!(
+                (actual.brep.signed_volume(Tolerance::DEFAULT).unwrap()
+                    / (315. * scale * scale * scale)
+                    - 1.)
+                    .abs()
+                    < 1e-9
+            );
+        }
+    }
+}
+
+#[test]
+fn native_instance_units_reject_invalid_units_and_preserve_unitless_coordinates() {
+    let text = assembly_step(None);
+    assert_eq!(
+        read_step_planar_instances_in_units(
+            Cursor::new(&text),
+            &LengthUnitSystem::None,
+            Tolerance::DEFAULT
+        )
+        .unwrap(),
+        read_step_planar_instances(Cursor::new(&text), Tolerance::DEFAULT).unwrap()
+    );
+    assert!(matches!(
+        read_step_planar_instances_in_units(
+            Cursor::new(&text),
+            &LengthUnitSystem::Unset,
+            Tolerance::DEFAULT
+        ),
+        Err(StepError::Units(_))
+    ));
+    let missing = text.replace("SI_UNIT(.MILLI.,.METRE.)", "SI_UNIT($,.RADIAN.)");
+    assert!(matches!(
+        read_step_planar_instances_in_units(
+            Cursor::new(missing),
+            &LengthUnitSystem::Meters,
+            Tolerance::DEFAULT
+        ),
+        Err(StepError::InvalidLengthUnits(_))
+    ));
+}
+
+#[test]
 fn native_planar_instances_keep_solid_void_shells_and_their_sense() {
     use monstertruck::modeling::{Shell, Solid};
     let cube = |radius: f64| -> Solid {

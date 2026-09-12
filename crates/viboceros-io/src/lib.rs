@@ -14,8 +14,9 @@ mod three_dm_rational_tests;
 pub use step::{
     StepError, StepImport, StepImportReport, StepObject, StepPlanarImport, StepPlanarInstance,
     StepPlanarShell, read_step, read_step_file, read_step_file_in_units, read_step_in_units,
-    read_step_planar_instances, read_step_planar_shells, read_step_planar_shells_in_units,
-    write_step, write_step_file, write_step_file_in_units, write_step_in_units,
+    read_step_planar_instances, read_step_planar_instances_in_units, read_step_planar_shells,
+    read_step_planar_shells_in_units, write_step, write_step_file, write_step_file_in_units,
+    write_step_in_units,
 };
 pub use stl::{StlError, StlFormat, read_stl, read_stl_file, write_stl, write_stl_file};
 pub use three_dm::{

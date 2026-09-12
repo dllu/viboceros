@@ -4,7 +4,7 @@ use super::{
     referenced_entity,
 };
 use std::{collections::BTreeMap, io::Read};
-use viboceros_geometry::{AffineTransform3, Brep, Tolerance, Vector3};
+use viboceros_geometry::{AffineTransform3, Brep, LengthUnitSystem, Point3, Tolerance, Vector3};
 
 /// One placed shell, retaining its containing shape and shell reference IDs.
 /// A solid with void shells yields multiple entries; these are not separate solids.
@@ -36,14 +36,40 @@ pub fn read_step_planar_instances<R: Read>(
     let data = read_data_section(reader)?;
     let table = Table::from_data_section(&data);
     drop(data);
-    let plan = instance_plan::build(&table)?;
+    convert_table(&table, tolerance)
+}
+
+/// Imports placed planar shells in explicit target units, including translations.
+/// Tolerance is in target units. UV trims and occurrence metadata are unchanged.
+/// Unit resolution and unitless-target behavior match the other STEP readers.
+pub fn read_step_planar_instances_in_units<R: Read>(
+    reader: R,
+    target: &LengthUnitSystem,
+    tolerance: Tolerance,
+) -> Result<StepPlanarImport, StepError> {
+    let data = read_data_section(reader)?;
+    let (scale, source_tolerance) = super::units::conversion_to_target(&data, target, tolerance)?;
+    let table = Table::from_data_section(&data);
+    drop(data);
+    let mut imported = convert_table(&table, source_tolerance)?;
+    if scale != 1.0 {
+        let transform = AffineTransform3::try_uniform_scale(Point3::try_new(0., 0., 0.)?, scale)?;
+        for instance in &mut imported.instances {
+            instance.brep = instance.brep.transformed(transform, tolerance)?;
+        }
+    }
+    Ok(imported)
+}
+
+fn convert_table(table: &Table, tolerance: Tolerance) -> Result<StepPlanarImport, StepError> {
+    let plan = instance_plan::build(table)?;
     let mut placements = Vec::new();
     let mut shape_shells = BTreeMap::new();
     for (placement_index, instance) in plan.instances.into_iter().enumerate() {
         let shells = match shape_shells.entry(instance.shape_id) {
             std::collections::btree_map::Entry::Occupied(entry) => entry.into_mut(),
             std::collections::btree_map::Entry::Vacant(entry) => {
-                entry.insert(shell_ids(&table, instance.shape_id)?)
+                entry.insert(shell_ids(table, instance.shape_id)?)
             }
         };
         let matrix = instance.transform;
@@ -81,7 +107,7 @@ pub fn read_step_planar_instances<R: Read>(
         let source = match cache.entry(shell) {
             std::collections::btree_map::Entry::Occupied(entry) => entry.into_mut(),
             std::collections::btree_map::Entry::Vacant(entry) => {
-                entry.insert(native_planar::convert_shell(&table, shell, tolerance)?)
+                entry.insert(native_planar::convert_shell(table, shell, tolerance)?)
             }
         };
         instances.push(StepPlanarInstance {

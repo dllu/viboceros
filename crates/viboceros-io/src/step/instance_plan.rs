@@ -79,6 +79,24 @@ pub(super) fn build(table: &Table) -> Result<InstancePlan, StepError> {
         }
     }
 
+    // Assembly construction traverses hash-backed source tables. Stabilize the
+    // observable occurrence sequence across independent parses. Identical keys
+    // represent indistinguishable occurrences and remain separate entries.
+    instances.sort_by(|left, right| {
+        left.shape_id
+            .cmp(&right.shape_id)
+            .then_with(|| left.name.cmp(&right.name))
+            .then_with(|| {
+                (0..4)
+                    .flat_map(|column| (0..4).map(move |row| (column, row)))
+                    .map(|(column, row)| {
+                        left.transform[column][row].total_cmp(&right.transform[column][row])
+                    })
+                    .find(|order| !order.is_eq())
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            })
+    });
+
     let mut supported_shape_ids = table
         .manifold_solid_brep
         .keys()
