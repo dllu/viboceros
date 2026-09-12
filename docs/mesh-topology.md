@@ -59,6 +59,11 @@ A 300-case native matrix checks all five partitions of three incident faces at
 each endpoint, all six face permutations, and both winding directions. It checks
 vertex counts, unchanged ordered face geometry, area, and every endpoint-sharing
 relationship against partition labels independent of the topology implementation.
+Connectivity flags are local to each affected vertex's incident edges, rather
+than cloning a whole-mesh edge mask for every vertex. Sorted incident edge IDs
+provide the radial-to-local mapping. A disconnected-panel regression checks
+sparse selections, untouched sharing, compaction, and ordered face geometry on
+up to 1,024 panels; no wall-clock performance threshold is asserted.
 
 Shared welding compaction resolves every face to its representative before
 reusing the parent array as the compact-index map, eliminating a separate

@@ -3180,31 +3180,43 @@ impl TriangleMesh {
                 .enumerate()
                 .map(|(local, &face)| (face, local))
                 .collect::<BTreeMap<_, _>>();
-            let mut separated_edges = active_edges.clone();
+            let vertex_edges = &incident_edges[topological_vertex];
+            // Incident edges were appended in global index order. Keep only
+            // this vertex's flags, avoiding a whole-mesh mask clone per vertex.
+            let local_edge = |edge| {
+                vertex_edges
+                    .binary_search(&edge)
+                    .expect("a radial edge is incident to its topology vertex")
+            };
             // Rhino only separates an endpoint when every face along this
             // edge uses the same raw vertex there. Existing partial sharing
             // at a non-manifold endpoint is preserved, not fully separated.
-            for &edge in &incident_edges[topological_vertex] {
-                let (vertices, incidence) = edges[edge];
-                let endpoint = usize::from(vertices[1] == topological_vertex);
-                separated_edges[edge] &= edge_endpoint_is_fully_shared(incidence, endpoint);
-            }
+            let mut separated_edges = vertex_edges
+                .iter()
+                .map(|&edge| {
+                    let (vertices, incidence) = edges[edge];
+                    let endpoint = usize::from(vertices[1] == topological_vertex);
+                    active_edges[edge] && edge_endpoint_is_fully_shared(incidence, endpoint)
+                })
+                .collect::<Vec<_>>();
             for group in &edge_groups[topological_vertex] {
                 let selected = group
                     .iter()
                     .enumerate()
-                    .filter_map(|(position, &edge)| separated_edges[edge].then_some(position))
+                    .filter_map(|(position, &edge)| {
+                        separated_edges[local_edge(edge)].then_some(position)
+                    })
                     .collect::<Vec<_>>();
                 let closed_manifold = group.iter().all(|&edge| edges[edge].1.count == 2);
                 if closed_manifold && selected.len() == 1 {
-                    separated_edges[group[(selected[0] + 1) % group.len()]] = true;
+                    separated_edges[local_edge(group[(selected[0] + 1) % group.len()])] = true;
                 }
             }
 
             let mut parents = (0..vertex_faces.len()).collect::<Vec<_>>();
             let mut ranks = vec![0_u8; vertex_faces.len()];
-            for &edge in &incident_edges[topological_vertex] {
-                if separated_edges[edge] {
+            for (&edge, &separated) in vertex_edges.iter().zip(&separated_edges) {
+                if separated {
                     continue;
                 }
                 let (edge_vertices, incidence) = edges[edge];
