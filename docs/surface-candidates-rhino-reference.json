@@ -1,0 +1,52 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 6874084,
+      "id": "rounded-boundary-singular-start",
+      "value": [
+        {
+          "distance": 0.0,
+          "normalized_parameters": [
+            0.0,
+            0.0
+          ],
+          "parameters": [
+            0.0,
+            0.0
+          ],
+          "point": [
+            1.0000000000000004e+16,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    {
+      "elapsed_ns": 1403809,
+      "id": "distant-interior-peak",
+      "value": [
+        {
+          "distance": 1e+20,
+          "normalized_parameters": [
+            0.5,
+            0.5
+          ],
+          "parameters": [
+            0.5,
+            0.5
+          ],
+          "point": [
+            0.5,
+            0.25,
+            1.0
+          ]
+        }
+      ]
+    }
+  ]
+}

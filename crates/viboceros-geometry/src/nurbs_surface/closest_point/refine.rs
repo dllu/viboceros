@@ -15,10 +15,10 @@ impl SurfaceQuery<'_> {
         u_domain: [Real; 2],
         v_domain: [Real; 2],
         tolerance: Tolerance,
-    ) -> Result<(Real, Real, Real), GeometryError> {
+    ) -> Result<(Real, Real), GeometryError> {
         let initial = self.evaluate(u, v)?;
         if initial == target {
-            return Ok((u, v, 0.));
+            return Ok((u, v));
         }
         let mut distance = initial.distance_to(target)?;
         for _ in 0..64 {
@@ -105,10 +105,10 @@ impl SurfaceQuery<'_> {
             v = next_v;
             distance = next_distance;
             if exact_hit {
-                return Ok((u, v, 0.));
+                return Ok((u, v));
             }
         }
-        Ok((u, v, distance))
+        Ok((u, v))
     }
 }
 

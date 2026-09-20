@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 1e-09,
+  "passed": false,
+  "operations": [
+    {
+      "id": "rounded-boundary-singular-start",
+      "passed": false,
+      "max_absolute_error": 0.00437330537046059,
+      "viboceros_ns_per_iteration": 368911.0,
+      "rhino_ns_per_iteration": 6874084.0,
+      "rhino_to_viboceros_ratio": 18.633448175847292,
+      "differences": [
+        "rounded-boundary-singular-start.value[0].normalized_parameters[0]: 0.0043733053704605902 != 0 (error 0.00437, limit 1e-09)",
+        "rounded-boundary-singular-start.value[0].parameters[0]: 0.0043733053704605902 != 0 (error 0.00437, limit 1e-09)"
+      ]
+    },
+    {
+      "id": "distant-interior-peak",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 1205886.0,
+      "rhino_ns_per_iteration": 1403809.0,
+      "rhino_to_viboceros_ratio": 1.1641307718971776,
+      "differences": []
+    }
+  ],
+  "max_absolute_error": 0.00437330537046059,
+  "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation."
+}

@@ -16,8 +16,8 @@ Refinement and local polishing share a [query-owned last-span cache](surface-que
 of prepared controls and exact derivative nets. A successfully evaluated point
 whose coordinates equal the target terminates the search at distance zero,
 including the first corner before grid construction. Neither model tolerance nor
-a rounded zero distance is enough for this shortcut. Boundary-curve hits are
-confirmed on the original surface because isocurve extraction can round
+a rounded zero distance is enough for this shortcut. All boundary candidates are
+evaluated on the original surface because isocurve extraction can round
 differently. Other targets retain the bounded multi-start search below.
 
 ## Affine bilinear fast path
@@ -119,6 +119,13 @@ needs neither a square root nor a rounded result. Subnormal differences and
 overflowing distances remain distinguishable. The surface solver uses this for
 final candidate selection and line-search ties. This is an exact predicate on
 evaluated points, not an exact solution of the rational optimization problem.
+
+[Candidate selection](surface-candidate-selection.md) now also uses exact ordering
+before truncating the grid to sixteen starts. Cached, outward-rounded squared
+distance bounds decide disjoint cases cheaply; overlapping bounds use the exact
+predicate. A finite point is not discarded just because its distance overflows.
+Extracted boundary curves and normalized copies propose parameters; their
+candidate points are evaluated and ranked on the original surface.
 
 ## Evidence and limits
 

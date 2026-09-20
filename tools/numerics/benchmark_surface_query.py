@@ -45,10 +45,17 @@ def main():
     parser.add_argument("--cpu", type=int)
     parser.add_argument("--rounds", type=int, default=3)
     parser.add_argument("--baseline-commit", default="unspecified")
+    parser.add_argument(
+        "--artifacts",
+        type=Path,
+        help="retain requests and raw responses for value-difference audits",
+    )
     args = parser.parse_args()
     if args.rounds < 1:
         parser.error("--rounds must be positive")
     executables = {"before": args.before.resolve(), "after": args.after.resolve()}
+    if args.artifacts is not None:
+        args.artifacts.mkdir(parents=True, exist_ok=True)
     report = {
         "captured_utc": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),
         "architecture": platform.machine(),
@@ -64,7 +71,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="viboceros-query-benchmark-") as directory:
         directory = Path(directory)
 
-        def run(mode, request):
+        def run(mode, request, label):
             source, output = directory / "request.json", directory / "response.json"
             source.write_text(json.dumps(request))
             output.unlink(missing_ok=True)
@@ -79,6 +86,9 @@ def main():
                 request["operations"]
             ):
                 raise RuntimeError(response)
+            if args.artifacts is not None:
+                (args.artifacts / f"{label}-request.json").write_text(source.read_text())
+                (args.artifacts / f"{label}-{mode}.json").write_text(output.read_text())
             return elapsed, response["results"]
 
         ordinary = read_fixture("surface-closest-point.json")
@@ -91,7 +101,7 @@ def main():
                 op = copy.deepcopy(op)
                 op["id"] += f"-round-{round_index + 1}"
                 ordinary["operations"].append(op)
-        results = {mode: run(mode, ordinary)[1] for mode in executables}
+        results = {mode: run(mode, ordinary, "ordinary")[1] for mode in executables}
         report["ordinary_values_bit_identical"] = fingerprint(
             [r["value"] for r in results["before"]]
         ) == fingerprint([r["value"] for r in results["after"]])
@@ -137,7 +147,7 @@ def main():
                 if round_index % 2:
                     modes.reverse()
                 for mode in modes:
-                    elapsed, results = run(mode, request)
+                    elapsed, results = run(mode, request, f"{workload}-{round_index + 1}")
                     record["wall_ns"][mode].append(elapsed)
                     values = fingerprint([r["value"] for r in results])
                     if expected is None:

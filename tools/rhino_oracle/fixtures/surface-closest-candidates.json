@@ -1,0 +1,330 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_closest_point",
+      "id": "rounded-boundary-singular-start",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              10000000000000002,
+              0,
+              0
+            ],
+            "weight": 0.22772277227722773
+          },
+          {
+            "point": [
+              10000000000000002,
+              0,
+              0
+            ],
+            "weight": 0.22772277227722773
+          },
+          {
+            "point": [
+              10000000000012802,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10000000000000002,
+              64,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10000000000000002,
+              64,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10000000000012802,
+              64,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      },
+      "points": [
+        [
+          10000000000000004,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "surface_closest_point",
+      "id": "distant-interior-peak",
+      "surface": {
+        "degree_u": 4,
+        "degree_v": 4,
+        "control_point_count_u": 5,
+        "control_point_count_v": 5,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.25,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.5,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.75,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.25,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.5,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.75,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              0.16666666666666666,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.25,
+              0.16666666666666666,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.5,
+              0.16666666666666666,
+              7.111111111111111
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.75,
+              0.16666666666666666,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0.16666666666666666,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              0.5,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.25,
+              0.5,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.5,
+              0.5,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.75,
+              0.5,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0.5,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.25,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.5,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.75,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "points": [
+        [
+          0.5,
+          0.25,
+          100000000000000000000
+        ]
+      ]
+    }
+  ]
+}

@@ -2433,12 +2433,14 @@ impl NurbsSurface {
         })
     }
 
-    /// Extracts the exact U-direction isocurve at a fixed V parameter.
+    /// Extracts the U-direction isocurve at a fixed V parameter without fitting.
     ///
     /// The returned curve retains the surface's complete U knot vector and
     /// degree. Its homogeneous controls are obtained by evaluating every
     /// control-net column in V, so this also works at non-clamped and periodic
     /// parameter values where copying a control row would be incorrect.
+    /// Stored controls are rounded; evaluate the original surface when a query
+    /// needs its original point rather than the extracted curve's rounded image.
     pub fn isocurve_u(&self, v: Real) -> Result<crate::NurbsCurve, GeometryError> {
         let span_v = checked_span(self.degree_v, self.control_point_count_v, &self.knots_v, v)?;
         let controls = self.isocurve_controls(
@@ -2451,11 +2453,13 @@ impl NurbsSurface {
         crate::NurbsCurve::try_new_rational(self.degree_u, controls, self.knots_u.clone())
     }
 
-    /// Extracts the exact V-direction isocurve at a fixed U parameter.
+    /// Extracts the V-direction isocurve at a fixed U parameter without fitting.
     ///
     /// The returned curve retains the surface's complete V knot vector and
     /// degree. Its homogeneous controls are obtained by evaluating every
     /// control-net row in U, including for non-clamped and periodic surfaces.
+    /// Stored controls are rounded, so the curve and surface evaluators need
+    /// not produce identical points at corresponding parameters.
     pub fn isocurve_v(&self, u: Real) -> Result<crate::NurbsCurve, GeometryError> {
         let span_u = checked_span(self.degree_u, self.control_point_count_u, &self.knots_u, u)?;
         let controls = self.isocurve_controls(

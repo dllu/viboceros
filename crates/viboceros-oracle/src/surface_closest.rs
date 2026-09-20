@@ -72,6 +72,65 @@ mod tests {
         );
     }
 
+    #[test]
+    fn closest_candidate_fixture_matches_model_points_with_a_recorded_parameter_discrepancy() {
+        let request = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/surface-closest-candidates.json"
+        ))
+        .unwrap();
+        let response = run_request(&request).unwrap();
+        let reference: Value = serde_json::from_str(include_str!(
+            "../../../docs/surface-candidates-rhino-reference.json"
+        ))
+        .unwrap();
+        assert_eq!(response.results.len(), 2);
+        let x = 1e16 + 2.;
+        for (index, point) in [[x + 2., 0., 0.], [0.5, 0.25, 1.]].into_iter().enumerate() {
+            let actual = &response.results[index];
+            let expected = &reference["results"][index];
+            assert_eq!(actual.id, expected["id"].as_str().unwrap());
+            assert_eq!(actual.value[0]["point"], json!(point));
+            assert_eq!(actual.value[0]["point"], expected["value"][0]["point"]);
+            assert_eq!(
+                actual.value[0]["distance"],
+                expected["value"][0]["distance"]
+            );
+        }
+        let first = &response.results[0].value[0];
+        assert_eq!(first["distance"], json!(0.));
+        let (u, v) = (
+            first["parameters"][0].as_f64().unwrap(),
+            first["parameters"][1].as_f64().unwrap(),
+        );
+        assert!(u > 0. && u < 1.);
+        assert_eq!(v, 0.);
+        let Operation::SurfaceClosestPoint { surface, .. } = &request.operations[0] else {
+            panic!("surface closest-point operation expected")
+        };
+        let surface = nurbs_surface_from_definition(surface).unwrap();
+        assert_eq!(surface.evaluate(u, v).unwrap().to_array(), [x + 2., 0., 0.]);
+        assert_eq!(surface.evaluate(0., 0.).unwrap().to_array(), [x, 0., 0.]);
+        // Rhino reports the target at U=0; the stored native controls evaluate
+        // differently there. Keep this discrepancy explicit, not a widened UV
+        // tolerance or a claim that the full response comparison passes.
+        assert_eq!(
+            reference["results"][0]["value"][0]["parameters"],
+            json!([0., 0.])
+        );
+        assert_ne!(
+            first["parameters"],
+            reference["results"][0]["value"][0]["parameters"]
+        );
+        assert_eq!(
+            response.results[1].value[0]["parameters"],
+            json!([0.5, 0.5])
+        );
+        assert_eq!(
+            response.results[1].value[0]["parameters"],
+            reference["results"][1]["value"][0]["parameters"]
+        );
+    }
+
     fn check_fixture(request: &str, reference: &str, epsilon: f64, expected_count: usize) {
         let request = serde_json::from_str(request).unwrap();
         let response = run_request(&request).unwrap();

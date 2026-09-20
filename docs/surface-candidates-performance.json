@@ -1,0 +1,292 @@
+{
+  "captured_utc": "2026-09-20 12:19:40 UTC",
+  "architecture": "aarch64",
+  "baseline_commit": "b28d039f93646db77f42a6f4b75b1cbd0b3d9fc0",
+  "executable_sha256": {
+    "before": "460867ca6ee6120a8fff7309484ceb532ab50655a33ca650c1b38735eda144b7",
+    "after": "2ad7f0c2612c0d184b79c6a2e194ecc5d46aceec356d4c9dfe20279a440fdb29"
+  },
+  "cpu_affinity": 5,
+  "ordinary": [
+    {
+      "id": "plane-unit",
+      "queries_per_batch": 3,
+      "iterations": 200,
+      "before_elapsed_ns": [
+        591903,
+        587103,
+        586718,
+        587663,
+        588959
+      ],
+      "before_ns_per_query": 979.4383333333334,
+      "after_elapsed_ns": [
+        591311,
+        595455,
+        592462,
+        592479,
+        594431
+      ],
+      "after_ns_per_query": 987.465,
+      "speedup": 0.991871441857011
+    },
+    {
+      "id": "plane-wide-u",
+      "queries_per_batch": 3,
+      "iterations": 200,
+      "before_elapsed_ns": [
+        585535,
+        586575,
+        587535,
+        587342,
+        585294
+      ],
+      "before_ns_per_query": 977.625,
+      "after_elapsed_ns": [
+        591871,
+        592750,
+        592911,
+        590255,
+        594799
+      ],
+      "after_ns_per_query": 987.9166666666666,
+      "speedup": 0.9895824546604809
+    },
+    {
+      "id": "plane-anisotropic",
+      "queries_per_batch": 3,
+      "iterations": 200,
+      "before_elapsed_ns": [
+        589838,
+        587887,
+        588799,
+        585343,
+        587727
+      ],
+      "before_ns_per_query": 979.8116666666666,
+      "after_elapsed_ns": [
+        591582,
+        589311,
+        593551,
+        604111,
+        592670
+      ],
+      "after_ns_per_query": 987.7833333333333,
+      "speedup": 0.9919297416774934
+    },
+    {
+      "id": "skew-anisotropic",
+      "queries_per_batch": 2,
+      "iterations": 200,
+      "before_elapsed_ns": [
+        407872,
+        409823,
+        406767,
+        408447,
+        410975
+      ],
+      "before_ns_per_query": 1021.1175,
+      "after_elapsed_ns": [
+        410144,
+        411327,
+        410111,
+        412015,
+        413744
+      ],
+      "after_ns_per_query": 1028.3175,
+      "speedup": 0.9929982714482636
+    },
+    {
+      "id": "cylinder-unit",
+      "queries_per_batch": 3,
+      "iterations": 200,
+      "before_elapsed_ns": [
+        68010177,
+        67834690,
+        67809059,
+        67665651,
+        67680227
+      ],
+      "before_ns_per_query": 113015.09833333333,
+      "after_elapsed_ns": [
+        72279881,
+        72132459,
+        72094763,
+        72232186,
+        72326474
+      ],
+      "after_ns_per_query": 120386.97666666667,
+      "speedup": 0.938765151036686
+    },
+    {
+      "id": "cylinder-anisotropic",
+      "queries_per_batch": 3,
+      "iterations": 200,
+      "before_elapsed_ns": [
+        71618394,
+        71896522,
+        71634794,
+        71703706,
+        71801674
+      ],
+      "before_ns_per_query": 119506.17666666668,
+      "after_elapsed_ns": [
+        75870082,
+        75867074,
+        75915379,
+        75954898,
+        75867475
+      ],
+      "after_ns_per_query": 126450.13666666666,
+      "speedup": 0.9450853895215247
+    },
+    {
+      "id": "paraboloid-unit",
+      "queries_per_batch": 9,
+      "iterations": 200,
+      "before_elapsed_ns": [
+        393716600,
+        395041158,
+        393486715,
+        394101243,
+        393816060
+      ],
+      "before_ns_per_query": 218786.7,
+      "after_elapsed_ns": [
+        408545519,
+        408279969,
+        408587634,
+        408684323,
+        408838756
+      ],
+      "after_ns_per_query": 226993.13,
+      "speedup": 0.9638472318523473
+    },
+    {
+      "id": "paraboloid-anisotropic",
+      "queries_per_batch": 9,
+      "iterations": 200,
+      "before_elapsed_ns": [
+        403980291,
+        406693134,
+        403975622,
+        403787271,
+        403827544
+      ],
+      "before_ns_per_query": 224430.90111111113,
+      "after_elapsed_ns": [
+        418990009,
+        423301746,
+        418859997,
+        418816366,
+        418842351
+      ],
+      "after_ns_per_query": 232699.99833333335,
+      "speedup": 0.9644645583092052
+    },
+    {
+      "id": "saddle-unit",
+      "queries_per_batch": 3,
+      "iterations": 200,
+      "before_elapsed_ns": [
+        63925146,
+        64171658,
+        64248810,
+        64147771,
+        64144443
+      ],
+      "before_ns_per_query": 106912.95166666666,
+      "after_elapsed_ns": [
+        67341380,
+        67358101,
+        67311988,
+        67498196,
+        67429221
+      ],
+      "after_ns_per_query": 112263.50166666666,
+      "speedup": 0.9523393630114364
+    }
+  ],
+  "signed": [
+    {
+      "workload": "endpoint",
+      "queries_per_operation": [
+        1,
+        1
+      ],
+      "wall_ns": {
+        "before": [
+          60806019
+        ],
+        "after": [
+          62846750
+        ]
+      },
+      "values_bit_identical_across_all_runs": true,
+      "median_wall_ns": {
+        "before": 60806019,
+        "after": 62846750
+      },
+      "speedup": 0.9675284561254162
+    },
+    {
+      "workload": "off_surface",
+      "queries_per_operation": [
+        3,
+        3
+      ],
+      "wall_ns": {
+        "before": [
+          1009925884
+        ],
+        "after": [
+          1021862839
+        ]
+      },
+      "values_bit_identical_across_all_runs": true,
+      "median_wall_ns": {
+        "before": 1009925884,
+        "after": 1021862839
+      },
+      "speedup": 0.9883184371283317
+    },
+    {
+      "workload": "full_fixture_queries",
+      "queries_per_operation": [
+        135,
+        135
+      ],
+      "wall_ns": {
+        "before": [
+          40481038944
+        ],
+        "after": [
+          39409660203
+        ]
+      },
+      "values_bit_identical_across_all_runs": false,
+      "median_wall_ns": {
+        "before": 40481038944,
+        "after": 39409660203
+      },
+      "speedup": 1.027185688368824
+    }
+  ],
+  "ordinary_values_bit_identical": true,
+  "mixed_value_changes": [
+    {
+      "id": "three-rational-retained-basis",
+      "definition_bit_identical": true,
+      "changed_sample_points": 9,
+      "max_point_component_change": 4.5445469609717293e-10
+    },
+    {
+      "id": "three-rational-retained-global-basis",
+      "definition_bit_identical": true,
+      "changed_sample_points": 9,
+      "max_point_component_change": 4.5445469609717293e-10
+    }
+  ],
+  "measurement_scope": "Ordinary cases: five 200-iteration rounds, median elapsed_ns per query. Signed cases: one whole-process before/after pair per workload, not repeated statistical evidence. Construction elapsed_ns excludes queries and is not used for signed workloads.",
+  "host_conditions": "Pinned to CPU 5; no builds or Rhino launches were initiated during this measurement. Brief Python/file diagnostics ran on the same host. Core isolation, clock frequency, and unrelated host activity were not controlled."
+}

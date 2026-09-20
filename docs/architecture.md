@@ -292,6 +292,9 @@ when the original homogeneous coefficients and exact factors permit it.
 Closest-point refinement owns a [last-span query cache](surface-query-cache.md)
 for prepared controls and lazy exact derivative nets. It does not change the
 surface, cache evaluated stations, or relax pole detection.
+Its [candidate module](surface-candidate-selection.md) ranks original-surface
+points with conservative distance bounds and exact tie/overlap predicates,
+including grid selection and rounded boundary-curve proposals.
 The separate [curvature module](curvature.md) forms a scale-aware orthonormal
 shape operator from those jets. Geometry evaluation is independent of the
 command's closest-point selection, reports, and permanent markers.

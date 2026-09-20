@@ -1,0 +1,52 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "rounded-boundary-singular-start",
+      "value": [
+        {
+          "distance": 0.0,
+          "normalized_parameters": [
+            0.00437330537046059,
+            0.0
+          ],
+          "parameters": [
+            0.00437330537046059,
+            0.0
+          ],
+          "point": [
+            1.0000000000000004e+16,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "elapsed_ns": 368911
+    },
+    {
+      "id": "distant-interior-peak",
+      "value": [
+        {
+          "distance": 1e+20,
+          "normalized_parameters": [
+            0.5,
+            0.5
+          ],
+          "parameters": [
+            0.5,
+            0.5
+          ],
+          "point": [
+            0.5,
+            0.25,
+            1.0
+          ]
+        }
+      ],
+      "elapsed_ns": 1205886
+    }
+  ]
+}

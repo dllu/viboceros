@@ -2,7 +2,9 @@
 use super::evaluate::SurfaceQuery;
 use super::*;
 mod affine;
+mod candidate;
 mod refine;
+use candidate::{Candidate, retain_closest_seeds};
 #[cfg(test)]
 mod tests;
 
@@ -48,20 +50,20 @@ impl NurbsSurface {
         let v_seeds = closest_parameter_seeds(self.spans_v(), v_start, v_end);
         let mut seeds = Vec::with_capacity(u_seeds.len() * v_seeds.len());
         self.for_each_grid_point(&u_seeds, &v_seeds, |i, j, result| {
-            if let Ok(point) = result
-                && let Ok(distance) = point.distance_to(target)
-            {
-                seeds.push((distance, u_seeds[i], v_seeds[j]));
+            if let Ok(point) = result {
+                seeds.push(Candidate::new(target, point, (u_seeds[i], v_seeds[j])));
             }
         });
-        seeds.sort_by(|left, right| left.0.total_cmp(&right.0));
-        seeds.truncate(16);
-        let mut best = seeds.first().copied().ok_or(GeometryError::Degenerate {
+        // Rank the stored points before discarding starts. Rounded distances
+        // can tie (or overflow) while the best basins are still distinguishable.
+        // Ties retain the original V-major/U-minor grid order.
+        retain_closest_seeds(&mut seeds, target);
+        let first = seeds.first().ok_or(GeometryError::Degenerate {
             context: "NURBS surface closest-point search",
         })?;
-        let mut best_point = query.evaluate(best.1, best.2)?;
-        if best_point == target {
-            return Ok((best.1, best.2));
+        let mut best = Candidate::evaluate(&mut query, target, first.parameters)?;
+        if best.point == target {
+            return Ok(best.parameters);
         }
         // Clamping a coupled two-parameter Newton step can stall before the
         // minimum along an active boundary. Solve all four natural boundary
@@ -75,46 +77,41 @@ impl NurbsSurface {
         ] {
             if let Ok(curve) = curve
                 && let Ok(t) = curve.closest_parameter(target, tolerance)
-                && let Ok(point) = curve.evaluate(t)
-                && let Ok(distance) = point.distance_to(target)
-                && target.compare_distances(point, best_point).is_lt()
+                // Extraction can round control points or weights differently.
+                // The curve proposes parameters, never the comparison point.
+                && let Ok(candidate) = Candidate::evaluate(
+                    &mut query,
+                    target,
+                    if fixed_u { (fixed, t) } else { (t, fixed) },
+                )
+                && candidate.compare(&best, target).is_lt()
             {
-                best_point = point;
-                best = if fixed_u {
-                    (distance, fixed, t)
-                } else {
-                    (distance, t, fixed)
-                };
-                // Isocurve projection can round differently from the tensor
-                // surface evaluator. Confirm any terminal hit on the surface.
-                if best_point == target
-                    && query
-                        .evaluate(best.1, best.2)
-                        .is_ok_and(|point| point == target)
-                {
-                    return Ok((best.1, best.2));
+                best = candidate;
+                if best.point == target {
+                    return Ok(best.parameters);
                 }
             }
         }
         let mut refined = false;
         let mut nonfinite_step = false;
-        for (_, seed_u, seed_v) in seeds {
-            match query.refine_closest_parameters(
-                target,
-                seed_u,
-                seed_v,
-                [u_start, u_end],
-                [v_start, v_end],
-                tolerance,
-            ) {
-                Ok((u, v, distance)) => {
+        for seed in seeds {
+            match query
+                .refine_closest_parameters(
+                    target,
+                    seed.parameters.0,
+                    seed.parameters.1,
+                    [u_start, u_end],
+                    [v_start, v_end],
+                    tolerance,
+                )
+                .and_then(|parameters| Candidate::evaluate(&mut query, target, parameters))
+            {
+                Ok(candidate) => {
                     refined = true;
-                    let point = query.evaluate(u, v)?;
-                    if target.compare_distances(point, best_point).is_lt() {
-                        best = (distance, u, v);
-                        best_point = point;
-                        if best_point == target {
-                            return Ok((best.1, best.2));
+                    if candidate.compare(&best, target).is_lt() {
+                        best = candidate;
+                        if best.point == target {
+                            return Ok(best.parameters);
                         }
                     }
                 }
@@ -130,16 +127,13 @@ impl NurbsSurface {
             && (u_domain != (0.0..=1.0) || v_domain != (0.0..=1.0))
             && let Ok(normalized) = self.try_reparameterized(0.0..=1.0, 0.0..=1.0)
             && let Ok((u, v)) = normalized.closest_parameters(target, tolerance)
+            && let (Ok(u), Ok(v)) = (self.parameter_at_u(u), self.parameter_at_v(v))
+            && let Ok(candidate) = Candidate::evaluate(&mut query, target, (u, v))
+            && candidate.compare(&best, target).is_lt()
         {
-            let u = self.parameter_at_u(u)?;
-            let v = self.parameter_at_v(v)?;
-            let point = query.evaluate(u, v)?;
-            let distance = point.distance_to(target)?;
-            if target.compare_distances(point, best_point).is_lt() {
-                best = (distance, u, v);
-            }
+            best = candidate;
         }
-        Ok(query.polish_closest_parameters(target, (best.1, best.2), tolerance))
+        Ok(query.polish_closest_parameters(target, best.parameters, tolerance))
     }
 }
 
