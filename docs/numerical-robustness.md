@@ -30,7 +30,12 @@ range. It rounds only the final sum, nearest with ties to even. Up to six produc
 fit in 66 limbs; separate positive and negative magnitudes retain small terms
 until large terms cancel.
 
-Scaled frame projections use a separate 99-limb accumulator at quantum
+The [compact product path](compact-exact-products.md) certifies when four limbs
+can hold the complete exact sum, including all possible same-sign carries.
+Otherwise the full-range accumulator remains in use; no approximate rescaling
+or truncated product is involved.
+
+Scaled frame projections retain a 99-limb full-range fallback at quantum
 `2^-3222` for products of three binary64 factors. It applies the scale before
 rounding, allowing a finite display-space projection even when the unscaled
 point displacement or projection overflows. `Distance` uses this path when a

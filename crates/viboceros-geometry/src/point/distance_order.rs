@@ -8,6 +8,9 @@ impl Point3 {
     /// their stored binary64 coordinates, even when distances overflow or tie
     /// after rounding. No square root or rounded coordinate subtraction is used.
     pub fn compare_distances(self, first: Self, second: Self) -> Ordering {
+        if first == second {
+            return Ordering::Equal;
+        }
         // 12 products, at most twice MAX² each: 66 limbs at quantum 2^-2148
         // cover every finite binary64 input and all carries (highest bit <4201).
         let mut positive = [0_u64; 66];
@@ -32,6 +35,9 @@ impl Point3 {
             .zip(first.to_array())
             .zip(second.to_array())
         {
+            if a == b {
+                continue;
+            }
             // |a-t|² - |b-t|² = a² - b² - 2ta + 2tb; t² cancels exactly.
             add(a, a, false, false);
             add(b, b, true, false);
@@ -45,6 +51,39 @@ impl Point3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn product_distance_order_matches_independent_finite_binary64_rationals() {
+        use num_rational::BigRational as R;
+        use num_traits::Zero;
+        let mut state = 314159_u64;
+        for case in 0..512 {
+            let mut next = || loop {
+                state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
+                let value = Real::from_bits(state);
+                if value.is_finite() {
+                    break value;
+                }
+            };
+            let target = p(std::array::from_fn(|_| next()));
+            let a = p(std::array::from_fn(|_| next()));
+            let mut b = std::array::from_fn(|_| next());
+            if case % 2 == 0 {
+                b[0] = a.x();
+            }
+            let b = p(b);
+            let squared = |point: Point3| {
+                target.to_array().into_iter().zip(point.to_array()).fold(
+                    R::zero(),
+                    |sum, (t, a)| {
+                        let d = R::from_float(t).unwrap() - R::from_float(a).unwrap();
+                        sum + &d * &d
+                    },
+                )
+            };
+            assert_eq!(target.compare_distances(a, b), squared(a).cmp(&squared(b)));
+        }
+    }
     fn p(a: [Real; 3]) -> Point3 {
         Point3::try_from(a).unwrap()
     }

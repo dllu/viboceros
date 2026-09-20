@@ -9,6 +9,8 @@ file formats, or command parsing.
 The kernel combines validated finite primitives with compensated arithmetic and
 exact fallbacks for difficult binary64 inputs. See [numerical robustness](numerical-robustness.md)
 for implementation boundaries, regression evidence, and focused test commands.
+Its [compact exact-product fallback](compact-exact-products.md) selects bounded
+integer windows without weakening rounding or full-range recovery.
 
 | Module | Responsibility |
 | --- | --- |

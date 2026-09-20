@@ -17,8 +17,11 @@ overflowing total also leaves the accumulator usable for later cancellation.
 
 The shared `binary_accumulator` module supplies significand decomposition,
 integer addition, signed subtraction, and rounding. The existing exact
-three-product dot fallback uses the same code with 66 limbs and quantum
-`2^-2148`; its product-scale underflow and tie tests remain separate.
+dot fallbacks share this code and an exponent-aware rounder. They select a
+[compact integer window](compact-exact-products.md) when certified safe, with
+66-limb pair-product and 99-limb scaled-product full-range fallbacks. The streaming
+sum itself retains its fixed 34-limb representation; product-scale underflow
+and tie tests remain separate.
 
 Tests compare sums against hardware-rounded addition across the binary64 range
 and independently accumulated integer totals at several binary scales. Explicit

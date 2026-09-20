@@ -6,30 +6,52 @@
 //! Separate positive/negative magnitudes avoid losing small terms before large
 //! terms cancel. Only the final conversion rounds (nearest, ties to even).
 
-const LIMBS: usize = 66;
-use crate::binary_accumulator::{add_product, decompose, finish};
+use crate::binary_accumulator::{add_product, decompose, finish_at, products::compact_base};
 
-/// Scale the exact sum before rounding. Three binary64 factors need quantum
-/// 2^-3222 and at most 6297 bits for six products; 99 limbs provide 6336.
+/// Scale the exact sum before rounding. Triple products use quantum 2^-3222.
 pub(super) fn scaled_dot<const N: usize>(left: [f64; N], right: [f64; N], scale: f64) -> f64 {
     assert!(N <= 6, "exact scaled dot accumulator capacity");
-    let mut positive = [0; 99];
-    let mut negative = [0; 99];
     let (c, c_shift) = decompose(scale);
+    if c == 0 {
+        return 0.;
+    }
+    if let Some(base) = compact_base(&left, &right, c_shift, 159) {
+        scaled_accumulate::<N, 4>(left, right, c, c_shift, scale.is_sign_negative(), base)
+    } else {
+        scaled_accumulate::<N, 99>(left, right, c, c_shift, scale.is_sign_negative(), 0)
+    }
+}
+
+#[inline]
+fn scaled_accumulate<const N: usize, const WORDS: usize>(
+    left: [f64; N],
+    right: [f64; N],
+    c: u64,
+    c_shift: usize,
+    negative_scale: bool,
+    base: usize,
+) -> f64 {
+    let mut positive = [0; WORDS];
+    let mut negative = [0; WORDS];
     for (a, b) in left.into_iter().zip(right) {
+        if a == 0. || b == 0. {
+            continue;
+        }
         let (a_bits, a_shift) = decompose(a);
         let (b_bits, b_shift) = decompose(b);
         let product = u128::from(a_bits) * u128::from(b_bits);
-        let target = if a.is_sign_negative() ^ b.is_sign_negative() ^ scale.is_sign_negative() {
+        let shift = a_shift + b_shift + c_shift - base;
+        let target = if a.is_sign_negative() ^ b.is_sign_negative() ^ negative_scale {
             &mut negative
         } else {
             &mut positive
         };
-        let shift = a_shift + b_shift + c_shift;
+        // Both parts have the same sign and sum to one exact triple product.
+        // N-product carry headroom therefore also bounds every partial sum.
         add_product(target, u128::from(product as u64) * u128::from(c), shift);
         add_product(target, (product >> 64) * u128::from(c), shift + 64);
     }
-    finish::<99, 3222>(positive, negative)
+    finish_at(positive, negative, base as i32 - 3222)
 }
 
 pub(super) fn dot<const N: usize>(left: [f64; N], right: [f64; N]) -> f64 {
@@ -43,25 +65,95 @@ pub(super) fn half_dot<const N: usize>(left: [f64; N], right: [f64; N]) -> f64 {
 
 fn dot_with_quantum<const N: usize, const QUANTUM: usize>(left: [f64; N], right: [f64; N]) -> f64 {
     assert!(N <= 6, "exact dot accumulator capacity");
-    let mut positive = [0; LIMBS];
-    let mut negative = [0; LIMBS];
+    if let Some(base) = compact_base(&left, &right, 0, 106) {
+        accumulate::<N, 4, QUANTUM>(left, right, base)
+    } else {
+        accumulate::<N, 66, QUANTUM>(left, right, 0)
+    }
+}
+
+#[inline]
+fn accumulate<const N: usize, const WORDS: usize, const QUANTUM: usize>(
+    left: [f64; N],
+    right: [f64; N],
+    base: usize,
+) -> f64 {
+    let mut positive = [0; WORDS];
+    let mut negative = [0; WORDS];
     for (a, b) in left.into_iter().zip(right) {
-        let (a_significand, a_shift) = decompose(a);
-        let (b_significand, b_shift) = decompose(b);
-        let product = u128::from(a_significand) * u128::from(b_significand);
-        let target = if a.is_sign_negative() != b.is_sign_negative() {
+        if a == 0. || b == 0. {
+            continue;
+        }
+        let (a_bits, a_shift) = decompose(a);
+        let (b_bits, b_shift) = decompose(b);
+        let target = if a.is_sign_negative() ^ b.is_sign_negative() {
             &mut negative
         } else {
             &mut positive
         };
-        add_product(target, product, a_shift + b_shift);
+        add_product(
+            target,
+            u128::from(a_bits) * u128::from(b_bits),
+            a_shift + b_shift - base,
+        );
     }
-    finish::<LIMBS, QUANTUM>(positive, negative)
+    finish_at(positive, negative, base as i32 - QUANTUM as i32)
 }
 
 #[cfg(test)]
 mod tests {
     use super::dot;
+
+    #[test]
+    fn clustered_products_and_scales_match_independent_rational_rounding() {
+        use num_rational::BigRational as R;
+        use num_traits::{ToPrimitive, Zero};
+        let mut state = 53_u64;
+        for center in [-1000, -512, -1, 0, 512, 1000] {
+            for case in 0..128 {
+                let mut next = || {
+                    state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
+                    let exponent = (1023 + center + (state % 9) as i32 - 4).clamp(0, 2046) as u64;
+                    f64::from_bits(
+                        (state & ((1_u64 << 63) | ((1_u64 << 52) - 1))) | (exponent << 52),
+                    )
+                };
+                let mut left = std::array::from_fn::<_, 6, _>(|_| next());
+                let mut right = std::array::from_fn::<_, 6, _>(|_| next());
+                if case % 2 == 0 {
+                    left[1] = left[0];
+                    right[1] = -right[0];
+                }
+                let exact = left.into_iter().zip(right).fold(R::zero(), |sum, (a, b)| {
+                    sum + R::from_float(a).unwrap() * R::from_float(b).unwrap()
+                });
+                assert_eq!(
+                    dot(left, right).to_bits(),
+                    exact.to_f64().unwrap().to_bits()
+                );
+                assert_eq!(
+                    super::half_dot(left, right).to_bits(),
+                    (&exact / R::from_integer(2.into()))
+                        .to_f64()
+                        .unwrap()
+                        .to_bits()
+                );
+                let scale = match case % 4 {
+                    0 => 0.,
+                    1 => -1.,
+                    2 => 2_f64.powi(-600),
+                    _ => 2_f64.powi(600),
+                };
+                assert_eq!(
+                    super::scaled_dot(left, right, scale).to_bits(),
+                    (&exact * R::from_float(scale).unwrap())
+                        .to_f64()
+                        .unwrap()
+                        .to_bits()
+                );
+            }
+        }
+    }
 
     #[test]
     fn scaled_dot_matches_independent_fraction_reference_bit_for_bit() {
