@@ -13,6 +13,8 @@ pub struct BorderFixture {
     #[serde(default)]
     preselect: bool,
     artifact_path: Option<String>,
+    /// New edge order, expressed as old indices; geometry is unchanged.
+    edge_order: Option<Vec<usize>>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -25,6 +27,13 @@ enum BorderSource {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "type", rename_all = "snake_case")]
 enum BorderPrimitive {
+    MeshBrep {
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+    },
+    SurfaceFace {
+        surface: NurbsSurfaceDefinition,
+    },
     Box {
         min: [f64; 3],
         max: [f64; 3],
@@ -40,6 +49,20 @@ impl BorderSource {
     fn geometry(&self, tolerance: Tolerance) -> Result<Geometry, ProbeError> {
         Ok(match self {
             Self::Object(source) => source.geometry(tolerance)?,
+            Self::Primitive(BorderPrimitive::MeshBrep { vertices, faces }) => {
+                let source = ObjectSource::Vertices(crate::object_source::VertexSource::Mesh {
+                    vertices: vertices.clone(),
+                    faces: faces.clone(),
+                })
+                .geometry(tolerance)?;
+                let Geometry::Mesh(mesh) = source else {
+                    unreachable!()
+                };
+                Geometry::Brep(Brep::try_from_mesh(&mesh, true, tolerance)?)
+            }
+            Self::Primitive(BorderPrimitive::SurfaceFace { surface }) => Geometry::Brep(
+                Brep::try_surface_face(nurbs_surface_from_definition(surface)?, tolerance)?,
+            ),
             Self::Primitive(BorderPrimitive::Box {
                 min,
                 max,
@@ -89,7 +112,13 @@ pub(super) fn run(f: &BorderFixture, tolerance: Tolerance) -> Result<(Value, u64
     let input_layer = document.add_layer("Source", ColorRgb::BLACK)?;
     let current_layer = document.add_layer("Current", ColorRgb::BLACK)?;
     document.set_current_layer(current_layer)?;
-    let geometry = f.source.geometry(tolerance)?;
+    let mut geometry = f.source.geometry(tolerance)?;
+    if let Some(order) = &f.edge_order {
+        let Geometry::Brep(brep) = &geometry else {
+            return Err(invalid());
+        };
+        geometry = Geometry::Brep(reorder_edges(brep, order, tolerance)?);
+    }
     if let Some(path) = &f.artifact_path {
         use viboceros_io::{
             ThreeDmGeometry, ThreeDmLayer, ThreeDmModel, ThreeDmObject, read_3dm_file,
@@ -182,4 +211,54 @@ pub(super) fn run(f: &BorderFixture, tolerance: Tolerance) -> Result<(Value, u64
         json!({"succeeded":true,"source_retained":document.object(source).is_some(),"source_selected":document.is_selected(source),"outputs":outputs,"new_groups":document.groups().len()-1}),
         0,
     ))
+}
+
+fn reorder_edges(brep: &Brep, order: &[usize], tolerance: Tolerance) -> Result<Brep, ProbeError> {
+    use viboceros_geometry::{BrepLoop, BrepTrim};
+    if order.len() != brep.edges().len()
+        || order.iter().copied().collect::<BTreeSet<_>>() != (0..order.len()).collect()
+    {
+        return Err(ProbeError::FixtureInvariant(
+            "border edge order must be a permutation",
+        ));
+    }
+    let mut inverse = vec![0; order.len()];
+    for (new, &old) in order.iter().enumerate() {
+        inverse[old] = new;
+    }
+    let faces = brep
+        .faces()
+        .iter()
+        .map(|face| {
+            let loops = face
+                .loops()
+                .iter()
+                .map(|boundary| {
+                    let trims = boundary
+                        .trims()
+                        .iter()
+                        .map(|trim| {
+                            BrepTrim::try_new(
+                                trim.vertices(),
+                                trim.edge().map(|edge| inverse[edge]),
+                                trim.is_reversed_3d(),
+                                trim.curve().clone(),
+                                trim.trim_type(),
+                                trim.iso(),
+                                trim.tolerance(),
+                            )
+                        })
+                        .collect::<Result<Vec<_>, _>>()?;
+                    BrepLoop::try_new(boundary.loop_type(), trims)
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            BrepFace::try_new(face.surface().clone(), face.is_reversed(), loops)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(Brep::try_new(
+        brep.vertices().to_vec(),
+        order.iter().map(|&i| brep.edges()[i].clone()).collect(),
+        faces,
+        tolerance,
+    )?)
 }

@@ -2,9 +2,9 @@
 
 [Project overview](../README.md)
 
-Border duplication now has 50 live command records and offline replay checks;
-see [border validation](borders.md) for the 42 full matches, eight retained
-polysurface seam discrepancies, and identical-source 3DM protocol.
+Border duplication has 86 matching live command records and offline replay
+checks, including edge-table permutations. See [border validation](borders.md)
+for the resolved polysurface seam discrepancies and identical-source 3DM protocol.
 
 The `align` object-layout probe compares actual bounding-box, curve and line/plane alignment commands,
 including retained IDs, source samples/domains, groups, layer assignment and

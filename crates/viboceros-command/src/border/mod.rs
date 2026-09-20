@@ -59,11 +59,14 @@ impl Command for DuplicateBorderCommand {
                     .into_iter()
                     .map(|curves| assemble(curves, document.tolerance()))
                     .collect::<Result<_, _>>()?,
-                Geometry::Brep(brep) => brep
-                    .naked_boundary_curve_components()?
-                    .into_iter()
-                    .map(|curves| assemble(curves, document.tolerance()))
-                    .collect::<Result<_, _>>()?,
+                Geometry::Brep(brep) => (if brep.faces().len() == 1 {
+                    brep.face_boundary_curve_components(0)?
+                } else {
+                    brep.naked_boundary_curve_components()?
+                })
+                .into_iter()
+                .map(|curves| assemble(curves, document.tolerance()))
+                .collect::<Result<_, _>>()?,
                 Geometry::Mesh(mesh) => assemble::mesh_boundaries(mesh, document.tolerance())?,
                 Geometry::Point(_)
                 | Geometry::PointCloud(_)

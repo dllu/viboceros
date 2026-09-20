@@ -1,15 +1,17 @@
 //! Exact topological boundary chaining; no fitting or endpoint edits.
 use super::*;
+mod order;
 
 impl Brep {
     /// Returns the selected face's exact non-seam boundary curves in connected
     /// components.
     ///
     /// Mated edges are included because they become naked when a single face
-    /// is considered in isolation. Seam and singular trims are excluded. Each
-    /// component starts from its first trim and follows face orientation. Closed
-    /// linear loops start one edge before the seed; disconnected components
-    /// retain trim order. No edge fitting or endpoint deformation occurs.
+    /// is considered in isolation. Seam and singular trims are excluded. Trim
+    /// order seeds chaining and curves follow face orientation. Closed linear
+    /// loops start at their last endpoint join; disconnected linear components
+    /// use surviving join-fragment order. No edge fitting or endpoint deformation
+    /// occurs.
     pub fn face_boundary_curve_components(
         &self,
         face_index: usize,
@@ -84,6 +86,20 @@ impl Brep {
 
         let mut visited = vec![false; ordered_edges.len()];
         let mut visited_vertices = BTreeSet::new();
+        let line_ranks = ordered_edges
+            .iter()
+            .all(|&(edge, _)| {
+                self.edges[edge].curve.degree() == 1
+                    && self.edges[edge].curve.control_points().len() == 2
+            })
+            .then(|| {
+                let ends = ordered_edges
+                    .iter()
+                    .map(|&(edge, reversed)| oriented_edge_vertices(&self.edges[edge], reversed))
+                    .collect::<Vec<_>>();
+                order::linear_component_ranks(&ends, &local_edges_at_vertex)
+            })
+            .flatten();
         let mut components = Vec::new();
         for root in 0..ordered_edges.len() {
             if visited[root] {
@@ -107,9 +123,13 @@ impl Brep {
                 }
             }
             component.sort_unstable();
-            components.push(self.chain_boundary_component(&component, ordered_edges)?);
+            components.push((
+                line_ranks.as_ref().map_or(root, |ranks| ranks[root]),
+                self.chain_boundary_component(&component, ordered_edges)?,
+            ));
         }
-        Ok(components)
+        components.sort_by_key(|(rank, _)| *rank);
+        Ok(components.into_iter().map(|(_, curves)| curves).collect())
     }
 
     fn chain_boundary_component(
@@ -177,7 +197,7 @@ impl Brep {
             let last =
                 oriented_edge_vertices(&self.edges[ordered_edges[last_edge].0], last_reversed)[1];
             if first == last {
-                let root_position = chain
+                let mut start_position = chain
                     .iter()
                     .position(|(edge, _)| *edge == edge_indices[0])
                     .expect("the boundary chain must retain its root edge");
@@ -185,8 +205,22 @@ impl Brep {
                     let curve = &self.edges[ordered_edges[edge].0].curve;
                     curve.degree() == 1 && curve.control_points().len() == 2
                 });
-                chain
-                    .rotate_left((root_position + chain.len() - usize::from(linear)) % chain.len());
+                if linear {
+                    // Exact two-valent loops have one possible join per
+                    // vertex. Pairwise line joining visits those joins by
+                    // (larger input index, smaller input index). The last
+                    // connection closes the loop without moving its seam.
+                    // Thus its vertex, not a fixed offset from the seed, is
+                    // the start. No quadratic pair enumeration is needed.
+                    start_position = (0..chain.len())
+                        .max_by_key(|&i| {
+                            let left = chain[(i + chain.len() - 1) % chain.len()].0;
+                            let right = chain[i].0;
+                            (left.max(right), left.min(right))
+                        })
+                        .unwrap();
+                }
+                chain.rotate_left(start_position);
             }
         }
         chain

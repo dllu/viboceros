@@ -1,0 +1,2868 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "border_command",
+      "id": "shell-edges-0",
+      "command": "DupBorder",
+      "source": {
+        "type": "box",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          4,
+          3,
+          5
+        ],
+        "keep_faces": [
+          0,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "edge_order": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "shell-edges-1",
+      "command": "DupBorder",
+      "source": {
+        "type": "box",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          4,
+          3,
+          5
+        ],
+        "keep_faces": [
+          0,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "edge_order": [
+        11,
+        6,
+        1,
+        7,
+        5,
+        10,
+        3,
+        9,
+        2,
+        0,
+        8,
+        4
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "shell-edges-2",
+      "command": "DupBorder",
+      "source": {
+        "type": "box",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          4,
+          3,
+          5
+        ],
+        "keep_faces": [
+          0,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "edge_order": [
+        10,
+        11,
+        8,
+        3,
+        2,
+        6,
+        9,
+        1,
+        5,
+        0,
+        4,
+        7
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "shell-edges-3",
+      "command": "DupBorder",
+      "source": {
+        "type": "box",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          4,
+          3,
+          5
+        ],
+        "keep_faces": [
+          0,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "edge_order": [
+        9,
+        8,
+        4,
+        2,
+        5,
+        11,
+        6,
+        3,
+        1,
+        7,
+        10,
+        0
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "caps-edges-0",
+      "command": "DupBorder",
+      "source": {
+        "type": "box",
+        "min": [
+          20,
+          -10,
+          3
+        ],
+        "max": [
+          24,
+          -7,
+          8
+        ],
+        "keep_faces": [
+          0,
+          1
+        ]
+      },
+      "edge_order": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "caps-edges-1",
+      "command": "DupBorder",
+      "source": {
+        "type": "box",
+        "min": [
+          20,
+          -10,
+          3
+        ],
+        "max": [
+          24,
+          -7,
+          8
+        ],
+        "keep_faces": [
+          0,
+          1
+        ]
+      },
+      "edge_order": [
+        2,
+        3,
+        0,
+        5,
+        6,
+        1,
+        4,
+        7
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "caps-edges-2",
+      "command": "DupBorder",
+      "source": {
+        "type": "box",
+        "min": [
+          20,
+          -10,
+          3
+        ],
+        "max": [
+          24,
+          -7,
+          8
+        ],
+        "keep_faces": [
+          0,
+          1
+        ]
+      },
+      "edge_order": [
+        2,
+        5,
+        3,
+        0,
+        6,
+        4,
+        7,
+        1
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "caps-edges-3",
+      "command": "DupBorder",
+      "source": {
+        "type": "box",
+        "min": [
+          20,
+          -10,
+          3
+        ],
+        "max": [
+          24,
+          -7,
+          8
+        ],
+        "keep_faces": [
+          0,
+          1
+        ]
+      },
+      "edge_order": [
+        3,
+        5,
+        4,
+        1,
+        0,
+        2,
+        6,
+        7
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "opposite-edges-0",
+      "command": "DupBorder",
+      "source": {
+        "type": "box",
+        "min": [
+          40,
+          -20,
+          6
+        ],
+        "max": [
+          44,
+          -17,
+          11
+        ],
+        "keep_faces": [
+          2,
+          3
+        ]
+      },
+      "edge_order": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "opposite-edges-1",
+      "command": "DupBorder",
+      "source": {
+        "type": "box",
+        "min": [
+          40,
+          -20,
+          6
+        ],
+        "max": [
+          44,
+          -17,
+          11
+        ],
+        "keep_faces": [
+          2,
+          3
+        ]
+      },
+      "edge_order": [
+        2,
+        4,
+        5,
+        1,
+        6,
+        3,
+        0,
+        7
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "opposite-edges-2",
+      "command": "DupBorder",
+      "source": {
+        "type": "box",
+        "min": [
+          40,
+          -20,
+          6
+        ],
+        "max": [
+          44,
+          -17,
+          11
+        ],
+        "keep_faces": [
+          2,
+          3
+        ]
+      },
+      "edge_order": [
+        7,
+        4,
+        5,
+        3,
+        1,
+        2,
+        6,
+        0
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "opposite-edges-3",
+      "command": "DupBorder",
+      "source": {
+        "type": "box",
+        "min": [
+          40,
+          -20,
+          6
+        ],
+        "max": [
+          44,
+          -17,
+          11
+        ],
+        "keep_faces": [
+          2,
+          3
+        ]
+      },
+      "edge_order": [
+        2,
+        6,
+        3,
+        7,
+        0,
+        1,
+        4,
+        5
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "adjacent-edges-0",
+      "command": "DupBorder",
+      "source": {
+        "type": "box",
+        "min": [
+          60,
+          -30,
+          9
+        ],
+        "max": [
+          64,
+          -27,
+          14
+        ],
+        "keep_faces": [
+          2,
+          5
+        ]
+      },
+      "edge_order": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "adjacent-edges-1",
+      "command": "DupBorder",
+      "source": {
+        "type": "box",
+        "min": [
+          60,
+          -30,
+          9
+        ],
+        "max": [
+          64,
+          -27,
+          14
+        ],
+        "keep_faces": [
+          2,
+          5
+        ]
+      },
+      "edge_order": [
+        2,
+        0,
+        4,
+        6,
+        5,
+        3,
+        1
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "adjacent-edges-2",
+      "command": "DupBorder",
+      "source": {
+        "type": "box",
+        "min": [
+          60,
+          -30,
+          9
+        ],
+        "max": [
+          64,
+          -27,
+          14
+        ],
+        "keep_faces": [
+          2,
+          5
+        ]
+      },
+      "edge_order": [
+        2,
+        0,
+        6,
+        4,
+        3,
+        1,
+        5
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "adjacent-edges-3",
+      "command": "DupBorder",
+      "source": {
+        "type": "box",
+        "min": [
+          60,
+          -30,
+          9
+        ],
+        "max": [
+          64,
+          -27,
+          14
+        ],
+        "keep_faces": [
+          2,
+          5
+        ]
+      },
+      "edge_order": [
+        3,
+        1,
+        2,
+        6,
+        0,
+        5,
+        4
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "grid-natural",
+      "command": "DupBorder",
+      "source": {
+        "type": "mesh_brep",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            0,
+            6,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            2,
+            3,
+            0
+          ],
+          [
+            2,
+            6,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ],
+          [
+            4,
+            6,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            3,
+            0
+          ],
+          [
+            6,
+            6,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            3,
+            4,
+            1
+          ],
+          [
+            1,
+            4,
+            5,
+            2
+          ],
+          [
+            3,
+            6,
+            7,
+            4
+          ],
+          [
+            4,
+            7,
+            8,
+            5
+          ],
+          [
+            6,
+            9,
+            10,
+            7
+          ],
+          [
+            7,
+            10,
+            11,
+            8
+          ]
+        ]
+      }
+    },
+    {
+      "op": "border_command",
+      "id": "grid-shuffled",
+      "command": "DupBorder",
+      "source": {
+        "type": "mesh_brep",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            0,
+            6,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            2,
+            3,
+            0
+          ],
+          [
+            2,
+            6,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ],
+          [
+            4,
+            6,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            3,
+            0
+          ],
+          [
+            6,
+            6,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            3,
+            4,
+            1
+          ],
+          [
+            1,
+            4,
+            5,
+            2
+          ],
+          [
+            3,
+            6,
+            7,
+            4
+          ],
+          [
+            4,
+            7,
+            8,
+            5
+          ],
+          [
+            6,
+            9,
+            10,
+            7
+          ],
+          [
+            7,
+            10,
+            11,
+            8
+          ]
+        ]
+      },
+      "edge_order": [
+        7,
+        10,
+        5,
+        6,
+        15,
+        14,
+        13,
+        9,
+        8,
+        1,
+        2,
+        12,
+        16,
+        4,
+        11,
+        0,
+        3
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "l-shape-natural",
+      "command": "DupBorder",
+      "source": {
+        "type": "mesh_brep",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            0,
+            6,
+            0
+          ],
+          [
+            0,
+            9,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            2,
+            3,
+            0
+          ],
+          [
+            2,
+            6,
+            0
+          ],
+          [
+            2,
+            9,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            3,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            4,
+            5,
+            1
+          ],
+          [
+            4,
+            8,
+            9,
+            5
+          ],
+          [
+            8,
+            10,
+            11,
+            9
+          ],
+          [
+            1,
+            5,
+            6,
+            2
+          ],
+          [
+            2,
+            6,
+            7,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "op": "border_command",
+      "id": "l-shape-shuffled",
+      "command": "DupBorder",
+      "source": {
+        "type": "mesh_brep",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            0,
+            6,
+            0
+          ],
+          [
+            0,
+            9,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            2,
+            3,
+            0
+          ],
+          [
+            2,
+            6,
+            0
+          ],
+          [
+            2,
+            9,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            3,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            4,
+            5,
+            1
+          ],
+          [
+            4,
+            8,
+            9,
+            5
+          ],
+          [
+            8,
+            10,
+            11,
+            9
+          ],
+          [
+            1,
+            5,
+            6,
+            2
+          ],
+          [
+            2,
+            6,
+            7,
+            3
+          ]
+        ]
+      },
+      "edge_order": [
+        7,
+        9,
+        5,
+        6,
+        14,
+        10,
+        12,
+        8,
+        1,
+        2,
+        13,
+        15,
+        4,
+        11,
+        0,
+        3
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "annulus-natural",
+      "command": "DupBorder",
+      "source": {
+        "type": "mesh_brep",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            0,
+            6,
+            0
+          ],
+          [
+            0,
+            9,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            2,
+            3,
+            0
+          ],
+          [
+            2,
+            6,
+            0
+          ],
+          [
+            2,
+            9,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ],
+          [
+            4,
+            6,
+            0
+          ],
+          [
+            4,
+            9,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            3,
+            0
+          ],
+          [
+            6,
+            6,
+            0
+          ],
+          [
+            6,
+            9,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            4,
+            5,
+            1
+          ],
+          [
+            1,
+            5,
+            6,
+            2
+          ],
+          [
+            2,
+            6,
+            7,
+            3
+          ],
+          [
+            4,
+            8,
+            9,
+            5
+          ],
+          [
+            6,
+            10,
+            11,
+            7
+          ],
+          [
+            8,
+            12,
+            13,
+            9
+          ],
+          [
+            9,
+            13,
+            14,
+            10
+          ],
+          [
+            10,
+            14,
+            15,
+            11
+          ]
+        ]
+      }
+    },
+    {
+      "op": "border_command",
+      "id": "annulus-shuffled",
+      "command": "DupBorder",
+      "source": {
+        "type": "mesh_brep",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            0,
+            6,
+            0
+          ],
+          [
+            0,
+            9,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            2,
+            3,
+            0
+          ],
+          [
+            2,
+            6,
+            0
+          ],
+          [
+            2,
+            9,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ],
+          [
+            4,
+            6,
+            0
+          ],
+          [
+            4,
+            9,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            3,
+            0
+          ],
+          [
+            6,
+            6,
+            0
+          ],
+          [
+            6,
+            9,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            4,
+            5,
+            1
+          ],
+          [
+            1,
+            5,
+            6,
+            2
+          ],
+          [
+            2,
+            6,
+            7,
+            3
+          ],
+          [
+            4,
+            8,
+            9,
+            5
+          ],
+          [
+            6,
+            10,
+            11,
+            7
+          ],
+          [
+            8,
+            12,
+            13,
+            9
+          ],
+          [
+            9,
+            13,
+            14,
+            10
+          ],
+          [
+            10,
+            14,
+            15,
+            11
+          ]
+        ]
+      },
+      "edge_order": [
+        15,
+        5,
+        18,
+        23,
+        13,
+        10,
+        17,
+        11,
+        14,
+        16,
+        1,
+        12,
+        21,
+        6,
+        9,
+        2,
+        22,
+        4,
+        19,
+        7,
+        8,
+        0,
+        3,
+        20
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "disconnected-natural",
+      "command": "DupBorder",
+      "source": {
+        "type": "mesh_brep",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            2,
+            3,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ],
+          [
+            10,
+            0,
+            0
+          ],
+          [
+            10,
+            3,
+            0
+          ],
+          [
+            10,
+            6,
+            0
+          ],
+          [
+            12,
+            0,
+            0
+          ],
+          [
+            12,
+            3,
+            0
+          ],
+          [
+            12,
+            6,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            2,
+            3,
+            1
+          ],
+          [
+            2,
+            4,
+            5,
+            3
+          ],
+          [
+            6,
+            9,
+            10,
+            7
+          ],
+          [
+            7,
+            10,
+            11,
+            8
+          ]
+        ]
+      }
+    },
+    {
+      "op": "border_command",
+      "id": "disconnected-shuffled",
+      "command": "DupBorder",
+      "source": {
+        "type": "mesh_brep",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            2,
+            3,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ],
+          [
+            10,
+            0,
+            0
+          ],
+          [
+            10,
+            3,
+            0
+          ],
+          [
+            10,
+            6,
+            0
+          ],
+          [
+            12,
+            0,
+            0
+          ],
+          [
+            12,
+            3,
+            0
+          ],
+          [
+            12,
+            6,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            2,
+            3,
+            1
+          ],
+          [
+            2,
+            4,
+            5,
+            3
+          ],
+          [
+            6,
+            9,
+            10,
+            7
+          ],
+          [
+            7,
+            10,
+            11,
+            8
+          ]
+        ]
+      },
+      "edge_order": [
+        8,
+        12,
+        7,
+        6,
+        13,
+        11,
+        5,
+        2,
+        9,
+        3,
+        4,
+        0,
+        1,
+        10
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "warped-natural",
+      "command": "DupBorder",
+      "source": {
+        "type": "mesh_brep",
+        "vertices": [
+          [
+            0,
+            0,
+            0.0
+          ],
+          [
+            0,
+            3,
+            0.0
+          ],
+          [
+            0,
+            6,
+            0.0
+          ],
+          [
+            2,
+            0,
+            0.0
+          ],
+          [
+            2,
+            3,
+            0.25
+          ],
+          [
+            2,
+            6,
+            0.5
+          ],
+          [
+            4,
+            0,
+            0.0
+          ],
+          [
+            4,
+            3,
+            0.5
+          ],
+          [
+            4,
+            6,
+            1.0
+          ],
+          [
+            6,
+            0,
+            0.0
+          ],
+          [
+            6,
+            3,
+            0.75
+          ],
+          [
+            6,
+            6,
+            1.5
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            3,
+            4,
+            1
+          ],
+          [
+            1,
+            4,
+            5,
+            2
+          ],
+          [
+            3,
+            6,
+            7,
+            4
+          ],
+          [
+            4,
+            7,
+            8,
+            5
+          ],
+          [
+            6,
+            9,
+            10,
+            7
+          ],
+          [
+            7,
+            10,
+            11,
+            8
+          ]
+        ]
+      }
+    },
+    {
+      "op": "border_command",
+      "id": "warped-shuffled",
+      "command": "DupBorder",
+      "source": {
+        "type": "mesh_brep",
+        "vertices": [
+          [
+            0,
+            0,
+            0.0
+          ],
+          [
+            0,
+            3,
+            0.0
+          ],
+          [
+            0,
+            6,
+            0.0
+          ],
+          [
+            2,
+            0,
+            0.0
+          ],
+          [
+            2,
+            3,
+            0.25
+          ],
+          [
+            2,
+            6,
+            0.5
+          ],
+          [
+            4,
+            0,
+            0.0
+          ],
+          [
+            4,
+            3,
+            0.5
+          ],
+          [
+            4,
+            6,
+            1.0
+          ],
+          [
+            6,
+            0,
+            0.0
+          ],
+          [
+            6,
+            3,
+            0.75
+          ],
+          [
+            6,
+            6,
+            1.5
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            3,
+            4,
+            1
+          ],
+          [
+            1,
+            4,
+            5,
+            2
+          ],
+          [
+            3,
+            6,
+            7,
+            4
+          ],
+          [
+            4,
+            7,
+            8,
+            5
+          ],
+          [
+            6,
+            9,
+            10,
+            7
+          ],
+          [
+            7,
+            10,
+            11,
+            8
+          ]
+        ]
+      },
+      "edge_order": [
+        7,
+        10,
+        5,
+        6,
+        15,
+        14,
+        13,
+        9,
+        8,
+        1,
+        2,
+        12,
+        16,
+        4,
+        11,
+        0,
+        3
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "reversed-natural",
+      "command": "DupBorder",
+      "source": {
+        "type": "mesh_brep",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            0,
+            6,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            2,
+            3,
+            0
+          ],
+          [
+            2,
+            6,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ],
+          [
+            4,
+            6,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            3,
+            0
+          ],
+          [
+            6,
+            6,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            1,
+            4,
+            3,
+            0
+          ],
+          [
+            2,
+            5,
+            4,
+            1
+          ],
+          [
+            4,
+            7,
+            6,
+            3
+          ],
+          [
+            5,
+            8,
+            7,
+            4
+          ],
+          [
+            7,
+            10,
+            9,
+            6
+          ],
+          [
+            8,
+            11,
+            10,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "op": "border_command",
+      "id": "reversed-shuffled",
+      "command": "DupBorder",
+      "source": {
+        "type": "mesh_brep",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            0,
+            6,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            2,
+            3,
+            0
+          ],
+          [
+            2,
+            6,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ],
+          [
+            4,
+            6,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            3,
+            0
+          ],
+          [
+            6,
+            6,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            1,
+            4,
+            3,
+            0
+          ],
+          [
+            2,
+            5,
+            4,
+            1
+          ],
+          [
+            4,
+            7,
+            6,
+            3
+          ],
+          [
+            5,
+            8,
+            7,
+            4
+          ],
+          [
+            7,
+            10,
+            9,
+            6
+          ],
+          [
+            8,
+            11,
+            10,
+            7
+          ]
+        ]
+      },
+      "edge_order": [
+        7,
+        10,
+        5,
+        6,
+        15,
+        14,
+        13,
+        9,
+        8,
+        1,
+        2,
+        12,
+        16,
+        4,
+        11,
+        0,
+        3
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "DupBorder-curved-face-0",
+      "command": "DupBorder",
+      "source": {
+        "type": "surface_face",
+        "surface": {
+          "degree_u": 2,
+          "degree_v": 2,
+          "control_point_count_u": 3,
+          "control_point_count_v": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                0.0,
+                3
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                4,
+                0.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                1.5,
+                3
+              ],
+              "weight": 1.3
+            },
+            {
+              "point": [
+                2,
+                1.5,
+                4
+              ],
+              "weight": 1.5
+            },
+            {
+              "point": [
+                4,
+                1.5,
+                3
+              ],
+              "weight": 1.3
+            },
+            {
+              "point": [
+                0,
+                3.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                3.0,
+                3
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                4,
+                3.0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            4,
+            4,
+            4
+          ],
+          "knots_v": [
+            0,
+            0,
+            0,
+            3,
+            3,
+            3
+          ]
+        }
+      },
+      "edge_order": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "DupFaceBorder-curved-face-0",
+      "command": "DupFaceBorder",
+      "source": {
+        "type": "surface_face",
+        "surface": {
+          "degree_u": 2,
+          "degree_v": 2,
+          "control_point_count_u": 3,
+          "control_point_count_v": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                0.0,
+                3
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                4,
+                0.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                1.5,
+                3
+              ],
+              "weight": 1.3
+            },
+            {
+              "point": [
+                2,
+                1.5,
+                4
+              ],
+              "weight": 1.5
+            },
+            {
+              "point": [
+                4,
+                1.5,
+                3
+              ],
+              "weight": 1.3
+            },
+            {
+              "point": [
+                0,
+                3.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                3.0,
+                3
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                4,
+                3.0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            4,
+            4,
+            4
+          ],
+          "knots_v": [
+            0,
+            0,
+            0,
+            3,
+            3,
+            3
+          ]
+        }
+      },
+      "edge_order": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "DupBorder-curved-face-1",
+      "command": "DupBorder",
+      "source": {
+        "type": "surface_face",
+        "surface": {
+          "degree_u": 2,
+          "degree_v": 2,
+          "control_point_count_u": 3,
+          "control_point_count_v": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                0.0,
+                3
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                4,
+                0.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                1.5,
+                3
+              ],
+              "weight": 1.3
+            },
+            {
+              "point": [
+                2,
+                1.5,
+                4
+              ],
+              "weight": 1.5
+            },
+            {
+              "point": [
+                4,
+                1.5,
+                3
+              ],
+              "weight": 1.3
+            },
+            {
+              "point": [
+                0,
+                3.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                3.0,
+                3
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                4,
+                3.0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            4,
+            4,
+            4
+          ],
+          "knots_v": [
+            0,
+            0,
+            0,
+            3,
+            3,
+            3
+          ]
+        }
+      },
+      "edge_order": [
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "DupFaceBorder-curved-face-1",
+      "command": "DupFaceBorder",
+      "source": {
+        "type": "surface_face",
+        "surface": {
+          "degree_u": 2,
+          "degree_v": 2,
+          "control_point_count_u": 3,
+          "control_point_count_v": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                0.0,
+                3
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                4,
+                0.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                1.5,
+                3
+              ],
+              "weight": 1.3
+            },
+            {
+              "point": [
+                2,
+                1.5,
+                4
+              ],
+              "weight": 1.5
+            },
+            {
+              "point": [
+                4,
+                1.5,
+                3
+              ],
+              "weight": 1.3
+            },
+            {
+              "point": [
+                0,
+                3.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                3.0,
+                3
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                4,
+                3.0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            4,
+            4,
+            4
+          ],
+          "knots_v": [
+            0,
+            0,
+            0,
+            3,
+            3,
+            3
+          ]
+        }
+      },
+      "edge_order": [
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "DupBorder-curved-face-2",
+      "command": "DupBorder",
+      "source": {
+        "type": "surface_face",
+        "surface": {
+          "degree_u": 2,
+          "degree_v": 2,
+          "control_point_count_u": 3,
+          "control_point_count_v": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                0.0,
+                3
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                4,
+                0.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                1.5,
+                3
+              ],
+              "weight": 1.3
+            },
+            {
+              "point": [
+                2,
+                1.5,
+                4
+              ],
+              "weight": 1.5
+            },
+            {
+              "point": [
+                4,
+                1.5,
+                3
+              ],
+              "weight": 1.3
+            },
+            {
+              "point": [
+                0,
+                3.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                3.0,
+                3
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                4,
+                3.0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            4,
+            4,
+            4
+          ],
+          "knots_v": [
+            0,
+            0,
+            0,
+            3,
+            3,
+            3
+          ]
+        }
+      },
+      "edge_order": [
+        1,
+        3,
+        0,
+        2
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "DupFaceBorder-curved-face-2",
+      "command": "DupFaceBorder",
+      "source": {
+        "type": "surface_face",
+        "surface": {
+          "degree_u": 2,
+          "degree_v": 2,
+          "control_point_count_u": 3,
+          "control_point_count_v": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                0.0,
+                3
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                4,
+                0.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                1.5,
+                3
+              ],
+              "weight": 1.3
+            },
+            {
+              "point": [
+                2,
+                1.5,
+                4
+              ],
+              "weight": 1.5
+            },
+            {
+              "point": [
+                4,
+                1.5,
+                3
+              ],
+              "weight": 1.3
+            },
+            {
+              "point": [
+                0,
+                3.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                3.0,
+                3
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                4,
+                3.0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            4,
+            4,
+            4
+          ],
+          "knots_v": [
+            0,
+            0,
+            0,
+            3,
+            3,
+            3
+          ]
+        }
+      },
+      "edge_order": [
+        1,
+        3,
+        0,
+        2
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "DupBorder-curved-face-3",
+      "command": "DupBorder",
+      "source": {
+        "type": "surface_face",
+        "surface": {
+          "degree_u": 2,
+          "degree_v": 2,
+          "control_point_count_u": 3,
+          "control_point_count_v": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                0.0,
+                3
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                4,
+                0.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                1.5,
+                3
+              ],
+              "weight": 1.3
+            },
+            {
+              "point": [
+                2,
+                1.5,
+                4
+              ],
+              "weight": 1.5
+            },
+            {
+              "point": [
+                4,
+                1.5,
+                3
+              ],
+              "weight": 1.3
+            },
+            {
+              "point": [
+                0,
+                3.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                3.0,
+                3
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                4,
+                3.0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            4,
+            4,
+            4
+          ],
+          "knots_v": [
+            0,
+            0,
+            0,
+            3,
+            3,
+            3
+          ]
+        }
+      },
+      "edge_order": [
+        2,
+        0,
+        3,
+        1
+      ]
+    },
+    {
+      "op": "border_command",
+      "id": "DupFaceBorder-curved-face-3",
+      "command": "DupFaceBorder",
+      "source": {
+        "type": "surface_face",
+        "surface": {
+          "degree_u": 2,
+          "degree_v": 2,
+          "control_point_count_u": 3,
+          "control_point_count_v": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                0.0,
+                3
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                4,
+                0.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                1.5,
+                3
+              ],
+              "weight": 1.3
+            },
+            {
+              "point": [
+                2,
+                1.5,
+                4
+              ],
+              "weight": 1.5
+            },
+            {
+              "point": [
+                4,
+                1.5,
+                3
+              ],
+              "weight": 1.3
+            },
+            {
+              "point": [
+                0,
+                3.0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                3.0,
+                3
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                4,
+                3.0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            4,
+            4,
+            4
+          ],
+          "knots_v": [
+            0,
+            0,
+            0,
+            3,
+            3,
+            3
+          ]
+        }
+      },
+      "edge_order": [
+        2,
+        0,
+        3,
+        1
+      ]
+    }
+  ]
+}

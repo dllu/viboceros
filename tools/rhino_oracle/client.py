@@ -289,7 +289,7 @@ class OracleClient:
                     operation["artifact_path"] = str(Path(job) / f"curve-{index}.3dm")
                 elif operation.get("op") == "three_dm_brep_interchange":
                     operation["artifact_path"] = str(Path(job) / f"brep-{index}.3dm")
-                elif operation.get("op") == "border_command" and operation["source"]["type"] in ("box", "extrusion", "brep"):
+                elif operation.get("op") == "border_command" and operation["source"]["type"] in ("box", "extrusion", "brep", "mesh_brep", "surface_face"):
                     operation["artifact_path"] = str(Path(job) / f"border-{index}.3dm")
             viboceros = self.run_viboceros(prepared, timeout)
             rhino = self.run_rhino(prepared, timeout)

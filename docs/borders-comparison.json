@@ -1,17 +1,30 @@
 {
   "protocol_version": 1,
-  "passed": false,
+  "passed": true,
   "reference_engine": "rhino",
-  "reference_engine_version": "8.32.26160.13001",
-  "fixture_sha256": "47f9e977b997eccfbaf707f8784455ceb9275f65740e24ed127bbdaca8250c9f",
-  "observations_sha256": "0fdba2ef1d5566793f520cffe38a7884c7b80a4aa9cc1ecc95040161be32d1ac",
-  "native_executable_sha256": "1ab6fc30a347a19d7198eb8c62e51697915fbe13b448ca06cfe4fba02ef99805",
+  "native_executable_sha256": "c73c20f7f2f89a985676d3c1f960b1267320c6adba8dacb5dbc4039db14fb777",
   "absolute_epsilon": 1e-10,
   "relative_epsilon": 1e-10,
-  "passing_operations": 42,
-  "retained_discrepancies": 8,
-  "maximum_error_in_passing_cases": 1.7763568394002505e-15,
-  "note": "Actual Rhino commands in owned private Xvfb; B-reps use identical native-written 3DM sources. Eight polysurface seams differ. No timings or speedup claims. Raw geometry and state are retained in the observations; differences below show the first eight per operation.",
+  "passing_operations": 86,
+  "retained_discrepancies": 0,
+  "maximum_error_in_passing_cases": 4.884981308350689e-15,
+  "resolved_original_discrepancies": 8,
+  "suites": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/borders.json",
+      "fixture_sha256": "47f9e977b997eccfbaf707f8784455ceb9275f65740e24ed127bbdaca8250c9f",
+      "observations": "tools/rhino_oracle/observations/borders.json",
+      "observations_sha256": "0fdba2ef1d5566793f520cffe38a7884c7b80a4aa9cc1ecc95040161be32d1ac",
+      "operation_count": 50
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/border_seams.json",
+      "fixture_sha256": "cedf46a76284cf07537653db60a3dd1c6ce8c15c4c368a05c06fe95fd27707ab",
+      "observations": "tools/rhino_oracle/observations/border_seams.json",
+      "observations_sha256": "8eb83c01ff17a85269ef71b48a701ae9523079ffd7627707a7c7d98bb3f509ed",
+      "operation_count": 36
+    }
+  ],
   "operations": [
     {
       "id": "DupBorder-rectangle-Current",
@@ -57,99 +70,45 @@
     },
     {
       "id": "DupBorder-shell-Current",
-      "passed": false,
-      "max_absolute_error": 4.0,
-      "difference_count": 61,
-      "first_differences": [
-        "DupBorder-shell-Current.value.outputs[0].curve.samples[0][0]: 4 != 0 (error 4, limit 4e-10)",
-        "DupBorder-shell-Current.value.outputs[0].curve.samples[1][0]: 4 != 0.4375 (error 3.56, limit 4e-10)",
-        "DupBorder-shell-Current.value.outputs[0].curve.samples[1][1]: 2.5625 != 3 (error 0.438, limit 3e-10)",
-        "DupBorder-shell-Current.value.outputs[0].curve.samples[2][0]: 4 != 0.875 (error 3.12, limit 4e-10)",
-        "DupBorder-shell-Current.value.outputs[0].curve.samples[2][1]: 2.125 != 3 (error 0.875, limit 3e-10)",
-        "DupBorder-shell-Current.value.outputs[0].curve.samples[3][0]: 4 != 1.3125 (error 2.69, limit 4e-10)",
-        "DupBorder-shell-Current.value.outputs[0].curve.samples[3][1]: 1.6875 != 3 (error 1.31, limit 3e-10)",
-        "DupBorder-shell-Current.value.outputs[0].curve.samples[4][0]: 4 != 1.75 (error 2.25, limit 4e-10)"
-      ]
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
     },
     {
       "id": "DupBorder-shell-Input",
-      "passed": false,
-      "max_absolute_error": 4.0,
-      "difference_count": 61,
-      "first_differences": [
-        "DupBorder-shell-Input.value.outputs[0].curve.samples[0][0]: 4 != 0 (error 4, limit 4e-10)",
-        "DupBorder-shell-Input.value.outputs[0].curve.samples[1][0]: 4 != 0.4375 (error 3.56, limit 4e-10)",
-        "DupBorder-shell-Input.value.outputs[0].curve.samples[1][1]: 2.5625 != 3 (error 0.438, limit 3e-10)",
-        "DupBorder-shell-Input.value.outputs[0].curve.samples[2][0]: 4 != 0.875 (error 3.12, limit 4e-10)",
-        "DupBorder-shell-Input.value.outputs[0].curve.samples[2][1]: 2.125 != 3 (error 0.875, limit 3e-10)",
-        "DupBorder-shell-Input.value.outputs[0].curve.samples[3][0]: 4 != 1.3125 (error 2.69, limit 4e-10)",
-        "DupBorder-shell-Input.value.outputs[0].curve.samples[3][1]: 1.6875 != 3 (error 1.31, limit 3e-10)",
-        "DupBorder-shell-Input.value.outputs[0].curve.samples[4][0]: 4 != 1.75 (error 2.25, limit 4e-10)"
-      ]
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
     },
     {
       "id": "DupBorder-panels-Current",
-      "passed": false,
-      "max_absolute_error": 4.0,
-      "difference_count": 61,
-      "first_differences": [
-        "DupBorder-panels-Current.value.outputs[0].curve.samples[0][0]: 4 != 0 (error 4, limit 4e-10)",
-        "DupBorder-panels-Current.value.outputs[0].curve.samples[1][0]: 4 != 0.4375 (error 3.56, limit 4e-10)",
-        "DupBorder-panels-Current.value.outputs[0].curve.samples[1][1]: 2.5625 != 3 (error 0.438, limit 3e-10)",
-        "DupBorder-panels-Current.value.outputs[0].curve.samples[2][0]: 4 != 0.875 (error 3.12, limit 4e-10)",
-        "DupBorder-panels-Current.value.outputs[0].curve.samples[2][1]: 2.125 != 3 (error 0.875, limit 3e-10)",
-        "DupBorder-panels-Current.value.outputs[0].curve.samples[3][0]: 4 != 1.3125 (error 2.69, limit 4e-10)",
-        "DupBorder-panels-Current.value.outputs[0].curve.samples[3][1]: 1.6875 != 3 (error 1.31, limit 3e-10)",
-        "DupBorder-panels-Current.value.outputs[0].curve.samples[4][0]: 4 != 1.75 (error 2.25, limit 4e-10)"
-      ]
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
     },
     {
       "id": "DupBorder-panels-Input",
-      "passed": false,
-      "max_absolute_error": 4.0,
-      "difference_count": 61,
-      "first_differences": [
-        "DupBorder-panels-Input.value.outputs[0].curve.samples[0][0]: 4 != 0 (error 4, limit 4e-10)",
-        "DupBorder-panels-Input.value.outputs[0].curve.samples[1][0]: 4 != 0.4375 (error 3.56, limit 4e-10)",
-        "DupBorder-panels-Input.value.outputs[0].curve.samples[1][1]: 2.5625 != 3 (error 0.438, limit 3e-10)",
-        "DupBorder-panels-Input.value.outputs[0].curve.samples[2][0]: 4 != 0.875 (error 3.12, limit 4e-10)",
-        "DupBorder-panels-Input.value.outputs[0].curve.samples[2][1]: 2.125 != 3 (error 0.875, limit 3e-10)",
-        "DupBorder-panels-Input.value.outputs[0].curve.samples[3][0]: 4 != 1.3125 (error 2.69, limit 4e-10)",
-        "DupBorder-panels-Input.value.outputs[0].curve.samples[3][1]: 1.6875 != 3 (error 1.31, limit 3e-10)",
-        "DupBorder-panels-Input.value.outputs[0].curve.samples[4][0]: 4 != 1.75 (error 2.25, limit 4e-10)"
-      ]
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
     },
     {
       "id": "DupBorder-opposite-walls-Current",
-      "passed": false,
-      "max_absolute_error": 4.0,
-      "difference_count": 61,
-      "first_differences": [
-        "DupBorder-opposite-walls-Current.value.outputs[0].curve.samples[0][0]: 0 != 4 (error 4, limit 4e-10)",
-        "DupBorder-opposite-walls-Current.value.outputs[0].curve.samples[1][0]: 0 != 3.4375 (error 3.44, limit 3.44e-10)",
-        "DupBorder-opposite-walls-Current.value.outputs[0].curve.samples[1][2]: 4.4375 != 5 (error 0.562, limit 5e-10)",
-        "DupBorder-opposite-walls-Current.value.outputs[0].curve.samples[2][0]: 0 != 2.875 (error 2.88, limit 2.87e-10)",
-        "DupBorder-opposite-walls-Current.value.outputs[0].curve.samples[2][2]: 3.875 != 5 (error 1.12, limit 5e-10)",
-        "DupBorder-opposite-walls-Current.value.outputs[0].curve.samples[3][0]: 0 != 2.3125 (error 2.31, limit 2.31e-10)",
-        "DupBorder-opposite-walls-Current.value.outputs[0].curve.samples[3][2]: 3.3125 != 5 (error 1.69, limit 5e-10)",
-        "DupBorder-opposite-walls-Current.value.outputs[0].curve.samples[4][0]: 0 != 1.75 (error 1.75, limit 1.75e-10)"
-      ]
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "difference_count": 0,
+      "first_differences": []
     },
     {
       "id": "DupBorder-opposite-walls-Input",
-      "passed": false,
-      "max_absolute_error": 4.0,
-      "difference_count": 61,
-      "first_differences": [
-        "DupBorder-opposite-walls-Input.value.outputs[0].curve.samples[0][0]: 0 != 4 (error 4, limit 4e-10)",
-        "DupBorder-opposite-walls-Input.value.outputs[0].curve.samples[1][0]: 0 != 3.4375 (error 3.44, limit 3.44e-10)",
-        "DupBorder-opposite-walls-Input.value.outputs[0].curve.samples[1][2]: 4.4375 != 5 (error 0.562, limit 5e-10)",
-        "DupBorder-opposite-walls-Input.value.outputs[0].curve.samples[2][0]: 0 != 2.875 (error 2.88, limit 2.87e-10)",
-        "DupBorder-opposite-walls-Input.value.outputs[0].curve.samples[2][2]: 3.875 != 5 (error 1.12, limit 5e-10)",
-        "DupBorder-opposite-walls-Input.value.outputs[0].curve.samples[3][0]: 0 != 2.3125 (error 2.31, limit 2.31e-10)",
-        "DupBorder-opposite-walls-Input.value.outputs[0].curve.samples[3][2]: 3.3125 != 5 (error 1.69, limit 5e-10)",
-        "DupBorder-opposite-walls-Input.value.outputs[0].curve.samples[4][0]: 0 != 1.75 (error 1.75, limit 1.75e-10)"
-      ]
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "difference_count": 0,
+      "first_differences": []
     },
     {
       "id": "DupBorder-cylinder-Current",
@@ -377,35 +336,17 @@
     },
     {
       "id": "DupBorder-adjacent-walls-Current",
-      "passed": false,
-      "max_absolute_error": 5.0,
-      "difference_count": 80,
-      "first_differences": [
-        "DupBorder-adjacent-walls-Current.value.outputs[0].curve.samples[0][0]: 0 != 4 (error 4, limit 4e-10)",
-        "DupBorder-adjacent-walls-Current.value.outputs[0].curve.samples[0][1]: 0 != 3 (error 3, limit 3e-10)",
-        "DupBorder-adjacent-walls-Current.value.outputs[0].curve.samples[1][0]: 0 != 4 (error 4, limit 4e-10)",
-        "DupBorder-adjacent-walls-Current.value.outputs[0].curve.samples[1][1]: 0 != 2.25 (error 2.25, limit 2.25e-10)",
-        "DupBorder-adjacent-walls-Current.value.outputs[0].curve.samples[1][2]: 4.25 != 5 (error 0.75, limit 5e-10)",
-        "DupBorder-adjacent-walls-Current.value.outputs[0].curve.samples[2][0]: 0 != 4 (error 4, limit 4e-10)",
-        "DupBorder-adjacent-walls-Current.value.outputs[0].curve.samples[2][1]: 0 != 1.5 (error 1.5, limit 1.5e-10)",
-        "DupBorder-adjacent-walls-Current.value.outputs[0].curve.samples[2][2]: 3.5 != 5 (error 1.5, limit 5e-10)"
-      ]
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
     },
     {
       "id": "DupBorder-adjacent-walls-Input",
-      "passed": false,
-      "max_absolute_error": 5.0,
-      "difference_count": 80,
-      "first_differences": [
-        "DupBorder-adjacent-walls-Input.value.outputs[0].curve.samples[0][0]: 0 != 4 (error 4, limit 4e-10)",
-        "DupBorder-adjacent-walls-Input.value.outputs[0].curve.samples[0][1]: 0 != 3 (error 3, limit 3e-10)",
-        "DupBorder-adjacent-walls-Input.value.outputs[0].curve.samples[1][0]: 0 != 4 (error 4, limit 4e-10)",
-        "DupBorder-adjacent-walls-Input.value.outputs[0].curve.samples[1][1]: 0 != 2.25 (error 2.25, limit 2.25e-10)",
-        "DupBorder-adjacent-walls-Input.value.outputs[0].curve.samples[1][2]: 4.25 != 5 (error 0.75, limit 5e-10)",
-        "DupBorder-adjacent-walls-Input.value.outputs[0].curve.samples[2][0]: 0 != 4 (error 4, limit 4e-10)",
-        "DupBorder-adjacent-walls-Input.value.outputs[0].curve.samples[2][1]: 0 != 1.5 (error 1.5, limit 1.5e-10)",
-        "DupBorder-adjacent-walls-Input.value.outputs[0].curve.samples[2][2]: 3.5 != 5 (error 1.5, limit 5e-10)"
-      ]
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
     },
     {
       "id": "DupBorder-face-Input",
@@ -434,6 +375,260 @@
       "max_absolute_error": 2.220446049250313e-16,
       "difference_count": 0,
       "first_differences": []
+    },
+    {
+      "id": "shell-edges-0",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "shell-edges-1",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "shell-edges-2",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "shell-edges-3",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "caps-edges-0",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "caps-edges-1",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "caps-edges-2",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "caps-edges-3",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "opposite-edges-0",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "opposite-edges-1",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "opposite-edges-2",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "opposite-edges-3",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "adjacent-edges-0",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "adjacent-edges-1",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "adjacent-edges-2",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "adjacent-edges-3",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "grid-natural",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "grid-shuffled",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "l-shape-natural",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "l-shape-shuffled",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "annulus-natural",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "annulus-shuffled",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "disconnected-natural",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "disconnected-shuffled",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "warped-natural",
+      "passed": true,
+      "max_absolute_error": 4.884981308350689e-15,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "warped-shuffled",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "reversed-natural",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "reversed-shuffled",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-curved-face-0",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-curved-face-0",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-curved-face-1",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-curved-face-1",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-curved-face-2",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-curved-face-2",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-curved-face-3",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-curved-face-3",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
     }
-  ]
+  ],
+  "note": "Actual Rhino commands in owned private Xvfb. B-reps use identical native-written 3DM sources; edge permutations preserve geometry and remap trim references. No geometric, seam, direction, or output-order normalization. No timings or speedup claims.",
+  "reference_engine_version": "8.32.26160.13001"
 }

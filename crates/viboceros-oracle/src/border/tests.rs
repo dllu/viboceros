@@ -36,42 +36,72 @@ fn close(a: &Value, b: &Value, path: &str) {
     }
 }
 
+fn seam_request() -> ProbeRequest {
+    serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/border_seams.json"
+    ))
+    .unwrap()
+}
+
+fn replay(request: &ProbeRequest, observed: &Value, count: usize) {
+    let actual = run_request(request).unwrap();
+    assert_eq!(actual.results.len(), count);
+    assert_eq!(observed["results"].as_array().unwrap().len(), count);
+    for (result, reference) in actual
+        .results
+        .iter()
+        .zip(observed["results"].as_array().unwrap())
+    {
+        assert_eq!(result.id, reference["id"]);
+        close(&result.value, &reference["value"], &result.id);
+    }
+}
+
 #[test]
 fn borders_replay_rhino_definitions_domains_and_document_state() {
+    let observed: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/borders.json"
+    ))
+    .unwrap();
+    replay(&request(), &observed, 50);
+}
+
+#[test]
+fn reordered_edges_and_nonrectangular_boundaries_replay_every_rhino_field() {
+    let observed: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/border_seams.json"
+    ))
+    .unwrap();
+    replay(&seam_request(), &observed, 36);
+}
+
+#[test]
+fn polysurface_samples_and_perimeters_agree_with_independent_naked_edges() {
     let request = request();
     let observed: Value = serde_json::from_str(include_str!(
         "../../../../tools/rhino_oracle/observations/borders.json"
     ))
     .unwrap();
     let actual = run_request(&request).unwrap();
-    assert_eq!(actual.results.len(), 50);
-    assert_eq!(observed["results"].as_array().unwrap().len(), 50);
-    let mut parity = 0;
-    let mut diagnostics = 0;
+    let mut checked = 0;
     for ((operation, result), reference) in request
         .operations
         .iter()
         .zip(&actual.results)
         .zip(observed["results"].as_array().unwrap())
     {
-        assert_eq!(result.id, reference["id"]);
-        let diagnostic = [
+        if ![
             "DupBorder-shell-",
             "DupBorder-panels-",
             "DupBorder-opposite-walls-",
             "DupBorder-adjacent-walls-",
         ]
         .iter()
-        .any(|prefix| result.id.starts_with(prefix));
-        if !diagnostic {
-            close(&result.value, &reference["value"], &result.id);
-            parity += 1;
+        .any(|prefix| result.id.starts_with(prefix))
+        {
             continue;
         }
-        diagnostics += 1;
-        // Do not silently normalize or bless different native parameters. The
-        // raw report remains failing. Separately verify every recorded point
-        // lies on a true naked edge and both engines cover the full perimeter.
+        checked += 1;
         let Operation::BorderCommand { fixture, .. } = operation else {
             panic!("border fixture")
         };
@@ -97,10 +127,6 @@ fn borders_replay_rhino_definitions_domains_and_document_state() {
             })
             .collect::<Vec<_>>();
         let length = edges.iter().map(|edge| edge.length().unwrap()).sum::<f64>();
-        assert_ne!(
-            result.value["outputs"][0]["curve"]["samples"],
-            reference["value"]["outputs"][0]["curve"]["samples"]
-        );
         for record in [&result.value, &reference["value"]] {
             let mut perimeter = 0.;
             for output in record["outputs"].as_array().unwrap() {
@@ -127,16 +153,8 @@ fn borders_replay_rhino_definitions_domains_and_document_state() {
             }
             assert!((perimeter - length).abs() < 1e-12);
         }
-        let mut a = result.value.clone();
-        let mut b = reference["value"].clone();
-        for value in [&mut a, &mut b] {
-            for output in value["outputs"].as_array_mut().unwrap() {
-                output["curve"]["samples"] = Value::Null;
-            }
-        }
-        close(&a, &b, &result.id);
     }
-    assert_eq!((parity, diagnostics), (42, 8));
+    assert_eq!(checked, 8);
 }
 
 #[test]
@@ -191,7 +209,11 @@ fn source_artifacts_never_overwrite_existing_files() {
 
 #[test]
 fn every_shared_brep_fixture_survives_its_topology_checked_artifact() {
-    for operation in request().operations {
+    for operation in request()
+        .operations
+        .into_iter()
+        .chain(seam_request().operations)
+    {
         let Operation::BorderCommand { mut fixture, .. } = operation else {
             unreachable!()
         };
@@ -207,5 +229,38 @@ fn every_shared_brep_fixture_survives_its_topology_checked_artifact() {
         let actual = run(&fixture, Tolerance::DEFAULT).unwrap().0;
         assert_eq!(actual, expected);
         assert!(temporary.path.is_file());
+    }
+}
+
+#[test]
+fn edge_permutations_are_bijections_and_preserve_all_trim_references() {
+    let request = seam_request();
+    let Operation::BorderCommand { fixture, .. } = &request.operations[0] else {
+        unreachable!()
+    };
+    let Geometry::Brep(source) = fixture.source.geometry(Tolerance::DEFAULT).unwrap() else {
+        unreachable!()
+    };
+    let count = source.edges().len();
+    for order in [vec![], vec![0; count], (1..=count).collect::<Vec<_>>()] {
+        assert!(reorder_edges(&source, &order, Tolerance::DEFAULT).is_err());
+    }
+    let order = (0..count).rev().collect::<Vec<_>>();
+    let reordered = reorder_edges(&source, &order, Tolerance::DEFAULT).unwrap();
+    for (a, b) in source.faces().iter().zip(reordered.faces()) {
+        assert_eq!(a.surface(), b.surface());
+        for (a, b) in a
+            .loops()
+            .iter()
+            .flat_map(|l| l.trims())
+            .zip(b.loops().iter().flat_map(|l| l.trims()))
+        {
+            assert_eq!(a.curve(), b.curve());
+            assert_eq!(a.is_reversed_3d(), b.is_reversed_3d());
+            assert_eq!(
+                a.edge().map(|i| &source.edges()[i]),
+                b.edge().map(|i| &reordered.edges()[i])
+            );
+        }
     }
 }

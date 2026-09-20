@@ -16,12 +16,17 @@ def validate(operation):
     if faces is not None and (not faces or len(set(faces)) != len(faces) or
             any(type(i) is not int or i < 0 for i in faces) or not preselect):
         raise ValueError("border face selection needs preselected distinct indices")
+    order = operation.get("edge_order")
+    if order is not None and (not isinstance(order, list) or
+            any(type(i) is not int or i < 0 for i in order) or
+            sorted(order) != list(range(len(order)))):
+        raise ValueError("border edge order must be a permutation")
     return command, layer, preselect, faces
 
 
 def run(operation, tolerance, host):
     command, output_layer, preselect, faces = validate(operation)
-    if operation["source"]["type"] in ("box", "extrusion", "brep") and not operation.get("artifact_path"):
+    if operation["source"]["type"] in ("box", "extrusion", "brep", "mesh_brep", "surface_face") and not operation.get("artifact_path"):
         raise ValueError("B-rep border probes require compare mode with a shared source artifact")
     Rhino, System = host["Rhino"], host["System"]
     document = Rhino.RhinoDoc.ActiveDoc
@@ -64,6 +69,10 @@ def run(operation, tolerance, host):
             if geometry is None: raise ValueError("missing border source geometry")
             owned.append(geometry)
             if not geometry.IsValid: raise ValueError("invalid border source geometry")
+            if operation.get("edge_order") is not None and (
+                    not isinstance(geometry, Rhino.Geometry.Brep) or
+                    len(operation["edge_order"]) != geometry.Edges.Count):
+                raise ValueError("border edge order does not match source topology")
             attributes = Rhino.DocObjects.ObjectAttributes()
             try:
                 attributes.Name = "Source"
