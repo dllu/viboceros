@@ -6,7 +6,9 @@ use viboceros_geometry::{FiniteSum, GeometryError, Real, Tolerance};
 
 mod angle;
 mod distance;
+mod evaluate_point;
 pub(super) use angle::AngleCommand;
+pub(super) use evaluate_point::EvaluatePointCommand;
 #[cfg(test)]
 mod tests;
 pub(super) use distance::DistanceCommand;

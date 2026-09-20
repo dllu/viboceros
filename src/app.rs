@@ -32,6 +32,7 @@ mod construction_plane;
 mod curve_preview;
 mod curve_prompt;
 mod distance;
+mod evaluate_point;
 mod group_prompt;
 mod interface;
 mod object_selection;
@@ -150,6 +151,7 @@ enum InteractiveCommand {
         points: [Option<Point3>; 3],
     },
     Point,
+    EvaluatePoint,
     Points,
     Line {
         start: Option<Point3>,
@@ -397,6 +399,7 @@ impl InteractiveCommand {
         match self {
             Self::Angle { .. } => "Angle",
             Self::Point => "Point",
+            Self::EvaluatePoint => "EvaluatePt",
             Self::Points => "Points",
             Self::Line { .. } => "Line",
             Self::Distance { .. } => "Distance",
@@ -482,6 +485,9 @@ impl InteractiveCommand {
             } => "Angle: pick the second direction's start (Esc cancels)",
             Self::Angle { .. } => "Angle: pick the second direction's end (Esc cancels)",
             Self::Point => "Point: pick a location in the viewport (Esc to cancel)",
+            Self::EvaluatePoint => {
+                "EvaluatePt: pick a location to report world/CPlane coordinates (Esc cancels)"
+            }
             Self::Points => "Points: pick locations; Undo removes the last; Enter or Esc finishes",
             Self::Line { start: None } => {
                 "Line: pick the start point in the viewport (Esc to cancel)"
@@ -937,6 +943,7 @@ impl InteractiveCommand {
                 points: [_, Some(_), start],
             } => start,
             Self::Point
+            | Self::EvaluatePoint
             | Self::Points
             | Self::Line { start: None }
             | Self::Distance { start: None, .. }
@@ -1317,7 +1324,12 @@ impl VibocerosApp {
         {
             return false;
         }
-        let command = if normalized == "distance" {
+        let command = if normalized == "evaluatept" {
+            let Some(command) = evaluate_point::start_command(&arguments) else {
+                return false;
+            };
+            command
+        } else if normalized == "distance" {
             let Some(command) = distance::start_command(&arguments, self.last_point) else {
                 return false;
             };
@@ -3021,6 +3033,7 @@ impl VibocerosApp {
                 }
             }
             InteractiveCommand::Points => return self.apply_points_point(point),
+            InteractiveCommand::EvaluatePoint => return self.finish_evaluate_point(point, plane),
             InteractiveCommand::Point => {
                 self.active_command = None;
                 self.execute_command(&format!("Point {}", format_model_point(point)));
@@ -5378,6 +5391,7 @@ mod tests {
     mod construction_plane;
     mod distance;
     mod distribute;
+    mod evaluate_point;
     mod group_prompt;
     mod interface;
     mod nurbs_selection;

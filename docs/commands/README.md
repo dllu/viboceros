@@ -23,6 +23,7 @@ Rhino's complete command set is still a work in progress.
 - [Extraction, measurement, and intersections](editing.md)
 - [Angle, distance, length, area, and volume queries](measurements.md)
 - [Local curve radius and diameter](radius.md)
+- [World and construction-plane point coordinates](evaluate-point.md)
 - [Selection, attributes, layers, and groups](document.md)
 - [Model units](units.md)
 - [Model tolerances](../tolerances.md)
