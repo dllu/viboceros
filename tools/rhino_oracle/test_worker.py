@@ -11,6 +11,62 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_domain_probe_cleans_source_and_restores_selection_after_failures(self):
+        for failure in [None, "construction", "measurement"]:
+            with self.subTest(failure=failure):
+                geometry = Mock(Domain=SimpleNamespace(T0=-2., T1=8.))
+                geometry.DataCRC.return_value = 42
+                table = Mock()
+                table.GetObjectList.return_value = [SimpleNamespace(Id="old", IsSelected=lambda _: True)]
+                table.AddCurve.side_effect = ValueError("construction") if failure == "construction" else None
+                table.AddCurve.return_value = "source"
+                table.FindId.return_value = SimpleNamespace(Geometry=geometry)
+                rhino = SimpleNamespace(
+                    RhinoDoc=SimpleNamespace(ActiveDoc=SimpleNamespace(Objects=table)),
+                    DocObjects=SimpleNamespace(ObjectEnumeratorSettings=lambda: SimpleNamespace()))
+                capture = Mock(side_effect=ValueError("measurement") if failure == "measurement" else None,
+                               return_value=({"history": "Curve domain = -2 to 8"}, 0))
+                with patch.object(self.worker, "Rhino", rhino), \
+                     patch.object(self.worker, "System", SimpleNamespace(Guid=SimpleNamespace(Empty="empty"))), \
+                     patch.object(self.worker, "_nurbs_curve_from_definition", return_value=geometry), \
+                     patch.object(self.worker, "_measurement_history", capture):
+                    if failure:
+                        with self.assertRaisesRegex(ValueError, failure):
+                            self.worker._domain_command({"curve": {}})
+                    else:
+                        value, elapsed = self.worker._domain_command({"curve": {}})
+                        self.assertEqual(value["domain"], [-2.,8.])
+                        self.assertTrue(value["source_geometry_unchanged"])
+                        self.assertEqual(elapsed, 0)
+                geometry.Dispose.assert_called_once_with()
+                self.assertEqual(table.Delete.call_count, int(failure != "construction"))
+                self.assertEqual(table.Select.call_args.args, ("old",))
+                self.assertEqual(table.UnselectAll.call_count, 2)
+                if failure != "construction":
+                    capture.assert_called_once_with("Domain", "! _Domain")
+
+    def test_domain_capture_requires_a_new_curve_or_complete_surface_report(self):
+        curve = "Curve domain = -2.000 to 8.000"
+        u = "Surface U domain = -2.000 to 4.000"
+        v = "Surface V domain = 10.000 to 20.000"
+        for output, valid in [(curve, True), (u + "\n" + v, True),
+                              (u, False), (v, False), ("Command: _Domain", False),
+                              ("Unknown command: extra\n" + curve, False)]:
+            app = SimpleNamespace(CommandHistoryWindowText=curve + "\n" + u + "\n" + v + "\n")
+            def write(marker):
+                app.CommandHistoryWindowText += marker + "\n"
+            def run(macro, echo):
+                app.CommandHistoryWindowText += output
+                return True
+            app.WriteLine, app.RunScript = write, run
+            with patch.object(self.worker, "Rhino", SimpleNamespace(RhinoApp=app)), \
+                 patch.object(self.worker, "System", SimpleNamespace(Guid=SimpleNamespace(NewGuid=lambda: "unique-marker"))):
+                if valid:
+                    self.assertEqual(self.worker._measurement_history("Domain", "macro"), ({"history": output}, 0))
+                else:
+                    with self.assertRaisesRegex(ValueError, "no measurement"):
+                        self.worker._measurement_history("Domain", "macro")
+
     def test_radius_probe_disposes_source_and_restores_selection_on_failure(self):
         for failure in [None, "construction", "measurement"]:
             with self.subTest(failure=failure):

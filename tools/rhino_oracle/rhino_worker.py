@@ -2180,9 +2180,57 @@ def _measurement_history(name, macro):
     history = parts[1].strip()
     labels = (["Point in world coordinates =", "CPlane coordinates ="]
               if name == "EvaluatePt" else [name + " ="])
-    if "Unknown command:" in history or not all(label in history for label in labels):
+    reported = (("Curve domain =" in history or all(label in history for label in
+                 ["Surface U domain =", "Surface V domain ="])) if name == "Domain"
+                else all(label in history for label in labels))
+    if "Unknown command:" in history or not reported:
         raise ValueError("measurement command produced no measurement: %s" % history[-3000:])
     return {"history": history}, 0
+
+
+def _domain_command(operation):
+    curve = "curve" in operation
+    if curve == ("surface" in operation):
+        raise ValueError("domain command needs exactly one curve or surface")
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    selected = [obj.Id for obj in document.Objects.GetObjectList(settings) if obj.IsSelected(False)]
+    geometry = (_nurbs_curve_from_definition(operation["curve"]) if curve else
+                _nurbs_surface_from_definition(operation["surface"]))
+    owned = [geometry]
+    source = System.Guid.Empty
+    try:
+        result = ({"domain": [geometry.Domain.T0, geometry.Domain.T1]} if curve else
+                  {"domain_u": [geometry.Domain(0).T0, geometry.Domain(0).T1],
+                   "domain_v": [geometry.Domain(1).T0, geometry.Domain(1).T1]})
+        as_brep = operation.get("as_brep", False)
+        if as_brep:
+            if curve:
+                raise ValueError("domain B-rep source must be a surface")
+            geometry = geometry.ToBrep()
+            if geometry is None:
+                raise ValueError("could not create domain B-rep source")
+            owned.append(geometry)
+        document.Objects.UnselectAll()
+        source = (document.Objects.AddCurve(geometry) if curve else
+                  document.Objects.AddBrep(geometry) if as_brep else document.Objects.AddSurface(geometry))
+        if source == System.Guid.Empty:
+            raise ValueError("could not add domain source")
+        document.Objects.Select(source)
+        checksum = document.Objects.FindId(source).Geometry.DataCRC(0)
+        report, _ = _measurement_history("Domain", "! _Domain")
+        result.update(report)
+        result["source_geometry_unchanged"] = document.Objects.FindId(source).Geometry.DataCRC(0) == checksum
+        return result, 0
+    finally:
+        if source != System.Guid.Empty:
+            document.Objects.Delete(source, True)
+        document.Objects.UnselectAll()
+        for object_id in selected:
+            document.Objects.Select(object_id)
+        for item in reversed(owned):
+            item.Dispose()
 
 
 def _radius_command(operation):
@@ -4553,6 +4601,8 @@ def _execute(operation, iterations, tolerance):
         return _radius_command(operation)
     if kind == "evaluate_point_command":
         return _evaluate_point_command(operation)
+    if kind == "domain_command":
+        return _domain_command(operation)
     if kind == "three_dm_curve_interchange":
         return _three_dm_curve_interchange(operation, iterations)
     if kind == "three_dm_brep_interchange":

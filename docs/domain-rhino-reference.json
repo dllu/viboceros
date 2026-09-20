@@ -1,0 +1,64 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "linear-nonunit",
+      "value": {
+        "domain": [
+          -2.0,
+          8.0
+        ],
+        "history": "Python Script ( ResetEngine ): _Domain\nCurve domain = -2.000 to 8.000",
+        "source_geometry_unchanged": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "rational-arc-nonunit",
+      "value": {
+        "domain": [
+          7.0,
+          11.0
+        ],
+        "history": "Command: _Domain\nCurve domain = 7.000 to 11.000",
+        "source_geometry_unchanged": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "surface-nonunit",
+      "value": {
+        "domain_u": [
+          -2.0,
+          4.0
+        ],
+        "domain_v": [
+          10.0,
+          20.0
+        ],
+        "history": "Command: _Domain\nSurface U domain = -2.000 to 4.000\nSurface V domain = 10.000 to 20.000",
+        "source_geometry_unchanged": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "single-face-nonunit",
+      "value": {
+        "domain_u": [
+          5.0,
+          6.0
+        ],
+        "domain_v": [
+          -8.0,
+          -3.0
+        ],
+        "history": "Command: _Domain\nSurface U domain = 5.000 to 6.000\nSurface V domain = -8.000 to -3.000",
+        "source_geometry_unchanged": true
+      }
+    }
+  ]
+}

@@ -1,13 +1,54 @@
 use super::*;
 use crate::CommandRegistry;
 use viboceros_document::SelectionMode;
-use viboceros_geometry::{Brep, NurbsSurface, Point3};
+use viboceros_geometry::{Brep, NurbsCurve, NurbsSurface, Point3, WeightedPoint3};
 
 fn surface(z: f64) -> NurbsSurface {
     NurbsSurface::try_bilinear(
         [[0., 0., z], [1., 0., z], [1., 1., z], [0., 1., z]].map(|p| Point3::try_from(p).unwrap()),
     )
     .unwrap()
+}
+
+#[test]
+fn domain_reports_rational_and_single_face_intervals_without_normalizing_them() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    let curve = NurbsCurve::try_new_rational(
+        2,
+        [
+            ([2., 0., 0.], 1.),
+            ([2., 2., 0.], std::f64::consts::FRAC_1_SQRT_2),
+            ([0., 2., 0.], 1.),
+        ]
+        .map(|(p, w)| WeightedPoint3::try_new(Point3::try_from(p).unwrap(), w).unwrap())
+        .to_vec(),
+        vec![7., 7., 7., 11., 11., 11.],
+    )
+    .unwrap();
+    let a = doc.add_geometry(Geometry::NurbsCurve(curve)).unwrap();
+    doc.select_object(a, SelectionMode::Replace).unwrap();
+    let before = format!("{doc:?}");
+    assert_eq!(
+        registry.execute(&mut doc, "Domain").unwrap(),
+        "Curve domain = [7,11]"
+    );
+    assert_eq!(format!("{doc:?}"), before);
+    let s = surface(0.)
+        .try_reparameterized(5.0..=6.0, -8.0..=-3.0)
+        .unwrap();
+    let b = doc
+        .add_geometry(Geometry::Brep(
+            Brep::try_surface_face(s, Tolerance::DEFAULT).unwrap(),
+        ))
+        .unwrap();
+    doc.select_object(b, SelectionMode::Replace).unwrap();
+    let before = format!("{doc:?}");
+    assert_eq!(
+        registry.execute(&mut doc, "Domain").unwrap(),
+        "Face 0: U domain = [5,6]; V domain = [-8,-3]"
+    );
+    assert_eq!(format!("{doc:?}"), before);
 }
 
 #[test]

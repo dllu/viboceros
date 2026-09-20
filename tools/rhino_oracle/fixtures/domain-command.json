@@ -1,0 +1,20 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"op":"domain_command", "id":"linear-nonunit", "curve":{
+      "degree":1, "control_points":[{"point":[0,0,0],"weight":1},{"point":[3,4,0],"weight":1}],
+      "knots":[-2,-2,8,8]}},
+    {"op":"domain_command", "id":"rational-arc-nonunit", "curve":{
+      "degree":2, "control_points":[{"point":[2,0,0],"weight":1},{"point":[2,2,0],"weight":0.7071067811865476},{"point":[0,2,0],"weight":1}],
+      "knots":[7,7,7,11,11,11]}},
+    {"op":"domain_command", "id":"surface-nonunit", "surface":{
+      "degree_u":1,"degree_v":1,"control_point_count_u":2,"control_point_count_v":2,
+      "control_points":[{"point":[0,0,0],"weight":1},{"point":[1,0,0],"weight":1},{"point":[0,1,0],"weight":1},{"point":[1,1,0],"weight":1}],
+      "knots_u":[-2,-2,4,4],"knots_v":[10,10,20,20]}},
+    {"op":"domain_command", "id":"single-face-nonunit", "as_brep":true, "surface":{
+      "degree_u":1,"degree_v":1,"control_point_count_u":2,"control_point_count_v":2,
+      "control_points":[{"point":[0,0,0],"weight":1},{"point":[1,0,0],"weight":1},{"point":[0,1,0],"weight":1},{"point":[1,1,0],"weight":1}],
+      "knots_u":[5,5,6,6],"knots_v":[-8,-8,-3,-3]}}
+  ]
+}
