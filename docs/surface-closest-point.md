@@ -51,6 +51,48 @@ are retried on a unit-domain copy. Returned parameters are mapped back and check
 on the original surface. Ordinary successful queries do not copy the control net.
 Native tests include `[0,10⁻³⁰⁸]`, `[0,10³⁰⁸]`, and `[-MAX,MAX]` parameter domains.
 
+## Curvature-aware refinement
+
+General surfaces retain the same UV seeds, sixteen refinement starts, and four
+independent boundary searches. The refinement now first tries the full Hessian of
+half the squared distance, including mixed partials. In independently
+speed-normalized parameter coordinates its entries are
+`Hᵢⱼ = unitᵢ·unitⱼ − residual·Sᵢⱼ/(speedᵢ speedⱼ)`. Nalgebra's Cholesky solve
+accepts only a positive-definite free-variable Hessian. A boundary coordinate is
+held fixed when the gradient points out of the domain; the other coordinate is
+still minimized independently.
+
+Indefinite or singular Hessians, non-normal metric products, and unrepresentable
+curvature steps retain tangent-plane QR. Failed second-derivative evaluation also
+retains usable first derivatives. Both directions use clamping and backtracking;
+an unevaluable trial point is rejected without discarding the whole start. No
+surface is recognized as, or substituted by, an analytic cylinder or paraboloid.
+
+### Stationarity at the evaluation-roundoff limit
+
+An exact comparison of *evaluated* points cannot remove error in those positions.
+Near a smooth minimum, the true distance decrease is quadratic in parameter error,
+while point-evaluation error can change the distance to first order. A convex
+paraboloid regression exposed roughly `1e-7` model-point error despite decreasing
+the distance between stored binary64 points.
+
+After candidate selection, at most eight local Newton corrections improve the
+projected gradient (including boundary KKT signs). They must remain within
+`sqrt(64 ε) × scale` of the selected point and within `64 ε × scale` of its
+distance, where scale includes control coordinates, the selected point, and query
+distance. These are floating-point safeguards, not certified rational-evaluation
+error bounds. Ordinary search and candidate comparison remain monotone; this
+last correction may increase the rounded distance within that allowance. If
+second derivatives overflow, one unit-domain copy can recover the correction,
+then parameters are mapped back and evaluated on the original surface.
+
+Tests cover the full mixed Hessian under independent parameter rescaling, skew
+metrics, active constraints, rejected indefinite/singular Hessians, a two-minimum
+saddle, and a local-polish guard. Seventy-two convex-paraboloid queries have
+independently prescribed global minima, including edges and corners, and retain
+the `1e-8` model-point bound. Another regression has finite first derivatives but
+overflowing second derivatives on `[0,10⁻¹⁷⁰] × [0,10¹⁶⁰]` domains.
+
 ## Rounded distance ties
 
 For a query far from a surface, candidate distances can round to the same binary64
@@ -77,15 +119,28 @@ distances, and normalized parameters to `1e-8`; native parameter allowances scal
 with domain width. Extreme-domain and distant-query regressions are independently
 analytic tests, not additional Rhino measurements.
 
+The [curvature fixture](../tools/rhino_oracle/fixtures/surface-closest-curvature.json)
+and [fresh Rhino reference](surface-closest-curvature-rhino-reference.json) add
+twenty-one queries on convex paraboloids and a warped bilinear saddle. The saved
+record selects their first benchmark round without reserializing floating-point
+values. Native paraboloid results are within `1.7e-11` of the independent analytic
+minima; one Rhino upper-edge result is `8.71e-8` away. This new replay therefore
+uses `1e-7`, while the original seventeen-query replay and native analytic tests
+keep their stricter `1e-8` bounds. Saddle model points agree within `1.3e-12`.
+
 ```sh
 cargo test -p viboceros-geometry closest_point_
 cargo test -p viboceros-geometry affine_closest
+cargo test -p viboceros-geometry closest_point::refine
 cargo test -p viboceros-geometry exact_distance_order
 cargo test -p viboceros-oracle closest_surface_fixture
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/surface-closest-point.json --absolute-epsilon 1e-8 --relative-epsilon 1e-8 --timeout 240
+tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/surface-closest-curvature.json --absolute-epsilon 1e-7 --relative-epsilon 1e-7 --timeout 240
 ```
 
 ## Performance measurement
+
+### Affine path measurement
 
 The [measurement record](surface-closest-point-performance.json) uses the same six
 fixture operations, each repeated for three rounds of 200 iterations on aarch64
@@ -114,8 +169,31 @@ The probe times only batches of closest-parameter queries; construction and resu
 formatting are outside the timer. Rhino timings still include the Python/API
 bridge and host overhead, so these are harness measurements rather than native
 Rhino kernel speedups. The record includes raw round times to expose variability.
-The cylinder search remains substantially slower than this Rhino harness, and
-reducing the general many-seed search cost remains follow-up work.
+At this stage the cylinder search remained substantially slower than the Rhino
+harness. The subsequent general refinement measurement follows.
+
+### Curvature-aware refinement measurement
+
+The [new measurement record](surface-closest-curvature-performance.json) combines
+both fixtures, again using three rounds of 200 iterations. Baseline `d4ff70a`, the
+new release executable, and the Rhino harness ran sequentially after all tests and
+builds finished. Median microseconds per query:
+
+| Fixture case | Native before | Native after | Rhino harness | Native speedup |
+| --- | ---: | ---: | ---: | ---: |
+| Quarter cylinder, unit domains | 402.048 | 237.009 | 19.875 | 1.70× |
+| Quarter cylinder, anisotropic domains | 494.821 | 250.724 | 17.090 | 1.97× |
+| Paraboloid, unit domains | 502.474 | 441.081 | 57.606 | 1.14× |
+| Paraboloid, anisotropic domains | 484.992 | 439.653 | 61.561 | 1.10× |
+| Warped bilinear saddle | 249.814 | 189.547 | 19.811 | 1.32× |
+
+The record also retains all four unchanged affine-path controls: measured times
+were 2–4% higher, at `0.94–0.99 µs` per query. Cylinder model points now agree with
+Rhino within `1.3e-15`. Paraboloid error against the analytic minimum decreased
+from `2.8e-9`/`1.4e-8` (unit/anisotropic) to below `1.7e-11` for both domains.
+All fresh comparisons pass their separately documented fixture epsilons. This
+improves the general solver but does not establish performance parity: curved
+cases remain slower than the Rhino harness, and the dense seed search remains.
 
 The multi-start search is not a certified global minimum solver for arbitrary
 multi-modal rational surfaces. Coarse seed ranking uses rounded distances, singular

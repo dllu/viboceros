@@ -1,0 +1,265 @@
+{
+  "captured_utc_date": "2026-09-20",
+  "fixtures": [
+    "tools/rhino_oracle/fixtures/surface-closest-point.json",
+    "tools/rhino_oracle/fixtures/surface-closest-curvature.json"
+  ],
+  "benchmark_request": "Concatenate both fixtures' operations in the listed order, set iterations to 200, repeat the nine operations in order three times, and suffix operation IDs with -round-1, -round-2, or -round-3.",
+  "architecture": "aarch64",
+  "rustc": "1.95.0 (59807616e 2026-04-14)",
+  "build_profile": "release",
+  "native_baseline_commit": "d4ff70a",
+  "native_after": "Curvature-aware closest-point refinement, active constraints, and guarded local stationarity polishing.",
+  "rhino_engine_version": "8.32.26160.13001",
+  "iterations_per_round": 200,
+  "rounds": 3,
+  "timing_method": "Median elapsed_ns across three rounds divided by iterations and queries per batch. Native baseline, native after, and Rhino ran sequentially after all builds/tests finished. Closest-parameter batches alone are timed, after one warmup; construction and output formatting are excluded.",
+  "timing_limit": "Rhino includes Python/RhinoCommon and host overhead. These are harness measurements, not native Rhino kernel speedups. Planar control cases were 2-4% slower in this measurement despite unchanged affine-path logic; raw round times are retained.",
+  "comparison": {
+    "original_fixture_absolute_and_relative_epsilon": 1e-8,
+    "curvature_fixture_absolute_and_relative_epsilon": 1e-7,
+    "curvature_fixture_epsilon_reason": "One Rhino paraboloid upper-edge point differs by 8.71e-8 from the independently analytic minimum; native analytic regressions keep their 1e-8 bound."
+  },
+  "cases": [
+    {
+      "id": "plane-unit",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        568095,
+        559183,
+        555151
+      ],
+      "after_elapsed_ns": [
+        1150622,
+        568431,
+        563967
+      ],
+      "rhino_elapsed_ns": [
+        19538879,
+        4539490,
+        8407593
+      ],
+      "before_ns_per_query": 931.9716666666667,
+      "after_ns_per_query": 947.385,
+      "rhino_ns_per_query": 14012.655,
+      "native_speedup": 0.9837306550839064,
+      "max_model_point_difference_from_rhino": 4.440892098500626e-16,
+      "max_normalized_parameter_difference_from_rhino": 1.1102230246251565e-16,
+      "max_distance_difference_from_rhino": 0
+    },
+    {
+      "id": "plane-wide-u",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        558703,
+        553134,
+        552926
+      ],
+      "after_elapsed_ns": [
+        1147230,
+        566655,
+        561455
+      ],
+      "rhino_elapsed_ns": [
+        12992859,
+        6530762,
+        4257202
+      ],
+      "before_ns_per_query": 921.89,
+      "after_ns_per_query": 944.425,
+      "rhino_ns_per_query": 10884.603333333333,
+      "native_speedup": 0.976138920507187,
+      "max_model_point_difference_from_rhino": 4.440892098500626e-16,
+      "max_normalized_parameter_difference_from_rhino": 1.1102230246251565e-16,
+      "max_distance_difference_from_rhino": 0
+    },
+    {
+      "id": "plane-anisotropic",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        558815,
+        554239,
+        553919
+      ],
+      "after_elapsed_ns": [
+        1135278,
+        565087,
+        567663
+      ],
+      "rhino_elapsed_ns": [
+        7217407,
+        5752563,
+        5073547
+      ],
+      "before_ns_per_query": 923.7316666666667,
+      "after_ns_per_query": 946.105,
+      "rhino_ns_per_query": 9587.605,
+      "native_speedup": 0.9763521666904483,
+      "max_model_point_difference_from_rhino": 4.440892098500626e-16,
+      "max_normalized_parameter_difference_from_rhino": 1.1102230246251565e-16,
+      "max_distance_difference_from_rhino": 0
+    },
+    {
+      "id": "skew-anisotropic",
+      "queries_per_batch": 2,
+      "before_elapsed_ns": [
+        389471,
+        383152,
+        382191
+      ],
+      "after_elapsed_ns": [
+        770654,
+        396767,
+        389999
+      ],
+      "rhino_elapsed_ns": [
+        6439209,
+        5073547,
+        4508972
+      ],
+      "before_ns_per_query": 957.88,
+      "after_ns_per_query": 991.9175,
+      "rhino_ns_per_query": 12683.8675,
+      "native_speedup": 0.9656851502267073,
+      "max_model_point_difference_from_rhino": 1.1102230246251565e-16,
+      "max_normalized_parameter_difference_from_rhino": 2.7755575615628914e-17,
+      "max_distance_difference_from_rhino": 0
+    },
+    {
+      "id": "cylinder-unit",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        247721969,
+        240753921,
+        241228913
+      ],
+      "after_elapsed_ns": [
+        145872032,
+        142205160,
+        142059705
+      ],
+      "rhino_elapsed_ns": [
+        14656067,
+        10536194,
+        11924744
+      ],
+      "before_ns_per_query": 402048.18833333335,
+      "after_ns_per_query": 237008.6,
+      "rhino_ns_per_query": 19874.573333333334,
+      "native_speedup": 1.696344302836831,
+      "max_model_point_difference_from_rhino": 1.1322097734007351e-15,
+      "max_normalized_parameter_difference_from_rhino": 3.3306690738754696e-16,
+      "max_distance_difference_from_rhino": 4.440892098500626e-16
+    },
+    {
+      "id": "cylinder-anisotropic",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        282511628,
+        298194911,
+        296892769
+      ],
+      "after_elapsed_ns": [
+        143607797,
+        151125911,
+        150434344
+      ],
+      "rhino_elapsed_ns": [
+        13893127,
+        8300781,
+        10253906
+      ],
+      "before_ns_per_query": 494821.2816666667,
+      "after_ns_per_query": 250723.90666666668,
+      "rhino_ns_per_query": 17089.843333333334,
+      "native_speedup": 1.9735704035775234,
+      "max_model_point_difference_from_rhino": 1.2755491433176288e-15,
+      "max_normalized_parameter_difference_from_rhino": 3.3306690738754696e-16,
+      "max_distance_difference_from_rhino": 4.440892098500626e-16
+    },
+    {
+      "id": "paraboloid-unit",
+      "queries_per_batch": 9,
+      "before_elapsed_ns": [
+        904452948,
+        904999175,
+        901543040
+      ],
+      "after_elapsed_ns": [
+        797251326,
+        793917078,
+        793945977
+      ],
+      "rhino_elapsed_ns": [
+        103691101,
+        104087830,
+        98258972
+      ],
+      "before_ns_per_query": 502473.86,
+      "after_ns_per_query": 441081.0983333333,
+      "rhino_ns_per_query": 57606.16722222222,
+      "native_speedup": 1.1391870154913575,
+      "max_model_point_difference_from_rhino": 8.707529942674488e-8,
+      "max_normalized_parameter_difference_from_rhino": 2.2868986149227055e-8,
+      "max_distance_difference_from_rhino": 7.105427357601002e-15,
+      "max_before_model_point_error_against_analytic": 2.7816458059172536e-9,
+      "max_after_model_point_error_against_analytic": 1.58920243032954e-11,
+      "max_rhino_model_point_error_against_analytic": 8.70753000670611e-8
+    },
+    {
+      "id": "paraboloid-anisotropic",
+      "queries_per_batch": 9,
+      "before_elapsed_ns": [
+        872986164,
+        875090371,
+        839160990
+      ],
+      "after_elapsed_ns": [
+        791951257,
+        791374717,
+        763051638
+      ],
+      "rhino_elapsed_ns": [
+        124870300,
+        110809326,
+        101768494
+      ],
+      "before_ns_per_query": 484992.31333333335,
+      "after_ns_per_query": 439652.62055555556,
+      "rhino_ns_per_query": 61560.736666666664,
+      "native_speedup": 1.1031261742975293,
+      "max_model_point_difference_from_rhino": 8.705845307999488e-8,
+      "max_normalized_parameter_difference_from_rhino": 2.286456179945162e-8,
+      "max_distance_difference_from_rhino": 7.105427357601002e-15,
+      "max_before_model_point_error_against_analytic": 1.3575871703421652e-8,
+      "max_after_model_point_error_against_analytic": 1.684704538425664e-11,
+      "max_rhino_model_point_error_against_analytic": 8.707530012537769e-8
+    },
+    {
+      "id": "saddle-unit",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        149596118,
+        150028230,
+        149888695
+      ],
+      "after_elapsed_ns": [
+        113845840,
+        113695873,
+        113728273
+      ],
+      "rhino_elapsed_ns": [
+        11886597,
+        7896423,
+        13198853
+      ],
+      "before_ns_per_query": 249814.49166666667,
+      "after_ns_per_query": 189547.12166666667,
+      "rhino_ns_per_query": 19810.995,
+      "native_speedup": 1.3179545511959019,
+      "max_model_point_difference_from_rhino": 1.2059524658234577e-12,
+      "max_normalized_parameter_difference_from_rhino": 5.427325255880078e-13,
+      "max_distance_difference_from_rhino": 3.122502256758253e-16
+    }
+  ]
+}

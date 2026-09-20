@@ -1,11 +1,13 @@
-//! Bounded multi-start surface closest-point search and scaled tangent refinement.
+//! Bounded surface closest-point search with affine and curvature-aware refinement.
 use super::*;
 mod affine;
+mod refine;
 
 impl NurbsSurface {
     /// Finds natural surface parameters nearest to a finite model-space
     /// point. Exactly affine bilinear patches use direct constrained projection;
-    /// other surfaces use bounded multi-start tangent-plane Newton refinement.
+    /// other surfaces use bounded multi-start curvature-aware Newton refinement
+    /// with a tangent-plane fallback and local stationarity polishing.
     /// Neither path assumes normalized parameter domains.
     pub fn closest_parameters(
         &self,
@@ -111,83 +113,8 @@ impl NurbsSurface {
                 best = (distance, u, v);
             }
         }
-        Ok((best.1, best.2))
+        Ok(self.polish_closest_parameters(target, (best.1, best.2), tolerance))
     }
-
-    fn refine_closest_parameters(
-        &self,
-        target: Point3,
-        mut u: Real,
-        mut v: Real,
-        u_domain: [Real; 2],
-        v_domain: [Real; 2],
-        tolerance: Tolerance,
-    ) -> Result<(Real, Real, Real), GeometryError> {
-        let mut distance = self.evaluate(u, v)?.distance_to(target)?;
-        for _ in 0..64 {
-            let (point, derivative_u, derivative_v) = self.evaluate_with_derivatives(u, v)?;
-            let residual = point.vector_to(target)?;
-            // Normalize columns before QR: parameter speeds are not model-space
-            // feature sizes, and must not be compared to a modelling tolerance.
-            let x_axis = derivative_u.normalized_nonzero()?;
-            let v_direction = derivative_v.normalized_nonzero()?.as_vector();
-            let v_along_x = v_direction.dot(x_axis.as_vector())?;
-            // Compensated cross products avoid a spurious parallel component
-            // from subtracting nearly parallel unit directions in Gram-Schmidt.
-            let normal = x_axis
-                .as_vector()
-                .cross(v_direction)?
-                .normalized_nonzero()?;
-            let y_axis = normal
-                .as_vector()
-                .cross(x_axis.as_vector())?
-                .normalized_nonzero()?;
-            let tangent_x = residual.dot(x_axis.as_vector())?;
-            let tangent_y = residual.dot(y_axis.as_vector())?;
-            if tangent_x.hypot(tangent_y) <= tolerance.absolute() {
-                break;
-            }
-            let v_motion = tangent_y / v_direction.dot(y_axis.as_vector())?;
-            let u_motion = (-v_along_x).mul_add(v_motion, tangent_x);
-            let delta_v = parameter_step(derivative_v, v_motion);
-            let delta_u = parameter_step(derivative_u, u_motion);
-            require_finite([delta_u, delta_v], "surface closest-point step")?;
-            let mut step = 1.0;
-            let mut accepted = None;
-            for _ in 0..24 {
-                let candidate_u = (u + step * delta_u).clamp(u_domain[0], u_domain[1]);
-                let candidate_v = (v + step * delta_v).clamp(v_domain[0], v_domain[1]);
-                if candidate_u == u && candidate_v == v {
-                    break;
-                }
-                let candidate = self.evaluate(candidate_u, candidate_v)?;
-                let candidate_distance = candidate.distance_to(target)?;
-                if candidate_distance < distance
-                    || (candidate_distance == distance
-                        && !target.compare_distances(candidate, point).is_gt())
-                {
-                    accepted = Some((candidate_u, candidate_v, candidate_distance));
-                    break;
-                }
-                step *= 0.5;
-            }
-            let Some((next_u, next_v, next_distance)) = accepted else {
-                break;
-            };
-            u = next_u;
-            v = next_v;
-            distance = next_distance;
-        }
-        Ok((u, v, distance))
-    }
-}
-
-/// Divide by a nonzero derivative's norm without forming an overflowing norm.
-fn parameter_step(derivative: Vector3, motion: Real) -> Real {
-    let values = derivative.to_array();
-    let scale = values.into_iter().map(Real::abs).fold(0.0, Real::max);
-    let [x, y, z] = values.map(|v| v / scale);
-    (motion / x.hypot(y).hypot(z)) / scale
 }
 
 fn closest_parameter_seeds(

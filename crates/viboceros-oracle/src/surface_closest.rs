@@ -39,17 +39,33 @@ mod tests {
 
     #[test]
     fn closest_surface_fixture_matches_recorded_rhino_parameters_points_and_distances() {
-        let request = serde_json::from_str(include_str!(
-            "../../../tools/rhino_oracle/fixtures/surface-closest-point.json"
-        ))
-        .unwrap();
+        check_fixture(
+            include_str!("../../../tools/rhino_oracle/fixtures/surface-closest-point.json"),
+            include_str!("../../../docs/surface-closest-point-rhino-reference.json"),
+            1e-8,
+            17,
+        );
+    }
+
+    #[test]
+    fn closest_surface_curvature_fixture_matches_recorded_rhino() {
+        // Rhino's upper-edge paraboloid result differs from the independently
+        // analytic minimum by 8.71e-8. Keep the native analytic tests at 1e-8,
+        // but allow 1e-7 for this observed oracle discrepancy.
+        check_fixture(
+            include_str!("../../../tools/rhino_oracle/fixtures/surface-closest-curvature.json"),
+            include_str!("../../../docs/surface-closest-curvature-rhino-reference.json"),
+            1e-7,
+            21,
+        );
+    }
+
+    fn check_fixture(request: &str, reference: &str, epsilon: f64, expected_count: usize) {
+        let request = serde_json::from_str(request).unwrap();
         let response = run_request(&request).unwrap();
-        let reference: Value = serde_json::from_str(include_str!(
-            "../../../docs/surface-closest-point-rhino-reference.json"
-        ))
-        .unwrap();
+        let reference: Value = serde_json::from_str(reference).unwrap();
         let expected = reference["results"].as_array().unwrap();
-        assert_eq!(response.results.len(), 6);
+        assert_eq!(response.results.len(), request.operations.len());
         assert_eq!(response.results.len(), expected.len());
         let mut count = 0;
         for ((actual, expected), operation) in response
@@ -80,9 +96,9 @@ mod tests {
                     for (axis, (a, b)) in a.iter().zip(b).enumerate() {
                         let (a, b) = (a.as_f64().unwrap(), b.as_f64().unwrap());
                         let epsilon = if field == "parameters" {
-                            1e-8 * widths[axis] + 16. * f64::EPSILON * a.abs().max(b.abs())
+                            epsilon * widths[axis] + 16. * f64::EPSILON * a.abs().max(b.abs())
                         } else {
-                            1e-8
+                            epsilon
                         };
                         assert!(
                             (a - b).abs() <= epsilon,
@@ -93,11 +109,11 @@ mod tests {
                 }
                 assert!(
                     (a["distance"].as_f64().unwrap() - b["distance"].as_f64().unwrap()).abs()
-                        <= 1e-8
+                        <= epsilon
                 );
                 count += 1;
             }
         }
-        assert_eq!(count, 17);
+        assert_eq!(count, expected_count);
     }
 }
