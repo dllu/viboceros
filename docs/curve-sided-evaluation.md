@@ -33,6 +33,10 @@ derivative polygons through the curve degree. If the first nonzero Euclidean
 derivative has order `k`, the right tangent points along that derivative and
 the left tangent acquires sign `(-1)^(k-1)`. The homogeneous denominator's sign
 is retained. A locally constant span still returns a degeneracy error.
+When the first derivative rounds to zero, this search now uses
+[exact rational stationarity and scaled direction](curve-rational-range.md#tangent-direction-before-rounding).
+It distinguishes underflowed speed from a true stationary point, and preserves
+the direction before rounding even when the derivative magnitude is unrepresentable.
 
 For example, `C(t)=(t-1)^3` pauses at `t=1` but continues with the same tangent;
 `C(t)=(t-1)^2` reverses direction there. Actual first and second derivative
@@ -87,5 +91,5 @@ stored in OpenNURBS' shortened knot array.
 
 Floating-point range and active-weight normalization limits in the
 [rational numerical policy](nurbs-numerics.md) still apply. Stationary detection
-uses exact computed zeros, not an arbitrary speed threshold. These sampled
+uses exact rational zeros on the fallback path, not an arbitrary speed threshold. These sampled
 comparisons and analytic tests do not prove equivalence for every curve.

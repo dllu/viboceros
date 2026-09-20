@@ -101,8 +101,9 @@ regeneration also passed.
 
 This guard detects range loss in **active homogeneous preparation**, not all
 possible subsequent recurrence underflow or signed cancellation. Unflagged nets
-continue to use floating-point arithmetic. Curves, isocurve extraction, surface
-structure edits, and other homogeneous operations do not automatically inherit
-this fallback. The change is not a universal correctly rounded geometry-kernel
+continue to use floating-point arithmetic. Three-dimensional curves have their
+own [recovery policy](curve-rational-range.md), sharing the exact recurrence.
+Isocurve extraction, surface structure edits, and other homogeneous operations
+do not automatically inherit this fallback. The change is not a universal correctly rounded geometry-kernel
 claim, a proof of closest-point global optimality, or a Rhino performance-parity
 claim.

@@ -1,0 +1,217 @@
+{
+  "absolute_epsilon": 1e-08,
+  "max_absolute_error": 9.213775451224466e+164,
+  "operations": [
+    {
+      "differences": [],
+      "id": "rational-jets-line-default",
+      "max_absolute_error": 4.059419467239422e-12,
+      "passed": true,
+      "rhino_ns_per_iteration": 57205200.0,
+      "rhino_to_viboceros_ratio": 337.70499545438446,
+      "viboceros_ns_per_iteration": 169394.0
+    },
+    {
+      "differences": [],
+      "id": "rational-jets-line-domain",
+      "max_absolute_error": 1.871924837359984e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 7614136.0,
+      "rhino_to_viboceros_ratio": 43.01528727190554,
+      "viboceros_ns_per_iteration": 177010.0
+    },
+    {
+      "differences": [],
+      "id": "rational-jets-line-reversed",
+      "max_absolute_error": 2.3428370354849903e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 6118774.0,
+      "rhino_to_viboceros_ratio": 36.56011519938815,
+      "viboceros_ns_per_iteration": 167362.0
+    },
+    {
+      "differences": [],
+      "id": "rational-jets-multi-line-default",
+      "max_absolute_error": 1.4484413668469642e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 7118225.0,
+      "rhino_to_viboceros_ratio": 34.56489331740621,
+      "viboceros_ns_per_iteration": 205938.0
+    },
+    {
+      "differences": [],
+      "id": "rational-jets-multi-line-domain",
+      "max_absolute_error": 1.2068346322280377e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 10658264.0,
+      "rhino_to_viboceros_ratio": 53.36336053672458,
+      "viboceros_ns_per_iteration": 199730.0
+    },
+    {
+      "differences": [],
+      "id": "rational-jets-multi-line-reversed",
+      "max_absolute_error": 2.8125946016643866e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 7873535.0,
+      "rhino_to_viboceros_ratio": 36.54596132601814,
+      "viboceros_ns_per_iteration": 215442.0
+    },
+    {
+      "differences": [],
+      "id": "rational-jets-closed-line-default",
+      "max_absolute_error": 4.1886494273057906e-12,
+      "passed": true,
+      "rhino_ns_per_iteration": 7324219.0,
+      "rhino_to_viboceros_ratio": 37.71599019537164,
+      "viboceros_ns_per_iteration": 194194.0
+    },
+    {
+      "differences": [],
+      "id": "rational-jets-closed-line-domain",
+      "max_absolute_error": 6.16884321402722e-12,
+      "passed": true,
+      "rhino_ns_per_iteration": 10734558.0,
+      "rhino_to_viboceros_ratio": 53.80137528693577,
+      "viboceros_ns_per_iteration": 199522.0
+    },
+    {
+      "differences": [],
+      "id": "rational-jets-closed-line-reversed",
+      "max_absolute_error": 1.3571366253017914e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 7408142.0,
+      "rhino_to_viboceros_ratio": 34.65602866739645,
+      "viboceros_ns_per_iteration": 213762.0
+    },
+    {
+      "differences": [],
+      "id": "rational-jets-quadratic-default",
+      "max_absolute_error": 4.510614104447086e-12,
+      "passed": true,
+      "rhino_ns_per_iteration": 4135132.0,
+      "rhino_to_viboceros_ratio": 14.758050643301987,
+      "viboceros_ns_per_iteration": 280195.0
+    },
+    {
+      "differences": [],
+      "id": "rational-jets-quadratic-domain",
+      "max_absolute_error": 1.5013768006610917e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 4028320.0,
+      "rhino_to_viboceros_ratio": 14.769871562189493,
+      "viboceros_ns_per_iteration": 272739.0
+    },
+    {
+      "differences": [],
+      "id": "rational-jets-quadratic-reversed",
+      "max_absolute_error": 2.4001245435556484e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 23307800.0,
+      "rhino_to_viboceros_ratio": 77.72116442695655,
+      "viboceros_ns_per_iteration": 299890.0
+    },
+    {
+      "differences": [],
+      "id": "rational-jets-cubic-default",
+      "max_absolute_error": 1.4225065569917206e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 9269714.0,
+      "rhino_to_viboceros_ratio": 4.841648655735102,
+      "viboceros_ns_per_iteration": 1914578.0
+    },
+    {
+      "differences": [],
+      "id": "rational-jets-cubic-domain",
+      "max_absolute_error": 4.196820668767032e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 8926392.0,
+      "rhino_to_viboceros_ratio": 4.53089895767506,
+      "viboceros_ns_per_iteration": 1970115.0
+    },
+    {
+      "differences": [],
+      "id": "rational-jets-cubic-reversed",
+      "max_absolute_error": 3.871836184998756e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 7713318.0,
+      "rhino_to_viboceros_ratio": 5.307998486047552,
+      "viboceros_ns_per_iteration": 1453150.0
+    },
+    {
+      "differences": [],
+      "id": "rational-jets-line-tiny-weights",
+      "max_absolute_error": 1.871924837359984e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 3715515.0,
+      "rhino_to_viboceros_ratio": 21.94880110585358,
+      "viboceros_ns_per_iteration": 169281.0
+    },
+    {
+      "differences": [],
+      "id": "rational-jets-line-huge-weights",
+      "max_absolute_error": 9.213775451224466e+164,
+      "passed": true,
+      "rhino_ns_per_iteration": 11955261.0,
+      "rhino_to_viboceros_ratio": 72.79096571501634,
+      "viboceros_ns_per_iteration": 164241.0
+    },
+    {
+      "differences": [],
+      "id": "rational-seam-closed-line-1",
+      "max_absolute_error": 1.2795098314200004e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 9597778.0,
+      "rhino_to_viboceros_ratio": 43.695779649442294,
+      "viboceros_ns_per_iteration": 219650.0
+    },
+    {
+      "differences": [],
+      "id": "rational-seam-closed-line-10",
+      "max_absolute_error": 1.3198331316743861e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 37452698.0,
+      "rhino_to_viboceros_ratio": 184.08073410728505,
+      "viboceros_ns_per_iteration": 203458.0
+    },
+    {
+      "differences": [],
+      "id": "rational-seam-closed-line-31",
+      "max_absolute_error": 1.3798739928461146e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 7133484.0,
+      "rhino_to_viboceros_ratio": 34.80393438783774,
+      "viboceros_ns_per_iteration": 204962.0
+    },
+    {
+      "differences": [],
+      "id": "rational-seam-closed-cubic-1",
+      "max_absolute_error": 2.240518881535536e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 9681702.0,
+      "rhino_to_viboceros_ratio": 15.77795776552992,
+      "viboceros_ns_per_iteration": 613622.0
+    },
+    {
+      "differences": [],
+      "id": "rational-seam-closed-cubic-10",
+      "max_absolute_error": 1.446309738639684e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 11352539.0,
+      "rhino_to_viboceros_ratio": 13.811815646808055,
+      "viboceros_ns_per_iteration": 821944.0
+    },
+    {
+      "differences": [],
+      "id": "rational-seam-closed-cubic-31",
+      "max_absolute_error": 2.8464341994549613e-11,
+      "passed": true,
+      "rhino_ns_per_iteration": 6362915.0,
+      "rhino_to_viboceros_ratio": 6.942836224129051,
+      "viboceros_ns_per_iteration": 916472.0
+    }
+  ],
+  "passed": true,
+  "protocol_version": 1,
+  "relative_epsilon": 1e-10,
+  "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation."
+}

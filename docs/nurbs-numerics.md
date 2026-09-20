@@ -206,13 +206,14 @@ far from the origin, signed-weight poles, finite world points whose local offset
 overflow, and exact interpolated endpoints. Negative global weights remain covered
 in native tests: this oracle's public Rhino control-point setter rejected them.
 
-The kernel stores geometry in `f64`. Active-weight normalization can underflow
-when weights within one span have an unrepresentable dynamic range; derivative
-intermediates can also exceed the numeric range even when a final mathematical
-answer is finite. The separate-span fallback does not solve those within-span
-limitations for curve evaluation and other homogeneous operations. Sampling and
-passing tests are bounded evidence, not a universal error proof or full Rhino
-compatibility claim.
+The kernel stores geometry in `f64`. Three-dimensional NURBS curves now use
+[exact-rational recovery](curve-rational-range.md) after detected homogeneous
+preparation range loss or a reported floating-point evaluation failure. Tangents
+whose first derivative rounds to zero resolve stationarity and orientation before
+rounding, and can remain finite when speed is unrepresentable. This does not
+certify every successful unflagged floating-point result or extend automatically
+to 2D trim curves and structure edits. Sampling and passing tests are bounded
+evidence, not a universal error proof or full Rhino compatibility claim.
 
 Surface point and differential evaluation has a guarded
 [exact-rational fallback](surface-rational-range.md) when active homogeneous

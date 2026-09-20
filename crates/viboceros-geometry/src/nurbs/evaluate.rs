@@ -1,6 +1,15 @@
 use super::*;
 use crate::{ParameterSide, UnitVector3};
 
+mod exact;
+mod tangent;
+
+struct EvaluationControls {
+    origin: Point3,
+    homogeneous: Vec<[Real; 4]>,
+    range_loss: bool,
+}
+
 #[cfg(test)]
 mod tests;
 
@@ -20,10 +29,19 @@ impl NurbsCurve {
         if let Some(point) = self.span_endpoint_point(span, parameter) {
             return Ok(point);
         }
-        self.with_evaluation_controls(span, |origin, work| {
-            let homogeneous = de_boor(&self.knots, self.degree, span, parameter, work)?;
-            self.restore_evaluated_point(span, parameter, project_homogeneous(homogeneous)?, origin)
-        })
+        self.with_evaluation_controls(
+            span,
+            |origin, work| {
+                let homogeneous = de_boor(&self.knots, self.degree, span, parameter, work)?;
+                self.restore_evaluated_point(
+                    span,
+                    parameter,
+                    project_homogeneous(homogeneous)?,
+                    origin,
+                )
+            },
+            || Ok(self.exact_jet(span, parameter, 0)?.0),
+        )
     }
 
     /// Evaluates the point and exact first derivative using the derivative
@@ -42,32 +60,40 @@ impl NurbsCurve {
         side: ParameterSide,
     ) -> Result<(Point3, Vector3), GeometryError> {
         let span = self.checked_span_on_side(parameter, side)?;
-        self.with_evaluation_controls(span, |origin, active| {
-            let homogeneous = de_boor(&self.knots, self.degree, span, parameter, active.clone())?;
-            let point = project_homogeneous(homogeneous)?;
+        self.with_evaluation_controls(
+            span,
+            |origin, active| {
+                let homogeneous =
+                    de_boor(&self.knots, self.degree, span, parameter, active.clone())?;
+                let point = project_homogeneous(homogeneous)?;
 
-            let derivative_controls = self.derivative_controls(span, 1, &active)?;
+                let derivative_controls = self.derivative_controls(span, 1, &active)?;
 
-            let homogeneous_derivative = de_boor(
-                &self.knots[1..self.knots.len() - 1],
-                self.degree - 1,
-                span - 1,
-                parameter,
-                derivative_controls,
-            )?;
-            let weight = homogeneous[3];
-            let weight_derivative = homogeneous_derivative[3];
-            let point_coordinates = point.to_array();
-            let derivative: [Real; 3] = std::array::from_fn(|coordinate| {
-                (-point_coordinates[coordinate])
-                    .mul_add(weight_derivative, homogeneous_derivative[coordinate])
-                    / weight
-            });
-            Ok((
-                self.restore_evaluated_point(span, parameter, point, origin)?,
-                Vector3::try_from(derivative)?,
-            ))
-        })
+                let homogeneous_derivative = de_boor(
+                    &self.knots[1..self.knots.len() - 1],
+                    self.degree - 1,
+                    span - 1,
+                    parameter,
+                    derivative_controls,
+                )?;
+                let weight = homogeneous[3];
+                let weight_derivative = homogeneous_derivative[3];
+                let point_coordinates = point.to_array();
+                let derivative: [Real; 3] = std::array::from_fn(|coordinate| {
+                    (-point_coordinates[coordinate])
+                        .mul_add(weight_derivative, homogeneous_derivative[coordinate])
+                        / weight
+                });
+                Ok((
+                    self.restore_evaluated_point(span, parameter, point, origin)?,
+                    Vector3::try_from(derivative)?,
+                ))
+            },
+            || {
+                let (p, d, _) = self.exact_jet(span, parameter, 1)?;
+                Ok((p, d))
+            },
+        )
     }
 
     /// Evaluates the point and exact first and second derivatives using
@@ -86,117 +112,73 @@ impl NurbsCurve {
         side: ParameterSide,
     ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
         let span = self.checked_span_on_side(parameter, side)?;
-        self.with_evaluation_controls(span, |origin, active| {
-            let homogeneous = de_boor(&self.knots, self.degree, span, parameter, active.clone())?;
-            let point = project_homogeneous(homogeneous)?;
+        self.with_evaluation_controls(
+            span,
+            |origin, active| {
+                let homogeneous =
+                    de_boor(&self.knots, self.degree, span, parameter, active.clone())?;
+                let point = project_homogeneous(homogeneous)?;
 
-            let derivative_controls = self.derivative_controls(span, 1, &active)?;
+                let derivative_controls = self.derivative_controls(span, 1, &active)?;
 
-            let homogeneous_derivative = de_boor(
-                &self.knots[1..self.knots.len() - 1],
-                self.degree - 1,
-                span - 1,
-                parameter,
-                derivative_controls.clone(),
-            )?;
-            let weight = homogeneous[3];
-            let weight_derivative = homogeneous_derivative[3];
-            let point_coordinates = point.to_array();
-            let first_derivative: [Real; 3] = std::array::from_fn(|coordinate| {
-                (-point_coordinates[coordinate])
-                    .mul_add(weight_derivative, homogeneous_derivative[coordinate])
-                    / weight
-            });
-            let first_derivative = Vector3::try_from(first_derivative)?;
-
-            if self.degree == 1 {
-                // A degree-one homogeneous curve has H'' = 0, but its
-                // Euclidean second derivative is -2 (W'/W) C', not zero.
-                let second = first_derivative.to_array().map(|value| {
-                    crate::parameter::scaled_ratio(value, weight_derivative, weight)
-                        .map(|value| -2.0 * value)
+                let homogeneous_derivative = de_boor(
+                    &self.knots[1..self.knots.len() - 1],
+                    self.degree - 1,
+                    span - 1,
+                    parameter,
+                    derivative_controls.clone(),
+                )?;
+                let weight = homogeneous[3];
+                let weight_derivative = homogeneous_derivative[3];
+                let point_coordinates = point.to_array();
+                let first_derivative: [Real; 3] = std::array::from_fn(|coordinate| {
+                    (-point_coordinates[coordinate])
+                        .mul_add(weight_derivative, homogeneous_derivative[coordinate])
+                        / weight
                 });
-                let [x, y, z] = second;
-                return Ok((
+                let first_derivative = Vector3::try_from(first_derivative)?;
+
+                if self.degree == 1 {
+                    // A degree-one homogeneous curve has H'' = 0, but its
+                    // Euclidean second derivative is -2 (W'/W) C', not zero.
+                    let second = first_derivative.to_array().map(|value| {
+                        crate::parameter::scaled_ratio(value, weight_derivative, weight)
+                            .map(|value| -2.0 * value)
+                    });
+                    let [x, y, z] = second;
+                    return Ok((
+                        self.restore_evaluated_point(span, parameter, point, origin)?,
+                        first_derivative,
+                        Vector3::try_new(x?, y?, z?)?,
+                    ));
+                }
+
+                let second_derivative_controls =
+                    self.derivative_controls(span, 2, &derivative_controls)?;
+                let homogeneous_second_derivative = de_boor(
+                    &self.knots[2..self.knots.len() - 2],
+                    self.degree - 2,
+                    span - 2,
+                    parameter,
+                    second_derivative_controls,
+                )?;
+                let weight_second_derivative = homogeneous_second_derivative[3];
+                let first_coordinates = first_derivative.to_array();
+                let second_derivative: [Real; 3] = std::array::from_fn(|coordinate| {
+                    let quotient_terms = (2.0 * weight_derivative).mul_add(
+                        first_coordinates[coordinate],
+                        weight_second_derivative * point_coordinates[coordinate],
+                    );
+                    (homogeneous_second_derivative[coordinate] - quotient_terms) / weight
+                });
+                Ok((
                     self.restore_evaluated_point(span, parameter, point, origin)?,
                     first_derivative,
-                    Vector3::try_new(x?, y?, z?)?,
-                ));
-            }
-
-            let second_derivative_controls =
-                self.derivative_controls(span, 2, &derivative_controls)?;
-            let homogeneous_second_derivative = de_boor(
-                &self.knots[2..self.knots.len() - 2],
-                self.degree - 2,
-                span - 2,
-                parameter,
-                second_derivative_controls,
-            )?;
-            let weight_second_derivative = homogeneous_second_derivative[3];
-            let first_coordinates = first_derivative.to_array();
-            let second_derivative: [Real; 3] = std::array::from_fn(|coordinate| {
-                let quotient_terms = (2.0 * weight_derivative).mul_add(
-                    first_coordinates[coordinate],
-                    weight_second_derivative * point_coordinates[coordinate],
-                );
-                (homogeneous_second_derivative[coordinate] - quotient_terms) / weight
-            });
-            Ok((
-                self.restore_evaluated_point(span, parameter, point, origin)?,
-                first_derivative,
-                Vector3::try_from(second_derivative)?,
-            ))
-        })
-    }
-
-    /// The oriented limiting tangent, including stationary points with a
-    /// nonzero higher derivative. A locally constant span has no tangent.
-    pub fn tangent_at_on_side(
-        &self,
-        parameter: Real,
-        side: ParameterSide,
-    ) -> Result<UnitVector3, GeometryError> {
-        let (_, first) = self.evaluate_with_derivative_on_side(parameter, side)?;
-        if first.to_array() != [0.0; 3] {
-            return first.normalized_nonzero();
-        }
-        let span = self.checked_span_on_side(parameter, side)?;
-        let domain = self.domain();
-        let incoming = parameter == *domain.end()
-            || (side == ParameterSide::Left && parameter > *domain.start());
-        self.with_evaluation_controls(span, |_, active| {
-            let homogeneous = de_boor(&self.knots, self.degree, span, parameter, active.clone())?;
-            let point = project_homogeneous(homogeneous)?.to_array();
-            let mut controls = active;
-            for order in 1..=self.degree {
-                controls = self.derivative_controls(span, order, &controls)?;
-                let derivative = de_boor(
-                    &self.knots[order..self.knots.len() - order],
-                    self.degree - order,
-                    span - order,
-                    parameter,
-                    controls.clone(),
-                )?;
-                // If C', ..., C^(order-1) vanish, the quotient rule reduces
-                // to (H^(order) - C W^(order))/W. Only direction is needed.
-                let coordinates =
-                    std::array::from_fn(|i| (-point[i]).mul_add(derivative[3], derivative[i]));
-                let direction = Vector3::try_from(coordinates)?;
-                if direction.to_array() != [0.0; 3] {
-                    let sign = homogeneous[3].signum()
-                        * if incoming && order % 2 == 0 {
-                            -1.0
-                        } else {
-                            1.0
-                        };
-                    return direction.scaled(sign)?.normalized_nonzero();
-                }
-            }
-            Err(GeometryError::Degenerate {
-                context: "locally constant NURBS tangent",
-            })
-        })
+                    Vector3::try_from(second_derivative)?,
+                ))
+            },
+            || self.exact_jet(span, parameter, 2),
+        )
     }
 
     fn derivative_controls(
@@ -275,17 +257,28 @@ impl NurbsCurve {
         &self,
         span: usize,
         evaluate: impl Fn(Point3, Vec<[Real; 4]>) -> Result<T, GeometryError>,
+        exact: impl Fn() -> Result<T, GeometryError>,
     ) -> Result<T, GeometryError> {
-        let (origin, controls) = self.homogeneous_controls(span, true)?;
-        let result = evaluate(origin, controls);
+        let controls = self.homogeneous_controls(span, true)?;
+        if controls.range_loss {
+            return exact();
+        }
+        let origin = controls.origin;
+        let result = evaluate(origin, controls.homogeneous);
         // Signed-weight curves can leave their control hull. A local offset
         // may overflow even when the final world-space point remains finite.
         // Retry that exceptional case in the unshifted frame.
         if matches!(result, Err(GeometryError::NonFinite { .. })) && origin.to_array() != [0.0; 3] {
-            let (origin, controls) = self.homogeneous_controls(span, false)?;
-            evaluate(origin, controls)
+            let controls = self.homogeneous_controls(span, false)?;
+            if controls.range_loss {
+                exact()
+            } else {
+                evaluate(controls.origin, controls.homogeneous).or_else(|_| exact())
+            }
         } else {
-            result
+            // Loss can also arise later in the recurrence or quotient rule.
+            // A reported failure is not proof of a pole or nonrepresentability.
+            result.or_else(|_| exact())
         }
     }
 
@@ -293,7 +286,7 @@ impl NurbsCurve {
         &self,
         span: usize,
         center: bool,
-    ) -> Result<(Point3, Vec<[Real; 4]>), GeometryError> {
+    ) -> Result<EvaluationControls, GeometryError> {
         let active = &self.control_points[span - self.degree..=span];
         let candidate = active[0].point;
         // Center local coordinates before the rational quotient rule. This
@@ -313,20 +306,31 @@ impl NurbsCurve {
         };
         let weight_scale = active.iter().map(|c| c.weight.abs()).fold(0.0, Real::max);
         let mut controls = Vec::with_capacity(active.len());
+        let mut range_loss = false;
         for control in active {
             let weight = control.weight / weight_scale;
+            range_loss |= !weight.is_normal();
             let point = control.point.to_array();
             let origin = origin.to_array();
+            let local: [Real; 3] = std::array::from_fn(|i| point[i] - origin[i]);
             let value = [
-                (point[0] - origin[0]) * weight,
-                (point[1] - origin[1]) * weight,
-                (point[2] - origin[2]) * weight,
+                local[0] * weight,
+                local[1] * weight,
+                local[2] * weight,
                 weight,
             ];
+            range_loss |= local
+                .into_iter()
+                .zip(value)
+                .any(|(a, product)| a != 0. && !product.is_normal());
             require_finite(value, "local homogeneous NURBS control point")?;
             controls.push(value);
         }
-        Ok((origin, controls))
+        Ok(EvaluationControls {
+            origin,
+            homogeneous: controls,
+            range_loss,
+        })
     }
 }
 

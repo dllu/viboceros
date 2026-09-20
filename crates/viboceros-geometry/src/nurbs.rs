@@ -3,6 +3,7 @@ mod arc_length;
 mod circularity;
 mod decompose;
 mod evaluate;
+pub(crate) mod exact;
 mod integration_frame;
 mod weights;
 use weights::change_bezier_end_weights;

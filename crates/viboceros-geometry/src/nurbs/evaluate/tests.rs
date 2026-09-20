@@ -1,5 +1,7 @@
 use super::*;
 
+mod range;
+
 fn point(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }

@@ -1,105 +1,10 @@
 //! Guarded exact-rational evaluation when binary64 homogeneous preparation loses range.
 use super::*;
-use num_rational::BigRational as Rational;
-use num_traits::{One, ToPrimitive, Zero};
+use crate::nurbs::exact::{Direction, Homogeneous, Rational, rational, scalar, vector};
+use num_traits::Zero;
 
 #[cfg(test)]
 mod tests;
-
-type Homogeneous = [Rational; 4];
-
-fn rational(value: Real) -> Rational {
-    Rational::from_float(value).expect("validated finite geometry scalar")
-}
-
-fn scalar(value: &Rational) -> Result<Real, GeometryError> {
-    let value = value.to_f64().ok_or(GeometryError::NonFinite {
-        context: "exact surface projection",
-    })?;
-    require_finite([value], "exact surface projection")?;
-    Ok(value)
-}
-
-fn vector(values: &[Rational; 3]) -> Result<Vector3, GeometryError> {
-    Vector3::try_new(
-        scalar(&values[0])?,
-        scalar(&values[1])?,
-        scalar(&values[2])?,
-    )
-}
-
-#[derive(Clone, Copy)]
-struct Direction<'a> {
-    knots: &'a [Real],
-    degree: usize,
-    span: usize,
-    parameter: Real,
-}
-
-impl Direction<'_> {
-    fn differentiated(self) -> Self {
-        Self {
-            knots: &self.knots[1..self.knots.len() - 1],
-            degree: self.degree - 1,
-            span: self.span - 1,
-            ..self
-        }
-    }
-
-    fn evaluate(self, mut work: Vec<Homogeneous>) -> Result<Homogeneous, GeometryError> {
-        let parameter = rational(self.parameter);
-        for level in 1..=self.degree {
-            for local in (level..=self.degree).rev() {
-                let index = self.span - self.degree + local;
-                let left = rational(self.knots[index]);
-                let width = rational(self.knots[index + self.degree - level + 1]) - &left;
-                if width <= Rational::zero() {
-                    return Err(GeometryError::InvalidKnotVector {
-                        context: "exact de Boor interval",
-                    });
-                }
-                let alpha = (&parameter - left) / width;
-                let complement = Rational::one() - &alpha;
-                work[local] = std::array::from_fn(|i| {
-                    &work[local - 1][i] * &complement + &work[local][i] * &alpha
-                });
-            }
-        }
-        Ok(work.swap_remove(self.degree))
-    }
-
-    fn derivative_controls(
-        self,
-        net: &[Homogeneous],
-        width: usize,
-        along_u: bool,
-    ) -> Result<Vec<Homogeneous>, GeometryError> {
-        let height = net.len() / width;
-        let (output_width, output_height) = if along_u {
-            (width - 1, height)
-        } else {
-            (width, height - 1)
-        };
-        let mut output = Vec::with_capacity(output_width * output_height);
-        for j in 0..output_height {
-            for i in 0..output_width {
-                let index = self.span - self.degree + if along_u { i } else { j };
-                let interval =
-                    rational(self.knots[index + self.degree + 1]) - rational(self.knots[index + 1]);
-                if interval <= Rational::zero() {
-                    return Err(GeometryError::InvalidKnotVector {
-                        context: "exact derivative interval",
-                    });
-                }
-                let factor = Rational::from_integer(self.degree.into()) / interval;
-                let lower = &net[j * width + i];
-                let upper = &net[j * width + i + if along_u { 1 } else { width }];
-                output.push(std::array::from_fn(|k| (&upper[k] - &lower[k]) * &factor));
-            }
-        }
-        Ok(output)
-    }
-}
 
 fn tensor(
     net: &[Homogeneous],

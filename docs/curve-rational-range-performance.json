@@ -1,0 +1,579 @@
+{
+  "captured_utc_date": "2026-09-20",
+  "architecture": "aarch64",
+  "rustc": "1.95.0 (59807616e 2026-04-14)",
+  "build_profile": "release",
+  "native_baseline_commit": "1135404",
+  "native_after": "Guarded exact 3D NURBS curve points and jets; exact recovery of reported evaluation failures; scale-free exact limiting tangents when required; shared homogeneous recurrence with surfaces.",
+  "iterations_per_round": 200,
+  "rounds": 3,
+  "timing_method": "Before/after curve probes, then before/after closest-point probes ran sequentially after builds, tests, and live Rhino comparisons had finished. Each case reports median elapsed_ns across three rounds divided by 200. No timing assertion.",
+  "curve_probe": {
+    "fixture": "tools/rhino_oracle/fixtures/nurbs_rational_jets.json",
+    "request": "Set differential_only=true on every operation, set iterations=200, repeat the 23 operations in order three times, suffixing IDs with -round-1, -round-2, or -round-3.",
+    "timing_scope": "The existing curve_native probe times curve construction, edits, 33 point/first/second derivative/tangent sample records, and JSON value construction, after one untimed warmup. Length and division are omitted. These are end-to-end records, not isolated kernel jet timings.",
+    "operations": 69,
+    "bitwise_equal": true,
+    "curve_sample_count": 2277,
+    "cases": [
+      {
+        "id": "rational-jets-line-default",
+        "before_elapsed_ns": [
+          5867647,
+          5859391,
+          5831823
+        ],
+        "after_elapsed_ns": [
+          12349073,
+          5986288,
+          6009279
+        ],
+        "before_ns_per_operation": 29296.955,
+        "after_ns_per_operation": 30046.395,
+        "change_percent": 2.5580815480653163
+      },
+      {
+        "id": "rational-jets-line-domain",
+        "before_elapsed_ns": [
+          5904143,
+          5892160,
+          5875023
+        ],
+        "after_elapsed_ns": [
+          11862335,
+          5964527,
+          6014815
+        ],
+        "before_ns_per_operation": 29460.8,
+        "after_ns_per_operation": 30074.075,
+        "change_percent": 2.0816644490305736
+      },
+      {
+        "id": "rational-jets-line-reversed",
+        "before_elapsed_ns": [
+          5861664,
+          5863423,
+          5893855
+        ],
+        "after_elapsed_ns": [
+          11858751,
+          5986287,
+          6034912
+        ],
+        "before_ns_per_operation": 29317.115,
+        "after_ns_per_operation": 30174.56,
+        "change_percent": 2.924725028366537
+      },
+      {
+        "id": "rational-jets-multi-line-default",
+        "before_elapsed_ns": [
+          6021823,
+          6007120,
+          6055056
+        ],
+        "after_elapsed_ns": [
+          12243441,
+          6162993,
+          6218384
+        ],
+        "before_ns_per_operation": 30109.115,
+        "after_ns_per_operation": 31091.92,
+        "change_percent": 3.264144429353033
+      },
+      {
+        "id": "rational-jets-multi-line-domain",
+        "before_elapsed_ns": [
+          6007776,
+          6051344,
+          6068496
+        ],
+        "after_elapsed_ns": [
+          12367025,
+          6197585,
+          6181024
+        ],
+        "before_ns_per_operation": 30256.72,
+        "after_ns_per_operation": 30987.925,
+        "change_percent": 2.41666975138084
+      },
+      {
+        "id": "rational-jets-multi-line-reversed",
+        "before_elapsed_ns": [
+          6039600,
+          6051504,
+          6053472
+        ],
+        "after_elapsed_ns": [
+          12415970,
+          6190273,
+          6240081
+        ],
+        "before_ns_per_operation": 30257.52,
+        "after_ns_per_operation": 31200.405,
+        "change_percent": 3.1162005346109023
+      },
+      {
+        "id": "rational-jets-closed-line-default",
+        "before_elapsed_ns": [
+          6057984,
+          6064480,
+          6035920
+        ],
+        "after_elapsed_ns": [
+          12493410,
+          6179505,
+          6201392
+        ],
+        "before_ns_per_operation": 30289.92,
+        "after_ns_per_operation": 31006.96,
+        "change_percent": 2.3672561697092753
+      },
+      {
+        "id": "rational-jets-closed-line-domain",
+        "before_elapsed_ns": [
+          6050304,
+          6067520,
+          6049872
+        ],
+        "after_elapsed_ns": [
+          12490386,
+          6263985,
+          6214593
+        ],
+        "before_ns_per_operation": 30251.52,
+        "after_ns_per_operation": 31319.925,
+        "change_percent": 3.531739892739272
+      },
+      {
+        "id": "rational-jets-closed-line-reversed",
+        "before_elapsed_ns": [
+          6110033,
+          6037327,
+          6099808
+        ],
+        "after_elapsed_ns": [
+          12532498,
+          6247153,
+          6261618
+        ],
+        "before_ns_per_operation": 30499.04,
+        "after_ns_per_operation": 31308.09,
+        "change_percent": 2.6527064458422345
+      },
+      {
+        "id": "rational-jets-quadratic-default",
+        "before_elapsed_ns": [
+          6525474,
+          6501682,
+          6503010
+        ],
+        "after_elapsed_ns": [
+          13435064,
+          6724020,
+          6751203
+        ],
+        "before_ns_per_operation": 32515.05,
+        "after_ns_per_operation": 33756.015,
+        "change_percent": 3.8165864730332677
+      },
+      {
+        "id": "rational-jets-quadratic-domain",
+        "before_elapsed_ns": [
+          6526659,
+          6482899,
+          6499843
+        ],
+        "after_elapsed_ns": [
+          13383463,
+          6738564,
+          6770275
+        ],
+        "before_ns_per_operation": 32499.215,
+        "after_ns_per_operation": 33851.375,
+        "change_percent": 4.160592802010754
+      },
+      {
+        "id": "rational-jets-quadratic-reversed",
+        "before_elapsed_ns": [
+          6520995,
+          6448530,
+          6545362
+        ],
+        "after_elapsed_ns": [
+          13329927,
+          6721379,
+          6818932
+        ],
+        "before_ns_per_operation": 32604.975,
+        "after_ns_per_operation": 34094.66,
+        "change_percent": 4.56888864352758
+      },
+      {
+        "id": "rational-jets-cubic-default",
+        "before_elapsed_ns": [
+          7073157,
+          7061381,
+          7084886
+        ],
+        "after_elapsed_ns": [
+          14659710,
+          7338279,
+          7389607
+        ],
+        "before_ns_per_operation": 35365.785,
+        "after_ns_per_operation": 36948.035,
+        "change_percent": 4.47395696150954
+      },
+      {
+        "id": "rational-jets-cubic-domain",
+        "before_elapsed_ns": [
+          7075382,
+          7050278,
+          7129830
+        ],
+        "after_elapsed_ns": [
+          14756062,
+          7362439,
+          7452247
+        ],
+        "before_ns_per_operation": 35376.91,
+        "after_ns_per_operation": 37261.235,
+        "change_percent": 5.3264261915469735
+      },
+      {
+        "id": "rational-jets-cubic-reversed",
+        "before_elapsed_ns": [
+          7104374,
+          7079573,
+          7120406
+        ],
+        "after_elapsed_ns": [
+          14975727,
+          7355526,
+          7417623
+        ],
+        "before_ns_per_operation": 35521.87,
+        "after_ns_per_operation": 37088.115,
+        "change_percent": 4.409241405365183
+      },
+      {
+        "id": "rational-jets-line-tiny-weights",
+        "before_elapsed_ns": [
+          5849423,
+          5864799,
+          5832575
+        ],
+        "after_elapsed_ns": [
+          12057055,
+          6025183,
+          5987024
+        ],
+        "before_ns_per_operation": 29247.115,
+        "after_ns_per_operation": 30125.915,
+        "change_percent": 3.0047408094781236
+      },
+      {
+        "id": "rational-jets-line-huge-weights",
+        "before_elapsed_ns": [
+          5850639,
+          5826974,
+          5860383
+        ],
+        "after_elapsed_ns": [
+          12073872,
+          6000799,
+          6024880
+        ],
+        "before_ns_per_operation": 29253.195,
+        "after_ns_per_operation": 30124.4,
+        "change_percent": 2.9781533264998883
+      },
+      {
+        "id": "rational-seam-closed-line-1",
+        "before_elapsed_ns": [
+          8845135,
+          8998847,
+          8980367
+        ],
+        "after_elapsed_ns": [
+          17887055,
+          9203584,
+          9207889
+        ],
+        "before_ns_per_operation": 44901.835,
+        "after_ns_per_operation": 46039.445,
+        "change_percent": 2.5335490186537024
+      },
+      {
+        "id": "rational-seam-closed-line-10",
+        "before_elapsed_ns": [
+          8916127,
+          8897423,
+          8781326
+        ],
+        "after_elapsed_ns": [
+          18103040,
+          9086384,
+          9066704
+        ],
+        "before_ns_per_operation": 44487.115,
+        "after_ns_per_operation": 45431.92,
+        "change_percent": 2.123772242816835
+      },
+      {
+        "id": "rational-seam-closed-line-31",
+        "before_elapsed_ns": [
+          8907568,
+          8798046,
+          8835167
+        ],
+        "after_elapsed_ns": [
+          18034303,
+          9005103,
+          9072128
+        ],
+        "before_ns_per_operation": 44175.835,
+        "after_ns_per_operation": 45360.64,
+        "change_percent": 2.6820206114949396
+      },
+      {
+        "id": "rational-seam-closed-cubic-1",
+        "before_elapsed_ns": [
+          10131013,
+          10176677,
+          10094214
+        ],
+        "after_elapsed_ns": [
+          19168597,
+          10559831,
+          10430503
+        ],
+        "before_ns_per_operation": 50655.065,
+        "after_ns_per_operation": 52799.155,
+        "change_percent": 4.232725789612535
+      },
+      {
+        "id": "rational-seam-closed-cubic-10",
+        "before_elapsed_ns": [
+          10148101,
+          10060805,
+          10163206
+        ],
+        "after_elapsed_ns": [
+          10470792,
+          10377206,
+          10517831
+        ],
+        "before_ns_per_operation": 50740.505,
+        "after_ns_per_operation": 52353.96,
+        "change_percent": 3.1798165981990145
+      },
+      {
+        "id": "rational-seam-closed-cubic-31",
+        "before_elapsed_ns": [
+          10112389,
+          10182166,
+          10162374
+        ],
+        "after_elapsed_ns": [
+          10430407,
+          10529719,
+          10606056
+        ],
+        "before_ns_per_operation": 50811.87,
+        "after_ns_per_operation": 52648.595,
+        "change_percent": 3.6147557647455253
+      }
+    ]
+  },
+  "surface_closest_probe": {
+    "fixtures": [
+      "tools/rhino_oracle/fixtures/surface-closest-point.json",
+      "tools/rhino_oracle/fixtures/surface-closest-curvature.json"
+    ],
+    "request": "Concatenate both fixtures' operations in that order, set iterations=200, repeat the nine operations in order three times, suffixing IDs with -round-1, -round-2, or -round-3.",
+    "timing_scope": "Only closest-parameter batches are timed, with one untimed warmup; surface construction and result formatting are excluded.",
+    "queries": 114,
+    "operations": 27,
+    "bitwise_equal": true,
+    "cases": [
+      {
+        "id": "plane-unit",
+        "before_elapsed_ns": [
+          1141638,
+          612067,
+          596756
+        ],
+        "after_elapsed_ns": [
+          1314919,
+          602771,
+          614147
+        ],
+        "before_ns_per_operation": 3060.335,
+        "after_ns_per_operation": 3070.735,
+        "change_percent": 0.3398320772072472
+      },
+      {
+        "id": "plane-wide-u",
+        "before_elapsed_ns": [
+          1140390,
+          610676,
+          597795
+        ],
+        "after_elapsed_ns": [
+          1299335,
+          610915,
+          613363
+        ],
+        "before_ns_per_operation": 3053.38,
+        "after_ns_per_operation": 3066.815,
+        "change_percent": 0.4400041920756603
+      },
+      {
+        "id": "plane-anisotropic",
+        "before_elapsed_ns": [
+          1135046,
+          608803,
+          598995
+        ],
+        "after_elapsed_ns": [
+          1237271,
+          601555,
+          607524
+        ],
+        "before_ns_per_operation": 3044.015,
+        "after_ns_per_operation": 3037.62,
+        "change_percent": -0.21008437869064478
+      },
+      {
+        "id": "skew-anisotropic",
+        "before_elapsed_ns": [
+          819877,
+          425794,
+          412930
+        ],
+        "after_elapsed_ns": [
+          902549,
+          420195,
+          420466
+        ],
+        "before_ns_per_operation": 2128.97,
+        "after_ns_per_operation": 2102.33,
+        "change_percent": -1.2513093185906765
+      },
+      {
+        "id": "cylinder-unit",
+        "before_elapsed_ns": [
+          86389849,
+          75347758,
+          73788726
+        ],
+        "after_elapsed_ns": [
+          102528957,
+          75834047,
+          75994368
+        ],
+        "before_ns_per_operation": 376738.79,
+        "after_ns_per_operation": 379971.84,
+        "change_percent": 0.8581675383095178
+      },
+      {
+        "id": "cylinder-anisotropic",
+        "before_elapsed_ns": [
+          79638853,
+          80604218,
+          78913328
+        ],
+        "after_elapsed_ns": [
+          81174940,
+          80768154,
+          81039643
+        ],
+        "before_ns_per_operation": 398194.265,
+        "after_ns_per_operation": 405198.215,
+        "change_percent": 1.7589278941523734
+      },
+      {
+        "id": "paraboloid-unit",
+        "before_elapsed_ns": [
+          531106630,
+          528099284,
+          517534890
+        ],
+        "after_elapsed_ns": [
+          539664332,
+          530131784,
+          525839982
+        ],
+        "before_ns_per_operation": 2640496.42,
+        "after_ns_per_operation": 2650658.92,
+        "change_percent": 0.3848708115271826
+      },
+      {
+        "id": "paraboloid-anisotropic",
+        "before_elapsed_ns": [
+          533950404,
+          550254375,
+          548748397
+        ],
+        "after_elapsed_ns": [
+          545692380,
+          560522278,
+          560076658
+        ],
+        "before_ns_per_operation": 2743741.985,
+        "after_ns_per_operation": 2800383.29,
+        "change_percent": 2.0643816113051994
+      },
+      {
+        "id": "saddle-unit",
+        "before_elapsed_ns": [
+          72029836,
+          72002796,
+          72705343
+        ],
+        "after_elapsed_ns": [
+          73477123,
+          74009606,
+          73696500
+        ],
+        "before_ns_per_operation": 360149.18,
+        "after_ns_per_operation": 368482.5,
+        "change_percent": 2.313852276437234
+      }
+    ]
+  },
+  "correctness": {
+    "comparison_method": "Recursive response-value comparison using IEEE binary64 bit packing, including geometry, native parameters, derivatives, tangents, representation fields, and distances; timing fields excluded.",
+    "independent_curve_reference_cases": 127,
+    "independent_surface_reference_cases": 70,
+    "independent_reference_orders": [
+      0,
+      1,
+      2
+    ],
+    "curve_regression_tests": 11,
+    "workspace_tests": {
+      "passed": 2470,
+      "failed": 0,
+      "ignored": 18
+    },
+    "python_tests": {
+      "passed": 178,
+      "failed": 0
+    },
+    "clippy": "cargo clippy --workspace --all-targets -- -D warnings: passed",
+    "formatting": "cargo fmt --all -- --check: passed",
+    "reference_regeneration": "Python generator stdout matches checked-in curve reference.txt byte-for-byte.",
+    "live_rhino": {
+      "operations": 68,
+      "passed": true,
+      "absolute_epsilon": 1e-8,
+      "relative_epsilon": 1e-10,
+      "rational_report": "curve-rational-range-rhino-comparison.json",
+      "sided_report": "curve-rational-range-sided-rhino-comparison.json",
+      "note": "Licensed Rhino 8 in private Xvfb. Harness timings are not native-kernel speed comparisons. Huge homogeneous weight scales are compared relatively."
+    }
+  },
+  "exact_cost_note": "The 127-case curve reference test took 62.09 seconds in debug and 1.40 seconds in release, including construction, all requested orders, bit comparisons, and expected errors. These whole-test durations are not per-query timings. Exact fallback costs depend on degree and intermediate integer sizes."
+}
