@@ -1,12 +1,24 @@
 //! Bounded multi-start surface closest-point search and scaled tangent refinement.
 use super::*;
+mod affine;
 
 impl NurbsSurface {
     /// Finds natural surface parameters nearest to a finite model-space
-    /// point. A bounded multi-start search followed by tangent-plane Newton
-    /// refinement handles rational and non-uniform surfaces without assuming
-    /// normalized parameter domains.
+    /// point. Exactly affine bilinear patches use direct constrained projection;
+    /// other surfaces use bounded multi-start tangent-plane Newton refinement.
+    /// Neither path assumes normalized parameter domains.
     pub fn closest_parameters(
+        &self,
+        target: Point3,
+        tolerance: Tolerance,
+    ) -> Result<(Real, Real), GeometryError> {
+        if let Some(parameters) = self.closest_affine_parameters(target) {
+            return Ok(parameters);
+        }
+        self.closest_parameters_general(target, tolerance)
+    }
+
+    fn closest_parameters_general(
         &self,
         target: Point3,
         tolerance: Tolerance,

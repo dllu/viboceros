@@ -1,0 +1,163 @@
+{
+  "captured_utc_date": "2026-09-20",
+  "fixture": "tools/rhino_oracle/fixtures/surface-closest-point.json",
+  "benchmark_request": "Set iterations to 200, repeat the original six operations in order three times, and suffix every operation ID with -round-1, -round-2, or -round-3.",
+  "architecture": "aarch64",
+  "rustc": "1.95.0 (59807616e 2026-04-14)",
+  "build_profile": "release",
+  "native_baseline_commit": "1979507",
+  "native_after": "Exact-guarded affine bilinear closest-point path in nurbs_surface/closest_point/affine.rs",
+  "rhino_engine_version": "8.32.26160.13001",
+  "iterations_per_round": 200,
+  "rounds": 3,
+  "timing_method": "Median elapsed_ns across three rounds, divided by iterations and queries per batch. Surface construction and output formatting excluded; one warmup batch precedes each timed operation. Native before and after ran sequentially on the same host after tests and builds finished. Rhino ran separately in the private Xvfb harness.",
+  "timing_limit": "Harness measurements, not native Rhino kernel speedups. Rhino includes Python/RhinoCommon and host overhead. First-round Rhino warmup variability and small native cylinder differences are visible in raw times.",
+  "comparison": {
+    "absolute_epsilon": 1e-8,
+    "relative_epsilon": 1e-8,
+    "all_18_operations_passed": true,
+    "max_model_point_distance": 8.086453684441625e-9,
+    "max_normalized_parameter_absolute_error": 2.4526283226578016e-9,
+    "max_distance_absolute_error": 4.440892098500626e-16
+  },
+  "cases": [
+    {
+      "id": "plane-unit",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        86635202,
+        86097763,
+        86341762
+      ],
+      "after_elapsed_ns": [
+        552223,
+        552399,
+        553040
+      ],
+      "rhino_elapsed_ns": [
+        29808044,
+        4371643,
+        4951477
+      ],
+      "before_ns_per_query": 143902.93666666668,
+      "after_ns_per_query": 920.665,
+      "rhino_ns_per_query": 8252.461666666666,
+      "native_speedup": 156.3032554367405
+    },
+    {
+      "id": "plane-wide-u",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        86490898,
+        86407890,
+        86433649
+      ],
+      "after_elapsed_ns": [
+        556112,
+        555600,
+        557312
+      ],
+      "rhino_elapsed_ns": [
+        5332947,
+        4699707,
+        5264282
+      ],
+      "before_ns_per_query": 144056.08166666667,
+      "after_ns_per_query": 926.8533333333334,
+      "rhino_ns_per_query": 8773.803333333333,
+      "native_speedup": 155.42489462554306
+    },
+    {
+      "id": "plane-anisotropic",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        175612337,
+        175779570,
+        174216802
+      ],
+      "after_elapsed_ns": [
+        558815,
+        557888,
+        558015
+      ],
+      "rhino_elapsed_ns": [
+        5760193,
+        4928589,
+        4348755
+      ],
+      "before_ns_per_query": 292687.22833333333,
+      "after_ns_per_query": 930.025,
+      "rhino_ns_per_query": 8214.315,
+      "native_speedup": 314.70898990170514
+    },
+    {
+      "id": "skew-anisotropic",
+      "queries_per_batch": 2,
+      "before_elapsed_ns": [
+        60824852,
+        60975460,
+        60684804
+      ],
+      "after_elapsed_ns": [
+        385984,
+        385455,
+        387632
+      ],
+      "rhino_elapsed_ns": [
+        4089355,
+        4081726,
+        3532410
+      ],
+      "before_ns_per_query": 152062.13,
+      "after_ns_per_query": 964.96,
+      "rhino_ns_per_query": 10204.315,
+      "native_speedup": 157.58386876139943
+    },
+    {
+      "id": "cylinder-unit",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        250441932,
+        245299391,
+        240995122
+      ],
+      "after_elapsed_ns": [
+        241092706,
+        239977860,
+        240138227
+      ],
+      "rhino_elapsed_ns": [
+        8857727,
+        7896423,
+        8026123
+      ],
+      "before_ns_per_query": 408832.31833333336,
+      "after_ns_per_query": 400230.37833333336,
+      "rhino_ns_per_query": 13376.871666666666,
+      "native_speedup": 1.0214924715005913
+    },
+    {
+      "id": "cylinder-anisotropic",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        285259427,
+        284355923,
+        298268281
+      ],
+      "after_elapsed_ns": [
+        290480271,
+        296161242,
+        279940790
+      ],
+      "rhino_elapsed_ns": [
+        10505676,
+        7743835,
+        6958008
+      ],
+      "before_ns_per_query": 475432.37833333336,
+      "after_ns_per_query": 484133.785,
+      "rhino_ns_per_query": 12906.391666666666,
+      "native_speedup": 0.9820268551043868
+    }
+  ]
+}
