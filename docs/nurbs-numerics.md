@@ -212,3 +212,9 @@ dynamic range; derivative intermediates can also exceed the numeric range even
 when a final mathematical answer is finite. The separate-span fallback does not
 solve those within-span limitations. Sampling and passing tests are bounded
 evidence, not a universal error proof or full Rhino compatibility claim.
+
+Surface point-only evaluation can recover an exactly interpolated control after
+normalization erases its nonzero weight. This narrow recovery uses knot
+multiplicity, not tolerance, and does not fabricate differential jets. See
+[surface-grid evaluation](surface-grid-evaluation.md#exact-control-recovery) for
+the independent corner regressions and remaining weight-range limits.

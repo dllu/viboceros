@@ -34,15 +34,13 @@ impl NurbsSurface {
         let u_seeds = closest_parameter_seeds(self.spans_u(), u_start, u_end);
         let v_seeds = closest_parameter_seeds(self.spans_v(), v_start, v_end);
         let mut seeds = Vec::with_capacity(u_seeds.len() * v_seeds.len());
-        for &v in &v_seeds {
-            for &u in &u_seeds {
-                if let Ok(point) = self.evaluate(u, v)
-                    && let Ok(distance) = point.distance_to(target)
-                {
-                    seeds.push((distance, u, v));
-                }
+        self.for_each_grid_point(&u_seeds, &v_seeds, |i, j, result| {
+            if let Ok(point) = result
+                && let Ok(distance) = point.distance_to(target)
+            {
+                seeds.push((distance, u_seeds[i], v_seeds[j]));
             }
-        }
+        });
         seeds.sort_by(|left, right| left.0.total_cmp(&right.0));
         seeds.truncate(16);
         let mut best = seeds.first().copied().ok_or(GeometryError::Degenerate {

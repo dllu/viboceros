@@ -8,6 +8,10 @@ Other surfaces use a bounded search that samples the UV domain, refines up to
 sixteen promising starts, and independently checks the four natural boundary
 curves. The implementation is isolated in `nurbs_surface/closest_point.rs`.
 
+Seed points use [batched tensor-grid evaluation](surface-grid-evaluation.md),
+reusing homogeneous U contractions within each V span while retaining the scalar
+arithmetic order, sample coverage, and per-cell failure fallback.
+
 ## Affine bilinear fast path
 
 The direct path accepts only degree-one surfaces with a `2 × 2` control net,
@@ -194,6 +198,11 @@ from `2.8e-9`/`1.4e-8` (unit/anisotropic) to below `1.7e-11` for both domains.
 All fresh comparisons pass their separately documented fixture epsilons. This
 improves the general solver but does not establish performance parity: curved
 cases remain slower than the Rhino harness, and the dense seed search remains.
+
+The subsequent [grid-evaluation measurement](surface-grid-evaluation.md#measurement)
+removes repeated tensor work from those same seeds. Curved query times improve by
+a further `1.52–1.98×` against `5eb3e26`, with all 114 measured query results
+bit-for-bit unchanged. The sample coverage and refinement policy are unchanged.
 
 The multi-start search is not a certified global minimum solver for arbitrary
 multi-modal rational surfaces. Coarse seed ranking uses rounded distances, singular

@@ -5019,9 +5019,9 @@ pub(crate) fn de_boor<const DIMENSION: usize>(
     degree: usize,
     span: usize,
     parameter: Real,
-    work: Vec<[Real; DIMENSION]>,
+    mut work: Vec<[Real; DIMENSION]>,
 ) -> Result<[Real; DIMENSION], GeometryError> {
-    de_boor_impl::<DIMENSION, false>(knots, degree, span, parameter, work)
+    de_boor_impl::<DIMENSION, false>(knots, degree, span, parameter, &mut work)
 }
 
 /// Evaluate the polynomial represented by a selected span, including its
@@ -5031,7 +5031,19 @@ pub(crate) fn de_boor_extended<const DIMENSION: usize>(
     degree: usize,
     span: usize,
     parameter: Real,
-    work: Vec<[Real; DIMENSION]>,
+    mut work: Vec<[Real; DIMENSION]>,
+) -> Result<[Real; DIMENSION], GeometryError> {
+    de_boor_extended_in_place(knots, degree, span, parameter, &mut work)
+}
+
+/// Same recurrence as `de_boor_extended`, with caller-owned scratch storage.
+/// The input is exactly the active span's degree-plus-one homogeneous controls.
+pub(crate) fn de_boor_extended_in_place<const DIMENSION: usize>(
+    knots: &[Real],
+    degree: usize,
+    span: usize,
+    parameter: Real,
+    work: &mut [[Real; DIMENSION]],
 ) -> Result<[Real; DIMENSION], GeometryError> {
     de_boor_impl::<DIMENSION, true>(knots, degree, span, parameter, work)
 }
@@ -5041,7 +5053,7 @@ fn de_boor_impl<const DIMENSION: usize, const EXTENDED: bool>(
     degree: usize,
     span: usize,
     parameter: Real,
-    mut work: Vec<[Real; DIMENSION]>,
+    work: &mut [[Real; DIMENSION]],
 ) -> Result<[Real; DIMENSION], GeometryError> {
     debug_assert_eq!(work.len(), degree + 1);
     for level in 1..=degree {

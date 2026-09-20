@@ -3,6 +3,7 @@
 use super::{NurbsSurface, checked_span, extended_span};
 use crate::nurbs::project_homogeneous;
 use crate::{GeometryError, ParameterSide, Point3, Real, Vector3, require_finite};
+mod grid;
 mod tensor;
 use tensor::{
     derivative_controls_u, derivative_controls_v, evaluate_tensor_product, project_derivative,
@@ -164,16 +165,22 @@ impl NurbsSurface {
             )
         };
         let h = tensor(active, 0, 0)?;
-        let local = project_homogeneous(h)?;
-        let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
-        let mut jet = SurfaceJet2 {
-            point: local,
-            derivative_u: zero,
-            derivative_v: zero,
-            derivative_uu: zero,
-            derivative_uv: zero,
-            derivative_vv: zero,
+        let local = match project_homogeneous(h) {
+            Ok(point) => point,
+            Err(error) => {
+                // Weight normalization can erase a tiny but nonzero weight.
+                // At a fully interpolated control, the point itself is exact
+                // even when the normalized homogeneous projection is unusable.
+                // Do not fabricate derivatives when a jet was requested.
+                if order == 0
+                    && let Some(point) = self.interpolated_point([u, v], [span_u, span_v])
+                {
+                    return point_jet(point);
+                }
+                return Err(error);
+            }
         };
+        let mut jet = point_jet(local)?;
         if order != 0 {
             let net_u =
                 derivative_controls_u(active, self.degree_u, self.degree_v, span_u, &self.knots_u)?;
@@ -237,19 +244,36 @@ impl NurbsSurface {
                     project_second(h_vv, jet.derivative_v, h_v[3], jet.derivative_v, h_v[3])?;
             }
         }
-        jet.point = if let (Some(i), Some(j)) = (
-            interpolated_control(&self.knots_u, self.degree_u, span_u, u),
-            interpolated_control(&self.knots_v, self.degree_v, span_v, v),
-        ) {
-            self.control_points[self.control_index(i, j)].point()
+        jet.point = self.restore_point([u, v], [span_u, span_v], origin, local)?;
+        Ok(jet)
+    }
+
+    fn restore_point(
+        &self,
+        [u, v]: [Real; 2],
+        [span_u, span_v]: [usize; 2],
+        origin: Point3,
+        local: Point3,
+    ) -> Result<Point3, GeometryError> {
+        if let Some(point) = self.interpolated_point([u, v], [span_u, span_v]) {
+            Ok(point)
         } else {
             Point3::try_new(
                 local.x() + origin.x(),
                 local.y() + origin.y(),
                 local.z() + origin.z(),
-            )?
-        };
-        Ok(jet)
+            )
+        }
+    }
+
+    fn interpolated_point(
+        &self,
+        [u, v]: [Real; 2],
+        [span_u, span_v]: [usize; 2],
+    ) -> Option<Point3> {
+        let i = interpolated_control(&self.knots_u, self.degree_u, span_u, u)?;
+        let j = interpolated_control(&self.knots_v, self.degree_v, span_v, v)?;
+        Some(self.control_points[self.control_index(i, j)].point())
     }
 
     fn evaluation_controls(
@@ -298,6 +322,18 @@ impl NurbsSurface {
             .collect::<Result<_, GeometryError>>()?;
         Ok((origin, controls))
     }
+}
+
+fn point_jet(point: Point3) -> Result<SurfaceJet2, GeometryError> {
+    let zero = Vector3::try_new(0., 0., 0.)?;
+    Ok(SurfaceJet2 {
+        point,
+        derivative_u: zero,
+        derivative_v: zero,
+        derivative_uu: zero,
+        derivative_uv: zero,
+        derivative_vv: zero,
+    })
 }
 
 fn interpolated_control(knots: &[Real], degree: usize, span: usize, t: Real) -> Option<usize> {

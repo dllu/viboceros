@@ -1,0 +1,221 @@
+{
+  "captured_utc_date": "2026-09-20",
+  "architecture": "aarch64",
+  "rustc": "1.95.0 (59807616e 2026-04-14)",
+  "build_profile": "release",
+  "native_baseline_commit": "5eb3e26",
+  "native_after": "Span-local tensor-grid cache, scratch-backed de Boor recurrence, and exact-control recovery after homogeneous normalization loss.",
+  "fixtures": [
+    "tools/rhino_oracle/fixtures/surface-closest-point.json",
+    "tools/rhino_oracle/fixtures/surface-closest-curvature.json"
+  ],
+  "benchmark_request": "Concatenate both fixtures' operations in the listed order, set iterations to 200, repeat the nine operations in order three times, and suffix operation IDs with -round-1, -round-2, or -round-3.",
+  "timing_method": "Median elapsed_ns across three rounds divided by iterations and queries per batch. Native before, native after, and the microbenchmark ran sequentially after all builds/tests finished. Closest-parameter batches exclude surface construction and output formatting and have one untimed warmup.",
+  "iterations_per_round": 200,
+  "rounds": 3,
+  "correctness": {
+    "before_after_queries": 114,
+    "before_after_operations": 27,
+    "before_after_values_bitwise_equal": true,
+    "comparison_method": "Recursive response-value comparison with IEEE binary64 bit packing, including parameters, normalized parameters, points, and distances; timing fields excluded.",
+    "grid_scalar_parity_sample_count": 17820,
+    "exact_control_recovery": "Separately checked against stored controls for all four corners and both common weight signs; baseline can fail these formerly false-pole cases.",
+    "rhino_reference": "No new live Rhino capture in this measurement. Existing 38-query saved Rhino replays pass their documented 1e-8 and 1e-7 bounds."
+  },
+  "microbenchmark": {
+    "command": "cargo test -p viboceros-geometry --release benchmark_surface_grid_evaluation -- --ignored --nocapture",
+    "points_per_grid": 1089,
+    "grids_per_round": 200,
+    "rounds": 3,
+    "method": "Alternate scalar and grid traversal in each round on one-span and two-spans-per-axis rational quadratic patches. Identical row-order coordinate sums are checked bit-for-bit. No timing assertion.",
+    "cases": [
+      {
+        "spans_per_axis": 1,
+        "scalar_elapsed_ns": [
+          46983314,
+          46790578,
+          46748497
+        ],
+        "grid_elapsed_ns": [
+          4730169,
+          4716346,
+          4701610
+        ],
+        "scalar_ns_per_point": 214.83277318640955,
+        "grid_ns_per_point": 21.654481175390266,
+        "speedup": 9.920938370509713
+      },
+      {
+        "spans_per_axis": 2,
+        "scalar_elapsed_ns": [
+          47250033,
+          47259760,
+          47254753
+        ],
+        "grid_elapsed_ns": [
+          5366377,
+          5357785,
+          5351225
+        ],
+        "scalar_ns_per_point": 216.963971533517,
+        "grid_ns_per_point": 24.599563820018364,
+        "speedup": 8.819830023041238
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "plane-unit",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        570431,
+        569391,
+        565823
+      ],
+      "after_elapsed_ns": [
+        568959,
+        566655,
+        565903
+      ],
+      "before_ns_per_query": 948.985,
+      "after_ns_per_query": 944.425,
+      "native_speedup": 1.0048283347010085
+    },
+    {
+      "id": "plane-wide-u",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        566447,
+        569439,
+        569567
+      ],
+      "after_elapsed_ns": [
+        567695,
+        565008,
+        564816
+      ],
+      "before_ns_per_query": 949.065,
+      "after_ns_per_query": 941.68,
+      "native_speedup": 1.007842366833744
+    },
+    {
+      "id": "plane-anisotropic",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        567631,
+        565600,
+        568192
+      ],
+      "after_elapsed_ns": [
+        563119,
+        562671,
+        565055
+      ],
+      "before_ns_per_query": 946.0516666666666,
+      "after_ns_per_query": 938.5316666666666,
+      "native_speedup": 1.00801251600461
+    },
+    {
+      "id": "skew-anisotropic",
+      "queries_per_batch": 2,
+      "before_elapsed_ns": [
+        392240,
+        394575,
+        393887
+      ],
+      "after_elapsed_ns": [
+        394816,
+        398911,
+        392271
+      ],
+      "before_ns_per_query": 984.7175,
+      "after_ns_per_query": 987.04,
+      "native_speedup": 0.9976470051872265
+    },
+    {
+      "id": "cylinder-unit",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        146541755,
+        142767840,
+        142833440
+      ],
+      "after_elapsed_ns": [
+        73055230,
+        71781872,
+        72173919
+      ],
+      "before_ns_per_query": 238055.73333333334,
+      "after_ns_per_query": 120289.865,
+      "native_speedup": 1.979017378840132
+    },
+    {
+      "id": "cylinder-anisotropic",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        149779895,
+        151200485,
+        151322357
+      ],
+      "after_elapsed_ns": [
+        77469464,
+        76619833,
+        76805017
+      ],
+      "before_ns_per_query": 252000.80833333332,
+      "after_ns_per_query": 128008.36166666666,
+      "native_speedup": 1.968627713473457
+    },
+    {
+      "id": "paraboloid-unit",
+      "queries_per_batch": 9,
+      "before_elapsed_ns": [
+        797360320,
+        795997457,
+        794900004
+      ],
+      "after_elapsed_ns": [
+        498328436,
+        485948149,
+        482517785
+      ],
+      "before_ns_per_query": 442220.8094444444,
+      "after_ns_per_query": 269971.19388888887,
+      "native_speedup": 1.638029610027386
+    },
+    {
+      "id": "paraboloid-anisotropic",
+      "queries_per_batch": 9,
+      "before_elapsed_ns": [
+        793142085,
+        780681591,
+        764214973
+      ],
+      "after_elapsed_ns": [
+        500262961,
+        516050380,
+        514718974
+      ],
+      "before_ns_per_query": 433711.995,
+      "after_ns_per_query": 285954.98555555556,
+      "native_speedup": 1.5167142274417107
+    },
+    {
+      "id": "saddle-unit",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        114082695,
+        114476790,
+        114097478
+      ],
+      "after_elapsed_ns": [
+        69825234,
+        69730130,
+        69754642
+      ],
+      "before_ns_per_query": 190162.46333333335,
+      "after_ns_per_query": 116257.73666666666,
+      "native_speedup": 1.6356972773224183
+    }
+  ]
+}
