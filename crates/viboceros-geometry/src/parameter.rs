@@ -1,6 +1,39 @@
 use crate::{GeometryError, Real, require_finite};
 use std::ops::RangeInclusive;
 
+/// Error-free TwoDiff, declining nonfinite intermediates or a nonzero residual.
+pub(crate) fn exact_difference(a: Real, b: Real) -> Option<Real> {
+    let difference = a - b;
+    let b_virtual = a - difference;
+    let a_virtual = difference + b_virtual;
+    let b_error = b_virtual - b;
+    let a_error = a - a_virtual;
+    let error = a_error + b_error;
+    [difference, b_virtual, a_virtual, b_error, a_error, error]
+        .into_iter()
+        .all(Real::is_finite)
+        .then_some(difference)
+        .filter(|_| error == 0.)
+}
+
+pub(crate) fn check_trim_interval(
+    interval: &RangeInclusive<Real>,
+    domain: RangeInclusive<Real>,
+) -> Result<(), GeometryError> {
+    let start = *interval.start();
+    let end = *interval.end();
+    if !start.is_finite()
+        || !end.is_finite()
+        || start >= end
+        || start < *domain.start()
+        || end > *domain.end()
+    {
+        Err(GeometryError::InvalidCurveTrimInterval)
+    } else {
+        Ok(())
+    }
+}
+
 /// Which one-sided limit to evaluate at a curve knot, composite junction, or
 /// surface knot line. Domain endpoints use the only available interior side.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]

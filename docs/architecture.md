@@ -298,6 +298,10 @@ for topology predicates, containment, and triangulation.
 `brep/parameter_frame` prepares [lossless local UV frames](brep-parameter-frames.md)
 for validation, containment, meshing, and mass integration, avoiding native UV
 rounding between trim and surface evaluation without altering stored geometry.
+Shared surface preparation lives in `nurbs_surface/parameter_frame`;
+`brep/rectangular_surface` constructs independently parameterized spatial edges
+and `nurbs_surface/wires` generates local-domain borders and density wires.
+See [surface construction and wire frames](surface-wire-frames.md).
 `brep/isocurves` uses the same frames for trim intersections and density stations;
 it restores extracted curve domains only losslessly and keeps display wires
 locally parameterized. The `extract_isocurve` command module owns parsing,

@@ -36671,6 +36671,10 @@ mod tests {
             );
             assert_eq!(document.objects().len(), expected_count + 1);
             assert!(!document.is_selected(source));
+            assert_eq!(
+                document.object(source).unwrap().geometry(),
+                &Geometry::NurbsSurface(surface.clone())
+            );
             assert!(
                 document
                     .objects()
@@ -36699,11 +36703,21 @@ mod tests {
                     let Geometry::NurbsCurve(curve) = object.geometry() else {
                         panic!("V wire must remain an exact NURBS curve")
                     };
-                    assert_eq!(curve.domain(), surface.domain_v());
+                    // Density-generated curves use local knot origins;
+                    // the source surface's native V domain remains [10,14].
+                    assert_eq!(curve.domain(), 0.0..=4.0);
+                    assert_eq!(
+                        curve.knots(),
+                        surface
+                            .knots_v()
+                            .iter()
+                            .map(|k| k - 10.)
+                            .collect::<Vec<_>>()
+                    );
                     for v in [10.0, 12.0, 14.0] {
                         assert!(
                             curve
-                                .evaluate(v)
+                                .evaluate(v - 10.)
                                 .unwrap()
                                 .is_near(surface.evaluate(u, v).unwrap(), Tolerance::DEFAULT,)
                         );

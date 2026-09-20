@@ -41,6 +41,7 @@ mod isocurves;
 mod mass_properties;
 mod parameter_bounds;
 mod surface_closest;
+mod surface_wires;
 pub use parameter_bounds::ParameterCurveBoundsFixture;
 mod bounding_box;
 mod conversion;
@@ -322,6 +323,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: BrepMeshFixture,
+    },
+    SurfaceWires {
+        id: String,
+        surface: NurbsSurfaceDefinition,
+        density: i32,
     },
     BrepSurfaceMorph {
         id: String,
@@ -1631,6 +1637,7 @@ impl Operation {
             | Self::SurfaceSurfaceMorph { id, .. }
             | Self::BrepSurfaceMorph { id, .. }
             | Self::BrepMeshBoundaries { id, .. }
+            | Self::SurfaceWires { id, .. }
             | Self::SurfaceJets { id, .. }
             | Self::ThreeDmCurveInterchange { id, .. }
             | Self::ThreeDmBrepInterchange { id, .. }
@@ -2037,6 +2044,9 @@ fn execute(
         Operation::BrepMeshBoundaries { fixture, .. } => {
             brep_mesh::run(fixture, iterations, tolerance)?
         }
+        Operation::SurfaceWires {
+            surface, density, ..
+        } => surface_wires::run(surface, *density, iterations, tolerance)?,
         Operation::BrepSurfaceMorph { fixture, .. } => {
             brep_morph::run(fixture, iterations, tolerance)?
         }

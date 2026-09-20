@@ -185,17 +185,13 @@ fn append_all_surface_isocurves(
         direction,
         ExtractIsocurveDirection::U | ExtractIsocurveDirection::Both
     ) {
-        for v in surface.wire_parameters_v(wire_density)? {
-            append_extractable_isocurves(curves, [surface.isocurve_u(v)?])?;
-        }
+        append_extractable_isocurves(curves, surface.isocurves_u_at_density(wire_density)?)?;
     }
     if matches!(
         direction,
         ExtractIsocurveDirection::V | ExtractIsocurveDirection::Both
     ) {
-        for u in surface.wire_parameters_u(wire_density)? {
-            append_extractable_isocurves(curves, [surface.isocurve_v(u)?])?;
-        }
+        append_extractable_isocurves(curves, surface.isocurves_v_at_density(wire_density)?)?;
     }
     Ok(())
 }

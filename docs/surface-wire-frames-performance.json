@@ -1,0 +1,194 @@
+{
+  "baseline": "9bd67f4",
+  "rounds": 3,
+  "iterations": 100,
+  "note": "Ordinary mesh and mass fixtures compare full floating-point bits. One process pair, with other stress-test and build work active; timings do not establish significant speed changes or general kernel parity.",
+  "mesh": {
+    "operations": 15,
+    "bitwise_equal": true,
+    "cases": [
+      {
+        "id": "mesh-boundary-open-corner",
+        "before_elapsed_ns": [
+          5893115,
+          2790111,
+          2801679
+        ],
+        "after_elapsed_ns": [
+          5962281,
+          2820661,
+          2798646
+        ],
+        "before_ns_per_operation": 28016.79,
+        "after_ns_per_operation": 28206.61,
+        "change_percent": 0.6775223000208053
+      },
+      {
+        "id": "mesh-boundary-open-box",
+        "before_elapsed_ns": [
+          12979424,
+          6232361,
+          6318857
+        ],
+        "after_elapsed_ns": [
+          13254317,
+          6269672,
+          6531063
+        ],
+        "before_ns_per_operation": 63188.57,
+        "after_ns_per_operation": 65310.63,
+        "change_percent": 3.3582972363514374
+      },
+      {
+        "id": "mesh-boundary-closed-box",
+        "before_elapsed_ns": [
+          8038734,
+          7491297,
+          7543010
+        ],
+        "after_elapsed_ns": [
+          7645139,
+          7774210,
+          7845986
+        ],
+        "before_ns_per_operation": 75430.1,
+        "after_ns_per_operation": 77742.1,
+        "change_percent": 3.0650894006504004
+      },
+      {
+        "id": "mesh-boundary-disjoint-faces",
+        "before_elapsed_ns": [
+          892331,
+          894411,
+          895562
+        ],
+        "after_elapsed_ns": [
+          902140,
+          898204,
+          899724
+        ],
+        "before_ns_per_operation": 8944.11,
+        "after_ns_per_operation": 8997.24,
+        "change_percent": 0.5940222112652771
+      },
+      {
+        "id": "mesh-boundary-translated-open-corner",
+        "before_elapsed_ns": [
+          2806415,
+          2771871,
+          2797982
+        ],
+        "after_elapsed_ns": [
+          2836325,
+          2798709,
+          2811733
+        ],
+        "before_ns_per_operation": 27979.82,
+        "after_ns_per_operation": 28117.33,
+        "change_percent": 0.49146134607014336
+      }
+    ]
+  },
+  "mass": {
+    "operations": 18,
+    "bitwise_equal": true,
+    "cases": [
+      {
+        "id": "paraboloid-disk",
+        "before_elapsed_ns": [
+          384356873,
+          363520239,
+          366536171
+        ],
+        "after_elapsed_ns": [
+          382617144,
+          363024863,
+          358239757
+        ],
+        "before_ns_per_operation": 3665361.71,
+        "after_ns_per_operation": 3630248.63,
+        "change_percent": -0.9579703935958861
+      },
+      {
+        "id": "paraboloid-annulus",
+        "before_elapsed_ns": [
+          741264117,
+          729945982,
+          755041801
+        ],
+        "after_elapsed_ns": [
+          731040824,
+          727635852,
+          720270559
+        ],
+        "before_ns_per_operation": 7412641.17,
+        "after_ns_per_operation": 7276358.52,
+        "change_percent": -1.8385167563695792
+      },
+      {
+        "id": "paraboloid-thin-annulus",
+        "before_elapsed_ns": [
+          741040720,
+          746211953,
+          744389538
+        ],
+        "after_elapsed_ns": [
+          730494751,
+          734664791,
+          725782366
+        ],
+        "before_ns_per_operation": 7443895.38,
+        "after_ns_per_operation": 7304947.51,
+        "change_percent": -1.8666015964345806
+      },
+      {
+        "id": "paraboloid-capped-outward",
+        "before_elapsed_ns": [
+          508274437,
+          506798313,
+          510291241
+        ],
+        "after_elapsed_ns": [
+          502445672,
+          508439120,
+          501691707
+        ],
+        "before_ns_per_operation": 5082744.37,
+        "after_ns_per_operation": 5024456.72,
+        "change_percent": -1.1467751623322364
+      },
+      {
+        "id": "paraboloid-capped-inward",
+        "before_elapsed_ns": [
+          506601204,
+          507803124,
+          510025825
+        ],
+        "after_elapsed_ns": [
+          507961045,
+          505940141,
+          506678537
+        ],
+        "before_ns_per_operation": 5078031.24,
+        "after_ns_per_operation": 5066785.37,
+        "change_percent": -0.22146122125865642
+      },
+      {
+        "id": "paraboloid-rotated-translated",
+        "before_elapsed_ns": [
+          470032569,
+          470382016,
+          475308517
+        ],
+        "after_elapsed_ns": [
+          471090628,
+          470934914,
+          471559425
+        ],
+        "before_ns_per_operation": 4703820.16,
+        "after_ns_per_operation": 4710906.28,
+        "change_percent": 0.1506460655162467
+      }
+    ]
+  }
+}

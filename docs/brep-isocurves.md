@@ -112,17 +112,17 @@ was active; these measurements do not establish a significant speed change.
 ## Remaining limits
 
 This is not universal parameter-translation invariance. A lossy frame candidate
-is declined. Bare `NurbsSurface` extraction, `IgnoreTrims=Yes`, and point-picking
-through a native closest-UV result retain their existing native-coordinate limits.
+is declined. [Standalone borders, wires, and density-batch extraction](surface-wire-frames.md)
+now share surface-frame preparation, including `ExtractAll IgnoreTrims=Yes`.
+Single native isocurve APIs and point-picking through a native closest-UV result
+retain their existing native-coordinate limits.
 An extracted curve whose native knots are restored exactly can still have a
 poorly resolved native sampling grid; reparameterize it before comparing its
 normalized locus. Display wires deliberately do not restore that origin.
 
-Independent 3D edges and trims' own knot parameters are not reframed. For
-example, building a full bilinear saddle directly with domains
-`[1e12,1e12+1] × [-2e12,-2e12+1]` can fail edge/trim correspondence validation
-because its generated 3D edges inherit coarse native knot domains. The command
-regression instead translates only the UV face representation of an existing
-valid B-rep, retaining independently parameterized spatial edges. Arbitrary
+Existing independent 3D edges and trims' own knot parameters are not reframed.
+The previously failing full-saddle constructor with domains
+`[1e12,1e12+1] × [-2e12,-2e12+1]` now creates local-domain spatial edges; the
+command regression now uses that constructor directly. Arbitrary
 degenerate topology, native structure edits, and model-space output rounding
 are outside this correction.

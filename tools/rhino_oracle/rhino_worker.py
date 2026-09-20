@@ -730,6 +730,61 @@ def _trimmed_surface_isocurves(operation, iterations, tolerance):
         brep.Dispose()
 
 
+def _surface_wire_sort_key(points):
+    key = []
+    for point in points:
+        for value in point:
+            scaled = value*1e9
+            key.append(value if math.isinf(scaled) else float(round(scaled))/1e9)
+    return tuple(key)
+
+
+def _surface_wires(operation, iterations):
+    density = operation["density"]
+    if isinstance(density, bool) or not isinstance(density, int) or not -1 <= density <= 99:
+        raise ValueError("wire density must be an integer in [-1,99]")
+    surface = _nurbs_surface_from_definition(operation["surface"])
+    try:
+        def compute():
+            brep = Rhino.Geometry.Brep.CreateFromSurface(surface)
+            if brep is None:
+                raise ValueError("surface-to-B-rep construction failed")
+            try:
+                valid, log = brep.IsValidWithLog()
+                if not valid:
+                    raise ValueError("invalid surface B-rep: " + str(log))
+                curves = brep.GetWireframe(density)
+                if curves is None:
+                    raise ValueError("surface wireframe extraction failed")
+                try:
+                    records = []
+                    for curve in curves:
+                        curve.Domain = Rhino.Geometry.Interval(0.0, 1.0)
+                        if curve.Domain.T0 != 0.0 or curve.Domain.T1 != 1.0:
+                            raise ValueError("wire reparameterization failed")
+                        def sample(reverse):
+                            return [[_finite(x, "wire sample") for x in _xyz(curve.PointAt(1.0-t if reverse else t))]
+                                    for t in [0.0, 0.125, 0.3, 0.5, 0.875, 1.0]]
+                        records.append(min(sample(False), sample(True)))
+                    # Stabilize ordering at symmetric coordinates without
+                    # rounding any samples in the returned records.
+                    records.sort(key=_surface_wire_sort_key)
+                finally:
+                    for curve in curves:
+                        curve.Dispose()
+                trims = list(brep.Trims)
+                return dict(vertices=brep.Vertices.Count, edges=brep.Edges.Count, faces=brep.Faces.Count,
+                            trims=len(trims), is_solid=bool(brep.IsSolid),
+                            seam_trims=sum(t.TrimType == Rhino.Geometry.BrepTrimType.Seam for t in trims),
+                            singular_trims=sum(t.TrimType == Rhino.Geometry.BrepTrimType.Singular for t in trims),
+                            surface_wires=records, brep_wires=records)
+            finally:
+                brep.Dispose()
+        return _measure(iterations, compute)
+    finally:
+        surface.Dispose()
+
+
 def _trimmed_surface_mass_properties(operation, iterations, tolerance):
     brep = _trimmed_brep_from_definition(operation, tolerance)
     try:
@@ -4778,6 +4833,8 @@ def _execute(operation, iterations, tolerance):
         return _trimmed_surface_mass_properties(operation, iterations, tolerance)
     if kind == "trimmed_surface_isocurves":
         return _trimmed_surface_isocurves(operation, iterations, tolerance)
+    if kind == "surface_wires":
+        return _surface_wires(operation, iterations)
     if kind == "mesh_weld_vertex":
         document = Rhino.RhinoDoc.ActiveDoc
         source = _triangle_mesh(operation["vertices"], operation["triangles"])

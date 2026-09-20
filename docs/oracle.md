@@ -2,6 +2,13 @@
 
 [Project overview](../README.md)
 
+The `surface_wires` probe compares natural surface-to-B-rep topology and wire
+geometry against Rhino `CreateFromSurface`/`GetWireframe`. The
+[paired surface-wire record](surface-wire-frames.md) contains 12 operations;
+ten pass and two translated density-3 cases remain discrepancies. Its bounded
+correspondence diagnostic requires unique nearest six-sample matches to form
+a bijection, then compares unchanged coordinates and topology fields.
+
 The `trimmed_surface_isocurves` probe accepts a `TrimmedBrepFixture` and 1–64
 native `[u,v]` parameter pairs. It returns samples in face, query, U/V, segment,
 point order. Both engines normalize each extracted curve's domain *after*

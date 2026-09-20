@@ -2618,13 +2618,8 @@ impl NurbsCurve {
     pub fn try_trimmed(&self, interval: RangeInclusive<Real>) -> Result<Self, GeometryError> {
         let start = *interval.start();
         let end = *interval.end();
-        if !start.is_finite() || !end.is_finite() || start >= end {
-            return Err(GeometryError::InvalidCurveTrimInterval);
-        }
         let domain = self.domain();
-        if start < *domain.start() || end > *domain.end() {
-            return Err(GeometryError::InvalidCurveTrimInterval);
-        }
+        crate::parameter::check_trim_interval(&interval, domain.clone())?;
         if start == *domain.start() && end == *domain.end() {
             return Ok(self.clone());
         }

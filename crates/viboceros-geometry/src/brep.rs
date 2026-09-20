@@ -22,6 +22,7 @@ mod morph;
 mod parameter_frame;
 mod parameter_normalization;
 mod polygon_boundaries;
+mod rectangular_surface;
 use parameter_normalization::{
     TrimParameterNormalization, floating_parameter_epsilon, trim_parameter_epsilon,
 };
@@ -426,206 +427,6 @@ impl Brep {
         };
         brep.validate(tolerance)?;
         Ok(brep)
-    }
-
-    /// Wraps a NURBS surface as one exact natural-domain face.
-    pub fn try_surface_face(
-        surface: NurbsSurface,
-        tolerance: Tolerance,
-    ) -> Result<Self, GeometryError> {
-        let u = surface.domain_u();
-        let v = surface.domain_v();
-        Self::try_rectangular_surface_face(
-            surface.clone(),
-            *u.start()..=*u.end(),
-            *v.start()..=*v.end(),
-            tolerance,
-        )
-    }
-
-    /// Builds one exact face whose rectangular trim lies in the supplied
-    /// subdomain while retaining the complete underlying NURBS surface.
-    ///
-    /// Closed directions share one seam edge between their two trims, and
-    /// collapsed sides become singular trims without a 3D edge. Interior
-    /// constant-U and constant-V trims retain their OpenNURBS isoparametric
-    /// classes.
-    pub fn try_rectangular_surface_face(
-        surface: NurbsSurface,
-        u: RangeInclusive<Real>,
-        v: RangeInclusive<Real>,
-        tolerance: Tolerance,
-    ) -> Result<Self, GeometryError> {
-        Self::try_rectangular_surface_face_with_orientation(surface, u, v, false, tolerance)
-    }
-
-    /// Builds the same rectangular face while explicitly preserving its
-    /// orientation relative to the underlying surface.
-    pub fn try_rectangular_surface_face_with_orientation(
-        surface: NurbsSurface,
-        u: RangeInclusive<Real>,
-        v: RangeInclusive<Real>,
-        reversed: bool,
-        tolerance: Tolerance,
-    ) -> Result<Self, GeometryError> {
-        require_finite(
-            [*u.start(), *u.end(), *v.start(), *v.end()],
-            "rectangular surface-face trim bounds",
-        )?;
-        // Reuse the exact tensor trimmer's domain validation without changing
-        // the underlying surface retained by this face.
-        surface.try_trimmed(u.clone(), v.clone())?;
-        let bounds = [[*u.start(), *u.end()], [*v.start(), *v.end()]];
-        let corner_points = [
-            surface.evaluate(bounds[0][0], bounds[1][0])?,
-            surface.evaluate(bounds[0][1], bounds[1][0])?,
-            surface.evaluate(bounds[0][1], bounds[1][1])?,
-            surface.evaluate(bounds[0][0], bounds[1][1])?,
-        ];
-        let side_curves = [
-            surface
-                .isocurve_u(bounds[1][0])?
-                .try_trimmed(bounds[0][0]..=bounds[0][1])?,
-            surface
-                .isocurve_v(bounds[0][1])?
-                .try_trimmed(bounds[1][0]..=bounds[1][1])?,
-            surface
-                .isocurve_u(bounds[1][1])?
-                .try_trimmed(bounds[0][0]..=bounds[0][1])?
-                .reversed()?,
-            surface
-                .isocurve_v(bounds[0][0])?
-                .try_trimmed(bounds[1][0]..=bounds[1][1])?
-                .reversed()?,
-        ];
-        let singular = side_curves.each_ref().map(|curve| {
-            let first = curve.control_points()[0].point();
-            curve
-                .control_points()
-                .iter()
-                .all(|control| control.point() == first)
-        });
-
-        // Join corner records only where the intervening topological side
-        // closes or collapses. Coincident points on unrelated sides remain
-        // distinct vertices, as required at self-intersections.
-        let mut corner_groups = [0, 1, 2, 3];
-        for side in 0..4 {
-            if corner_points[side].distance_to(corner_points[(side + 1) % 4])?
-                <= tolerance.absolute()
-            {
-                let first = corner_groups[side];
-                let second = corner_groups[(side + 1) % 4];
-                for group in &mut corner_groups {
-                    if *group == second {
-                        *group = first;
-                    }
-                }
-            }
-        }
-        let surface_u = surface.domain_u();
-        let surface_v = surface.domain_v();
-        let closed_u = bounds[0][0] == *surface_u.start()
-            && bounds[0][1] == *surface_u.end()
-            && surface.is_closed_u()?;
-        let closed_v = bounds[1][0] == *surface_v.start()
-            && bounds[1][1] == *surface_v.end()
-            && surface.is_closed_v()?;
-        let seam_sides = [closed_v, closed_u, closed_v, closed_u];
-
-        let mut group_vertices = [usize::MAX; 4];
-        let mut corner_vertices = [usize::MAX; 4];
-        let mut vertices = Vec::new();
-        for corner in 0..4 {
-            let group = corner_groups[corner];
-            if group_vertices[group] == usize::MAX {
-                group_vertices[group] = vertices.len();
-                vertices.push(BrepVertex::try_new(corner_points[corner], 0.0)?);
-            }
-            corner_vertices[corner] = group_vertices[group];
-        }
-
-        let mut edge_indices = [None; 4];
-        let mut reversed_3d = [false; 4];
-        let mut edges = Vec::new();
-        for side in 0..4 {
-            if singular[side] {
-                continue;
-            }
-            let paired_side = match side {
-                2 if closed_v && !singular[0] => Some(0),
-                3 if closed_u && !singular[1] => Some(1),
-                _ => None,
-            };
-            if let Some(paired_side) = paired_side {
-                edge_indices[side] = edge_indices[paired_side];
-                reversed_3d[side] = true;
-                continue;
-            }
-            edge_indices[side] = Some(edges.len());
-            edges.push(BrepEdge::try_new(
-                [corner_vertices[side], corner_vertices[(side + 1) % 4]],
-                side_curves[side].clone(),
-                0.0,
-            )?);
-        }
-        let iso = [
-            if bounds[1][0] == *surface_v.start() {
-                SurfaceIso::South
-            } else {
-                SurfaceIso::InteriorVConstant
-            },
-            if bounds[0][1] == *surface_u.end() {
-                SurfaceIso::East
-            } else {
-                SurfaceIso::InteriorUConstant
-            },
-            if bounds[1][1] == *surface_v.end() {
-                SurfaceIso::North
-            } else {
-                SurfaceIso::InteriorVConstant
-            },
-            if bounds[0][0] == *surface_u.start() {
-                SurfaceIso::West
-            } else {
-                SurfaceIso::InteriorUConstant
-            },
-        ];
-        let parameter_corners = [
-            Point2::try_new(bounds[0][0], bounds[1][0])?,
-            Point2::try_new(bounds[0][1], bounds[1][0])?,
-            Point2::try_new(bounds[0][1], bounds[1][1])?,
-            Point2::try_new(bounds[0][0], bounds[1][1])?,
-        ];
-        let trims = (0..4)
-            .map(|side| {
-                let trim_type = if singular[side] {
-                    BrepTrimType::Singular
-                } else if seam_sides[side] {
-                    BrepTrimType::Seam
-                } else {
-                    BrepTrimType::Boundary
-                };
-                BrepTrim::try_new(
-                    [corner_vertices[side], corner_vertices[(side + 1) % 4]],
-                    edge_indices[side],
-                    reversed_3d[side],
-                    NurbsCurve2::try_line(
-                        parameter_corners[side],
-                        parameter_corners[(side + 1) % 4],
-                    )?,
-                    trim_type,
-                    iso[side],
-                    [0.0, 0.0],
-                )
-            })
-            .collect::<Result<Vec<_>, _>>()?;
-        let face = BrepFace::try_new(
-            surface,
-            reversed,
-            vec![BrepLoop::try_new(BrepLoopType::Outer, trims)?],
-        )?;
-        Self::try_new(vertices, edges, vec![face], tolerance)
     }
 
     /// Splits one rectangular surface region at an interior constant-U
@@ -9589,8 +9390,23 @@ mod tests {
                 .iter()
                 .all(|trim| !trim.is_reversed_3d())
         );
-        assert_eq!(brep.edges()[2].curve().domain(), -6.0..=-2.0);
+        // Spatial edges are independently parameterized in the local frame;
+        // the face's native trim coordinates above are still unchanged.
+        assert_eq!(brep.edges()[2].curve().domain(), -4.0..=0.0);
         assert_eq!(brep.edges()[3].curve().domain(), -3.0..=3.0);
+        for t in [0.0, 0.1, 0.3, 0.5, 0.9, 1.0] {
+            for (edge, u, v) in [(2, 6. - 4. * t, 3.), (3, 2., 3. - 6. * t)] {
+                let curve = brep.edges()[edge].curve();
+                assert!(
+                    curve
+                        .evaluate(curve.parameter_at(t).unwrap())
+                        .unwrap()
+                        .distance_to(surface.evaluate(u, v).unwrap())
+                        .unwrap()
+                        < 2e-12
+                );
+            }
+        }
         let bounds = brep.bounds();
         assert!(bounds.min().x().abs() <= 1.0e-12);
         assert!(bounds.min().y().abs() <= 1.0e-12);

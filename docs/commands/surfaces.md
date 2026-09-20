@@ -110,7 +110,9 @@ surfaces or B-rep faces; the per-object Rhino wire density survives 3DM I/O.
 The same wire-density rules drive viewport display and `ExtractWireframe`.
 Trim-aware `ExtractAll` generates its stations locally as well. B-rep display
 isocurves retain local domains for accurate sampling; source 3D edge domains
-are unchanged. Bare surfaces and `IgnoreTrims=Yes` still use native UV stations.
+are unchanged. [Standalone surfaces and `IgnoreTrims=Yes`](../surface-wire-frames.md)
+also generate `ExtractAll` stations and output curve domains locally. Newly
+constructed surface B-reps retain native UV data but create local-domain 3D edges.
 That command emits each B-rep or exact-location-welded mesh topology edge once,
 adds exact trim-clipped interior surface isocurves, selects the results, and can
 place them on the current or input layer. `GroupOutput=Yes` forms one output

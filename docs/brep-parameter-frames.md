@@ -29,6 +29,10 @@ coordinate. The frame is shared by:
 - [trimmed isocurve extraction and display wires](brep-isocurves.md), including
   density-selected stations for trim-aware `ExtractIsocurve ExtractAll`.
 
+The underlying surface preparation now lives in `nurbs_surface/parameter_frame`
+and is also used by [rectangular construction and standalone surface wires](surface-wire-frames.md).
+The B-rep wrapper supplies its UV trim controls to the same lossless guard.
+
 Temporary frames are per face, not per evaluation or trim. Unshifted faces borrow
 the original face; shifted faces own one temporary surface and trim set. Model
 vertices and shared 3D edges are not copied into the frame. The original B-rep,
