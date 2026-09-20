@@ -178,6 +178,26 @@ mod tests {
                 .unwrap()
                 .is_none()
         );
+        assert!(
+            perturbed
+                .try_canonical_circular_arc(Tolerance::DEFAULT)
+                .unwrap()
+                .is_none()
+        );
+        let extended = perturbed
+            .try_merged_naturally_by_length(CurveExtensionSide::End, 0.1, Tolerance::DEFAULT)
+            .unwrap();
+        for i in 0..=32 {
+            let t = i as Real / 32.;
+            assert!(
+                perturbed
+                    .evaluate(t)
+                    .unwrap()
+                    .distance_to(extended.evaluate(t).unwrap())
+                    .unwrap()
+                    < 1e-9
+            );
+        }
     }
 
     #[test]

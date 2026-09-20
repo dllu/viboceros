@@ -4009,6 +4009,13 @@ impl NurbsCurve {
             }
         }
 
+        // Sampled curvature centers above are a cheap rejection test, not a
+        // certificate: higher-degree curves can share all those sampled jets
+        // while departing from the circle between them. Do not canonicalize
+        // (and thereby replace) their geometry without whole-span bounds.
+        if self.circular_radius(tolerance)?.is_none() {
+            return Ok(None);
+        }
         let length = self.length(tolerance)?;
         let arc = match CircularArc3::try_from_start_tangent_curvature_length(
             start, tangent, curvature, length, tolerance,

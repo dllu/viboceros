@@ -201,6 +201,11 @@ Tests cover rational arcs, degree elevation through degree 12, ellipse rejection
 and a degree-nine rational perturbation whose position and first two derivatives
 agree with a circle at the endpoints and midpoint. Whole-span checks reject that
 perturbation even though a three-sample curvature test cannot distinguish it.
+The extension kernel also requires this whole-span check before canonicalizing
+a NURBS curve into an arc. A regression demonstrated that the former sampled
+recognizer accepted the perturbed curve, which could replace its geometry during
+natural or circular merging. The fixed natural-extension path preserves the
+original interval (checked at 33 parameters) instead of substituting a circle.
 
 ## Focused checks
 
