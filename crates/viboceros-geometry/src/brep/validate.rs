@@ -37,6 +37,8 @@ impl Brep {
         }
 
         for face in &self.faces {
+            let frame = face.local_parameter_frame()?;
+            let face = frame.face.as_ref();
             for face_loop in &face.loops {
                 self.validate_loop(face, face_loop, tolerance)?;
             }

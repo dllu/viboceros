@@ -1839,6 +1839,29 @@ class RhinoWorkerTests(unittest.TestCase):
                 self.worker._trimmed_brep_from_definition({"boundaries": [{"curve": {}}]}, {"absolute": 1e-9})
         brep.Dispose.assert_called_once_with()
 
+    def test_uv_closure_uses_parameter_gap_not_model_space_is_closed(self):
+        for gap in [0.0, 2e-9, float("nan"), float("inf")]:
+            with self.subTest(gap=gap):
+                vertex_add = Mock(side_effect=RuntimeError("past closure check"))
+                brep = SimpleNamespace(Vertices=SimpleNamespace(Add=vertex_add), Dispose=Mock())
+                self.worker.Rhino.Geometry = SimpleNamespace(Brep=lambda: brep)
+                spatial = SimpleNamespace(IsClosed=True, PointAtStart=object(), Dispose=Mock())
+                parameter = SimpleNamespace(IsClosed=False,
+                    PointAtStart=SimpleNamespace(DistanceTo=Mock(return_value=gap)),
+                    PointAtEnd=object(), Dispose=Mock())
+                expected = (RuntimeError, "past closure check") if gap == 0.0 else (
+                    ValueError, "mass property boundaries must be closed" if gap == 2e-9 else
+                    "UV closure gap must be finite")
+                with patch.object(self.worker, "_nurbs_curve_from_definition",
+                                  side_effect=[spatial, parameter]):
+                    with self.assertRaisesRegex(*expected):
+                        self.worker._trimmed_brep_from_definition(
+                            {"boundaries": [{"curve": {}, "parameter_curve": {}}]},
+                            {"absolute": 1e-9})
+                self.assertEqual(vertex_add.call_count, int(gap == 0.0))
+                for owned in [spatial, parameter, brep]:
+                    owned.Dispose.assert_called_once_with()
+
     def test_brep_morph_edge_comparison_uses_closest_point_not_source_parameter(self):
         point = object()
         edge = SimpleNamespace(ClosestPoint=Mock(return_value=(True, 0.75)),

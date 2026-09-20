@@ -18,6 +18,7 @@ mod incidence;
 mod loft;
 mod mass_properties;
 mod morph;
+mod parameter_frame;
 mod parameter_normalization;
 mod polygon_boundaries;
 use parameter_normalization::{
@@ -401,7 +402,9 @@ impl BrepFace {
         {
             return Ok(false);
         }
-        let intervals = trimmed_isocurve_intervals(self, 0, v, tolerance)?;
+        let frame = self.local_parameter_frame()?;
+        let [u, v] = [u - frame.origin[0], v - frame.origin[1]];
+        let intervals = trimmed_isocurve_intervals(&frame.face, 0, v, tolerance)?;
         let epsilon = trim_parameter_epsilon([*u_domain.start(), *u_domain.end()], tolerance);
         Ok(intervals
             .iter()

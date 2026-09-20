@@ -40,7 +40,9 @@ impl Brep {
             .faces
             .iter()
             .map(|face| {
-                face.surface
+                face.local_parameter_frame()?
+                    .face
+                    .surface
                     .polygon_mesh_samples_per_span(density, simple_planes, tolerance)
             })
             .collect::<Result<Vec<_>, _>>()?
@@ -64,6 +66,8 @@ impl Brep {
         let mut faces = Vec::new();
         let mut face_sources = Vec::new();
         for (face_index, face) in self.faces.iter().enumerate() {
+            let frame = face.local_parameter_frame()?;
+            let face = frame.face.as_ref();
             let mesh = if face_covers_full_surface_domain(face, tolerance)? {
                 let surface_mesh = if preserve_quads {
                     face.surface

@@ -180,6 +180,76 @@ fn disk_area(radius: Real) -> Real {
 }
 
 #[test]
+fn local_parameter_frames_preserve_rational_holes_and_oriented_mass_properties() {
+    let tolerance = Tolerance::DEFAULT;
+    for (radii, capped) in [
+        (&[0.5][..], false),
+        (&[0.5, 0.25][..], false),
+        (&[0.5][..], true),
+    ] {
+        let baseline = round_trim(paraboloid(), radii, capped);
+        let mut source = baseline.clone();
+        for (index, face) in source.faces.iter_mut().enumerate() {
+            *face = crate::brep::parameter_frame::tests::translated_face(
+                face,
+                [1e12 * (index + 1) as Real, -2e12 * (index + 1) as Real],
+            );
+        }
+        source.validate(tolerance).unwrap();
+        let original = source.clone();
+        assert!(
+            (source.area(tolerance).unwrap() - baseline.area(tolerance).unwrap()).abs() < 2e-12
+        );
+        assert_eq!(source.is_solid(), capped);
+        if capped {
+            let expected = std::f64::consts::PI / 32.;
+            assert!((source.signed_volume(tolerance).unwrap() - expected).abs() < 2e-12);
+            let mut reversed = source.clone();
+            for face in &mut reversed.faces {
+                face.reversed = !face.reversed;
+            }
+            assert!((reversed.signed_volume(tolerance).unwrap() + expected).abs() < 2e-12);
+        }
+        let face = &source.faces[0];
+        assert_eq!(
+            face.contains_parameters(1e12, -2e12, tolerance).unwrap(),
+            radii.len() == 1
+        );
+        assert!(
+            !face
+                .contains_parameters(1e12 + 0.75, -2e12, tolerance)
+                .unwrap()
+        );
+        for mesh in [
+            source.tessellate(8, tolerance).unwrap(),
+            source.polygon_mesh(0., false, false, tolerance).unwrap(),
+        ] {
+            assert_eq!(mesh.topology().is_closed(), capped);
+            assert!(mesh.topology().is_oriented());
+            let boundaries = mesh
+                .filtered_edge_polylines(crate::MeshEdgeFilter::Naked, tolerance)
+                .unwrap();
+            assert_eq!(boundaries.len(), if capped { 0 } else { radii.len() });
+            assert!(boundaries.iter().all(|loop_| loop_.is_closed()));
+            for line in mesh
+                .filtered_edge_lines(crate::MeshEdgeFilter::Naked, tolerance)
+                .unwrap()
+            {
+                for point in [line.start(), line.end()] {
+                    assert!(
+                        radii
+                            .iter()
+                            .any(|&r| (point.x().hypot(point.y()) - r).abs() < 2e-12
+                                && (point.z() - r * r).abs() < 2e-12)
+                    );
+                }
+            }
+        }
+        assert_eq!(source, original);
+    }
+}
+
+#[test]
 fn integrates_nonplanar_rational_round_trims_and_holes() {
     for radii in [&[0.8][..], &[0.8, 0.35][..], &[0.8, 0.799][..]] {
         let brep = round_trim(paraboloid(), radii, false);

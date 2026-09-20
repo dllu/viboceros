@@ -640,7 +640,10 @@ def _trimmed_brep_from_definition(operation, tolerance):
             owned.append(spatial)
             parameter = _nurbs_curve_from_definition(boundary["parameter_curve"], 2)
             owned.append(parameter)
-            if not spatial.IsClosed or not parameter.IsClosed:
+            # Parameter-space closure must not use model-space IsClosed's
+            # origin-relative degeneracy threshold on large UV offsets.
+            uv_gap = _finite(parameter.PointAtStart.DistanceTo(parameter.PointAtEnd), "UV closure gap")
+            if not spatial.IsClosed or uv_gap > tolerance["absolute"]:
                 raise ValueError("mass property boundaries must be closed")
             brep.Vertices.Add(spatial.PointAtStart, 0.0)
             curve_index = brep.Curves3D.Add(spatial)

@@ -1,0 +1,21 @@
+{
+  "engine": "Rhino 8",
+  "launcher": "direct ARM64 Wine in private Xvfb",
+  "fixture": "tools/rhino_oracle/fixtures/brep_parameter_frames.json",
+  "iterations": 3,
+  "absolute_epsilon": 1e-8,
+  "relative_epsilon": 1e-10,
+  "status": "timeout",
+  "timeout_seconds": 240,
+  "completed_response_received": false,
+  "worker_progress": [
+    "worker: started",
+    "worker: request loaded",
+    "operation parameter-frame-disk-u-local: start",
+    "operation parameter-frame-disk-u-translated: start",
+    "operation parameter-frame-disk-v-local: start",
+    "operation parameter-frame-disk-v-translated: start"
+  ],
+  "owned_process_cleanup_verified": true,
+  "note": "No partial numerical response was received. Progress identifies the operation active at timeout, not a measured per-operation runtime. This is not a passing Rhino comparison or a kernel-speed ratio."
+}

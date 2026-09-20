@@ -1,0 +1,98 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 3,
+  "results": [
+    {
+      "id": "parameter-frame-disk-u-local",
+      "value": {
+        "area": 0.9573622037878233,
+        "is_solid": false,
+        "volume": null
+      },
+      "elapsed_ns": 20536534
+    },
+    {
+      "id": "parameter-frame-disk-u-translated",
+      "value": {
+        "area": 0.9573622037878233,
+        "is_solid": false,
+        "volume": null
+      },
+      "elapsed_ns": 10087243
+    },
+    {
+      "id": "parameter-frame-disk-v-local",
+      "value": {
+        "area": 0.9573622037878233,
+        "is_solid": false,
+        "volume": null
+      },
+      "elapsed_ns": 10051435
+    },
+    {
+      "id": "parameter-frame-disk-v-translated",
+      "value": {
+        "area": 0.9573622037878233,
+        "is_solid": false,
+        "volume": null
+      },
+      "elapsed_ns": 10025450
+    },
+    {
+      "id": "parameter-frame-annulus-local",
+      "value": {
+        "area": 0.7492094449027131,
+        "is_solid": false,
+        "volume": null
+      },
+      "elapsed_ns": 22773880
+    },
+    {
+      "id": "parameter-frame-annulus-translated",
+      "value": {
+        "area": 0.749209444902713,
+        "is_solid": false,
+        "volume": null
+      },
+      "elapsed_ns": 22606264
+    },
+    {
+      "id": "parameter-frame-capped-outward-local",
+      "value": {
+        "area": 1.7427603671852716,
+        "is_solid": true,
+        "volume": 0.09817477042468103
+      },
+      "elapsed_ns": 14208063
+    },
+    {
+      "id": "parameter-frame-capped-outward-translated",
+      "value": {
+        "area": 1.7427603671852714,
+        "is_solid": true,
+        "volume": 0.09817477042468102
+      },
+      "elapsed_ns": 14036383
+    },
+    {
+      "id": "parameter-frame-capped-inward-local",
+      "value": {
+        "area": 1.7427603671852716,
+        "is_solid": true,
+        "volume": -0.09817477042468103
+      },
+      "elapsed_ns": 14069342
+    },
+    {
+      "id": "parameter-frame-capped-inward-translated",
+      "value": {
+        "area": 1.7427603671852716,
+        "is_solid": true,
+        "volume": -0.09817477042468103
+      },
+      "elapsed_ns": 14019614
+    }
+  ]
+}

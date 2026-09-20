@@ -1,0 +1,66 @@
+{
+  "absolute_epsilon": 1e-08,
+  "max_absolute_error": 3.434044980998863e-05,
+  "operations": [
+    {
+      "differences": [],
+      "id": "parameter-frame-disk-u-local",
+      "max_absolute_error": 6.745675129593565e-10,
+      "passed": true,
+      "rhino_ns_per_iteration": 9437561.0,
+      "rhino_to_viboceros_ratio": 1.3836386139629968,
+      "viboceros_ns_per_iteration": 6820828.0
+    },
+    {
+      "differences": [
+        "parameter-frame-disk-u-translated.value.area: 0.95736220378782333 != 0.95739654423763332 (error 3.43e-05, limit 1e-08)"
+      ],
+      "id": "parameter-frame-disk-u-translated",
+      "max_absolute_error": 3.434044980998863e-05,
+      "passed": false,
+      "rhino_ns_per_iteration": 27670249939.0,
+      "rhino_to_viboceros_ratio": 8311.605786231155,
+      "viboceros_ns_per_iteration": 3329110.0
+    },
+    {
+      "differences": [],
+      "id": "parameter-frame-disk-v-local",
+      "max_absolute_error": 6.745675129593565e-10,
+      "passed": true,
+      "rhino_ns_per_iteration": 1564026.0,
+      "rhino_to_viboceros_ratio": 0.4697307982707947,
+      "viboceros_ns_per_iteration": 3329622.0
+    },
+    {
+      "differences": [],
+      "id": "parameter-frame-annulus-local",
+      "max_absolute_error": 6.927343143559028e-10,
+      "passed": true,
+      "rhino_ns_per_iteration": 2288818.0,
+      "rhino_to_viboceros_ratio": 0.30587140726201006,
+      "viboceros_ns_per_iteration": 7482942.0
+    },
+    {
+      "differences": [],
+      "id": "parameter-frame-capped-outward-local",
+      "max_absolute_error": 1.2115312086891095e-09,
+      "passed": true,
+      "rhino_ns_per_iteration": 3120422.0,
+      "rhino_to_viboceros_ratio": 0.6702294280279534,
+      "viboceros_ns_per_iteration": 4655752.0
+    },
+    {
+      "differences": [],
+      "id": "parameter-frame-capped-inward-local",
+      "max_absolute_error": 1.2115312086891095e-09,
+      "passed": true,
+      "rhino_ns_per_iteration": 2998352.0,
+      "rhino_to_viboceros_ratio": 0.6440543768968429,
+      "viboceros_ns_per_iteration": 4655433.0
+    }
+  ],
+  "passed": false,
+  "protocol_version": 1,
+  "relative_epsilon": 1e-10,
+  "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation."
+}

@@ -3,6 +3,9 @@
 use super::*;
 use crate::ParameterSide;
 
+#[cfg(test)]
+mod tests;
+
 pub(super) struct LiftedTrim<'a> {
     pub(super) curve: NurbsCurve,
     surface: &'a NurbsSurface,

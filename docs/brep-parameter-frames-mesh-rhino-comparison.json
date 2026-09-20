@@ -1,0 +1,55 @@
+{
+  "absolute_epsilon": 1e-09,
+  "max_absolute_error": 0.0,
+  "operations": [
+    {
+      "differences": [],
+      "id": "mesh-boundary-open-corner",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 4643758.0,
+      "rhino_to_viboceros_ratio": 137.59554756637166,
+      "viboceros_ns_per_iteration": 33749.333333333336
+    },
+    {
+      "differences": [],
+      "id": "mesh-boundary-open-box",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 3115336.0,
+      "rhino_to_viboceros_ratio": 46.241727359088024,
+      "viboceros_ns_per_iteration": 67370.66666666667
+    },
+    {
+      "differences": [],
+      "id": "mesh-boundary-closed-box",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 1378377.3333333333,
+      "rhino_to_viboceros_ratio": 17.373336246302767,
+      "viboceros_ns_per_iteration": 79338.66666666667
+    },
+    {
+      "differences": [],
+      "id": "mesh-boundary-disjoint-faces",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 404358.0,
+      "rhino_to_viboceros_ratio": 35.34597902097902,
+      "viboceros_ns_per_iteration": 11440.0
+    },
+    {
+      "differences": [],
+      "id": "mesh-boundary-translated-open-corner",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 483195.0,
+      "rhino_to_viboceros_ratio": 16.596274500824325,
+      "viboceros_ns_per_iteration": 29114.666666666668
+    }
+  ],
+  "passed": true,
+  "protocol_version": 1,
+  "relative_epsilon": 1e-12,
+  "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation."
+}

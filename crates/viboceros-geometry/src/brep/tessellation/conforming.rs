@@ -12,10 +12,16 @@ impl Brep {
         samples_per_span: usize,
         tolerance: Tolerance,
     ) -> Result<TriangleMesh, GeometryError> {
+        let frames = self
+            .faces
+            .iter()
+            .map(BrepFace::local_parameter_frame)
+            .collect::<Result<Vec<_>, _>>()?;
         // The UV triangulation below does not split internal positional
         // breaks. Never "repair" a naked interior jump by bridging it. Even
         // coincident full-order limits are conservatively unsupported here.
-        for (index, face) in self.faces.iter().enumerate() {
+        for (index, frame) in frames.iter().enumerate() {
+            let face = frame.face.as_ref();
             for (knots, degree, domain) in [
                 (
                     face.surface.knots_u(),
@@ -47,7 +53,8 @@ impl Brep {
             .collect::<Result<Vec<_>, _>>()?;
         // Preserve p-curve corners even when the shared model-space edge uses
         // a different knot layout or parameterization.
-        for face in &self.faces {
+        for frame in &frames {
+            let face = frame.face.as_ref();
             for trim in face.loops.iter().flat_map(|l| &l.trims) {
                 let Some(index) = trim.edge else { continue };
                 let edge = &self.edges[index];
@@ -111,7 +118,8 @@ impl Brep {
         let mut vertices = Vec::new();
         let mut triangles = Vec::new();
         let mut face_sources = Vec::new();
-        for (index, face) in self.faces.iter().enumerate() {
+        for (index, frame) in frames.iter().enumerate() {
+            let face = frame.face.as_ref();
             let mut parameters = Vec::new();
             let mut boundary_points = Vec::new();
             let mut lengths = Vec::new();

@@ -66,10 +66,15 @@ impl Brep {
             Measure::Area => area_tolerance,
             Measure::Volume => mass_tolerance(tolerance.absolute(), scale, scale)?,
         };
-        let prepared = self
+        let frames = self
             .faces
             .iter()
-            .map(|face| {
+            .map(BrepFace::local_parameter_frame)
+            .collect::<Result<Vec<_>, _>>()?;
+        let prepared = frames
+            .iter()
+            .map(|frame| {
+                let face = frame.face.as_ref();
                 let mut surface = centered_surface(&face.surface, reference)?;
                 let mut rectangular = face_covers_full_surface_domain(face, tolerance)?;
                 if !rectangular && let Some(bounds) = rectangular_face_trim_bounds(face, tolerance)?

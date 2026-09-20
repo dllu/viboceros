@@ -39,8 +39,13 @@ pub(super) fn build(
     for (index, boundary) in fixture.boundaries.iter().enumerate() {
         let spatial = nurbs_curve_from_definition(&boundary.curve)?;
         let uv = nurbs_curve_from_definition(&boundary.parameter_curve)?;
+        // UV closure uses the fixture's parameter tolerance. Model-space
+        // IsClosed's origin-relative degeneracy rule can classify a small
+        // closed UV loop near 1e12 as a single point.
+        let uv_start = uv.evaluate(*uv.domain().start())?;
+        let uv_end = uv.evaluate(*uv.domain().end())?;
         if !spatial.is_closed()?
-            || !uv.is_closed()?
+            || uv_start.distance_to(uv_end)? > tolerance.absolute()
             || uv.control_points().iter().any(|c| c.point().z() != 0.0)
         {
             return Err(ProbeError::FixtureInvariant(

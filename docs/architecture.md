@@ -295,6 +295,9 @@ model-space curves, including exact constant parameter coordinates. Its
 for points and native first derivatives. `brep/parameter_normalization` separately
 owns independent UV-axis normalization and width-relative interval tolerances
 for topology predicates, containment, and triangulation.
+`brep/parameter_frame` prepares [lossless local UV frames](brep-parameter-frames.md)
+for validation, containment, meshing, and mass integration, avoiding native UV
+rounding between trim and surface evaluation without altering stored geometry.
 
 The [loft kernel](loft.md) and [one-rail sweep](sweep1.md) share exact degree/knot
 matching and the explicit common-basis end-weight policy in `section_basis`.

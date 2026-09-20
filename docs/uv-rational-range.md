@@ -119,10 +119,9 @@ Topology predicates and triangulation remain floating-point, tolerance-based
 algorithms; independently scaling axes does not prove robustness for every
 nearly coincident or self-intersecting loop.
 
-A further diagnostic with unit-width UV domains near `1e12` still fails
-edge-to-trim correspondence validation. `LiftedTrim` rounds the evaluated UV
-coordinate before surface evaluation; native UV spacing at that origin is
-already about `1e-4`, too coarse for the default model-space tolerance on a
-unit-size face. Exact UV output rounding does not fix this composed-evaluation
-loss. The domain-normalization helper handles those origins, but that alone
-does not make every downstream B-rep operation translation-invariant.
+This audit also found a composed-evaluation failure on unit-width UV domains
+near `1e12`: rounding UV before surface evaluation quantized the model-space
+image above the default tolerance. The subsequent [local parameter frame](brep-parameter-frames.md)
+fix now handles this case across validation, containment, meshing, and mass
+integration when the stored face can be translated losslessly. Remaining
+unframed consumers and precision limits are documented separately.

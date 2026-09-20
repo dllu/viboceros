@@ -1,0 +1,204 @@
+{
+  "baseline_commit": "1f896d5",
+  "target": "aarch64-unknown-linux-gnu",
+  "build": "release",
+  "iterations_per_operation": 100,
+  "rounds": 3,
+  "request_reconstruction": "Preserve each source fixture tolerance, set iterations=100, concatenate three copies of operations with IDs suffixed -round-1 through -round-3.",
+  "source_fixtures": [
+    "tools/rhino_oracle/fixtures/brep_mesh_boundaries.json",
+    "tools/rhino_oracle/fixtures/trimmed_mass_properties.json"
+  ],
+  "measurement": "Meshing and mass-integration calls only, one untimed warmup; source construction, command checks, and record generation excluded. Before and after ran sequentially per fixture.",
+  "limitation": "Other builds, tests, and Rhino were active. Host-dependent observations with visible outliers, not statistical significance, exact-evaluator speed, or native Rhino performance parity.",
+  "results": {
+    "mesh": {
+      "operations": 15,
+      "bitwise_equal": true,
+      "cases": [
+        {
+          "id": "mesh-boundary-open-corner",
+          "before_elapsed_ns": [
+            2860915,
+            2761186,
+            2797747
+          ],
+          "after_elapsed_ns": [
+            2848467,
+            2819042,
+            2792818
+          ],
+          "before_ns_per_operation": 27977.47,
+          "after_ns_per_operation": 28190.42,
+          "change_percent": 0.7611481667212816
+        },
+        {
+          "id": "mesh-boundary-open-box",
+          "before_elapsed_ns": [
+            6213093,
+            6304342,
+            6474262
+          ],
+          "after_elapsed_ns": [
+            6331013,
+            6264869,
+            6525957
+          ],
+          "before_ns_per_operation": 63043.42,
+          "after_ns_per_operation": 63310.13,
+          "change_percent": 0.4230576323429158
+        },
+        {
+          "id": "mesh-boundary-closed-box",
+          "before_elapsed_ns": [
+            7569926,
+            7488134,
+            7552982
+          ],
+          "after_elapsed_ns": [
+            7642438,
+            7796310,
+            7852711
+          ],
+          "before_ns_per_operation": 75529.82,
+          "after_ns_per_operation": 77963.1,
+          "change_percent": 3.221614985975063
+        },
+        {
+          "id": "mesh-boundary-disjoint-faces",
+          "before_elapsed_ns": [
+            886896,
+            892161,
+            913377
+          ],
+          "after_elapsed_ns": [
+            898512,
+            893969,
+            891073
+          ],
+          "before_ns_per_operation": 8921.61,
+          "after_ns_per_operation": 8939.69,
+          "change_percent": 0.20265400527483823
+        },
+        {
+          "id": "mesh-boundary-translated-open-corner",
+          "before_elapsed_ns": [
+            2771394,
+            2783938,
+            2791282
+          ],
+          "after_elapsed_ns": [
+            2839970,
+            2793986,
+            2813587
+          ],
+          "before_ns_per_operation": 27839.38,
+          "after_ns_per_operation": 28135.87,
+          "change_percent": 1.065002165996498
+        }
+      ]
+    },
+    "mass": {
+      "operations": 18,
+      "bitwise_equal": true,
+      "cases": [
+        {
+          "id": "paraboloid-disk",
+          "before_elapsed_ns": [
+            358893574,
+            357926954,
+            363675971
+          ],
+          "after_elapsed_ns": [
+            356290769,
+            360012344,
+            355533289
+          ],
+          "before_ns_per_operation": 3588935.74,
+          "after_ns_per_operation": 3562907.69,
+          "change_percent": -0.7252303157704421
+        },
+        {
+          "id": "paraboloid-annulus",
+          "before_elapsed_ns": [
+            740147889,
+            726229550,
+            721541426
+          ],
+          "after_elapsed_ns": [
+            724653278,
+            723746277,
+            714054965
+          ],
+          "before_ns_per_operation": 7262295.5,
+          "after_ns_per_operation": 7237462.77,
+          "change_percent": -0.34194050627657235
+        },
+        {
+          "id": "paraboloid-thin-annulus",
+          "before_elapsed_ns": [
+            743299110,
+            735146584,
+            738593620
+          ],
+          "after_elapsed_ns": [
+            723786623,
+            730191213,
+            721848334
+          ],
+          "before_ns_per_operation": 7385936.2,
+          "after_ns_per_operation": 7237866.23,
+          "change_percent": -2.004755605660391
+        },
+        {
+          "id": "paraboloid-capped-outward",
+          "before_elapsed_ns": [
+            508466011,
+            503678573,
+            508441639
+          ],
+          "after_elapsed_ns": [
+            498074340,
+            504963359,
+            497817552
+          ],
+          "before_ns_per_operation": 5084416.39,
+          "after_ns_per_operation": 4980743.4,
+          "change_percent": -2.0390342184385735
+        },
+        {
+          "id": "paraboloid-capped-inward",
+          "before_elapsed_ns": [
+            504867081,
+            498295082,
+            511262907
+          ],
+          "after_elapsed_ns": [
+            503591098,
+            501432429,
+            504479958
+          ],
+          "before_ns_per_operation": 5048670.81,
+          "after_ns_per_operation": 5035910.98,
+          "change_percent": -0.2527364227179474
+        },
+        {
+          "id": "paraboloid-rotated-translated",
+          "before_elapsed_ns": [
+            466762888,
+            462647354,
+            473435162
+          ],
+          "after_elapsed_ns": [
+            464974199,
+            465701678,
+            467755909
+          ],
+          "before_ns_per_operation": 4667628.88,
+          "after_ns_per_operation": 4657016.78,
+          "change_percent": -0.22735526479987778
+        }
+      ]
+    }
+  }
+}

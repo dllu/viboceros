@@ -99,6 +99,7 @@ fn anisotropic_uv_domains_preserve_holes_and_constrained_mesh_boundaries() {
         [[0., 1e-200], [0.4, 1.4]],
         [[0.4, 1.4], [0., 1e-200]],
         [[1e6, 1e6 + 1.], [-2e6, -2e6 + 1.]],
+        [[1e12, 1e12 + 1.], [-2e12, -2e12 + 1.]],
         [[2e200, 3e200], [2e-200, 3e-200]],
     ] {
         check_holed_uv_domain(domains);
@@ -171,9 +172,11 @@ fn check_holed_uv_domain([u_domain, v_domain]: [[Real; 2]; 2]) {
             )
             .unwrap()
     );
+    assert!((source.area(tolerance).unwrap() - 1.5).abs() < 2e-12);
     for mesh in [
         source.tessellate(2, tolerance).unwrap(),
         source.polygon_mesh(0., false, false, tolerance).unwrap(),
+        source.tessellate_conforming(2, tolerance).unwrap(),
     ] {
         assert!((mesh.area().unwrap() - 1.5).abs() < 2e-12);
         assert!(mesh.topology().is_oriented());
@@ -189,6 +192,35 @@ fn check_holed_uv_domain([u_domain, v_domain]: [[Real; 2]; 2]) {
             .map(|line| line.length().unwrap())
             .sum();
         assert!((perimeter - 9.).abs() < 2e-12);
+    }
+    assert_eq!(source, original);
+}
+
+#[test]
+fn local_parameter_frames_preserve_shared_edges_and_full_surface_meshes() {
+    let tolerance = Tolerance::DEFAULT;
+    let mut source = unit_box().duplicate_faces(&[0, 2], tolerance).unwrap();
+    source.faces[0].surface = source.faces[0]
+        .surface
+        .try_insert_knot_u(0.25, 1)
+        .unwrap()
+        .try_insert_knot_v(0.75, 1)
+        .unwrap();
+    for (i, face) in source.faces.iter_mut().enumerate() {
+        *face = crate::brep::parameter_frame::tests::translated_face(
+            face,
+            [1e12 * (i + 1) as Real, -2e12 * (i + 1) as Real],
+        );
+    }
+    source.validate(tolerance).unwrap();
+    let original = source.clone();
+    assert!((source.area(tolerance).unwrap() - 2.).abs() < 1e-12);
+    for mesh in [
+        source.tessellate(3, tolerance).unwrap(),
+        source.polygon_mesh(0., false, false, tolerance).unwrap(),
+        source.tessellate_conforming(3, tolerance).unwrap(),
+    ] {
+        check_open_corner(&mesh);
     }
     assert_eq!(source, original);
 }

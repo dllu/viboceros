@@ -73,6 +73,51 @@ mod tests {
     use crate::{ProbeRequest, run_request};
 
     #[test]
+    fn local_and_translated_uv_fixtures_match_analytic_masses() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/brep_parameter_frames.json"
+        ))
+        .unwrap();
+        let response = run_request(&request).unwrap();
+        assert_eq!(response.results.len(), 10);
+        let disk_area = |r: f64| std::f64::consts::PI / 6. * ((1. + 4. * r * r).powf(1.5) - 1.);
+        for pair in response.results.chunks_exact(2) {
+            let capped = pair[0].id.contains("capped");
+            let annulus = pair[0].id.contains("annulus");
+            let area = disk_area(0.5) - if annulus { disk_area(0.25) } else { 0. }
+                + if capped {
+                    std::f64::consts::PI / 4.
+                } else {
+                    0.
+                };
+            for result in pair {
+                assert!(
+                    (result.value["area"].as_f64().unwrap() - area).abs() < 2e-12,
+                    "{}: {:?}",
+                    result.id,
+                    result.value
+                );
+                assert_eq!(result.value["is_solid"].as_bool().unwrap(), capped);
+                if capped {
+                    let sign = if result.id.contains("inward") {
+                        -1.
+                    } else {
+                        1.
+                    };
+                    assert!(
+                        (result.value["volume"].as_f64().unwrap()
+                            - sign * std::f64::consts::PI / 32.)
+                            .abs()
+                            < 2e-12
+                    );
+                } else {
+                    assert!(result.value["volume"].is_null());
+                }
+            }
+        }
+    }
+
+    #[test]
     fn fixture_areas_and_signed_volumes_match_analytic_paraboloids() {
         let request: ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/trimmed_mass_properties.json"
