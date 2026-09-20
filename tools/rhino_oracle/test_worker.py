@@ -11,6 +11,27 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_alignment_projection_macros_and_degenerate_prompt_safety(self):
+        with patch.object(self.worker, "_command_point", lambda p: ",".join(str(x) for x in p)):
+            base = {"mode": "ToLine", "align_to": "World", "references": [[1,2,3],[5,7,11]]}
+            self.assertEqual(self.worker._align_script(base), "_Align _AlignTo=_World _ToLine w1,2,3 w5,7,11")
+            plane = dict(base, mode="ToPlane", three_point=True, references=base["references"]+[[-2,3,5]])
+            self.assertEqual(self.worker._align_script(plane), "_Align _AlignTo=_World _ToPlane _3Point w1,2,3 w5,7,11 w-2,3,5")
+            for changes in [{"references": []}, {"references": [[0,0,0]]}, {"target": [0,0,0]},
+                            {"three_point": True}, {"three_point": "Yes"}, {"references": [[0,0,0]]*2},
+                            {"mode": "Left"}, {"mode": "ToFitPlane"}]:
+                with self.subTest(changes=changes), self.assertRaises(ValueError):
+                    self.worker._align_script(dict(base, **changes))
+            tol = self.worker.DEFAULT_TOLERANCE
+            for operation in [base, plane, dict(base, mode="ToPlane")]:
+                self.worker._validate_alignment_references(operation, tol)
+            for operation in [dict(base, references=[[0,0,0],[1e-15,0,0]]),
+                              dict(base, mode="ToPlane", references=[[0,0,0],[0,0,2]]),
+                              dict(plane, references=[[0,0,0],[1,2,3],[2,4,6]]),
+                              dict(base, mode="ToPlane", align_to="CPlane", x_axis=[0,1,0], y_axis=[0,0,1], references=[[0,0,0],[2,0,0]])]:
+                with self.subTest(operation=operation), self.assertRaises(ValueError):
+                    self.worker._validate_alignment_references(operation, tol)
+
     def test_align_macros_validate_modes_frames_and_numeric_targets(self):
         host = patch.object(self.worker, "Rhino", SimpleNamespace(Geometry=SimpleNamespace(
             Point3d=lambda x,y,z: SimpleNamespace(X=x,Y=y,Z=z))))

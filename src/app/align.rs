@@ -5,13 +5,18 @@ use viboceros_command::AlignmentOptions;
 impl VibocerosApp {
     pub(super) fn start_align(&self, input: &str) -> Option<InteractiveCommand> {
         self.document.selected_object_ids().next()?;
-        let prompt = self.commands.object_selection_prompt(input).ok()??;
+        let prompt = self.commands.object_selection_prompt("Align").ok()??;
         let line = prompt.command_line();
         let arguments = line.split_whitespace().skip(1).collect::<Vec<_>>();
-        let options = AlignmentOptions::default().parse(&arguments).ok()?;
-        self.commands
-            .accept_object_selection_options(&prompt)
+        let options = AlignmentOptions::default()
+            .parse(&arguments)
+            .ok()?
+            .parse(&input.split_whitespace().skip(1).collect::<Vec<_>>())
             .ok()?;
+        if options.ready() {
+            return None;
+        }
+        self.commands.accept_object_selection_input(input).ok()?;
         Some(InteractiveCommand::Align {
             options,
             postselected: false,
@@ -41,7 +46,7 @@ impl VibocerosApp {
             .trim_start_matches('_');
         if !viboceros_command::AlignmentMode::LABELS
             .iter()
-            .chain(["AlignTo", "Mode", "Auto"].iter())
+            .chain(["AlignTo", "Mode", "Auto", "3Point"].iter())
             .any(|name| first.eq_ignore_ascii_case(name))
         {
             return false;
@@ -55,8 +60,8 @@ impl VibocerosApp {
                     self.push_log(format!("Error: {error}"));
                     return true;
                 }
-                if options.automatic || options.target.is_some() {
-                    self.finish_align(options.target, options);
+                if options.ready() {
+                    self.execute_align(options);
                 } else {
                     let command = InteractiveCommand::Align {
                         options,
@@ -79,17 +84,36 @@ impl VibocerosApp {
         options: AlignmentOptions,
     ) -> bool {
         if options.mode.is_none() {
-            self.push_log(
-                "Choose Left, Right, Top, Bottom, HorizCenter, VertCenter, or Concentric first"
-                    .into(),
-            );
+            self.push_log("Choose an alignment mode first".into());
             return false;
         }
-        let input = format!(
-            "{} {}",
-            options.command_line(),
-            target.map_or_else(|| "Auto".into(), format_model_point)
-        );
+        let updated = if let Some(point) = target {
+            options.with_point(point)
+        } else {
+            options.parse(&["Auto"])
+        };
+        let options = match updated {
+            Ok(options) => options,
+            Err(error) => {
+                self.push_log(format!("Error: {error}"));
+                return false;
+            }
+        };
+        if !options.ready() {
+            if let Some(InteractiveCommand::Align {
+                options: active, ..
+            }) = &mut self.active_command
+            {
+                *active = options;
+            }
+            self.push_log(self.active_command.unwrap().prompt().into());
+            return true;
+        }
+        self.execute_align(options)
+    }
+
+    fn execute_align(&mut self, options: AlignmentOptions) -> bool {
+        let input = options.command_line();
         let context = viboceros_command::CommandContext {
             construction_plane: self.viewports[self.active_viewport].construction_plane(),
         };

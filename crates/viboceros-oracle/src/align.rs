@@ -13,15 +13,35 @@ pub struct AlignFixture {
     pub mode: String,
     pub align_to: Option<String>,
     pub target: Option<[f64; 3]>,
+    #[serde(default)]
+    pub references: Vec<[f64; 3]>,
+    #[serde(default)]
+    pub three_point: bool,
 }
 
 pub(super) fn run(f: &AlignFixture, tolerance: Tolerance) -> Result<(Value, u64), ProbeError> {
     let coordinates = f.align_to.as_deref().unwrap_or("CPlane");
     let options = AlignmentOptions::default().parse(&["Mode", &f.mode, "AlignTo", coordinates])?;
     let mut command = options.command_line();
+    if f.three_point {
+        command.push_str(" 3Point");
+    }
     if let Some(p) = f.target {
         let p = Point3::try_from(p)?;
         command.push_str(&format!(" {},{},{}", p.x(), p.y(), p.z()));
+    }
+    for p in &f.references {
+        let p = Point3::try_from(*p)?;
+        command.push_str(&format!(" {},{},{}", p.x(), p.y(), p.z()));
+    }
+    // Validate fixture shape before building a document, including inappropriate
+    // target/reference fields that otherwise look like ordinary command points.
+    if options.reference_count() > 0 && f.target.is_some()
+        || options.reference_count() == 0 && !f.references.is_empty()
+    {
+        return Err(ProbeError::FixtureInvariant(
+            "invalid alignment target/references",
+        ));
     }
     object_layout::run(&f.layout, tolerance, 1, |document, construction_plane| {
         let registry = CommandRegistry::with_builtins();

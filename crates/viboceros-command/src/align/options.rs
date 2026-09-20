@@ -9,6 +9,8 @@ pub enum AlignmentMode {
     HorizCenter,
     VertCenter,
     Concentric,
+    ToLine,
+    ToPlane,
 }
 
 impl AlignmentMode {
@@ -20,8 +22,10 @@ impl AlignmentMode {
         "HorizCenter",
         "VertCenter",
         "Concentric",
+        "ToLine",
+        "ToPlane",
     ];
-    const VALUES: [Self; 7] = [
+    const VALUES: [Self; 9] = [
         Self::Left,
         Self::Right,
         Self::Top,
@@ -29,6 +33,8 @@ impl AlignmentMode {
         Self::HorizCenter,
         Self::VertCenter,
         Self::Concentric,
+        Self::ToLine,
+        Self::ToPlane,
     ];
     pub const fn label(self) -> &'static str {
         match self {
@@ -39,6 +45,8 @@ impl AlignmentMode {
             Self::HorizCenter => "HorizCenter",
             Self::VertCenter => "VertCenter",
             Self::Concentric => "Concentric",
+            Self::ToLine => "ToLine",
+            Self::ToPlane => "ToPlane",
         }
     }
     fn parse(value: &str) -> Option<Self> {
@@ -55,21 +63,73 @@ pub struct AlignmentOptions {
     pub world: bool,
     pub target: Option<Point3>,
     pub automatic: bool,
+    pub references: [Option<Point3>; 3],
+    pub three_point: bool,
 }
 
 impl AlignmentOptions {
     pub fn command_line(self) -> String {
-        format!(
+        let mut line = format!(
             "Align AlignTo={}{}",
             if self.world { "World" } else { "CPlane" },
             self.mode
                 .map_or_else(String::new, |mode| format!(" {}", mode.label()))
-        )
+        );
+        if self.three_point {
+            line.push_str(" 3Point");
+        }
+        for p in self.target.iter().chain(self.references.iter().flatten()) {
+            line.push_str(&format!(" {},{},{}", p.x(), p.y(), p.z()));
+        }
+        if self.automatic {
+            line.push_str(" Auto");
+        }
+        line
+    }
+    pub const fn reference_count(self) -> usize {
+        match self.mode {
+            Some(AlignmentMode::ToLine) => 2,
+            Some(AlignmentMode::ToPlane) => {
+                if self.three_point {
+                    3
+                } else {
+                    2
+                }
+            }
+            _ => 0,
+        }
+    }
+    pub fn ready(self) -> bool {
+        if self.reference_count() == 0 {
+            self.target.is_some() || self.automatic
+        } else {
+            self.references[..self.reference_count()]
+                .iter()
+                .all(Option::is_some)
+        }
+    }
+    pub fn with_point(mut self, point: Point3) -> Result<Self, CommandError> {
+        if self.reference_count() == 0 {
+            if self.target.is_some() || self.automatic {
+                return Err(CommandError::Usage(USAGE));
+            }
+            self.target = Some(point);
+        } else {
+            let count = self.reference_count();
+            *self.references[..count]
+                .iter_mut()
+                .find(|p| p.is_none())
+                .ok_or(CommandError::Usage(USAGE))? = Some(point);
+        }
+        Ok(self)
     }
     /// Update a copy, rejecting duplicate or contradictory entries atomically.
     pub fn parse(mut self, arguments: &[&str]) -> Result<Self, CommandError> {
         let mut remaining = arguments;
         let (mut mode_seen, mut frame_seen, mut target_seen) = (false, false, false);
+        let mut plane_seen = false;
+        let mut points = Vec::new();
+        let previous_mode = self.mode;
         while let Some(token) = remaining.first() {
             if let Some(mode) = AlignmentMode::parse(token) {
                 if mode_seen {
@@ -77,6 +137,13 @@ impl AlignmentOptions {
                 }
                 mode_seen = true;
                 self.mode = Some(mode);
+                remaining = &remaining[1..];
+            } else if option_name_eq(token, "3Point") {
+                if plane_seen {
+                    return Err(CommandError::Usage(USAGE));
+                }
+                plane_seen = true;
+                self.three_point = true;
                 remaining = &remaining[1..];
             } else if option_name_eq(token, "Auto") {
                 if target_seen {
@@ -112,20 +179,43 @@ impl AlignmentOptions {
                     self.mode =
                         Some(AlignmentMode::parse(value).ok_or(CommandError::Usage(USAGE))?);
                     mode_seen = true;
+                } else if option_name_eq(name, "3Point") && !plane_seen {
+                    self.three_point =
+                        crate::parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
+                    plane_seen = true;
                 } else {
                     return Err(CommandError::Usage(USAGE));
                 }
                 remaining = &remaining[used..];
             } else {
-                if target_seen {
+                let (point, used) = parse_point(remaining)?;
+                points.push(point);
+                if points.len() > 3 {
                     return Err(CommandError::Usage(USAGE));
                 }
-                let (point, used) = parse_point(remaining)?;
-                self.target = Some(point);
-                self.automatic = false;
-                target_seen = true;
                 remaining = &remaining[used..];
             }
+        }
+        if mode_seen && previous_mode != self.mode {
+            self.references = [None; 3];
+            self.target = None;
+            if !target_seen {
+                self.automatic = false;
+            }
+            if !plane_seen {
+                self.three_point = false;
+            }
+        }
+        if self.three_point && self.mode != Some(AlignmentMode::ToPlane)
+            || self.reference_count() > 0 && (self.automatic || self.target.is_some())
+            || self.references[self.reference_count()..]
+                .iter()
+                .any(Option::is_some)
+        {
+            return Err(CommandError::Usage(USAGE));
+        }
+        for point in points {
+            self = self.with_point(point)?;
         }
         Ok(self)
     }

@@ -26,6 +26,10 @@ integer windows without weakening rounding or full-range recovery.
 The [Align command](commands/align.md) separates option parsing, rigid layout,
 and interactive mode/point phases. Its `layout_units` helper shares top-group
 selection with Distribute; both use `object_bounds` for geometry-local bounds.
+Projection alignment has a separate per-object bottom-center path: group units
+do not apply. Prepared `PointProjection3` definitions preserve exact endpoint
+differences and plane normals, sharing finite rational conversion with NURBS
+evaluators through the kernel's independent `exact_scalar` module.
 The oracle's `object_layout` module shares owned fixture setup and output
 recording without sharing the native and Rhino alignment implementations.
 

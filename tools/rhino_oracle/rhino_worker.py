@@ -4048,17 +4048,62 @@ def _distribute(operation, tolerance):
 def _align_script(operation):
     mode = operation["mode"]
     coordinates = operation.get("align_to", "CPlane")
-    if mode not in ("Left", "Right", "Top", "Bottom", "HorizCenter", "VertCenter", "Concentric"):
+    if mode not in ("Left", "Right", "Top", "Bottom", "HorizCenter", "VertCenter", "Concentric", "ToLine", "ToPlane"):
         raise ValueError("invalid Align mode")
     if coordinates not in ("World", "CPlane"):
         raise ValueError("invalid Align coordinate system")
-    target = operation.get("target")
-    ending = "_Enter" if target is None else "w" + _command_point(target)
+    three_point = operation.get("three_point", False)
+    if type(three_point) is not bool or three_point and mode != "ToPlane":
+        raise ValueError("invalid alignment plane option")
+    if mode in ("ToLine", "ToPlane"):
+        references = operation.get("references", [])
+        expected = 3 if three_point else 2
+        if len(references) != expected or operation.get("target") is not None:
+            raise ValueError("invalid alignment reference point count")
+        ending = " ".join("w" + _command_point(p) for p in references)
+        if expected == 3:
+            ending = "_3Point " + ending
+        if references[0] == references[1]:
+            raise ValueError("alignment references must be distinct")
+    else:
+        if operation.get("references"):
+            raise ValueError("bounding-box alignment does not use reference pairs")
+        target = operation.get("target")
+        ending = "_Enter" if target is None else "w" + _command_point(target)
     return "_Align _AlignTo=_%s _%s %s" % (coordinates, mode, ending)
 
 
 def _align(operation, tolerance):
-    return _object_layout(operation, tolerance, _align_script(operation), 1)
+    script = _align_script(operation)
+    if operation["mode"] in ("ToLine", "ToPlane"):
+        _validate_alignment_references(operation, tolerance)
+    return _object_layout(operation, tolerance, script, 1)
+
+
+def _validate_alignment_references(operation, tolerance):
+    # Reject incomplete/degenerate macros before they can leave Rhino waiting
+    # for another point. This batch safety guard is not the native kernel's
+    # exact nondegeneracy policy; extreme-range inputs are tested natively.
+    def difference(a, b):
+        return [_finite(float(x) - float(y), "alignment direction") for x, y in zip(a, b)]
+    def cross(a, b):
+        return [_finite(a[(i+1)%3]*b[(i+2)%3] - a[(i+2)%3]*b[(i+1)%3], "alignment normal") for i in range(3)]
+    def unit(a, threshold):
+        length = _finite(math.hypot(math.hypot(a[0], a[1]), a[2]), "alignment direction length")
+        if length <= threshold:
+            raise ValueError("degenerate alignment references")
+        return [x / length for x in a]
+    points = operation["references"]
+    direction = unit(difference(points[1], points[0]), tolerance["absolute"])
+    if operation["mode"] == "ToPlane":
+        if operation.get("three_point", False):
+            other = difference(points[2], points[0])
+            threshold = tolerance["absolute"]
+        else:
+            other = [0., 0., 1.] if operation.get("align_to", "CPlane") == "World" else unit(
+                cross(operation["x_axis"], operation["y_axis"]), 0.)
+            threshold = tolerance["angular"]
+        unit(cross(direction, other), threshold)
 
 
 def _object_layout(operation, tolerance, script, minimum_selection):

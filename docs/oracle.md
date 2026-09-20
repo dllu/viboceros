@@ -2,12 +2,13 @@
 
 [Project overview](../README.md)
 
-The `align` object-layout probe compares actual bounding-box alignment commands,
+The `align` object-layout probe compares actual bounding-box and line/plane alignment commands,
 including retained IDs, source samples/domains, groups, layer assignment and
 pre/postselection cleanup. Its shared `object_layout` module supplies fixture
 ownership and recording for Align and Distribute, not the alignment algorithm.
-[Alignment evidence](commands/align.md#oracle-evidence) records 56 passing cases
-and three explicit curved-bound discrepancies validated against analytic extrema.
+[Alignment evidence](commands/align.md#oracle-evidence) records 90 passing cases,
+three curved-bound discrepancies checked against analytic extrema, and four
+raw mesh discrepancies explained by exact single-precision storage rounding.
 All Rhino command probes run on an owned private Xvfb display.
 
 The `surface_wires` probe compares natural surface-to-B-rep topology and wire

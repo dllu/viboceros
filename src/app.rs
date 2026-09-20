@@ -509,7 +509,16 @@ impl InteractiveCommand {
                 "Domain: pick a component surface on the selected polysurface (Esc cancels)"
             }
             Self::Align { options, .. } if options.mode.is_none() => {
-                "Align: choose Left/Right/Top/Bottom/HorizCenter/VertCenter/Concentric; AlignTo=CPlane|World"
+                "Align: choose Left/Right/Top/Bottom/HorizCenter/VertCenter/Concentric/ToLine/ToPlane; AlignTo=CPlane|World"
+            }
+            Self::Align { options, .. } if options.reference_count() > 0 => {
+                match options.references {
+                    [None, _, _] => {
+                        "Align: pick the first reference point (ToPlane supports 3Point; Esc cancels)"
+                    }
+                    [_, None, _] => "Align: pick the second reference point (Esc cancels)",
+                    _ => "Align: pick the third plane point (Esc cancels)",
+                }
             }
             Self::Align { .. } => {
                 "Align: pick an alignment point, or Enter for automatic alignment (Esc cancels)"
@@ -968,11 +977,14 @@ impl InteractiveCommand {
             Self::Angle {
                 points: [_, Some(_), start],
             } => start,
+            Self::Align { options, .. } => match options.references {
+                [_, Some(point), _] => Some(point),
+                [point, _, _] => point,
+            },
             Self::Point
             | Self::EvaluatePoint
             | Self::EvaluateUv { .. }
             | Self::DomainFace
-            | Self::Align { .. }
             | Self::Points
             | Self::Line { start: None }
             | Self::Distance { start: None, .. }

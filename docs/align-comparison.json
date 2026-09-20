@@ -1,8 +1,8 @@
 {
-  "captured_utc": "2026-09-20 14:34:03 UTC",
-  "base_commit": "2b00cb3bdf0aadfe27ebef557e51642d7c510bd4",
-  "native_executable_sha256": "2539c4b5f1d6d5d5e5fcd16661998bee46282393aff6c15d131dbcc213fa6694",
-  "method": "Actual native commands compared with saved public Rhino 8.32 commands from owned private Xvfb sessions. All value fields are compared. These probes return zero timings and do not establish performance parity. The three separately retained curved-bound diagnostics fail the same numerical threshold and have independent analytic-extremum tests.",
+  "captured_utc": "2026-09-20 15:02:39 UTC",
+  "base_commit": "2f8cc448d49d0dc367d757b0a223e8911f096754",
+  "native_executable_sha256": "d04d68243764c8f22eab9498acd0453dc40baae590bf579803c2ee7dded22409",
+  "method": "Actual native commands compared with saved public Rhino 8.32 commands from owned private Xvfb sessions. All value fields are compared. These probes return zero timings and do not establish performance parity. Three curved-bound diagnostics and four projection mesh-storage diagnostics fail the unchanged raw numerical threshold. Independent tests check analytic extrema for the former and exact single-precision storage rounding for the latter.",
   "absolute_epsilon": 1e-08,
   "relative_epsilon": 1e-12,
   "fixtures": [
@@ -487,8 +487,321 @@
           ]
         }
       ]
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/align_projection.json",
+      "request_sha256": "fecc9eda8bc8d89988688f9d305b4cf8592322145caa22c24d30434576b5397c",
+      "rhino_reference": "tools/rhino_oracle/observations/align_projection.json",
+      "rhino_reference_sha256": "5f45c53d8e762fd68eb3e7acf7722a0462f5db0be58278fa677fdf9ccdf05521",
+      "rhino_version": "8.32.26160.13001",
+      "native_value_fingerprint_sha256": "5adcd38affeef4eebc3450bf3c89971bd9a5f61d70a36f2dd16066211abace53",
+      "passed": true,
+      "max_absolute_error": 5.976525940809552e-10,
+      "operations": [
+        {
+          "id": "points-ToLine-CPlane",
+          "passed": true,
+          "max_absolute_error": 2.220446049250313e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "points-ToLine-World",
+          "passed": true,
+          "max_absolute_error": 2.220446049250313e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "points-ToPlane-CPlane",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "points-ToPlane-World",
+          "passed": true,
+          "max_absolute_error": 2.220446049250313e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "group-ToLine",
+          "passed": true,
+          "max_absolute_error": 2.220446049250313e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "group-ToPlane",
+          "passed": true,
+          "max_absolute_error": 2.220446049250313e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "threepoint-World",
+          "passed": true,
+          "max_absolute_error": 3.885780586188048e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "threepoint-CPlane",
+          "passed": true,
+          "max_absolute_error": 3.885780586188048e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "mixed-ToLine-World",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "mixed-ToLine-CPlane",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "mixed-ToPlane-World",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "mixed-ToPlane-CPlane",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "mixed-3Point-World",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "mixed-3Point-CPlane",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "postselected-ToLine",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "postselected-ToPlane",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "postselected-ToPlane-3Point",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "nurbs-ToLine",
+          "passed": true,
+          "max_absolute_error": 5.976525940809552e-10,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "nurbs-ToPlane",
+          "passed": true,
+          "max_absolute_error": 2.4434423928632043e-10,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "signed-ToLine",
+          "passed": true,
+          "max_absolute_error": 1.2727596754302795e-10,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "signed-ToPlane",
+          "passed": true,
+          "max_absolute_error": 1.2664713722188026e-10,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "circle-ToLine",
+          "passed": true,
+          "max_absolute_error": 7.16093850883226e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "circle-ToPlane",
+          "passed": true,
+          "max_absolute_error": 7.105427357601002e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "ellipse-ToLine",
+          "passed": true,
+          "max_absolute_error": 5.329070518200751e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "ellipse-ToPlane",
+          "passed": true,
+          "max_absolute_error": 7.105427357601002e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "arc-ToLine",
+          "passed": true,
+          "max_absolute_error": 5.662137425588298e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "arc-ToPlane",
+          "passed": true,
+          "max_absolute_error": 7.105427357601002e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polyline-ToLine",
+          "passed": true,
+          "max_absolute_error": 5.329070518200751e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polyline-ToPlane",
+          "passed": true,
+          "max_absolute_error": 7.105427357601002e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polycurve-ToLine",
+          "passed": true,
+          "max_absolute_error": 5.662137425588298e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polycurve-ToPlane",
+          "passed": true,
+          "max_absolute_error": 7.105427357601002e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "dyadic-mesh-ToLine",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "dyadic-mesh-ToPlane",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "dyadic-mesh-ToPlane-3Point",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "difference_count": 0,
+          "first_differences": []
+        }
+      ]
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/align_projection_mesh_diagnostics.json",
+      "request_sha256": "804c2e82ffb8c846d8ab7969a5434cfa701a07101aecc771dfdf771791c65417",
+      "rhino_reference": "tools/rhino_oracle/observations/align_projection_mesh_diagnostics.json",
+      "rhino_reference_sha256": "e2e9e240ac9e80887b1497b32408f6a4357b899f8201b7a5c85a3f016e0a5673",
+      "rhino_version": "8.32.26160.13001",
+      "native_value_fingerprint_sha256": "0ae83f33a031f72000b4d7b83c68a50b74550f56187d837c2735dc40b28a4348",
+      "passed": false,
+      "max_absolute_error": 1.046715714103641e-07,
+      "operations": [
+        {
+          "id": "mixed-ToLine-World",
+          "passed": false,
+          "max_absolute_error": 5.336034858416383e-08,
+          "difference_count": 6,
+          "first_differences": [
+            "mixed-ToLine-World.value.objects[3].points[0][0]: -1.1047619047619048 != -1.1047619581222534 (error 5.34e-08, limit 1e-08)",
+            "mixed-ToLine-World.value.objects[3].points[0][2]: 0.79047619047619044 != 0.79047620296478271 (error 1.25e-08, limit 1e-08)",
+            "mixed-ToLine-World.value.objects[3].points[1][2]: 0.79047619047619044 != 0.79047620296478271 (error 1.25e-08, limit 1e-08)",
+            "mixed-ToLine-World.value.objects[3].points[2][0]: -1.1047619047619048 != -1.1047619581222534 (error 5.34e-08, limit 1e-08)",
+            "mixed-ToLine-World.value.objects[3].points[2][1]: 1.6190476190476191 != 1.6190476417541504 (error 2.27e-08, limit 1e-08)",
+            "mixed-ToLine-World.value.objects[3].points[2][2]: 1.7904761904761903 != 1.7904762029647827 (error 1.25e-08, limit 1e-08)"
+          ]
+        },
+        {
+          "id": "mixed-ToLine-CPlane",
+          "passed": false,
+          "max_absolute_error": 5.336034858416383e-08,
+          "difference_count": 5,
+          "first_differences": [
+            "mixed-ToLine-CPlane.value.objects[3].points[0][2]: 0.29047619047619044 != 0.29047620296478271 (error 1.25e-08, limit 1e-08)",
+            "mixed-ToLine-CPlane.value.objects[3].points[1][0]: 1.8952380952380952 != 1.8952380418777466 (error 5.34e-08, limit 1e-08)",
+            "mixed-ToLine-CPlane.value.objects[3].points[1][2]: 0.29047619047619044 != 0.29047620296478271 (error 1.25e-08, limit 1e-08)",
+            "mixed-ToLine-CPlane.value.objects[3].points[2][1]: 1.6190476190476191 != 1.6190476417541504 (error 2.27e-08, limit 1e-08)",
+            "mixed-ToLine-CPlane.value.objects[3].points[2][2]: 1.2904761904761903 != 1.2904762029647827 (error 1.25e-08, limit 1e-08)"
+          ]
+        },
+        {
+          "id": "mixed-ToPlane-World",
+          "passed": false,
+          "max_absolute_error": 1.046715714103641e-07,
+          "difference_count": 6,
+          "first_differences": [
+            "mixed-ToPlane-World.value.objects[3].points[0][0]: -0.48780487804878048 != -0.48780488967895508 (error 1.16e-08, limit 1e-08)",
+            "mixed-ToPlane-World.value.objects[3].points[0][1]: 0.39024390243902429 != 0.39024388790130615 (error 1.45e-08, limit 1e-08)",
+            "mixed-ToPlane-World.value.objects[3].points[1][0]: 1.5121951219512195 != 1.5121951103210449 (error 1.16e-08, limit 1e-08)",
+            "mixed-ToPlane-World.value.objects[3].points[1][1]: 0.39024390243902429 != 0.39024388790130615 (error 1.45e-08, limit 1e-08)",
+            "mixed-ToPlane-World.value.objects[3].points[2][0]: -0.48780487804878048 != -0.48780488967895508 (error 1.16e-08, limit 1e-08)",
+            "mixed-ToPlane-World.value.objects[3].points[2][1]: 2.3902439024390243 != 2.3902440071105957 (error 1.05e-07, limit 1e-08)"
+          ]
+        },
+        {
+          "id": "mixed-ToPlane-CPlane",
+          "passed": false,
+          "max_absolute_error": 5.89349298252273e-08,
+          "difference_count": 2,
+          "first_differences": [
+            "mixed-ToPlane-CPlane.value.objects[3].points[2][1]: 1.595505617977528 != 1.5955055952072144 (error 2.28e-08, limit 1e-08)",
+            "mixed-ToPlane-CPlane.value.objects[3].points[2][2]: 1.2528089887640448 != 1.2528090476989746 (error 5.89e-08, limit 1e-08)"
+          ]
+        }
+      ]
     }
   ],
-  "passing_operations": 56,
-  "retained_discrepancies": 3
+  "passing_operations": 90,
+  "retained_discrepancies": 7
 }

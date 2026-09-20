@@ -1,4 +1,5 @@
 use super::*;
+mod projection;
 
 #[test]
 fn all_alignment_fixtures_match_recorded_rhino_geometry_and_document_state() {

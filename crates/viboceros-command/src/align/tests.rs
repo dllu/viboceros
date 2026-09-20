@@ -3,6 +3,8 @@ use crate::CommandRegistry;
 use viboceros_document::{Geometry, SelectionMode};
 use viboceros_geometry::{NurbsCurve, PointCloud3, WeightedPoint3};
 
+mod projection;
+
 fn p(a: [f64; 3]) -> Point3 {
     Point3::try_from(a).unwrap()
 }

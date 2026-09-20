@@ -8,11 +8,12 @@ use viboceros_document::Document;
 use viboceros_geometry::{AffineTransform3, BoundingBox3, Frame3, Point3, Vector3};
 
 mod options;
+mod projection;
 pub use options::{AlignmentMode, AlignmentOptions};
 #[cfg(test)]
 mod tests;
 
-const USAGE: &str = "Align Left|Right|Top|Bottom|HorizCenter|VertCenter|Concentric [AlignTo=CPlane|World] [point|Auto]";
+const USAGE: &str = "Align mode [AlignTo=CPlane|World] [point|Auto]; ToLine start end; ToPlane [3Point] start end [third]";
 
 #[derive(Default)]
 pub(super) struct AlignCommand {
@@ -38,7 +39,7 @@ impl Command for AlignCommand {
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
         let options = self.options(arguments)?;
-        if options.target.is_some() || options.automatic {
+        if options.ready() || options.references.iter().any(Option::is_some) {
             return Ok(None);
         }
         let mut choices = vec![ChoiceSelectionOption {
@@ -58,7 +59,15 @@ impl Command for AlignCommand {
         Ok(Some(ObjectSelectionPrompt {
             command: "Align",
             filter: ObjectSelectionFilter::Any,
-            options: vec![],
+            options: if options.mode == Some(AlignmentMode::ToPlane) {
+                vec![crate::BooleanSelectionOption {
+                    name: "3Point",
+                    value: options.three_point,
+                    aliases: &[],
+                }]
+            } else {
+                vec![]
+            },
             menus: vec![],
             choices,
             workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
@@ -89,6 +98,11 @@ impl Command for AlignCommand {
     ) -> Result<String, CommandError> {
         let options = self.options(arguments)?;
         let mode = options.mode.ok_or(CommandError::Usage(USAGE))?;
+        if options.reference_count() > 0 {
+            let message = projection::run(document, options, context)?;
+            self.world.set(options.world);
+            return Ok(message);
+        }
         let units = crate::layout_units::selected_units(document);
         let first = units.first().ok_or(CommandError::NoObjectsSelected)?;
         self.world.set(options.world);
@@ -172,6 +186,7 @@ fn offsets(
         VertCenter => [coordinate(0, 0), 0.],
         HorizCenter => [0., coordinate(1, 0)],
         Concentric => [coordinate(0, 0), coordinate(1, 0)],
+        ToLine | ToPlane => unreachable!("projection modes use individual object anchors"),
     }
 }
 

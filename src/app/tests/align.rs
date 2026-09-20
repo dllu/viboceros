@@ -133,3 +133,85 @@ fn cancelling_command_first_alignment_releases_prompt_selection() {
     assert_eq!(app.document.selected_object_ids().count(), 0);
     assert_eq!(positions(&app), before);
 }
+
+#[test]
+fn projection_points_are_staged_and_a_rejected_endpoint_can_be_corrected() {
+    let mut app = setup();
+    let before = positions(&app);
+    enter(&mut app, "Align ToLine");
+    enter(&mut app, "");
+    assert_eq!(positions(&app), before);
+    assert!(app.accept_drafting_point(point(0., 0., 0.)));
+    assert_eq!(
+        app.active_command.unwrap().anchor(),
+        Some(point(0., 0., 0.))
+    );
+    assert!(!app.accept_drafting_point(point(0., 0., 0.)));
+    assert_eq!(positions(&app), before);
+    enter(&mut app, "w0,0,1");
+    assert!(app.active_command.is_none());
+    assert_eq!(
+        positions(&app),
+        vec![
+            Geometry::Point(point(0., 0., 1.)),
+            Geometry::Point(point(0., 0., 3.))
+        ]
+    );
+    enter(&mut app, "Undo");
+    assert_eq!(positions(&app), before);
+}
+
+#[test]
+fn three_point_projection_survives_selection_and_partial_typed_input() {
+    let mut app = setup();
+    enter(&mut app, "SelNone");
+    enter(&mut app, "Align ToPlane 3Point");
+    enter(&mut app, "SelAll");
+    enter(&mut app, "");
+    assert!(
+        matches!(app.active_command,Some(InteractiveCommand::Align{options,..}) if options.three_point)
+    );
+    enter(&mut app, "w0,0,0");
+    enter(&mut app, "w1,0,0");
+    let before = positions(&app);
+    enter(&mut app, "w2,0,0");
+    assert_eq!(positions(&app), before);
+    enter(&mut app, "w0,1,0");
+    assert!(app.active_command.is_none());
+    assert_eq!(app.document.selected_object_ids().count(), 0);
+    assert_eq!(
+        positions(&app),
+        vec![
+            Geometry::Point(point(0., 0., 0.)),
+            Geometry::Point(point(4., 8., 0.))
+        ]
+    );
+    enter(&mut app, "Undo");
+    enter(&mut app, "SelAll");
+    enter(&mut app, "Align ToLine 0,0,0");
+    assert_eq!(
+        app.active_command.unwrap().anchor(),
+        Some(point(0., 0., 0.))
+    );
+    enter(&mut app, "w0,0,1");
+    assert!(app.active_command.is_none());
+}
+
+#[test]
+fn switching_projection_modes_and_cancelling_never_applies_staged_points() {
+    let mut app = setup();
+    let before = positions(&app);
+    enter(&mut app, "Align ToPlane 3Point");
+    enter(&mut app, "w1,2,3");
+    enter(&mut app, "ToLine");
+    assert_eq!(app.active_command.unwrap().anchor(), None);
+    enter(&mut app, "w4,5,6");
+    app.cancel_interactive_command(true);
+    assert_eq!(positions(&app), before);
+    enter(&mut app, "Align ToPlane");
+    enter(&mut app, "3Point w0,0,0 w1,0,0 w0,1,0");
+    // Full option lines use registry/world point syntax, not drafting prefixes.
+    assert!(app.active_command.is_some());
+    enter(&mut app, "3Point 0,0,0 1,0,0 0,1,0");
+    assert!(app.active_command.is_none());
+}

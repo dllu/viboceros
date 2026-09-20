@@ -1,0 +1,403 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "align",
+      "id": "mixed-ToLine-World",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              2,
+              3,
+              4
+            ],
+            [
+              6,
+              8,
+              10
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            5,
+            2,
+            1
+          ],
+          "end": [
+            9,
+            6,
+            7
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              0,
+              2,
+              1
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "mode": "ToLine",
+      "align_to": "World",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          5,
+          7,
+          11
+        ]
+      ]
+    },
+    {
+      "op": "align",
+      "id": "mixed-ToLine-CPlane",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              2,
+              3,
+              4
+            ],
+            [
+              6,
+              8,
+              10
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            5,
+            2,
+            1
+          ],
+          "end": [
+            9,
+            6,
+            7
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              0,
+              2,
+              1
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "mode": "ToLine",
+      "align_to": "CPlane",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          5,
+          7,
+          11
+        ]
+      ]
+    },
+    {
+      "op": "align",
+      "id": "mixed-ToPlane-World",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              2,
+              3,
+              4
+            ],
+            [
+              6,
+              8,
+              10
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            5,
+            2,
+            1
+          ],
+          "end": [
+            9,
+            6,
+            7
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              0,
+              2,
+              1
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "mode": "ToPlane",
+      "align_to": "World",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          5,
+          7,
+          11
+        ]
+      ]
+    },
+    {
+      "op": "align",
+      "id": "mixed-ToPlane-CPlane",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              2,
+              3,
+              4
+            ],
+            [
+              6,
+              8,
+              10
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            5,
+            2,
+            1
+          ],
+          "end": [
+            9,
+            6,
+            7
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              0,
+              2,
+              1
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "mode": "ToPlane",
+      "align_to": "CPlane",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          5,
+          7,
+          11
+        ]
+      ]
+    }
+  ]
+}
