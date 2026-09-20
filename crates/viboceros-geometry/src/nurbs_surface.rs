@@ -1,6 +1,7 @@
 use std::ops::RangeInclusive;
 
 mod evaluate;
+mod parameters;
 pub use evaluate::SurfaceJet2;
 
 use nalgebra::{Matrix3, Vector3 as NalgebraVector3};

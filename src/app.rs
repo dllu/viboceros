@@ -34,6 +34,7 @@ mod curve_prompt;
 mod distance;
 mod domain;
 mod evaluate_point;
+mod evaluate_uv;
 mod group_prompt;
 mod interface;
 mod object_selection;
@@ -153,6 +154,9 @@ enum InteractiveCommand {
     },
     Point,
     EvaluatePoint,
+    EvaluateUv {
+        options: viboceros_command::EvaluateUvOptions,
+    },
     DomainFace,
     Points,
     Line {
@@ -402,6 +406,7 @@ impl InteractiveCommand {
             Self::Angle { .. } => "Angle",
             Self::Point => "Point",
             Self::EvaluatePoint => "EvaluatePt",
+            Self::EvaluateUv { .. } => "EvaluateUVPt",
             Self::DomainFace => "Domain",
             Self::Points => "Points",
             Self::Line { .. } => "Line",
@@ -490,6 +495,9 @@ impl InteractiveCommand {
             Self::Point => "Point: pick a location in the viewport (Esc to cancel)",
             Self::EvaluatePoint => {
                 "EvaluatePt: pick a location to report world/CPlane coordinates (Esc cancels)"
+            }
+            Self::EvaluateUv { .. } => {
+                "EvaluateUVPt: pick a surface location (Normalized=Yes|No; CreatePoint=Yes|No; Esc cancels)"
             }
             Self::DomainFace => {
                 "Domain: pick a component surface on the selected polysurface (Esc cancels)"
@@ -950,6 +958,7 @@ impl InteractiveCommand {
             } => start,
             Self::Point
             | Self::EvaluatePoint
+            | Self::EvaluateUv { .. }
             | Self::DomainFace
             | Self::Points
             | Self::Line { start: None }
@@ -1224,6 +1233,7 @@ impl VibocerosApp {
         if self.try_continue_points(&input)
             || self.try_continue_distance(&input)
             || self.try_continue_angle(&input)
+            || self.try_continue_evaluate_uv(&input)
         {
             return;
         }
@@ -1262,6 +1272,7 @@ impl VibocerosApp {
         if self.try_continue_points(input)
             || self.try_continue_distance(input)
             || self.try_continue_angle(input)
+            || self.try_continue_evaluate_uv(input)
         {
             return true;
         }
@@ -1331,10 +1342,17 @@ impl VibocerosApp {
         {
             return false;
         }
-        let command = if normalized == "domain"
-            && arguments.is_empty()
-            && self.domain_needs_face_pick()
-        {
+        let command = if normalized == "evaluateuvpt" {
+            let Ok((options, None)) =
+                viboceros_command::EvaluateUvOptions::default().parse(&arguments)
+            else {
+                return false;
+            };
+            if !self.evaluate_uv_can_pick() {
+                return false;
+            }
+            InteractiveCommand::EvaluateUv { options }
+        } else if normalized == "domain" && arguments.is_empty() && self.domain_needs_face_pick() {
             InteractiveCommand::DomainFace
         } else if normalized == "evaluatept" {
             let Some(command) = evaluate_point::start_command(&arguments) else {
@@ -3046,6 +3064,9 @@ impl VibocerosApp {
             }
             InteractiveCommand::Points => return self.apply_points_point(point),
             InteractiveCommand::EvaluatePoint => return self.finish_evaluate_point(point, plane),
+            InteractiveCommand::EvaluateUv { options } => {
+                return self.finish_evaluate_uv(point, options);
+            }
             InteractiveCommand::DomainFace => return self.finish_domain_face(point),
             InteractiveCommand::Point => {
                 self.active_command = None;
@@ -5406,6 +5427,7 @@ mod tests {
     mod distribute;
     mod domain;
     mod evaluate_point;
+    mod evaluate_uv;
     mod group_prompt;
     mod interface;
     mod nurbs_selection;

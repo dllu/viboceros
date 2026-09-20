@@ -113,6 +113,9 @@ command context; the application adapter keeps failed point queries open.
 Its `domain` submodule reports native parameter intervals, including the underlying
 surface of an explicitly indexed or picked B-rep face. The app's `domain` adapter
 continues accepted polysurface selection with a component-location pick.
+`evaluate_uv` owns surface-coordinate query options and optional projected-point
+creation. It shares one parser with the UI, uses underlying-face closest points
+(ignoring trims), and delegates inverse domain mapping to `NurbsSurface::normalized_parameters`.
 Its `angle` submodule owns the four-point Angle query, using range-safe
 `Point3::direction_to` and `Vector3::angle_to`. Its `objects` submodule measures
 unoriented straight-curve/planar-surface angles. The interactive adapter validates

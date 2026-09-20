@@ -209,6 +209,11 @@ impl VibocerosApp {
                 }
             }
             let command = pending.description.command_line();
+            if pending.description.command == "EvaluateUVPt" && self.evaluate_uv_can_pick() {
+                self.object_prompt = None;
+                self.try_start_interactive_command(&command);
+                return true;
+            }
             if command == "Domain" && self.domain_needs_face_pick() {
                 // This is acceptance, not cancellation: retain the picked
                 // object while handing control to the component-point phase.

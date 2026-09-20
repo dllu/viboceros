@@ -53,6 +53,10 @@ fn object_filters_cover_geometry_and_memberships_without_changing_selection_poli
                 [false, false, false, true, false],
             ),
             (
+                ObjectSelectionFilter::SurfaceComponents,
+                [false, false, false, true, false],
+            ),
+            (
                 ObjectSelectionFilter::PointCloudSources,
                 [true, false, true, false, false],
             ),
