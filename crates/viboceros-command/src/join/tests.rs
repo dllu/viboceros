@@ -1,6 +1,8 @@
 use super::*;
 use viboceros_geometry::MeshFace;
 
+mod copy;
+
 fn quad(x: f64) -> Geometry {
     Geometry::Mesh(
         TriangleMesh::try_new_faces(

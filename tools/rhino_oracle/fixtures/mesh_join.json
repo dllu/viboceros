@@ -8,7 +8,7 @@
   },
   "operations": [
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "adjacent-False",
       "sources": [
         {
@@ -79,7 +79,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "adjacent-True",
       "sources": [
         {
@@ -150,7 +150,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "disjoint-False",
       "sources": [
         {
@@ -221,7 +221,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "disjoint-True",
       "sources": [
         {
@@ -292,7 +292,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "vertex-touch-False",
       "sources": [
         {
@@ -363,7 +363,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "vertex-touch-True",
       "sources": [
         {
@@ -434,7 +434,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "triangle-False",
       "sources": [
         {
@@ -499,7 +499,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "triangle-True",
       "sources": [
         {
@@ -564,7 +564,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fold-False",
       "sources": [
         {
@@ -635,7 +635,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fold-True",
       "sources": [
         {
@@ -706,7 +706,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "near-False",
       "sources": [
         {
@@ -777,7 +777,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "near-True",
       "sources": [
         {
@@ -848,7 +848,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "at-tolerance-False",
       "sources": [
         {
@@ -919,7 +919,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "at-tolerance-True",
       "sources": [
         {
@@ -990,7 +990,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "outside-False",
       "sources": [
         {
@@ -1061,7 +1061,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "outside-True",
       "sources": [
         {
@@ -1132,7 +1132,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "overlap-False",
       "sources": [
         {
@@ -1203,7 +1203,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "overlap-True",
       "sources": [
         {
@@ -1274,7 +1274,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "identical-False",
       "sources": [
         {
@@ -1345,7 +1345,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "identical-True",
       "sources": [
         {
@@ -1416,7 +1416,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "unused-False",
       "sources": [
         {
@@ -1492,7 +1492,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "unused-True",
       "sources": [
         {
@@ -1568,7 +1568,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "single-False",
       "sources": [
         {
@@ -1607,7 +1607,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "single-True",
       "sources": [
         {
@@ -1646,7 +1646,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "three-chain-False",
       "sources": [
         {
@@ -1749,7 +1749,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "three-chain-True",
       "sources": [
         {
@@ -1852,7 +1852,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "connected-and-disjoint-False",
       "sources": [
         {
@@ -1955,7 +1955,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "connected-and-disjoint-True",
       "sources": [
         {
@@ -2058,7 +2058,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "adjacent-reverse",
       "sources": [
         {
@@ -2133,7 +2133,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "disjoint-reverse",
       "sources": [
         {
@@ -2208,7 +2208,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "vertex-touch-reverse",
       "sources": [
         {
@@ -2283,7 +2283,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "triangle-reverse",
       "sources": [
         {
@@ -2352,7 +2352,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fold-reverse",
       "sources": [
         {
@@ -2427,7 +2427,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "near-reverse",
       "sources": [
         {
@@ -2502,7 +2502,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "adjacent-False-pre",
       "sources": [
         {
@@ -2574,7 +2574,7 @@
       "preselect": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "adjacent-True-pre",
       "sources": [
         {
@@ -2646,7 +2646,7 @@
       "preselect": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "disjoint-False-pre",
       "sources": [
         {
@@ -2718,7 +2718,7 @@
       "preselect": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "disjoint-True-pre",
       "sources": [
         {
@@ -2790,7 +2790,7 @@
       "preselect": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "vertex-touch-False-pre",
       "sources": [
         {
@@ -2862,7 +2862,7 @@
       "preselect": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "vertex-touch-True-pre",
       "sources": [
         {
@@ -2934,7 +2934,7 @@
       "preselect": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "triangle-False-pre",
       "sources": [
         {
@@ -3000,7 +3000,7 @@
       "preselect": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "triangle-True-pre",
       "sources": [
         {
@@ -3066,7 +3066,7 @@
       "preselect": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "reversed-adjacent-False",
       "sources": [
         {
@@ -3137,7 +3137,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "reversed-adjacent-True",
       "sources": [
         {
@@ -3208,7 +3208,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "reversed-seed-False",
       "sources": [
         {
@@ -3279,7 +3279,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "reversed-seed-True",
       "sources": [
         {
@@ -3350,7 +3350,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "vertex-other-corners-False",
       "sources": [
         {
@@ -3421,7 +3421,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "vertex-other-corners-True",
       "sources": [
         {
@@ -3492,7 +3492,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "vertex-side-False",
       "sources": [
         {
@@ -3563,7 +3563,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "vertex-side-True",
       "sources": [
         {
@@ -3634,7 +3634,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "already-disjoint-False",
       "sources": [
         {
@@ -3731,7 +3731,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "already-disjoint-True",
       "sources": [
         {
@@ -3828,7 +3828,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "interleaved-components-False",
       "sources": [
         {
@@ -3963,7 +3963,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "interleaved-components-True",
       "sources": [
         {
@@ -4098,7 +4098,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "unused-contact-False",
       "sources": [
         {
@@ -4174,7 +4174,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "unused-contact-True",
       "sources": [
         {
@@ -4250,7 +4250,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "opposite-overlap-False",
       "sources": [
         {
@@ -4321,7 +4321,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "opposite-overlap-True",
       "sources": [
         {
@@ -4392,7 +4392,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "nonmanifold-False",
       "sources": [
         {
@@ -4495,7 +4495,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "nonmanifold-True",
       "sources": [
         {
@@ -4598,7 +4598,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "small-gap-False",
       "sources": [
         {
@@ -4669,7 +4669,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "small-gap-True",
       "sources": [
         {
@@ -4740,7 +4740,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "internal-contact-False",
       "sources": [
         {
@@ -4830,7 +4830,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "internal-contact-True",
       "sources": [
         {
@@ -4920,7 +4920,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--8-tol-0.125-False",
       "sources": [
         {
@@ -4992,7 +4992,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--8-tol-0.125-True",
       "sources": [
         {
@@ -5064,7 +5064,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--10-tol-0.125-False",
       "sources": [
         {
@@ -5136,7 +5136,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--10-tol-0.125-True",
       "sources": [
         {
@@ -5208,7 +5208,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--12-tol-0.125-False",
       "sources": [
         {
@@ -5280,7 +5280,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--12-tol-0.125-True",
       "sources": [
         {
@@ -5352,7 +5352,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--16-tol-0.125-False",
       "sources": [
         {
@@ -5424,7 +5424,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--16-tol-0.125-True",
       "sources": [
         {
@@ -5496,7 +5496,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--18-tol-0.125-False",
       "sources": [
         {
@@ -5568,7 +5568,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--18-tol-0.125-True",
       "sources": [
         {
@@ -5640,7 +5640,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--19-tol-0.125-False",
       "sources": [
         {
@@ -5712,7 +5712,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--19-tol-0.125-True",
       "sources": [
         {
@@ -5784,7 +5784,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--20-tol-0.125-False",
       "sources": [
         {
@@ -5856,7 +5856,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--20-tol-0.125-True",
       "sources": [
         {
@@ -5928,7 +5928,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--21-tol-0.125-False",
       "sources": [
         {
@@ -6000,7 +6000,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--21-tol-0.125-True",
       "sources": [
         {
@@ -6072,7 +6072,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--24-tol-0.125-False",
       "sources": [
         {
@@ -6144,7 +6144,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--24-tol-0.125-True",
       "sources": [
         {
@@ -6216,7 +6216,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--8-tol-1e-06-False",
       "sources": [
         {
@@ -6288,7 +6288,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--8-tol-1e-06-True",
       "sources": [
         {
@@ -6360,7 +6360,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--10-tol-1e-06-False",
       "sources": [
         {
@@ -6432,7 +6432,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--10-tol-1e-06-True",
       "sources": [
         {
@@ -6504,7 +6504,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--12-tol-1e-06-False",
       "sources": [
         {
@@ -6576,7 +6576,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--12-tol-1e-06-True",
       "sources": [
         {
@@ -6648,7 +6648,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--16-tol-1e-06-False",
       "sources": [
         {
@@ -6720,7 +6720,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--16-tol-1e-06-True",
       "sources": [
         {
@@ -6792,7 +6792,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--18-tol-1e-06-False",
       "sources": [
         {
@@ -6864,7 +6864,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--18-tol-1e-06-True",
       "sources": [
         {
@@ -6936,7 +6936,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--19-tol-1e-06-False",
       "sources": [
         {
@@ -7008,7 +7008,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--19-tol-1e-06-True",
       "sources": [
         {
@@ -7080,7 +7080,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--20-tol-1e-06-False",
       "sources": [
         {
@@ -7152,7 +7152,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--20-tol-1e-06-True",
       "sources": [
         {
@@ -7224,7 +7224,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--21-tol-1e-06-False",
       "sources": [
         {
@@ -7296,7 +7296,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--21-tol-1e-06-True",
       "sources": [
         {
@@ -7368,7 +7368,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--24-tol-1e-06-False",
       "sources": [
         {
@@ -7440,7 +7440,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "gap--24-tol-1e-06-True",
       "sources": [
         {
@@ -7512,7 +7512,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-0.125-1.25e-06",
       "sources": [
         {
@@ -7584,7 +7584,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-0.125-6.25e-06",
       "sources": [
         {
@@ -7656,7 +7656,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-0.125-1.25e-05",
       "sources": [
         {
@@ -7728,7 +7728,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-0.125-2.5e-05",
       "sources": [
         {
@@ -7800,7 +7800,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-0.125-0.000125",
       "sources": [
         {
@@ -7872,7 +7872,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-0.125-0.00125",
       "sources": [
         {
@@ -7944,7 +7944,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-0.125-0.0125",
       "sources": [
         {
@@ -8016,7 +8016,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-0.125-0.0625",
       "sources": [
         {
@@ -8088,7 +8088,7 @@
       "absolute_tolerance": 0.125
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-0.001-1e-08",
       "sources": [
         {
@@ -8160,7 +8160,7 @@
       "absolute_tolerance": 0.001
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-0.001-5.0000000000000004e-08",
       "sources": [
         {
@@ -8232,7 +8232,7 @@
       "absolute_tolerance": 0.001
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-0.001-1.0000000000000001e-07",
       "sources": [
         {
@@ -8304,7 +8304,7 @@
       "absolute_tolerance": 0.001
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-0.001-2.0000000000000002e-07",
       "sources": [
         {
@@ -8376,7 +8376,7 @@
       "absolute_tolerance": 0.001
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-0.001-1e-06",
       "sources": [
         {
@@ -8448,7 +8448,7 @@
       "absolute_tolerance": 0.001
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-0.001-1e-05",
       "sources": [
         {
@@ -8520,7 +8520,7 @@
       "absolute_tolerance": 0.001
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-0.001-0.0001",
       "sources": [
         {
@@ -8592,7 +8592,7 @@
       "absolute_tolerance": 0.001
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-0.001-0.0005",
       "sources": [
         {
@@ -8664,7 +8664,7 @@
       "absolute_tolerance": 0.001
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-1e-06-1.0000000000000001e-11",
       "sources": [
         {
@@ -8736,7 +8736,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-1e-06-5e-11",
       "sources": [
         {
@@ -8808,7 +8808,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-1e-06-1e-10",
       "sources": [
         {
@@ -8880,7 +8880,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-1e-06-2e-10",
       "sources": [
         {
@@ -8952,7 +8952,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-1e-06-1e-09",
       "sources": [
         {
@@ -9024,7 +9024,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-1e-06-1e-08",
       "sources": [
         {
@@ -9096,7 +9096,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-1e-06-1e-07",
       "sources": [
         {
@@ -9168,7 +9168,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-1e-06-5e-07",
       "sources": [
         {
@@ -9240,7 +9240,7 @@
       "absolute_tolerance": 1e-06
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-1.0-1e-05",
       "sources": [
         {
@@ -9312,7 +9312,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-1.0-5e-05",
       "sources": [
         {
@@ -9384,7 +9384,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-1.0-0.0001",
       "sources": [
         {
@@ -9456,7 +9456,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-1.0-0.0002",
       "sources": [
         {
@@ -9528,7 +9528,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-1.0-0.001",
       "sources": [
         {
@@ -9600,7 +9600,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-1.0-0.01",
       "sources": [
         {
@@ -9672,7 +9672,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-1.0-0.1",
       "sources": [
         {
@@ -9744,7 +9744,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "fine-1.0-0.5",
       "sources": [
         {
@@ -9816,7 +9816,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "close-chain-False",
       "sources": [
         {
@@ -9919,7 +9919,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "close-chain-True",
       "sources": [
         {
@@ -10022,7 +10022,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "close-chain-reverse-False",
       "sources": [
         {
@@ -10125,7 +10125,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "close-chain-reverse-True",
       "sources": [
         {
@@ -10228,7 +10228,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "translated-near-False",
       "sources": [
         {
@@ -10299,7 +10299,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "translated-near-True",
       "sources": [
         {
@@ -10370,7 +10370,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "translated-negative-False",
       "sources": [
         {
@@ -10441,7 +10441,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "translated-negative-True",
       "sources": [
         {
@@ -10512,7 +10512,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "closed-near-False",
       "sources": [
         {
@@ -10597,7 +10597,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "closed-near-True",
       "sources": [
         {
@@ -10682,7 +10682,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "internal-near-False",
       "sources": [
         {
@@ -10772,7 +10772,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "internal-near-True",
       "sources": [
         {
@@ -10862,7 +10862,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "disjoint-bridge-False",
       "sources": [
         {
@@ -10959,7 +10959,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "disjoint-bridge-True",
       "sources": [
         {
@@ -11056,7 +11056,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "diagonal-near-False",
       "sources": [
         {
@@ -11127,7 +11127,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "diagonal-near-True",
       "sources": [
         {
@@ -11198,7 +11198,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "three-components-False",
       "sources": [
         {
@@ -11365,7 +11365,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "three-components-True",
       "sources": [
         {
@@ -11532,7 +11532,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "closed-contact-False",
       "sources": [
         {
@@ -11617,7 +11617,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "closed-contact-True",
       "sources": [
         {
@@ -11702,7 +11702,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "single-disjoint-False",
       "sources": [
         {
@@ -11767,7 +11767,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "single-disjoint-True",
       "sources": [
         {
@@ -11832,7 +11832,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "float-boundary-0.5-9.999e-05",
       "sources": [
         {
@@ -11904,7 +11904,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "float-boundary-0.5-0.0001",
       "sources": [
         {
@@ -11976,7 +11976,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "float-boundary-0.5-0.00010001",
       "sources": [
         {
@@ -12048,7 +12048,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "float-boundary-1.0-9.999e-05",
       "sources": [
         {
@@ -12120,7 +12120,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "float-boundary-1.0-0.0001",
       "sources": [
         {
@@ -12192,7 +12192,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "float-boundary-1.0-0.00010001",
       "sources": [
         {
@@ -12264,7 +12264,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "float-boundary-2.0-9.999e-05",
       "sources": [
         {
@@ -12336,7 +12336,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "float-boundary-2.0-0.0001",
       "sources": [
         {
@@ -12408,7 +12408,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "float-boundary-2.0-0.00010001",
       "sources": [
         {
@@ -12480,7 +12480,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "float-boundary-4.0-9.999e-05",
       "sources": [
         {
@@ -12552,7 +12552,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "float-boundary-4.0-0.0001",
       "sources": [
         {
@@ -12624,7 +12624,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "float-boundary-4.0-0.00010001",
       "sources": [
         {
@@ -12696,7 +12696,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "float-boundary-8.0-9.999e-05",
       "sources": [
         {
@@ -12768,7 +12768,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "float-boundary-8.0-0.0001",
       "sources": [
         {
@@ -12840,7 +12840,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "float-boundary-8.0-0.00010001",
       "sources": [
         {
@@ -12912,7 +12912,7 @@
       "absolute_tolerance": 1.0
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "anchors-[0, 8e-06, 1.6e-05, 2.4e-05]-False",
       "sources": [
         {
@@ -13047,7 +13047,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "anchors-[0, 8e-06, 1.6e-05, 2.4e-05]-True",
       "sources": [
         {
@@ -13182,7 +13182,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "anchors-[2.4e-05, 1.6e-05, 8e-06, 0]-False",
       "sources": [
         {
@@ -13317,7 +13317,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "anchors-[2.4e-05, 1.6e-05, 8e-06, 0]-True",
       "sources": [
         {
@@ -13452,7 +13452,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "anchors-[0, 1.6e-05, 8e-06]-False",
       "sources": [
         {
@@ -13555,7 +13555,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "anchors-[0, 1.6e-05, 8e-06]-True",
       "sources": [
         {
@@ -13658,7 +13658,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "anchors-[8e-06, 0, 1.6e-05]-False",
       "sources": [
         {
@@ -13761,7 +13761,7 @@
       "join_disjoint": false
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "anchors-[8e-06, 0, 1.6e-05]-True",
       "sources": [
         {
@@ -13864,7 +13864,7 @@
       "join_disjoint": true
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "reverse-pre-adjacent-False",
       "sources": [
         {
@@ -13940,7 +13940,7 @@
       ]
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "reverse-pre-mixed-False",
       "sources": [
         {
@@ -14049,7 +14049,7 @@
       ]
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "reverse-pre-adjacent-True",
       "sources": [
         {
@@ -14125,7 +14125,7 @@
       ]
     },
     {
-      "op": "mesh_join_command",
+      "op": "join_command",
       "id": "reverse-pre-mixed-True",
       "sources": [
         {

@@ -92,11 +92,18 @@ impl Command for AlignCommand {
         document.clear_selection();
         Ok(message)
     }
-    fn cleanup_failed_postselection(&self, document: &mut Document, error: &CommandError) {
-        if matches!(
-            error,
-            CommandError::InsufficientPlaneAlignmentObjects { .. }
-        ) {
+    fn cleanup_failed_selection(
+        &self,
+        document: &mut Document,
+        error: &CommandError,
+        postselected: bool,
+    ) {
+        if postselected
+            && matches!(
+                error,
+                CommandError::InsufficientPlaneAlignmentObjects { .. }
+            )
+        {
             document.clear_selection();
         }
     }

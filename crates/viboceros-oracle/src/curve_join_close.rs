@@ -242,7 +242,11 @@ fn command(
             fixture.close_tolerance.unwrap_or(tolerance.absolute())
         ),
     };
-    registry.execute(&mut document, &macro_text)?;
+    if matches!(fixture.action, Action::JoinCommand) {
+        registry.execute_postselected(&mut document, &macro_text, Default::default())?;
+    } else {
+        registry.execute(&mut document, &macro_text)?;
+    }
     let mut curves = document
         .objects()
         .map(|object| {

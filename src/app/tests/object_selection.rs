@@ -2,48 +2,57 @@ use super::*;
 use viboceros_document::SelectionMode;
 
 #[test]
-fn mesh_join_command_first_filters_points_and_retains_pick_order() {
-    let mut app = test_app();
-    for input in [
-        "MeshPlane 0,0,0 2,2,0 XCount=1 YCount=1",
-        "MeshPlane 10,0,0 12,2,0 XCount=1 YCount=1",
-        "Point 20,0,0",
-    ] {
-        enter(&mut app, input);
+fn mesh_join_and_copy_command_first_filter_points_and_retain_pick_order() {
+    for command in ["Join", "JoinCopy"] {
+        let mut app = test_app();
+        for input in [
+            "MeshPlane 0,0,0 2,2,0 XCount=1 YCount=1",
+            "MeshPlane 10,0,0 12,2,0 XCount=1 YCount=1",
+            "Point 20,0,0",
+        ] {
+            enter(&mut app, input);
+        }
+        let ids = app.document.objects().map(|o| o.id()).collect::<Vec<_>>();
+        assert_eq!(ids.len(), 3);
+        app.document.clear_selection();
+        enter(&mut app, command);
+        assert!(app.object_prompt.is_some());
+        assert_eq!(
+            app.viewport_object_filter(),
+            Some(viboceros_command::ObjectSelectionFilter::Join)
+        );
+        for id in [ids[2], ids[1], ids[0]] {
+            app.apply_selection_click(SelectionClick {
+                object_id: Some(id),
+                mode: SelectionMode::Replace,
+            });
+        }
+        assert_eq!(app.document.selected_object_count(), 2);
+        assert!(!app.document.is_selected(ids[2]));
+        enter(&mut app, "JoinDisjointMeshes=Yes");
+        enter(&mut app, "");
+        assert!(app.object_prompt.is_none());
+        assert_eq!(
+            app.document.objects().len(),
+            if command == "Join" { 2 } else { 4 }
+        );
+        assert_eq!(app.document.selected_object_count(), 0);
+        let output = app
+            .document
+            .objects()
+            .find(|o| !ids.contains(&o.id()))
+            .unwrap();
+        let Geometry::Mesh(mesh) = output.geometry() else {
+            panic!("mesh output")
+        };
+        assert_eq!(mesh.vertices()[0].x(), 10.);
+        assert_eq!(mesh.faces().len(), 2);
+        enter(&mut app, "Undo");
+        assert_eq!(
+            app.document.objects().map(|o| o.id()).collect::<Vec<_>>(),
+            ids
+        );
     }
-    let ids = app.document.objects().map(|o| o.id()).collect::<Vec<_>>();
-    assert_eq!(ids.len(), 3);
-    app.document.clear_selection();
-    enter(&mut app, "Join");
-    assert!(app.object_prompt.is_some());
-    assert_eq!(
-        app.viewport_object_filter(),
-        Some(viboceros_command::ObjectSelectionFilter::Join)
-    );
-    for id in [ids[2], ids[1], ids[0]] {
-        app.apply_selection_click(SelectionClick {
-            object_id: Some(id),
-            mode: SelectionMode::Replace,
-        });
-    }
-    assert_eq!(app.document.selected_object_count(), 2);
-    assert!(!app.document.is_selected(ids[2]));
-    enter(&mut app, "JoinDisjointMeshes=Yes");
-    enter(&mut app, "");
-    assert!(app.object_prompt.is_none());
-    assert_eq!(app.document.objects().len(), 2);
-    assert_eq!(app.document.selected_object_count(), 0);
-    let output = app.document.objects().find(|o| o.id() != ids[2]).unwrap();
-    let Geometry::Mesh(mesh) = output.geometry() else {
-        panic!("mesh output")
-    };
-    assert_eq!(mesh.vertices()[0].x(), 10.);
-    assert_eq!(mesh.faces().len(), 2);
-    enter(&mut app, "Undo");
-    assert_eq!(
-        app.document.objects().map(|o| o.id()).collect::<Vec<_>>(),
-        ids
-    );
 }
 
 #[test]

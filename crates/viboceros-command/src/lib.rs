@@ -226,10 +226,16 @@ pub trait Command: Send + Sync {
         true
     }
 
-    /// Optional command-first selection cleanup after a failed transaction has
+    /// Optional selection cleanup after a failed transaction has
     /// rolled back. Implementations may release prompt selection, but must not
     /// mutate geometry or other model state. Most errors retain selection.
-    fn cleanup_failed_postselection(&self, _document: &mut Document, _error: &CommandError) {}
+    fn cleanup_failed_selection(
+        &self,
+        _document: &mut Document,
+        _error: &CommandError,
+        _postselected: bool,
+    ) {
+    }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError>;
 
@@ -803,6 +809,9 @@ impl CommandRegistry {
             .register(JoinCommand::default())
             .expect("unique built-in command");
         registry
+            .register(JoinCommand::copy())
+            .expect("unique built-in command");
+        registry
             .register(ExplodeCommand)
             .expect("unique built-in command");
         registry
@@ -977,8 +986,8 @@ impl CommandRegistry {
         } else {
             run(document)
         };
-        if postselected && let Err(error) = &result {
-            command.cleanup_failed_postselection(document, error);
+        if let Err(error) = &result {
+            command.cleanup_failed_selection(document, error, postselected);
         }
         result
     }
@@ -16959,16 +16968,13 @@ pub enum CommandError {
     #[error("no qualifying multiple knots were removed from the selected curves or surfaces")]
     NoMultipleKnotsRemoved,
 
-    #[error("Join requires at least two selected curves")]
-    NotEnoughCurvesToJoin,
+    #[error("Join requires an open curve or a mesh")]
+    NoOpenCurvesToJoin,
 
     #[error(
         "Join requires only curves or only meshes; surface and mixed-family joining is not implemented"
     )]
     UnsupportedJoinGeometry,
-
-    #[error("the selected curves do not have endpoints within the document tolerance")]
-    NoJoinableCurves,
 
     #[error("none of the selected objects can be exploded")]
     NoExplodableObjects,
@@ -17682,7 +17688,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: AddToGroup, Align, Angle, Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curvature, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Diameter, Dir, Distance, Distribute, Divide, Domain, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, EdgeSrf, Ellipse, Ellipsoid, EvaluatePt, EvaluateUVPt, Explode, Export3dm, ExportStep, ExportStl, Extend, ExtendSrf, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Intersect, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Loft, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, PointCloud, PointGrid, Points, Polygon, Polyline, ProjectToCPlane, Pyramid, Radius, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveFromGroup, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelNonManifold, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, Split, SplitDisjointMesh, SplitMeshEdge, SrfControlPtGrid, SrfPt, SrfPtGrid, SrfSeam, SubCrv, SwapMeshEdge, Sweep1, Tolerance, ToNURBS, Torus, TriangulateMesh, Trim, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UngroupAll, UnifyMeshNormals, Unisolate, UnisolateLock, Units, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: AddToGroup, Align, Angle, Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curvature, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Diameter, Dir, Distance, Distribute, Divide, Domain, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, EdgeSrf, Ellipse, Ellipsoid, EvaluatePt, EvaluateUVPt, Explode, Export3dm, ExportStep, ExportStl, Extend, ExtendSrf, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Intersect, Invert, Isolate, IsolateLock, Join, JoinCopy, Layer, Length, Line, Lock, LockSwap, Loft, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, PointCloud, PointGrid, Points, Polygon, Polyline, ProjectToCPlane, Pyramid, Radius, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveFromGroup, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelNonManifold, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, Split, SplitDisjointMesh, SplitMeshEdge, SrfControlPtGrid, SrfPt, SrfPtGrid, SrfSeam, SubCrv, SwapMeshEdge, Sweep1, Tolerance, ToNURBS, Torus, TriangulateMesh, Trim, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UngroupAll, UnifyMeshNormals, Unisolate, UnisolateLock, Units, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -30761,11 +30767,11 @@ mod tests {
 
         assert_eq!(
             registry.execute(&mut document, "Join").unwrap(),
-            "Joined 2 curve(s) into 1 curve(s); 2 curve(s) unchanged"
+            "Joined 3 curve(s) into 1 curve(s); 1 curve(s) unchanged"
         );
-        assert_eq!(document.objects().len(), 3);
+        assert_eq!(document.objects().len(), 2);
         assert!(document.object(ids[3]).is_some());
-        assert!(document.object(ids[1]).is_some());
+        assert!(document.object(ids[1]).is_none());
         let Geometry::Polyline(joined) = document
             .objects()
             .find(|object| object.id() != ids[3] && object.id() != ids[1])
@@ -30777,19 +30783,20 @@ mod tests {
         assert_eq!(
             joined.vertices(),
             &[
-                Point3::try_new(1.0, 0.0, 0.0).unwrap(),
-                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
                 Point3::try_new(3.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 0.0, 0.0).unwrap(),
             ]
         );
-        assert_eq!(document.selected_object_count(), 3);
+        assert_eq!(document.selected_object_count(), 2);
         assert_eq!(document.undo_label(), Some("Join"));
 
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().len(), 4);
         assert!(ids.iter().all(|id| document.object(*id).is_some()));
         registry.execute(&mut document, "Redo").unwrap();
-        assert_eq!(document.objects().len(), 3);
+        assert_eq!(document.objects().len(), 2);
     }
 
     #[test]

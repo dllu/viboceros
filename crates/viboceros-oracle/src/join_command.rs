@@ -1,10 +1,12 @@
-//! Actual mesh Join commands with exact raw-index and document-state records.
+//! Actual Join commands with native geometry and document-state records.
 use super::*;
 #[cfg(test)]
 mod tests;
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
-pub struct MeshJoinFixture {
+pub struct JoinFixture {
+    #[serde(default)]
+    command: JoinAction,
     sources: Vec<Source>,
     selected: Option<Vec<usize>>,
     #[serde(default)]
@@ -15,18 +17,53 @@ pub struct MeshJoinFixture {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
-struct Source {
-    vertices: Vec<[f64; 3]>,
-    faces: Vec<Vec<u32>>,
+#[serde(untagged)]
+enum Source {
+    Mesh {
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+    },
+    Curve(crate::curve_join_close::CurveInput),
 }
 
-pub(super) fn run(f: &MeshJoinFixture, tolerance: Tolerance) -> Result<(Value, u64), ProbeError> {
+#[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq)]
+enum JoinAction {
+    #[default]
+    Join,
+    JoinCopy,
+}
+
+impl JoinAction {
+    fn name(self) -> &'static str {
+        match self {
+            Self::Join => "Join",
+            Self::JoinCopy => "JoinCopy",
+        }
+    }
+}
+
+impl Source {
+    fn geometry(&self, tolerance: Tolerance) -> Result<Geometry, ProbeError> {
+        match self {
+            Self::Mesh { vertices, faces } => crate::object_source::ObjectSource::Vertices(
+                crate::object_source::VertexSource::Mesh {
+                    vertices: vertices.clone(),
+                    faces: faces.clone(),
+                },
+            )
+            .geometry(tolerance),
+            Self::Curve(curve) => Ok(Geometry::from(curve.geometry()?)),
+        }
+    }
+}
+
+pub(super) fn run(f: &JoinFixture, tolerance: Tolerance) -> Result<(Value, u64), ProbeError> {
     let tolerance = if let Some(absolute) = f.absolute_tolerance {
         Tolerance::try_new(absolute, tolerance.relative(), tolerance.angular())?
     } else {
         tolerance
     };
-    let invalid = || ProbeError::FixtureInvariant("invalid mesh join fixture");
+    let invalid = || ProbeError::FixtureInvariant("invalid join fixture");
     let order = f
         .selected
         .clone()
@@ -46,13 +83,7 @@ pub(super) fn run(f: &MeshJoinFixture, tolerance: Tolerance) -> Result<(Value, u
     for (index, source) in f.sources.iter().enumerate() {
         let layer = document.add_layer(format!("Source {index}"), ColorRgb::BLACK)?;
         layers.push(layer);
-        let source = crate::object_source::ObjectSource::Vertices(
-            crate::object_source::VertexSource::Mesh {
-                vertices: source.vertices.clone(),
-                faces: source.faces.clone(),
-            },
-        )
-        .geometry(tolerance)?;
+        let source = source.geometry(tolerance)?;
         ids.push(
             document.add_geometry_with_attributes(
                 source,
@@ -71,26 +102,37 @@ pub(super) fn run(f: &MeshJoinFixture, tolerance: Tolerance) -> Result<(Value, u
     }
     let registry = CommandRegistry::with_builtins();
     let command = format!(
-        "Join JoinDisjointMeshes={}",
+        "{} JoinDisjointMeshes={}",
+        f.command.name(),
         if f.join_disjoint { "Yes" } else { "No" }
     );
-    if f.preselect {
-        registry.execute(&mut document, &command)?;
+    let result = if f.preselect {
+        registry.execute(&mut document, &command)
     } else {
-        registry.execute_postselected(&mut document, &command, Default::default())?;
-    }
+        registry.execute_postselected(&mut document, &command, Default::default())
+    };
+    let succeeded = match result {
+        Ok(_) => true,
+        Err(CommandError::NoOpenCurvesToJoin) => false,
+        Err(error) => return Err(error.into()),
+    };
     let objects = document.objects().map(|object| {
-        let Geometry::Mesh(mesh) = object.geometry() else { return Err(invalid()); };
         let attributes = object.attributes();
         let color = attributes.object_color();
         let mut memberships = object.group_ids().iter().map(|g| groups.iter().position(|i|i==g).unwrap()).collect::<Vec<_>>();
         memberships.sort_unstable();
-        Ok(json!({"mesh":polygon_mesh_value(mesh),"source":ids.iter().position(|id|*id==object.id()),
+        let mut record = json!({"source":ids.iter().position(|id|*id==object.id()),
             "selected":document.is_selected(object.id()),"name":attributes.name(),
             "layer":layers.iter().position(|l|*l==attributes.layer_id()),"color":[color.red,color.green,color.blue],
-            "groups":memberships}))
+            "groups":memberships});
+        if let Geometry::Mesh(mesh) = object.geometry() {
+            record["mesh"] = polygon_mesh_value(mesh);
+        } else if let Some(curve) = object.geometry().curve_ref() {
+            record["curve"] = crate::curve_interchange::curve_record(curve)?;
+        } else { return Err(invalid()); }
+        Ok(record)
     }).collect::<Result<Vec<_>,ProbeError>>()?;
-    let mut result = json!({"succeeded":true,"objects":objects});
+    let mut result = json!({"succeeded":succeeded,"objects":objects});
     if f.absolute_tolerance.is_some() {
         result["absolute_tolerance"] = json!(tolerance.absolute());
     }

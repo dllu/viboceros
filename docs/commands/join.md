@@ -1,4 +1,4 @@
-# Join
+# Join and JoinCopy
 
 [Command reference](README.md) · [Curve joining details](../curve-editing.md)
 
@@ -6,11 +6,34 @@
 Join
 Join JoinDisjointMeshes=Yes
 Join JoinDisjointMeshes=No
+JoinCopy
+JoinCopy JoinDisjointMeshes=No
 ```
 
-`Join` accepts selected curves or selected polygon meshes. The command-first
+`Join` and `JoinCopy` accept selected curves or selected polygon meshes. The command-first
 workflow filters eligible objects and exposes the remembered mesh option.
 Mixed object families, surfaces, B-reps, and SubD joining remain unimplemented.
+
+`JoinCopy` retains all original objects, including their exact geometry, IDs,
+attributes, and groups. Outputs inherit their seed's attributes and memberships.
+Preselection leaves originals and outputs selected; command-first selection
+clears selection. Neither command expands selection to unselected group peers.
+Disconnected curves and single selected objects are not duplicated. With
+multiple meshes and `JoinDisjointMeshes=No`, even isolated mesh components
+produce fresh copies. Both commands use the same staged geometry/document path.
+
+## Curves
+
+Preselection scans document table order and batch-joins all compatible chains,
+using majority direction and chord-length parameters for linear outputs.
+Individual command-first picks extend only the first open curve, in pick order;
+skipped curves are not revisited and a second unrelated chain is not started.
+The seed's direction and parameter interval are retained in this mode.
+See [curve joining details](../curve-editing.md) for endpoint matching.
+
+A single open curve or disconnected open curves succeed without geometry edits.
+Existing closed curves are ignored when open curves are present; an all-closed
+selection fails and is released without changing geometry or undo/redo history.
 
 ## Meshes
 
@@ -55,8 +78,8 @@ indices are not welded together.
 
 ## Architecture and validation
 
-The command's `join` module separates family dispatch, selection and preferences
-from its existing curve policy. Kernel `mesh/append` performs checked linear
+The command's `join` module separates curve/mesh geometry staging from shared
+copying, deletion, direct selection, and preferences. Kernel `mesh/append` performs checked linear
 concatenation; `mesh/join` handles matching, connectivity, and orientation.
 Candidate matching uses a widest-axis sweep, with 100,000 inputs, one million
 matching pairs, and 16 million candidate scans as resource ceilings. Exhausting
@@ -79,12 +102,22 @@ Independent tests check concatenation arithmetic, 10,000 appended meshes,
 2,000 disconnected outputs, 256 randomized alignment cases against a literal
 all-pairs reference, bounded direct movement, input preservation, groups,
 two undo/redo cycles, error rollback, and the app's object-selection workflow.
-The checkpoint passes 2,676 Rust tests (18 existing ignored tests), 209 Python
-tests, Clippy with warnings denied, and rustdoc with warnings denied.
+
+The additional [140-case workflow fixture](../../tools/rhino_oracle/fixtures/join_workflow.json)
+and [raw observations](../../tools/rhino_oracle/observations/join_workflow.json)
+check both commands, both selection modes, source identity/retention, creation
+order, layers/colors/groups, no-ops, closed inputs, independent chains, NURBS/line
+joins, unrelated nonlinear curves, and effective native parameter domains.
+They compare every recorded field, with absolute epsilon `1e-10` and relative
+epsilon `1e-12` for numbers; mesh indices and document metadata agree exactly.
+See the [workflow comparison](../join-workflow-comparison.json).
+Unit tests also verify exact source preservation, group reverse indices, atomic
+undo/redo over two cycles, and app command-first picking for both commands.
 
 ```sh
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/mesh_join.json --timeout 420
-cargo test --release -p viboceros-oracle mesh_join::tests
+cargo test --release -p viboceros-oracle join_command::tests
+tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/join_workflow.json --timeout 360 --relative-epsilon 1e-12
 ```
 
 Normals, texture coordinates, per-vertex colors, ngons, restricted-source
@@ -92,3 +125,13 @@ deletion behavior, and arbitrary conflicting orientation cycles need further
 coverage or implementation. Inputs outside finite binary32 coordinate range
 retain binary64 matching natively; Rhino parity for that range is unproven.
 These observations establish the recorded cases, not full mesh compatibility.
+
+Four [closed-chain diagnostics](../../tools/rhino_oracle/fixtures/join_closed_chain_diagnostic.json)
+retain [raw nonmatching results](../../tools/rhino_oracle/observations/join_closed_chain_diagnostic.json).
+Rhino may finish an individually picked Join as soon as its chain closes, so
+later `_SelID` macro tokens execute outside Join and can select unrelated objects.
+Closed-chain seams and parameter origins also differ. These are not included in
+the 140 passing cases; neither early completion nor general cycle parameter
+parity is claimed. Batch picks during a command, Undo-within-prompt, edge
+subobjects, cross-command sharing of remembered options, and Rhino construction
+history associations for JoinCopy still need independent coverage/implementation.

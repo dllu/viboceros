@@ -53,6 +53,51 @@ fn seeded_join_preserves_the_seed_domain_and_does_not_revisit_skipped_sources() 
 }
 
 #[test]
+fn seeded_join_does_not_start_a_second_chain_and_unrelated_curves_do_not_change_representation() {
+    let mut inputs = vec![
+        line([0., 0.], [1., 0.]),
+        line([1., 0.], [2., 0.]),
+        line([10., 0.], [11., 0.]),
+        line([11., 0.], [12., 0.]),
+    ];
+    inputs.push(Curve3::NurbsCurve(
+        NurbsCurve::try_clamped_uniform(2, vec![p(20., 0.), p(21., 1.), p(22., 0.)]).unwrap(),
+    ));
+    let before = inputs.clone();
+    for style in [CurveJoinStyle::Seeded, CurveJoinStyle::Batch] {
+        let joined = join_curves(
+            &inputs,
+            CurveJoinOptions {
+                tolerance: 1e-6,
+                preserve_direction: false,
+                style,
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let chains = joined
+            .iter()
+            .filter(|c| c.source_indices().len() > 1)
+            .collect::<Vec<_>>();
+        assert_eq!(
+            chains.len(),
+            if style == CurveJoinStyle::Seeded {
+                1
+            } else {
+                2
+            }
+        );
+        assert!(
+            chains
+                .iter()
+                .all(|c| matches!(c.curve(), Curve3::Polyline(_)))
+        );
+        assert_eq!(chains[0].source_indices(), [0, 1]);
+        assert_eq!(inputs, before);
+    }
+}
+
+#[test]
 fn exact_and_extreme_tolerance_matching_scales_for_separated_vertical_data() {
     let curves = (0..5000)
         .map(|index| line([0.0, 3.0 * index as Real], [0.0, 3.0 * index as Real + 1.0]))

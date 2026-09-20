@@ -1,98 +1,68 @@
-//! Existing curve-chain policy, separate from mesh joining.
+//! Curve-chain policy; copying/deletion and selection belong to the command.
 use super::*;
 
-pub(super) fn run(document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-    require_consumed(arguments, 0, "Join")?;
-    let inputs = selected_join_curves(document)?;
-    if inputs.len() < 2 {
-        return Err(CommandError::NotEnoughCurvesToJoin);
-    }
-    let curves = inputs
+pub(super) fn stage(
+    sources: &[&viboceros_document::Object],
+    tolerance: Tolerance,
+    postselected: bool,
+) -> Result<JoinPlan, CommandError> {
+    let curves = sources
         .iter()
-        .map(|input| input.curve.clone())
-        .collect::<Vec<_>>();
-    let components = join_curves(
-        &curves,
-        CurveJoinOptions {
-            tolerance: document.tolerance().absolute(),
-            preserve_direction: false,
-            style: viboceros_geometry::CurveJoinStyle::Seeded,
-        },
-        document.tolerance(),
-    )?;
-    let replacements = components
-        .iter()
-        .filter(|component| component.source_indices().len() > 1)
-        .map(|component| {
-            let source_indices = component.source_indices().to_vec();
-            let attributes = inputs[source_indices[0]].attributes.clone();
-            (source_indices, component.curve().clone(), attributes)
+        .map(|o| {
+            o.geometry()
+                .curve_ref()
+                .ok_or(CommandError::UnsupportedJoinGeometry)
+                .map(|c| c.to_owned())
         })
-        .collect::<Vec<_>>();
-    if replacements.is_empty() {
-        return Err(CommandError::NoJoinableCurves);
-    }
-
-    let joined_curve_count = replacements
-        .iter()
-        .map(|(sources, _, _)| sources.len())
-        .sum::<usize>();
-    let unchanged = inputs.len() - joined_curve_count;
-    let unchanged_ids = components
-        .iter()
-        .filter(|component| component.source_indices().len() == 1)
-        .map(|component| inputs[component.source_indices()[0]].id)
-        .collect::<Vec<_>>();
-    let mut result_ids = Vec::with_capacity(replacements.len());
-    for (sources, curve, attributes) in replacements {
-        let groups = document
-            .object(inputs[sources[0]].id)
-            .expect("join seed object")
-            .group_ids()
-            .to_vec();
-        let id = document.add_geometry_with_attributes(Geometry::from(curve), attributes)?;
-        for group in groups {
-            document.add_group_members(group, [id])?;
+        .collect::<Result<Vec<_>, _>>()?;
+    // Closed selections survive untouched and do not affect the curve-family
+    // assembly decision, but the entire family has been preflighted above.
+    let mut indices = Vec::new();
+    let mut open = Vec::new();
+    for (index, curve) in curves.into_iter().enumerate() {
+        if !curve.as_ref().is_closed()? {
+            indices.push(index);
+            open.push(curve);
         }
-        for source in sources {
-            document.delete_object(inputs[source].id)?;
-        }
-        result_ids.push(id);
     }
-    replace_selection(
-        document,
-        unchanged_ids.into_iter().chain(result_ids.iter().copied()),
+    if open.is_empty() {
+        return Err(CommandError::NoOpenCurvesToJoin);
+    }
+    let components = join_curves(
+        &open,
+        CurveJoinOptions {
+            tolerance: tolerance.absolute(),
+            preserve_direction: false,
+            style: if postselected {
+                viboceros_geometry::CurveJoinStyle::Seeded
+            } else {
+                viboceros_geometry::CurveJoinStyle::Batch
+            },
+        },
+        tolerance,
     )?;
-    Ok(format!(
-        "Joined {joined_curve_count} curve(s) into {} curve(s); {unchanged} curve(s) unchanged",
-        result_ids.len()
-    ))
-}
-
-#[derive(Clone)]
-struct SelectedJoinCurve {
-    id: ObjectId,
-    curve: Curve3,
-    attributes: ObjectAttributes,
-}
-
-fn selected_join_curves(document: &Document) -> Result<Vec<SelectedJoinCurve>, CommandError> {
-    let mut inputs = Vec::new();
-    for object in document.selected_objects() {
-        let curve = object
-            .geometry()
-            .curve_ref()
-            .ok_or(CommandError::UnsupportedJoinGeometry)?
-            .to_owned();
-        inputs.push(SelectedJoinCurve {
-            id: object.id(),
-            curve,
-            attributes: object.attributes().clone(),
-        });
+    let mut copies = Vec::new();
+    let mut consumed = Vec::new();
+    for component in components {
+        let joined = component.source_indices();
+        if joined.len() < 2 {
+            continue;
+        }
+        copies.push((
+            sources[indices[joined[0]]].id(),
+            Geometry::from(component.curve().clone()),
+        ));
+        consumed.extend(joined.iter().map(|&i| sources[indices[i]].id()));
     }
-    if inputs.is_empty() {
-        Err(CommandError::NoObjectsSelected)
-    } else {
-        Ok(inputs)
-    }
+    let description = format!(
+        "Joined {} curve(s) into {} curve(s); {} curve(s) unchanged",
+        consumed.len(),
+        copies.len(),
+        sources.len() - consumed.len()
+    );
+    Ok(JoinPlan {
+        copies,
+        consumed,
+        description,
+    })
 }

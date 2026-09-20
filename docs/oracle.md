@@ -2,11 +2,16 @@
 
 [Project overview](../README.md)
 
-The `mesh_join_command` probe has 181 raw command records covering both
+The `join_command` probe has 181 raw mesh records covering both
 `JoinDisjointMeshes` choices, precision thresholds, ordered selection, winding,
 attributes, groups, and identity replacement. It checks identical binary64
 vertices and face indices before and after inserting each Rhino source;
-no output normalization is used. See [mesh joining](commands/join.md).
+no mesh output normalization is used. A further 140 paired Join/JoinCopy
+workflow records cover curves and meshes, selection, no-ops, and source retention.
+Curve records include native type, domains, sampled positions, NURBS definitions,
+and effective polycurve segment domains (native segments have local domains plus
+affine maps). Four closed-chain early-completion/seam diagnostics remain separate
+from the passing set. See [joining evidence and limits](commands/join.md).
 
 Border duplication has 86 matching live command records and offline replay
 checks, including edge-table permutations. See [border validation](borders.md)

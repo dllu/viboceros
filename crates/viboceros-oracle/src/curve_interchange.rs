@@ -179,11 +179,14 @@ fn validate_source_locus(
 pub(super) fn curve_record(curve: CurveRef<'_>) -> Result<Value, ProbeError> {
     let kind = match curve {
         CurveRef::Line(_) => "line",
-        CurveRef::Arc(_) => "arc",
+        CurveRef::Arc(_) | CurveRef::Circle(_) => "arc",
         CurveRef::Polyline(_) => "polyline",
         CurveRef::NurbsCurve(_) => "nurbs",
         CurveRef::PolyCurve(_) => "polycurve",
-        _ => return Err(ProbeError::FixtureInvariant("unexpected file curve type")),
+        CurveRef::Ellipse(_) => {
+            // Rhino represents a full ellipse as an exact rational NURBS.
+            return curve_record(CurveRef::NurbsCurve(&curve.to_nurbs()?));
+        }
     };
     let samples = (0..=32)
         .map(|i| {
@@ -212,7 +215,10 @@ pub(super) fn curve_record(curve: CurveRef<'_>) -> Result<Value, ProbeError> {
         value["segments"] = json!(
             c.segments()
                 .iter()
-                .map(|s| curve_record(s.as_ref()))
+                .enumerate()
+                // Rhino's SegmentCurve exposes the effective parent interval.
+                // Native segments retain local domains plus an affine map.
+                .map(|(i, s)| curve_record(s.try_reparameterized(c.segment_domain(i)?)?.as_ref()))
                 .collect::<Result<Vec<_>, _>>()?
         );
     }

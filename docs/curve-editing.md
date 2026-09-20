@@ -15,15 +15,15 @@ the Rust circle reconstruction uses the endpoint/chord/tangent geometry directly
 
 The kernel exposes two explicitly different `CurveJoinStyle` policies:
 
-- `Batch` matches nearest compatible endpoints, using tangent alignment to break
+- `Batch`, used for preselection, matches nearest compatible endpoints, using tangent alignment to break
   distance ties. It forms independent chains, prefers the majority of original
   directions, and favors the last source on a direction tie. Linear outputs are
   chord-length-parameterized polylines, retaining intermediate vertices.
-- `Seeded`, used by `Join`, extends the earliest unused source in one pass through
+- `Seeded`, used for individual command-first picks, extends only the first open source in one pass through
   later inputs. An earlier skipped source is not revisited after a later extension.
   The seed's direction and original parameter interval are retained, including
   negative parameters when another curve is prepended. Linear inputs preserve
-  their individual vertex parameters.
+  their individual vertex parameters. Unrelated later chains are not joined.
 
 These differences were observed separately in Rhino's public `JoinCurves` API
 and interactive command. Endpoints of two flexible curves move to their midpoint.
@@ -37,7 +37,16 @@ joined, or nested-and-flattened polycurves.
 The command creates new joined object IDs, inherits the earliest source's
 attributes and group memberships, deletes consumed inputs, and leaves disconnected
 inputs unchanged. It stages validation and records one atomic undo step.
-Preselection uses the document's recorded selection order, not UUID ordering.
+Preselection scans document table order; command-first picks retain pick order.
+`JoinCopy` follows the same policies without deleting consumed sources. Linear
+representation is decided per chain: unrelated nonlinear inputs cannot turn a
+line chain into a polycurve. See [Join/JoinCopy](commands/join.md) for selection,
+no-op behavior, measured workflow coverage, and outstanding closed-chain limits.
+
+The older `curve_join_close` command probe used native preselection while its
+Rhino worker used command-first picks. It now invokes native postselection too;
+the newer `join_command` probe measures both workflows explicitly, including
+selection and creation order, without sorting objects by name.
 
 Positive tolerances use spatial endpoint buckets. Exact-zero tolerance uses exact
 coordinate keys; extreme coordinates use a widest-axis sweep. Limits of 100,000
@@ -62,8 +71,8 @@ Closure keeps object IDs, attributes, groups, selection, and atomic undo/redo.
 
 ## Evidence and remaining limits
 
-The 39-case `curve_join_close.json` fixture was compared with Rhino
-8.32.26160.13001 using absolute epsilon `1e-8` and relative epsilon `1e-10`;
+The 39-case `curve_join_close.json` fixture was rechecked after the workflow
+corrections against Rhino 8.32.26160.13001 using absolute and relative epsilons `1e-10`;
 observed maximum numeric difference was below `1.6e-12`. This covers rational
 definitions, domains, orientation, short/wide closure, branch and shuffled input,
 two-arc matching, native polyline parameters, and command identity/group behavior.

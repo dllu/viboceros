@@ -57,7 +57,7 @@ mod distribute;
 mod document_units;
 mod group_memberships;
 mod group_picking;
-mod mesh_join;
+mod join_command;
 mod object_layout;
 mod object_source;
 mod plane_arrays;
@@ -203,10 +203,10 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: border::BorderFixture,
     },
-    MeshJoinCommand {
+    JoinCommand {
         id: String,
         #[serde(flatten)]
-        fixture: mesh_join::MeshJoinFixture,
+        fixture: join_command::JoinFixture,
     },
     GroupMemberships {
         id: String,
@@ -1638,7 +1638,7 @@ impl Operation {
             | Self::Distribute { id, .. }
             | Self::Align { id, .. }
             | Self::BorderCommand { id, .. }
-            | Self::MeshJoinCommand { id, .. }
+            | Self::JoinCommand { id, .. }
             | Self::GroupMemberships { id, .. }
             | Self::GroupPicking { id, .. }
             | Self::UndoSelection { id, .. }
@@ -2046,7 +2046,7 @@ fn execute(
         Operation::Distribute { fixture, .. } => distribute::run(fixture, tolerance)?,
         Operation::Align { fixture, .. } => align::run(fixture, tolerance)?,
         Operation::BorderCommand { fixture, .. } => border::run(fixture, tolerance)?,
-        Operation::MeshJoinCommand { fixture, .. } => mesh_join::run(fixture, tolerance)?,
+        Operation::JoinCommand { fixture, .. } => join_command::run(fixture, tolerance)?,
         Operation::GroupMemberships { fixture, .. } => group_memberships::run(fixture, tolerance)?,
         Operation::GroupPicking { fixture, .. } => group_picking::run(fixture, tolerance)?,
         Operation::UndoSelection { fixture, .. } => undo_selection::run(fixture, tolerance)?,

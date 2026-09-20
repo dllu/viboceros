@@ -17,7 +17,8 @@ const MAX_JOIN_SCANS: usize = 16_000_000;
 pub enum CurveJoinStyle {
     /// Batch API: majority direction and chord-length linear outputs.
     Batch,
-    /// Extend the earliest source, retaining its direction and interval.
+    /// Extend only the first open source in one pass, retaining its direction
+    /// and interval. Unconnected sources remain singleton components.
     Seeded,
 }
 
@@ -86,16 +87,6 @@ pub fn join_curves(
             maximum: MAX_JOIN_INPUTS,
         });
     }
-    let all_linear = curves.iter().all(|curve| match curve {
-        Curve3::Line(_) | Curve3::Polyline(_) => true,
-        Curve3::NurbsCurve(curve) => {
-            curve.degree() == 1
-                && curve.knots()[1..curve.knots().len() - 1]
-                    .windows(2)
-                    .all(|pair| pair[0] < pair[1])
-        }
-        _ => false,
-    });
     let mut endpoints = Vec::with_capacity(curves.len() * 2);
     let mut ends = vec![None; curves.len()];
     for (index, curve) in curves.iter().enumerate() {
@@ -201,6 +192,17 @@ pub fn join_curves(
         }
         let mut sources = chain.iter().map(|(index, _)| *index).collect::<Vec<_>>();
         sources.sort_unstable();
+        // Representation is a property of this chain, not unrelated inputs.
+        let all_linear = chain.iter().all(|&(index, _)| match &curves[index] {
+            Curve3::Line(_) | Curve3::Polyline(_) => true,
+            Curve3::NurbsCurve(curve) => {
+                curve.degree() == 1
+                    && curve.knots()[1..curve.knots().len() - 1]
+                        .windows(2)
+                        .all(|pair| pair[0] < pair[1])
+            }
+            _ => false,
+        });
         let output = if chain.len() == 1 {
             if all_linear {
                 Curve3::Polyline(
@@ -413,13 +415,12 @@ fn seeded_partners(
     let mut partners = vec![None; endpoints.len()];
     let mut assigned = vec![false; ends.len()];
     let mut scans = 0;
-    for (seed, seed_ends) in ends.iter().enumerate() {
-        let Some(mut free) = *seed_ends else {
-            continue;
-        };
-        if assigned[seed] {
-            continue;
-        }
+    if let Some((seed, Some(mut free))) = ends
+        .iter()
+        .copied()
+        .enumerate()
+        .find(|(_, ends)| ends.is_some())
+    {
         assigned[seed] = true;
         let mut last_source = seed;
         loop {

@@ -21,7 +21,7 @@ Rhino's complete command set is still a work in progress.
 - [Object and group distribution](distribute.md)
 - [Object and group alignment](align.md)
 - [Splitting curves and surfaces](split.md)
-- [Joining curves and meshes](join.md)
+- [Joining curves and meshes; JoinCopy](join.md)
 - [Extraction, measurement, and intersections](editing.md)
 - [Angle, distance, length, area, and volume queries](measurements.md)
 - [Local curve radius and diameter](radius.md)
@@ -187,6 +187,7 @@ UngroupAll
 Ungroup Assembly
 Join
 Join JoinDisjointMeshes=Yes
+JoinCopy
 Explode
 Length
 Curvature MarkCurvature=No 2,0,0

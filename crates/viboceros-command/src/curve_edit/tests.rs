@@ -1,7 +1,7 @@
 use super::*;
 
 #[test]
-fn join_uses_selection_order_for_seed_direction_and_attributes() {
+fn command_first_join_uses_pick_order_for_seed_direction_and_attributes() {
     let mut document = Document::default();
     let point = |x, y| Point3::try_new(x, y, 0.0).unwrap();
     let first = document
@@ -26,7 +26,7 @@ fn join_uses_selection_order_for_seed_direction_and_attributes() {
         .unwrap();
     document.select_object(first, SelectionMode::Add).unwrap();
     CommandRegistry::with_builtins()
-        .execute(&mut document, "Join")
+        .execute_postselected(&mut document, "Join", Default::default())
         .unwrap();
     let object = document.objects().next().unwrap();
     assert_eq!(object.attributes().name(), Some("first-selected"));
