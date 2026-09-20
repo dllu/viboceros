@@ -1,0 +1,221 @@
+{
+  "captured_utc": "2026-09-20 11:20:40 UTC",
+  "architecture": "aarch64",
+  "rustc": "1.95.0 (59807616e 2026-04-14)",
+  "build_profile": "release",
+  "cpu_affinity": [
+    5
+  ],
+  "native_baseline_commit": "f4a9a110b2d59c83c3a9f57d3439016a3413fe98",
+  "before_executable_sha256": "46f3a397a2b6aa07a70ab3d8aa743192aa7c4429418f695503cf9a62c975fe78",
+  "after_executable_sha256": "44d47dd9cfe8111996f2524642bf593f38fd27a855c8f913f6fff28c21571a32",
+  "before_executable_provenance": "Pre-change release oracle preserved before rebuilding.",
+  "after_description": "Exact mixed-weight/pole/failure surface dispatch, affine-difference polynomial continuation, exact grid contractions, and shared exact dyadic recurrences.",
+  "fixtures": [
+    "tools/rhino_oracle/fixtures/surface-closest-point.json",
+    "tools/rhino_oracle/fixtures/surface-closest-curvature.json"
+  ],
+  "request_reconstruction": "Concatenate both fixtures' operations in the listed order, set iterations to 200, repeat the nine operations in order five times, suffixing IDs with -round-1 through -round-5.",
+  "timing_method": "Run the preserved before executable then the final after executable, each pinned to CPU 5. Median of five raw elapsed_ns records divided by iterations and queries per batch. No timing assertions.",
+  "host_conditions": "Builds had finished. One exhaustive debug grid test was still running, last observed on CPU 15. Affinity does not isolate a core, fix clock frequency, or remove host-load effects.",
+  "iterations_per_round": 200,
+  "rounds": 5,
+  "correctness": {
+    "before_after_operations": 45,
+    "before_after_queries": 190,
+    "values_bitwise_equal": true,
+    "comparison": "Recursive numeric Object.is comparison of every result value, including signed zero, parameters, normalized parameters, points, and distances; timings excluded."
+  },
+  "scope": "Ordinary-weight closest-point guard overhead only, not exact mixed-weight or variable-weight continuation cost; no Rhino kernel-speed claim.",
+  "cases": [
+    {
+      "id": "plane-unit",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        590993,
+        595168,
+        588464,
+        587601,
+        589312
+      ],
+      "after_elapsed_ns": [
+        588304,
+        590336,
+        585600,
+        587616,
+        587601
+      ],
+      "before_ns_per_query": 982.1866666666666,
+      "after_ns_per_query": 979.36,
+      "change_percent": -0.28779322328410517
+    },
+    {
+      "id": "plane-wide-u",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        592672,
+        589184,
+        587280,
+        590864,
+        585360
+      ],
+      "after_elapsed_ns": [
+        589392,
+        590497,
+        589344,
+        587808,
+        586816
+      ],
+      "before_ns_per_query": 981.9733333333334,
+      "after_ns_per_query": 982.2399999999999,
+      "change_percent": 0.02715620247664141
+    },
+    {
+      "id": "plane-anisotropic",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        596784,
+        593216,
+        589792,
+        588656,
+        589088
+      ],
+      "after_elapsed_ns": [
+        586544,
+        585152,
+        587312,
+        586384,
+        586400
+      ],
+      "before_ns_per_query": 982.9866666666667,
+      "after_ns_per_query": 977.3333333333334,
+      "change_percent": -0.5751180077044116
+    },
+    {
+      "id": "skew-anisotropic",
+      "queries_per_batch": 2,
+      "before_elapsed_ns": [
+        410320,
+        414784,
+        412032,
+        408816,
+        407152
+      ],
+      "after_elapsed_ns": [
+        409024,
+        406320,
+        405312,
+        405904,
+        407168
+      ],
+      "before_ns_per_query": 1025.8,
+      "after_ns_per_query": 1015.8,
+      "change_percent": -0.9748488984207437
+    },
+    {
+      "id": "cylinder-unit",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        76147323,
+        74821691,
+        74597707,
+        74735579,
+        74615931
+      ],
+      "after_elapsed_ns": [
+        78112331,
+        76923563,
+        76686251,
+        76724987,
+        76729403
+      ],
+      "before_ns_per_query": 124559.29833333334,
+      "after_ns_per_query": 127882.33833333333,
+      "change_percent": 2.6678377643933215
+    },
+    {
+      "id": "cylinder-anisotropic",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        80518860,
+        79551036,
+        80322876,
+        79731452,
+        80358956
+      ],
+      "after_elapsed_ns": [
+        82553740,
+        81958876,
+        82353308,
+        81808588,
+        82386380
+      ],
+      "before_ns_per_query": 133871.46,
+      "after_ns_per_query": 137255.51333333334,
+      "change_percent": 2.5278377731394963
+    },
+    {
+      "id": "paraboloid-unit",
+      "queries_per_batch": 9,
+      "before_elapsed_ns": [
+        534856527,
+        539560799,
+        518857212,
+        525038701,
+        532578014
+      ],
+      "after_elapsed_ns": [
+        545303103,
+        546289360,
+        522899404,
+        529809164,
+        537808766
+      ],
+      "before_ns_per_query": 295876.6744444444,
+      "after_ns_per_query": 298782.6477777778,
+      "change_percent": 0.9821569540044983
+    },
+    {
+      "id": "paraboloid-anisotropic",
+      "queries_per_batch": 9,
+      "before_elapsed_ns": [
+        554156338,
+        549466272,
+        544593232,
+        552749729,
+        547196512
+      ],
+      "after_elapsed_ns": [
+        568238147,
+        554063601,
+        548939264,
+        557563265,
+        551907455
+      ],
+      "before_ns_per_query": 305259.04,
+      "after_ns_per_query": 307813.11166666663,
+      "change_percent": 0.8366899360840119
+    },
+    {
+      "id": "saddle-unit",
+      "queries_per_batch": 3,
+      "before_elapsed_ns": [
+        72489739,
+        72437163,
+        72500282,
+        72419659,
+        72627627
+      ],
+      "after_elapsed_ns": [
+        74342650,
+        74297403,
+        74105211,
+        74220410,
+        74422571
+      ],
+      "before_ns_per_query": 120816.23166666667,
+      "after_ns_per_query": 123829.005,
+      "change_percent": 2.49368258864886
+    }
+  ]
+}

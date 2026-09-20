@@ -1,4 +1,4 @@
-//! Guarded exact-rational evaluation when binary64 homogeneous preparation loses range.
+//! Exact-rational surface jets for range loss, signed cancellation, and continuation.
 use super::*;
 use crate::nurbs::exact::{Direction, Homogeneous, Rational, rational, scalar, vector};
 use num_traits::Zero;
@@ -19,6 +19,43 @@ fn tensor(
 }
 
 impl NurbsSurface {
+    pub(super) fn exact_controls(&self, [span_u, span_v]: [usize; 2]) -> Vec<Homogeneous> {
+        (span_v - self.degree_v..=span_v)
+            .flat_map(|j| {
+                (span_u - self.degree_u..=span_u).map(move |i| {
+                    let control = self.control_points[self.control_index(i, j)];
+                    let p = control.point();
+                    let w = rational(control.weight());
+                    [
+                        rational(p.x()) * &w,
+                        rational(p.y()) * &w,
+                        rational(p.z()) * &w,
+                        w,
+                    ]
+                })
+            })
+            .collect()
+    }
+
+    pub(super) fn exact_point_from_homogeneous(
+        &self,
+        parameters: [Real; 2],
+        spans: [usize; 2],
+        h: &Homogeneous,
+    ) -> Result<Point3, GeometryError> {
+        if h[3].is_zero() {
+            return Err(GeometryError::ZeroWeightAtParameter);
+        }
+        if let Some(point) = self.interpolated_point(parameters, spans) {
+            return Ok(point);
+        }
+        Point3::try_new(
+            scalar(&(&h[0] / &h[3]))?,
+            scalar(&(&h[1] / &h[3]))?,
+            scalar(&(&h[2] / &h[3]))?,
+        )
+    }
+
     pub(super) fn exact_jet_at_spans(
         &self,
         parameters: [Real; 2],
@@ -37,22 +74,11 @@ impl NurbsSurface {
             span: spans[1],
             parameter: parameters[1],
         };
-        let net = (v.span - v.degree..=v.span)
-            .flat_map(|j| {
-                (u.span - u.degree..=u.span).map(move |i| {
-                    let control = self.control_points[self.control_index(i, j)];
-                    let p = control.point();
-                    let w = rational(control.weight());
-                    [
-                        rational(p.x()) * &w,
-                        rational(p.y()) * &w,
-                        rational(p.z()) * &w,
-                        w,
-                    ]
-                })
-            })
-            .collect::<Vec<_>>();
+        let net = self.exact_controls(spans);
         let h = tensor(&net, u, v)?;
+        if order == 0 {
+            return point_jet(self.exact_point_from_homogeneous(parameters, spans, &h)?);
+        }
         let w = &h[3];
         if w.is_zero() {
             return Err(GeometryError::ZeroWeightAtParameter);
@@ -64,9 +90,6 @@ impl NurbsSurface {
             Point3::try_new(scalar(&p[0])?, scalar(&p[1])?, scalar(&p[2])?)?
         };
         let mut jet = point_jet(point)?;
-        if order == 0 {
-            return Ok(jet);
-        }
         let net_u = u.derivative_controls(&net, u.degree + 1, true)?;
         let net_v = v.derivative_controls(&net, u.degree + 1, false)?;
         let hu = tensor(&net_u, u.differentiated(), v)?;

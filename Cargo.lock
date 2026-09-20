@@ -3673,6 +3673,7 @@ version = "0.1.0"
 dependencies = [
  "faer",
  "nalgebra",
+ "num-bigint",
  "num-rational",
  "num-traits",
  "spade",

@@ -5023,7 +5023,7 @@ pub(crate) fn de_boor<const DIMENSION: usize>(
     parameter: Real,
     mut work: Vec<[Real; DIMENSION]>,
 ) -> Result<[Real; DIMENSION], GeometryError> {
-    de_boor_impl::<DIMENSION, false>(knots, degree, span, parameter, &mut work)
+    de_boor_impl::<DIMENSION, false, false>(knots, degree, span, parameter, &mut work)
 }
 
 /// Evaluate the polynomial represented by a selected span, including its
@@ -5047,10 +5047,23 @@ pub(crate) fn de_boor_extended_in_place<const DIMENSION: usize>(
     parameter: Real,
     work: &mut [[Real; DIMENSION]],
 ) -> Result<[Real; DIMENSION], GeometryError> {
-    de_boor_impl::<DIMENSION, true>(knots, degree, span, parameter, work)
+    de_boor_impl::<DIMENSION, true, false>(knots, degree, span, parameter, work)
 }
 
-fn de_boor_impl<const DIMENSION: usize, const EXTENDED: bool>(
+/// Polynomial continuation using affine differences outside each knot interval.
+/// This preserves constant components even when `1 - alpha` loses its unit term.
+/// An overflowing difference is an error; callers may recover using exact inputs.
+pub(crate) fn de_boor_polynomial_extended<const DIMENSION: usize>(
+    knots: &[Real],
+    degree: usize,
+    span: usize,
+    parameter: Real,
+    mut work: Vec<[Real; DIMENSION]>,
+) -> Result<[Real; DIMENSION], GeometryError> {
+    de_boor_impl::<DIMENSION, true, true>(knots, degree, span, parameter, &mut work)
+}
+
+fn de_boor_impl<const DIMENSION: usize, const EXTENDED: bool, const AFFINE_BLEND: bool>(
     knots: &[Real],
     degree: usize,
     span: usize,
@@ -5070,7 +5083,13 @@ fn de_boor_impl<const DIMENSION: usize, const EXTENDED: bool>(
             };
             work[local_index] = if EXTENDED && !(0.0..=1.0).contains(&alpha) {
                 let result = std::array::from_fn(|i| {
-                    work[local_index - 1][i].mul_add(1.0 - alpha, work[local_index][i] * alpha)
+                    let a = work[local_index - 1][i];
+                    let b = work[local_index][i];
+                    if AFFINE_BLEND {
+                        (b - a).mul_add(alpha, a)
+                    } else {
+                        a.mul_add(1.0 - alpha, b * alpha)
+                    }
                 });
                 require_finite(result, "homogeneous NURBS continuation")?;
                 result

@@ -1,8 +1,8 @@
-use crate::nurbs::{de_boor_extended, stable_divided_difference};
+use crate::nurbs::{de_boor_extended, de_boor_polynomial_extended, stable_divided_difference};
 use crate::{GeometryError, Point3, Real, Vector3};
 
 #[allow(clippy::too_many_arguments)]
-pub(super) fn evaluate_tensor_product(
+pub(super) fn evaluate_tensor_product<const POLYNOMIAL: bool>(
     controls: &[[Real; 4]],
     row_width: usize,
     knots_u: &[Real],
@@ -15,17 +15,16 @@ pub(super) fn evaluate_tensor_product(
     v: Real,
 ) -> Result<[Real; 4], GeometryError> {
     debug_assert_eq!(controls.len(), row_width * (degree_v + 1));
+    let evaluate = if POLYNOMIAL {
+        de_boor_polynomial_extended
+    } else {
+        de_boor_extended
+    };
     let mut evaluated_u = Vec::with_capacity(degree_v + 1);
     for row in controls.chunks_exact(row_width) {
-        evaluated_u.push(de_boor_extended(
-            knots_u,
-            degree_u,
-            span_u,
-            u,
-            row.to_vec(),
-        )?);
+        evaluated_u.push(evaluate(knots_u, degree_u, span_u, u, row.to_vec())?);
     }
-    de_boor_extended(knots_v, degree_v, span_v, v, evaluated_u)
+    evaluate(knots_v, degree_v, span_v, v, evaluated_u)
 }
 
 pub(super) fn derivative_controls_u(

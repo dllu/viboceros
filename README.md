@@ -24,8 +24,10 @@ Enter `Help` to list commands, or `Help UI` for display and drafting controls.
 
 ## Development
 
+Release-mode tests keep the exhaustive exact-arithmetic checks practical.
+
 ```sh
-cargo test --workspace
+cargo test --workspace --release
 cargo clippy --workspace --all-targets -- -D warnings
 cargo fmt --all -- --check
 python3 -m unittest discover -s tools/rhino_oracle -t .

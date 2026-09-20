@@ -31,15 +31,31 @@ fn exact_surface_jets_match_independent_fraction_bernstein_reference_bits() {
             knots(dv, header[2], header[3]),
         )
         .unwrap();
-        assert!(
-            surface
-                .evaluation_controls([du, dv], true)
-                .unwrap()
-                .range_loss
-        );
         let expected = fields.collect::<Vec<_>>();
         let (u, v) = (header[4], header[5]);
         let extended = !surface.domain_u().contains(&u) || !surface.domain_v().contains(&v);
+        if !extended {
+            let mut grid_point = None;
+            surface.for_each_grid_point(&[u], &[v], |_, _, point| grid_point = Some(point));
+            let point = grid_point.unwrap();
+            if expected == ["pole"] {
+                assert_eq!(point, Err(GeometryError::ZeroWeightAtParameter));
+            } else {
+                let coordinates = expected[..3]
+                    .iter()
+                    .map(|value| parse(value))
+                    .collect::<Vec<_>>();
+                if coordinates.iter().any(|value| !value.is_finite()) {
+                    assert!(matches!(point, Err(GeometryError::NonFinite { .. })));
+                } else {
+                    assert_eq!(
+                        point.unwrap().to_array().map(Real::to_bits).as_slice(),
+                        coordinates.iter().map(|v| v.to_bits()).collect::<Vec<_>>(),
+                        "grid case {count}"
+                    );
+                }
+            }
+        }
         for order in 0..=2 {
             let result = surface.evaluate_jet([u, v], [ParameterSide::Right; 2], extended, order);
             if expected == ["pole"] {
@@ -81,6 +97,6 @@ fn exact_surface_jets_match_independent_fraction_bernstein_reference_bits() {
         }
         count += 1;
     }
-    assert_eq!(count, 70);
+    assert_eq!(count, 150);
     assert!(overflow_count > 0);
 }

@@ -1,14 +1,29 @@
 //! Tensor-grid point evaluation with the scalar evaluator's operation order.
 use super::*;
 use crate::nurbs::de_boor_extended_in_place;
+use crate::nurbs::exact::{Direction, Homogeneous};
 
 #[cfg(test)]
 mod tests;
 
 struct Column {
     span_u: usize,
+    contraction: Contraction,
+}
+
+enum Contraction {
+    Float(FloatColumn),
+    Exact(Vec<Homogeneous>),
+}
+
+struct FloatColumn {
     origin: Point3,
     homogeneous: Vec<[Real; 4]>,
+}
+
+enum Controls {
+    Float(EvaluationControls),
+    Exact(Vec<Homogeneous>),
 }
 
 impl NurbsSurface {
@@ -36,30 +51,56 @@ impl NurbsSurface {
                 span = next_span;
             }
             for (i, &u) in parameters_u.iter().enumerate() {
-                let cached = columns.get(i).and_then(Option::as_ref).and_then(|column| {
-                    let span_v = span?;
-                    work.copy_from_slice(&column.homogeneous);
-                    let h = de_boor_extended_in_place(
-                        &self.knots_v,
-                        self.degree_v,
-                        span_v,
-                        v,
-                        &mut work,
-                    )
-                    .ok()?;
-                    let local = project_homogeneous(h).ok()?;
-                    self.restore_point([u, v], [column.span_u, span_v], column.origin, local)
-                        .ok()
-                });
-                // Preserve the scalar path's validation precedence and errors,
-                // including its world-origin retry for signed-weight overflow.
-                visit(i, j, cached.map_or_else(|| self.evaluate(u, v), Ok));
+                let cached =
+                    columns
+                        .get(i)
+                        .and_then(Option::as_ref)
+                        .zip(span)
+                        .map(|(column, span_v)| match &column.contraction {
+                            Contraction::Exact(net) => {
+                                let direction = Direction {
+                                    knots: &self.knots_v,
+                                    degree: self.degree_v,
+                                    span: span_v,
+                                    parameter: v,
+                                };
+                                direction.evaluate(net.clone()).and_then(|h| {
+                                    self.exact_point_from_homogeneous(
+                                        [u, v],
+                                        [column.span_u, span_v],
+                                        &h,
+                                    )
+                                })
+                            }
+                            Contraction::Float(contraction) => {
+                                work.copy_from_slice(&contraction.homogeneous);
+                                de_boor_extended_in_place(
+                                    &self.knots_v,
+                                    self.degree_v,
+                                    span_v,
+                                    v,
+                                    &mut work,
+                                )
+                                .and_then(project_homogeneous)
+                                .and_then(|local| {
+                                    self.restore_point(
+                                        [u, v],
+                                        [column.span_u, span_v],
+                                        contraction.origin,
+                                        local,
+                                    )
+                                })
+                                .or_else(|_| self.evaluate(u, v))
+                            }
+                        });
+                // Invalid cells preserve the scalar path's validation precedence.
+                visit(i, j, cached.unwrap_or_else(|| self.evaluate(u, v)));
             }
         }
     }
 
     fn grid_columns(&self, parameters_u: &[Real], span_v: usize) -> Vec<Option<Column>> {
-        let mut active: Option<(usize, EvaluationControls)> = None;
+        let mut active: Option<(usize, Controls)> = None;
         let mut work = vec![[0.; 4]; self.degree_u + 1];
         parameters_u
             .iter()
@@ -68,33 +109,52 @@ impl NurbsSurface {
                     checked_span(self.degree_u, self.control_point_count_u, &self.knots_u, u)
                         .ok()?;
                 if active.as_ref().is_none_or(|(span, _)| *span != span_u) {
-                    let controls = self.evaluation_controls([span_u, span_v], true).ok()?;
+                    let controls = match self.evaluation_controls([span_u, span_v]) {
+                        Ok(controls) if !controls.needs_exact => Controls::Float(controls),
+                        _ => Controls::Exact(self.exact_controls([span_u, span_v])),
+                    };
                     active = Some((span_u, controls));
                 }
                 let (_, controls) = active.as_ref()?;
-                // Do not cache an already lossy floating-point representation.
-                // Scalar evaluation dispatches these cells to the exact path.
-                if controls.range_loss {
-                    return None;
-                }
-                let mut homogeneous = Vec::with_capacity(self.degree_v + 1);
-                for row in controls.homogeneous.chunks_exact(self.degree_u + 1) {
-                    work.copy_from_slice(row);
-                    homogeneous.push(
-                        de_boor_extended_in_place(
-                            &self.knots_u,
-                            self.degree_u,
-                            span_u,
-                            u,
-                            &mut work,
-                        )
-                        .ok()?,
-                    );
-                }
+                let contraction = match controls {
+                    Controls::Exact(net) => {
+                        let direction = Direction {
+                            knots: &self.knots_u,
+                            degree: self.degree_u,
+                            span: span_u,
+                            parameter: u,
+                        };
+                        let column = net
+                            .chunks_exact(self.degree_u + 1)
+                            .map(|row| direction.evaluate(row.to_vec()))
+                            .collect::<Result<Vec<_>, _>>()
+                            .ok()?;
+                        Contraction::Exact(column)
+                    }
+                    Controls::Float(controls) => {
+                        let mut homogeneous = Vec::with_capacity(self.degree_v + 1);
+                        for row in controls.homogeneous.chunks_exact(self.degree_u + 1) {
+                            work.copy_from_slice(row);
+                            homogeneous.push(
+                                de_boor_extended_in_place(
+                                    &self.knots_u,
+                                    self.degree_u,
+                                    span_u,
+                                    u,
+                                    &mut work,
+                                )
+                                .ok()?,
+                            );
+                        }
+                        Contraction::Float(FloatColumn {
+                            origin: controls.origin,
+                            homogeneous,
+                        })
+                    }
+                };
                 Some(Column {
                     span_u,
-                    origin: controls.origin,
-                    homogeneous,
+                    contraction,
                 })
             })
             .collect()

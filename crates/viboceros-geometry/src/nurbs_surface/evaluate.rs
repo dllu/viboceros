@@ -28,7 +28,7 @@ pub struct SurfaceJet2 {
 struct EvaluationControls {
     origin: Point3,
     homogeneous: Vec<[Real; 4]>,
-    range_loss: bool,
+    needs_exact: bool,
 }
 
 impl NurbsSurface {
@@ -125,6 +125,7 @@ impl NurbsSurface {
         let counts = [self.control_point_count_u, self.control_point_count_v];
         let knots = [&self.knots_u[..], &self.knots_v[..]];
         let mut spans = [0; 2];
+        let mut continuation = false;
         for axis in 0..2 {
             let t = parameters[axis];
             let k = knots[axis];
@@ -136,41 +137,42 @@ impl NurbsSurface {
             if sides[axis] == ParameterSide::Left && t > k[degrees[axis]] && t < k[counts[axis]] {
                 spans[axis] = k.partition_point(|value| *value < t) - 1;
             }
+            continuation |= t < k[degrees[axis]] || t > k[counts[axis]];
         }
-        let controls = self.evaluation_controls(spans, true)?;
-        if controls.range_loss {
+        // Extrapolated basis coefficients can have either sign, even when all
+        // control weights are positive. Only an exactly constant active weight
+        // proves W is constant under continuation (partition of unity).
+        if continuation && self.constant_span_weight(spans).is_none() {
             return self.exact_jet_at_spans(parameters, spans, order);
         }
-        let result = self.jet_at_spans(
-            parameters,
-            spans,
-            controls.origin,
-            &controls.homogeneous,
-            order,
-        );
-        if matches!(result, Err(GeometryError::NonFinite { .. }))
-            && controls.origin.to_array() != [0.0; 3]
-        {
-            // Signed surfaces can leave their control hull. A local offset can
-            // overflow while the final world-space point is representable.
-            let controls = self.evaluation_controls(spans, false)?;
-            if controls.range_loss {
-                self.exact_jet_at_spans(parameters, spans, order)
-            } else {
-                self.jet_at_spans(
-                    parameters,
-                    spans,
-                    controls.origin,
-                    &controls.homogeneous,
-                    order,
-                )
-            }
+        let controls = match self.evaluation_controls(spans) {
+            Ok(controls) if !controls.needs_exact => controls,
+            _ => return self.exact_jet_at_spans(parameters, spans, order),
+        };
+        let result = if continuation {
+            self.jet_at_spans::<true>(
+                parameters,
+                spans,
+                controls.origin,
+                &controls.homogeneous,
+                order,
+            )
         } else {
-            result
-        }
+            self.jet_at_spans::<false>(
+                parameters,
+                spans,
+                controls.origin,
+                &controls.homogeneous,
+                order,
+            )
+        };
+        // Homogeneous derivatives or a local projection may overflow although
+        // every requested world-space component is finite. Validation and span
+        // selection have already succeeded; recover from the original inputs.
+        result.or_else(|_| self.exact_jet_at_spans(parameters, spans, order))
     }
 
-    fn jet_at_spans(
+    fn jet_at_spans<const POLYNOMIAL: bool>(
         &self,
         [u, v]: [Real; 2],
         [span_u, span_v]: [usize; 2],
@@ -179,7 +181,7 @@ impl NurbsSurface {
         order: u8,
     ) -> Result<SurfaceJet2, GeometryError> {
         let tensor = |net: &[[Real; 4]], du: usize, dv: usize| {
-            evaluate_tensor_product(
+            evaluate_tensor_product::<POLYNOMIAL>(
                 net,
                 self.degree_u + 1 - du,
                 &self.knots_u[du..self.knots_u.len() - du],
@@ -304,10 +306,22 @@ impl NurbsSurface {
         Some(self.control_points[self.control_index(i, j)].point())
     }
 
+    fn constant_span_weight(&self, [span_u, span_v]: [usize; 2]) -> Option<Real> {
+        let first_u = span_u - self.degree_u;
+        let first_v = span_v - self.degree_v;
+        let weight = self.control_points[self.control_index(first_u, first_v)].weight();
+        (first_v..=span_v)
+            .all(|v| {
+                self.control_points[self.control_index(first_u, v)..=self.control_index(span_u, v)]
+                    .iter()
+                    .all(|control| control.weight() == weight)
+            })
+            .then_some(weight)
+    }
+
     fn evaluation_controls(
         &self,
         [span_u, span_v]: [usize; 2],
-        center: bool,
     ) -> Result<EvaluationControls, GeometryError> {
         let first_u = span_u - self.degree_u;
         let first_v = span_v - self.degree_v;
@@ -318,7 +332,7 @@ impl NurbsSurface {
                     .iter()
             })
         };
-        let mut can_center = center;
+        let mut can_center = true;
         let mut weight_scale: Real = 0.0;
         for control in active() {
             weight_scale = weight_scale.max(control.weight().abs());
@@ -334,11 +348,15 @@ impl NurbsSurface {
         } else {
             Point3::try_new(0.0, 0.0, 0.0)?
         };
-        let mut range_loss = false;
+        let mut needs_exact = false;
+        let negative_weight = self.control_points[self.control_index(first_u, first_v)]
+            .weight()
+            .is_sign_negative();
         let controls = active()
             .map(|control| {
                 let weight = control.weight() / weight_scale;
-                range_loss |= !weight.is_normal();
+                needs_exact |=
+                    !weight.is_normal() || control.weight().is_sign_negative() != negative_weight;
                 let point = control.point();
                 let local = [
                     point.x() - origin.x(),
@@ -353,7 +371,7 @@ impl NurbsSurface {
                 ];
                 // A rounded/subnormal product may later be divided by a small
                 // denominator and become a significant point or derivative.
-                range_loss |= local
+                needs_exact |= local
                     .into_iter()
                     .zip(h)
                     .any(|(a, product)| a != 0. && !product.is_normal());
@@ -364,7 +382,7 @@ impl NurbsSurface {
         Ok(EvaluationControls {
             origin,
             homogeneous: controls,
-            range_loss,
+            needs_exact,
         })
     }
 }

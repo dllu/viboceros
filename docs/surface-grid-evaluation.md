@@ -24,14 +24,22 @@ world-origin restoration use the scalar evaluator's helper.
 Only the current V span's columns are retained. Unsorted parameters, duplicates,
 and revisiting earlier spans are valid; changing V spans rebuilds the cache.
 Additional storage is proportional to the U sample count times `degree_v + 1`,
-plus one active control patch and scratch buffers. Empty grids do no work. All
+plus one active control patch and scratch buffers. For exact columns this counts
+rational values, whose integer sizes are input-dependent. Empty grids do no work. All
 caches belong to the query, not the surface.
 
 A failed cached projection uses scalar evaluation for that cell. This preserves
-validation precedence, genuine poles, and the uncentered retry that can recover
-a finite signed-weight image when its local coordinates overflow.
-Prepared nets with subnormal/erased weights or weighted coordinates are not
-cached: these cells use the scalar [exact-rational fallback](surface-rational-range.md).
+validation precedence, genuine poles, and exact recovery when intermediate
+coordinates overflow but the world-space point is finite.
+Prepared nets with mixed-sign weights or subnormal/erased weights or weighted
+coordinates instead cache exact homogeneous U contractions from the original
+controls. V interpolation and the final projection stay exact. An intermediate
+row with zero weight is valid; only the final denominator is tested. Both paths
+reuse only the current V span and preserve scalar output bits and errors.
+The [pole audit](surface-pole-recovery.md) also tests exact poles whose rounded
+denominator is nonzero; waiting for cached projection to fail cannot detect them.
+Its [dyadic specialization](exact-dyadic-evaluation.md) accelerates eligible exact
+recurrences without approximating them.
 
 ## Exact-control recovery
 

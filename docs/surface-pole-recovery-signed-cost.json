@@ -1,0 +1,97 @@
+{
+  "native_baseline_commit": "f4a9a110b2d59c83c3a9f57d3439016a3413fe98",
+  "after_executable_sha256": "44d47dd9cfe8111996f2524642bf593f38fd27a855c8f913f6fff28c21571a32",
+  "fixture": "tools/rhino_oracle/fixtures/sweep1_weights.json",
+  "case_ids": [
+    "three-rational-retained-basis",
+    "three-rational-retained-global-basis"
+  ],
+  "request_reconstruction": "Select the two named operations; preserve the fixture tolerance; set iterations=1, inspect_definition=true, and each queries list to its first element. The measured IDs have the suffix -fixture-6.",
+  "measurement": "Python time.perf_counter_ns around each whole oracle process, pinned to CPU 5. Three alternating-order before/after pairs. Includes loading, two surface constructions per operation (warmup and timed), one closest-point query per operation, definition extraction, and JSON output. The operation elapsed_ns field times only construction and is NOT used here.",
+  "host_conditions": "An exhaustive debug grid test and a release-workspace build were also active; this is a bounded non-isolated workload measurement.",
+  "before_median_wall_ns": 5279457,
+  "after_median_wall_ns": 293020020,
+  "slowdown": 55.50192377738847,
+  "definition_and_sample_values_bit_identical_across_all_six_runs": true,
+  "surfaces": [
+    {
+      "id": "three-rational-retained-basis-fixture-6",
+      "surfaces": [
+        {
+          "degree": [
+            5,
+            2
+          ],
+          "control_count": [
+            6,
+            3
+          ],
+          "negative_weights": 1,
+          "minimum_weight": -0.22550409597039173
+        }
+      ]
+    },
+    {
+      "id": "three-rational-retained-global-basis-fixture-6",
+      "surfaces": [
+        {
+          "degree": [
+            5,
+            2
+          ],
+          "control_count": [
+            6,
+            3
+          ],
+          "negative_weights": 1,
+          "minimum_weight": -0.22550409597039173
+        }
+      ]
+    }
+  ],
+  "exact_denominator_lower_bound": {
+    "numerator": "7543498508633175",
+    "denominator": "36028797018963968",
+    "approximate": 0.20937414326275203,
+    "proof": "For each degree-5 U weight trajectory, subdivide its Bernstein controls exactly at 1/2 using Python Fraction of the stored binary64 weights. Every left/right control is at least this positive value. The V Bernstein basis is nonnegative and sums to one."
+  },
+  "intermediate_prototypes_wall_seconds": {
+    "scalar_general_rational": 2.95,
+    "exact_grid_cache": 1.2,
+    "exact_grid_and_dyadic": 0.3
+  },
+  "prototype_timing_note": "Single coarse /usr/bin/time process measurements, not repeated kernel benchmarks. All evaluate the same two-query request. The repeated final comparison below is the main evidence.",
+  "remaining_limit": "Exact mixed-weight closest-point search remains substantially slower than the former floating-point path, even for a rigorously positive denominator. No performance-parity claim.",
+  "records": [
+    {
+      "round": 1,
+      "mode": "before",
+      "elapsed_ns": 5364609
+    },
+    {
+      "round": 1,
+      "mode": "after",
+      "elapsed_ns": 293020020
+    },
+    {
+      "round": 2,
+      "mode": "after",
+      "elapsed_ns": 295730853
+    },
+    {
+      "round": 2,
+      "mode": "before",
+      "elapsed_ns": 5279457
+    },
+    {
+      "round": 3,
+      "mode": "before",
+      "elapsed_ns": 4913425
+    },
+    {
+      "round": 3,
+      "mode": "after",
+      "elapsed_ns": 292720756
+    }
+  ]
+}

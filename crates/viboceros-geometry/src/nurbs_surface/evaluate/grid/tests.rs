@@ -214,9 +214,12 @@ fn grid_points_retain_scalar_fallback_for_signed_weight_overflow_and_poles() {
     }
     let signed = make([1e308, 5e307], [1., -1.]);
     let columns = signed.grid_columns(&[0.58], 1);
-    let mut work = columns[0].as_ref().unwrap().homogeneous.clone();
-    let h = de_boor_extended_in_place(&signed.knots_v, 1, 1, 0.25, &mut work).unwrap();
-    assert!(project_homogeneous(h).is_err()); // The cached local projection overflows.
+    // Signed nets now bypass rounded contractions before projection, including
+    // cases where a cached projection would have returned a false finite pole.
+    assert!(matches!(
+        columns[0].as_ref().unwrap().contraction,
+        Contraction::Exact(_)
+    ));
     let mut actual = None;
     signed.for_each_grid_point(&[0.58], &[0.25], |_, _, result| {
         actual = Some(result.unwrap())
@@ -242,6 +245,33 @@ fn grid_points_validate_each_cell_and_preserve_empty_duplicate_and_unsorted_inpu
     assert_grid(&surface, &[], &parameters);
     assert_grid(&surface, &parameters, &[]);
     assert_grid(&surface, &[], &[]);
+}
+
+#[test]
+fn exact_grid_retains_zero_weight_rows_until_the_final_tensor_projection() {
+    let surface = NurbsSurface::try_new_rational(
+        1,
+        1,
+        2,
+        2,
+        [
+            (point([0., 0., 0.]), 1.),
+            (point([1., 0., 0.]), -1.),
+            (point([0., 1., 0.]), 1.),
+            (point([1., 1., 0.]), 1.),
+        ]
+        .map(|(p, w)| WeightedPoint3::try_new(p, w).unwrap())
+        .to_vec(),
+        vec![0., 0., 1., 1.],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap();
+    // The first U-contracted row has W=0 at u=1/2, but a later V blend
+    // produces a regular point. No intermediate row may be projected.
+    let mut result = None;
+    surface.for_each_grid_point(&[0.5], &[0.25], |_, _, value| result = Some(value));
+    assert_eq!(result.unwrap().unwrap(), point([-1., 1., 0.]));
+    assert_grid(&surface, &[0.5, 0.25, 0.5, 0.75], &[0.25, 0., 0.75, 0.25]);
 }
 
 #[test]

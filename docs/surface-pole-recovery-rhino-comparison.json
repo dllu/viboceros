@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 1e-12,
+  "relative_epsilon": 1e-12,
+  "passed": true,
+  "operations": [
+    {
+      "id": "surface-poles-mixed-positive-gauge",
+      "passed": true,
+      "max_absolute_error": 7.105427357601002e-15,
+      "viboceros_ns_per_iteration": 187461.65,
+      "rhino_ns_per_iteration": 231742.85,
+      "rhino_to_viboceros_ratio": 1.2362147137827924,
+      "differences": []
+    },
+    {
+      "id": "surface-poles-mixed-negative-gauge",
+      "passed": true,
+      "max_absolute_error": 7.105427357601002e-15,
+      "viboceros_ns_per_iteration": 188407.25,
+      "rhino_ns_per_iteration": 62561.025,
+      "rhino_to_viboceros_ratio": 0.33205211052122463,
+      "differences": []
+    },
+    {
+      "id": "surface-poles-continuation-positive-gauge",
+      "passed": true,
+      "max_absolute_error": 2.842170943040401e-14,
+      "viboceros_ns_per_iteration": 113932.825,
+      "rhino_ns_per_iteration": 19836.425,
+      "rhino_to_viboceros_ratio": 0.17410632098343914,
+      "differences": []
+    },
+    {
+      "id": "surface-poles-continuation-negative-gauge",
+      "passed": true,
+      "max_absolute_error": 2.842170943040401e-14,
+      "viboceros_ns_per_iteration": 113433.625,
+      "rhino_ns_per_iteration": 15640.25,
+      "rhino_to_viboceros_ratio": 0.13788019205063753,
+      "differences": []
+    }
+  ],
+  "max_absolute_error": 2.842170943040401e-14,
+  "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation."
+}

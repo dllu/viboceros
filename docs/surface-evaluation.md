@@ -57,13 +57,18 @@ point exactly. Constant rational patches have exact zero partials at regular
 parameters, including the tested large world offsets.
 
 If subtracting the local origin would overflow, evaluation uses world coordinates.
-A signed-weight patch can also leave its control hull: a nonfinite local result
-is retried without centering when the world-space answer may be representable.
-Subnormal/erased normalized weights or weighted coordinates now select a guarded
-[exact-rational fallback](surface-rational-range.md), with only final requested
-components rounded to binary64. The grid dispatcher shares this policy. It does
-not detect every later recurrence underflow or cancellation in otherwise unflagged
-nets, and ill-conditioned denominators can still amplify floating-point error.
+A signed-weight patch can leave its control hull, and rounded cancellation can
+hide a true pole behind an apparently finite denominator. Mixed-sign active
+weights, subnormal/erased normalized weights or weighted coordinates, and actual
+out-of-domain variable-weight continuation select the [exact-rational evaluator](surface-rational-range.md).
+It also recovers from failed ordinary evaluation, including intermediate
+derivative overflow. Only final requested components are rounded to binary64.
+The grid dispatcher shares this policy. See the [pole audit](surface-pole-recovery.md)
+for analytic regressions and cost. Ordinary same-sign nets still use floating-point
+evaluation; this does not detect every later recurrence underflow or guarantee
+correct rounding for those unflagged nets.
+Equal active weights prove a polynomial continuation's denominator is constant;
+that fast path uses affine-difference extrapolation to retain constant coordinates.
 Singular-surface limiting normals remain unsupported. The separate [curvature module](curvature.md)
 computes principal, mean and Gaussian curvature from regular analytic surface
 jets, including one-sided limits.

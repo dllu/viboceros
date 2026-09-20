@@ -284,7 +284,11 @@ The `nurbs_surface/evaluate` module shares `ParameterSide` and nonempty knot-spa
 selection with curves. Its [surface jets](surface-evaluation.md) use local rational
 coordinates and expose exact U/V limits and boundary-span continuation.
 Its separate [exact-rational evaluator](surface-rational-range.md) handles detected
-range loss during homogeneous preparation; unflagged nets retain the floating-point path.
+range loss, mixed-sign active weights, variable-weight continuation, and failed
+floating-point evaluation. The [pole audit](surface-pole-recovery.md) documents
+why a finite rounded denominator is insufficient; ordinary same-sign nets stay fast.
+Shared [exact dyadic recurrences](exact-dyadic-evaluation.md) avoid repeated GCDs
+when the original homogeneous coefficients and exact factors permit it.
 The separate [curvature module](curvature.md) forms a scale-aware orthonormal
 shape operator from those jets. Geometry evaluation is independent of the
 command's closest-point selection, reports, and permanent markers.

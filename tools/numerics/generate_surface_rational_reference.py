@@ -104,6 +104,55 @@ def main():
         count += 1
     assert count == 70
 
+    # Ordinary-sized weights also require exact evaluation when signs mix or
+    # the requested station continues beyond a boundary. The original range-
+    # loss records above stay unchanged so both dispatch policies are tested.
+    def emit(degrees, domain, parameters, controls):
+        result = reference(degrees, domain, parameters, controls)
+        print(*degrees, *(bits(x) for x in [*domain[0], *domain[1], *parameters]),
+              *(bits(x) for c in controls for x in c), *result)
+
+    for degrees in degree_pairs:
+        for continuation in [False, True]:
+            for sign in [-1, 1]:
+                controls = []
+                for index in range((degrees[0] + 1) * (degrees[1] + 1)):
+                    point = [rng.randrange(-64, 65) / 8 for _ in range(3)]
+                    weight = sign * (1 + index % 4)
+                    if not continuation and index % 3 == 0:
+                        weight = -weight
+                    controls.append([*point, weight])
+                parameters = [-0.25, 1.125] if continuation else [0.5, 0.375]
+                emit(degrees, ((0., 1.5), (0., 1.)), parameters, controls)
+                count += 1
+
+    # W=1-2u inside the domain and W=1+2u on continuation. Include both
+    # adjacent floats: a model-tolerance or rounded-zero pole test is wrong.
+    for weights, pole in [([1., -2.], 0.5), ([1., 4.], -0.5)]:
+        for sign in [-1, 1]:
+            for constant in [False, True]:
+                for swapped in [False, True]:
+                    controls = [[*([3., -4., 5.] if constant else [i, j, i * j]), sign * weights[i]]
+                                for j in range(2) for i in range(2)]
+                    domain = ((0., 1.5), (0., 1.))
+                    if swapped:
+                        controls = [controls[i + 2 * j] for i in range(2) for j in range(2)]
+                        domain = domain[::-1]
+                    for t in [math.nextafter(pole, -math.inf), pole, math.nextafter(pole, math.inf)]:
+                        parameters = [0.25, t] if swapped else [t, 0.25]
+                        emit((1, 1), domain, parameters, controls)
+                        count += 1
+
+    # The weight derivative overflows in binary64, but the Euclidean jet is
+    # exactly constant. These controls themselves have no preparation range loss.
+    tiny = math.ulp(0.)
+    for sign in [-1, 1]:
+        controls = [[3., -4., 5., sign * w] for w in [1., 2., 1., 2.]]
+        for u in [0., tiny]:
+            emit((1, 1), ((0., tiny), (0., 1.)), [u, 0.25], controls)
+            count += 1
+    assert count == 150
+
 
 if __name__ == "__main__":
     main()

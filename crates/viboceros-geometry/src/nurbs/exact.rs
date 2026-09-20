@@ -2,6 +2,7 @@
 use crate::{GeometryError, NurbsCurve, Real, Vector3, require_finite};
 pub(crate) use num_rational::BigRational as Rational;
 use num_traits::{One, ToPrimitive, Zero};
+mod dyadic;
 
 pub(crate) type Homogeneous<const D: usize = 4> = [Rational; D];
 
@@ -50,6 +51,9 @@ pub(crate) fn evaluate_at<const D: usize>(
     parameter: &Rational,
     mut work: Vec<Homogeneous<D>>,
 ) -> Result<Homogeneous<D>, GeometryError> {
+    if let Some(value) = dyadic::evaluate(knots, degree, span, parameter, &work) {
+        return Ok(value);
+    }
     for level in 1..=degree {
         for local in (level..=degree).rev() {
             let index = span - degree + local;
@@ -107,6 +111,9 @@ impl Direction<'_> {
         width: usize,
         along_u: bool,
     ) -> Result<Vec<Homogeneous<D>>, GeometryError> {
+        if let Some(values) = dyadic::derivative_controls(self, net, width, along_u) {
+            return Ok(values);
+        }
         let height = net.len() / width;
         let (output_width, output_height) = if along_u {
             (width - 1, height)

@@ -12,6 +12,30 @@ mod tests {
     use super::*;
 
     #[test]
+    fn pole_recovery_fixture_preserves_gauge_and_analytic_mixed_partials() {
+        let request: crate::ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/surface_pole_recovery.json"
+        ))
+        .unwrap();
+        let response = crate::run_request(&request).unwrap();
+        assert_eq!(response.results.len(), 4);
+        for pair in response.results.chunks_exact(2) {
+            assert_eq!(pair[0].value, pair[1].value);
+            for sample in pair[0].value["samples"].as_array().unwrap() {
+                // The tensor extrusion is S=(x(u), v, x(u)v), hence
+                // S_v=(0,1,x), S_uv=(0,0,x'), and S_vv=0.
+                assert_eq!(sample["dv"], json!([0., 1., sample["point"][0]]));
+                assert_eq!(sample["duv"], json!([0., 0., sample["du"][0]]));
+                assert_eq!(sample["dvv"], json!([0., 0., 0.]));
+            }
+        }
+        assert_eq!(
+            response.results[0].value["samples"][1]["point"],
+            json!([-2. / 3., 0.375, -0.25])
+        );
+    }
+
+    #[test]
     fn permanent_curvature_fixtures_cover_shape_operators_and_actual_marker_commands() {
         for (text, count) in [
             (

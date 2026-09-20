@@ -1,4 +1,4 @@
-# Surface evaluation after homogeneous range loss
+# Surface evaluation after range loss or signed cancellation
 
 [NURBS numerical policy](nurbs-numerics.md) · [Batched grids](surface-grid-evaluation.md)
 
@@ -17,16 +17,28 @@ corners cannot fix this case.
 
 ## Guard and fallback
 
-The active-net preparation flags either of these conditions:
+The active-net preparation flags any of these conditions:
 
 - A nonzero stored weight normalizes to zero or a subnormal number.
 - A nonzero local coordinate times its normalized weight becomes zero or subnormal.
+- Active control weights have mixed signs, even when every prepared component is normal.
 
 The check is conservative: even an exactly representable subnormal product
-selects the fallback. It applies independently to the centered preparation and
-the existing uncentered overflow retry. Ordinary nets retain their floating-point
+selects the fallback. Ordinary same-sign nets retain their floating-point
 evaluation path. The batched grid does not cache a flagged net's rounded U
-contractions; affected cells use the scalar dispatcher.
+contractions; it retains exact homogeneous contractions and completes exact V
+evaluation and projection instead. See the [grid policy](surface-grid-evaluation.md).
+
+Actual out-of-domain variable-weight continuation also uses exact arithmetic,
+since extrapolated basis coefficients need not be positive. Exactly equal active
+weights prove a constant denominator; polynomial continuation remains fast using
+affine-difference extrapolation that preserves constant coordinates.
+Extended entry points at in-domain
+stations use ordinary dispatch. Any remaining fast-path failure is retried exactly
+from the original inputs, replacing the old uncentered projection retry. Input
+validation and one-sided span selection precede all fallback decisions.
+The [pole audit](surface-pole-recovery.md) explains the added cancellation and
+failure-recovery policy, with independent references and new Rhino evidence.
 
 The fallback in `nurbs_surface/evaluate/exact.rs` converts the original finite
 binary64 controls, weights, knots, and parameters to `num-rational::BigRational`.
@@ -35,6 +47,9 @@ span, constructs derivative control nets, and applies the rational quotient rule
 using exact rational arithmetic throughout. Only the final requested Euclidean
 components are rounded to binary64. Points at fully interpolated controls retain
 their original stored coordinates, including signed zeros.
+The shared [dyadic specialization](exact-dyadic-evaluation.md) uses integer
+significands and binary exponents when every recurrence factor permits it,
+avoiding unnecessary fraction reduction without changing any exact value.
 
 Points, first derivatives, pure second derivatives, and the mixed second
 derivative share this path. Native parameter scaling, unclamped spans, independent
@@ -52,9 +67,11 @@ zero. There is no model-tolerance clamp or fabricated derivative.
 `tools/numerics/generate_surface_rational_reference.py` uses Python `Fraction`
 and explicit Bernstein basis derivatives, independently of Rust's de Boor and
 derivative-control recurrences. Its checked-in bit-pattern reference contains
-70 tensor-Bezier cases with degrees through `(5,4)`, positive/common-negative/
+150 tensor-Bezier cases with degrees through `(5,4)`, positive/common-negative/
 mixed-sign weights spanning `2^-1000` to `2^1000`, varied coordinate scales,
-anisotropic domains, endpoints, and rational extrapolation. Tests compare every
+anisotropic domains, endpoints, rational extrapolation, ordinary mixed-sign nets,
+exact poles and their adjacent binary64 stations, and finite constant jets despite
+intermediate weight-derivative overflow. Tests compare every
 requested point/first/second-derivative component bit-for-bit and check overflow
 errors separately. Regeneration is deterministic:
 
