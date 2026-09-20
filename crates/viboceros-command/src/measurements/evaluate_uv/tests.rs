@@ -17,6 +17,105 @@ fn uv(report: &str) -> Vec<f64> {
 }
 
 #[test]
+fn uv_replays_live_rhino_reports_and_created_points() {
+    use serde_json::Value;
+    use viboceros_geometry::WeightedPoint3;
+
+    let request: Value = serde_json::from_str(include_str!(
+        "../../../../../tools/rhino_oracle/fixtures/evaluate-uv-command.json"
+    ))
+    .unwrap();
+    let response: Value = serde_json::from_str(include_str!(
+        "../../../../../docs/evaluate-uv-rhino-reference.json"
+    ))
+    .unwrap();
+    let operations = request["operations"].as_array().unwrap();
+    let results = response["results"].as_array().unwrap();
+    assert_eq!(operations.len(), 4);
+    assert_eq!(operations.len(), results.len());
+    let registry = CommandRegistry::with_builtins();
+    for (operation, result) in operations.iter().zip(results) {
+        assert_eq!(operation["id"], result["id"]);
+        assert_eq!(operation["op"], "evaluate_uv_command");
+        let definition = &operation["surface"];
+        let size = |key| definition[key].as_u64().unwrap() as usize;
+        let surface = NurbsSurface::try_new_rational(
+            size("degree_u"),
+            size("degree_v"),
+            size("control_point_count_u"),
+            size("control_point_count_v"),
+            definition["control_points"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|control| {
+                    WeightedPoint3::try_new(
+                        point(serde_json::from_value(control["point"].clone()).unwrap()),
+                        control["weight"].as_f64().unwrap(),
+                    )
+                    .unwrap()
+                })
+                .collect(),
+            serde_json::from_value(definition["knots_u"].clone()).unwrap(),
+            serde_json::from_value(definition["knots_v"].clone()).unwrap(),
+        )
+        .unwrap();
+        let mut doc = Document::default();
+        let id = doc.add_geometry(Geometry::NurbsSurface(surface)).unwrap();
+        doc.select_object(id, SelectionMode::Replace).unwrap();
+        let before = format!("{doc:?}");
+        let source_before = format!("{:?}", doc.object(id).unwrap());
+        let options = EvaluateUvOptions {
+            normalized: operation["normalized"].as_bool().unwrap_or(false),
+            create_point: operation["create_point"].as_bool().unwrap_or(false),
+        };
+        let [x, y, z]: [f64; 3] = serde_json::from_value(operation["point"].clone()).unwrap();
+        let report = registry
+            .execute(&mut doc, &format!("{} {x},{y},{z}", options.command_line()))
+            .unwrap();
+        let observation = &result["value"];
+        let lines = observation["history"]
+            .as_str()
+            .unwrap()
+            .lines()
+            .filter_map(|line| line.strip_prefix("UV coordinates of point = "))
+            .collect::<Vec<_>>();
+        assert_eq!(lines.len(), 1);
+        let expected = lines[0]
+            .split(',')
+            .map(|value| value.trim().parse::<f64>().unwrap())
+            .collect::<Vec<_>>();
+        let actual = uv(&report);
+        assert_eq!(actual.len(), 2);
+        assert_eq!(expected.len(), 2);
+        // These dyadic fixture values are exact even in Rhino's rounded report.
+        for (a, b) in actual.iter().zip(expected) {
+            assert!((a - b).abs() < 1e-8, "{}: {report}", result["id"]);
+        }
+        let expected: Vec<[f64; 3]> =
+            serde_json::from_value(observation["created_points"].clone()).unwrap();
+        let actual = doc
+            .objects()
+            .filter(|object| object.id() != id)
+            .map(|object| match object.geometry() {
+                Geometry::Point(point) => *point,
+                _ => panic!("unexpected added geometry"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(expected.len(), usize::from(options.create_point));
+        assert_eq!(actual.len(), expected.len());
+        for (a, b) in actual.iter().zip(expected) {
+            assert!(a.distance_to(point(b)).unwrap() < 1e-8);
+        }
+        assert_eq!(observation["source_geometry_unchanged"], true);
+        assert_eq!(format!("{:?}", doc.object(id).unwrap()), source_before);
+        if !options.create_point {
+            assert_eq!(format!("{doc:?}"), before);
+        }
+    }
+}
+
+#[test]
 fn uv_reports_native_and_normalized_parameters_with_undoable_projected_markers() {
     let registry = CommandRegistry::with_builtins();
     let mut doc = Document::default();

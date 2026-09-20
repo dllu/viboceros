@@ -39,6 +39,25 @@ point undo/redo, underlying evaluation inside a trim hole, nearest component
 selection, UI handoff, option edits, and failed-pick recovery. Parameter normalization
 handles finite domain endpoints even when their difference overflows.
 
-These are native analytic tests, not live Rhino captures. Closest-surface lookup
-uses model-space distance rather than a screen-space hit aperture; exact interactive
-picking, persistent defaults, and reporting-format parity remain to be verified.
+The [Rhino 8.32 capture](../evaluate-uv-rhino-reference.json), generated from this
+[fixture](../../tools/rhino_oracle/fixtures/evaluate-uv-command.json), covers all four
+combinations of these options on a planar surface with U domain `[-2,6]` and V
+domain `[10,14]`. The off-surface input `(1,1,3)` reports native `(0,12)` or
+normalized `(0.25,0.5)` and creates `(1,1,0)` only when requested. All cases retain
+the source geometry checksum. Native command tests replay the saved reports and
+point locations to `1e-8`; these particular UV values are exact despite Rhino's
+three-decimal display. Run the Rhino-only probe with:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/evaluate-uv-command.json --timeout 240
+```
+
+The capture is not a timing benchmark (`elapsed_ns` is zero). Trim holes and
+multi-face selection still have native analytic coverage only. Closest-surface
+lookup uses model-space distance rather than a screen-space hit aperture.
+Rhino's captured prompt permits repeated picks until Enter and retains option
+values between invocations; Viboceros currently finishes after one pick and resets
+its options. Exact interactive picking, initial-default parity, and report text
+formatting are also not established. The worker explicitly sets both options and
+sends Enter after the point, then deletes its temporary geometry and restores the
+previous selection, including on failure.

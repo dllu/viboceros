@@ -11,6 +11,77 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_uv_probe_cleans_created_points_and_restores_selection_on_failure(self):
+        class Point:
+            Location = [1.,1.,0.]
+        for failure in [None, "construction", "measurement"]:
+            with self.subTest(failure=failure):
+                surface = Mock()
+                surface.DataCRC.return_value = 42
+                objects = {"old": SimpleNamespace(Id="old", IsSelected=lambda _: True)}
+                deleted = []
+                def add(geometry):
+                    if failure == "construction":
+                        raise ValueError("construction")
+                    objects["source"] = SimpleNamespace(Id="source", Geometry=geometry)
+                    return "source"
+                def delete(object_id, quiet):
+                    deleted.append(object_id)
+                    objects.pop(object_id)
+                table = SimpleNamespace(GetObjectList=lambda _: list(objects.values()),
+                    AddSurface=add, FindId=lambda key: objects[key], Delete=delete,
+                    Select=Mock(), UnselectAll=Mock())
+                rhino = SimpleNamespace(RhinoDoc=SimpleNamespace(ActiveDoc=SimpleNamespace(Objects=table)),
+                    DocObjects=SimpleNamespace(ObjectEnumeratorSettings=lambda: SimpleNamespace()),
+                    Geometry=SimpleNamespace(Point=Point))
+                def capture(name, macro):
+                    self.assertEqual((name, macro), ("EvaluateUVPt", "! _EvaluateUVPt _Normalized=Yes _CreatePoint=Yes w1,1,3 _Enter"))
+                    objects["marker"] = SimpleNamespace(Id="marker", Geometry=Point())
+                    if failure == "measurement":
+                        raise ValueError("measurement")
+                    return {"history": "UV report"}, 0
+                with patch.object(self.worker, "Rhino", rhino), \
+                     patch.object(self.worker, "System", SimpleNamespace(Guid=SimpleNamespace(Empty="empty"))), \
+                     patch.object(self.worker, "_nurbs_surface_from_definition", return_value=surface), \
+                     patch.object(self.worker, "_command_point", return_value="1,1,3"), \
+                     patch.object(self.worker, "_xyz", lambda value: value), \
+                     patch.object(self.worker, "_measurement_history", capture):
+                    operation = {"surface": {}, "point": [1,1,3], "normalized": True, "create_point": True}
+                    if failure:
+                        with self.assertRaisesRegex(ValueError, failure):
+                            self.worker._evaluate_uv_command(operation)
+                    else:
+                        value, elapsed = self.worker._evaluate_uv_command(operation)
+                        self.assertEqual(value["created_points"], [[1.,1.,0.]])
+                        self.assertTrue(value["source_geometry_unchanged"])
+                        self.assertEqual(elapsed, 0)
+                self.assertEqual(set(objects), {"old"})
+                self.assertEqual(set(deleted), set() if failure == "construction" else {"source", "marker"})
+                self.assertEqual(table.Select.call_args.args, ("old",))
+                self.assertEqual(table.UnselectAll.call_count, 2)
+                surface.Dispose.assert_called_once_with()
+
+    def test_uv_capture_requires_a_new_report_without_command_errors(self):
+        report = "UV coordinates of point = 0.000, 12.000"
+        for output, valid in [(report, True), ("", False),
+                              ("Point to evaluate. Press Enter when done", False),
+                              ("Unknown command: extra\n" + report, False)]:
+            with self.subTest(output=output):
+                app = SimpleNamespace(CommandHistoryWindowText=report + "\n")
+                def write(marker):
+                    app.CommandHistoryWindowText += marker + "\n"
+                def run(macro, echo):
+                    app.CommandHistoryWindowText += output
+                    return True
+                app.WriteLine, app.RunScript = write, run
+                with patch.object(self.worker, "Rhino", SimpleNamespace(RhinoApp=app)), \
+                     patch.object(self.worker, "System", SimpleNamespace(Guid=SimpleNamespace(NewGuid=lambda: "unique-marker"))):
+                    if valid:
+                        self.assertEqual(self.worker._measurement_history("EvaluateUVPt", "macro"), ({"history": output}, 0))
+                    else:
+                        with self.assertRaisesRegex(ValueError, "no measurement"):
+                            self.worker._measurement_history("EvaluateUVPt", "macro")
+
     def test_domain_probe_cleans_source_and_restores_selection_after_failures(self):
         for failure in [None, "construction", "measurement"]:
             with self.subTest(failure=failure):

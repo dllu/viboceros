@@ -2178,14 +2178,56 @@ def _measurement_history(name, macro):
         raise ValueError("measurement command failed or history marker was lost: %s" %
                          Rhino.RhinoApp.CommandHistoryWindowText[-3000:])
     history = parts[1].strip()
-    labels = (["Point in world coordinates =", "CPlane coordinates ="]
-              if name == "EvaluatePt" else [name + " ="])
+    labels = {
+        "EvaluatePt": ["Point in world coordinates =", "CPlane coordinates ="],
+        "EvaluateUVPt": ["UV coordinates of point ="],
+    }.get(name, [name + " ="])
     reported = (("Curve domain =" in history or all(label in history for label in
                  ["Surface U domain =", "Surface V domain ="])) if name == "Domain"
                 else all(label in history for label in labels))
     if "Unknown command:" in history or not reported:
         raise ValueError("measurement command produced no measurement: %s" % history[-3000:])
     return {"history": history}, 0
+
+
+def _evaluate_uv_command(operation):
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    existing = list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in existing)
+    selected = [obj.Id for obj in existing if obj.IsSelected(False)]
+    surface = _nurbs_surface_from_definition(operation["surface"])
+    try:
+        document.Objects.UnselectAll()
+        source = document.Objects.AddSurface(surface)
+        if source == System.Guid.Empty:
+            raise ValueError("could not add UV source")
+        document.Objects.Select(source)
+        checksum = document.Objects.FindId(source).Geometry.DataCRC(0)
+        macro = "! _EvaluateUVPt _Normalized=%s _CreatePoint=%s w%s _Enter" % (
+            "Yes" if operation.get("normalized", False) else "No",
+            "Yes" if operation.get("create_point", False) else "No",
+            _command_point(operation["point"]))
+        result, _ = _measurement_history("EvaluateUVPt", macro)
+        points = []
+        for obj in document.Objects.GetObjectList(settings):
+            if obj.Id not in before and obj.Id != source:
+                if not isinstance(obj.Geometry, Rhino.Geometry.Point):
+                    raise ValueError("UV command created unexpected geometry")
+                points.append(_xyz(obj.Geometry.Location))
+        result["created_points"] = sorted(points)
+        result["source_geometry_unchanged"] = document.Objects.FindId(source).Geometry.DataCRC(0) == checksum
+        return result, 0
+    finally:
+        # The private oracle command owns all additions after this snapshot.
+        for obj in list(document.Objects.GetObjectList(settings)):
+            if obj.Id not in before:
+                document.Objects.Delete(obj.Id, True)
+        document.Objects.UnselectAll()
+        for object_id in selected:
+            document.Objects.Select(object_id)
+        surface.Dispose()
 
 
 def _domain_command(operation):
@@ -4603,6 +4645,8 @@ def _execute(operation, iterations, tolerance):
         return _evaluate_point_command(operation)
     if kind == "domain_command":
         return _domain_command(operation)
+    if kind == "evaluate_uv_command":
+        return _evaluate_uv_command(operation)
     if kind == "three_dm_curve_interchange":
         return _three_dm_curve_interchange(operation, iterations)
     if kind == "three_dm_brep_interchange":
