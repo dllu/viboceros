@@ -1,6 +1,6 @@
 //! Guarded exact curve jets and scale-free limiting tangents.
 use super::*;
-use crate::nurbs::exact::{Direction, Homogeneous, Rational, rational, scalar, vector};
+use crate::nurbs::exact::{Direction, Homogeneous, Rational, curve_controls, scalar, vector};
 use num_traits::{Signed, Zero};
 
 #[cfg(test)]
@@ -22,19 +22,7 @@ impl<'a> Evaluation<'a> {
             span,
             parameter,
         };
-        let controls = curve.control_points[span - curve.degree..=span]
-            .iter()
-            .map(|control| {
-                let w = rational(control.weight());
-                let p = control.point();
-                [
-                    rational(p.x()) * &w,
-                    rational(p.y()) * &w,
-                    rational(p.z()) * &w,
-                    w,
-                ]
-            })
-            .collect::<Vec<_>>();
+        let controls = curve_controls(curve, span);
         let homogeneous = direction.evaluate(controls.clone())?;
         if homogeneous[3].is_zero() {
             return Err(GeometryError::ZeroWeightAtParameter);

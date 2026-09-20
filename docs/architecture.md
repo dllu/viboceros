@@ -268,6 +268,9 @@ shared by length, sampling, shortness, and enclosed curve-area queries.
 `nurbs/sampling` provides [lossless fractional point sampling](curve-parameter-sampling.md)
 and exact span limits without changing stored native domains. The viewport's
 shared segment visitor uses it for drawing, click picking, and window selection.
+Its [exceptional fractional recovery](curve-fractional-recovery.md) preserves
+unrepresentable intermediate stations and shares exact recurrences with native
+mixed-weight curve jets.
 `nurbs/weights/end_weights` owns projective endpoint normalization and
 piecewise-Bezier end-weight changes, including near-equal and extreme gauges.
 Loft and Sweep share its geometry-preserving normalizer; explicit common-profile

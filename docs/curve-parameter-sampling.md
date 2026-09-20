@@ -124,8 +124,10 @@ cargo run --release -p viboceros-geometry --example parameter_sampling
 ```
 
 The sampler does not recover already-rounded input knots, guarantee resolution
-of arbitrarily narrow relative spans or subnormal fractional stations, or
-translate an unsafe exterior knot. Those curves retain their native frame.
+of arbitrarily narrow relative spans, or translate an unsafe exterior knot.
+[Exact fractional recovery](curve-fractional-recovery.md) now handles declined
+shifts, subnormal stations, adjacent-float spans, and positional discontinuities
+without changing those knots; ordinary samples still use the fast path.
 Closest-parameter queries, parameter-returning structure edits, and other
 algorithms not using this sampler still have their own native-grid limits.
 No stored geometry is silently reparameterized.

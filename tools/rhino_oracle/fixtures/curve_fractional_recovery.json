@@ -1,0 +1,209 @@
+{
+  "protocol_version": 1,
+  "iterations": 3,
+  "tolerance": {
+    "absolute": 1e-12,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "nurbs_curve_parameter_samples",
+      "id": "line-positive-unshiftable",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 2
+          }
+        ],
+        "knots": [
+          -1e+308,
+          4503599627370496,
+          4503599627370498,
+          4503599627370498
+        ]
+      },
+      "fractions": [
+        0,
+        0.125,
+        0.3333333333333333,
+        0.5,
+        0.6666666666666666,
+        0.875,
+        1
+      ]
+    },
+    {
+      "op": "nurbs_curve_parameter_samples",
+      "id": "line-negative-unshiftable",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 2
+          }
+        ],
+        "knots": [
+          -1e+308,
+          -4503599627370496,
+          -4503599627370494,
+          -4503599627370494
+        ]
+      },
+      "fractions": [
+        0,
+        0.125,
+        0.3333333333333333,
+        0.5,
+        0.6666666666666666,
+        0.875,
+        1
+      ]
+    },
+    {
+      "op": "nurbs_curve_parameter_samples",
+      "id": "unclamped-positive-unshiftable",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              2,
+              -1,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              4,
+              1,
+              0
+            ],
+            "weight": 4
+          }
+        ],
+        "knots": [
+          -1e+308,
+          4503599627370495,
+          4503599627370496,
+          4503599627370497,
+          4503599627370498,
+          4503599627370499,
+          4503599627370500
+        ]
+      },
+      "fractions": [
+        0,
+        0.125,
+        0.3333333333333333,
+        0.5,
+        0.6666666666666666,
+        0.875,
+        1
+      ]
+    },
+    {
+      "op": "nurbs_curve_parameter_samples",
+      "id": "unclamped-negative-unshiftable",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              2,
+              -1,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              4,
+              1,
+              0
+            ],
+            "weight": 4
+          }
+        ],
+        "knots": [
+          -1e+308,
+          -4503599627370497,
+          -4503599627370496,
+          -4503599627370495,
+          -4503599627370494,
+          -4503599627370493,
+          -4503599627370492
+        ]
+      },
+      "fractions": [
+        0,
+        0.125,
+        0.3333333333333333,
+        0.5,
+        0.6666666666666666,
+        0.875,
+        1
+      ]
+    }
+  ]
+}

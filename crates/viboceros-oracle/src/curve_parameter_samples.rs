@@ -37,6 +37,47 @@ mod tests {
     use super::*;
 
     #[test]
+    fn unshiftable_fractional_fixture_preserves_shape_across_both_origin_signs() {
+        let request: super::super::ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/curve_fractional_recovery.json"
+        ))
+        .unwrap();
+        let response = super::super::run_request(&request).unwrap();
+        assert_eq!(response.results.len(), 4);
+        for pair in response.results.chunks_exact(2) {
+            for field in ["points", "span_points"] {
+                assert_eq!(pair[0].value[field], pair[1].value[field]);
+            }
+            assert_ne!(pair[0].value["domain"], pair[1].value["domain"]);
+        }
+        for (operation, record) in request.operations.iter().zip(&response.results) {
+            let super::super::Operation::NurbsCurveParameterSamples {
+                curve, fractions, ..
+            } = operation
+            else {
+                panic!("unexpected fixture operation");
+            };
+            assert_eq!(
+                record.value["domain"],
+                json!([
+                    curve.knots[curve.degree],
+                    curve.knots[curve.control_points.len()]
+                ])
+            );
+            if curve.degree == 1 {
+                for (f, p) in fractions
+                    .iter()
+                    .zip(record.value["points"].as_array().unwrap())
+                {
+                    assert!((p[0].as_f64().unwrap() - 4. * f / (1. + f)).abs() < 5e-16);
+                    assert_eq!(p[1], 0.);
+                    assert_eq!(p[2], 0.);
+                }
+            }
+        }
+    }
+
+    #[test]
     fn paired_curve_sampling_fixture_preserves_shape_and_native_domains() {
         let request: super::super::ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/curve_parameter_samples.json"

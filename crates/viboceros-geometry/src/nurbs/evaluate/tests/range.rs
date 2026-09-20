@@ -209,10 +209,12 @@ fn curve_range_loss_distinguishes_true_poles_from_constant_finite_jets() {
 }
 
 #[test]
-fn curve_exact_recovery_handles_a_false_pole_after_lossless_preparation() {
+fn mixed_weight_spans_preserve_constant_jets_before_denominator_cancellation() {
     let p = point(1., 2., 3.);
     let curve = bezier(&[(p, 1.), (p, 2_f64.powi(-100)), (p, -1.)]);
-    assert!(!curve.homogeneous_controls(2, true).unwrap().range_loss);
+    let controls = curve.homogeneous_controls(2, true).unwrap();
+    assert!(controls.homogeneous.iter().all(|h| h[3].is_normal()));
+    assert!(controls.needs_exact);
     assert_eq!(curve.evaluate(0.5).unwrap(), p);
     let jet = curve.evaluate_with_second_derivative(0.5).unwrap();
     assert_eq!(jet.0, p);
@@ -257,7 +259,7 @@ fn curve_exact_recovery_retains_constant_jets_with_overflowing_intermediate_fact
         vec![0., 0., tiny, tiny],
     )
     .unwrap();
-    assert!(!curve.homogeneous_controls(1, true).unwrap().range_loss);
+    assert!(!curve.homogeneous_controls(1, true).unwrap().needs_exact);
     for t in [0., tiny] {
         let jet = curve.evaluate_with_second_derivative(t).unwrap();
         assert_eq!(jet.0, p);
@@ -267,5 +269,53 @@ fn curve_exact_recovery_retains_constant_jets_with_overflowing_intermediate_fact
             curve.tangent_at_on_side(t, ParameterSide::Right),
             Err(GeometryError::Degenerate { .. })
         ));
+    }
+}
+
+#[test]
+fn mixed_weight_native_jets_recognize_a_pole_hidden_by_rounded_blend_ratios() {
+    for sign in [1., -1.] {
+        let curve = NurbsCurve::try_new_rational(
+            1,
+            [(point(0., 0., 0.), sign), (point(1., 0., 0.), -2. * sign)]
+                .map(|(p, w)| WeightedPoint3::try_new(p, w).unwrap())
+                .to_vec(),
+            vec![0., 0., 1.5, 1.5],
+        )
+        .unwrap();
+        assert_eq!(
+            curve.evaluate(0.5),
+            Err(GeometryError::ZeroWeightAtParameter)
+        );
+        assert_eq!(
+            curve.evaluate_with_derivative(0.5),
+            Err(GeometryError::ZeroWeightAtParameter)
+        );
+        assert_eq!(
+            curve.evaluate_with_second_derivative(0.5),
+            Err(GeometryError::ZeroWeightAtParameter)
+        );
+        assert_eq!(
+            curve.tangent_at_on_side(0.5, ParameterSide::Right),
+            Err(GeometryError::ZeroWeightAtParameter)
+        );
+        for (t, x, second) in [(0.25, -2. / 3., -128. / 3.), (0.75, 2., 128. / 3.)] {
+            let (p, d, dd) = curve.evaluate_with_second_derivative(t).unwrap();
+            assert_eq!(p, point(x, 0., 0.));
+            assert_eq!(d.to_array(), [-16. / 3., 0., 0.]);
+            assert_eq!(dd.to_array(), [second, 0., 0.]);
+        }
+    }
+}
+
+#[test]
+fn common_sign_weight_spans_keep_the_fast_control_path() {
+    for sign in [1., -1.] {
+        let curve = bezier(&[
+            (point(0., 0., 0.), sign),
+            (point(1., 2., 0.), 2. * sign),
+            (point(2., 0., 0.), 3. * sign),
+        ]);
+        assert!(!curve.homogeneous_controls(2, true).unwrap().needs_exact);
     }
 }

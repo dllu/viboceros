@@ -5,6 +5,9 @@
 Three-dimensional NURBS curves now have a guarded exact-rational path for points,
 first/second derivatives, and limiting tangents. Ordinary successful evaluation
 still uses the existing centered, weight-normalized floating-point formulas.
+An additional [mixed-sign weight guard](curve-fractional-recovery.md) now
+evaluates those curve spans exactly before rounded blending can hide a true pole.
+Common-sign weight gauges retain the ordinary dispatch below.
 
 ## Failures recovered
 

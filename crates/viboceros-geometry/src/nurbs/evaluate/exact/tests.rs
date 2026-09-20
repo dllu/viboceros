@@ -30,7 +30,7 @@ fn exact_curve_jets_match_independent_fraction_basis_reference_bits() {
             .collect();
         let curve = NurbsCurve::try_new_rational(degree, controls, knots).unwrap();
         let span = curve.checked_span_on_side(parameter, side).unwrap();
-        assert!(curve.homogeneous_controls(span, true).unwrap().range_loss);
+        assert!(curve.homogeneous_controls(span, true).unwrap().needs_exact);
         let expected = fields.collect::<Vec<_>>();
         for order in 0..=2 {
             let actual = match order {

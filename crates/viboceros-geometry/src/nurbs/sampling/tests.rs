@@ -4,6 +4,122 @@ fn p(x: Real, y: Real) -> Point3 {
     Point3::try_new(x, y, 0.).unwrap()
 }
 
+#[test]
+fn subnormal_domain_samples_retain_rational_interior_geometry() {
+    for width in [
+        Real::from_bits(1),
+        Real::from_bits(3),
+        Real::MIN_POSITIVE / 2.,
+    ] {
+        let curve = NurbsCurve::try_new_rational(
+            1,
+            vec![
+                WeightedPoint3::try_new(p(0., 0.), 1.).unwrap(),
+                WeightedPoint3::try_new(p(2., 0.), 2.).unwrap(),
+            ],
+            vec![0., 0., width, width],
+        )
+        .unwrap();
+        let sampler = curve.parameter_sampler().unwrap();
+        for f in [0.125, 1. / 3., 0.5, 0.75] {
+            let expected = p(4. * f / (1. + f), 0.);
+            assert!(sampler.evaluate(f).unwrap().distance_to(expected).unwrap() < 5e-16);
+            assert!(
+                sampler
+                    .spans()
+                    .next()
+                    .unwrap()
+                    .evaluate(f)
+                    .unwrap()
+                    .distance_to(expected)
+                    .unwrap()
+                    < 5e-16
+            );
+        }
+    }
+}
+
+#[test]
+fn unshiftable_exterior_knots_do_not_quantize_fractional_points() {
+    let origin = 2.0_f64.powi(52);
+    let curve = NurbsCurve::try_new(
+        1,
+        vec![p(-4., 0.), p(-2., 0.), p(2., 0.), p(4., 0.)],
+        vec![
+            -1e308,
+            origin,
+            origin + 1.,
+            origin + 1.,
+            origin + 2.,
+            origin + 2.,
+        ],
+    )
+    .unwrap();
+    let sampler = curve.parameter_sampler().unwrap();
+    let spans: Vec<_> = sampler.spans().collect();
+    for f in [0.125, 0.25, 0.5, 0.75, 0.875] {
+        assert_eq!(spans[0].evaluate(f).unwrap(), p(-4. + 2. * f, 0.));
+        assert_eq!(spans[1].evaluate(f).unwrap(), p(2. + 2. * f, 0.));
+    }
+    assert_eq!(sampler.evaluate(0.125).unwrap(), p(-3.5, 0.));
+    assert_eq!(sampler.evaluate(0.5).unwrap(), p(2., 0.));
+    assert_eq!(sampler.evaluate(0.875).unwrap(), p(3.5, 0.));
+}
+
+#[test]
+fn single_ulp_span_inside_a_wide_domain_has_fractional_interior_points() {
+    let start = 1e308_f64;
+    let end = start.next_up();
+    let curve = NurbsCurve::try_new(
+        1,
+        vec![p(0., 0.), p(1., 0.), p(10., 0.), p(12., 0.)],
+        vec![0., 0., start, start, end, end],
+    )
+    .unwrap();
+    let sampler = curve.parameter_sampler().unwrap();
+    let span = sampler.spans().last().unwrap();
+    assert_eq!(span.evaluate(0.5).unwrap(), p(11., 0.));
+}
+
+#[test]
+fn whole_curve_fraction_selects_the_exact_side_of_a_discontinuity() {
+    let curve = NurbsCurve::try_new(
+        1,
+        vec![p(0., 0.), p(1., 0.), p(10., 0.), p(12., 0.)],
+        vec![0., 0., 0.5, 0.5, 1.5, 1.5],
+    )
+    .unwrap();
+    let sampler = curve.parameter_sampler().unwrap();
+    let fraction = 1. / 3.;
+    assert_eq!(curve.parameter_at(fraction).unwrap(), 0.5);
+    assert_eq!(curve.evaluate(0.5).unwrap(), p(10., 0.));
+    // The exact binary64 fraction is slightly below mathematical one third.
+    assert_eq!(sampler.evaluate(fraction).unwrap(), p(1., 0.));
+    assert_eq!(sampler.evaluate(fraction.next_up()).unwrap(), p(10., 0.));
+}
+
+#[test]
+fn rounded_native_pole_does_not_reject_a_finite_fractional_point() {
+    let curve = NurbsCurve::try_new_rational(
+        1,
+        vec![
+            WeightedPoint3::try_new(p(0., 0.), 1.).unwrap(),
+            WeightedPoint3::try_new(p(1., 0.), -2.).unwrap(),
+        ],
+        vec![0., 0., 1.5, 1.5],
+    )
+    .unwrap();
+    let f = 1. / 3.;
+    assert_eq!(
+        curve.evaluate(curve.parameter_at(f).unwrap()),
+        Err(GeometryError::ZeroWeightAtParameter)
+    );
+    let sampler = curve.parameter_sampler().unwrap();
+    let whole = sampler.evaluate(f).unwrap();
+    assert_eq!(whole, sampler.spans().next().unwrap().evaluate(f).unwrap());
+    assert_eq!(whole.x(), -12_009_599_006_321_322.);
+}
+
 fn shifted(curve: &NurbsCurve, origin: Real) -> NurbsCurve {
     let knots: Vec<_> = curve.knots().iter().map(|k| k + origin).collect();
     assert!(
@@ -159,10 +275,16 @@ fn sampler_borrows_identity_and_declines_inexact_exterior_knots() {
         assert!(matches!(sampler.curve, Cow::Borrowed(_)));
         assert_eq!(&*sampler.curve, &curve);
         for t in [0., 1. / 3., 1.] {
-            assert_eq!(
-                sampler.evaluate(t).unwrap(),
-                curve.evaluate(curve.parameter_at(t).unwrap()).unwrap()
-            );
+            let actual = sampler.evaluate(t).unwrap();
+            assert!(actual.distance_to(p(t, t)).unwrap() < 1e-15);
+            if sampler.origin_declined {
+                assert_eq!(actual, p(t, t));
+            } else {
+                assert_eq!(
+                    actual,
+                    curve.evaluate(curve.parameter_at(t).unwrap()).unwrap()
+                );
+            }
         }
     }
 }

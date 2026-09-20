@@ -7,7 +7,7 @@ mod tangent;
 struct EvaluationControls {
     origin: Point3,
     homogeneous: Vec<[Real; 4]>,
-    range_loss: bool,
+    needs_exact: bool,
 }
 
 #[cfg(test)]
@@ -260,7 +260,7 @@ impl NurbsCurve {
         exact: impl Fn() -> Result<T, GeometryError>,
     ) -> Result<T, GeometryError> {
         let controls = self.homogeneous_controls(span, true)?;
-        if controls.range_loss {
+        if controls.needs_exact {
             return exact();
         }
         let origin = controls.origin;
@@ -270,7 +270,7 @@ impl NurbsCurve {
         // Retry that exceptional case in the unshifted frame.
         if matches!(result, Err(GeometryError::NonFinite { .. })) && origin.to_array() != [0.0; 3] {
             let controls = self.homogeneous_controls(span, false)?;
-            if controls.range_loss {
+            if controls.needs_exact {
                 exact()
             } else {
                 evaluate(controls.origin, controls.homogeneous).or_else(|_| exact())
@@ -306,10 +306,15 @@ impl NurbsCurve {
         };
         let weight_scale = active.iter().map(|c| c.weight.abs()).fold(0.0, Real::max);
         let mut controls = Vec::with_capacity(active.len());
-        let mut range_loss = false;
+        let mut needs_exact = false;
+        let negative_weight = active[0].weight.is_sign_negative();
         for control in active {
             let weight = control.weight / weight_scale;
-            range_loss |= !weight.is_normal();
+            // Mixed-sign weights can have a true pole even when a rounded
+            // blend ratio produces a small nonzero denominator. No numerical
+            // tolerance can certify that cancellation; keep the span exact.
+            needs_exact |=
+                !weight.is_normal() || control.weight.is_sign_negative() != negative_weight;
             let point = control.point.to_array();
             let origin = origin.to_array();
             let local: [Real; 3] = std::array::from_fn(|i| point[i] - origin[i]);
@@ -319,7 +324,7 @@ impl NurbsCurve {
                 local[2] * weight,
                 weight,
             ];
-            range_loss |= local
+            needs_exact |= local
                 .into_iter()
                 .zip(value)
                 .any(|(a, product)| a != 0. && !product.is_normal());
@@ -329,7 +334,7 @@ impl NurbsCurve {
         Ok(EvaluationControls {
             origin,
             homogeneous: controls,
-            range_loss,
+            needs_exact,
         })
     }
 }

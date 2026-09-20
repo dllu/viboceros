@@ -572,6 +572,42 @@ mod tests {
     }
 
     #[test]
+    fn curve_projection_of_subnormal_domains_retains_interior_geometry() {
+        let view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        let controls = [(0., 0., 1.), (1., 2., 2.), (2., 0., 1.)].map(|(x, y, w)| {
+            viboceros_geometry::WeightedPoint3::try_new(Point3::try_new(x, y, 0.).unwrap(), w)
+                .unwrap()
+        });
+        let make = |width| {
+            NurbsCurve::try_new_rational(
+                2,
+                controls.to_vec(),
+                vec![0., 0., 0., width, width, width],
+            )
+            .unwrap()
+        };
+        let mut expected = ProjectedPrimitives::default();
+        view.add_projected_nurbs_curve(&mut expected, rect, &make(1.));
+        assert_eq!(expected.segments.len(), CURVE_SAMPLES_PER_SPAN);
+        for width in [
+            Real::from_bits(1),
+            Real::from_bits(3),
+            Real::MIN_POSITIVE / 2.,
+        ] {
+            let curve = make(width);
+            let before = curve.clone();
+            let mut actual = ProjectedPrimitives::default();
+            view.add_projected_nurbs_curve(&mut actual, rect, &curve);
+            assert_eq!(actual.segments, expected.segments);
+            for [start, end] in expected.segments.iter().copied() {
+                assert!(view.nurbs_pick_distance(start.lerp(end, 0.5), rect, &curve) < 1e-4);
+            }
+            assert_eq!(curve, before);
+        }
+    }
+
+    #[test]
     #[ignore = "manual large-scene click-picking timing"]
     fn benchmark_large_scene_click_picking() {
         let view = Viewport::new(ViewKind::Top);
