@@ -117,8 +117,10 @@ now share surface-frame preparation, including `ExtractAll IgnoreTrims=Yes`.
 Single native isocurve APIs and point-picking through a native closest-UV result
 retain their existing native-coordinate limits.
 An extracted curve whose native knots are restored exactly can still have a
-poorly resolved native sampling grid; reparameterize it before comparing its
-normalized locus. Display wires deliberately do not restore that origin.
+poorly resolved native sampling grid. Its
+[fractional point sampler](curve-parameter-sampling.md) avoids that intermediate
+native rounding whenever the knot origin can be removed losslessly; the source
+domain is retained. Display wires deliberately do not restore that origin.
 
 Existing independent 3D edges and trims' own knot parameters are not reframed.
 The previously failing full-saddle constructor with domains

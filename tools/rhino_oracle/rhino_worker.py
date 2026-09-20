@@ -878,6 +878,42 @@ def _canonical_linear_intersection_curve_definition(curve):
     return definition
 
 
+def _curve_parameter_samples(operation, iterations):
+    if any(isinstance(t, bool) or not isinstance(t, (int, float)) for t in operation["fractions"]):
+        raise ValueError("curve sampling fractions must be numbers in [0, 1]")
+    fractions = [_finite(t, "curve sampling fraction") for t in operation["fractions"]]
+    if any(t < 0 or t > 1 for t in fractions):
+        raise ValueError("curve sampling fractions must be numbers in [0, 1]")
+    curve = _nurbs_curve_from_definition(operation["curve"])
+    try:
+        native_domain = [float(curve.Domain.T0), float(curve.Domain.T1)]
+        # Shape oracle, not native-parameter rounding parity: this privately
+        # owned reference alone gets a unit domain before fractional sampling.
+        curve.Domain = Rhino.Geometry.Interval(0.0, 1.0)
+        if not curve.IsValid or curve.Domain.T0 != 0.0 or curve.Domain.T1 != 1.0:
+            raise ValueError("curve sampling reference normalization failed")
+
+        def compute():
+            points = [_xyz(curve.PointAt(t)) for t in fractions]
+            span_points = []
+            for index in range(curve.SpanCount):
+                interval = curve.SpanDomain(index)
+                samples = []
+                for t in fractions:
+                    parameter = interval.ParameterAt(t)
+                    side = (Rhino.Geometry.CurveEvaluationSide.Below if parameter == interval.T1
+                            else Rhino.Geometry.CurveEvaluationSide.Above)
+                    values = curve.DerivativeAt(parameter, 0, side)
+                    if values is None or len(values) != 1:
+                        raise ValueError("one-sided curve point sampling failed")
+                    samples.append(_xyz(values[0]))
+                span_points.append(samples)
+            return dict(domain=native_domain, points=points, span_points=span_points)
+        return _measure(iterations, compute)
+    finally:
+        curve.Dispose()
+
+
 def _nurbs_curve_from_definition(definition, dimension=3):
     degree = int(definition["degree"])
     controls = definition["control_points"]
@@ -8397,6 +8433,9 @@ def _execute(operation, iterations, tolerance):
 
         value, elapsed = _measure(iterations, join_curves)
         return _canonical_join_segments(value), elapsed
+
+    if kind == "nurbs_curve_parameter_samples":
+        return _curve_parameter_samples(operation, iterations)
 
     if kind == "nurbs_curve_evaluate":
         degree = int(operation["degree"])

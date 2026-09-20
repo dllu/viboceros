@@ -1,0 +1,118 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 1e-12,
+  "relative_epsilon": 1e-12,
+  "passed": true,
+  "operations": [
+    {
+      "id": "rational-local",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "viboceros_ns_per_iteration": 1509.3333333333333,
+      "rhino_ns_per_iteration": 3814697.3333333335,
+      "rhino_to_viboceros_ratio": 2527.4054770318025,
+      "differences": []
+    },
+    {
+      "id": "rational-positive",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "viboceros_ns_per_iteration": 1509.3333333333333,
+      "rhino_ns_per_iteration": 862121.6666666666,
+      "rhino_to_viboceros_ratio": 571.193683745583,
+      "differences": []
+    },
+    {
+      "id": "rational-negative",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "viboceros_ns_per_iteration": 3024.0,
+      "rhino_ns_per_iteration": 401814.6666666667,
+      "rhino_to_viboceros_ratio": 132.8752204585538,
+      "differences": []
+    },
+    {
+      "id": "c0-local",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "viboceros_ns_per_iteration": 2069.3333333333335,
+      "rhino_ns_per_iteration": 1485188.6666666667,
+      "rhino_to_viboceros_ratio": 717.7135953608247,
+      "differences": []
+    },
+    {
+      "id": "c0-positive",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "viboceros_ns_per_iteration": 2080.0,
+      "rhino_ns_per_iteration": 434875.3333333333,
+      "rhino_to_viboceros_ratio": 209.07467948717948,
+      "differences": []
+    },
+    {
+      "id": "c0-negative",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "viboceros_ns_per_iteration": 2032.0,
+      "rhino_ns_per_iteration": 409444.3333333333,
+      "rhino_to_viboceros_ratio": 201.49819553805773,
+      "differences": []
+    },
+    {
+      "id": "unclamped-local",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "viboceros_ns_per_iteration": 2661.3333333333335,
+      "rhino_ns_per_iteration": 1246134.3333333333,
+      "rhino_to_viboceros_ratio": 468.23684869739475,
+      "differences": []
+    },
+    {
+      "id": "unclamped-positive",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "viboceros_ns_per_iteration": 2602.6666666666665,
+      "rhino_ns_per_iteration": 325521.0,
+      "rhino_to_viboceros_ratio": 125.07210553278689,
+      "differences": []
+    },
+    {
+      "id": "unclamped-negative",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-15,
+      "viboceros_ns_per_iteration": 2848.0,
+      "rhino_ns_per_iteration": 775655.0,
+      "rhino_to_viboceros_ratio": 272.3507724719101,
+      "differences": []
+    },
+    {
+      "id": "closed-local",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-16,
+      "viboceros_ns_per_iteration": 1744.0,
+      "rhino_ns_per_iteration": 208536.66666666666,
+      "rhino_to_viboceros_ratio": 119.57377675840978,
+      "differences": []
+    },
+    {
+      "id": "closed-positive",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-16,
+      "viboceros_ns_per_iteration": 2144.0,
+      "rhino_ns_per_iteration": 264485.6666666667,
+      "rhino_to_viboceros_ratio": 123.36085199004977,
+      "differences": []
+    },
+    {
+      "id": "closed-negative",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-16,
+      "viboceros_ns_per_iteration": 1765.3333333333333,
+      "rhino_ns_per_iteration": 195821.0,
+      "rhino_to_viboceros_ratio": 110.92579305135952,
+      "differences": []
+    }
+  ],
+  "max_absolute_error": 1.1102230246251565e-15,
+  "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation."
+}

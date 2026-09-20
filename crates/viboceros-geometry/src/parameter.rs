@@ -16,6 +16,26 @@ pub(crate) fn exact_difference(a: Real, b: Real) -> Option<Real> {
         .filter(|_| error == 0.)
 }
 
+/// Removes a same-sign domain's nearest endpoint only when every supplied
+/// coordinate (including exterior knots) translates without any rounding.
+pub(crate) fn lossless_parameter_origin(
+    domain: RangeInclusive<Real>,
+    mut coordinates: impl Iterator<Item = Real>,
+) -> Real {
+    let candidate = if *domain.start() > 0. {
+        *domain.start()
+    } else if *domain.end() < 0. {
+        *domain.end()
+    } else {
+        return 0.;
+    };
+    if coordinates.all(|value| exact_difference(value, candidate).is_some()) {
+        candidate
+    } else {
+        0.
+    }
+}
+
 pub(crate) fn check_trim_interval(
     interval: &RangeInclusive<Real>,
     domain: RangeInclusive<Real>,

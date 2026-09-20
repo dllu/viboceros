@@ -24,6 +24,8 @@ second derivative at the corresponding negated parameter. One-sided first
 derivatives and tangents do not require the second derivative to be representable.
 Full-order NURBS knots can have distinct point limits; the point returned by a
 one-sided jet belongs to its selected span.
+[Viewport curve sampling](curve-parameter-sampling.md) also uses these limits,
+including when a native knot span has no representable interior parameter.
 
 ## Stationary points and kink detection
 

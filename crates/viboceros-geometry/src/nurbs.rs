@@ -5,6 +5,8 @@ mod decompose;
 mod evaluate;
 pub(crate) mod exact;
 mod integration_frame;
+mod sampling;
+pub use sampling::{NurbsCurveParameterSampler, NurbsCurveSamplingSpan};
 mod weights;
 use weights::change_bezier_end_weights;
 pub(crate) use weights::rescale_controls;
@@ -1280,8 +1282,9 @@ impl NurbsCurve {
         if !curve_points_coincident(start, end) {
             return Ok(false);
         }
-        let first_interior = self.evaluate(self.parameter_at(1.0 / 3.0)?)?;
-        let second_interior = self.evaluate(self.parameter_at(2.0 / 3.0)?)?;
+        let sampler = self.parameter_sampler()?;
+        let first_interior = sampler.evaluate(1.0 / 3.0)?;
+        let second_interior = sampler.evaluate(2.0 / 3.0)?;
         Ok(!curve_points_coincident(start, first_interior)
             && !curve_points_coincident(start, second_interior)
             && !curve_points_coincident(end, first_interior)
@@ -1360,6 +1363,9 @@ impl NurbsCurve {
 
     /// Maps a normalized value in `[0, 1]` into the curve domain without
     /// subtracting potentially opposite, very large endpoints.
+    ///
+    /// The returned native parameter can round onto a coarse floating-point
+    /// grid. Use [`Self::parameter_sampler`] to sample geometry directly.
     pub fn parameter_at(&self, normalized: Real) -> Result<Real, GeometryError> {
         if !normalized.is_finite() {
             return Err(GeometryError::NonFinite {

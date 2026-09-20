@@ -130,6 +130,7 @@ representation cannot be translated exactly, arbitrary degeneracy, or native
 point-picking/structure-edit intermediates. Single native isocurve APIs and
 already-existing 3D curves can still have poorly resolved native sampling
 grids. Trim-aware B-rep extraction can restore exactly representable native
-knots; normalized locus comparisons of those output curves still require
-reparameterization. This correction does not silently alter stored source
+knots; point-only consumers can now use the
+[lossless curve sampler](curve-parameter-sampling.md), as display and selection do,
+without changing those stored domains. This correction does not silently alter stored source
 geometry or promise universal parameter-translation invariance.

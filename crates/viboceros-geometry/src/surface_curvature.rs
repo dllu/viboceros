@@ -12,7 +12,7 @@ pub struct SurfaceCurvature {
     pub normal: UnitVector3,
     /// Largest absolute curvature first. Signs refer to `normal`.
     pub principal: [Real; 2],
-    /// Orthonormal eigenvectors; directions[0], directions[1], normal is right handed.
+    /// Orthonormal eigenvectors; `directions[0]`, `directions[1]`, normal is right handed.
     /// A direction's sign, and directions at umbilics, are not intrinsic.
     pub directions: [UnitVector3; 2],
 }

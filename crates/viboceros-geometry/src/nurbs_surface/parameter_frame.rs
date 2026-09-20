@@ -1,6 +1,6 @@
 //! Lossless local parameter origins shared by surfaces and trimmed faces.
 use super::*;
-use crate::parameter::exact_difference;
+use crate::parameter::lossless_parameter_origin;
 use std::borrow::Cow;
 
 pub(crate) struct SurfaceParameterFrame<'a> {
@@ -18,24 +18,13 @@ impl NurbsSurface {
         let knots = [self.knots_u(), self.knots_v()];
         let domains = [self.domain_u(), self.domain_v()];
         let origin = std::array::from_fn(|axis| {
-            let domain = &domains[axis];
-            let candidate = if *domain.start() > 0. {
-                *domain.start()
-            } else if *domain.end() < 0. {
-                *domain.end()
-            } else {
-                return 0.;
-            };
-            if knots[axis]
-                .iter()
-                .copied()
-                .chain(coordinates.clone().map(|p| p[axis]))
-                .all(|value| exact_difference(value, candidate).is_some())
-            {
-                candidate
-            } else {
-                0.
-            }
+            lossless_parameter_origin(
+                domains[axis].clone(),
+                knots[axis]
+                    .iter()
+                    .copied()
+                    .chain(coordinates.clone().map(|p| p[axis])),
+            )
         });
         let surface = if origin == [0.; 2] {
             Cow::Borrowed(self)

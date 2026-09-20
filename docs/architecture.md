@@ -265,6 +265,9 @@ keeps tangent direction separate from representability of derivative magnitude.
 `nurbs/arc_length` owns accuracy-controlled full-curve length integration.
 `nurbs/integration_frame` supplies checked dimensionless parameter preparation
 shared by length, sampling, shortness, and enclosed curve-area queries.
+`nurbs/sampling` provides [lossless fractional point sampling](curve-parameter-sampling.md)
+and exact span limits without changing stored native domains. The viewport's
+shared segment visitor uses it for drawing, click picking, and window selection.
 `nurbs/weights/end_weights` owns projective endpoint normalization and
 piecewise-Bezier end-weight changes, including near-equal and extreme gauges.
 Loft and Sweep share its geometry-preserving normalizer; explicit common-profile

@@ -37,46 +37,8 @@ use selection::{ProjectedPrimitives, is_crossing_selection, selection_mode};
 mod raster_tests;
 #[cfg(test)]
 use camera::zoom_pan;
-/// Borrow native span evaluators without allocating a NURBS copy each frame.
-trait ViewportCurve {
-    fn domain(&self) -> std::ops::RangeInclusive<Real>;
-    fn spans(&self) -> impl Iterator<Item = (Real, Real)>;
-    fn evaluate(&self, parameter: Real) -> Result<Point3, GeometryError>;
-    fn samples_per_span(&self) -> usize {
-        CURVE_SAMPLES_PER_SPAN
-    }
-}
-
-impl ViewportCurve for NurbsCurve {
-    fn domain(&self) -> std::ops::RangeInclusive<Real> {
-        self.domain()
-    }
-    fn spans(&self) -> impl Iterator<Item = (Real, Real)> {
-        self.spans()
-    }
-    fn evaluate(&self, parameter: Real) -> Result<Point3, GeometryError> {
-        self.evaluate(parameter)
-    }
-}
-
-impl ViewportCurve for CurveSegment3 {
-    fn samples_per_span(&self) -> usize {
-        match self {
-            Self::Line(_) | Self::Polyline(_) => 1,
-            Self::Arc(arc) => circular_arc_samples(*arc),
-            Self::NurbsCurve(_) => CURVE_SAMPLES_PER_SPAN,
-        }
-    }
-    fn domain(&self) -> std::ops::RangeInclusive<Real> {
-        self.domain()
-    }
-    fn spans(&self) -> impl Iterator<Item = (Real, Real)> {
-        self.spans()
-    }
-    fn evaluate(&self, parameter: Real) -> Result<Point3, GeometryError> {
-        self.evaluate(parameter)
-    }
-}
+mod curve_sampling;
+use curve_sampling::ViewportCurve;
 const TRACK_CAPTURE_PIXELS: f32 = 8.0;
 const PICK_CAPTURE_PIXELS: f32 = 8.0;
 const CURVE_SAMPLES_PER_SPAN: usize = 16;

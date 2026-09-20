@@ -340,25 +340,11 @@ impl Viewport {
         rect: Rect,
         curve: &impl ViewportCurve,
     ) {
-        let domain_end = *curve.domain().end();
-        let samples = curve.samples_per_span();
-        for (span_start, span_end) in curve.spans() {
-            let mut previous = None;
-            for sample in 0..=samples {
-                let fraction = sample as Real / samples as Real;
-                let mut parameter = span_start.mul_add(1.0 - fraction, span_end * fraction);
-                if sample == samples && span_end < domain_end {
-                    parameter = span_end.next_down().max(span_start);
-                }
-                let point = curve.evaluate(parameter).ok();
-                if let (Some(start), Some(end)) = (previous, point)
-                    && let Some([start, end]) = self.project_segment(start, end, rect)
-                {
-                    projected.add_segment(Some(start), Some(end));
-                }
-                previous = point;
+        curve.visit_segments(|start, end| {
+            if let Some([start, end]) = self.project_segment(start, end, rect) {
+                projected.add_segment(Some(start), Some(end));
             }
-        }
+        });
     }
 
     pub(super) fn add_projected_mesh(
@@ -427,26 +413,12 @@ impl Viewport {
         rect: Rect,
         curve: &impl ViewportCurve,
     ) -> f32 {
-        let domain_end = *curve.domain().end();
-        let samples = curve.samples_per_span();
         let mut nearest = f32::INFINITY;
-        for (span_start, span_end) in curve.spans() {
-            let mut previous = None;
-            for sample in 0..=samples {
-                let fraction = sample as Real / samples as Real;
-                let mut parameter = span_start.mul_add(1.0 - fraction, span_end * fraction);
-                if sample == samples && span_end < domain_end {
-                    parameter = span_end.next_down().max(span_start);
-                }
-                let projected = curve.evaluate(parameter).ok();
-                if let (Some(start), Some(end)) = (previous, projected)
-                    && let Some([start, end]) = self.project_segment(start, end, rect)
-                {
-                    nearest = nearest.min(point_segment_distance(pointer, start, end));
-                }
-                previous = projected;
+        curve.visit_segments(|start, end| {
+            if let Some([start, end]) = self.project_segment(start, end, rect) {
+                nearest = nearest.min(point_segment_distance(pointer, start, end));
             }
-        }
+        });
         nearest
     }
 
@@ -515,6 +487,89 @@ pub(super) fn is_crossing_selection(start: Pos2, end: Pos2) -> bool {
 mod tests {
     use super::*;
     use viboceros_document::ColorRgb;
+
+    #[test]
+    fn curve_projection_is_invariant_under_exact_knot_translation() {
+        let view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        let controls = [(0., 0., 1.), (1., 2., 2.), (2., 0., 1.)].map(|(x, y, w)| {
+            viboceros_geometry::WeightedPoint3::try_new(Point3::try_new(x, y, 0.).unwrap(), w)
+                .unwrap()
+        });
+        let curve =
+            NurbsCurve::try_new_rational(2, controls.to_vec(), vec![0., 0., 0., 2., 2., 2.])
+                .unwrap();
+        let mut expected = ProjectedPrimitives::default();
+        view.add_projected_nurbs_curve(&mut expected, rect, &curve);
+        assert_eq!(expected.segments.len(), CURVE_SAMPLES_PER_SPAN);
+        for origin in [1e12, -1e12, 2.0_f64.powi(52), -2.0_f64.powi(52)] {
+            let shifted = NurbsCurve::try_new_rational(
+                2,
+                controls.to_vec(),
+                curve.knots().iter().map(|k| k + origin).collect(),
+            )
+            .unwrap();
+            assert!(
+                shifted
+                    .knots()
+                    .iter()
+                    .zip(curve.knots())
+                    .all(|(a, b)| a - origin == *b)
+            );
+            let before = shifted.clone();
+            let mut actual = ProjectedPrimitives::default();
+            view.add_projected_nurbs_curve(&mut actual, rect, &shifted);
+            assert_eq!(actual.segments, expected.segments, "origin={origin}");
+            for segment in &expected.segments {
+                let pointer = segment[0].lerp(segment[1], 0.5);
+                assert!(view.nurbs_pick_distance(pointer, rect, &shifted) < 1e-4);
+            }
+            let leaf = CurveSegment3::NurbsCurve(shifted.clone());
+            let mut leaf_projection = ProjectedPrimitives::default();
+            view.add_projected_nurbs_curve(&mut leaf_projection, rect, &leaf);
+            assert_eq!(leaf_projection.segments, expected.segments);
+            assert_eq!(shifted, before);
+        }
+    }
+
+    #[test]
+    fn curve_projection_reaches_both_sides_of_single_ulp_knot_spans() {
+        let view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        let origin = 2.0_f64.powi(52);
+        let controls = [-4., -2., 2., 4.].map(|x| Point3::try_new(x, 0., 0.).unwrap());
+        let curve = NurbsCurve::try_new(
+            1,
+            controls.to_vec(),
+            vec![
+                origin,
+                origin,
+                origin + 1.,
+                origin + 1.,
+                origin + 2.,
+                origin + 2.,
+            ],
+        )
+        .unwrap();
+        let mut projected = ProjectedPrimitives::default();
+        view.add_projected_nurbs_curve(&mut projected, rect, &curve);
+        assert_eq!(projected.segments.len(), 2 * CURVE_SAMPLES_PER_SPAN);
+        assert_eq!(
+            projected.segments[CURVE_SAMPLES_PER_SPAN - 1][1],
+            view.project(controls[1], rect).unwrap()
+        );
+        assert_eq!(
+            projected.segments[CURVE_SAMPLES_PER_SPAN][0],
+            view.project(controls[2], rect).unwrap()
+        );
+        assert!(
+            projected
+                .segments
+                .iter()
+                .all(|[a, b]| (a.x < rect.center().x && b.x < rect.center().x)
+                    || (a.x > rect.center().x && b.x > rect.center().x))
+        );
+    }
 
     #[test]
     #[ignore = "manual large-scene click-picking timing"]

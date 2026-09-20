@@ -36,6 +36,7 @@ use viboceros_io::{
 };
 
 mod construction_plane;
+mod curve_parameter_samples;
 mod interface;
 mod isocurves;
 mod mass_properties;
@@ -512,6 +513,11 @@ pub enum Operation {
         control_points: Vec<ControlPoint>,
         knots: Vec<f64>,
         parameter: f64,
+    },
+    NurbsCurveParameterSamples {
+        id: String,
+        curve: NurbsCurveDefinition,
+        fractions: Vec<f64>,
     },
     NurbsCurveClosestPoint {
         id: String,
@@ -1677,6 +1683,7 @@ impl Operation {
             | Self::PolylineArea { id, .. }
             | Self::PolylineJoin { id, .. }
             | Self::NurbsCurveEvaluate { id, .. }
+            | Self::NurbsCurveParameterSamples { id, .. }
             | Self::NurbsCurveClosestPoint { id, .. }
             | Self::NurbsCurveLength { id, .. }
             | Self::NurbsCurveShortFilter { id, .. }
@@ -2314,6 +2321,9 @@ fn execute(
             })?;
             (json!(canonical_join_segments(&joined)), elapsed)
         }
+        Operation::NurbsCurveParameterSamples {
+            curve, fractions, ..
+        } => curve_parameter_samples::run(curve, fractions, iterations)?,
         Operation::NurbsCurveEvaluate {
             degree,
             control_points,

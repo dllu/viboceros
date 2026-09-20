@@ -2,7 +2,7 @@
 use super::*;
 
 impl NurbsSurface {
-    /// Converts native parameters to fractions in [0,1], preserving endpoints.
+    /// Converts native parameters to fractions in `[0,1]`, preserving endpoints.
     pub fn normalized_parameters(&self, u: Real, v: Real) -> Result<[Real; 2], GeometryError> {
         Ok([fraction(u, self.domain_u())?, fraction(v, self.domain_v())?])
     }

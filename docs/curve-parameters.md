@@ -9,6 +9,9 @@ without changing the locus. `CurveSample::parameter()` belongs to the source
 curve's native interval, including negative reversed intervals.
 [One-sided evaluation](curve-sided-evaluation.md) selects exact left/right limits
 at knots, including knots inside composite leaves and stationary limiting tangents.
+[Fractional NURBS sampling](curve-parameter-sampling.md) evaluates geometry
+without first restoring a large native knot origin; display and selection use
+its exact one-sided span endpoints. The stored native parameter contract is unchanged.
 
 | Curve | Initial native interval | Parameterization |
 | --- | --- | --- |

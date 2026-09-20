@@ -123,7 +123,7 @@ pub use morph::{
 pub use nurbs::{
     ControlPointCurveClosure, CurveCurveIntersection, CurveCurveIntersectionEvent,
     CurveCurveOverlap, CurveExtensionBoundary, CurveExtensionSide, CurveExtensionStyle, NurbsCurve,
-    WeightedPoint3,
+    NurbsCurveParameterSampler, NurbsCurveSamplingSpan, WeightedPoint3,
 };
 pub use nurbs_surface::{NurbsSurface, SurfaceExtensionEdge, SurfaceJet2, SurfaceKnotDirection};
 pub use nurbs2::{NurbsCurve2, WeightedPoint2};

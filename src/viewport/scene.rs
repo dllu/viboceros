@@ -409,27 +409,9 @@ impl Viewport {
         width: f32,
         color: Color32,
     ) {
-        let domain_end = *curve.domain().end();
-        let samples = curve.samples_per_span();
-        for (span_start, span_end) in curve.spans() {
-            let mut previous = None;
-            for sample in 0..=samples {
-                let fraction = sample as Real / samples as Real;
-                let mut parameter = span_start.mul_add(1.0 - fraction, span_end * fraction);
-                // At a fully multiple interior knot, the curve has distinct
-                // left and right limits. Keep this span on its left side and
-                // begin the next polyline separately on the right side.
-                if sample == samples && span_end < domain_end {
-                    parameter = span_end.next_down().max(span_start);
-                }
-
-                let evaluated = curve.evaluate(parameter).ok();
-                if let (Some(start), Some(end)) = (previous, evaluated) {
-                    self.add_gpu_line(scene, rect, start, end, width, color);
-                }
-                previous = evaluated;
-            }
-        }
+        curve.visit_segments(|start, end| {
+            self.add_gpu_line(scene, rect, start, end, width, color);
+        });
     }
 
     fn add_gpu_parametric_curve(
@@ -590,6 +572,43 @@ mod tests {
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn gpu_curve_lines_match_after_exact_knot_translation() {
+        let view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        let make = |origin| {
+            NurbsCurve::try_new(
+                2,
+                vec![point(0., 0., 0.), point(1., 2., 0.), point(2., 0., 0.)],
+                vec![
+                    origin,
+                    origin,
+                    origin,
+                    origin + 2.,
+                    origin + 2.,
+                    origin + 2.,
+                ],
+            )
+            .unwrap()
+        };
+        let mut expected = GpuSceneBuilder::new();
+        let mut actual = GpuSceneBuilder::new();
+        view.add_gpu_nurbs_curve(&mut expected, rect, &make(0.), 1., Color32::WHITE);
+        view.add_gpu_nurbs_curve(
+            &mut actual,
+            rect,
+            &make(2.0_f64.powi(52)),
+            1.,
+            Color32::WHITE,
+        );
+        assert_eq!(actual.lines.len(), CURVE_SAMPLES_PER_SPAN);
+        for (a, b) in actual.lines.iter().zip(&expected.lines) {
+            assert_eq!(a.instance.start_width, b.instance.start_width);
+            assert_eq!(a.instance.end_padding, b.instance.end_padding);
+            assert_eq!(a.depths, b.depths);
+        }
     }
 
     #[test]
