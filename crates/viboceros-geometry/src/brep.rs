@@ -18,7 +18,11 @@ mod incidence;
 mod loft;
 mod mass_properties;
 mod morph;
+mod parameter_normalization;
 mod polygon_boundaries;
+use parameter_normalization::{
+    TrimParameterNormalization, floating_parameter_epsilon, trim_parameter_epsilon,
+};
 mod surface_grid;
 mod tessellation;
 mod tolerance;
@@ -7966,7 +7970,7 @@ fn trimmed_isocurve_intervals(
             after += 1;
         }
         if (after - index) % 2 == 1 {
-            let crossing = events[index] * 0.5 + events[after - 1] * 0.5;
+            let crossing = events[index].midpoint(events[after - 1]);
             if let Some(start) = inside_start.take() {
                 if start < crossing {
                     intervals.push([start, crossing]);
@@ -7992,15 +7996,6 @@ fn trimmed_isocurve_intervals(
         }
     }
     merge_trim_intervals(intervals, epsilon)
-}
-
-fn trim_parameter_epsilon(domain: [Real; 2], tolerance: Tolerance) -> Real {
-    let scale = domain[0].abs().max(domain[1].abs()).max(1.0);
-    floating_parameter_epsilon(domain).max(tolerance.relative() * scale)
-}
-
-fn floating_parameter_epsilon(domain: [Real; 2]) -> Real {
-    256.0 * Real::EPSILON * domain[0].abs().max(domain[1].abs()).max(1.0)
 }
 
 fn parameter_interval_contains(interval: [Real; 2], value: Real, epsilon: Real) -> bool {
@@ -8363,7 +8358,7 @@ fn collect_bernstein_roots(
     if sign_changes == 0 {
         return;
     }
-    let middle = parameter[0] * 0.5 + parameter[1] * 0.5;
+    let middle = parameter[0].midpoint(parameter[1]);
     if depth >= MAX_TRIM_ROOT_DEPTH || middle <= parameter[0] || middle >= parameter[1] {
         roots.push(middle);
         return;
@@ -9285,76 +9280,6 @@ fn point_on_trim_segment(
         && point[0] <= start[0].max(end[0]) + epsilon
         && point[1] >= start[1].min(end[1]) - epsilon
         && point[1] <= start[1].max(end[1]) + epsilon
-}
-
-#[derive(Clone, Copy)]
-struct TrimParameterNormalization {
-    coordinate_scale: Real,
-    origin: [Real; 2],
-    relative_scale: Real,
-}
-
-impl TrimParameterNormalization {
-    fn try_from_points(parameters: &[Point2]) -> Result<Option<Self>, GeometryError> {
-        let Some(origin) = parameters.first() else {
-            return Ok(None);
-        };
-        // Only the maximum is needed; do not allocate one temporary vector
-        // per face loop. An overflowing difference switches to scaled subtraction.
-        let direct_scale = parameters.iter().try_fold(0.0_f64, |scale, point| {
-            let dx = point.x() - origin.x();
-            let dy = point.y() - origin.y();
-            if dx.is_finite() && dy.is_finite() {
-                Some(scale.max(dx.abs()).max(dy.abs()))
-            } else {
-                None
-            }
-        });
-        if let Some(relative_scale) = direct_scale {
-            return Ok((relative_scale > 0.0).then_some(Self {
-                coordinate_scale: 1.0,
-                origin: [origin.x(), origin.y()],
-                relative_scale,
-            }));
-        }
-
-        let coordinate_scale = parameters
-            .iter()
-            .flat_map(|point| [point.x().abs(), point.y().abs()])
-            .fold(0.0, Real::max);
-        if coordinate_scale == 0.0 {
-            return Ok(None);
-        }
-        let scaled_origin = [origin.x() / coordinate_scale, origin.y() / coordinate_scale];
-        let relative_scale = parameters
-            .iter()
-            .flat_map(|point| {
-                [
-                    point.x() / coordinate_scale - scaled_origin[0],
-                    point.y() / coordinate_scale - scaled_origin[1],
-                ]
-            })
-            .map(Real::abs)
-            .fold(0.0, Real::max);
-        require_finite(
-            [coordinate_scale, relative_scale],
-            "trim parameter normalization",
-        )?;
-        Ok((relative_scale > 0.0).then_some(Self {
-            coordinate_scale,
-            origin: scaled_origin,
-            relative_scale,
-        }))
-    }
-
-    fn normalize(self, parameter: Point2) -> Result<[Real; 2], GeometryError> {
-        let normalized = [
-            (parameter.x() / self.coordinate_scale - self.origin[0]) / self.relative_scale,
-            (parameter.y() / self.coordinate_scale - self.origin[1]) / self.relative_scale,
-        ];
-        require_finite(normalized, "normalized trim parameter")?;
-        Ok(normalized)
-    }
 }
 
 fn normalized_trim_polygon(parameters: &[Point2]) -> Result<Option<Vec<[Real; 2]>>, GeometryError> {

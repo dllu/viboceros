@@ -1,0 +1,206 @@
+{
+  "baseline_commit": "cb3e6b6",
+  "build": "release",
+  "target": "aarch64-unknown-linux-gnu",
+  "rustc": "1.95.0 (59807616e 2026-04-14)",
+  "iterations_per_operation": 100,
+  "rounds": 3,
+  "request_reconstruction": "For each source fixture, preserve its tolerance, set iterations=100, and concatenate three copies of its operations with IDs suffixed -round-1 through -round-3.",
+  "mesh_fixture": "tools/rhino_oracle/fixtures/brep_mesh_boundaries.json",
+  "mass_fixture": "tools/rhino_oracle/fixtures/trimmed_mass_properties.json",
+  "measured_work": {
+    "mesh": "polygon_mesh only, with one untimed warmup; source construction, command checks, and record generation excluded.",
+    "mass": "Area and, for closed B-reps, signed volume, with one untimed warmup; source construction and command checks excluded."
+  },
+  "note": "Before and after binaries ran sequentially on the same host, with other test/build/oracle jobs active. These are bounded host-dependent measurements, not statistical significance, exact-fallback speed, or native Rhino performance parity. All recorded result values were compared recursively by binary64 bits.",
+  "results": {
+    "mesh": {
+      "operations": 15,
+      "bitwise_equal": true,
+      "cases": [
+        {
+          "id": "mesh-boundary-open-corner",
+          "before_elapsed_ns": [
+            5829519,
+            2764807,
+            2799079
+          ],
+          "after_elapsed_ns": [
+            5894095,
+            2794615,
+            2771527
+          ],
+          "before_ns_per_operation": 27990.79,
+          "after_ns_per_operation": 27946.15,
+          "change_percent": -0.15948102929570496
+        },
+        {
+          "id": "mesh-boundary-open-box",
+          "before_elapsed_ns": [
+            12866351,
+            6264816,
+            6474975
+          ],
+          "after_elapsed_ns": [
+            13007793,
+            6207951,
+            6193247
+          ],
+          "before_ns_per_operation": 64749.75,
+          "after_ns_per_operation": 62079.51,
+          "change_percent": -4.123938702466035
+        },
+        {
+          "id": "mesh-boundary-closed-box",
+          "before_elapsed_ns": [
+            11550604,
+            7494018,
+            7565442
+          ],
+          "after_elapsed_ns": [
+            9198775,
+            7483523,
+            7578979
+          ],
+          "before_ns_per_operation": 75654.42,
+          "after_ns_per_operation": 75789.79,
+          "change_percent": 0.1789320438911446
+        },
+        {
+          "id": "mesh-boundary-disjoint-faces",
+          "before_elapsed_ns": [
+            885314,
+            891683,
+            887315
+          ],
+          "after_elapsed_ns": [
+            895394,
+            902610,
+            892403
+          ],
+          "before_ns_per_operation": 8873.15,
+          "after_ns_per_operation": 8953.94,
+          "change_percent": 0.9104996534488929
+        },
+        {
+          "id": "mesh-boundary-translated-open-corner",
+          "before_elapsed_ns": [
+            2780630,
+            2785734,
+            2799559
+          ],
+          "after_elapsed_ns": [
+            2772727,
+            2779991,
+            2771782
+          ],
+          "before_ns_per_operation": 27857.34,
+          "after_ns_per_operation": 27727.27,
+          "change_percent": -0.46691464439893027
+        }
+      ]
+    },
+    "mass": {
+      "operations": 18,
+      "bitwise_equal": true,
+      "cases": [
+        {
+          "id": "paraboloid-disk",
+          "before_elapsed_ns": [
+            380517465,
+            357368019,
+            356602499
+          ],
+          "after_elapsed_ns": [
+            355171901,
+            360727660,
+            358337639
+          ],
+          "before_ns_per_operation": 3573680.19,
+          "after_ns_per_operation": 3583376.39,
+          "change_percent": 0.2713225438340183
+        },
+        {
+          "id": "paraboloid-annulus",
+          "before_elapsed_ns": [
+            738388076,
+            725927714,
+            721961466
+          ],
+          "after_elapsed_ns": [
+            725752145,
+            727974489,
+            721486619
+          ],
+          "before_ns_per_operation": 7259277.14,
+          "after_ns_per_operation": 7257521.45,
+          "change_percent": -0.024185465937442974
+        },
+        {
+          "id": "paraboloid-thin-annulus",
+          "before_elapsed_ns": [
+            739443584,
+            735252121,
+            738774725
+          ],
+          "after_elapsed_ns": [
+            734202119,
+            730268223,
+            725085557
+          ],
+          "before_ns_per_operation": 7387747.25,
+          "after_ns_per_operation": 7302682.23,
+          "change_percent": -1.1514338149562375
+        },
+        {
+          "id": "paraboloid-capped-outward",
+          "before_elapsed_ns": [
+            507587327,
+            504370777,
+            507840819
+          ],
+          "after_elapsed_ns": [
+            504355781,
+            504938344,
+            503099957
+          ],
+          "before_ns_per_operation": 5075873.27,
+          "after_ns_per_operation": 5043557.81,
+          "change_percent": -0.6366482825919673
+        },
+        {
+          "id": "paraboloid-capped-inward",
+          "before_elapsed_ns": [
+            504969705,
+            498266394,
+            510082905
+          ],
+          "after_elapsed_ns": [
+            502640081,
+            506165276,
+            497126135
+          ],
+          "before_ns_per_operation": 5049697.05,
+          "after_ns_per_operation": 5026400.81,
+          "change_percent": -0.46133935896214284
+        },
+        {
+          "id": "paraboloid-rotated-translated",
+          "before_elapsed_ns": [
+            468017200,
+            463097557,
+            472460942
+          ],
+          "after_elapsed_ns": [
+            465638548,
+            463640481,
+            460687995
+          ],
+          "before_ns_per_operation": 4680172,
+          "after_ns_per_operation": 4636404.81,
+          "change_percent": -0.9351619983197335
+        }
+      ]
+    }
+  }
+}

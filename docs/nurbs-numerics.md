@@ -90,6 +90,10 @@ outside its incident surface's domain during conforming meshing. UV tolerances
 and surface domain checks are not widened to hide that numerical error. Tests
 cover constant coordinates, signed/global weight scales, translated derivatives,
 full-order limits, finite signed images with overflowing offsets and genuine poles.
+Its separate [exact-rational recovery](uv-rational-range.md) shares homogeneous
+recurrences with model-space curves, but rounds only requested UV points and
+first derivatives. B-rep topology separately normalizes U/V ranges independently
+and scales interval tolerances with domain width rather than coordinate origin.
 
 ## Arc-length integration
 
@@ -212,8 +216,9 @@ preparation range loss or a reported floating-point evaluation failure. Tangents
 whose first derivative rounds to zero resolve stationarity and orientation before
 rounding, and can remain finite when speed is unrepresentable. This does not
 certify every successful unflagged floating-point result or extend automatically
-to 2D trim curves and structure edits. Sampling and passing tests are bounded
-evidence, not a universal error proof or full Rhino compatibility claim.
+to structure edits. UV trims have their own [recovery policy](uv-rational-range.md).
+Sampling and passing tests are bounded evidence, not a universal error proof or
+full Rhino compatibility claim.
 
 Surface point and differential evaluation has a guarded
 [exact-rational fallback](surface-rational-range.md) when active homogeneous

@@ -290,7 +290,11 @@ sampled fitting tolerance cannot be reached within their resource budgets.
 Both fitters also check bounded rational composition candidates:
 [curves](curve-rational-fitting.md) and [surfaces](surface-rational-fitting.md).
 `nurbs2/evaluate` provides stable, sided UV-trim evaluation independently of
-model-space curves, including exact constant parameter coordinates.
+model-space curves, including exact constant parameter coordinates. Its
+[exact-rational fallback](uv-rational-range.md) shares `nurbs/exact` recurrences
+for points and native first derivatives. `brep/parameter_normalization` separately
+owns independent UV-axis normalization and width-relative interval tolerances
+for topology predicates, containment, and triangulation.
 
 The [loft kernel](loft.md) and [one-rail sweep](sweep1.md) share exact degree/knot
 matching and the explicit common-basis end-weight policy in `section_basis`.

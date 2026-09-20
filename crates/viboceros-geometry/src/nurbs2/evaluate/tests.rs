@@ -2,6 +2,9 @@ use super::*;
 use crate::ParameterSide::{Left, Right};
 use crate::{NurbsCurve, Point3, WeightedPoint3};
 
+mod range;
+mod reference;
+
 fn p(x: Real, y: Real) -> Point2 {
     Point2::try_new(x, y).unwrap()
 }

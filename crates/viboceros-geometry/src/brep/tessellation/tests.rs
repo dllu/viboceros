@@ -1,5 +1,7 @@
 use super::*;
 
+mod range;
+
 fn unit_box() -> Brep {
     let frame = Frame3::try_from_directions(
         Point3::try_new(0.0, 0.0, 0.0).unwrap(),

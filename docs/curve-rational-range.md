@@ -111,10 +111,11 @@ degree cap or timing assertion in the test suite.
 
 The preparation guard and failure recovery are not a universal forward-error
 bound: an unflagged floating-point evaluation that returns a finite but inaccurate
-answer can still escape detection. Two-dimensional trim curves, isocurve
-extraction, structure edits, and other homogeneous operations do not automatically
-inherit this recovery policy. Neither the independent references nor ordinary
-Rhino comparisons establish full Rhino compatibility or native-kernel speed parity.
+answer can still escape detection. Two-dimensional trim curves now have their own
+[recovery policy](uv-rational-range.md). Isocurve extraction, structure edits, and
+other homogeneous operations do not automatically inherit this policy. Neither
+the independent references nor ordinary Rhino comparisons establish full Rhino
+compatibility or native-kernel speed parity.
 
 The [release measurement record](curve-rational-range-performance.json) compares
 baseline `1135404` with this change using three rounds of 200 iterations. All
