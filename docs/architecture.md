@@ -23,6 +23,12 @@ integer windows without weakening rounding or full-range recovery.
 | `viboceros-oracle`, `tools/rhino_oracle/` | Matching native and public Rhino API probes and a Python comparison client. |
 | `third_party/` | Pinned OpenNURBS source and its license. |
 
+The [Align command](commands/align.md) separates option parsing, rigid layout,
+and interactive mode/point phases. Its `layout_units` helper shares top-group
+selection with Distribute; both use `object_bounds` for geometry-local bounds.
+The oracle's `object_layout` module shares owned fixture setup and output
+recording without sharing the native and Rhino alignment implementations.
+
 Typed coordinates are resolved by `viboceros-drafting/point_input`, independent
 of UI and document edits. `app/point_input` shares the interactive command's
 point-validation and transaction path with mouse picks; see [point input](point-input.md).

@@ -1,0 +1,551 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "align",
+      "id": "mixed-Right-auto",
+      "origin": [
+        7,
+        -11,
+        13
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              -2,
+              0,
+              1
+            ],
+            [
+              0,
+              0,
+              1
+            ],
+            [
+              0,
+              2,
+              2
+            ],
+            [
+              -2,
+              2,
+              2
+            ],
+            [
+              1,
+              0,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              4,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                3,
+                4,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                4,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                6,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                6,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10,
+            8,
+            4
+          ],
+          "end": [
+            12,
+            10,
+            6
+          ]
+        }
+      ],
+      "mode": "Right",
+      "target": null,
+      "align_to": "CPlane"
+    },
+    {
+      "op": "align",
+      "id": "mixed-Right-picked",
+      "origin": [
+        7,
+        -11,
+        13
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              -2,
+              0,
+              1
+            ],
+            [
+              0,
+              0,
+              1
+            ],
+            [
+              0,
+              2,
+              2
+            ],
+            [
+              -2,
+              2,
+              2
+            ],
+            [
+              1,
+              0,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              4,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                3,
+                4,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                4,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                6,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                6,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10,
+            8,
+            4
+          ],
+          "end": [
+            12,
+            10,
+            6
+          ]
+        }
+      ],
+      "mode": "Right",
+      "target": [
+        20,
+        -4,
+        17
+      ],
+      "align_to": "World"
+    },
+    {
+      "op": "align",
+      "id": "mixed-Concentric-auto",
+      "origin": [
+        7,
+        -11,
+        13
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              -2,
+              0,
+              1
+            ],
+            [
+              0,
+              0,
+              1
+            ],
+            [
+              0,
+              2,
+              2
+            ],
+            [
+              -2,
+              2,
+              2
+            ],
+            [
+              1,
+              0,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              4,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                3,
+                4,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                4,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                6,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                6,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10,
+            8,
+            4
+          ],
+          "end": [
+            12,
+            10,
+            6
+          ]
+        }
+      ],
+      "mode": "Concentric",
+      "target": null,
+      "align_to": "CPlane"
+    },
+    {
+      "op": "align",
+      "id": "mixed-Concentric-picked",
+      "origin": [
+        7,
+        -11,
+        13
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              -2,
+              0,
+              1
+            ],
+            [
+              0,
+              0,
+              1
+            ],
+            [
+              0,
+              2,
+              2
+            ],
+            [
+              -2,
+              2,
+              2
+            ],
+            [
+              1,
+              0,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              4,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                3,
+                4,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                4,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                6,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                6,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10,
+            8,
+            4
+          ],
+          "end": [
+            12,
+            10,
+            6
+          ]
+        }
+      ],
+      "mode": "Concentric",
+      "target": [
+        20,
+        -4,
+        17
+      ],
+      "align_to": "World"
+    }
+  ]
+}

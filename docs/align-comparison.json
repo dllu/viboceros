@@ -1,0 +1,494 @@
+{
+  "captured_utc": "2026-09-20 14:34:03 UTC",
+  "base_commit": "2b00cb3bdf0aadfe27ebef557e51642d7c510bd4",
+  "native_executable_sha256": "2539c4b5f1d6d5d5e5fcd16661998bee46282393aff6c15d131dbcc213fa6694",
+  "method": "Actual native commands compared with saved public Rhino 8.32 commands from owned private Xvfb sessions. All value fields are compared. These probes return zero timings and do not establish performance parity. The three separately retained curved-bound diagnostics fail the same numerical threshold and have independent analytic-extremum tests.",
+  "absolute_epsilon": 1e-08,
+  "relative_epsilon": 1e-12,
+  "fixtures": [
+    {
+      "request": "tools/rhino_oracle/fixtures/align.json",
+      "request_sha256": "db82a02a385e3952c558f32bcadaee5f7cdaafe1d3cdae4d93bf1497cf73ac4c",
+      "rhino_reference": "tools/rhino_oracle/observations/align.json",
+      "rhino_reference_sha256": "9e6c8fff230a0d5bcbfd37fdde1c5c033d48a3e723e3b8e71685d9c1f05a101f",
+      "rhino_version": "8.32.26160.13001",
+      "native_value_fingerprint_sha256": "a2b7a15d34eb61a6a9ccdad72e97cdb64bff653e4db3232e86a83854e8888bfe",
+      "passed": true,
+      "max_absolute_error": 7.404423740808852e-10,
+      "operations": [
+        {
+          "id": "Left-auto",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Left-picked",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Left-CPlane-rotated",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Left-World-rotated",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Right-auto",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Right-picked",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Right-CPlane-rotated",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Right-World-rotated",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Top-auto",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Top-picked",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Top-CPlane-rotated",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Top-World-rotated",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Bottom-auto",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Bottom-picked",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Bottom-CPlane-rotated",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Bottom-World-rotated",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "HorizCenter-auto",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "HorizCenter-picked",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "HorizCenter-CPlane-rotated",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "HorizCenter-World-rotated",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "VertCenter-auto",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "VertCenter-picked",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "VertCenter-CPlane-rotated",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "VertCenter-World-rotated",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Concentric-auto",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Concentric-picked",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Concentric-CPlane-rotated",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Concentric-World-rotated",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "group",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "overlap",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-groups",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "partial",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "one-point",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "nurbs-Right",
+          "passed": true,
+          "max_absolute_error": 7.404423740808852e-10,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "nurbs-Concentric",
+          "passed": true,
+          "max_absolute_error": 3.702211870404426e-10,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "signed-Right",
+          "passed": true,
+          "max_absolute_error": 1.0658141036401503e-14,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "signed-Concentric",
+          "passed": true,
+          "max_absolute_error": 1.1268852517787309e-10,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "disk-Right",
+          "passed": true,
+          "max_absolute_error": 2.0517987309176533e-10,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "circle-Right",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "circle-Concentric",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-14,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "ellipse-Right",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "ellipse-Concentric",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-14,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "arc-Right",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "arc-Concentric",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-14,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polyline-Right",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polyline-Concentric",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-14,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polycurve-Right",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polycurve-Concentric",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-14,
+          "difference_count": 0,
+          "first_differences": []
+        }
+      ]
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/align_mixed.json",
+      "request_sha256": "fb96309b3671c0df8d21272c1cfd0bae01f95fbaeafc82f85363fc06316fb231",
+      "rhino_reference": "tools/rhino_oracle/observations/align_mixed.json",
+      "rhino_reference_sha256": "71a810863dcbce01d3adbb17583f6788566162f45a0b61764260d0a95856732f",
+      "rhino_version": "8.32.26160.13001",
+      "native_value_fingerprint_sha256": "d59e795929a3bd18d915fb0dbfcabd023705a0433476c7f7e248d3e0d3d771df",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "operations": [
+        {
+          "id": "mixed-Right-auto",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "mixed-Right-picked",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "mixed-Concentric-auto",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "mixed-Concentric-picked",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "difference_count": 0,
+          "first_differences": []
+        }
+      ]
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/align_postselection.json",
+      "request_sha256": "2704dc36583ded0ec5a8481e014ea984ecc51059291288127ec32524f9f0ddb9",
+      "rhino_reference": "tools/rhino_oracle/observations/align_postselection.json",
+      "rhino_reference_sha256": "9648c1ef99f7e66d3b6ca84847611164d6db9d16bbc2a09c75f24af91110b330",
+      "rhino_version": "8.32.26160.13001",
+      "native_value_fingerprint_sha256": "f323ebaac2163ae9dd1669725d8b90e8a9d5a7e7d6c149eafe7cbd7103cc5f9f",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "operations": [
+        {
+          "id": "Left-auto-postselected",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "Concentric-picked-postselected",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "group-postselected",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "partial-postselected",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        }
+      ]
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/align_diagnostics.json",
+      "request_sha256": "608652c1b27cff6b8c6bbd314fcb61e3b50629b676a863158d5353b9b8a76649",
+      "rhino_reference": "tools/rhino_oracle/observations/align_diagnostics.json",
+      "rhino_reference_sha256": "ec20b96257722ee30ce080de811e4a64d65906bce63b5d50ed3ad731fdd11cc9",
+      "rhino_version": "8.32.26160.13001",
+      "native_value_fingerprint_sha256": "47d612acd92400fa87cb1e27674303b4242c3a56a61389e23fbdd35efab60cca",
+      "passed": false,
+      "max_absolute_error": 0.0005590110751150235,
+      "operations": [
+        {
+          "id": "surface-Right",
+          "passed": false,
+          "max_absolute_error": 0.0005590110751150235,
+          "difference_count": 75,
+          "first_differences": [
+            "surface-Right.value.objects[1].points[0][0]: 5.81696428558124 != 5.8171506226062775 (error 0.000186, limit 1e-08)",
+            "surface-Right.value.objects[1].points[0][1]: 11.63392857116248 != 11.634301245212555 (error 0.000373, limit 1e-08)",
+            "surface-Right.value.objects[1].points[0][2]: 17.450892856743717 != 17.451451867818832 (error 0.000559, limit 1e-08)",
+            "surface-Right.value.objects[1].points[1][0]: 6.06696428558124 != 6.0671506226062775 (error 0.000186, limit 1e-08)",
+            "surface-Right.value.objects[1].points[1][1]: 11.63392857116248 != 11.634301245212555 (error 0.000373, limit 1e-08)",
+            "surface-Right.value.objects[1].points[1][2]: 18.200892856743717 != 18.201451867818832 (error 0.000559, limit 1e-08)"
+          ]
+        },
+        {
+          "id": "surface-Concentric",
+          "passed": false,
+          "max_absolute_error": 0.00027950553755751173,
+          "difference_count": 75,
+          "first_differences": [
+            "surface-Concentric.value.objects[1].points[0][0]: 4.5227678570763352 != 4.5228610255888562 (error 9.32e-05, limit 1e-08)",
+            "surface-Concentric.value.objects[1].points[0][1]: 3.0455357141526687 != 3.0457220511777097 (error 0.000186, limit 1e-08)",
+            "surface-Concentric.value.objects[1].points[0][2]: 6.3683035712290028 != 6.3685830767665603 (error 0.00028, limit 1e-08)",
+            "surface-Concentric.value.objects[1].points[1][0]: 4.7727678570763352 != 4.7728610255888553 (error 9.32e-05, limit 1e-08)",
+            "surface-Concentric.value.objects[1].points[1][1]: 3.0455357141526687 != 3.0457220511777101 (error 0.000186, limit 1e-08)",
+            "surface-Concentric.value.objects[1].points[1][2]: 7.1183035712290028 != 7.1185830767665603 (error 0.00028, limit 1e-08)"
+          ]
+        },
+        {
+          "id": "disk-Concentric",
+          "passed": false,
+          "max_absolute_error": 0.00017857095611528706,
+          "difference_count": 102,
+          "first_differences": [
+            "disk-Concentric.value.objects[1].points[0][0]: 3.9824218673862042 != 3.9823623437341684 (error 5.95e-05, limit 1e-08)",
+            "disk-Concentric.value.objects[1].points[0][1]: 2.4648437347724101 != 2.4647246874683386 (error 0.000119, limit 1e-08)",
+            "disk-Concentric.value.objects[1].points[0][2]: 9.1472656021586154 != 9.147087031202501 (error 0.000179, limit 1e-08)",
+            "disk-Concentric.value.objects[1].points[1][0]: 4.4824218673862042 != 4.4823623437341684 (error 5.95e-05, limit 1e-08)",
+            "disk-Concentric.value.objects[1].points[1][1]: 2.4648437347724101 != 2.4647246874683391 (error 0.000119, limit 1e-08)",
+            "disk-Concentric.value.objects[1].points[1][2]: 8.3972656021586154 != 8.397087031202501 (error 0.000179, limit 1e-08)"
+          ]
+        }
+      ]
+    }
+  ],
+  "passing_operations": 56,
+  "retained_discrepancies": 3
+}

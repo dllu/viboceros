@@ -253,7 +253,7 @@ fn record(
                 },
             ),
         };
-        let (domain, points) = crate::distribute::sample(geometry)?;
+        let (domain, points) = crate::object_layout::sample(geometry)?;
         let attrs = object.attributes();
         let layer = if attrs.layer_id() == source_layer {
             "Source"

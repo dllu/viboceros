@@ -1,11 +1,11 @@
 //! Group-aware one-dimensional distribution with staged, identity-preserving edits.
+use crate::layout_units::selected_units as units;
 use crate::{
     Command, CommandContext, CommandError, option_name_eq, parse_finite_real, parse_point,
 };
-use std::collections::BTreeMap;
 mod planner;
 use planner::offsets;
-use viboceros_document::{Document, GroupId, Object, ObjectId};
+use viboceros_document::Document;
 use viboceros_geometry::{AffineTransform3, Frame3, GeometryError, Point3, Tolerance};
 #[cfg(test)]
 mod tests;
@@ -221,27 +221,4 @@ fn direction_frame(
         }
     };
     Frame3::try_from_directions(origin, direction, guide, tolerance)
-}
-
-/// Each object's last membership supplies its rigid unit. Partial selection
-/// never moves unseen members, even when that top group contains them.
-fn units(document: &Document) -> Vec<Vec<&Object>> {
-    #[derive(Clone, Copy, Eq, Ord, PartialEq, PartialOrd)]
-    enum Unit {
-        Object(ObjectId),
-        Group(GroupId),
-    }
-    let mut slots = BTreeMap::new();
-    let mut result = Vec::<Vec<&Object>>::new();
-    for object in document.selected_objects() {
-        let key = object
-            .top_group()
-            .map_or(Unit::Object(object.id()), Unit::Group);
-        let slot = *slots.entry(key).or_insert_with(|| {
-            result.push(Vec::new());
-            result.len() - 1
-        });
-        result[slot].push(object);
-    }
-    result
 }

@@ -2,6 +2,14 @@
 
 [Project overview](../README.md)
 
+The `align` object-layout probe compares actual bounding-box alignment commands,
+including retained IDs, source samples/domains, groups, layer assignment and
+pre/postselection cleanup. Its shared `object_layout` module supplies fixture
+ownership and recording for Align and Distribute, not the alignment algorithm.
+[Alignment evidence](commands/align.md#oracle-evidence) records 56 passing cases
+and three explicit curved-bound discrepancies validated against analytic extrema.
+All Rhino command probes run on an owned private Xvfb display.
+
 The `surface_wires` probe compares natural surface-to-B-rep topology and wire
 geometry against Rhino `CreateFromSurface`/`GetWireframe`. The
 [paired surface-wire record](surface-wire-frames.md) contains 12 operations;

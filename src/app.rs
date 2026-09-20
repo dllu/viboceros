@@ -27,6 +27,7 @@ use crate::viewport::{
 
 const MAX_LOG_ENTRIES: usize = 100;
 
+mod align;
 mod angle;
 mod construction_plane;
 mod curve_preview;
@@ -158,6 +159,10 @@ enum InteractiveCommand {
         options: viboceros_command::EvaluateUvOptions,
     },
     DomainFace,
+    Align {
+        options: viboceros_command::AlignmentOptions,
+        postselected: bool,
+    },
     Points,
     Line {
         start: Option<Point3>,
@@ -408,6 +413,7 @@ impl InteractiveCommand {
             Self::EvaluatePoint => "EvaluatePt",
             Self::EvaluateUv { .. } => "EvaluateUVPt",
             Self::DomainFace => "Domain",
+            Self::Align { .. } => "Align",
             Self::Points => "Points",
             Self::Line { .. } => "Line",
             Self::Distance { .. } => "Distance",
@@ -501,6 +507,12 @@ impl InteractiveCommand {
             }
             Self::DomainFace => {
                 "Domain: pick a component surface on the selected polysurface (Esc cancels)"
+            }
+            Self::Align { options, .. } if options.mode.is_none() => {
+                "Align: choose Left/Right/Top/Bottom/HorizCenter/VertCenter/Concentric; AlignTo=CPlane|World"
+            }
+            Self::Align { .. } => {
+                "Align: pick an alignment point, or Enter for automatic alignment (Esc cancels)"
             }
             Self::Points => "Points: pick locations; Undo removes the last; Enter or Esc finishes",
             Self::Line { start: None } => {
@@ -960,6 +972,7 @@ impl InteractiveCommand {
             | Self::EvaluatePoint
             | Self::EvaluateUv { .. }
             | Self::DomainFace
+            | Self::Align { .. }
             | Self::Points
             | Self::Line { start: None }
             | Self::Distance { start: None, .. }
@@ -1236,6 +1249,7 @@ impl VibocerosApp {
             || self.try_continue_distance(&input)
             || self.try_continue_angle(&input)
             || self.try_continue_evaluate_uv(&input)
+            || self.try_continue_align(&input)
         {
             return;
         }
@@ -1275,6 +1289,7 @@ impl VibocerosApp {
             || self.try_continue_distance(input)
             || self.try_continue_angle(input)
             || self.try_continue_evaluate_uv(input)
+            || self.try_continue_align(input)
         {
             return true;
         }
@@ -1344,7 +1359,12 @@ impl VibocerosApp {
         {
             return false;
         }
-        let command = if normalized == "evaluateuvpt" {
+        let command = if normalized == "align" {
+            let Some(command) = self.start_align(input) else {
+                return false;
+            };
+            command
+        } else if normalized == "evaluateuvpt" {
             let Some(command) = self.start_evaluate_uv(input) else {
                 return false;
             };
@@ -3016,6 +3036,15 @@ impl VibocerosApp {
         self.cancel_object_prompt(announce);
         self.cancel_group_prompt(announce);
         let command = self.active_command.take();
+        if matches!(
+            command,
+            Some(InteractiveCommand::Align {
+                postselected: true,
+                ..
+            })
+        ) {
+            self.document.clear_selection();
+        }
         self.drafting_plane = None;
         if command.is_some() {
             self.command_input.clear();
@@ -3074,6 +3103,9 @@ impl VibocerosApp {
                 return self.apply_evaluate_uv(point, options);
             }
             InteractiveCommand::DomainFace => return self.finish_domain_face(point),
+            InteractiveCommand::Align { options, .. } => {
+                return self.finish_align(Some(point), options);
+            }
             InteractiveCommand::Point => {
                 self.active_command = None;
                 self.execute_command(&format!("Point {}", format_model_point(point)));
@@ -5426,6 +5458,7 @@ fn point_is_near_axis(
 
 #[cfg(test)]
 mod tests {
+    mod align;
     mod angle;
     mod bezier_selection;
     mod construction_plane;

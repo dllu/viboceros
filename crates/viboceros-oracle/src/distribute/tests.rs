@@ -21,17 +21,18 @@ fn permanent_distribution_preserves_all_source_geometry_up_to_one_rigid_translat
                 "{id}"
             );
             let records = result.value["objects"].as_array().unwrap();
-            assert_eq!(records.len(), f.sources.len());
+            assert_eq!(records.len(), f.layout.sources.len());
             let selected = f
+                .layout
                 .selected
                 .clone()
-                .unwrap_or_else(|| (0..f.sources.len()).collect());
+                .unwrap_or_else(|| (0..f.layout.sources.len()).collect());
             for (i, record) in records.iter().enumerate() {
                 assert_eq!(record["source"], i);
                 assert_eq!(record["retained"], true);
                 assert_eq!(record["current_layer"], true);
                 assert_eq!(record["selected"], selected.contains(&i));
-                let geometry = f.sources[i].geometry(tolerance).unwrap();
+                let geometry = f.layout.sources[i].geometry(tolerance).unwrap();
                 let (domain, original) = sample(&geometry).unwrap();
                 assert_eq!(record["domain"], domain);
                 let points = record["points"].as_array().unwrap();
@@ -51,7 +52,7 @@ fn permanent_distribution_preserves_all_source_geometry_up_to_one_rigid_translat
                     }
                 }
             }
-            let mut expected = f.groups.clone();
+            let mut expected = f.layout.groups.clone();
             for group in &mut expected {
                 group.sort_unstable();
             }
@@ -96,7 +97,7 @@ fn curved_diagnostic_translations_match_closed_form_extrema() {
         };
         let (value, _) = run(f, request.tolerance.geometry().unwrap()).unwrap();
         let (_, original) = sample(
-            &f.sources[1]
+            &f.layout.sources[1]
                 .geometry(request.tolerance.geometry().unwrap())
                 .unwrap(),
         )

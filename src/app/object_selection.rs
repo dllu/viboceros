@@ -209,6 +209,16 @@ impl VibocerosApp {
                 }
             }
             let command = pending.description.command_line();
+            if pending.description.command == "Align" {
+                self.object_prompt = None;
+                self.try_start_interactive_command(&command);
+                if let Some(InteractiveCommand::Align { postselected, .. }) =
+                    &mut self.active_command
+                {
+                    *postselected = pending.postselected;
+                }
+                return true;
+            }
             if pending.description.command == "EvaluateUVPt" && self.evaluate_uv_can_pick() {
                 self.object_prompt = None;
                 self.try_start_interactive_command(&command);

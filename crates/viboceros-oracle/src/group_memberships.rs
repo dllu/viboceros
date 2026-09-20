@@ -260,7 +260,7 @@ fn record(
             .iter()
             .map(|id| group_name(*id))
             .collect::<Vec<_>>();
-        let (domain, points) = crate::distribute::sample(object.geometry())?;
+        let (domain, points) = crate::object_layout::sample(object.geometry())?;
         let retained = original_ids[source] == object.id();
         let selected = document.is_selected(object.id());
         let key = (source, points[0], groups.clone(), selected, retained);

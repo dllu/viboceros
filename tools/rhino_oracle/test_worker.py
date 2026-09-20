@@ -11,6 +11,36 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_align_macros_validate_modes_frames_and_numeric_targets(self):
+        host = patch.object(self.worker, "Rhino", SimpleNamespace(Geometry=SimpleNamespace(
+            Point3d=lambda x,y,z: SimpleNamespace(X=x,Y=y,Z=z))))
+        host.start()
+        self.addCleanup(host.stop)
+        operation = {"mode": "Left"}
+        self.assertEqual(self.worker._align_script(operation), "_Align _AlignTo=_CPlane _Left _Enter")
+        self.assertEqual(self.worker._align_script(dict(operation, align_to="World", target=[1,2,3])),
+                         "_Align _AlignTo=_World _Left w1,2,3")
+        for mode in ("Right", "Top", "Bottom", "HorizCenter", "VertCenter", "Concentric"):
+            self.assertIn("_" + mode, self.worker._align_script(dict(operation, mode=mode)))
+        for changes in [{"mode": "Left _Delete"}, {"mode": "ToCurve"}, {"align_to": "World _Delete"},
+                        {"target": ["_Delete",0,0]}, {"target": [float("nan"),0,0]},
+                        {"target": [0,0]}, {"target": [float("inf"),0,0]}]:
+            with self.subTest(changes=changes), self.assertRaises((ValueError, TypeError)):
+                self.worker._align_script(dict(operation, **changes))
+
+    def test_layout_probes_delegate_only_validated_scripts_with_their_selection_minimum(self):
+        with patch.object(self.worker, "_object_layout", return_value=({"succeeded": True},0)) as run:
+            operation = {"op": "align", "mode": "Top"}
+            self.worker._align(operation,{})
+            run.assert_called_once_with(operation, {}, "_Align _AlignTo=_CPlane _Top _Enter", 1)
+            run.reset_mock()
+            operation = {"op": "distribute", "mode": "Gap", "direction": "XAxis"}
+            self.worker._distribute(operation,{})
+            run.assert_called_once_with(operation, {}, "_-Distribute _Mode=_Gap _Spacing _Automatic _XAxis", 3)
+            run.reset_mock()
+            with self.assertRaises(ValueError): self.worker._align({"mode": "Top _Delete"},{})
+            run.assert_not_called()
+
     def test_curve_closest_probe_rejects_invalid_results_and_always_disposes(self):
         for failure in [None, "curve", "not_found", "nan", "outside", "unset", "point", "infinite_distance", "negative_distance"]:
             with self.subTest(failure=failure):

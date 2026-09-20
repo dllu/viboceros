@@ -4042,23 +4042,47 @@ def _distribute(operation, tolerance):
         distance = _finite(math.hypot(math.hypot(delta[0], delta[1]), delta[2]), "distribution direction length")
         if distance <= tolerance["absolute"]:
             raise ValueError("distribution direction points must be distinct")
+    return _object_layout(operation, tolerance, script, 3)
+
+
+def _align_script(operation):
+    mode = operation["mode"]
+    coordinates = operation.get("align_to", "CPlane")
+    if mode not in ("Left", "Right", "Top", "Bottom", "HorizCenter", "VertCenter", "Concentric"):
+        raise ValueError("invalid Align mode")
+    if coordinates not in ("World", "CPlane"):
+        raise ValueError("invalid Align coordinate system")
+    target = operation.get("target")
+    ending = "_Enter" if target is None else "w" + _command_point(target)
+    return "_Align _AlignTo=_%s _%s %s" % (coordinates, mode, ending)
+
+
+def _align(operation, tolerance):
+    return _object_layout(operation, tolerance, _align_script(operation), 1)
+
+
+def _object_layout(operation, tolerance, script, minimum_selection):
+    """Owned geometry/selection lifecycle shared by whitelisted layout probes."""
+    preselect = operation.get("preselect", True)
+    if type(preselect) is not bool:
+        raise ValueError("invalid layout preselection")
     definitions = operation["sources"]
     if not 1 <= len(definitions) <= 32:
-        raise ValueError("expected 1 to 32 distribution sources")
+        raise ValueError("expected 1 to 32 layout sources")
     groups = operation.get("groups", [])
     for group in groups:
         if not group or len(set(group)) != len(group) or any(type(i) is not int or not 0 <= i < len(definitions) for i in group):
-            raise ValueError("invalid distribution group")
+            raise ValueError("invalid layout group")
     selected_indices = operation.get("selected")
     if selected_indices is None:
         selected_indices = list(range(len(definitions)))
     if len(set(selected_indices)) != len(selected_indices) or any(type(i) is not int or not 0 <= i < len(definitions) for i in selected_indices):
-        raise ValueError("invalid distribution selection")
-    if len(selected_indices) < 3:
+        raise ValueError("invalid layout selection")
+    if len(selected_indices) < minimum_selection:
         # Too few top-level objects leave Rhino in an interactive selection
         # prompt. This batch operation requires completed preselection; native
         # command/UI tests cover the minimum-selection error separately.
-        raise ValueError("distribution probe requires at least three selected objects")
+        raise ValueError("layout probe has too few selected objects")
     document = Rhino.RhinoDoc.ActiveDoc
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
     settings.NormalObjects = settings.LockedObjects = settings.HiddenObjects = True
@@ -4069,7 +4093,7 @@ def _distribute(operation, tolerance):
     groups_before = set(i for i in range(document.Groups.Count) if not document.Groups.IsDeleted(i))
     plane = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
     if not plane.IsValid:
-        raise ValueError("invalid distribution plane")
+        raise ValueError("invalid layout plane")
     owned, ids = [], []
     with _independent_construction_planes() as viewport:
         try:
@@ -4092,21 +4116,26 @@ def _distribute(operation, tolerance):
                 finally:
                     attributes.Dispose()
                 if key == System.Guid.Empty:
-                    raise ValueError("distribution source insertion failed")
+                    raise ValueError("layout source insertion failed")
                 ids.append(key)
             for group in groups:
-                if document.Groups.Add("Viboceros distribute " + str(System.Guid.NewGuid()), [ids[i] for i in group]) < 0:
-                    raise ValueError("distribution grouping failed")
-            for i in selected_indices:
-                document.Objects.Select(ids[i])
+                if document.Groups.Add("Viboceros layout " + str(System.Guid.NewGuid()), [ids[i] for i in group]) < 0:
+                    raise ValueError("layout grouping failed")
+            if preselect:
+                for i in selected_indices:
+                    document.Objects.Select(ids[i])
+            else:
+                name, options = script.split(" ", 1)
+                picks = " ".join("_SelID %s" % ids[i] for i in selected_indices)
+                script = name + " " + picks + " _Enter " + options
             history_before = Rhino.RhinoApp.CommandHistoryWindowText
-            _record_progress("distribute: " + script)
+            _record_progress("object layout: " + script)
             try:
                 succeeded = _run_surface_script(script, True)
             except ValueError:
                 history_after = Rhino.RhinoApp.CommandHistoryWindowText
                 history = history_after[len(history_before):] if history_after.startswith(history_before) else history_after.rsplit("Command: _-Distribute", 1)[-1]
-                if "At least three groups of objects must be selected" not in history:
+                if not script.startswith("_-Distribute ") or "At least three groups of objects must be selected" not in history:
                     raise
                 # Rhino aborts before reading the whitelisted options when
                 # selection has fewer than three object/group units.
@@ -4143,7 +4172,7 @@ def _distribute(operation, tolerance):
                     local = geometry.Duplicate()
                     try:
                         if not local.Transform(transform):
-                            raise ValueError("distribution inspection transform failed")
+                            raise ValueError("layout inspection transform failed")
                         box = local.GetBoundingBox(True)
                         value["source_plane_bounds"].append({"min":_xyz(box.Min),"max":_xyz(box.Max)})
                     finally:
@@ -4792,6 +4821,8 @@ def _execute(operation, iterations, tolerance):
         return _group_memberships(operation, tolerance)
     if operation["op"] == "distribute":
         return _distribute(operation, tolerance)
+    if operation["op"] == "align":
+        return _align(operation, tolerance)
     kind = operation["op"]
     if kind == "surface_closest_point":
         return _surface_closest_point(operation, iterations)

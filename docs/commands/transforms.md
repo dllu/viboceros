@@ -32,6 +32,11 @@ for geometry policy, viewport changes, verification, and remaining limitations.
 
 ## Orientation and arrays
 
+`Align` moves object/group bounds to an edge or center, in world or CPlane
+coordinates, using a target point or automatic overall bounds. See
+[alignment](align.md) for its seven modes, interactive workflow, selection
+cleanup, and recorded bounds discrepancies.
+
 `Distribute` moves at least three selected objects/group units along a CPlane
 axis or two-point direction. `Mode=Gap|Center` equalizes edge gaps or bound-center
 spacing; `Spacing=Automatic|distance` pins both endpoints or uses a signed fixed

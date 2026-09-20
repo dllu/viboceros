@@ -44,6 +44,12 @@ class DistributeWorkerTests(unittest.TestCase):
                 self.worker._distribute(operation, dict(absolute=1e-9))
 
     def test_owned_objects_groups_planes_selection_and_disposables_survive_failures(self):
+        self._check_layout_cleanup(False)
+
+    def test_alignment_owned_resources_survive_failures_without_suppressing_unrelated_errors(self):
+        self._check_layout_cleanup(True)
+
+    def _check_layout_cleanup(self, align):
         for failure in [None, "initialization", "source", "group", "command", "record", "inspection", "insufficient", "stale"]:
             with self.subTest(failure=failure):
                 original_planes = [object(), object()]
@@ -107,7 +113,7 @@ class DistributeWorkerTests(unittest.TestCase):
                 self.worker.Rhino.RhinoApp.CommandHistoryWindowText = "old: At least three groups of objects must be selected\n"
                 self.worker.System = SimpleNamespace(Guid=SimpleNamespace(Empty="empty", NewGuid=lambda: "owned-group"))
                 def run(script, verify):
-                    self.assertEqual(script, "_-Distribute _Mode=_Gap _Spacing _Automatic _XAxis")
+                    self.assertEqual(script, "_Align _AlignTo=_CPlane _Right _Enter" if align else "_-Distribute _Mode=_Gap _Spacing _Automatic _XAxis")
                     self.assertTrue(verify)
                     self.assertFalse(aid.UniversalConstructionPlaneMode)
                     self.assertEqual(selected, {"1", "2", "3"})
@@ -115,7 +121,7 @@ class DistributeWorkerTests(unittest.TestCase):
                         self.worker.Rhino.RhinoApp.CommandHistoryWindowText += "At least three groups of objects must be selected\n"
                     if failure in ["command", "stale", "insufficient"]: raise ValueError("command failure")
                     return True
-                operation = dict(mode="Gap", direction="XAxis", origin=[0, 0, 0], x_axis=[1, 0, 0],
+                operation = dict(mode="Right" if align else "Gap", direction="XAxis", origin=[0, 0, 0], x_axis=[1, 0, 0],
                                  y_axis=[0, 1, 0], sources=[dict(type="line")] * 3, groups=[[0, 1]], selected=None, inspect=True)
                 with patch.object(self.worker, "_point", side_effect=lambda p: p), \
                      patch.object(self.worker, "_vector", side_effect=lambda p: p), \
@@ -124,10 +130,11 @@ class DistributeWorkerTests(unittest.TestCase):
                      patch.object(self.worker, "_object_source", side_effect=source), \
                      patch.object(self.worker, "_run_surface_script", side_effect=run), \
                      patch.object(self.worker, "_plane_array_geometry_record", side_effect=ValueError("record failure") if failure == "record" else lambda *args: ([0, 1], [[0, 0, 0]])):
-                    if failure not in [None, "insufficient"]:
-                        with self.assertRaises(ValueError): self.worker._distribute(operation, {})
+                    execute = self.worker._align if align else self.worker._distribute
+                    if failure not in [None, "insufficient"] or (align and failure == "insufficient"):
+                        with self.assertRaises(ValueError): execute(operation, {})
                     else:
-                        value, elapsed = self.worker._distribute(operation, {})
+                        value, elapsed = execute(operation, {})
                         self.assertEqual(value["succeeded"], failure != "insufficient")
                         self.assertEqual(value["groups"], [[0, 1]])
                         self.assertEqual(len(value["source_plane_bounds"]), 3)

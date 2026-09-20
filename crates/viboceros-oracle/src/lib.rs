@@ -46,6 +46,7 @@ mod parameter_bounds;
 mod surface_closest;
 mod surface_wires;
 pub use parameter_bounds::ParameterCurveBoundsFixture;
+mod align;
 mod bounding_box;
 mod conversion;
 mod conversion_session;
@@ -53,6 +54,7 @@ mod distribute;
 mod document_units;
 mod group_memberships;
 mod group_picking;
+mod object_layout;
 mod object_source;
 mod plane_arrays;
 mod trimmed_brep;
@@ -186,6 +188,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: distribute::DistributeFixture,
+    },
+    Align {
+        id: String,
+        #[serde(flatten)]
+        fixture: align::AlignFixture,
     },
     GroupMemberships {
         id: String,
@@ -1615,6 +1622,7 @@ impl Operation {
             | Self::PlaneArray { id, .. }
             | Self::BoundingBoxCommand { id, .. }
             | Self::Distribute { id, .. }
+            | Self::Align { id, .. }
             | Self::GroupMemberships { id, .. }
             | Self::GroupPicking { id, .. }
             | Self::UndoSelection { id, .. }
@@ -2020,6 +2028,7 @@ fn execute(
         Operation::PlaneArray { fixture, .. } => plane_arrays::run(fixture, tolerance)?,
         Operation::BoundingBoxCommand { fixture, .. } => bounding_box::run(fixture, tolerance)?,
         Operation::Distribute { fixture, .. } => distribute::run(fixture, tolerance)?,
+        Operation::Align { fixture, .. } => align::run(fixture, tolerance)?,
         Operation::GroupMemberships { fixture, .. } => group_memberships::run(fixture, tolerance)?,
         Operation::GroupPicking { fixture, .. } => group_picking::run(fixture, tolerance)?,
         Operation::UndoSelection { fixture, .. } => undo_selection::run(fixture, tolerance)?,

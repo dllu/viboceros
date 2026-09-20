@@ -19,6 +19,7 @@ Rhino's complete command set is still a work in progress.
 - [Mesh conversion to NURBS](mesh-to-nurb.md)
 - [Transforms and arrays](transforms.md)
 - [Object and group distribution](distribute.md)
+- [Object and group alignment](align.md)
 - [Splitting curves and surfaces](split.md)
 - [Extraction, measurement, and intersections](editing.md)
 - [Angle, distance, length, area, and volume queries](measurements.md)
@@ -157,6 +158,7 @@ ArrayCrv Distance=2.5 Orientation=Roadlike BasePoint=0,0,0 PathName=Rail
 ArraySrf 4 3 BasePoint=0,0,0 Up=0,0,1 Mode=Isocurve SurfaceName=Panel
 ArrayLinear 4 0,0,0 2,1,0
 Distribute XAxis Mode=Gap Spacing=Automatic
+Align Concentric AlignTo=World Auto
 ArrayPolar 6 0,0,0 360 Rotate=Yes ZOffset=0
 Scale 0,0 2
 Scale1D 0,0 2 1,0
