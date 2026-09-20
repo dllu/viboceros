@@ -32,6 +32,7 @@ mod construction_plane;
 mod curve_preview;
 mod curve_prompt;
 mod distance;
+mod domain;
 mod evaluate_point;
 mod group_prompt;
 mod interface;
@@ -152,6 +153,7 @@ enum InteractiveCommand {
     },
     Point,
     EvaluatePoint,
+    DomainFace,
     Points,
     Line {
         start: Option<Point3>,
@@ -400,6 +402,7 @@ impl InteractiveCommand {
             Self::Angle { .. } => "Angle",
             Self::Point => "Point",
             Self::EvaluatePoint => "EvaluatePt",
+            Self::DomainFace => "Domain",
             Self::Points => "Points",
             Self::Line { .. } => "Line",
             Self::Distance { .. } => "Distance",
@@ -487,6 +490,9 @@ impl InteractiveCommand {
             Self::Point => "Point: pick a location in the viewport (Esc to cancel)",
             Self::EvaluatePoint => {
                 "EvaluatePt: pick a location to report world/CPlane coordinates (Esc cancels)"
+            }
+            Self::DomainFace => {
+                "Domain: pick a component surface on the selected polysurface (Esc cancels)"
             }
             Self::Points => "Points: pick locations; Undo removes the last; Enter or Esc finishes",
             Self::Line { start: None } => {
@@ -944,6 +950,7 @@ impl InteractiveCommand {
             } => start,
             Self::Point
             | Self::EvaluatePoint
+            | Self::DomainFace
             | Self::Points
             | Self::Line { start: None }
             | Self::Distance { start: None, .. }
@@ -1324,7 +1331,12 @@ impl VibocerosApp {
         {
             return false;
         }
-        let command = if normalized == "evaluatept" {
+        let command = if normalized == "domain"
+            && arguments.is_empty()
+            && self.domain_needs_face_pick()
+        {
+            InteractiveCommand::DomainFace
+        } else if normalized == "evaluatept" {
             let Some(command) = evaluate_point::start_command(&arguments) else {
                 return false;
             };
@@ -3034,6 +3046,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::Points => return self.apply_points_point(point),
             InteractiveCommand::EvaluatePoint => return self.finish_evaluate_point(point, plane),
+            InteractiveCommand::DomainFace => return self.finish_domain_face(point),
             InteractiveCommand::Point => {
                 self.active_command = None;
                 self.execute_command(&format!("Point {}", format_model_point(point)));
@@ -5391,6 +5404,7 @@ mod tests {
     mod construction_plane;
     mod distance;
     mod distribute;
+    mod domain;
     mod evaluate_point;
     mod group_prompt;
     mod interface;

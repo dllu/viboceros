@@ -45,6 +45,10 @@ fn object_filters_cover_geometry_and_memberships_without_changing_selection_poli
                 [false, true, false, true, false],
             ),
             (
+                ObjectSelectionFilter::Parametric,
+                [false, true, false, true, false],
+            ),
+            (
                 ObjectSelectionFilter::Surfaces,
                 [false, false, false, true, false],
             ),

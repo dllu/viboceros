@@ -209,6 +209,13 @@ impl VibocerosApp {
                 }
             }
             let command = pending.description.command_line();
+            if command == "Domain" && self.domain_needs_face_pick() {
+                // This is acceptance, not cancellation: retain the picked
+                // object while handing control to the component-point phase.
+                self.object_prompt = None;
+                self.try_start_interactive_command(&command);
+                return true;
+            }
             self.push_log(format!("> {command}"));
             let context = viboceros_command::CommandContext {
                 construction_plane: self.viewports[self.active_viewport].construction_plane(),

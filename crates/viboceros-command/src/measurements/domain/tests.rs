@@ -1,0 +1,99 @@
+use super::*;
+use crate::CommandRegistry;
+use viboceros_document::SelectionMode;
+use viboceros_geometry::{Brep, NurbsSurface, Point3};
+
+fn surface(z: f64) -> NurbsSurface {
+    NurbsSurface::try_bilinear(
+        [[0., 0., z], [1., 0., z], [1., 1., z], [0., 1., z]].map(|p| Point3::try_from(p).unwrap()),
+    )
+    .unwrap()
+}
+
+#[test]
+fn domain_rejects_empty_unsupported_and_multiple_selections_without_edits() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    for source in [None, Some("Point 0,0,0"), Some("Line 0,0,0 1,0,0")] {
+        if let Some(source) = source {
+            registry.execute(&mut doc, source).unwrap();
+            registry.execute(&mut doc, "SelAll").unwrap();
+        }
+        let before = format!("{doc:?}");
+        assert!(registry.execute(&mut doc, "Domain").is_err());
+        assert_eq!(format!("{doc:?}"), before);
+    }
+}
+
+#[test]
+fn domain_reports_native_curve_intervals_and_preserves_redo() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    registry.execute(&mut doc, "Line 0,0,0 3,4,0").unwrap();
+    registry.execute(&mut doc, "SelAll").unwrap();
+    assert_eq!(
+        registry.execute(&mut doc, "Domain").unwrap(),
+        "Curve domain = [0,5]"
+    );
+    registry.execute(&mut doc, "Reparameterize -2,8").unwrap();
+    registry.execute(&mut doc, "Point 9,9,9").unwrap();
+    registry.execute(&mut doc, "Undo").unwrap();
+    let before = format!("{doc:?}");
+    assert_eq!(
+        registry.execute(&mut doc, "_Domain").unwrap(),
+        "Curve domain = [-2,8]"
+    );
+    assert_eq!(format!("{doc:?}"), before);
+    registry.execute(&mut doc, "Redo").unwrap();
+    assert_eq!(doc.objects().count(), 2);
+}
+
+#[test]
+fn domain_selects_component_surface_without_combining_uv_intervals() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    let first = surface(0.)
+        .try_reparameterized(-2.0..=4.0, 10.0..=20.0)
+        .unwrap();
+    let a = doc
+        .add_geometry(Geometry::NurbsSurface(first.clone()))
+        .unwrap();
+    doc.select_object(a, SelectionMode::Replace).unwrap();
+    assert_eq!(
+        registry.execute(&mut doc, "Domain").unwrap(),
+        "Surface: U domain = [-2,4]; V domain = [10,20]"
+    );
+    let second = surface(10.)
+        .try_reparameterized(5.0..=6.0, -8.0..=-3.0)
+        .unwrap();
+    let parts = [first, second]
+        .into_iter()
+        .map(|s| Brep::try_surface_face(s, Tolerance::DEFAULT).unwrap())
+        .collect();
+    let b = doc
+        .add_geometry(Geometry::Brep(
+            Brep::try_combine(parts, Tolerance::DEFAULT).unwrap(),
+        ))
+        .unwrap();
+    doc.select_object(b, SelectionMode::Replace).unwrap();
+    let before = format!("{doc:?}");
+    assert_eq!(
+        registry.execute(&mut doc, "Domain Face=0").unwrap(),
+        "Face 0: U domain = [-2,4]; V domain = [10,20]"
+    );
+    for input in ["Domain _Face=1", "Domain 0.5,0.5,10"] {
+        assert_eq!(
+            registry.execute(&mut doc, input).unwrap(),
+            "Face 1: U domain = [5,6]; V domain = [-8,-3]"
+        );
+    }
+    for input in [
+        "Domain",
+        "Domain Face=2",
+        "Domain Face=-1",
+        "Domain 0,0,0 extra",
+    ] {
+        assert!(registry.execute(&mut doc, input).is_err());
+    }
+    assert_eq!(format!("{doc:?}"), before);
+}

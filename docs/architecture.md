@@ -110,6 +110,9 @@ and angular reporting. The application supplies picked or typed points through
 the shared drafting path; neither implementation mutates document history.
 Its `evaluate_point` submodule reports world/CPlane coordinates from an explicit
 command context; the application adapter keeps failed point queries open.
+Its `domain` submodule reports native parameter intervals, including the underlying
+surface of an explicitly indexed or picked B-rep face. The app's `domain` adapter
+continues accepted polysurface selection with a component-location pick.
 Its `angle` submodule owns the four-point Angle query, using range-safe
 `Point3::direction_to` and `Vector3::angle_to`. Its `objects` submodule measures
 unoriented straight-curve/planar-surface angles. The interactive adapter validates

@@ -6,6 +6,8 @@ use viboceros_geometry::{FiniteSum, GeometryError, Real, Tolerance};
 
 mod angle;
 mod distance;
+mod domain;
+pub(super) use domain::DomainCommand;
 mod evaluate_point;
 pub(super) use angle::AngleCommand;
 pub(super) use evaluate_point::EvaluatePointCommand;
