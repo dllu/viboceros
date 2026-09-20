@@ -2169,12 +2169,12 @@ def _point_measurement_command(name, points, operation):
         viewport.SetConstructionPlane(original_plane)
 
 
-def _measurement_history(name, macro):
+def _measurement_history(name, macro, allow_cancel=False):
     marker = "Viboceros measurement probe " + str(System.Guid.NewGuid())
     Rhino.RhinoApp.WriteLine(marker)
     succeeded = bool(Rhino.RhinoApp.RunScript(macro, True))
     parts = Rhino.RhinoApp.CommandHistoryWindowText.split(marker, 1)
-    if not succeeded or len(parts) != 2:
+    if (not succeeded and not allow_cancel) or len(parts) != 2:
         raise ValueError("measurement command failed or history marker was lost: %s" %
                          Rhino.RhinoApp.CommandHistoryWindowText[-3000:])
     history = parts[1].strip()
@@ -2190,7 +2190,40 @@ def _measurement_history(name, macro):
     return {"history": history}, 0
 
 
+def _evaluate_uv_macro(operation):
+    for key in ("normalized", "create_point", "inherit_options", "undo_redo"):
+        if key in operation and type(operation[key]) is not bool:
+            raise ValueError("invalid UV boolean")
+    if "point" in operation and "events" in operation:
+        raise ValueError("UV probe needs a point or events, not both")
+    tokens = ["!", "_EvaluateUVPt"]
+    if not operation.get("inherit_options", False):
+        tokens.extend(["_Normalized=%s" % ("Yes" if operation.get("normalized", False) else "No"),
+                       "_CreatePoint=%s" % ("Yes" if operation.get("create_point", False) else "No")])
+    elif "normalized" in operation or "create_point" in operation:
+        raise ValueError("inherited UV options cannot also be specified")
+    events = operation.get("events", [{"point": operation.get("point")}])
+    if not 1 <= len(events) <= 32:
+        raise ValueError("invalid UV event count")
+    for event in events:
+        if not event or set(event) - set(["point", "normalized", "create_point"]):
+            raise ValueError("invalid UV event")
+        for key, name in [("normalized", "Normalized"), ("create_point", "CreatePoint")]:
+            if key in event:
+                if type(event[key]) is not bool:
+                    raise ValueError("invalid UV boolean")
+                tokens.append("_%s=%s" % (name, "Yes" if event[key] else "No"))
+        if "point" in event:
+            tokens.append("w" + _command_point(event["point"]))
+    ending = operation.get("ending", "enter")
+    if ending not in ("enter", "cancel"):
+        raise ValueError("invalid UV ending")
+    tokens.append("_Enter" if ending == "enter" else "!")
+    return " ".join(tokens)
+
+
 def _evaluate_uv_command(operation):
+    macro = _evaluate_uv_macro(operation)
     document = Rhino.RhinoDoc.ActiveDoc
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
     settings.NormalObjects = True
@@ -2205,19 +2238,31 @@ def _evaluate_uv_command(operation):
             raise ValueError("could not add UV source")
         document.Objects.Select(source)
         checksum = document.Objects.FindId(source).Geometry.DataCRC(0)
-        macro = "! _EvaluateUVPt _Normalized=%s _CreatePoint=%s w%s _Enter" % (
-            "Yes" if operation.get("normalized", False) else "No",
-            "Yes" if operation.get("create_point", False) else "No",
-            _command_point(operation["point"]))
-        result, _ = _measurement_history("EvaluateUVPt", macro)
-        points = []
-        for obj in document.Objects.GetObjectList(settings):
-            if obj.Id not in before and obj.Id != source:
-                if not isinstance(obj.Geometry, Rhino.Geometry.Point):
-                    raise ValueError("UV command created unexpected geometry")
-                points.append(_xyz(obj.Geometry.Location))
-        result["created_points"] = sorted(points)
+        if operation.get("ending") == "cancel":
+            result, _ = _measurement_history("EvaluateUVPt", macro, allow_cancel=True)
+        else:
+            result, _ = _measurement_history("EvaluateUVPt", macro)
+        def points():
+            result = []
+            for obj in document.Objects.GetObjectList(settings):
+                if obj.Id not in before and obj.Id != source:
+                    if not isinstance(obj.Geometry, Rhino.Geometry.Point):
+                        raise ValueError("UV command created unexpected geometry")
+                    result.append(_xyz(obj.Geometry.Location))
+            return sorted(result)
+        result["created_points"] = points()
         result["source_geometry_unchanged"] = document.Objects.FindId(source).Geometry.DataCRC(0) == checksum
+        if operation.get("undo_redo", False):
+            for command in ("Undo", "Redo"):
+                marker = "Viboceros UV history probe " + str(System.Guid.NewGuid())
+                Rhino.RhinoApp.WriteLine(marker)
+                _run_surface_script("_" + command, True)
+                parts = Rhino.RhinoApp.CommandHistoryWindowText.split(marker, 1)
+                if len(parts) != 2:
+                    raise ValueError("UV history probe lost its marker")
+                result[command.lower() + "_history"] = parts[1].strip()
+                result["after_" + command.lower()] = points()
+                result["source_exists_after_" + command.lower()] = document.Objects.FindId(source) is not None
         return result, 0
     finally:
         # The private oracle command owns all additions after this snapshot.

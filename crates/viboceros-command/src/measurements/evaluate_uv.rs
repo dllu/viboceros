@@ -59,7 +59,10 @@ impl EvaluateUvOptions {
     }
 }
 
-pub(crate) struct EvaluateUvCommand;
+#[derive(Default)]
+pub(crate) struct EvaluateUvCommand {
+    options: crate::remembered::Remembered<EvaluateUvOptions>,
+}
 impl Command for EvaluateUvCommand {
     fn name(&self) -> &'static str {
         "EvaluateUVPt"
@@ -68,7 +71,7 @@ impl Command for EvaluateUvCommand {
         &self,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        let (options, point) = EvaluateUvOptions::default().parse(arguments)?;
+        let (options, point) = self.options.get().parse(arguments)?;
         Ok(point.is_none().then_some(ObjectSelectionPrompt {
             command: "EvaluateUVPt",
             filter: ObjectSelectionFilter::SurfaceComponents,
@@ -89,55 +92,80 @@ impl Command for EvaluateUvCommand {
             workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
         }))
     }
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (options, point) = EvaluateUvOptions::default().parse(arguments)?;
-        let target = point.ok_or(CommandError::Usage(USAGE))?;
-        let mut selected = document.selected_objects();
-        let object = selected.next().ok_or(CommandError::NoObjectsSelected)?;
-        if selected.next().is_some() {
-            return Err(CommandError::Usage(
-                "EvaluateUVPt requires one selected surface",
-            ));
+    fn accept_object_selection_options(&self, arguments: &[&str]) -> Result<(), CommandError> {
+        let (options, point) = self.options.get().parse(arguments)?;
+        if point.is_some() {
+            return Err(CommandError::Usage(USAGE));
         }
-        drop(selected);
-        let (surface, u, v) = match object.geometry() {
-            Geometry::NurbsSurface(surface) => {
-                let (u, v) = surface.closest_parameters(target, document.tolerance())?;
-                (surface, u, v)
-            }
-            Geometry::Brep(brep) => {
-                let (face, u, v) =
-                    brep.closest_underlying_face_parameters(target, document.tolerance())?;
-                (brep.faces()[face].surface(), u, v)
-            }
-            _ => {
-                return Err(CommandError::Usage(
-                    "EvaluateUVPt requires a surface or polysurface",
-                ));
-            }
-        };
-        let parameters = if options.normalized {
-            surface.normalized_parameters(u, v)?
-        } else {
-            [u, v]
-        };
-        let report = format!(
-            "Surface UV coordinates = {},{}{}",
-            format_measurement(parameters[0]),
-            format_measurement(parameters[1]),
-            if options.normalized {
-                " (normalized)"
-            } else {
-                ""
-            }
-        );
-        let marker = options
-            .create_point
-            .then(|| surface.evaluate(u, v))
-            .transpose()?;
-        if let Some(marker) = marker {
+        self.options.set(options);
+        Ok(())
+    }
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (options, point) = self.options.get().parse(arguments)?;
+        let target = point.ok_or(CommandError::Usage(USAGE))?;
+        // Accepted options are application preferences, not undoable model edits.
+        self.options.set(options);
+        let result = evaluate_surface_uv(document, target, options)?;
+        if let Some(marker) = result.marker {
             document.add_geometry(Geometry::Point(marker))?;
         }
-        Ok(report)
+        Ok(result.report)
     }
+}
+
+/// A staged UV report and optional marker, with no document mutations.
+pub struct EvaluateUvResult {
+    pub report: String,
+    pub marker: Option<Point3>,
+}
+
+/// Shared by atomic scripted commands and the interactive multi-pick session.
+pub fn evaluate_surface_uv(
+    document: &Document,
+    target: Point3,
+    options: EvaluateUvOptions,
+) -> Result<EvaluateUvResult, CommandError> {
+    let mut selected = document.selected_objects();
+    let object = selected.next().ok_or(CommandError::NoObjectsSelected)?;
+    if selected.next().is_some() {
+        return Err(CommandError::Usage(
+            "EvaluateUVPt requires one selected surface",
+        ));
+    }
+    let (surface, u, v) = match object.geometry() {
+        Geometry::NurbsSurface(surface) => {
+            let (u, v) = surface.closest_parameters(target, document.tolerance())?;
+            (surface, u, v)
+        }
+        Geometry::Brep(brep) => {
+            let (face, u, v) =
+                brep.closest_underlying_face_parameters(target, document.tolerance())?;
+            (brep.faces()[face].surface(), u, v)
+        }
+        _ => {
+            return Err(CommandError::Usage(
+                "EvaluateUVPt requires a surface or polysurface",
+            ));
+        }
+    };
+    let parameters = if options.normalized {
+        surface.normalized_parameters(u, v)?
+    } else {
+        [u, v]
+    };
+    let report = format!(
+        "Surface UV coordinates = {},{}{}",
+        format_measurement(parameters[0]),
+        format_measurement(parameters[1]),
+        if options.normalized {
+            " (normalized)"
+        } else {
+            ""
+        }
+    );
+    let marker = options
+        .create_point
+        .then(|| surface.evaluate(u, v))
+        .transpose()?;
+    Ok(EvaluateUvResult { report, marker })
 }

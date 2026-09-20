@@ -1,0 +1,128 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "repeated-enter",
+      "value": {
+        "after_redo": [
+          [
+            1.0,
+            1.0,
+            0.0
+          ],
+          [
+            2.9999999999999996,
+            1.0,
+            0.0
+          ]
+        ],
+        "after_undo": [
+          [
+            1.0,
+            1.0,
+            0.0
+          ],
+          [
+            2.9999999999999996,
+            1.0,
+            0.0
+          ]
+        ],
+        "created_points": [
+          [
+            1.0,
+            1.0,
+            0.0
+          ],
+          [
+            2.9999999999999996,
+            1.0,
+            0.0
+          ]
+        ],
+        "history": "Python Script ( ResetEngine ): _EvaluateUVPt\nPoint to evaluate ( CreatePoint=Yes  Normalized=No ): _Normalized=No\nPoint to evaluate ( CreatePoint=Yes  Normalized=No ): _CreatePoint=Yes\nPoint to evaluate ( CreatePoint=Yes  Normalized=No ): w1,1,3\nUV coordinates of point = 0.000, 12.000\nPoint to evaluate. Press Enter when done ( CreatePoint=Yes  Normalized=No ): _Normalized=Yes\nPoint to evaluate. Press Enter when done ( CreatePoint=Yes  Normalized=Yes ): w3,1,2\nUV coordinates of point = 0.750, 0.500\nPoint to evaluate. Press Enter when done ( CreatePoint=Yes  Normalized=Yes ): _CreatePoint=No\nPoint to evaluate. Press Enter when done ( CreatePoint=No  Normalized=Yes ): w2,0.5,5\nUV coordinates of point = 0.500, 0.250\nPoint to evaluate. Press Enter when done ( CreatePoint=No  Normalized=Yes ): _Enter\nPoint to evaluate. Press Enter when done ( CreatePoint=No  Normalized=Yes )",
+        "redo_history": "Command: _Redo\nNothing to redo.",
+        "source_exists_after_redo": true,
+        "source_exists_after_undo": true,
+        "source_geometry_unchanged": true,
+        "undo_history": "Command: _Undo\nNothing to undo."
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "inherited-after-enter",
+      "value": {
+        "created_points": [],
+        "history": "Command: _EvaluateUVPt\nPoint to evaluate ( CreatePoint=No  Normalized=Yes ): w1,1,3\nUV coordinates of point = 0.250, 0.500\nPoint to evaluate. Press Enter when done ( CreatePoint=No  Normalized=Yes ): _Enter\nPoint to evaluate. Press Enter when done ( CreatePoint=No  Normalized=Yes )",
+        "source_geometry_unchanged": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "repeated-cancel",
+      "value": {
+        "after_redo": [
+          [
+            1.0,
+            0.5,
+            0.0
+          ],
+          [
+            2.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "after_undo": [
+          [
+            1.0,
+            0.5,
+            0.0
+          ],
+          [
+            2.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "created_points": [
+          [
+            1.0,
+            0.5,
+            0.0
+          ],
+          [
+            2.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "history": "Command: _EvaluateUVPt\nPoint to evaluate ( CreatePoint=No  Normalized=Yes ): _Normalized=No\nPoint to evaluate ( CreatePoint=No  Normalized=No ): _CreatePoint=Yes\nPoint to evaluate ( CreatePoint=Yes  Normalized=No ): w2,1,4\nUV coordinates of point = 2.000, 12.000\nPoint to evaluate. Press Enter when done ( CreatePoint=Yes  Normalized=No ): w1,0.5,-3\nUV coordinates of point = 0.000, 11.000\n\nCANCEL\nPoint to evaluate. Press Enter when done ( CreatePoint=Yes  Normalized=No )",
+        "redo_history": "Command: _Redo\nNothing to redo.",
+        "source_exists_after_redo": true,
+        "source_exists_after_undo": true,
+        "source_geometry_unchanged": true,
+        "undo_history": "Command: _Undo\nNothing to undo."
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "inherited-after-cancel",
+      "value": {
+        "created_points": [
+          [
+            1.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "history": "Command: _EvaluateUVPt\nPoint to evaluate ( CreatePoint=Yes  Normalized=No ): w1,1,3\nUV coordinates of point = 0.000, 12.000\nPoint to evaluate. Press Enter when done ( CreatePoint=Yes  Normalized=No ): _Enter\nPoint to evaluate. Press Enter when done ( CreatePoint=Yes  Normalized=No )",
+        "source_geometry_unchanged": true
+      }
+    }
+  ]
+}

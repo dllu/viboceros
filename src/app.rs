@@ -497,7 +497,7 @@ impl InteractiveCommand {
                 "EvaluatePt: pick a location to report world/CPlane coordinates (Esc cancels)"
             }
             Self::EvaluateUv { .. } => {
-                "EvaluateUVPt: pick a surface location (Normalized=Yes|No; CreatePoint=Yes|No; Esc cancels)"
+                "EvaluateUVPt: pick surface locations (Normalized=Yes|No; CreatePoint=Yes|No; Enter or Esc finishes)"
             }
             Self::DomainFace => {
                 "Domain: pick a component surface on the selected polysurface (Esc cancels)"
@@ -1171,6 +1171,7 @@ pub struct VibocerosApp {
     group_prompt: Option<group_prompt::GroupPrompt>,
     curve_points: Vec<Point3>,
     points_session: Option<points::PointsSession>,
+    evaluate_uv_session: Option<evaluate_uv::EvaluateUvSession>,
     curve_preview: curve_preview::CurvePreviewCache,
     sidebar: DocumentSidebar,
 }
@@ -1209,6 +1210,7 @@ impl VibocerosApp {
             group_prompt: None,
             curve_points: Vec::new(),
             points_session: None,
+            evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
             sidebar: DocumentSidebar::default(),
         }
@@ -1343,15 +1345,10 @@ impl VibocerosApp {
             return false;
         }
         let command = if normalized == "evaluateuvpt" {
-            let Ok((options, None)) =
-                viboceros_command::EvaluateUvOptions::default().parse(&arguments)
-            else {
+            let Some(command) = self.start_evaluate_uv(input) else {
                 return false;
             };
-            if !self.evaluate_uv_can_pick() {
-                return false;
-            }
-            InteractiveCommand::EvaluateUv { options }
+            command
         } else if normalized == "domain" && arguments.is_empty() && self.domain_needs_face_pick() {
             InteractiveCommand::DomainFace
         } else if normalized == "evaluatept" {
@@ -3005,6 +3002,9 @@ impl VibocerosApp {
                 return true;
             }
         }
+        if let InteractiveCommand::EvaluateUv { options } = command {
+            self.push_log(options.command_line());
+        }
         self.push_log(command.prompt().to_owned());
         self.active_command = Some(command);
         true
@@ -3012,6 +3012,7 @@ impl VibocerosApp {
 
     fn cancel_interactive_command(&mut self, announce: bool) {
         self.finish_points_session();
+        self.finish_evaluate_uv_session();
         self.cancel_object_prompt(announce);
         self.cancel_group_prompt(announce);
         let command = self.active_command.take();
@@ -3024,7 +3025,12 @@ impl VibocerosApp {
             && announce
             && command != InteractiveCommand::Points
         {
-            self.push_log(format!("Cancelled {}", command.name()));
+            let action = if matches!(command, InteractiveCommand::EvaluateUv { .. }) {
+                "Finished"
+            } else {
+                "Cancelled"
+            };
+            self.push_log(format!("{action} {}", command.name()));
         }
     }
 
@@ -3065,7 +3071,7 @@ impl VibocerosApp {
             InteractiveCommand::Points => return self.apply_points_point(point),
             InteractiveCommand::EvaluatePoint => return self.finish_evaluate_point(point, plane),
             InteractiveCommand::EvaluateUv { options } => {
-                return self.finish_evaluate_uv(point, options);
+                return self.apply_evaluate_uv(point, options);
             }
             InteractiveCommand::DomainFace => return self.finish_domain_face(point),
             InteractiveCommand::Point => {
@@ -5469,6 +5475,7 @@ mod tests {
             curve_points: Vec::new(),
             group_prompt: None,
             points_session: None,
+            evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
             sidebar: DocumentSidebar::default(),
         }

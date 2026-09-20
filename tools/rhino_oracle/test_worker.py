@@ -11,6 +11,50 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_uv_macro_orders_events_inherits_only_when_requested_and_rejects_unsafe_input(self):
+        host = patch.object(self.worker, "Rhino", SimpleNamespace(Geometry=SimpleNamespace(
+            Point3d=lambda x,y,z: SimpleNamespace(X=x,Y=y,Z=z))))
+        host.start()
+        self.addCleanup(host.stop)
+        operation = {"create_point": True, "events": [
+            {"point": [1,1,3]}, {"normalized": True, "point": [3,1,2]},
+            {"create_point": False, "point": [2,0.5,5]}]}
+        self.assertEqual(self.worker._evaluate_uv_macro(operation),
+            "! _EvaluateUVPt _Normalized=No _CreatePoint=Yes w1,1,3 _Normalized=Yes w3,1,2 _CreatePoint=No w2,0.5,5 _Enter")
+        self.assertEqual(self.worker._evaluate_uv_macro({"inherit_options": True, "point": [1,1,3], "ending": "cancel"}),
+            "! _EvaluateUVPt w1,1,3 !")
+        for invalid in [dict(operation, ending="_Delete"), dict(operation, normalized="Yes"),
+                        dict(operation, events=[]), dict(operation, events=[{}]),
+                        dict(operation, events=[{"normalized": "Yes"}]),
+                        dict(operation, events=[{"command": "_Delete"}]),
+                        dict(operation, events=[{"point": ["_Delete",0,0]}]),
+                        dict(operation, events=[{"point": [float("nan"),0,0]}]),
+                        dict(operation, inherit_options=True),
+                        dict(operation, point=[0,0,0])]:
+            with self.subTest(invalid=invalid), self.assertRaises(ValueError):
+                self.worker._evaluate_uv_macro(invalid)
+
+    def test_uv_capture_accepts_intentional_cancel_only_with_new_measurement(self):
+        report = "UV coordinates of point = 0.000, 12.000"
+        for allow_cancel, output, valid in [(False, report, False), (True, report, True),
+                                          (True, "CANCEL", False),
+                                          (True, "Unknown command: extra\n" + report, False)]:
+            with self.subTest(allow_cancel=allow_cancel, output=output):
+                app = SimpleNamespace(CommandHistoryWindowText=report + "\n")
+                def write(marker):
+                    app.CommandHistoryWindowText += marker + "\n"
+                def run(macro, echo):
+                    app.CommandHistoryWindowText += output
+                    return False
+                app.WriteLine, app.RunScript = write, run
+                with patch.object(self.worker, "Rhino", SimpleNamespace(RhinoApp=app)), \
+                     patch.object(self.worker, "System", SimpleNamespace(Guid=SimpleNamespace(NewGuid=lambda: "unique-marker"))):
+                    if valid:
+                        self.assertEqual(self.worker._measurement_history("EvaluateUVPt", "macro", allow_cancel), ({"history": report}, 0))
+                    else:
+                        with self.assertRaises(ValueError):
+                            self.worker._measurement_history("EvaluateUVPt", "macro", allow_cancel)
+
     def test_uv_probe_cleans_created_points_and_restores_selection_on_failure(self):
         class Point:
             Location = [1.,1.,0.]

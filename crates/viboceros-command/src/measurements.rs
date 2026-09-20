@@ -13,7 +13,7 @@ mod evaluate_uv;
 pub(super) use angle::AngleCommand;
 pub(super) use evaluate_point::EvaluatePointCommand;
 pub(super) use evaluate_uv::EvaluateUvCommand;
-pub use evaluate_uv::EvaluateUvOptions;
+pub use evaluate_uv::{EvaluateUvOptions, EvaluateUvResult, evaluate_surface_uv};
 #[cfg(test)]
 mod tests;
 pub(super) use distance::DistanceCommand;

@@ -55,12 +55,12 @@ use selection_commands::{
 };
 mod measurements;
 pub use curvature::preselected_circular_radius;
-pub use measurements::EvaluateUvOptions;
 pub use measurements::distance_display_units;
 use measurements::{
     AngleCommand, AreaCommand, DistanceCommand, DomainCommand, EvaluatePointCommand, LengthCommand,
     VolumeCommand,
 };
+pub use measurements::{EvaluateUvOptions, EvaluateUvResult, evaluate_surface_uv};
 mod grouping;
 mod remove_from_group;
 pub use distribute::{DistributionMode, DistributionSettings, distribution_unit_count};
@@ -586,7 +586,7 @@ impl CommandRegistry {
             .register(DomainCommand)
             .expect("unique built-in command");
         registry
-            .register(measurements::EvaluateUvCommand)
+            .register(measurements::EvaluateUvCommand::default())
             .expect("unique built-in command");
         for diameter in [false, true] {
             registry

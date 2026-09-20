@@ -116,6 +116,68 @@ fn uv_replays_live_rhino_reports_and_created_points() {
 }
 
 #[test]
+fn uv_preferences_are_shared_with_prompts_but_not_document_history_or_other_registries() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    registry
+        .execute(&mut doc, "SrfPt 0,0,0 4,0,0 4,2,0 0,2,0")
+        .unwrap();
+    registry.execute(&mut doc, "SelAll").unwrap();
+    let choices = |input| {
+        registry
+            .object_selection_prompt(input)
+            .unwrap()
+            .unwrap()
+            .command_line()
+    };
+    registry
+        .execute(
+            &mut doc,
+            "EvaluateUVPt Normalized=Yes CreatePoint=Yes 1,1,3",
+        )
+        .unwrap();
+    registry.execute(&mut doc, "Undo").unwrap();
+    let yes = "EvaluateUVPt Normalized=Yes CreatePoint=Yes";
+    assert_eq!(choices("EvaluateUVPt"), yes);
+    // Describing a hypothetical invocation must not accept its choices.
+    assert_eq!(
+        choices("EvaluateUVPt Normalized=No"),
+        "EvaluateUVPt Normalized=No CreatePoint=Yes"
+    );
+    assert_eq!(choices("EvaluateUVPt"), yes);
+    let before = format!("{doc:?}");
+    for input in [
+        "EvaluateUVPt Normalized=No CreatePoint=Maybe 1,1,3",
+        "EvaluateUVPt Normalized=No NaN,0,0",
+    ] {
+        assert!(registry.execute(&mut doc, input).is_err());
+        assert_eq!(choices("EvaluateUVPt"), yes);
+        assert_eq!(format!("{doc:?}"), before);
+    }
+    registry
+        .accept_object_selection_input("EvaluateUVPt CreatePoint=No")
+        .unwrap();
+    let report = registry.execute(&mut doc, "EvaluateUVPt 1,1,3").unwrap();
+    assert_eq!(uv(&report), vec![0.25, 0.5]);
+    assert_eq!(format!("{doc:?}"), before);
+    registry.execute(&mut doc, "Redo").unwrap();
+    assert_eq!(doc.objects().count(), 2);
+    assert_eq!(
+        choices("EvaluateUVPt"),
+        "EvaluateUVPt Normalized=Yes CreatePoint=No"
+    );
+    let fresh = CommandRegistry::with_builtins();
+    assert_eq!(
+        fresh
+            .object_selection_prompt("EvaluateUVPt")
+            .unwrap()
+            .unwrap()
+            .command_line(),
+        "EvaluateUVPt Normalized=No CreatePoint=No"
+    );
+}
+
+#[test]
 fn uv_reports_native_and_normalized_parameters_with_undoable_projected_markers() {
     let registry = CommandRegistry::with_builtins();
     let mut doc = Document::default();
