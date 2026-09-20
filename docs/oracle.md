@@ -6,10 +6,15 @@ The `align` object-layout probe compares actual bounding-box and line/plane alig
 including retained IDs, source samples/domains, groups, layer assignment and
 pre/postselection cleanup. Its shared `object_layout` module supplies fixture
 ownership and recording for Align and Distribute, not the alignment algorithm.
-[Alignment evidence](commands/align.md#oracle-evidence) records 90 passing cases,
-three curved-bound discrepancies checked against analytic extrema, and four
-raw mesh discrepancies explained by exact single-precision storage rounding.
+[Alignment evidence](commands/align.md#oracle-evidence) includes bounding-box,
+line/plane and [best-fit plane](plane-fit.md) commands. It retains raw curved-bound,
+mesh-storage and nonunique-normal discrepancies alongside successful comparisons.
 All Rhino command probes run on an owned private Xvfb display.
+
+The shared `serde_json` dependency explicitly enables round-trip float parsing.
+Standalone oracle/document builds must not depend on app or test dependencies
+to enable numerical fidelity through Cargo feature unification. A package-only
+regression checks saved binary32 coordinates and 10,000 binary64 round trips.
 
 The `surface_wires` probe compares natural surface-to-B-rep topology and wire
 geometry against Rhino `CreateFromSurface`/`GetWireframe`. The

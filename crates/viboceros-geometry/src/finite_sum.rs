@@ -1,10 +1,12 @@
-//! Allocation-free, correctly rounded sums of finite binary64 values.
+//! Allocation-free exact accumulation; final means use rational division.
 
+use crate::exact_scalar::{Rational, scalar};
 use crate::{
     GeometryError, Real,
     binary_accumulator::{add_product, decompose, finish},
     require_finite,
 };
+use num_bigint::{BigInt, Sign};
 
 // One binary64 term needs 2098 bits at quantum 2^-1074. Space for another
 // 64 carry bits covers usize::MAX terms on all supported 32/64-bit targets.
@@ -56,11 +58,63 @@ impl FiniteSum {
         require_finite([value], "sum total")?;
         Ok(value)
     }
+
+    /// Arithmetic mean with one final nearest-even rounding. The exact total
+    /// need not fit in binary64. An empty accumulator has no mean. Unlike
+    /// `total`, this final division uses temporary arbitrary-precision integers.
+    pub fn mean(&self) -> Result<Real, GeometryError> {
+        scalar(&self.exact_mean()?)
+    }
+
+    pub(crate) fn exact_mean(&self) -> Result<Rational, GeometryError> {
+        if self.count == 0 {
+            return Err(GeometryError::EmptyPointSet);
+        }
+        let integer = |words: &[u64; LIMBS]| {
+            let digits: [u32; LIMBS * 2] =
+                std::array::from_fn(|i| (words[i / 2] >> (32 * (i % 2))) as u32);
+            BigInt::from_slice(Sign::Plus, &digits)
+        };
+        Ok(Rational::new(
+            integer(&self.positive) - integer(&self.negative),
+            BigInt::from(self.count) << 1074,
+        ))
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn means_round_once_without_overflow_or_premature_subnormal_loss() {
+        let tiny = f64::from_bits(1);
+        for values in [
+            vec![f64::MAX; 3],
+            vec![-f64::MAX; 7],
+            vec![tiny, tiny, 0.],
+            vec![tiny, 0.],
+            vec![3. * tiny, 0.],
+            vec![f64::MAX, f64::MAX, -f64::MAX],
+            vec![1., 0., 0.],
+        ] {
+            let mut sum = FiniteSum::default();
+            let mut exact = Rational::from_integer(0.into());
+            for &value in &values {
+                sum.add(value).unwrap();
+                exact += Rational::from_float(value).unwrap();
+            }
+            exact /= Rational::from_integer(values.len().into());
+            assert_eq!(
+                sum.mean().unwrap().to_bits(),
+                scalar(&exact).unwrap().to_bits()
+            );
+        }
+        assert_eq!(
+            FiniteSum::default().mean(),
+            Err(GeometryError::EmptyPointSet)
+        );
+    }
 
     fn sum(values: impl IntoIterator<Item = f64>) -> Result<f64, GeometryError> {
         let mut sum = FiniteSum::default();

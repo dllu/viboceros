@@ -215,3 +215,78 @@ fn switching_projection_modes_and_cancelling_never_applies_staged_points() {
     enter(&mut app, "3Point 0,0,0 1,0,0 0,1,0");
     assert!(app.active_command.is_none());
 }
+
+#[test]
+fn best_fit_executes_without_reference_picks_before_or_after_selection() {
+    for postselected in [false, true] {
+        let mut app = setup();
+        enter(&mut app, "Point 3,2,5");
+        enter(&mut app, "Point -1,7,4");
+        enter(&mut app, if postselected { "SelNone" } else { "SelAll" });
+        let before = positions(&app);
+        enter(&mut app, "Align ToFitPlane");
+        if postselected {
+            assert!(app.object_prompt.is_some());
+            enter(&mut app, "SelAll");
+            enter(&mut app, "");
+        }
+        assert!(app.object_prompt.is_none());
+        assert!(app.active_command.is_none());
+        assert_ne!(positions(&app), before);
+        assert_eq!(
+            app.document.selected_object_ids().count(),
+            if postselected { 0 } else { 4 }
+        );
+        enter(&mut app, "Undo");
+        assert_eq!(positions(&app), before);
+    }
+}
+
+#[test]
+fn failed_fit_ends_without_picks_and_cleans_only_prompt_selection() {
+    for postselected in [false, true] {
+        let mut app = setup();
+        let before = positions(&app);
+        if postselected {
+            enter(&mut app, "SelNone");
+        }
+        enter(&mut app, "Align");
+        if postselected {
+            enter(&mut app, "SelAll");
+            enter(&mut app, "");
+        }
+        enter(&mut app, "ToFitPlane");
+        assert!(app.active_command.is_none());
+        assert!(app.object_prompt.is_none());
+        assert_eq!(positions(&app), before);
+        assert_eq!(
+            app.document.selected_object_ids().count(),
+            if postselected { 0 } else { 2 }
+        );
+    }
+}
+
+#[test]
+fn selection_mode_changes_remove_inapplicable_plane_options() {
+    let mut app = setup();
+    enter(&mut app, "Point 3,2,5");
+    enter(&mut app, "Point -1,7,4");
+    enter(&mut app, "SelNone");
+    enter(&mut app, "Align ToPlane 3Point");
+    enter(&mut app, "Mode=ToFitPlane");
+    let line = app
+        .object_prompt
+        .as_ref()
+        .unwrap()
+        .description
+        .command_line();
+    assert!(line.contains("ToFitPlane"));
+    assert!(!line.contains("3Point"));
+    enter(&mut app, "0,0,0");
+    assert!(app.object_prompt.is_some());
+    enter(&mut app, "SelAll");
+    enter(&mut app, "");
+    assert!(app.object_prompt.is_none());
+    assert!(app.active_command.is_none());
+    assert_eq!(app.document.undo_label(), Some("Align"));
+}

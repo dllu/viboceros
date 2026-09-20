@@ -222,6 +222,11 @@ pub trait Command: Send + Sync {
         true
     }
 
+    /// Optional command-first selection cleanup after a failed transaction has
+    /// rolled back. Implementations may release prompt selection, but must not
+    /// mutate geometry or other model state. Most errors retain selection.
+    fn cleanup_failed_postselection(&self, _document: &mut Document, _error: &CommandError) {}
+
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError>;
 
     fn run_in_context(
@@ -963,11 +968,15 @@ impl CommandRegistry {
                 command.run_in_context(document, &arguments, context)
             }
         };
-        if !command.records_history() {
-            return run(document);
+        let result = if command.records_history() {
+            run_command_transaction(document, command.name(), run)
+        } else {
+            run(document)
+        };
+        if postselected && let Err(error) = &result {
+            command.cleanup_failed_postselection(document, error);
         }
-
-        run_command_transaction(document, command.name(), run)
+        result
     }
 
     /// Recognizes canonical names, aliases, script prefixes, and built-in help.
@@ -17718,6 +17727,9 @@ pub enum CommandError {
 
     #[error("Distribute requires at least three independent objects or groups; found {actual}")]
     InsufficientDistributionObjects { actual: usize },
+
+    #[error("Align ToFitPlane requires at least three selected objects; found {actual}")]
+    InsufficientPlaneAlignmentObjects { actual: usize },
 
     #[error("ExtrudeCrvAlongCrv currently supports Output=Surface only")]
     UnsupportedCurveAlongCurveOutput,

@@ -36,7 +36,7 @@ pub(super) fn run(f: &AlignFixture, tolerance: Tolerance) -> Result<(Value, u64)
     }
     // Validate fixture shape before building a document, including inappropriate
     // target/reference fields that otherwise look like ordinary command points.
-    if options.reference_count() > 0 && f.target.is_some()
+    if options.projects() && f.target.is_some()
         || options.reference_count() == 0 && !f.references.is_empty()
     {
         return Err(ProbeError::FixtureInvariant(
@@ -46,11 +46,15 @@ pub(super) fn run(f: &AlignFixture, tolerance: Tolerance) -> Result<(Value, u64)
     object_layout::run(&f.layout, tolerance, 1, |document, construction_plane| {
         let registry = CommandRegistry::with_builtins();
         let context = CommandContext { construction_plane };
-        if f.layout.preselect {
-            registry.execute_in_context(document, &command, context)?;
+        let result = if f.layout.preselect {
+            registry.execute_in_context(document, &command, context)
         } else {
-            registry.execute_postselected(document, &command, context)?;
+            registry.execute_postselected(document, &command, context)
+        };
+        match result {
+            Ok(_) => Ok(true),
+            Err(CommandError::InsufficientPlaneAlignmentObjects { .. }) => Ok(false),
+            Err(error) => Err(error.into()),
         }
-        Ok(true)
     })
 }

@@ -16,12 +16,45 @@ pub(super) fn run(
         context
     }
     .construction_plane;
-    let [Some(a), Some(b), c] = options.references else {
-        return Err(CommandError::Usage(USAGE));
-    };
+    let objects = document.selected_objects().collect::<Vec<_>>();
+    let count = objects.len();
+    if options.mode == Some(AlignmentMode::ToFitPlane) {
+        if count < 3 {
+            return Err(CommandError::InsufficientPlaneAlignmentObjects { actual: count });
+        }
+        if count > viboceros_geometry::MAX_PLANE_FIT_POINTS {
+            return Err(viboceros_geometry::GeometryError::PlaneFitResourceLimit {
+                maximum: viboceros_geometry::MAX_PLANE_FIT_POINTS,
+            }
+            .into());
+        }
+    }
+    let anchors = objects
+        .iter()
+        .map(|object| {
+            // Each object gets a geometry-local arithmetic origin, independently
+            // of the display CPlane and of other selected objects.
+            let frame = orientation.with_origin(object.geometry().bounds().center()?);
+            let bounds = crate::object_bounds::local_bounds(
+                [object.geometry()],
+                frame,
+                document.tolerance(),
+            )?;
+            let mut local = bounds.center()?.to_array();
+            local[2] = bounds.min().z();
+            frame.point_at(local)
+        })
+        .collect::<Result<Vec<_>, viboceros_geometry::GeometryError>>()?;
     let projector = match options.mode {
-        Some(AlignmentMode::ToLine) => PointProjection3::onto_line(a, b)?,
+        Some(AlignmentMode::ToFitPlane) => PointProjection3::onto_best_fit_plane(&anchors)?,
+        Some(AlignmentMode::ToLine) => PointProjection3::onto_line(
+            options.references[0].unwrap(),
+            options.references[1].unwrap(),
+        )?,
         Some(AlignmentMode::ToPlane) => {
+            let [Some(a), Some(b), c] = options.references else {
+                return Err(CommandError::Usage(USAGE));
+            };
             if let Some(c) = c {
                 PointProjection3::onto_three_point_plane([a, b, c])?
             } else {
@@ -31,17 +64,7 @@ pub(super) fn run(
         _ => return Err(CommandError::Usage(USAGE)),
     };
     let mut replacements = Vec::new();
-    let mut count = 0;
-    for object in document.selected_objects() {
-        count += 1;
-        // Use a separate geometry-local origin for each object. A distant
-        // display origin or another selected object cannot erase its extents.
-        let frame = orientation.with_origin(object.geometry().bounds().center()?);
-        let bounds =
-            crate::object_bounds::local_bounds([object.geometry()], frame, document.tolerance())?;
-        let mut local = bounds.center()?.to_array();
-        local[2] = bounds.min().z();
-        let anchor = frame.point_at(local)?;
+    for (object, anchor) in objects.iter().zip(anchors) {
         let projected = projector.project(anchor)?;
         if projected == anchor {
             continue;

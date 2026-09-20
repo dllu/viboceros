@@ -211,13 +211,15 @@ impl VibocerosApp {
             let command = pending.description.command_line();
             if pending.description.command == "Align" {
                 self.object_prompt = None;
-                self.try_start_interactive_command(&command);
-                if let Some(InteractiveCommand::Align { postselected, .. }) =
-                    &mut self.active_command
-                {
-                    *postselected = pending.postselected;
+                if self.try_start_interactive_command(&command) {
+                    if let Some(InteractiveCommand::Align { postselected, .. }) =
+                        &mut self.active_command
+                    {
+                        *postselected = pending.postselected;
+                    }
+                    return true;
                 }
-                return true;
+                // No-point modes execute directly after selection acceptance.
             }
             if pending.description.command == "EvaluateUVPt" && self.evaluate_uv_can_pick() {
                 self.object_prompt = None;
@@ -331,10 +333,17 @@ impl VibocerosApp {
             self.log_object_prompt();
             return true;
         }
-        let update = match pending.phase {
-            ObjectPromptPhase::Menu(index) => pending.description.update_menu_options(index, input),
-            ObjectPromptPhase::Choice(index) => pending.description.choices[index].set(input),
-            _ => pending.description.update_options(input),
+        let update = if pending.description.command == "Align" {
+            self.update_align_selection(&pending.description, input)
+                .map(|description| pending.description = description)
+        } else {
+            match pending.phase {
+                ObjectPromptPhase::Menu(index) => {
+                    pending.description.update_menu_options(index, input)
+                }
+                ObjectPromptPhase::Choice(index) => pending.description.choices[index].set(input),
+                _ => pending.description.update_options(input),
+            }
         };
         match update.and_then(|()| {
             self.commands

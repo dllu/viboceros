@@ -134,7 +134,7 @@ pub use plane::{Plane, intersect_three_planes};
 pub use point::Point3;
 pub use point_cloud::{PointCloud3, PointCloudProjection};
 pub use point_grid::{MAX_POINT_GRID_AXIS_COUNT, MAX_POINT_GRID_DEGREE};
-pub use point_projection::PointProjection3;
+pub use point_projection::{MAX_PLANE_FIT_POINTS, PointProjection3};
 pub use point2::Point2;
 pub use polycurve::{MAX_POLYCURVE_SEGMENTS, PolyCurve3};
 pub use polyline::{JoinedPolyline3, MAX_REGULAR_POLYGON_SIDES, Polyline3, join_polylines};

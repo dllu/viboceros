@@ -4,7 +4,7 @@
 
 `Align` translates selected objects or rigid group units by their tight bounding
 boxes. It supports `Left`, `Right`, `Top`, `Bottom`, `HorizCenter`, `VertCenter`,
-and `Concentric`, plus `ToLine` and `ToPlane` projection alignment, using
+and `Concentric`, plus `ToLine`, `ToPlane` and `ToFitPlane` projection alignment, using
 `AlignTo=CPlane` (initial default) or `AlignTo=World`.
 The coordinate choice is remembered by the command registry, outside undo
 history; each invocation asks for its alignment mode.
@@ -29,6 +29,7 @@ See also [McNeel's command reference](https://docs.mcneel.com/rhino/8/help/en-us
 Align ToLine 1,2,3 5,7,11
 Align ToPlane AlignTo=World 1,2,3 5,7,11
 Align ToPlane 3Point 1,2,3 5,7,11 -2,3,5
+Align ToFitPlane AlignTo=World
 ```
 
 These modes translate **each selected object independently**, including grouped
@@ -45,6 +46,9 @@ same in world coordinates. Group memberships and unselected peers are unchanged.
   its normal is `(end - start) × Z`. Translation preserves that Z component.
 - `ToPlane 3Point` uses the plane through three noncollinear world points.
   The target plane itself is independent of `AlignTo`.
+- `ToFitPlane` fits a least-squares plane to the individual bottom-center
+  anchors of at least three selected objects. It needs no reference picks.
+  See [best-fit plane design and evidence](../plane-fit.md).
 
 The app stages two or three picked/typed points without changing the model.
 Incomplete point sets cannot finish with Enter/Auto. Invalid final points leave
@@ -75,7 +79,8 @@ builder only consumes the selection it receives. Partial selections made by
 Rhino's `SelID` prompt action remain partial in the oracle fixtures.
 
 Preselected objects remain selected. Objects selected after starting `Align`
-are deselected after success. Both paths preserve IDs, attributes, layers,
+are deselected after success, and after a terminal `ToFitPlane` failure caused
+by fewer than three selected objects. Both paths preserve IDs, attributes, layers,
 ordered group memberships, and source geometry types. Actual geometry changes
 form one undo step. A no-op creates no model-history entry; postselection still
 clears selection. Invalid options, failed bounds, and unrepresentable
@@ -111,7 +116,7 @@ oblique line/plane queries, and 143 µs for a wide-exponent cancellation case.
 These are local measurements, not a Rhino speed comparison. Optimizing the
 exact oblique path and establishing command-level performance parity remain open.
 
-`ToCurve`, `ToFitPlane`, other plane-creation options, control-point/grip editing, and SubD
+`ToCurve`, other plane-creation options, control-point/grip editing, and SubD
 component alignment are not implemented. They are not aliases for bounding-box
 translation. No preview of the prospective transformed geometry is provided.
 
@@ -136,7 +141,7 @@ observed passing coordinate difference is below `7.5e-10`. Native tests also
 check independent box equations, a quadratic arch's true extremum, distant
 display-plane origins, undo/redo, late failures, and interactive phase handling.
 The [final executable comparison](../align-comparison.json) retains executable
-and fixture hashes, per-case errors, 90 passing operations, and all seven failing
+and fixture hashes, per-case errors, 129 passing operations and all 13 failing
 diagnostics. No cases are dropped from the combined evidence.
 
 The [34 projection cases](../../tools/rhino_oracle/fixtures/align_projection.json)
@@ -153,6 +158,10 @@ Every mesh coordinate matches exactly after conversion of the native value to
 binary32; every nonmesh value and document-state field is also checked. This
 separate storage diagnostic does not round native geometry or alter the raw
 comparison results.
+
+[Best-fit plane evidence](../plane-fit.md#evidence-and-remaining-differences)
+adds successful and terminal-failure cases, plus six explicit mesh, nonunique
+normal, and curved-bound diagnostics at the same comparison threshold.
 
 ```sh
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/align.json --absolute-epsilon 1e-8 --relative-epsilon 1e-12 --timeout 300
@@ -177,7 +186,7 @@ The regression tests check these translations against the formulas and retain
 the measured disagreements; the comparison epsilon is not widened to absorb
 Rhino's less accurate bounds. Full command parity is not claimed.
 
-The implementation checkpoint passed 2,609 release-mode workspace tests (18
-existing opt-in tests ignored), all 200 Python tests, strict all-target Clippy,
+The implementation checkpoint passed 2,628 release-mode workspace tests (18
+existing opt-in tests ignored), all 201 Python tests, strict all-target Clippy,
 warnings-denied rustdoc, and formatting checks. The README remains a short
 build/run guide; detailed command behavior is maintained here.

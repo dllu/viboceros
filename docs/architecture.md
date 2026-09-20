@@ -30,6 +30,10 @@ Projection alignment has a separate per-object bottom-center path: group units
 do not apply. Prepared `PointProjection3` definitions preserve exact endpoint
 differences and plane normals, sharing finite rational conversion with NURBS
 evaluators through the kernel's independent `exact_scalar` module.
+Best-fit projection adds exact affine-rank checks and centroid accumulation,
+shared-denominator matrix normalization, and faer thin SVD; see [plane fitting](plane-fit.md).
+Failed command-first selection cleanup is a separate registry hook that runs
+after model rollback, rather than a model edit inside a failed transaction.
 The oracle's `object_layout` module shares owned fixture setup and output
 recording without sharing the native and Rhino alignment implementations.
 

@@ -1,0 +1,4062 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "fit-identical",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "fit-collinear",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.0,
+                4.0,
+                6.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                4.0,
+                8.0,
+                12.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "fit-rectangle",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.0,
+                0.0,
+                2.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.0,
+                0.0,
+                2.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.0,
+                3.0,
+                2.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.0,
+                3.0,
+                2.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "rank-one-diagonal-pre",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.0,
+                3.0,
+                4.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                4.0,
+                7.0,
+                10.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                6.0,
+                11.0,
+                16.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                8.0,
+                15.0,
+                22.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "rank-one-diagonal-post",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.0,
+                3.0,
+                4.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                4.0,
+                7.0,
+                10.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                6.0,
+                11.0,
+                16.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                8.0,
+                15.0,
+                22.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "near-line-pre",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                4.0,
+                1e-08,
+                0.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                6.0,
+                0.0,
+                1e-09
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "near-line-post",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                4.0,
+                1e-08,
+                0.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                6.0,
+                0.0,
+                1e-09
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "square-off-plane-pre",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.06550271559254686,
+                0.04224743086586261,
+                -0.24705296763576134
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.9376360455744999,
+                -0.04022301715706148,
+                0.23521467583359715
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                -0.0582029564418393,
+                2.962460710884708,
+                0.219520869998365
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.055064195274793,
+                3.0355148754064927,
+                0.7923174218037989
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "square-off-plane-post",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.06550271559254686,
+                0.04224743086586261,
+                -0.24705296763576134
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.9376360455744999,
+                -0.04022301715706148,
+                0.23521467583359715
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                -0.0582029564418393,
+                2.962460710884708,
+                0.219520869998365
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.055064195274793,
+                3.0355148754064927,
+                0.7923174218037989
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "one-pre",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          }
+        ],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "one-post",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 0
+          }
+        ],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "two-pre",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                4.0,
+                7.0,
+                9.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          }
+        ],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "two-post",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                4.0,
+                7.0,
+                9.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 1
+          }
+        ],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "three-pre",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                3.0,
+                4.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "three-post",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                3.0,
+                4.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 2
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "grouped-cloud-World-pre",
+      "value": {
+        "groups": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.06550271559254683,
+                0.0422474308658628,
+                -0.2470529676357614
+              ],
+              [
+                1.065502715592547,
+                1.0422474308658627,
+                1.7529470323642387
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.9376360455744996,
+                -0.040223017157061336,
+                0.2352146758335971
+              ],
+              [
+                2.9376360455744996,
+                0.9597769828429387,
+                2.235214675833597
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                -0.05820295644183926,
+                2.962460710884708,
+                0.21952086999836495
+              ],
+              [
+                0.9417970435581607,
+                3.962460710884708,
+                2.219520869998365
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.055064195274793,
+                3.0355148754064927,
+                0.7923174218037988
+              ],
+              [
+                3.055064195274793,
+                4.035514875406493,
+                2.7923174218037987
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "grouped-cloud-World-post",
+      "value": {
+        "groups": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.06550271559254683,
+                0.0422474308658628,
+                -0.2470529676357614
+              ],
+              [
+                1.065502715592547,
+                1.0422474308658627,
+                1.7529470323642387
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.9376360455744996,
+                -0.040223017157061336,
+                0.2352146758335971
+              ],
+              [
+                2.9376360455744996,
+                0.9597769828429387,
+                2.235214675833597
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                -0.05820295644183926,
+                2.962460710884708,
+                0.21952086999836495
+              ],
+              [
+                0.9417970435581607,
+                3.962460710884708,
+                2.219520869998365
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.055064195274793,
+                3.0355148754064927,
+                0.7923174218037988
+              ],
+              [
+                3.055064195274793,
+                4.035514875406493,
+                2.7923174218037987
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "grouped-cloud-CPlane-pre",
+      "value": {
+        "groups": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.06550271559254678,
+                0.04224743086586269,
+                -0.24705296763576123
+              ],
+              [
+                1.0655027155925467,
+                1.0422474308658627,
+                1.7529470323642387
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.9376360455744994,
+                -0.040223017157061336,
+                0.23521467583359712
+              ],
+              [
+                2.937636045574499,
+                0.9597769828429387,
+                2.235214675833597
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                -0.0582029564418394,
+                2.962460710884708,
+                0.21952086999836506
+              ],
+              [
+                0.9417970435581606,
+                3.962460710884708,
+                2.219520869998365
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.055064195274793,
+                3.035514875406493,
+                0.7923174218037992
+              ],
+              [
+                3.055064195274793,
+                4.035514875406493,
+                2.792317421803799
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "grouped-cloud-CPlane-post",
+      "value": {
+        "groups": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.06550271559254678,
+                0.04224743086586269,
+                -0.24705296763576123
+              ],
+              [
+                1.0655027155925467,
+                1.0422474308658627,
+                1.7529470323642387
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.9376360455744994,
+                -0.040223017157061336,
+                0.23521467583359712
+              ],
+              [
+                2.937636045574499,
+                0.9597769828429387,
+                2.235214675833597
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                -0.0582029564418394,
+                2.962460710884708,
+                0.21952086999836506
+              ],
+              [
+                0.9417970435581606,
+                3.962460710884708,
+                2.219520869998365
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.055064195274793,
+                3.035514875406493,
+                0.7923174218037992
+              ],
+              [
+                3.055064195274793,
+                4.035514875406493,
+                2.792317421803799
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "partial-overlap",
+      "value": {
+        "groups": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.12419417771679497,
+                -0.019871989374266406,
+                -0.05362446885503939
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.5202404728947915,
+                2.9167576665872113,
+                -0.22462904098043773
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.2263670671150546,
+                3.1237870059974098,
+                1.3340386472007002
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 3
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                5.129198282273359,
+                6.979327316789648,
+                8.944214862634775
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 4
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "near-line-scaled-1000.0",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.542079322721451e-17,
+                -8.141609619342519e-09,
+                -1.4233325611695498e-07
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2000.0,
+                1.222402393771568e-08,
+                2.1370284394048115e-07
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                4000.0,
+                9.999976780982597e-06,
+                -4.059195300971548e-10
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                6000.0,
+                -4.0591953009693775e-09,
+                9.290363317065714e-07
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "near-line-scaled-1000000000.0",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.5420793227214553e-11,
+                -0.00814160961934251,
+                -0.14233325611695527
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2000000000.0,
+                0.012224023937715616,
+                0.2137028439404808
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                4000000000.0,
+                9.999976780982594,
+                -0.00040591953009549986
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                6000000000.0,
+                -0.004059195300969369,
+                0.9290363317065706
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "symmetric-weighted-0",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                4.0,
+                2.33846314550745e-18,
+                0.3333333333333332
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                -4.0,
+                2.33846314550745e-18,
+                0.3333333333333332
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.0,
+                4.0,
+                0.33333333333333315
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.0,
+                -4.0,
+                0.33333333333333326
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.0,
+                -4.676926291014902e-18,
+                0.33333333333333326
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 4
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.0,
+                -4.676926291014902e-18,
+                0.33333333333333326
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 5
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "symmetric-weighted-1073741824",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1073741828.0,
+                -1073741824.0,
+                1073741824.3333333
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1073741820.0,
+                -1073741824.0,
+                1073741824.3333333
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1073741824.0,
+                -1073741820.0,
+                1073741824.3333333
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1073741824.0,
+                -1073741828.0,
+                1073741824.3333333
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1073741824.0,
+                -1073741824.0,
+                1073741824.3333333
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 4
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1073741824.0,
+                -1073741824.0,
+                1073741824.3333333
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 5
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "nurbs-fit",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                -6.674487049932406,
+                -4.974012711045454,
+                -3.1763207878835127
+              ],
+              [
+                -4.674487049932406,
+                -1.9740127110454542,
+                -1.1763207878835127
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": [
+              0.0,
+              1.0
+            ],
+            "points": [
+              [
+                -1.2614581273052554,
+                0.9269439807315782,
+                4.1194756098898235
+              ],
+              [
+                -1.0976950611031648,
+                2.500926026899256,
+                3.1930224943691865
+              ],
+              [
+                -0.9703188867989264,
+                3.686556839457613,
+                2.489110420912676
+              ],
+              [
+                -0.8678721214743514,
+                4.603079398579714,
+                1.9389797886447317
+              ],
+              [
+                -0.7831972577400381,
+                5.324670073513028,
+                1.4998124439515432
+              ],
+              [
+                -0.711586004543107,
+                5.89979289332088,
+                1.143584727916831
+              ],
+              [
+                -0.6498076418683622,
+                6.3613532437375,
+                0.8512184835657323
+              ],
+              [
+                -0.5955648558435385,
+                6.73237617737112,
+                0.6093089076913464
+              ],
+              [
+                -0.5471724130195411,
+                7.029350020914671,
+                0.408196429850774
+              ],
+              [
+                -0.5033587752534197,
+                7.264279842739329,
+                0.24078099201643866
+              ],
+              [
+                -0.46313879957416293,
+                7.4459924493751295,
+                0.10176667102177153
+              ],
+              [
+                -0.42572917453318143,
+                7.580988348075014,
+                -0.012833657327713927
+              ],
+              [
+                -0.3904903853697716,
+                7.674008721810924,
+                -0.10603060538562252
+              ],
+              [
+                -0.35688556269292937,
+                7.728416316937616,
+                -0.18008475556988673
+              ],
+              [
+                -0.32445025328950733,
+                7.746449940387286,
+                -0.23666209933021537
+              ],
+              [
+                -0.2927692819040812,
+                7.729389066359253,
+                -0.27693996770167906
+              ],
+              [
+                -0.2614581273052554,
+                7.677650658199476,
+                -0.3016768811700755
+              ],
+              [
+                -0.23014697270642961,
+                7.590830806227792,
+                -0.31125453121391683
+              ],
+              [
+                -0.19846600132100345,
+                7.467696905240922,
+                -0.30569651647491436
+              ],
+              [
+                -0.1660306919175814,
+                7.306130406835173,
+                -0.28466572150281033
+              ],
+              [
+                -0.1324258692407393,
+                7.103014601430469,
+                -0.24743981469815096
+              ],
+              [
+                -0.09718708007732936,
+                6.854055381676899,
+                -0.19286180881388976
+              ],
+              [
+                -0.05977745503634787,
+                6.553514244410722,
+                -0.11925948807176026
+              ],
+              [
+                -0.019557479357091276,
+                6.193820023105992,
+                -0.02432309801223238
+              ],
+              [
+                0.024256158409030296,
+                5.765005897215092,
+                0.09507603780160379
+              ],
+              [
+                0.07264860123302766,
+                5.253885601165581,
+                0.24315420329974138
+              ],
+              [
+                0.12689138725785135,
+                4.6428272503594314,
+                0.425617950683365
+              ],
+              [
+                0.1886697499325962,
+                3.9078850155742293,
+                0.650279967041412
+              ],
+              [
+                0.2602810031295272,
+                3.0158677606703197,
+                0.9280273802095805
+              ],
+              [
+                0.3449558668638408,
+                1.9195735033806083,
+                1.2743977320505746
+              ],
+              [
+                0.4474026321884155,
+                0.5497030642029626,
+                1.7122547646894184
+              ],
+              [
+                0.5747788064926539,
+                -1.1995933595385346,
+                2.2765725664203953
+              ],
+              [
+                0.7385418726947446,
+                -3.4982604522169467,
+                3.023554237717728
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                16.629677270649612,
+                11.537300887601395,
+                9.441195604248811
+              ],
+              [
+                20.629677270649612,
+                14.537300887601395,
+                13.441195604248811
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                3.3062679065880465,
+                -3.490232157287519,
+                7.615649573744876
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "signed-fit",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                -7.431886250366591,
+                -6.298772135924594,
+                0.020632026685596383
+              ],
+              [
+                -5.431886250366591,
+                -3.298772135924594,
+                2.0206320266855964
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": [
+              0.0,
+              1.0
+            ],
+            "points": [
+              [
+                0.19559507886146532,
+                -0.7914410054339385,
+                0.6956805408504954
+              ],
+              [
+                0.13122215988255298,
+                -1.4795653117602425,
+                0.6956805408504952
+              ],
+              [
+                0.06361538342999325,
+                -2.3142836450278472,
+                0.6956805408504952
+              ],
+              [
+                -0.005864775153133189,
+                -3.3315869908353983,
+                0.6956805408504954
+              ],
+              [
+                -0.07467519140880494,
+                -4.575224789217723,
+                0.6956805408504955
+              ],
+              [
+                -0.13839313331928124,
+                -6.09595966948109,
+                0.6956805408504952
+              ],
+              [
+                -0.1897260220559659,
+                -7.947404308186233,
+                0.6956805408504956
+              ],
+              [
+                -0.21727355384630948,
+                -10.17481902151973,
+                0.6956805408504956
+              ],
+              [
+                -0.2044049211385347,
+                -12.791441005433938,
+                0.6956805408504954
+              ],
+              [
+                -0.12931466843095346,
+                -15.737289380885201,
+                0.6956805408504952
+              ],
+              [
+                0.0316606526319571,
+                -18.824227890679843,
+                0.6956805408504955
+              ],
+              [
+                0.29514259017368283,
+                -21.69641838099955,
+                0.6956805408504956
+              ],
+              [
+                0.6571335403999266,
+                -23.86836408235702,
+                0.6956805408504955
+              ],
+              [
+                1.0833999569102455,
+                -24.889001981043698,
+                0.6956805408504954
+              ],
+              [
+                1.5163497958425973,
+                -24.565025911094317,
+                0.6956805408504952
+              ],
+              [
+                1.8986518474204173,
+                -23.062183363512542,
+                0.6956805408504954
+              ],
+              [
+                2.1955950788614653,
+                -20.79144100543394,
+                0.6956805408504954
+              ],
+              [
+                2.4003732358580523,
+                -18.19758435014384,
+                0.6956805408504954
+              ],
+              [
+                2.525006843567348,
+                -15.614970417198645,
+                0.6956805408504954
+              ],
+              [
+                2.588542182136025,
+                -13.234765942461648,
+                0.6956805408504951
+              ],
+              [
+                2.6093881823097407,
+                -11.136268591640835,
+                0.6956805408504952
+              ],
+              [
+                2.602249422669229,
+                -9.33118222539697,
+                0.6956805408504954
+              ],
+              [
+                2.577760683957007,
+                -7.797810432185531,
+                0.6956805408504955
+              ],
+              [
+                2.5431812857580174,
+                -6.501785833020144,
+                0.6956805408504952
+              ],
+              [
+                2.5032873865537733,
+                -5.406825620818554,
+                0.6956805408504954
+              ],
+              [
+                2.461137755363046,
+                -4.479533734622557,
+                0.6956805408504954
+              ],
+              [
+                2.4186434059990116,
+                -3.6910692582220426,
+                0.6956805408504954
+              ],
+              [
+                2.3769635866932872,
+                -3.0173272379153895,
+                0.6956805408504954
+              ],
+              [
+                2.3367715494497006,
+                -2.43849982896335,
+                0.6956805408504954
+              ],
+              [
+                2.2984296207203974,
+                -1.9384416646297196,
+                0.6956805408504952
+              ],
+              [
+                2.262103392400658,
+                -1.504030079068143,
+                0.6956805408504952
+              ],
+              [
+                2.2278358096513635,
+                -1.124595223596217,
+                0.6956805408504954
+              ],
+              [
+                2.1955950788614653,
+                -0.7914410054339385,
+                0.6956805408504954
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                16.314560276633237,
+                10.72718729398855,
+                11.118808635943662
+              ],
+              [
+                20.314560276633237,
+                13.72718729398855,
+                15.118808635943662
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.9217308948718927,
+                0.36302584736998433,
+                3.1648787965202456
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-fit",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                -7.612323866472522,
+                -4.2010028051288915,
+                -2.4771154590747377
+              ],
+              [
+                -5.612323866472522,
+                -1.2010028051288915,
+                -0.47711545907473774
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": [
+              0.0,
+              25.132741228718345
+            ],
+            "points": [
+              [
+                4.505304451151298,
+                2.2564903650338266,
+                3.608824927507301
+              ],
+              [
+                4.42844557276422,
+                3.0368516530983394,
+                3.608824927507301
+              ],
+              [
+                4.200822581196444,
+                3.787224094494186,
+                3.608824927507301
+              ],
+              [
+                3.831182900361479,
+                4.478771297112235,
+                3.608824927507301
+              ],
+              [
+                3.333731575897488,
+                5.0849174897800165,
+                3.608824927507301
+              ],
+              [
+                2.727585383229707,
+                5.582368814244008,
+                3.608824927507301
+              ],
+              [
+                2.036038180611657,
+                5.952008495078974,
+                3.608824927507301
+              ],
+              [
+                1.285665739215811,
+                6.179631486646748,
+                3.608824927507301
+              ],
+              [
+                0.5053044511512979,
+                6.256490365033827,
+                3.608824927507301
+              ],
+              [
+                -0.2750568369132149,
+                6.179631486646748,
+                3.608824927507301
+              ],
+              [
+                -1.025429278309061,
+                5.952008495078974,
+                3.608824927507301
+              ],
+              [
+                -1.71697648092711,
+                5.582368814244008,
+                3.608824927507301
+              ],
+              [
+                -2.323122673594892,
+                5.0849174897800165,
+                3.608824927507301
+              ],
+              [
+                -2.8205739980588835,
+                4.478771297112235,
+                3.608824927507301
+              ],
+              [
+                -3.190213678893849,
+                3.787224094494186,
+                3.608824927507301
+              ],
+              [
+                -3.417836670461624,
+                3.036851653098341,
+                3.608824927507301
+              ],
+              [
+                -3.494695548848702,
+                2.2564903650338266,
+                3.608824927507301
+              ],
+              [
+                -3.417836670461624,
+                1.4761290769693132,
+                3.608824927507301
+              ],
+              [
+                -3.1902136788938495,
+                0.7257566355734681,
+                3.608824927507301
+              ],
+              [
+                -2.820573998058884,
+                0.034209432955418784,
+                3.608824927507301
+              ],
+              [
+                -2.323122673594893,
+                -0.5719367597123632,
+                3.608824927507301
+              ],
+              [
+                -1.7169764809271109,
+                -1.0693880841763543,
+                3.608824927507301
+              ],
+              [
+                -1.0254292783090635,
+                -1.4390277650113195,
+                3.608824927507301
+              ],
+              [
+                -0.2750568369132168,
+                -1.6666507565790947,
+                3.608824927507301
+              ],
+              [
+                0.5053044511512979,
+                -1.7435096349661734,
+                3.608824927507301
+              ],
+              [
+                1.285665739215811,
+                -1.6666507565790951,
+                3.608824927507301
+              ],
+              [
+                2.0360381806116576,
+                -1.43902776501132,
+                3.608824927507301
+              ],
+              [
+                2.7275853832297052,
+                -1.0693880841763552,
+                3.608824927507301
+              ],
+              [
+                3.3337315758974873,
+                -0.5719367597123641,
+                3.608824927507301
+              ],
+              [
+                3.831182900361479,
+                0.034209432955417896,
+                3.608824927507301
+              ],
+              [
+                4.200822581196444,
+                0.725756635573465,
+                3.608824927507301
+              ],
+              [
+                4.428445572764219,
+                1.4761290769693116,
+                3.608824927507301
+              ],
+              [
+                4.505304451151298,
+                2.2564903650338266,
+                3.608824927507301
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                16.196377874436273,
+                11.898181754786451,
+                9.75831651316461
+              ],
+              [
+                20.196377874436273,
+                14.898181754786451,
+                13.75831651316461
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                3.91064154088495,
+                -3.95366931469139,
+                7.10997401840283
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "ellipse-fit",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                -7.7877921467768765,
+                -4.100898839044699,
+                -2.2755175629659896
+              ],
+              [
+                -5.7877921467768765,
+                -1.1008988390446994,
+                -0.2755175629659896
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": [
+              0.0,
+              6.283185307179586
+            ],
+            "points": [
+              [
+                4.702343635050228,
+                2.1415271923330716,
+                3.386458630190504
+              ],
+              [
+                4.635565108716525,
+                2.1415271923330716,
+                3.7503847350147934
+              ],
+              [
+                4.42149683929995,
+                2.141527192333072,
+                4.12264804931425
+              ],
+              [
+                4.050325679924833,
+                2.141527192333071,
+                4.480878136960789
+              ],
+              [
+                3.5307707597964177,
+                2.1415271923330716,
+                4.800672192563599
+              ],
+              [
+                2.8911826485907977,
+                2.141527192333071,
+                5.060449652627807
+              ],
+              [
+                2.1747224732977193,
+                2.141527192333072,
+                5.246035232315364
+              ],
+              [
+                1.4301958446988068,
+                2.1415271923330716,
+                5.353069367023652
+              ],
+              [
+                0.7023436350502281,
+                2.1415271923330716,
+                5.3864586301905035
+              ],
+              [
+                -0.02550857459835077,
+                2.1415271923330716,
+                5.353069367023652
+              ],
+              [
+                -0.770035203197263,
+                2.141527192333072,
+                5.246035232315364
+              ],
+              [
+                -1.4864953784903412,
+                2.141527192333071,
+                5.060449652627807
+              ],
+              [
+                -2.126083489695962,
+                2.1415271923330716,
+                4.800672192563599
+              ],
+              [
+                -2.645638409824377,
+                2.141527192333071,
+                4.480878136960788
+              ],
+              [
+                -3.0168095691994936,
+                2.141527192333072,
+                4.12264804931425
+              ],
+              [
+                -3.230877838616069,
+                2.1415271923330716,
+                3.750384735014794
+              ],
+              [
+                -3.2976563649497717,
+                2.1415271923330716,
+                3.386458630190504
+              ],
+              [
+                -3.230877838616069,
+                2.1415271923330716,
+                3.0225325253662145
+              ],
+              [
+                -3.0168095691994936,
+                2.141527192333072,
+                2.650269211066759
+              ],
+              [
+                -2.645638409824377,
+                2.141527192333071,
+                2.292039123420219
+              ],
+              [
+                -2.126083489695962,
+                2.1415271923330716,
+                1.9722450678174088
+              ],
+              [
+                -1.4864953784903412,
+                2.141527192333071,
+                1.712467607753201
+              ],
+              [
+                -0.7700352031972646,
+                2.141527192333072,
+                1.5268820280656439
+              ],
+              [
+                -0.025508574598351482,
+                2.1415271923330716,
+                1.419847893357355
+              ],
+              [
+                0.7023436350502281,
+                2.1415271923330716,
+                1.386458630190504
+              ],
+              [
+                1.4301958446988077,
+                2.1415271923330716,
+                1.419847893357355
+              ],
+              [
+                2.1747224732977206,
+                2.141527192333072,
+                1.5268820280656439
+              ],
+              [
+                2.891182648590797,
+                2.141527192333071,
+                1.712467607753201
+              ],
+              [
+                3.5307707597964177,
+                2.1415271923330716,
+                1.9722450678174088
+              ],
+              [
+                4.050325679924833,
+                2.141527192333071,
+                2.292039123420219
+              ],
+              [
+                4.42149683929995,
+                2.141527192333072,
+                2.6502692110667576
+              ],
+              [
+                4.635565108716525,
+                2.1415271923330716,
+                3.0225325253662145
+              ],
+              [
+                4.702343635050228,
+                2.1415271923330716,
+                3.386458630190504
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                16.100806450453256,
+                11.95206938072996,
+                9.869119134196566
+              ],
+              [
+                20.100806450453256,
+                14.95206938072996,
+                13.869119134196566
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                3.9846420612733984,
+                -3.9926977340183307,
+                7.019939798578924
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "arc-fit",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                -7.458726538545799,
+                -4.2737591081139445,
+                -2.6553418453283464
+              ],
+              [
+                -5.458726538545799,
+                -1.273759108113945,
+                -0.6553418453283464
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": [
+              0.0,
+              6.283185307179586
+            ],
+            "points": [
+              [
+                1.2825692733935394,
+                0.36285391735567707,
+                1.868622627472593
+              ],
+              [
+                1.2729387267379333,
+                0.5588881980147983,
+                1.868622627472593
+              ],
+              [
+                1.2441398342000003,
+                0.7530345613879336,
+                1.868622627472593
+              ],
+              [
+                1.196449944857957,
+                0.9434232718646017,
+                1.868622627472593
+              ],
+              [
+                1.130328338416113,
+                1.1282207820858567,
+                1.868622627472593
+              ],
+              [
+                1.0464118020902495,
+                1.3056473910076725,
+                1.868622627472593
+              ],
+              [
+                0.9455084979986299,
+                1.4739943833948814,
+                1.868622627472593
+              ],
+              [
+                0.8285901801190134,
+                1.631640485682968,
+                1.868622627472593
+              ],
+              [
+                0.6967828357666346,
+                1.777067479728772,
+                1.868622627472593
+              ],
+              [
+                0.5513558417208304,
+                1.9088748240811508,
+                1.868622627472593
+              ],
+              [
+                0.393709739432744,
+                2.0257931419607678,
+                1.868622627472593
+              ],
+              [
+                0.22536274704553505,
+                2.126696446052387,
+                1.868622627472593
+              ],
+              [
+                0.04793613812371911,
+                2.2106129823782505,
+                1.868622627472593
+              ],
+              [
+                -0.1368613720975359,
+                2.276734588820095,
+                1.868622627472593
+              ],
+              [
+                -0.3272500825742039,
+                2.324424478162138,
+                1.868622627472593
+              ],
+              [
+                -0.521396445947339,
+                2.3532233707000705,
+                1.868622627472593
+              ],
+              [
+                -0.7174307266064606,
+                2.362853917355677,
+                1.868622627472593
+              ],
+              [
+                -0.9134650072655819,
+                2.353223370700071,
+                1.868622627472593
+              ],
+              [
+                -1.107611370638717,
+                2.324424478162138,
+                1.868622627472593
+              ],
+              [
+                -1.298000081115385,
+                2.276734588820095,
+                1.868622627472593
+              ],
+              [
+                -1.48279759133664,
+                2.2106129823782505,
+                1.868622627472593
+              ],
+              [
+                -1.660224200258456,
+                2.126696446052387,
+                1.868622627472593
+              ],
+              [
+                -1.8285711926456645,
+                2.0257931419607678,
+                1.868622627472593
+              ],
+              [
+                -1.9862172949337513,
+                1.9088748240811513,
+                1.868622627472593
+              ],
+              [
+                -2.1316442889795555,
+                1.7770674797287722,
+                1.868622627472593
+              ],
+              [
+                -2.2634516333319343,
+                1.631640485682968,
+                1.868622627472593
+              ],
+              [
+                -2.3803699512115513,
+                1.4739943833948814,
+                1.868622627472593
+              ],
+              [
+                -2.4812732553031704,
+                1.305647391007673,
+                1.868622627472593
+              ],
+              [
+                -2.565189791629034,
+                1.1282207820858567,
+                1.868622627472593
+              ],
+              [
+                -2.631311398070878,
+                0.9434232718646018,
+                1.868622627472593
+              ],
+              [
+                -2.6790012874129214,
+                0.7530345613879343,
+                1.868622627472593
+              ],
+              [
+                -2.707800179950854,
+                0.5588881980147987,
+                1.868622627472593
+              ],
+              [
+                -2.7174307266064606,
+                0.36285391735567707,
+                1.868622627472593
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                16.175288760863733,
+                11.911344452935982,
+                9.787770751403306
+              ],
+              [
+                20.175288760863733,
+                14.911344452935982,
+                13.787770751403306
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                4.000868504288525,
+                -4.000439262177719,
+                6.99894846645245
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "polyline-fit",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                -8.052137748193692,
+                -3.97801045925928,
+                -1.9273761527203899
+              ],
+              [
+                -6.052137748193692,
+                -0.9780104592592802,
+                0.07262384727961013
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": [
+              0.0,
+              2.0
+            ],
+            "points": [
+              [
+                1.0529272095566464,
+                1.9776774971846738,
+                2.9262764941535604
+              ],
+              [
+                1.2404272095566464,
+                2.165177497184674,
+                2.6762764941535604
+              ],
+              [
+                1.4279272095566464,
+                2.352677497184674,
+                2.4262764941535604
+              ],
+              [
+                1.6154272095566464,
+                2.540177497184674,
+                2.1762764941535604
+              ],
+              [
+                1.8029272095566464,
+                2.727677497184674,
+                1.9262764941535604
+              ],
+              [
+                1.9904272095566462,
+                2.915177497184674,
+                1.6762764941535604
+              ],
+              [
+                2.177927209556646,
+                3.102677497184674,
+                1.4262764941535604
+              ],
+              [
+                2.365427209556646,
+                3.290177497184674,
+                1.1762764941535606
+              ],
+              [
+                2.552927209556646,
+                3.477677497184674,
+                0.9262764941535605
+              ],
+              [
+                2.740427209556646,
+                3.665177497184674,
+                0.6762764941535604
+              ],
+              [
+                2.927927209556646,
+                3.852677497184674,
+                0.4262764941535605
+              ],
+              [
+                3.1154272095566466,
+                4.040177497184674,
+                0.1762764941535605
+              ],
+              [
+                3.302927209556646,
+                4.227677497184674,
+                -0.07372350584643939
+              ],
+              [
+                3.490427209556646,
+                4.415177497184674,
+                -0.3237235058464394
+              ],
+              [
+                3.677927209556646,
+                4.602677497184674,
+                -0.5737235058464394
+              ],
+              [
+                3.8654272095566466,
+                4.790177497184674,
+                -0.8237235058464395
+              ],
+              [
+                4.052927209556646,
+                4.977677497184674,
+                -1.0737235058464394
+              ],
+              [
+                3.615427209556646,
+                5.165177497184674,
+                -0.5737235058464395
+              ],
+              [
+                3.177927209556646,
+                5.352677497184674,
+                -0.07372350584643939
+              ],
+              [
+                2.740427209556646,
+                5.540177497184674,
+                0.4262764941535605
+              ],
+              [
+                2.302927209556646,
+                5.727677497184674,
+                0.9262764941535606
+              ],
+              [
+                1.8654272095566464,
+                5.915177497184674,
+                1.4262764941535606
+              ],
+              [
+                1.4279272095566462,
+                6.102677497184674,
+                1.9262764941535604
+              ],
+              [
+                0.990427209556646,
+                6.290177497184674,
+                2.4262764941535604
+              ],
+              [
+                0.5529272095566462,
+                6.477677497184674,
+                2.9262764941535604
+              ],
+              [
+                0.1154272095566462,
+                6.665177497184674,
+                3.4262764941535604
+              ],
+              [
+                -0.3220727904433538,
+                6.852677497184674,
+                3.926276494153561
+              ],
+              [
+                -0.7595727904433536,
+                7.040177497184674,
+                4.42627649415356
+              ],
+              [
+                -1.1970727904433538,
+                7.227677497184674,
+                4.92627649415356
+              ],
+              [
+                -1.634572790443354,
+                7.415177497184674,
+                5.42627649415356
+              ],
+              [
+                -2.072072790443354,
+                7.602677497184674,
+                5.92627649415356
+              ],
+              [
+                -2.509572790443354,
+                7.790177497184674,
+                6.42627649415356
+              ],
+              [
+                -2.947072790443354,
+                7.977677497184674,
+                6.92627649415356
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                15.969840968653397,
+                12.012719829134799,
+                10.042009196071906
+              ],
+              [
+                19.969840968653397,
+                15.012719829134799,
+                14.042009196071906
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                4.029369569983646,
+                -4.012386867060187,
+                6.959090462494922
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "polycurve-fit",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                -7.458726538545799,
+                -4.2737591081139445,
+                -2.6553418453283464
+              ],
+              [
+                -5.458726538545799,
+                -1.273759108113945,
+                -0.6553418453283464
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": [
+              0.0,
+              8.283185307179586
+            ],
+            "points": [
+              [
+                -0.7174307266064606,
+                0.36285391735567707,
+                1.868622627472593
+              ],
+              [
+                -0.4585811857570985,
+                0.36285391735567707,
+                1.868622627472593
+              ],
+              [
+                -0.19973164490773643,
+                0.36285391735567707,
+                1.868622627472593
+              ],
+              [
+                0.05911789594162564,
+                0.36285391735567707,
+                1.868622627472593
+              ],
+              [
+                0.3179674367909877,
+                0.36285391735567707,
+                1.868622627472593
+              ],
+              [
+                0.5768169776403498,
+                0.36285391735567707,
+                1.868622627472593
+              ],
+              [
+                0.8356665184897119,
+                0.36285391735567707,
+                1.868622627472593
+              ],
+              [
+                1.094516059339074,
+                0.36285391735567707,
+                1.868622627472593
+              ],
+              [
+                1.2813163742565048,
+                0.433635460090285,
+                1.868622627472593
+              ],
+              [
+                1.255464120224227,
+                0.6910092515328293,
+                1.868622627472593
+              ],
+              [
+                1.1966104612022728,
+                0.9428938568182399,
+                1.868622627472593
+              ],
+              [
+                1.1057398659978004,
+                1.1850759009240002,
+                1.868622627472593
+              ],
+              [
+                0.9843723635767798,
+                1.4135043074678084,
+                1.868622627472593
+              ],
+              [
+                0.834538116928595,
+                1.62435806269031,
+                1.868622627472593
+              ],
+              [
+                0.6587434637138179,
+                1.8141101310878789,
+                1.868622627472593
+              ],
+              [
+                0.4599289917468874,
+                1.9795864535529681,
+                1.868622627472593
+              ],
+              [
+                0.24142035060194555,
+                2.1180190411364226,
+                1.868622627472593
+              ],
+              [
+                0.006872622135864925,
+                2.2270922763110583,
+                1.868622627472593
+              ],
+              [
+                -0.23979081953491221,
+                2.3049816472366658,
+                1.868622627472593
+              ],
+              [
+                -0.49444393588998364,
+                2.3503842671028115,
+                1.868622627472593
+              ],
+              [
+                -0.7528270419095346,
+                2.3625406680401353,
+                1.868622627472593
+              ],
+              [
+                -1.0106180595375864,
+                2.3412475050446213,
+                1.868622627472593
+              ],
+              [
+                -1.2635048148186363,
+                2.286860957411207,
+                1.868622627472593
+              ],
+              [
+                -1.5072571693644383,
+                2.2002907707795654,
+                1.868622627472593
+              ],
+              [
+                -1.737797779578867,
+                2.0829850394531775,
+                1.868622627472593
+              ],
+              [
+                -1.951270300022896,
+                1.9369059835439428,
+                1.868622627472593
+              ],
+              [
+                -2.1441038900545837,
+                1.7644971261277687,
+                1.868622627472593
+              ],
+              [
+                -2.313072944715575,
+                1.568642419452054,
+                1.868622627472593
+              ],
+              [
+                -2.455351050721581,
+                1.3526180039074138,
+                1.868622627472593
+              ],
+              [
+                -2.568558265013289,
+                1.120037406710719,
+                1.868622627472593
+              ],
+              [
+                -2.6508009250203908,
+                0.8747910969830995,
+                1.868622627472593
+              ],
+              [
+                -2.7007033247164456,
+                0.6209814083094097,
+                1.868622627472593
+              ],
+              [
+                -2.7174307266064606,
+                0.36285391735567707,
+                1.868622627472593
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                16.175288760863733,
+                11.911344452935982,
+                9.787770751403306
+              ],
+              [
+                20.175288760863733,
+                14.911344452935982,
+                13.787770751403306
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                4.000868504288525,
+                -4.000439262177719,
+                6.99894846645245
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "mixed-without-mesh-World",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.2486736223464048,
+                2.8653408807880725,
+                4.2907576722996925
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.005762509589868,
+                2.9968795465377456,
+                4.006737722558368
+              ],
+              [
+                6.005762509589868,
+                7.996879546537746,
+                10.006737722558368
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": [
+              0.0,
+              8.246211251235321
+            ],
+            "points": [
+              [
+                4.891280195508887,
+                2.05887280273447,
+                0.8728811001808656
+              ],
+              [
+                5.016280195508887,
+                2.18387280273447,
+                1.0603811001808656
+              ],
+              [
+                5.141280195508887,
+                2.30887280273447,
+                1.2478811001808656
+              ],
+              [
+                5.266280195508887,
+                2.43387280273447,
+                1.4353811001808656
+              ],
+              [
+                5.391280195508887,
+                2.55887280273447,
+                1.6228811001808656
+              ],
+              [
+                5.516280195508887,
+                2.68387280273447,
+                1.8103811001808656
+              ],
+              [
+                5.641280195508887,
+                2.80887280273447,
+                1.9978811001808656
+              ],
+              [
+                5.766280195508887,
+                2.93387280273447,
+                2.185381100180866
+              ],
+              [
+                5.891280195508887,
+                3.05887280273447,
+                2.372881100180866
+              ],
+              [
+                6.016280195508887,
+                3.18387280273447,
+                2.560381100180866
+              ],
+              [
+                6.141280195508887,
+                3.30887280273447,
+                2.747881100180866
+              ],
+              [
+                6.266280195508887,
+                3.43387280273447,
+                2.935381100180866
+              ],
+              [
+                6.391280195508887,
+                3.55887280273447,
+                3.122881100180866
+              ],
+              [
+                6.516280195508887,
+                3.68387280273447,
+                3.310381100180866
+              ],
+              [
+                6.641280195508887,
+                3.80887280273447,
+                3.497881100180866
+              ],
+              [
+                6.766280195508887,
+                3.93387280273447,
+                3.685381100180866
+              ],
+              [
+                6.891280195508887,
+                4.05887280273447,
+                3.872881100180866
+              ],
+              [
+                7.016280195508887,
+                4.18387280273447,
+                4.060381100180866
+              ],
+              [
+                7.141280195508887,
+                4.30887280273447,
+                4.247881100180866
+              ],
+              [
+                7.266280195508887,
+                4.43387280273447,
+                4.435381100180866
+              ],
+              [
+                7.391280195508887,
+                4.55887280273447,
+                4.622881100180866
+              ],
+              [
+                7.516280195508887,
+                4.68387280273447,
+                4.810381100180866
+              ],
+              [
+                7.641280195508887,
+                4.80887280273447,
+                4.997881100180866
+              ],
+              [
+                7.766280195508887,
+                4.93387280273447,
+                5.185381100180866
+              ],
+              [
+                7.891280195508887,
+                5.05887280273447,
+                5.372881100180866
+              ],
+              [
+                8.016280195508887,
+                5.18387280273447,
+                5.560381100180866
+              ],
+              [
+                8.141280195508887,
+                5.30887280273447,
+                5.747881100180866
+              ],
+              [
+                8.266280195508887,
+                5.43387280273447,
+                5.935381100180866
+              ],
+              [
+                8.391280195508887,
+                5.55887280273447,
+                6.122881100180866
+              ],
+              [
+                8.516280195508887,
+                5.68387280273447,
+                6.310381100180866
+              ],
+              [
+                8.641280195508887,
+                5.80887280273447,
+                6.497881100180866
+              ],
+              [
+                8.766280195508887,
+                5.93387280273447,
+                6.685381100180866
+              ],
+              [
+                8.891280195508887,
+                6.05887280273447,
+                6.872881100180866
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                -1.14571632744516,
+                2.0789067699397092,
+                6.829623504961073
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "mixed-without-mesh-CPlane",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.2874867307008864,
+                2.674011984341318,
+                4.337882682320734
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.099031518659716,
+                2.8877058145367576,
+                4.116391581195638
+              ],
+              [
+                6.099031518659716,
+                7.887705814536758,
+                10.11639158119564
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": [
+              0.0,
+              8.246211251235321
+            ],
+            "points": [
+              [
+                4.778618241039831,
+                2.2510300219092247,
+                0.7398103823714548
+              ],
+              [
+                4.903618241039831,
+                2.3760300219092247,
+                0.9273103823714548
+              ],
+              [
+                5.028618241039831,
+                2.5010300219092247,
+                1.1148103823714548
+              ],
+              [
+                5.153618241039831,
+                2.6260300219092247,
+                1.3023103823714548
+              ],
+              [
+                5.278618241039831,
+                2.7510300219092247,
+                1.4898103823714548
+              ],
+              [
+                5.403618241039831,
+                2.8760300219092247,
+                1.6773103823714548
+              ],
+              [
+                5.528618241039831,
+                3.0010300219092247,
+                1.8648103823714548
+              ],
+              [
+                5.653618241039831,
+                3.1260300219092247,
+                2.052310382371455
+              ],
+              [
+                5.778618241039831,
+                3.2510300219092247,
+                2.239810382371455
+              ],
+              [
+                5.903618241039831,
+                3.3760300219092247,
+                2.427310382371455
+              ],
+              [
+                6.028618241039831,
+                3.5010300219092247,
+                2.614810382371455
+              ],
+              [
+                6.153618241039831,
+                3.6260300219092247,
+                2.802310382371455
+              ],
+              [
+                6.27861824103983,
+                3.7510300219092247,
+                2.989810382371455
+              ],
+              [
+                6.40361824103983,
+                3.8760300219092247,
+                3.177310382371455
+              ],
+              [
+                6.52861824103983,
+                4.001030021909225,
+                3.364810382371455
+              ],
+              [
+                6.65361824103983,
+                4.126030021909225,
+                3.552310382371455
+              ],
+              [
+                6.77861824103983,
+                4.251030021909225,
+                3.739810382371455
+              ],
+              [
+                6.90361824103983,
+                4.376030021909225,
+                3.927310382371455
+              ],
+              [
+                7.02861824103983,
+                4.501030021909225,
+                4.114810382371455
+              ],
+              [
+                7.15361824103983,
+                4.626030021909225,
+                4.302310382371455
+              ],
+              [
+                7.27861824103983,
+                4.751030021909225,
+                4.489810382371455
+              ],
+              [
+                7.40361824103983,
+                4.876030021909225,
+                4.677310382371455
+              ],
+              [
+                7.52861824103983,
+                5.001030021909225,
+                4.864810382371455
+              ],
+              [
+                7.65361824103983,
+                5.126030021909225,
+                5.052310382371455
+              ],
+              [
+                7.77861824103983,
+                5.251030021909225,
+                5.239810382371455
+              ],
+              [
+                7.90361824103983,
+                5.376030021909225,
+                5.427310382371455
+              ],
+              [
+                8.02861824103983,
+                5.501030021909225,
+                5.614810382371455
+              ],
+              [
+                8.15361824103983,
+                5.626030021909225,
+                5.802310382371455
+              ],
+              [
+                8.27861824103983,
+                5.751030021909225,
+                5.989810382371455
+              ],
+              [
+                8.40361824103983,
+                5.876030021909225,
+                6.177310382371455
+              ],
+              [
+                8.52861824103983,
+                6.001030021909225,
+                6.364810382371455
+              ],
+              [
+                8.65361824103983,
+                6.126030021909225,
+                6.552310382371455
+              ],
+              [
+                8.77861824103983,
+                6.251030021909225,
+                6.739810382371455
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                -1.1651364904004349,
+                2.187252179212704,
+                6.805915354112174
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 3
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "three-identical-pre",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "three-identical-post",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 2
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "three-collinear-pre",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.0,
+                4.0,
+                6.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 2
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "three-collinear-post",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 0
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 1
+          },
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                2.0,
+                4.0,
+                6.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 2
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "one-cloud-pre",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                2.0,
+                3.0,
+                1.0
+              ]
+            ],
+            "retained": true,
+            "selected": true,
+            "source": 0
+          }
+        ],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "one-cloud-post",
+      "value": {
+        "groups": [],
+        "objects": [
+          {
+            "current_layer": true,
+            "domain": null,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                2.0,
+                3.0,
+                1.0
+              ]
+            ],
+            "retained": true,
+            "selected": false,
+            "source": 0
+          }
+        ],
+        "succeeded": false
+      }
+    }
+  ]
+}

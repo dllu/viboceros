@@ -4048,7 +4048,7 @@ def _distribute(operation, tolerance):
 def _align_script(operation):
     mode = operation["mode"]
     coordinates = operation.get("align_to", "CPlane")
-    if mode not in ("Left", "Right", "Top", "Bottom", "HorizCenter", "VertCenter", "Concentric", "ToLine", "ToPlane"):
+    if mode not in ("Left", "Right", "Top", "Bottom", "HorizCenter", "VertCenter", "Concentric", "ToLine", "ToPlane", "ToFitPlane"):
         raise ValueError("invalid Align mode")
     if coordinates not in ("World", "CPlane"):
         raise ValueError("invalid Align coordinate system")
@@ -4065,6 +4065,10 @@ def _align_script(operation):
             ending = "_3Point " + ending
         if references[0] == references[1]:
             raise ValueError("alignment references must be distinct")
+    elif mode == "ToFitPlane":
+        if operation.get("target") is not None or operation.get("references"):
+            raise ValueError("plane-fit alignment does not use reference points")
+        ending = ""
     else:
         if operation.get("references"):
             raise ValueError("bounding-box alignment does not use reference pairs")

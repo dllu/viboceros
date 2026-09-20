@@ -3,6 +3,29 @@ use super::*;
 use viboceros_command::AlignmentOptions;
 
 impl VibocerosApp {
+    pub(super) fn update_align_selection(
+        &self,
+        prompt: &viboceros_command::ObjectSelectionPrompt,
+        input: &str,
+    ) -> Result<viboceros_command::ObjectSelectionPrompt, viboceros_command::CommandError> {
+        let usage = viboceros_command::CommandError::Usage(
+            "alignment options only; finish object selection before entering points",
+        );
+        let line = prompt.command_line();
+        let options = AlignmentOptions::default()
+            .parse(&line.split_whitespace().skip(1).collect::<Vec<_>>())?
+            .parse(&input.split_whitespace().collect::<Vec<_>>())?;
+        if options.target.is_some()
+            || options.automatic
+            || options.references.iter().any(Option::is_some)
+        {
+            return Err(usage);
+        }
+        self.commands
+            .object_selection_prompt(&options.command_line())?
+            .ok_or(usage)
+    }
+
     pub(super) fn start_align(&self, input: &str) -> Option<InteractiveCommand> {
         self.document.selected_object_ids().next()?;
         let prompt = self.commands.object_selection_prompt("Align").ok()??;
@@ -139,6 +162,12 @@ impl VibocerosApp {
                 true
             }
             Err(error) => {
+                if matches!(
+                    error,
+                    viboceros_command::CommandError::InsufficientPlaneAlignmentObjects { .. }
+                ) {
+                    self.cancel_interactive_command(false);
+                }
                 self.push_log(format!("Error: {error}"));
                 false
             }

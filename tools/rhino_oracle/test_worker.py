@@ -32,6 +32,15 @@ class RhinoWorkerTests(unittest.TestCase):
                 with self.subTest(operation=operation), self.assertRaises(ValueError):
                     self.worker._validate_alignment_references(operation, tol)
 
+    def test_fit_plane_macro_needs_no_extra_input_and_allows_completed_small_selection_failures(self):
+        op={"mode":"ToFitPlane"}
+        self.assertEqual(self.worker._align_script(op),"_Align _AlignTo=_CPlane _ToFitPlane ")
+        with patch.object(self.worker,"_object_layout",return_value=({},0)) as run:
+            self.worker._align(op,self.worker.DEFAULT_TOLERANCE)
+            run.assert_called_once_with(op,self.worker.DEFAULT_TOLERANCE,"_Align _AlignTo=_CPlane _ToFitPlane ",1)
+        for fields in [{"target":[0,0,0]},{"references":[[0,0,0]]},{"three_point":True}]:
+            with self.subTest(fields=fields),self.assertRaises(ValueError):self.worker._align_script(dict(op,**fields))
+
     def test_align_macros_validate_modes_frames_and_numeric_targets(self):
         host = patch.object(self.worker, "Rhino", SimpleNamespace(Geometry=SimpleNamespace(
             Point3d=lambda x,y,z: SimpleNamespace(X=x,Y=y,Z=z))))

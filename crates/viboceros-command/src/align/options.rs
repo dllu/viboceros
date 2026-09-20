@@ -11,6 +11,7 @@ pub enum AlignmentMode {
     Concentric,
     ToLine,
     ToPlane,
+    ToFitPlane,
 }
 
 impl AlignmentMode {
@@ -24,8 +25,9 @@ impl AlignmentMode {
         "Concentric",
         "ToLine",
         "ToPlane",
+        "ToFitPlane",
     ];
-    const VALUES: [Self; 9] = [
+    const VALUES: [Self; 10] = [
         Self::Left,
         Self::Right,
         Self::Top,
@@ -35,6 +37,7 @@ impl AlignmentMode {
         Self::Concentric,
         Self::ToLine,
         Self::ToPlane,
+        Self::ToFitPlane,
     ];
     pub const fn label(self) -> &'static str {
         match self {
@@ -47,6 +50,7 @@ impl AlignmentMode {
             Self::Concentric => "Concentric",
             Self::ToLine => "ToLine",
             Self::ToPlane => "ToPlane",
+            Self::ToFitPlane => "ToFitPlane",
         }
     }
     fn parse(value: &str) -> Option<Self> {
@@ -100,7 +104,9 @@ impl AlignmentOptions {
         }
     }
     pub fn ready(self) -> bool {
-        if self.reference_count() == 0 {
+        if self.mode == Some(AlignmentMode::ToFitPlane) {
+            true
+        } else if self.reference_count() == 0 {
             self.target.is_some() || self.automatic
         } else {
             self.references[..self.reference_count()]
@@ -109,6 +115,9 @@ impl AlignmentOptions {
         }
     }
     pub fn with_point(mut self, point: Point3) -> Result<Self, CommandError> {
+        if self.mode == Some(AlignmentMode::ToFitPlane) {
+            return Err(CommandError::Usage(USAGE));
+        }
         if self.reference_count() == 0 {
             if self.target.is_some() || self.automatic {
                 return Err(CommandError::Usage(USAGE));
@@ -207,7 +216,7 @@ impl AlignmentOptions {
             }
         }
         if self.three_point && self.mode != Some(AlignmentMode::ToPlane)
-            || self.reference_count() > 0 && (self.automatic || self.target.is_some())
+            || self.projects() && (self.automatic || self.target.is_some())
             || self.references[self.reference_count()..]
                 .iter()
                 .any(Option::is_some)
@@ -218,5 +227,12 @@ impl AlignmentOptions {
             self = self.with_point(point)?;
         }
         Ok(self)
+    }
+
+    pub const fn projects(self) -> bool {
+        matches!(
+            self.mode,
+            Some(AlignmentMode::ToLine | AlignmentMode::ToPlane | AlignmentMode::ToFitPlane)
+        )
     }
 }

@@ -1,0 +1,734 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "align",
+      "id": "mixed-ToFitPlane-World",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              2,
+              3,
+              4
+            ],
+            [
+              6,
+              8,
+              10
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            5,
+            2,
+            1
+          ],
+          "end": [
+            9,
+            6,
+            7
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              0,
+              2,
+              1
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World"
+    },
+    {
+      "op": "align",
+      "id": "mixed-ToFitPlane-CPlane",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              2,
+              3,
+              4
+            ],
+            [
+              6,
+              8,
+              10
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            5,
+            2,
+            1
+          ],
+          "end": [
+            9,
+            6,
+            7
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              0,
+              2,
+              1
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "CPlane"
+    },
+    {
+      "op": "align",
+      "id": "fit-tetra",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            -1,
+            1,
+            -1
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            -1,
+            -1,
+            1
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World"
+    },
+    {
+      "op": "align",
+      "id": "octahedron-pre",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            -1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            -1
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "id": "octahedron-post",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            -1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            -1
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "id": "disk-fit",
+      "origin": [
+        7,
+        -11,
+        13
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -2,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              -8,
+              -4,
+              -2
+            ],
+            [
+              -6,
+              -1,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "brep",
+          "surface": {
+            "degree_u": 2,
+            "degree_v": 2,
+            "control_point_count_u": 3,
+            "control_point_count_v": 3,
+            "control_points": [
+              {
+                "point": [
+                  -1,
+                  -1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  -1,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  -1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  -1,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  0,
+                  -2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  -1,
+                  1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  1,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  1,
+                  2
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              -1,
+              -1,
+              -1,
+              1,
+              1,
+              1
+            ],
+            "knots_v": [
+              -1,
+              -1,
+              -1,
+              1,
+              1,
+              1
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.8,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            0,
+            0
+          ],
+          "cap_surface": null,
+          "reversed": false
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              16,
+              12,
+              10
+            ],
+            [
+              20,
+              15,
+              14
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4,
+            -4,
+            7
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "CPlane"
+    }
+  ]
+}

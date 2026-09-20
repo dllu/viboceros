@@ -1,0 +1,2526 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "align",
+      "id": "fit-identical",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World"
+    },
+    {
+      "op": "align",
+      "id": "fit-collinear",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            4,
+            6
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4,
+            8,
+            12
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World"
+    },
+    {
+      "op": "align",
+      "id": "fit-rectangle",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            2
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            2
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            2
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            3,
+            2
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World"
+    },
+    {
+      "op": "align",
+      "id": "rank-one-diagonal-pre",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4,
+            7,
+            10
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            6,
+            11,
+            16
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            8,
+            15,
+            22
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "id": "rank-one-diagonal-post",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4,
+            7,
+            10
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            6,
+            11,
+            16
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            8,
+            15,
+            22
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "id": "near-line-pre",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4,
+            1e-08,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            6,
+            0,
+            1e-09
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "id": "near-line-post",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4,
+            1e-08,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            6,
+            0,
+            1e-09
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "id": "square-off-plane-pre",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            3,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            1
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "id": "square-off-plane-post",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            3,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            1
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "id": "one-pre",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "id": "one-post",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "id": "two-pre",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4,
+            7,
+            9
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "id": "two-post",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4,
+            7,
+            9
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "id": "three-pre",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1,
+            3,
+            4
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "id": "three-post",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1,
+            3,
+            4
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "id": "grouped-cloud-World-pre",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              3,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              1,
+              4,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              2,
+              3,
+              1
+            ],
+            [
+              3,
+              4,
+              3
+            ]
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": true,
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "align",
+      "id": "grouped-cloud-World-post",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              3,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              1,
+              4,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              2,
+              3,
+              1
+            ],
+            [
+              3,
+              4,
+              3
+            ]
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": false,
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "align",
+      "id": "grouped-cloud-CPlane-pre",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              3,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              1,
+              4,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              2,
+              3,
+              1
+            ],
+            [
+              3,
+              4,
+              3
+            ]
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "CPlane",
+      "preselect": true,
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "align",
+      "id": "grouped-cloud-CPlane-post",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              3,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              1,
+              4,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              2,
+              3,
+              1
+            ],
+            [
+              3,
+              4,
+              3
+            ]
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "CPlane",
+      "preselect": false,
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "align",
+      "id": "partial-overlap",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            3,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            1
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            7,
+            9
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": false,
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "selected": [
+        0,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "op": "align",
+      "id": "near-line-scaled-1000.0",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2000.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4000.0,
+            1e-05,
+            0.0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            6000.0,
+            0.0,
+            1.0000000000000002e-06
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "id": "near-line-scaled-1000000000.0",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2000000000.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4000000000.0,
+            10.0,
+            0.0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            6000000000.0,
+            0.0,
+            1.0
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "id": "symmetric-weighted-0",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            4,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            -4,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            4,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            -4,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "id": "symmetric-weighted-1073741824",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1073741828,
+            -1073741824,
+            1073741824
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1073741820,
+            -1073741824,
+            1073741824
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1073741824,
+            -1073741820,
+            1073741824
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1073741824,
+            -1073741828,
+            1073741824
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1073741824,
+            -1073741824,
+            1073741825
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1073741824,
+            -1073741824,
+            1073741825
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "id": "nurbs-fit",
+      "origin": [
+        7,
+        -11,
+        13
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -2,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              -8,
+              -4,
+              -2
+            ],
+            [
+              -6,
+              -1,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                9.738476308781951,
+                -2.7122164260511834
+              ],
+              "weight": 3
+            },
+            {
+              "point": [
+                2,
+                -4.425204432948525,
+                1.904078627827904
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              16,
+              12,
+              10
+            ],
+            [
+              20,
+              15,
+              14
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4,
+            -4,
+            7
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "CPlane"
+    },
+    {
+      "op": "align",
+      "id": "signed-fit",
+      "origin": [
+        7,
+        -11,
+        13
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -2,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              -8,
+              -4,
+              -2
+            ],
+            [
+              -6,
+              -1,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                10,
+                0
+              ],
+              "weight": -1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 2
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              16,
+              12,
+              10
+            ],
+            [
+              20,
+              15,
+              14
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4,
+            -4,
+            7
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "CPlane"
+    },
+    {
+      "op": "align",
+      "id": "circle-fit",
+      "origin": [
+        7,
+        -11,
+        13
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -2,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              -8,
+              -4,
+              -2
+            ],
+            [
+              -6,
+              -1,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "radius": 4,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              16,
+              12,
+              10
+            ],
+            [
+              20,
+              15,
+              14
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4,
+            -4,
+            7
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "CPlane"
+    },
+    {
+      "op": "align",
+      "id": "ellipse-fit",
+      "origin": [
+        7,
+        -11,
+        13
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -2,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              -8,
+              -4,
+              -2
+            ],
+            [
+              -6,
+              -1,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "ellipse",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "radius_x": 4,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              16,
+              12,
+              10
+            ],
+            [
+              20,
+              15,
+              14
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4,
+            -4,
+            7
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "CPlane"
+    },
+    {
+      "op": "align",
+      "id": "arc-fit",
+      "origin": [
+        7,
+        -11,
+        13
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -2,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              -8,
+              -4,
+              -2
+            ],
+            [
+              -6,
+              -1,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "arc",
+          "points": [
+            [
+              2,
+              0,
+              1
+            ],
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              -2,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              16,
+              12,
+              10
+            ],
+            [
+              20,
+              15,
+              14
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4,
+            -4,
+            7
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "CPlane"
+    },
+    {
+      "op": "align",
+      "id": "polyline-fit",
+      "origin": [
+        7,
+        -11,
+        13
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -2,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              -8,
+              -4,
+              -2
+            ],
+            [
+              -6,
+              -1,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              5,
+              -1
+            ],
+            [
+              -3,
+              8,
+              7
+            ]
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              16,
+              12,
+              10
+            ],
+            [
+              20,
+              15,
+              14
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4,
+            -4,
+            7
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "CPlane"
+    },
+    {
+      "op": "align",
+      "id": "polycurve-fit",
+      "origin": [
+        7,
+        -11,
+        13
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -2,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              -8,
+              -4,
+              -2
+            ],
+            [
+              -6,
+              -1,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                0,
+                1
+              ],
+              "end": [
+                2,
+                0,
+                1
+              ]
+            },
+            {
+              "type": "arc",
+              "points": [
+                [
+                  2,
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2,
+                  1
+                ],
+                [
+                  -2,
+                  0,
+                  1
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              16,
+              12,
+              10
+            ],
+            [
+              20,
+              15,
+              14
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4,
+            -4,
+            7
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "CPlane"
+    },
+    {
+      "op": "align",
+      "id": "mixed-without-mesh-World",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              2,
+              3,
+              4
+            ],
+            [
+              6,
+              8,
+              10
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            5,
+            2,
+            1
+          ],
+          "end": [
+            9,
+            6,
+            7
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            -1,
+            2,
+            7
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "id": "mixed-without-mesh-CPlane",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              2,
+              3,
+              4
+            ],
+            [
+              6,
+              8,
+              10
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            5,
+            2,
+            1
+          ],
+          "end": [
+            9,
+            6,
+            7
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            -1,
+            2,
+            7
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "CPlane",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "id": "three-identical-pre",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "id": "three-identical-post",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "id": "three-collinear-pre",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            4,
+            6
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "id": "three-collinear-post",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            4,
+            6
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "id": "one-cloud-pre",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              2,
+              3,
+              1
+            ]
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "id": "one-cloud-post",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              2,
+              3,
+              1
+            ]
+          ]
+        }
+      ],
+      "mode": "ToFitPlane",
+      "align_to": "World",
+      "preselect": false
+    }
+  ]
+}

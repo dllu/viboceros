@@ -1,4 +1,5 @@
 use super::*;
+mod fit;
 mod projection;
 
 #[test]
@@ -43,31 +44,6 @@ fn all_alignment_fixtures_match_recorded_rhino_geometry_and_document_state() {
         .chain(post_expected["results"].as_array().unwrap())
         .collect::<Vec<_>>();
     assert_eq!(actual.results.len(), expected.len());
-    fn compare(actual: &Value, expected: &Value, path: &str) {
-        match (actual, expected) {
-            (Value::Number(a), Value::Number(b)) => assert!(
-                (a.as_f64().unwrap() - b.as_f64().unwrap()).abs() <= 1e-8,
-                "{path}: {a} != {b}"
-            ),
-            (Value::Array(a), Value::Array(b)) => {
-                assert_eq!(a.len(), b.len(), "{path}");
-                for (i, (a, b)) in a.iter().zip(b).enumerate() {
-                    compare(a, b, &format!("{path}/{i}"));
-                }
-            }
-            (Value::Object(a), Value::Object(b)) => {
-                assert_eq!(
-                    a.keys().collect::<Vec<_>>(),
-                    b.keys().collect::<Vec<_>>(),
-                    "{path}"
-                );
-                for (k, a) in a {
-                    compare(a, &b[k], &format!("{path}/{k}"));
-                }
-            }
-            _ => assert_eq!(actual, expected, "{path}"),
-        }
-    }
     for (a, b) in actual.results.iter().zip(expected) {
         assert_eq!(a.id, b["id"]);
         compare(&a.value, &b["value"], &a.id);
@@ -150,5 +126,32 @@ fn curved_alignment_discrepancies_are_checked_against_analytic_extrema() {
             measured_discrepancy > 1e-6,
             "{id}: discrepancy unexpectedly disappeared; review the reference"
         );
+    }
+}
+
+fn compare(actual: &Value, expected: &Value, path: &str) {
+    match (actual, expected) {
+        (Value::Number(a), Value::Number(b)) => assert!(
+            (a.as_f64().unwrap() - b.as_f64().unwrap()).abs()
+                <= 1e-8_f64.max(1e-12 * a.as_f64().unwrap().abs().max(b.as_f64().unwrap().abs())),
+            "{path}: {a} != {b}"
+        ),
+        (Value::Array(a), Value::Array(b)) => {
+            assert_eq!(a.len(), b.len(), "{path}");
+            for (i, (a, b)) in a.iter().zip(b).enumerate() {
+                compare(a, b, &format!("{path}/{i}"));
+            }
+        }
+        (Value::Object(a), Value::Object(b)) => {
+            assert_eq!(
+                a.keys().collect::<Vec<_>>(),
+                b.keys().collect::<Vec<_>>(),
+                "{path}"
+            );
+            for (k, a) in a {
+                compare(a, &b[k], &format!("{path}/{k}"));
+            }
+        }
+        _ => assert_eq!(actual, expected, "{path}"),
     }
 }

@@ -39,7 +39,9 @@ impl Command for AlignCommand {
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
         let options = self.options(arguments)?;
-        if options.ready() || options.references.iter().any(Option::is_some) {
+        if options.ready() && options.mode != Some(AlignmentMode::ToFitPlane)
+            || options.references.iter().any(Option::is_some)
+        {
             return Ok(None);
         }
         let mut choices = vec![ChoiceSelectionOption {
@@ -90,6 +92,14 @@ impl Command for AlignCommand {
         document.clear_selection();
         Ok(message)
     }
+    fn cleanup_failed_postselection(&self, document: &mut Document, error: &CommandError) {
+        if matches!(
+            error,
+            CommandError::InsufficientPlaneAlignmentObjects { .. }
+        ) {
+            document.clear_selection();
+        }
+    }
     fn run_in_context(
         &self,
         document: &mut Document,
@@ -98,10 +108,12 @@ impl Command for AlignCommand {
     ) -> Result<String, CommandError> {
         let options = self.options(arguments)?;
         let mode = options.mode.ok_or(CommandError::Usage(USAGE))?;
-        if options.reference_count() > 0 {
-            let message = projection::run(document, options, context)?;
+        if options.projects() {
+            if document.selected_object_ids().next().is_none() {
+                return Err(CommandError::NoObjectsSelected);
+            }
             self.world.set(options.world);
-            return Ok(message);
+            return projection::run(document, options, context);
         }
         let units = crate::layout_units::selected_units(document);
         let first = units.first().ok_or(CommandError::NoObjectsSelected)?;
@@ -186,7 +198,9 @@ fn offsets(
         VertCenter => [coordinate(0, 0), 0.],
         HorizCenter => [0., coordinate(1, 0)],
         Concentric => [coordinate(0, 0), coordinate(1, 0)],
-        ToLine | ToPlane => unreachable!("projection modes use individual object anchors"),
+        ToLine | ToPlane | ToFitPlane => {
+            unreachable!("projection modes use individual object anchors")
+        }
     }
 }
 

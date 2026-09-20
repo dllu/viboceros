@@ -509,7 +509,7 @@ impl InteractiveCommand {
                 "Domain: pick a component surface on the selected polysurface (Esc cancels)"
             }
             Self::Align { options, .. } if options.mode.is_none() => {
-                "Align: choose Left/Right/Top/Bottom/HorizCenter/VertCenter/Concentric/ToLine/ToPlane; AlignTo=CPlane|World"
+                "Align: choose Left/Right/Top/Bottom/HorizCenter/VertCenter/Concentric/ToLine/ToPlane/ToFitPlane; AlignTo=CPlane|World"
             }
             Self::Align { options, .. } if options.reference_count() > 0 => {
                 match options.references {

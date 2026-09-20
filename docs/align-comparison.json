@@ -1,8 +1,8 @@
 {
-  "captured_utc": "2026-09-20 15:02:39 UTC",
-  "base_commit": "2f8cc448d49d0dc367d757b0a223e8911f096754",
-  "native_executable_sha256": "d04d68243764c8f22eab9498acd0453dc40baae590bf579803c2ee7dded22409",
-  "method": "Actual native commands compared with saved public Rhino 8.32 commands from owned private Xvfb sessions. All value fields are compared. These probes return zero timings and do not establish performance parity. Three curved-bound diagnostics and four projection mesh-storage diagnostics fail the unchanged raw numerical threshold. Independent tests check analytic extrema for the former and exact single-precision storage rounding for the latter.",
+  "captured_utc": "2026-09-20 15:32:15 UTC",
+  "base_commit": "9bd7728a5f743947400e9c9af65d3820649f7fbe",
+  "native_executable_sha256": "8563948e61d65a7f864bb6c31aba9309de146f71c04aed6bc672ae497a70c571",
+  "method": "Actual native commands compared with saved public Rhino 8.32 commands from owned private Xvfb sessions. All value fields are compared. These probes return zero timings and do not establish performance parity. Thirteen retained diagnostics fail the unchanged raw threshold: four curved-bound cases, six mesh-storage cases, and three best-fit cases with different equally optimal normals. Independent tests check analytic extrema, exact binary32 storage rounding, and optimal residual/coplanarity/orthogonal motion respectively.",
   "absolute_epsilon": 1e-08,
   "relative_epsilon": 1e-12,
   "fixtures": [
@@ -800,8 +800,379 @@
           ]
         }
       ]
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/align_fit.json",
+      "request_sha256": "9b08bbf5a3017ea98c3c3a924ca0461eba8914fc64c7bcaecd66153dc32d81fd",
+      "rhino_reference": "tools/rhino_oracle/observations/align_fit.json",
+      "rhino_reference_sha256": "e5dbbe850d124babb293afb3217b8b4aab9a127ff932804e5f9e74c976f40513",
+      "rhino_version": "8.32.26160.13001",
+      "native_value_fingerprint_sha256": "819a718ca847a19f1b19adbdeb8744ff503e79b0e73d0ec1f7c341d10eddb784",
+      "passed": true,
+      "max_absolute_error": 2.1370284394048062e-10,
+      "operations": [
+        {
+          "id": "fit-identical",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "fit-collinear",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "fit-rectangle",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "rank-one-diagonal-pre",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "rank-one-diagonal-post",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "near-line-pre",
+          "passed": true,
+          "max_absolute_error": 2.1370284394048062e-10,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "near-line-post",
+          "passed": true,
+          "max_absolute_error": 2.1370284394048062e-10,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "square-off-plane-pre",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "square-off-plane-post",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "one-pre",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "one-post",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "two-pre",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "two-post",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "three-pre",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "three-post",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "grouped-cloud-World-pre",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "grouped-cloud-World-post",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "grouped-cloud-CPlane-pre",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "grouped-cloud-CPlane-post",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "partial-overlap",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "near-line-scaled-1000.0",
+          "passed": true,
+          "max_absolute_error": 1.594959317367091e-21,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "near-line-scaled-1000000000.0",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "symmetric-weighted-0",
+          "passed": true,
+          "max_absolute_error": 1.6653345369377348e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "symmetric-weighted-1073741824",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "nurbs-fit",
+          "passed": true,
+          "max_absolute_error": 1.1588796589023787e-10,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "signed-fit",
+          "passed": true,
+          "max_absolute_error": 3.830225026035805e-11,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "circle-fit",
+          "passed": true,
+          "max_absolute_error": 7.105427357601002e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "ellipse-fit",
+          "passed": true,
+          "max_absolute_error": 7.105427357601002e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "arc-fit",
+          "passed": true,
+          "max_absolute_error": 1.2434497875801753e-14,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polyline-fit",
+          "passed": true,
+          "max_absolute_error": 7.105427357601002e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polycurve-fit",
+          "passed": true,
+          "max_absolute_error": 1.2434497875801753e-14,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "mixed-without-mesh-World",
+          "passed": true,
+          "max_absolute_error": 1.9984014443252818e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "mixed-without-mesh-CPlane",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "three-identical-pre",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "three-identical-post",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "three-collinear-pre",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "three-collinear-post",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "one-cloud-pre",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "one-cloud-post",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        }
+      ]
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/align_fit_diagnostics.json",
+      "request_sha256": "221087c81eee9c2c1195872560bc8edc9aa062362fa3f3486b76009b01833dbb",
+      "rhino_reference": "tools/rhino_oracle/observations/align_fit_diagnostics.json",
+      "rhino_reference_sha256": "a994115a79c9b8aaabc7ea5d47bb8c25cf5fbce58135d9e832c15dcb09e99327",
+      "rhino_version": "8.32.26160.13001",
+      "native_value_fingerprint_sha256": "e368637fb205c3cdd3c08f1a67bbf8dd428800f5595e92c4ad2e62f8ba29c8c5",
+      "passed": false,
+      "max_absolute_error": 1.0,
+      "operations": [
+        {
+          "id": "mixed-ToFitPlane-World",
+          "passed": false,
+          "max_absolute_error": 5.8247147549650435e-08,
+          "difference_count": 3,
+          "first_differences": [
+            "mixed-ToFitPlane-World.value.objects[3].points[1][0]: 2.1052000317085673 != 2.1052000522613525 (error 2.06e-08, limit 1e-08)",
+            "mixed-ToFitPlane-World.value.objects[3].points[2][1]: 1.7891576899752035 != 1.7891577482223511 (error 5.82e-08, limit 1e-08)",
+            "mixed-ToFitPlane-World.value.objects[3].points[2][2]: 1.1389203548422417 != 1.1389203071594238 (error 4.77e-08, limit 1e-08)"
+          ]
+        },
+        {
+          "id": "mixed-ToFitPlane-CPlane",
+          "passed": false,
+          "max_absolute_error": 5.144925108169218e-08,
+          "difference_count": 3,
+          "first_differences": [
+            "mixed-ToFitPlane-CPlane.value.objects[3].points[1][0]: 2.0181837450122391 != 2.018183708190918 (error 3.68e-08, limit 1e-08)",
+            "mixed-ToFitPlane-CPlane.value.objects[3].points[2][1]: 1.8877362972441061 != 1.8877363204956055 (error 2.33e-08, limit 1e-08)",
+            "mixed-ToFitPlane-CPlane.value.objects[3].points[2][2]: 1.0722571096911908 != 1.0722571611404419 (error 5.14e-08, limit 1e-08)"
+          ]
+        },
+        {
+          "id": "fit-tetra",
+          "passed": false,
+          "max_absolute_error": 1.0,
+          "difference_count": 8,
+          "first_differences": [
+            "fit-tetra.value.objects[0].points[0][0]: 0 != 1 (error 1, limit 1e-08)",
+            "fit-tetra.value.objects[0].points[0][1]: 1 != 0 (error 1, limit 1e-08)",
+            "fit-tetra.value.objects[0].points[0][2]: 1 != 0 (error 1, limit 1e-08)",
+            "fit-tetra.value.objects[1].points[0][0]: 0 != 1 (error 1, limit 1e-08)",
+            "fit-tetra.value.objects[1].points[0][1]: -1 != 0 (error 1, limit 1e-08)",
+            "fit-tetra.value.objects[1].points[0][2]: -1 != 0 (error 1, limit 1e-08)"
+          ]
+        },
+        {
+          "id": "octahedron-pre",
+          "passed": false,
+          "max_absolute_error": 1.0,
+          "difference_count": 4,
+          "first_differences": [
+            "octahedron-pre.value.objects[0].points[0][0]: 0 != 1 (error 1, limit 1e-08)",
+            "octahedron-pre.value.objects[1].points[0][0]: 0 != -1 (error 1, limit 1e-08)",
+            "octahedron-pre.value.objects[2].points[0][1]: 1 != 0 (error 1, limit 1e-08)",
+            "octahedron-pre.value.objects[3].points[0][1]: -1 != 0 (error 1, limit 1e-08)"
+          ]
+        },
+        {
+          "id": "octahedron-post",
+          "passed": false,
+          "max_absolute_error": 1.0,
+          "difference_count": 4,
+          "first_differences": [
+            "octahedron-post.value.objects[0].points[0][0]: 0 != 1 (error 1, limit 1e-08)",
+            "octahedron-post.value.objects[1].points[0][0]: 0 != -1 (error 1, limit 1e-08)",
+            "octahedron-post.value.objects[2].points[0][1]: 1 != 0 (error 1, limit 1e-08)",
+            "octahedron-post.value.objects[3].points[0][1]: -1 != 0 (error 1, limit 1e-08)"
+          ]
+        },
+        {
+          "id": "disk-fit",
+          "passed": false,
+          "max_absolute_error": 5.407877172625142e-05,
+          "difference_count": 117,
+          "first_differences": [
+            "disk-fit.value.objects[0].points[0][0]: -7.4241013856637368 != -7.4241449343547323 (error 4.35e-05, limit 1e-08)",
+            "disk-fit.value.objects[0].points[0][1]: -4.2837349900320723 != -4.2837115685745957 (error 2.34e-05, limit 1e-08)",
+            "disk-fit.value.objects[0].points[0][2]: -2.6997614088742581 != -2.6997148655864414 (error 4.65e-05, limit 1e-08)",
+            "disk-fit.value.objects[0].points[1][0]: -5.4241013856637368 != -5.4241449343547323 (error 4.35e-05, limit 1e-08)",
+            "disk-fit.value.objects[0].points[1][1]: -1.2837349900320723 != -1.2837115685745961 (error 2.34e-05, limit 1e-08)",
+            "disk-fit.value.objects[0].points[1][2]: -0.69976140887425808 != -0.69971486558644136 (error 4.65e-05, limit 1e-08)"
+          ]
+        }
+      ]
     }
   ],
-  "passing_operations": 90,
-  "retained_discrepancies": 7
+  "passing_operations": 129,
+  "retained_discrepancies": 13
 }

@@ -2,19 +2,23 @@
 use crate::exact_scalar::{Rational, rational, scalar};
 use crate::{GeometryError, Point3, Vector3};
 use num_traits::Zero;
+mod fit;
+pub use fit::MAX_PLANE_FIT_POINTS;
 
 #[cfg(test)]
 mod tests;
 
 /// An orthogonal point projector, not a geometry-flattening transform.
 ///
-/// Definitions use the exact values of their binary64 inputs, with one rounding
+/// Explicit line/plane definitions use exact binary64 inputs, with one rounding
 /// per output coordinate. Intermediate differences, cross products and dot
-/// products may exceed the floating-point range. Only degenerate definitions
-/// and unrepresentable final points fail; there is no implicit distance tolerance.
+/// products may exceed the floating-point range; no implicit distance tolerance
+/// is applied. Best-fit construction has additional solver/resource limits and
+/// a numerical normal, while retaining its exact centroid for projection.
 #[derive(Clone, Debug)]
 pub struct PointProjection3 {
-    origin: Point3,
+    origin: [Rational; 3],
+    rounded_origin: Point3,
     axis: [Rational; 3],
     squared_length: Rational,
     line: bool,
@@ -60,6 +64,14 @@ impl PointProjection3 {
     }
 
     fn new(origin: Point3, axis: [Rational; 3], line: bool) -> Result<Self, GeometryError> {
+        Self::new_exact(origin.to_array().map(rational), axis, line)
+    }
+
+    fn new_exact(
+        origin: [Rational; 3],
+        axis: [Rational; 3],
+        line: bool,
+    ) -> Result<Self, GeometryError> {
         let squared_length = axis.iter().map(|a| a * a).sum::<Rational>();
         if squared_length.is_zero() {
             return Err(GeometryError::Degenerate {
@@ -70,6 +82,11 @@ impl PointProjection3 {
         let coordinate_axis =
             (nonzero == 1).then(|| axis.iter().position(|a| !a.is_zero()).unwrap());
         Ok(Self {
+            rounded_origin: Point3::try_new(
+                scalar(&origin[0])?,
+                scalar(&origin[1])?,
+                scalar(&origin[2])?,
+            )?,
             origin,
             axis,
             squared_length,
@@ -79,7 +96,7 @@ impl PointProjection3 {
     }
 
     pub fn project(&self, point: Point3) -> Result<Point3, GeometryError> {
-        let origin = self.origin.to_array();
+        let origin = self.rounded_origin.to_array();
         let input = point.to_array();
         if let Some(axis) = self.coordinate_axis {
             // Exact coordinate replacement, with no allocation for axis-aligned
@@ -95,13 +112,18 @@ impl PointProjection3 {
         let parameter = self
             .axis
             .iter()
-            .zip(difference(point, self.origin))
+            .zip(
+                input
+                    .into_iter()
+                    .zip(&self.origin)
+                    .map(|(p, c)| rational(p) - c),
+            )
             .map(|(a, d)| a * d)
             .sum::<Rational>()
             / &self.squared_length;
         let output: [Result<f64, GeometryError>; 3] = std::array::from_fn(|i| {
             scalar(&if self.line {
-                rational(origin[i]) + &self.axis[i] * &parameter
+                &self.origin[i] + &self.axis[i] * &parameter
             } else {
                 rational(input[i]) - &self.axis[i] * &parameter
             })
