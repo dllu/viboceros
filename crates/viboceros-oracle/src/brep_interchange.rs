@@ -299,7 +299,7 @@ fn serialized_definition(mut definition: Value) -> Value {
 // Serialize/deserialize may round Euclidean rational control coordinates by a
 // few ulps. Compare every coefficient AND sample, with a fixed IO tolerance
 // independent of the much larger morph fitting tolerance. Integers stay exact.
-fn roundtrip_equal(actual: &Value, expected: &Value) -> bool {
+pub(super) fn roundtrip_equal(actual: &Value, expected: &Value) -> bool {
     match (actual, expected) {
         (Value::Number(a), Value::Number(b)) if a.is_f64() && b.is_f64() => {
             let (a, b) = (a.as_f64().unwrap(), b.as_f64().unwrap());

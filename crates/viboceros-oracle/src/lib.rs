@@ -49,6 +49,7 @@ mod surface_closest;
 mod surface_wires;
 pub use parameter_bounds::ParameterCurveBoundsFixture;
 mod align;
+mod border;
 mod bounding_box;
 mod conversion;
 mod conversion_session;
@@ -195,6 +196,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: align::AlignFixture,
+    },
+    BorderCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: border::BorderFixture,
     },
     GroupMemberships {
         id: String,
@@ -1625,6 +1631,7 @@ impl Operation {
             | Self::BoundingBoxCommand { id, .. }
             | Self::Distribute { id, .. }
             | Self::Align { id, .. }
+            | Self::BorderCommand { id, .. }
             | Self::GroupMemberships { id, .. }
             | Self::GroupPicking { id, .. }
             | Self::UndoSelection { id, .. }
@@ -2031,6 +2038,7 @@ fn execute(
         Operation::BoundingBoxCommand { fixture, .. } => bounding_box::run(fixture, tolerance)?,
         Operation::Distribute { fixture, .. } => distribute::run(fixture, tolerance)?,
         Operation::Align { fixture, .. } => align::run(fixture, tolerance)?,
+        Operation::BorderCommand { fixture, .. } => border::run(fixture, tolerance)?,
         Operation::GroupMemberships { fixture, .. } => group_memberships::run(fixture, tolerance)?,
         Operation::GroupPicking { fixture, .. } => group_picking::run(fixture, tolerance)?,
         Operation::UndoSelection { fixture, .. } => undo_selection::run(fixture, tolerance)?,

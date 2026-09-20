@@ -4893,6 +4893,9 @@ def _execute(operation, iterations, tolerance):
         return _distribute(operation, tolerance)
     if operation["op"] == "align":
         return _align(operation, tolerance)
+    if operation["op"] == "border_command":
+        import border_probe
+        return border_probe.run(operation, tolerance, globals())
     kind = operation["op"]
     if kind == "surface_closest_point":
         return _surface_closest_point(operation, iterations)

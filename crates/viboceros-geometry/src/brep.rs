@@ -13,6 +13,7 @@ use crate::{
     WeightedPoint2, WeightedPoint3, require_finite,
 };
 
+mod borders;
 mod combine;
 mod incidence;
 mod isocurves;
@@ -2866,154 +2867,6 @@ impl Brep {
     #[inline]
     pub fn faces(&self) -> &[BrepFace] {
         &self.faces
-    }
-
-    /// Returns the selected face's exact non-seam boundary curves in connected
-    /// components.
-    ///
-    /// Mated edges are included because they become naked when a single face
-    /// is considered in isolation. Seam and singular trims are excluded. Each
-    /// component starts from its lowest source edge index and is extended at
-    /// either end, matching Rhino's `DupFaceBorder`/`JoinCurves` ordering;
-    /// disconnected components are returned in reverse source-edge order.
-    pub fn face_boundary_curve_components(
-        &self,
-        face_index: usize,
-    ) -> Result<Vec<Vec<NurbsCurve>>, GeometryError> {
-        let face = self
-            .faces
-            .get(face_index)
-            .ok_or(GeometryError::BrepFaceIndexOutOfRange {
-                face: face_index,
-                face_count: self.faces.len(),
-            })?;
-        let mut boundary_edges = vec![false; self.edges.len()];
-        for trim in face.loops.iter().flat_map(|face_loop| &face_loop.trims) {
-            if matches!(trim.trim_type, BrepTrimType::Boundary | BrepTrimType::Mated) {
-                let edge = trim
-                    .edge
-                    .expect("validated non-singular B-rep trim must reference an edge");
-                boundary_edges[edge] = true;
-            }
-        }
-        let edge_indices = boundary_edges
-            .iter()
-            .enumerate()
-            .filter_map(|(edge, selected)| selected.then_some(edge))
-            .collect::<Vec<_>>();
-        if edge_indices.is_empty() {
-            return Ok(Vec::new());
-        }
-
-        let mut local_edges_at_vertex = BTreeMap::<usize, Vec<usize>>::new();
-        for (local_edge, &edge_index) in edge_indices.iter().enumerate() {
-            let vertices = self.edges[edge_index].vertices;
-            local_edges_at_vertex
-                .entry(vertices[0])
-                .or_default()
-                .push(local_edge);
-            if vertices[1] != vertices[0] {
-                local_edges_at_vertex
-                    .entry(vertices[1])
-                    .or_default()
-                    .push(local_edge);
-            }
-        }
-
-        let mut visited = vec![false; edge_indices.len()];
-        let mut components = Vec::new();
-        for root in 0..edge_indices.len() {
-            if visited[root] {
-                continue;
-            }
-            visited[root] = true;
-            let mut pending = vec![root];
-            let mut component = Vec::new();
-            while let Some(local_edge) = pending.pop() {
-                component.push(edge_indices[local_edge]);
-                for vertex in self.edges[edge_indices[local_edge]].vertices {
-                    for &neighbor in &local_edges_at_vertex[&vertex] {
-                        if !visited[neighbor] {
-                            visited[neighbor] = true;
-                            pending.push(neighbor);
-                        }
-                    }
-                }
-            }
-            component.sort_unstable();
-            components.push(self.chain_boundary_component(&component)?);
-        }
-        components.reverse();
-        Ok(components)
-    }
-
-    fn chain_boundary_component(
-        &self,
-        edge_indices: &[usize],
-    ) -> Result<Vec<NurbsCurve>, GeometryError> {
-        debug_assert!(!edge_indices.is_empty());
-        let mut chain = VecDeque::with_capacity(edge_indices.len());
-        chain.push_back((edge_indices[0], false));
-        let mut remaining = edge_indices[1..].to_vec();
-        while !remaining.is_empty() {
-            let (first_edge, first_reversed) = chain[0];
-            let (last_edge, last_reversed) = chain[chain.len() - 1];
-            let first_vertices = oriented_edge_vertices(&self.edges[first_edge], first_reversed);
-            let last_vertices = oriented_edge_vertices(&self.edges[last_edge], last_reversed);
-            let Some((position, placement)) =
-                remaining
-                    .iter()
-                    .enumerate()
-                    .find_map(|(position, &candidate)| {
-                        let vertices = self.edges[candidate].vertices;
-                        if vertices[0] == last_vertices[1] {
-                            Some((position, (false, false)))
-                        } else if vertices[1] == last_vertices[1] {
-                            Some((position, (false, true)))
-                        } else if vertices[1] == first_vertices[0] {
-                            Some((position, (true, false)))
-                        } else if vertices[0] == first_vertices[0] {
-                            Some((position, (true, true)))
-                        } else {
-                            None
-                        }
-                    })
-            else {
-                return Err(GeometryError::InvalidBrepTopology {
-                    context: "a face boundary edge component could not be chained",
-                });
-            };
-            let edge = remaining.remove(position);
-            let (prepend, reversed) = placement;
-            if prepend {
-                chain.push_front((edge, reversed));
-            } else {
-                chain.push_back((edge, reversed));
-            }
-        }
-        if chain.len() > 1 {
-            let (first_edge, first_reversed) = chain[0];
-            let (last_edge, last_reversed) = chain[chain.len() - 1];
-            let first = oriented_edge_vertices(&self.edges[first_edge], first_reversed)[0];
-            let last = oriented_edge_vertices(&self.edges[last_edge], last_reversed)[1];
-            if first == last {
-                let root_position = chain
-                    .iter()
-                    .position(|(edge, _)| *edge == edge_indices[0])
-                    .expect("the boundary chain must retain its root edge");
-                chain.rotate_left((root_position + chain.len() - 1) % chain.len());
-            }
-        }
-        chain
-            .into_iter()
-            .map(|(edge, reversed)| {
-                if reversed {
-                    self.edges[edge].curve.reversed()
-                } else {
-                    Ok(self.edges[edge].curve.clone())
-                }
-            })
-            .collect()
     }
 
     /// Duplicates a non-empty, unique face subset as one validated B-rep.
@@ -11734,9 +11587,15 @@ mod tests {
         let holed = Brep::try_planar_face_with_holes(&outer, &holes, Tolerance::DEFAULT).unwrap();
         let boundaries = holed.face_boundary_curve_components(0).unwrap();
         assert_eq!(boundaries.len(), 3);
-        assert_eq!(boundaries[0], vec![holed.edges()[2].curve().clone()]);
-        assert_eq!(boundaries[1], vec![holed.edges()[1].curve().clone()]);
-        assert_eq!(boundaries[2], vec![holed.edges()[0].curve().clone()]);
+        assert_eq!(boundaries[0], vec![holed.edges()[0].curve().clone()]);
+        assert_eq!(
+            boundaries[1],
+            vec![holed.edges()[1].curve().reversed().unwrap()]
+        );
+        assert_eq!(
+            boundaries[2],
+            vec![holed.edges()[2].curve().reversed().unwrap()]
+        );
 
         let cylinder = Brep::try_extruded_curve(
             &holes[0],
@@ -11749,11 +11608,11 @@ mod tests {
         assert_eq!(wall_boundaries.len(), 2);
         assert_eq!(
             wall_boundaries[0],
-            vec![cylinder.edges()[1].curve().clone()]
+            vec![cylinder.edges()[0].curve().clone()]
         );
         assert_eq!(
             wall_boundaries[1],
-            vec![cylinder.edges()[0].curve().clone()]
+            vec![cylinder.edges()[1].curve().reversed().unwrap()]
         );
         assert_eq!(
             cylinder.face_boundary_curve_components(3),

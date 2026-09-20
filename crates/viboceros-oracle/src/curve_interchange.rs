@@ -176,7 +176,7 @@ fn validate_source_locus(
     Ok(())
 }
 
-fn curve_record(curve: CurveRef<'_>) -> Result<Value, ProbeError> {
+pub(super) fn curve_record(curve: CurveRef<'_>) -> Result<Value, ProbeError> {
     let kind = match curve {
         CurveRef::Line(_) => "line",
         CurveRef::Arc(_) => "arc",
@@ -198,6 +198,14 @@ fn curve_record(curve: CurveRef<'_>) -> Result<Value, ProbeError> {
     });
     if let CurveRef::NurbsCurve(c) = curve {
         value["definition"] = super::nurbs_curve_definition_value(c);
+        // OpenNURBS does not store the two mathematically unused exterior
+        // knots. The worker expands them by repeating the adjacent knot.
+        // Compare every stored knot and control without inventing differences
+        // in data Rhino cannot represent.
+        let knots = value["definition"]["knots"].as_array_mut().unwrap();
+        let last = knots.len() - 1;
+        knots[0] = knots[1].clone();
+        knots[last] = knots[last - 1].clone();
     }
     if let CurveRef::PolyCurve(c) = curve {
         value["parameters"] = json!(c.parameters());

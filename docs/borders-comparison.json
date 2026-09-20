@@ -1,0 +1,439 @@
+{
+  "protocol_version": 1,
+  "passed": false,
+  "reference_engine": "rhino",
+  "reference_engine_version": "8.32.26160.13001",
+  "fixture_sha256": "47f9e977b997eccfbaf707f8784455ceb9275f65740e24ed127bbdaca8250c9f",
+  "observations_sha256": "0fdba2ef1d5566793f520cffe38a7884c7b80a4aa9cc1ecc95040161be32d1ac",
+  "native_executable_sha256": "1ab6fc30a347a19d7198eb8c62e51697915fbe13b448ca06cfe4fba02ef99805",
+  "absolute_epsilon": 1e-10,
+  "relative_epsilon": 1e-10,
+  "passing_operations": 42,
+  "retained_discrepancies": 8,
+  "maximum_error_in_passing_cases": 1.7763568394002505e-15,
+  "note": "Actual Rhino commands in owned private Xvfb; B-reps use identical native-written 3DM sources. Eight polysurface seams differ. No timings or speedup claims. Raw geometry and state are retained in the observations; differences below show the first eight per operation.",
+  "operations": [
+    {
+      "id": "DupBorder-rectangle-Current",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-rectangle-Input",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-curved-Current",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-curved-Input",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-unclamped-Current",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-unclamped-Input",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-shell-Current",
+      "passed": false,
+      "max_absolute_error": 4.0,
+      "difference_count": 61,
+      "first_differences": [
+        "DupBorder-shell-Current.value.outputs[0].curve.samples[0][0]: 4 != 0 (error 4, limit 4e-10)",
+        "DupBorder-shell-Current.value.outputs[0].curve.samples[1][0]: 4 != 0.4375 (error 3.56, limit 4e-10)",
+        "DupBorder-shell-Current.value.outputs[0].curve.samples[1][1]: 2.5625 != 3 (error 0.438, limit 3e-10)",
+        "DupBorder-shell-Current.value.outputs[0].curve.samples[2][0]: 4 != 0.875 (error 3.12, limit 4e-10)",
+        "DupBorder-shell-Current.value.outputs[0].curve.samples[2][1]: 2.125 != 3 (error 0.875, limit 3e-10)",
+        "DupBorder-shell-Current.value.outputs[0].curve.samples[3][0]: 4 != 1.3125 (error 2.69, limit 4e-10)",
+        "DupBorder-shell-Current.value.outputs[0].curve.samples[3][1]: 1.6875 != 3 (error 1.31, limit 3e-10)",
+        "DupBorder-shell-Current.value.outputs[0].curve.samples[4][0]: 4 != 1.75 (error 2.25, limit 4e-10)"
+      ]
+    },
+    {
+      "id": "DupBorder-shell-Input",
+      "passed": false,
+      "max_absolute_error": 4.0,
+      "difference_count": 61,
+      "first_differences": [
+        "DupBorder-shell-Input.value.outputs[0].curve.samples[0][0]: 4 != 0 (error 4, limit 4e-10)",
+        "DupBorder-shell-Input.value.outputs[0].curve.samples[1][0]: 4 != 0.4375 (error 3.56, limit 4e-10)",
+        "DupBorder-shell-Input.value.outputs[0].curve.samples[1][1]: 2.5625 != 3 (error 0.438, limit 3e-10)",
+        "DupBorder-shell-Input.value.outputs[0].curve.samples[2][0]: 4 != 0.875 (error 3.12, limit 4e-10)",
+        "DupBorder-shell-Input.value.outputs[0].curve.samples[2][1]: 2.125 != 3 (error 0.875, limit 3e-10)",
+        "DupBorder-shell-Input.value.outputs[0].curve.samples[3][0]: 4 != 1.3125 (error 2.69, limit 4e-10)",
+        "DupBorder-shell-Input.value.outputs[0].curve.samples[3][1]: 1.6875 != 3 (error 1.31, limit 3e-10)",
+        "DupBorder-shell-Input.value.outputs[0].curve.samples[4][0]: 4 != 1.75 (error 2.25, limit 4e-10)"
+      ]
+    },
+    {
+      "id": "DupBorder-panels-Current",
+      "passed": false,
+      "max_absolute_error": 4.0,
+      "difference_count": 61,
+      "first_differences": [
+        "DupBorder-panels-Current.value.outputs[0].curve.samples[0][0]: 4 != 0 (error 4, limit 4e-10)",
+        "DupBorder-panels-Current.value.outputs[0].curve.samples[1][0]: 4 != 0.4375 (error 3.56, limit 4e-10)",
+        "DupBorder-panels-Current.value.outputs[0].curve.samples[1][1]: 2.5625 != 3 (error 0.438, limit 3e-10)",
+        "DupBorder-panels-Current.value.outputs[0].curve.samples[2][0]: 4 != 0.875 (error 3.12, limit 4e-10)",
+        "DupBorder-panels-Current.value.outputs[0].curve.samples[2][1]: 2.125 != 3 (error 0.875, limit 3e-10)",
+        "DupBorder-panels-Current.value.outputs[0].curve.samples[3][0]: 4 != 1.3125 (error 2.69, limit 4e-10)",
+        "DupBorder-panels-Current.value.outputs[0].curve.samples[3][1]: 1.6875 != 3 (error 1.31, limit 3e-10)",
+        "DupBorder-panels-Current.value.outputs[0].curve.samples[4][0]: 4 != 1.75 (error 2.25, limit 4e-10)"
+      ]
+    },
+    {
+      "id": "DupBorder-panels-Input",
+      "passed": false,
+      "max_absolute_error": 4.0,
+      "difference_count": 61,
+      "first_differences": [
+        "DupBorder-panels-Input.value.outputs[0].curve.samples[0][0]: 4 != 0 (error 4, limit 4e-10)",
+        "DupBorder-panels-Input.value.outputs[0].curve.samples[1][0]: 4 != 0.4375 (error 3.56, limit 4e-10)",
+        "DupBorder-panels-Input.value.outputs[0].curve.samples[1][1]: 2.5625 != 3 (error 0.438, limit 3e-10)",
+        "DupBorder-panels-Input.value.outputs[0].curve.samples[2][0]: 4 != 0.875 (error 3.12, limit 4e-10)",
+        "DupBorder-panels-Input.value.outputs[0].curve.samples[2][1]: 2.125 != 3 (error 0.875, limit 3e-10)",
+        "DupBorder-panels-Input.value.outputs[0].curve.samples[3][0]: 4 != 1.3125 (error 2.69, limit 4e-10)",
+        "DupBorder-panels-Input.value.outputs[0].curve.samples[3][1]: 1.6875 != 3 (error 1.31, limit 3e-10)",
+        "DupBorder-panels-Input.value.outputs[0].curve.samples[4][0]: 4 != 1.75 (error 2.25, limit 4e-10)"
+      ]
+    },
+    {
+      "id": "DupBorder-opposite-walls-Current",
+      "passed": false,
+      "max_absolute_error": 4.0,
+      "difference_count": 61,
+      "first_differences": [
+        "DupBorder-opposite-walls-Current.value.outputs[0].curve.samples[0][0]: 0 != 4 (error 4, limit 4e-10)",
+        "DupBorder-opposite-walls-Current.value.outputs[0].curve.samples[1][0]: 0 != 3.4375 (error 3.44, limit 3.44e-10)",
+        "DupBorder-opposite-walls-Current.value.outputs[0].curve.samples[1][2]: 4.4375 != 5 (error 0.562, limit 5e-10)",
+        "DupBorder-opposite-walls-Current.value.outputs[0].curve.samples[2][0]: 0 != 2.875 (error 2.88, limit 2.87e-10)",
+        "DupBorder-opposite-walls-Current.value.outputs[0].curve.samples[2][2]: 3.875 != 5 (error 1.12, limit 5e-10)",
+        "DupBorder-opposite-walls-Current.value.outputs[0].curve.samples[3][0]: 0 != 2.3125 (error 2.31, limit 2.31e-10)",
+        "DupBorder-opposite-walls-Current.value.outputs[0].curve.samples[3][2]: 3.3125 != 5 (error 1.69, limit 5e-10)",
+        "DupBorder-opposite-walls-Current.value.outputs[0].curve.samples[4][0]: 0 != 1.75 (error 1.75, limit 1.75e-10)"
+      ]
+    },
+    {
+      "id": "DupBorder-opposite-walls-Input",
+      "passed": false,
+      "max_absolute_error": 4.0,
+      "difference_count": 61,
+      "first_differences": [
+        "DupBorder-opposite-walls-Input.value.outputs[0].curve.samples[0][0]: 0 != 4 (error 4, limit 4e-10)",
+        "DupBorder-opposite-walls-Input.value.outputs[0].curve.samples[1][0]: 0 != 3.4375 (error 3.44, limit 3.44e-10)",
+        "DupBorder-opposite-walls-Input.value.outputs[0].curve.samples[1][2]: 4.4375 != 5 (error 0.562, limit 5e-10)",
+        "DupBorder-opposite-walls-Input.value.outputs[0].curve.samples[2][0]: 0 != 2.875 (error 2.88, limit 2.87e-10)",
+        "DupBorder-opposite-walls-Input.value.outputs[0].curve.samples[2][2]: 3.875 != 5 (error 1.12, limit 5e-10)",
+        "DupBorder-opposite-walls-Input.value.outputs[0].curve.samples[3][0]: 0 != 2.3125 (error 2.31, limit 2.31e-10)",
+        "DupBorder-opposite-walls-Input.value.outputs[0].curve.samples[3][2]: 3.3125 != 5 (error 1.69, limit 5e-10)",
+        "DupBorder-opposite-walls-Input.value.outputs[0].curve.samples[4][0]: 0 != 1.75 (error 1.75, limit 1.75e-10)"
+      ]
+    },
+    {
+      "id": "DupBorder-cylinder-Current",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-cylinder-Input",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-mesh-Current",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-mesh-Input",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-curved-pre-Current",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-curved-pre-Input",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-rectangle-Current",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-rectangle-Input",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-curved-Current",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-curved-Input",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-unclamped-Current",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-unclamped-Input",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-cylinder-Current",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-cylinder-Input",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-curved-pre-Current",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-curved-pre-Input",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-box-faces-[2]",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-box-faces-[2]",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-box-faces-[2, 0]",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-box-faces-[2, 0]",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-closed-u",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-closed-u",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-singular-cone",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-singular-cone",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-elevated-plane",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-elevated-plane",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-mesh-reversed",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-mesh-unwelded",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-mesh-disconnected",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-mesh-annulus",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-trimmed-annulus",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-trimmed-annulus",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-adjacent-walls-Current",
+      "passed": false,
+      "max_absolute_error": 5.0,
+      "difference_count": 80,
+      "first_differences": [
+        "DupBorder-adjacent-walls-Current.value.outputs[0].curve.samples[0][0]: 0 != 4 (error 4, limit 4e-10)",
+        "DupBorder-adjacent-walls-Current.value.outputs[0].curve.samples[0][1]: 0 != 3 (error 3, limit 3e-10)",
+        "DupBorder-adjacent-walls-Current.value.outputs[0].curve.samples[1][0]: 0 != 4 (error 4, limit 4e-10)",
+        "DupBorder-adjacent-walls-Current.value.outputs[0].curve.samples[1][1]: 0 != 2.25 (error 2.25, limit 2.25e-10)",
+        "DupBorder-adjacent-walls-Current.value.outputs[0].curve.samples[1][2]: 4.25 != 5 (error 0.75, limit 5e-10)",
+        "DupBorder-adjacent-walls-Current.value.outputs[0].curve.samples[2][0]: 0 != 4 (error 4, limit 4e-10)",
+        "DupBorder-adjacent-walls-Current.value.outputs[0].curve.samples[2][1]: 0 != 1.5 (error 1.5, limit 1.5e-10)",
+        "DupBorder-adjacent-walls-Current.value.outputs[0].curve.samples[2][2]: 3.5 != 5 (error 1.5, limit 5e-10)"
+      ]
+    },
+    {
+      "id": "DupBorder-adjacent-walls-Input",
+      "passed": false,
+      "max_absolute_error": 5.0,
+      "difference_count": 80,
+      "first_differences": [
+        "DupBorder-adjacent-walls-Input.value.outputs[0].curve.samples[0][0]: 0 != 4 (error 4, limit 4e-10)",
+        "DupBorder-adjacent-walls-Input.value.outputs[0].curve.samples[0][1]: 0 != 3 (error 3, limit 3e-10)",
+        "DupBorder-adjacent-walls-Input.value.outputs[0].curve.samples[1][0]: 0 != 4 (error 4, limit 4e-10)",
+        "DupBorder-adjacent-walls-Input.value.outputs[0].curve.samples[1][1]: 0 != 2.25 (error 2.25, limit 2.25e-10)",
+        "DupBorder-adjacent-walls-Input.value.outputs[0].curve.samples[1][2]: 4.25 != 5 (error 0.75, limit 5e-10)",
+        "DupBorder-adjacent-walls-Input.value.outputs[0].curve.samples[2][0]: 0 != 4 (error 4, limit 4e-10)",
+        "DupBorder-adjacent-walls-Input.value.outputs[0].curve.samples[2][1]: 0 != 1.5 (error 1.5, limit 1.5e-10)",
+        "DupBorder-adjacent-walls-Input.value.outputs[0].curve.samples[2][2]: 3.5 != 5 (error 1.5, limit 5e-10)"
+      ]
+    },
+    {
+      "id": "DupBorder-face-Input",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupBorder-reversed-annulus",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-face-Input",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
+    },
+    {
+      "id": "DupFaceBorder-reversed-annulus",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "difference_count": 0,
+      "first_differences": []
+    }
+  ]
+}

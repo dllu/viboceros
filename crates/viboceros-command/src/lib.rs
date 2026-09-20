@@ -1,6 +1,8 @@
 //! Extensible command registry and the first model-editing commands.
 
 mod align;
+mod border;
+use border::{DuplicateBorderCommand, DuplicateBorderOutputLayer, DuplicateFaceBorderCommand};
 mod arrays;
 mod layout_units;
 pub use align::{AlignmentMode, AlignmentOptions};
@@ -3743,216 +3745,6 @@ fn parse_mesh_box_arguments(arguments: &[&str]) -> Result<MeshBoxCommandOptions,
 }
 
 const BOX_USAGE: &str = "Box base-corner opposite-base-corner height | Box base-corner opposite-base-corner height-point";
-
-const DUPLICATE_BORDER_USAGE: &str = "DupBorder [OutputLayer=Current|Input]";
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum DuplicateBorderOutputLayer {
-    Current,
-    Input,
-}
-
-struct StagedDuplicateBorder {
-    loops: Vec<Vec<Geometry>>,
-    attributes: ObjectAttributes,
-}
-
-struct DuplicateBorderCommand;
-
-impl Command for DuplicateBorderCommand {
-    fn name(&self) -> &'static str {
-        "DupBorder"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["DuplicateBorder"]
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let output_layer = parse_duplicate_border_arguments(arguments)?;
-        let selected = document
-            .selected_objects()
-            .map(|object| (object.geometry().clone(), object.attributes().layer_id()))
-            .collect::<Vec<_>>();
-        if selected.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
-
-        let current_layer = document.current_layer_id();
-        let mut staged = Vec::new();
-        for (geometry, input_layer) in selected {
-            let loops: Vec<Vec<Geometry>> = match geometry {
-                Geometry::NurbsSurface(surface) => surface
-                    .natural_boundary_curve_loops()?
-                    .into_iter()
-                    .map(|boundary| {
-                        boundary
-                            .into_iter()
-                            .map(Geometry::NurbsCurve)
-                            .collect::<Vec<_>>()
-                    })
-                    .collect(),
-                Geometry::Brep(brep) => brep_naked_edge_curve_components(&brep)
-                    .into_iter()
-                    .map(|boundary| {
-                        boundary
-                            .into_iter()
-                            .map(Geometry::NurbsCurve)
-                            .collect::<Vec<_>>()
-                    })
-                    .collect(),
-                Geometry::Mesh(mesh) => mesh
-                    .boundary_polylines(document.tolerance())?
-                    .into_iter()
-                    .map(|boundary| vec![Geometry::Polyline(boundary)])
-                    .collect(),
-                Geometry::Point(_)
-                | Geometry::PointCloud(_)
-                | Geometry::Line(_)
-                | Geometry::Circle(_)
-                | Geometry::Arc(_)
-                | Geometry::Ellipse(_)
-                | Geometry::Polyline(_)
-                | Geometry::NurbsCurve(_)
-                | Geometry::PolyCurve(_) => {
-                    return Err(CommandError::UnsupportedDuplicateBorderGeometry);
-                }
-            };
-            if loops.is_empty() {
-                continue;
-            }
-            let layer = match output_layer {
-                DuplicateBorderOutputLayer::Current => current_layer,
-                DuplicateBorderOutputLayer::Input => input_layer,
-            };
-            staged.push(StagedDuplicateBorder {
-                loops,
-                attributes: ObjectAttributes::on_layer(layer),
-            });
-        }
-        if staged.is_empty() {
-            return Err(CommandError::NoDuplicateBorders);
-        }
-
-        let source_count = staged.len();
-        let border_count = staged
-            .iter()
-            .map(|source| source.loops.len())
-            .sum::<usize>();
-        let curve_count = staged
-            .iter()
-            .flat_map(|source| &source.loops)
-            .map(Vec::len)
-            .sum::<usize>();
-        let mut output_ids = Vec::with_capacity(curve_count);
-        let mut grouped_count = 0;
-        for source in staged {
-            for boundary in source.loops {
-                let mut boundary_ids = Vec::with_capacity(boundary.len());
-                for geometry in boundary {
-                    let id = document
-                        .add_geometry_with_attributes(geometry, source.attributes.clone())?;
-                    boundary_ids.push(id);
-                    output_ids.push(id);
-                }
-                if boundary_ids.len() > 1 {
-                    document.add_group(None, boundary_ids)?;
-                    grouped_count += 1;
-                }
-            }
-        }
-        replace_selection(document, output_ids)?;
-        Ok(format!(
-            "Duplicated {curve_count} border curve(s) in {border_count} border(s) from {source_count} object(s){}",
-            if grouped_count == 0 {
-                String::new()
-            } else {
-                format!("; grouped {grouped_count} multi-edge border(s)")
-            }
-        ))
-    }
-}
-
-fn parse_duplicate_border_arguments(
-    arguments: &[&str],
-) -> Result<DuplicateBorderOutputLayer, CommandError> {
-    if arguments.is_empty() {
-        return Ok(DuplicateBorderOutputLayer::Current);
-    }
-    let (name, value, consumed) = if let Some((name, value)) = arguments[0].split_once('=') {
-        (name, value, 1)
-    } else {
-        let value = arguments
-            .get(1)
-            .ok_or(CommandError::Usage(DUPLICATE_BORDER_USAGE))?;
-        (arguments[0], *value, 2)
-    };
-    require_consumed(arguments, consumed, DUPLICATE_BORDER_USAGE)?;
-    if !option_name_eq(name, "OutputLayer") {
-        return Err(CommandError::Usage(DUPLICATE_BORDER_USAGE));
-    }
-    let value = value.trim_start_matches('_');
-    if value.eq_ignore_ascii_case("Current") {
-        Ok(DuplicateBorderOutputLayer::Current)
-    } else if value.eq_ignore_ascii_case("Input") {
-        Ok(DuplicateBorderOutputLayer::Input)
-    } else {
-        Err(CommandError::Usage(DUPLICATE_BORDER_USAGE))
-    }
-}
-
-fn brep_naked_edge_curve_components(brep: &Brep) -> Vec<Vec<NurbsCurve>> {
-    let naked = brep
-        .edge_use_counts()
-        .into_iter()
-        .enumerate()
-        .filter_map(|(edge, count)| (count == 1).then_some(edge))
-        .collect::<Vec<_>>();
-    let mut edges_at_vertex = BTreeMap::<usize, Vec<usize>>::new();
-    for (local_edge, &edge_index) in naked.iter().enumerate() {
-        let vertices = brep.edges()[edge_index].vertices();
-        edges_at_vertex
-            .entry(vertices[0])
-            .or_default()
-            .push(local_edge);
-        if vertices[1] != vertices[0] {
-            edges_at_vertex
-                .entry(vertices[1])
-                .or_default()
-                .push(local_edge);
-        }
-    }
-
-    let mut visited = vec![false; naked.len()];
-    let mut components = Vec::new();
-    for root in 0..naked.len() {
-        if visited[root] {
-            continue;
-        }
-        visited[root] = true;
-        let mut pending = vec![root];
-        let mut component = Vec::new();
-        while let Some(local_edge) = pending.pop() {
-            component.push(local_edge);
-            for vertex in brep.edges()[naked[local_edge]].vertices() {
-                for &neighbor in &edges_at_vertex[&vertex] {
-                    if !visited[neighbor] {
-                        visited[neighbor] = true;
-                        pending.push(neighbor);
-                    }
-                }
-            }
-        }
-        component.sort_unstable();
-        components.push(
-            component
-                .into_iter()
-                .map(|local_edge| brep.edges()[naked[local_edge]].curve().clone())
-                .collect(),
-        );
-    }
-    components
-}
 
 struct SphereCommand;
 
@@ -8250,226 +8042,6 @@ fn parse_surface_face_indices(
         return Err(CommandError::Usage(usage));
     }
     Ok(SurfaceFaceIndices::Indices(indices))
-}
-
-const DUPLICATE_FACE_BORDER_USAGE: &str =
-    "DupFaceBorder (point|Faces=All|Faces=0,2,...) [OutputLayer=Current|Input]";
-
-#[derive(Clone, Debug, PartialEq)]
-struct DuplicateFaceBorderOptions {
-    selection: SurfaceFaceSelection,
-    output_layer: DuplicateBorderOutputLayer,
-}
-
-struct DuplicateFaceBorderCommand;
-
-impl Command for DuplicateFaceBorderCommand {
-    fn name(&self) -> &'static str {
-        "DupFaceBorder"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["DuplicateFaceBorder"]
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_duplicate_face_border_arguments(arguments)?;
-        let sources = document
-            .selected_objects()
-            .map(|object| {
-                if !matches!(
-                    object.geometry(),
-                    Geometry::NurbsSurface(_) | Geometry::Brep(_)
-                ) {
-                    return Err(CommandError::UnsupportedDuplicateFaceBorderGeometry);
-                }
-                Ok(SurfaceFaceSource {
-                    id: object.id(),
-                    geometry: object.geometry().clone(),
-                    attributes: object.attributes().clone(),
-                })
-            })
-            .collect::<Result<Vec<_>, CommandError>>()?;
-        if sources.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
-        let selections = selected_surface_faces(
-            &sources,
-            &options.selection,
-            document.tolerance(),
-            SurfaceFaceCommand::DuplicateFaceBorder,
-        )?;
-        let current_layer = document.current_layer_id();
-        let mut staged = Vec::<(LayerId, Vec<Vec<Geometry>>)>::new();
-        let mut output_count = 0_usize;
-        let mut border_count = 0_usize;
-        for (source_index, faces) in selections {
-            let source = &sources[source_index];
-            let mut source_borders = Vec::new();
-            for face in faces {
-                let components = match &source.geometry {
-                    Geometry::NurbsSurface(surface) => {
-                        debug_assert_eq!(face, 0);
-                        let mut components = surface.natural_boundary_curve_loops()?;
-                        components.reverse();
-                        for component in &mut components {
-                            if component.len() > 1 {
-                                component.rotate_right(1);
-                            }
-                        }
-                        components
-                    }
-                    Geometry::Brep(brep) => brep.face_boundary_curve_components(face)?,
-                    _ => unreachable!("surface-face sources were validated above"),
-                };
-                for component in components {
-                    let geometries =
-                        stage_duplicate_face_border_component(component, document.tolerance())?;
-                    output_count = output_count
-                        .checked_add(geometries.len())
-                        .filter(|count| *count <= MAX_SPAN_OUTPUT_OBJECTS)
-                        .ok_or_else(|| too_many_span_outputs("DupFaceBorder"))?;
-                    border_count += 1;
-                    source_borders.push(geometries);
-                }
-            }
-            if !source_borders.is_empty() {
-                let layer = match options.output_layer {
-                    DuplicateBorderOutputLayer::Current => current_layer,
-                    DuplicateBorderOutputLayer::Input => source.attributes.layer_id(),
-                };
-                staged.push((layer, source_borders));
-            }
-        }
-        if staged.is_empty() {
-            return Err(CommandError::NoDuplicateFaceBorders);
-        }
-
-        let source_count = staged.len();
-        let mut output_ids = Vec::with_capacity(output_count);
-        let mut grouped_count = 0_usize;
-        for (layer, borders) in staged {
-            for border in borders {
-                let mut border_ids = Vec::with_capacity(border.len());
-                for geometry in border {
-                    let id = document.add_geometry_with_attributes(
-                        geometry,
-                        ObjectAttributes::on_layer(layer),
-                    )?;
-                    border_ids.push(id);
-                    output_ids.push(id);
-                }
-                if border_ids.len() > 1 {
-                    document.add_group(None, border_ids)?;
-                    grouped_count += 1;
-                }
-            }
-        }
-        replace_selection(document, output_ids)?;
-        Ok(format!(
-            "Duplicated {output_count} curve object(s) in {border_count} face border(s) from {source_count} object(s){}",
-            if grouped_count == 0 {
-                String::new()
-            } else {
-                format!("; grouped {grouped_count} multi-edge border(s)")
-            }
-        ))
-    }
-}
-
-fn stage_duplicate_face_border_component(
-    curves: Vec<NurbsCurve>,
-    tolerance: Tolerance,
-) -> Result<Vec<Geometry>, GeometryError> {
-    debug_assert!(!curves.is_empty());
-    if curves.len() > 1
-        && curves
-            .iter()
-            .all(|curve| curve.degree() == 1 && curve.control_points().len() == 2)
-    {
-        let endpoints = curves
-            .iter()
-            .map(|curve| {
-                Ok([
-                    curve.evaluate(*curve.domain().start())?,
-                    curve.evaluate(*curve.domain().end())?,
-                ])
-            })
-            .collect::<Result<Vec<_>, GeometryError>>()?;
-        if endpoints.windows(2).all(|pair| pair[0][1] == pair[1][0]) {
-            let mut vertices = Vec::with_capacity(endpoints.len() + 1);
-            vertices.push(endpoints[0][0]);
-            vertices.extend(endpoints.into_iter().map(|points| points[1]));
-            if let Ok(polyline) = Polyline3::try_new(vertices, tolerance) {
-                return Ok(vec![Geometry::Polyline(polyline)]);
-            }
-        }
-    }
-    Ok(curves.into_iter().map(Geometry::NurbsCurve).collect())
-}
-
-fn parse_duplicate_face_border_arguments(
-    arguments: &[&str],
-) -> Result<DuplicateFaceBorderOptions, CommandError> {
-    let mut output_layer = DuplicateBorderOutputLayer::Current;
-    let mut face_selection = None;
-    let mut output_layer_seen = false;
-    let mut positional = Vec::new();
-    let mut index = 0;
-    while index < arguments.len() {
-        let argument = arguments[index];
-        let option = if let Some((name, value)) = argument.split_once('=') {
-            Some((name, value, 1))
-        } else if option_name_eq(argument, "OutputLayer")
-            || option_name_eq(argument, "Faces")
-            || option_name_eq(argument, "FaceIndices")
-        {
-            let value = arguments
-                .get(index + 1)
-                .ok_or(CommandError::Usage(DUPLICATE_FACE_BORDER_USAGE))?;
-            Some((argument, *value, 2))
-        } else {
-            None
-        };
-        let Some((name, value, consumed)) = option else {
-            positional.push(argument);
-            index += 1;
-            continue;
-        };
-        if option_name_eq(name, "OutputLayer") && !output_layer_seen {
-            let value = value.trim_start_matches('_');
-            output_layer = if value.eq_ignore_ascii_case("Current") {
-                DuplicateBorderOutputLayer::Current
-            } else if value.eq_ignore_ascii_case("Input") {
-                DuplicateBorderOutputLayer::Input
-            } else {
-                return Err(CommandError::Usage(DUPLICATE_FACE_BORDER_USAGE));
-            };
-            output_layer_seen = true;
-        } else if (option_name_eq(name, "Faces") || option_name_eq(name, "FaceIndices"))
-            && face_selection.is_none()
-        {
-            face_selection = Some(parse_surface_face_indices(
-                value,
-                DUPLICATE_FACE_BORDER_USAGE,
-            )?);
-        } else {
-            return Err(CommandError::Usage(DUPLICATE_FACE_BORDER_USAGE));
-        }
-        index += consumed;
-    }
-    let selection = if let Some(face_selection) = face_selection {
-        require_consumed(&positional, 0, DUPLICATE_FACE_BORDER_USAGE)?;
-        SurfaceFaceSelection::Faces(face_selection)
-    } else {
-        let (point, consumed) = parse_point(&positional)?;
-        require_consumed(&positional, consumed, DUPLICATE_FACE_BORDER_USAGE)?;
-        SurfaceFaceSelection::Point(point)
-    };
-    Ok(DuplicateFaceBorderOptions {
-        selection,
-        output_layer,
-    })
 }
 
 const DUPLICATE_EDGE_USAGE: &str =
@@ -35317,43 +34889,31 @@ mod tests {
             .unwrap();
 
         let message = registry.execute(&mut document, "DupBorder").unwrap();
-        assert!(message.contains("4 border curve(s) in 1 border(s)"));
-        assert!(message.contains("grouped 1 multi-edge border(s)"));
+        assert!(message.contains("1 border curve(s) in 1 border(s)"));
         let outputs = document.objects().skip(1).collect::<Vec<_>>();
-        assert_eq!(outputs.len(), 4);
-        assert_eq!(document.groups().len(), 1);
-        assert_eq!(document.groups().next().unwrap().members().len(), 4);
+        assert_eq!(outputs.len(), 1);
+        assert_eq!(document.groups().len(), 0);
         assert!(!document.is_selected(source));
-        assert!(outputs.iter().all(|object| {
-            object.attributes().layer_id() == border_layer
-                && document.is_selected(object.id())
-                && matches!(object.geometry(), Geometry::NurbsCurve(_))
-        }));
-        let expected = [
-            (
-                Point3::try_new(0.0, 0.0, 2.0).unwrap(),
-                Point3::try_new(4.0, 0.0, 2.0).unwrap(),
-            ),
-            (
-                Point3::try_new(4.0, 0.0, 2.0).unwrap(),
-                Point3::try_new(4.0, 3.0, 2.0).unwrap(),
-            ),
-            (
-                Point3::try_new(4.0, 3.0, 2.0).unwrap(),
-                Point3::try_new(0.0, 3.0, 2.0).unwrap(),
-            ),
-            (
-                Point3::try_new(0.0, 3.0, 2.0).unwrap(),
-                Point3::try_new(0.0, 0.0, 2.0).unwrap(),
-            ),
-        ];
-        for (object, (start, end)) in outputs.into_iter().zip(expected) {
-            let Geometry::NurbsCurve(curve) = object.geometry() else {
-                unreachable!()
-            };
-            assert_eq!(curve.evaluate(*curve.domain().start()).unwrap(), start);
-            assert_eq!(curve.evaluate(*curve.domain().end()).unwrap(), end);
-        }
+        assert_eq!(outputs[0].attributes().layer_id(), border_layer);
+        assert!(document.is_selected(outputs[0].id()));
+        let Geometry::Polyline(curve) = outputs[0].geometry() else {
+            panic!("rectangular border must be one native polyline")
+        };
+        assert_eq!(curve.domain(), 0.0..=14.0);
+        assert_eq!(
+            curve
+                .vertices()
+                .iter()
+                .map(|p| p.to_array())
+                .collect::<Vec<_>>(),
+            vec![
+                [0., 3., 2.],
+                [0., 0., 2.],
+                [4., 0., 2.],
+                [4., 3., 2.],
+                [0., 3., 2.]
+            ]
+        );
         assert_eq!(document.undo_label(), Some("DupBorder"));
 
         registry.execute(&mut document, "Undo").unwrap();
@@ -36190,11 +35750,11 @@ mod tests {
         assert_eq!(
             boundaries[1],
             &[
-                Point3::try_new(0.0, 3.0, 0.0).unwrap(),
-                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
                 Point3::try_new(2.0, 0.0, 0.0).unwrap(),
-                Point3::try_new(2.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
                 Point3::try_new(0.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
             ]
         );
         assert_eq!(document.undo_label(), Some("DupFaceBorder"));
@@ -36266,7 +35826,6 @@ mod tests {
         let curved_surface = rational_multi_span_surface();
         let mut expected = curved_surface.natural_boundary_curve_loops().unwrap();
         expected.reverse();
-        expected[0].rotate_right(1);
         let curved_source = curved_document
             .add_geometry(Geometry::NurbsSurface(curved_surface))
             .unwrap();
@@ -36277,19 +35836,36 @@ mod tests {
             registry
                 .execute(&mut curved_document, "DupFaceBorder Faces=0")
                 .unwrap(),
-            "Duplicated 4 curve object(s) in 1 face border(s) from 1 object(s); grouped 1 multi-edge border(s)"
+            "Duplicated 1 curve object(s) in 1 face border(s) from 1 object(s)"
         );
-        let group = curved_document.groups().next().unwrap();
-        assert_eq!(group.members().len(), 4);
-        let curves = curved_document
-            .objects()
-            .skip(1)
-            .map(|object| match object.geometry() {
-                Geometry::NurbsCurve(curve) => curve.clone(),
-                _ => panic!("curved borders must retain exact NURBS segments"),
-            })
-            .collect::<Vec<_>>();
-        assert_eq!(curves, expected.remove(0));
+        assert_eq!(curved_document.groups().len(), 0);
+        assert_eq!(curved_document.objects().len(), 2);
+        let Geometry::PolyCurve(curve) = curved_document.objects().last().unwrap().geometry()
+        else {
+            panic!("curved border must be one exact polycurve")
+        };
+        assert_eq!(curve.segments().len(), 4);
+        for (segment, expected) in curve.segments().iter().zip(expected.remove(0)) {
+            let CurveRef::NurbsCurve(actual) = segment.as_ref() else {
+                panic!("exact NURBS child")
+            };
+            assert_eq!(actual.control_points(), expected.control_points());
+            for i in 0..=32 {
+                let fraction = i as f64 / 32.0;
+                assert!(
+                    actual
+                        .evaluate(actual.parameter_at(fraction).unwrap())
+                        .unwrap()
+                        .distance_to(
+                            expected
+                                .evaluate(expected.parameter_at(fraction).unwrap())
+                                .unwrap()
+                        )
+                        .unwrap()
+                        < 1.0e-12
+                );
+            }
+        }
     }
 
     #[test]
@@ -36332,9 +35908,9 @@ mod tests {
         ];
         let face = Brep::try_planar_face_with_holes(&outer, &holes, document.tolerance()).unwrap();
         let expected = [
-            face.edges()[2].curve().clone(),
-            face.edges()[1].curve().clone(),
             face.edges()[0].curve().clone(),
+            face.edges()[1].curve().reversed().unwrap(),
+            face.edges()[2].curve().reversed().unwrap(),
         ];
         let face_id = document.add_geometry(Geometry::Brep(face)).unwrap();
         document
@@ -36366,8 +35942,8 @@ mod tests {
         )
         .unwrap();
         let expected_rims = [
-            cylinder.edges()[1].curve().clone(),
             cylinder.edges()[0].curve().clone(),
+            cylinder.edges()[1].curve().reversed().unwrap(),
         ];
         let cylinder_id = cylinder_document
             .add_geometry(Geometry::Brep(cylinder))
