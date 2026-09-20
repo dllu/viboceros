@@ -1,0 +1,47 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 11367798,
+      "id": "distant-line-projection",
+      "value": {
+        "distance": 1e+100,
+        "parameter": 0.37,
+        "point": [
+          0.37,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 1319885,
+      "id": "distant-wide-domain-projection",
+      "value": {
+        "distance": 1e+100,
+        "parameter": 960000000000.0,
+        "point": [
+          0.37,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 701904,
+      "id": "translated-semicircle-offset",
+      "value": {
+        "distance": 2.5476206690103092e+16,
+        "parameter": 0.0,
+        "point": [
+          -1.8014398509481984e+16,
+          0.0,
+          0.0
+        ]
+      }
+    }
+  ]
+}

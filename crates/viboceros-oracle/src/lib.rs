@@ -36,6 +36,8 @@ use viboceros_io::{
 };
 
 mod construction_plane;
+#[cfg(test)]
+mod curve_closest_tests;
 mod curve_parameter_samples;
 mod interface;
 mod isocurves;

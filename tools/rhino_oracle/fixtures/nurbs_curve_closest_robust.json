@@ -1,0 +1,209 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "nurbs_curve_closest_point",
+      "id": "distant-line-projection",
+      "degree": 1,
+      "control_points": [
+        {
+          "point": [
+            0,
+            0,
+            0
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            1,
+            0,
+            0
+          ],
+          "weight": 1
+        }
+      ],
+      "knots": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "target": [
+        0.37,
+        1e+100,
+        0
+      ]
+    },
+    {
+      "op": "nurbs_curve_closest_point",
+      "id": "distant-wide-domain-projection",
+      "degree": 1,
+      "control_points": [
+        {
+          "point": [
+            0,
+            0,
+            0
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            1,
+            0,
+            0
+          ],
+          "weight": 1
+        }
+      ],
+      "knots": [
+        -2000000000000,
+        -2000000000000,
+        6000000000000,
+        6000000000000
+      ],
+      "target": [
+        0.37,
+        1e+100,
+        0
+      ]
+    },
+    {
+      "op": "nurbs_curve_closest_point",
+      "id": "large-speed-line-projection",
+      "degree": 1,
+      "control_points": [
+        {
+          "point": [
+            0,
+            0,
+            0
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            1e+160,
+            0,
+            0
+          ],
+          "weight": 1
+        }
+      ],
+      "knots": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "target": [
+        3.7e+159,
+        1,
+        0
+      ]
+    },
+    {
+      "op": "nurbs_curve_closest_point",
+      "id": "signed-pole-distant-projection",
+      "degree": 1,
+      "control_points": [
+        {
+          "point": [
+            0,
+            0,
+            0
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            1,
+            0,
+            0
+          ],
+          "weight": -1
+        }
+      ],
+      "knots": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "target": [
+        -0.5,
+        1e+100,
+        0
+      ]
+    },
+    {
+      "op": "nurbs_curve_closest_point",
+      "id": "translated-semicircle-offset",
+      "degree": 2,
+      "control_points": [
+        {
+          "point": [
+            -18014398509481984,
+            0,
+            0
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            -18014398509481984,
+            18014398509481984,
+            0
+          ],
+          "weight": 0.7071067811865476
+        },
+        {
+          "point": [
+            0,
+            18014398509481984,
+            0
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            18014398509481984,
+            18014398509481984,
+            0
+          ],
+          "weight": 0.7071067811865476
+        },
+        {
+          "point": [
+            18014398509481984,
+            0,
+            0
+          ],
+          "weight": 1
+        }
+      ],
+      "knots": [
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        1,
+        1,
+        1
+      ],
+      "target": [
+        1,
+        -18014398509481984,
+        0
+      ]
+    }
+  ]
+}

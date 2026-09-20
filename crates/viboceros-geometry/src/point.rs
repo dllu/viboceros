@@ -1,5 +1,7 @@
 use crate::{GeometryError, Real, Tolerance, UnitVector3, Vector3, require_finite};
+mod distance_key;
 mod distance_order;
+pub(crate) use distance_key::PointDistance;
 
 /// A finite point in three-dimensional model space.
 #[derive(Clone, Copy, Debug, PartialEq)]

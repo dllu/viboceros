@@ -53,8 +53,10 @@ coordinate subtraction on a patch at X=`−MAX`, not merely an overflowing norm.
 
 ## Selection mechanics
 
-`closest_point/candidate.rs` stores each point, its UV parameters, and an enclosure
-of its exact squared distance from the fixed target. Every coordinate subtraction,
+`closest_point/candidate.rs` pairs UV parameters with the shared immutable
+`point/distance_key.rs` key, also used by [curve searches](curve-closest-point.md).
+The key stores each point and an enclosure of its exact squared distance from
+the fixed target. Every coordinate subtraction,
 square, and sum is rounded outward using adjacent floats. A nonnegative lower
 bound and possibly infinite upper bound cover subnormal and overflowing cases.
 No square root or bound on a library `hypot` implementation is assumed.

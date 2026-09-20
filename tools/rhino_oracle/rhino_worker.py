@@ -2328,6 +2328,42 @@ def _measurement_history(name, macro, allow_cancel=False):
     return {"history": history}, 0
 
 
+def _checked_closest_parameter(domain, parameter):
+    parameter = _finite(parameter, "closest-point parameter")
+    if not float(domain.T0) <= parameter <= float(domain.T1):
+        raise ValueError("closest-point parameter is outside the active domain")
+    return parameter
+
+
+def _nurbs_curve_closest_point(operation, iterations):
+    degree = int(operation["degree"])
+    controls = operation["control_points"]
+    curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+    try:
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, operation["knots"], "curve knot")
+        if not curve.IsValid:
+            raise ValueError("NURBS curve is invalid")
+        target = _point(operation["target"])
+
+        def query():
+            success, parameter = curve.ClosestPoint(target)
+            if not success:
+                raise ValueError("NURBS curve closest-point search failed")
+            parameter = _checked_closest_parameter(curve.Domain, parameter)
+            closest = curve.PointAt(parameter)
+            if not closest.IsValid:
+                raise ValueError("NURBS curve closest point is invalid")
+            distance = _finite(closest.DistanceTo(target), "curve closest-point distance")
+            if distance < 0.0:
+                raise ValueError("NURBS curve closest-point distance is negative")
+            return {"distance": distance, "parameter": parameter, "point": _xyz(closest)}
+
+        return _measure(iterations, query)
+    finally:
+        curve.Dispose()
+
+
 def _surface_closest_point(operation, iterations):
     surface = _nurbs_surface_from_definition(operation["surface"])
     try:
@@ -2338,7 +2374,11 @@ def _surface_closest_point(operation, iterations):
             found, u, v = entry
             if not found:
                 raise ValueError("surface closest point failed")
+            u = _checked_closest_parameter(surface.Domain(0), u)
+            v = _checked_closest_parameter(surface.Domain(1), v)
             point = surface.PointAt(u,v)
+            if not point.IsValid:
+                raise ValueError("surface closest point is invalid")
             result.append({"parameters": [u,v], "normalized_parameters": [
                 surface.Domain(0).NormalizedParameterAt(u), surface.Domain(1).NormalizedParameterAt(v)],
                 "point": _xyz(point), "distance": point.DistanceTo(target)})
@@ -8454,27 +8494,7 @@ def _execute(operation, iterations, tolerance):
         return {"point": _xyz(value[0]), "derivative": _xyz(value[1])}, elapsed
 
     if kind == "nurbs_curve_closest_point":
-        degree = int(operation["degree"])
-        controls = operation["control_points"]
-        curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
-        _set_curve_controls(curve, controls)
-        _set_knots(curve.Knots, operation["knots"], "curve knot")
-        if not curve.IsValid:
-            raise ValueError("NURBS curve is invalid")
-        target = _point(operation["target"])
-
-        def curve_closest_point():
-            success, parameter = curve.ClosestPoint(target)
-            if not success:
-                raise ValueError("NURBS curve closest-point search failed")
-            closest = curve.PointAt(parameter)
-            return {
-                "distance": float(closest.DistanceTo(target)),
-                "parameter": float(parameter),
-                "point": _xyz(closest),
-            }
-
-        return _measure(iterations, curve_closest_point)
+        return _nurbs_curve_closest_point(operation, iterations)
 
     if kind == "nurbs_curve_length":
         degree = int(operation["degree"])

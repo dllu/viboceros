@@ -40,6 +40,24 @@ impl Vector3 {
         Ok(value)
     }
 
+    /// Convert a model-space motion to a step along a nonzero derivative,
+    /// without forming an overflowing norm. Callers validate nonzero tangents.
+    pub(crate) fn parameter_step(self, motion: Real) -> Real {
+        let values = self.to_array();
+        let scale = values.into_iter().map(Real::abs).fold(0.0, Real::max);
+        debug_assert!(scale > 0.);
+        let [x, y, z] = values.map(|v| v / scale);
+        let norm = x.hypot(y).hypot(z);
+        let first = motion / norm;
+        if first.is_subnormal() {
+            // Do not amplify a rounded subnormal intermediate when the
+            // numerator and derivative share a tiny scale.
+            (motion / scale) / norm
+        } else {
+            first / scale
+        }
+    }
+
     pub fn dot(self, other: Self) -> Result<Real, GeometryError> {
         // Common-scale normalization can erase a small component even when
         // the large component is multiplied by zero. Prefer compensated direct
@@ -360,6 +378,19 @@ impl TryFrom<[Real; 3]> for Vector3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn parameter_steps_handle_overflowing_norms_and_subnormal_motion() {
+        for scale in [Real::from_bits(1), Real::MIN_POSITIVE, 1., Real::MAX] {
+            let derivative = Vector3::try_new(scale, scale, scale).unwrap();
+            let expected = 1. / 3_f64.sqrt();
+            assert!((derivative.parameter_step(scale) - expected).abs() <= 2. * Real::EPSILON);
+            assert!((derivative.parameter_step(-scale) + expected).abs() <= 2. * Real::EPSILON);
+        }
+        let derivative = Vector3::try_new(Real::from_bits(1), 0., 0.).unwrap();
+        assert_eq!(derivative.parameter_step(1.), Real::INFINITY);
+        assert_eq!(derivative.parameter_step(-0.).to_bits(), (-0_f64).to_bits());
+    }
 
     #[test]
     fn direction_angles_retain_small_angles_and_ignore_vector_magnitude() {

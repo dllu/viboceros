@@ -11,16 +11,43 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_curve_closest_probe_rejects_invalid_results_and_always_disposes(self):
+        for failure in [None, "curve", "not_found", "nan", "outside", "unset", "point", "infinite_distance", "negative_distance"]:
+            with self.subTest(failure=failure):
+                curve = Mock(IsValid=failure != "curve")
+                curve.Domain = SimpleNamespace(T0=0., T1=1.)
+                parameter = {"nan": float("nan"), "outside": 1.1, "unset": -1.23432101234321e308}.get(failure, 0.25)
+                curve.ClosestPoint.return_value = (failure != "not_found", parameter)
+                location = Mock(X=1., Y=2., Z=0., IsValid=failure != "point")
+                location.DistanceTo.return_value = {"infinite_distance": float("inf"), "negative_distance": -1.}.get(failure, 3.)
+                curve.PointAt.return_value = location
+                host = SimpleNamespace(Geometry=SimpleNamespace(NurbsCurve=Mock(return_value=curve)))
+                operation = {"degree": 1, "control_points": [{}, {}], "knots": [0,0,1,1], "target": [1,2,3]}
+                with patch.object(self.worker, "Rhino", host), \
+                     patch.object(self.worker, "_set_curve_controls"), \
+                     patch.object(self.worker, "_set_knots"), \
+                     patch.object(self.worker, "_point", lambda p: p), \
+                     patch.object(self.worker, "_measure", lambda iterations, query: (query(), 42)):
+                    if failure:
+                        with self.assertRaises(ValueError):
+                            self.worker._nurbs_curve_closest_point(operation, 3)
+                    else:
+                        self.assertEqual(self.worker._nurbs_curve_closest_point(operation, 3),
+                            ({"parameter": 0.25, "point": [1.,2.,0.], "distance": 3.}, 42))
+                if failure in ["curve", "not_found", "nan", "outside", "unset"]:
+                    curve.PointAt.assert_not_called()
+                curve.Dispose.assert_called_once_with()
+
     def test_surface_closest_probe_times_only_queries_and_disposes_on_failure(self):
-        for failure in [None, "query", "not_found"]:
+        for failure in [None, "query", "not_found", "outside", "point"]:
             with self.subTest(failure=failure):
                 surface = Mock()
                 surface.ClosestPoint.side_effect = ValueError("query") if failure == "query" else None
-                surface.ClosestPoint.return_value = (failure != "not_found",2.,4.)
-                location = Mock(X=1.,Y=2.,Z=0.)
+                surface.ClosestPoint.return_value = (failure != "not_found",-1. if failure == "outside" else 2.,4.)
+                location = Mock(X=1.,Y=2.,Z=0.,IsValid=failure != "point")
                 location.DistanceTo.return_value = 3.
                 surface.PointAt.return_value = location
-                surface.Domain.side_effect = lambda axis: SimpleNamespace(NormalizedParameterAt=lambda p:p/(4. if axis==0 else 8.))
+                surface.Domain.side_effect = lambda axis: SimpleNamespace(T0=0.,T1=4. if axis==0 else 8.,NormalizedParameterAt=lambda p:p/(4. if axis==0 else 8.))
                 def measure(iterations, query):
                     self.assertEqual(iterations,3)
                     value = query()

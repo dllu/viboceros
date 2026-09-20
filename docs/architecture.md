@@ -295,6 +295,10 @@ surface, cache evaluated stations, or relax pole detection.
 Its [candidate module](surface-candidate-selection.md) ranks original-surface
 points with conservative distance bounds and exact tie/overlap predicates,
 including grid selection and rounded boundary-curve proposals.
+The [curve closest-point module](curve-closest-point.md) shares immutable distance
+keys with surfaces. It separates bounded candidate selection from range-safe
+Newton/tangent refinement; translated curves only propose parameters, whose
+original model-space images decide the result.
 The separate [curvature module](curvature.md) forms a scale-aware orthonormal
 shape operator from those jets. Geometry evaluation is independent of the
 command's closest-point selection, reports, and permanent markers.

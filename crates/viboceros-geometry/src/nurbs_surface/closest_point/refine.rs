@@ -185,8 +185,5 @@ fn projected_gradient_norm(gradient: [Real; 2], fixed: [bool; 2]) -> Real {
 
 /// Divide by a nonzero derivative's norm without forming an overflowing norm.
 fn parameter_step(derivative: Vector3, motion: Real) -> Real {
-    let values = derivative.to_array();
-    let scale = values.into_iter().map(Real::abs).fold(0.0, Real::max);
-    let [x, y, z] = values.map(|v| v / scale);
-    (motion / x.hypot(y).hypot(z)) / scale
+    derivative.parameter_step(motion)
 }

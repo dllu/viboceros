@@ -1,0 +1,37 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "scope": "Private Xvfb/i3, five-case nurbs_curve_closest_robust fixture. These records are diagnostic failures, not valid reference geometry.",
+  "observations": [
+    {
+      "id": "signed-pole-distant-projection",
+      "status": "rejected_input",
+      "diagnostic": "ValueError at operation signed-pole-distant-projection: start: NURBS curve is invalid"
+    },
+    {
+      "id": "large-speed-line-projection",
+      "status": "invalid_output",
+      "adapter": "Before closest-result validation",
+      "raw_result": {
+        "elapsed_ns": 564575,
+        "id": "large-speed-line-projection",
+        "value": {
+          "distance": 0,
+          "parameter": -1.23432101234321e+308,
+          "point": [
+            -1.23432101234321e+308,
+            -1.23432101234321e+308,
+            -1.23432101234321e+308
+          ]
+        }
+      },
+      "validation_failure": "Parameter is outside the active [0,1] domain; returned point is invalid."
+    },
+    {
+      "id": "large-speed-line-projection",
+      "status": "rejected_output",
+      "adapter": "Fresh rerun after closest-result validation",
+      "diagnostic": "ValueError at operation large-speed-line-projection: start: closest-point parameter is outside the active domain"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 1e-12,
+  "passed": false,
+  "operations": [
+    {
+      "id": "distant-line-projection",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 14768.0,
+      "rhino_ns_per_iteration": 11367798.0,
+      "rhino_to_viboceros_ratio": 769.7588028169014,
+      "differences": []
+    },
+    {
+      "id": "distant-wide-domain-projection",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 14144.0,
+      "rhino_ns_per_iteration": 1319885.0,
+      "rhino_to_viboceros_ratio": 93.31766119909503,
+      "differences": []
+    },
+    {
+      "id": "translated-semicircle-offset",
+      "passed": false,
+      "max_absolute_error": 3.602879701896397e+16,
+      "viboceros_ns_per_iteration": 17264.0,
+      "rhino_ns_per_iteration": 701904.0,
+      "rhino_to_viboceros_ratio": 40.657089898053755,
+      "differences": [
+        "translated-semicircle-offset.value.parameter: 1 != 0 (error 1, limit 1e-09)",
+        "translated-semicircle-offset.value.point[0]: 18014398509481984 != -18014398509481984 (error 3.6e+16, limit 1.8e+04)"
+      ]
+    }
+  ],
+  "max_absolute_error": 3.602879701896397e+16,
+  "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation."
+}

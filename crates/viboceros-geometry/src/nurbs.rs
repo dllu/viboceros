@@ -1,6 +1,7 @@
 use std::ops::RangeInclusive;
 mod arc_length;
 mod circularity;
+mod closest_point;
 mod decompose;
 mod evaluate;
 pub(crate) mod exact;
@@ -1390,157 +1391,6 @@ impl NurbsCurve {
     pub fn derivative_at(&self, parameter: Real) -> Result<Vector3, GeometryError> {
         self.evaluate_with_derivative(parameter)
             .map(|(_, derivative)| derivative)
-    }
-
-    /// Finds the active-domain parameter nearest to a finite model-space
-    /// point.
-    ///
-    /// Every nonempty knot span contributes endpoint and midpoint seeds, with
-    /// an additional bounded uniform seed set for high-span and periodic
-    /// curves. The best candidates are refined by curvature-aware Newton
-    /// steps with a projected-tangent fallback, clamping and monotone
-    /// backtracking, so rational and
-    /// non-uniform parameterizations do not need to be sampled as polylines.
-    pub fn closest_parameter(
-        &self,
-        target: Point3,
-        tolerance: Tolerance,
-    ) -> Result<Real, GeometryError> {
-        // Keep distance comparisons and tangent residuals in one local frame.
-        // Restoring a large world origin before subtracting the target can
-        // quantize the objective and stop refinement before stationarity.
-        let origin = self.control_points[0].point;
-        if origin.to_array() != [0.0; 3] {
-            let offset = Vector3::try_new(-origin.x(), -origin.y(), -origin.z())?;
-            if let (Ok(local), Ok(target)) = (
-                self.transformed(AffineTransform3::from_translation(offset)),
-                target.translated(offset),
-            ) {
-                return local.closest_parameter_in_frame(target, tolerance);
-            }
-        }
-        self.closest_parameter_in_frame(target, tolerance)
-    }
-
-    fn closest_parameter_in_frame(
-        &self,
-        target: Point3,
-        tolerance: Tolerance,
-    ) -> Result<Real, GeometryError> {
-        let domain = self.domain();
-        let domain_start = *domain.start();
-        let domain_end = *domain.end();
-        let seeds = curve_closest_parameter_seeds(self.spans(), domain_start, domain_end);
-        let mut candidates = seeds
-            .into_iter()
-            .filter_map(|parameter| {
-                self.evaluate(parameter)
-                    .and_then(|point| point.distance_to(target))
-                    .ok()
-                    .map(|distance| (distance, parameter))
-            })
-            .collect::<Vec<_>>();
-        candidates.sort_by(|left, right| {
-            left.0
-                .total_cmp(&right.0)
-                .then_with(|| left.1.total_cmp(&right.1))
-        });
-        candidates.truncate(16);
-        let mut best = candidates
-            .first()
-            .copied()
-            .ok_or(GeometryError::Degenerate {
-                context: "NURBS curve closest-point search",
-            })?;
-        for (_, seed) in candidates {
-            if let Ok((parameter, distance)) =
-                self.refine_closest_parameter(target, seed, [domain_start, domain_end], tolerance)
-                && (distance < best.0 || (distance == best.0 && parameter < best.1))
-            {
-                best = (distance, parameter);
-            }
-        }
-        Ok(best.1)
-    }
-
-    fn refine_closest_parameter(
-        &self,
-        target: Point3,
-        mut parameter: Real,
-        domain: [Real; 2],
-        tolerance: Tolerance,
-    ) -> Result<(Real, Real), GeometryError> {
-        let mut distance = self.evaluate(parameter)?.distance_to(target)?;
-        for _ in 0..64 {
-            let (point, derivative, second) = match self.evaluate_with_second_derivative(parameter)
-            {
-                Ok((point, first, second)) => (point, first, Some(second)),
-                Err(_) => {
-                    // A finite first derivative need not have a representable
-                    // second derivative on an extremely scaled domain.
-                    let (point, first) = self.evaluate_with_derivative(parameter)?;
-                    (point, first, None)
-                }
-            };
-            let speed = derivative.length()?;
-            if speed == 0.0 {
-                break;
-            }
-            let residual = point.vector_to(target)?;
-            let tangent_projection = residual.dot(derivative)? / speed;
-            if tangent_projection.abs() <= tolerance.absolute() {
-                break;
-            }
-            // Hessian of squared distance / 2 is |C'|^2 - residual.C''.
-            // Divide by speed before forming products to avoid squaring it.
-            // The tangent-only step can oscillate almost indefinitely when
-            // curvature makes this Hessian approximately twice |C'|^2.
-            let curvature = second.and_then(|second| {
-                Vector3::try_from(second.to_array().map(|x| x / speed))
-                    .ok()
-                    .and_then(|scaled| residual.dot(scaled).ok())
-            });
-            let hessian_over_speed = curvature.map_or(speed, |c| speed - c);
-            let denominator = if hessian_over_speed.is_finite() && hessian_over_speed > 0.0 {
-                hessian_over_speed
-            } else {
-                speed
-            };
-            let delta = tangent_projection / denominator;
-            let mut accepted = None;
-            for (attempt, direction) in [delta, tangent_projection / speed].into_iter().enumerate()
-            {
-                if !direction.is_finite() || (attempt == 1 && direction == delta) {
-                    continue;
-                }
-                let mut step: Real = 1.0;
-                for _ in 0..24 {
-                    let candidate = step
-                        .mul_add(direction, parameter)
-                        .clamp(domain[0], domain[1]);
-                    if candidate == parameter {
-                        break;
-                    }
-                    if let Ok(candidate_distance) =
-                        self.evaluate(candidate).and_then(|p| p.distance_to(target))
-                        && candidate_distance <= distance
-                    {
-                        accepted = Some((candidate, candidate_distance));
-                        break;
-                    }
-                    step *= 0.5;
-                }
-                if accepted.is_some() {
-                    break;
-                }
-            }
-            let Some((next_parameter, next_distance)) = accepted else {
-                break;
-            };
-            parameter = next_parameter;
-            distance = next_distance;
-        }
-        Ok((parameter, distance))
     }
 
     /// Finds finite intersections with another NURBS curve.
@@ -6140,25 +5990,6 @@ fn validate_structure(
     }
 
     Ok(())
-}
-
-fn curve_closest_parameter_seeds(
-    spans: impl Iterator<Item = (Real, Real)>,
-    domain_start: Real,
-    domain_end: Real,
-) -> Vec<Real> {
-    const UNIFORM_SEED_COUNT: usize = 33;
-    let mut seeds = Vec::new();
-    for (start, end) in spans {
-        seeds.extend([start, start * 0.5 + end * 0.5, end]);
-    }
-    for index in 0..UNIFORM_SEED_COUNT {
-        let fraction = index as Real / (UNIFORM_SEED_COUNT - 1) as Real;
-        seeds.push(domain_start.mul_add(1.0 - fraction, domain_end * fraction));
-    }
-    seeds.sort_by(Real::total_cmp);
-    seeds.dedup();
-    seeds
 }
 
 pub(crate) fn validate_direction(

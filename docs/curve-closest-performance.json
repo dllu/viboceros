@@ -1,0 +1,433 @@
+{
+  "baseline_commit": "d35a779755cfa87508e3253167919f1c1a4147c4",
+  "architecture": "aarch64",
+  "cpu_affinity": 5,
+  "rounds": 5,
+  "iterations": 500,
+  "timed_work": "Curve search plus final point evaluation and distance; excludes construction. Before and after groups ran sequentially, no concurrent build or Rhino launch. No host frequency or core isolation control.",
+  "executable_sha256": {
+    "before": "2ad7f0c2612c0d184b79c6a2e194ecc5d46aceec356d4c9dfe20279a440fdb29",
+    "after": "e0f891639555e4360e46a3a4c0c1ee4aee2a76bde2d4c003dad30cd75c09b5cf"
+  },
+  "curves": [
+    {
+      "id": "rational-quarter-circle-closest-point",
+      "before_elapsed_ns": [
+        7607807,
+        7604879,
+        7655151,
+        7618335,
+        7595599
+      ],
+      "after_elapsed_ns": [
+        14622509,
+        14570622,
+        14545806,
+        14597054,
+        14586893
+      ],
+      "before_ns_per_query": 15215.614,
+      "after_ns_per_query": 29173.786,
+      "after_over_before": 1.9173584450814802,
+      "values_bit_identical": false,
+      "before_value": {
+        "distance": 1,
+        "parameter": 0.4999999997883317,
+        "point": [
+          0.7071067814345323,
+          0.7071067809385627,
+          0
+        ]
+      },
+      "after_value": {
+        "distance": 1,
+        "parameter": 0.5000000000000001,
+        "point": [
+          0.7071067811865475,
+          0.7071067811865477,
+          0
+        ]
+      },
+      "original_evaluated_point_distance_order": "closer"
+    },
+    {
+      "id": "rational-nonuniform-multispan-closest-point",
+      "before_elapsed_ns": [
+        13624189,
+        13572333,
+        13674269,
+        13626141,
+        13617085
+      ],
+      "after_elapsed_ns": [
+        16008686,
+        16002445,
+        15992413,
+        15982909,
+        15969710
+      ],
+      "before_ns_per_query": 27248.378,
+      "after_ns_per_query": 31984.826,
+      "after_over_before": 1.1738249520760464,
+      "values_bit_identical": false,
+      "before_value": {
+        "distance": 0.9285122304567901,
+        "parameter": 3.3135641436497743,
+        "point": [
+          5.503305408997005,
+          -1.4561395540851896,
+          0
+        ]
+      },
+      "after_value": {
+        "distance": 0.92851223045679,
+        "parameter": 3.313564143576022,
+        "point": [
+          5.503305408799323,
+          -1.4561395545310791,
+          0
+        ]
+      },
+      "original_evaluated_point_distance_order": "closer"
+    },
+    {
+      "id": "curve-endpoint-closest-point",
+      "before_elapsed_ns": [
+        3214032,
+        3216080,
+        3227824,
+        3229616,
+        3221440
+      ],
+      "after_elapsed_ns": [
+        4575263,
+        4565967,
+        4630079,
+        4576944,
+        4553967
+      ],
+      "before_ns_per_query": 6442.88,
+      "after_ns_per_query": 9150.526,
+      "after_over_before": 1.4202539857951724,
+      "values_bit_identical": true,
+      "before_value": {
+        "distance": 8.306623862918075,
+        "parameter": -5,
+        "point": [
+          -2,
+          3,
+          1
+        ]
+      },
+      "after_value": {
+        "distance": 8.306623862918075,
+        "parameter": -5,
+        "point": [
+          -2,
+          3,
+          1
+        ]
+      },
+      "original_evaluated_point_distance_order": "equal"
+    }
+  ],
+  "surface_workloads": {
+    "captured_utc": "2026-09-20 13:05:46 UTC",
+    "architecture": "aarch64",
+    "baseline_commit": "d35a779755cfa87508e3253167919f1c1a4147c4",
+    "executable_sha256": {
+      "before": "2ad7f0c2612c0d184b79c6a2e194ecc5d46aceec356d4c9dfe20279a440fdb29",
+      "after": "e0f891639555e4360e46a3a4c0c1ee4aee2a76bde2d4c003dad30cd75c09b5cf"
+    },
+    "cpu_affinity": 5,
+    "ordinary": [
+      {
+        "id": "plane-unit",
+        "queries_per_batch": 3,
+        "iterations": 200,
+        "before_elapsed_ns": [
+          600048,
+          595056,
+          597775,
+          594288,
+          594544
+        ],
+        "before_ns_per_query": 991.7600000000001,
+        "after_elapsed_ns": [
+          598864,
+          597536,
+          591168,
+          591056,
+          594704
+        ],
+        "after_ns_per_query": 991.1733333333333,
+        "speedup": 1.0005918910920393
+      },
+      {
+        "id": "plane-wide-u",
+        "queries_per_batch": 3,
+        "iterations": 200,
+        "before_elapsed_ns": [
+          605824,
+          594160,
+          593344,
+          598064,
+          595264
+        ],
+        "before_ns_per_query": 992.1066666666667,
+        "after_elapsed_ns": [
+          595615,
+          593024,
+          590816,
+          590800,
+          591680
+        ],
+        "after_ns_per_query": 986.1333333333333,
+        "speedup": 1.0060573282855598
+      },
+      {
+        "id": "plane-anisotropic",
+        "queries_per_batch": 3,
+        "iterations": 200,
+        "before_elapsed_ns": [
+          596928,
+          593696,
+          597840,
+          609680,
+          593264
+        ],
+        "before_ns_per_query": 994.88,
+        "after_elapsed_ns": [
+          593488,
+          595808,
+          591984,
+          589056,
+          591824
+        ],
+        "after_ns_per_query": 986.64,
+        "speedup": 1.0083515770696505
+      },
+      {
+        "id": "skew-anisotropic",
+        "queries_per_batch": 2,
+        "iterations": 200,
+        "before_elapsed_ns": [
+          416736,
+          418912,
+          417248,
+          423552,
+          416784
+        ],
+        "before_ns_per_query": 1043.12,
+        "after_elapsed_ns": [
+          418288,
+          415264,
+          408192,
+          410704,
+          409904
+        ],
+        "after_ns_per_query": 1026.76,
+        "speedup": 1.0159336164244808
+      },
+      {
+        "id": "cylinder-unit",
+        "queries_per_batch": 3,
+        "iterations": 200,
+        "before_elapsed_ns": [
+          72383124,
+          72483236,
+          72374164,
+          72549492,
+          72426004
+        ],
+        "before_ns_per_query": 120710.00666666667,
+        "after_elapsed_ns": [
+          91332145,
+          91319072,
+          91409024,
+          91373249,
+          91512976
+        ],
+        "after_ns_per_query": 152288.74833333332,
+        "speedup": 0.7926390359611707
+      },
+      {
+        "id": "cylinder-anisotropic",
+        "queries_per_batch": 3,
+        "iterations": 200,
+        "before_elapsed_ns": [
+          76139859,
+          76210003,
+          76118420,
+          76232371,
+          76176227
+        ],
+        "before_ns_per_query": 126960.37833333334,
+        "after_elapsed_ns": [
+          92774545,
+          92678689,
+          92679505,
+          92699888,
+          92768817
+        ],
+        "after_ns_per_query": 154499.81333333332,
+        "speedup": 0.8217510144133077
+      },
+      {
+        "id": "paraboloid-unit",
+        "queries_per_batch": 9,
+        "iterations": 200,
+        "before_elapsed_ns": [
+          408729917,
+          409021389,
+          408964749,
+          408805260,
+          409687916
+        ],
+        "before_ns_per_query": 227202.63833333334,
+        "after_elapsed_ns": [
+          497865230,
+          497513661,
+          496996621,
+          496883932,
+          497269645
+        ],
+        "after_ns_per_query": 276260.9138888889,
+        "speedup": 0.8224204978367421
+      },
+      {
+        "id": "paraboloid-anisotropic",
+        "queries_per_batch": 9,
+        "iterations": 200,
+        "before_elapsed_ns": [
+          419284204,
+          423761530,
+          419309611,
+          419153930,
+          420067642
+        ],
+        "before_ns_per_query": 232949.7838888889,
+        "after_elapsed_ns": [
+          524869257,
+          525051961,
+          524440088,
+          524631400,
+          524879432
+        ],
+        "after_ns_per_query": 291594.0316666667,
+        "speedup": 0.7988839228204215
+      },
+      {
+        "id": "saddle-unit",
+        "queries_per_batch": 3,
+        "iterations": 200,
+        "before_elapsed_ns": [
+          67558068,
+          67650117,
+          67543557,
+          67756581,
+          67645429
+        ],
+        "before_ns_per_query": 112742.38166666667,
+        "after_elapsed_ns": [
+          75826083,
+          75847811,
+          75920131,
+          75976499,
+          75897699
+        ],
+        "after_ns_per_query": 126496.165,
+        "speedup": 0.8912711438063492
+      }
+    ],
+    "signed": [
+      {
+        "workload": "endpoint",
+        "queries_per_operation": [
+          1,
+          1
+        ],
+        "wall_ns": {
+          "before": [
+            61167734
+          ],
+          "after": [
+            62391541
+          ]
+        },
+        "values_bit_identical_across_all_runs": true,
+        "median_wall_ns": {
+          "before": 61167734,
+          "after": 62391541
+        },
+        "speedup": 0.9803850493130151
+      },
+      {
+        "workload": "off_surface",
+        "queries_per_operation": [
+          3,
+          3
+        ],
+        "wall_ns": {
+          "before": [
+            1024077572
+          ],
+          "after": [
+            1008703173
+          ]
+        },
+        "values_bit_identical_across_all_runs": true,
+        "median_wall_ns": {
+          "before": 1024077572,
+          "after": 1008703173
+        },
+        "speedup": 1.0152417474352486
+      },
+      {
+        "workload": "full_fixture_queries",
+        "queries_per_operation": [
+          135,
+          135
+        ],
+        "wall_ns": {
+          "before": [
+            39289793112
+          ],
+          "after": [
+            39260088562
+          ]
+        },
+        "values_bit_identical_across_all_runs": false,
+        "median_wall_ns": {
+          "before": 39289793112,
+          "after": 39260088562
+        },
+        "speedup": 1.0007566093477627
+      }
+    ],
+    "ordinary_values_bit_identical": false
+  },
+  "value_audit": {
+    "ordinary_surface": {
+      "queries_including_five_rounds": 190,
+      "changed_results": 15,
+      "unique_changed_results": 3,
+      "maximum_point_coordinate_change": 9.248335430811494e-11,
+      "maximum_normalized_parameter_change": 2.8544278052322625e-11,
+      "maximum_native_parameter_change": 192.958984375,
+      "maximum_distance_change": 7.105427357601002e-15,
+      "exact_rational_original_point_distance_order": {
+        "closer": 10,
+        "equal": 5,
+        "farther": 0
+      }
+    },
+    "signed_full_fixture": {
+      "sampled_points": 270,
+      "changed_points": 4,
+      "maximum_coordinate_change": 8.881784197001252e-16,
+      "definitions_bit_identical": true
+    },
+    "signed_endpoint_and_off_surface_values_bit_identical": true
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "distant-line-projection",
+      "value": {
+        "distance": 1e+100,
+        "parameter": 0.37,
+        "point": [
+          0.37,
+          0.0,
+          0.0
+        ]
+      },
+      "elapsed_ns": 14768
+    },
+    {
+      "id": "distant-wide-domain-projection",
+      "value": {
+        "distance": 1e+100,
+        "parameter": 960000000000.0,
+        "point": [
+          0.37,
+          0.0,
+          0.0
+        ]
+      },
+      "elapsed_ns": 14144
+    },
+    {
+      "id": "large-speed-line-projection",
+      "value": {
+        "distance": 1.0,
+        "parameter": 0.37,
+        "point": [
+          3.7e+159,
+          0.0,
+          0.0
+        ]
+      },
+      "elapsed_ns": 14832
+    },
+    {
+      "id": "signed-pole-distant-projection",
+      "value": {
+        "distance": 1e+100,
+        "parameter": 0.25,
+        "point": [
+          -0.5,
+          0.0,
+          0.0
+        ]
+      },
+      "elapsed_ns": 1639343
+    },
+    {
+      "id": "translated-semicircle-offset",
+      "value": {
+        "distance": 2.5476206690103092e+16,
+        "parameter": 1.0,
+        "point": [
+          1.8014398509481984e+16,
+          0.0,
+          0.0
+        ]
+      },
+      "elapsed_ns": 17264
+    }
+  ]
+}

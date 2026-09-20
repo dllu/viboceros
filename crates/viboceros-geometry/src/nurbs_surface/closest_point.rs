@@ -62,7 +62,7 @@ impl NurbsSurface {
             context: "NURBS surface closest-point search",
         })?;
         let mut best = Candidate::evaluate(&mut query, target, first.parameters)?;
-        if best.point == target {
+        if best.point() == target {
             return Ok(best.parameters);
         }
         // Clamping a coupled two-parameter Newton step can stall before the
@@ -87,7 +87,7 @@ impl NurbsSurface {
                 && candidate.compare(&best, target).is_lt()
             {
                 best = candidate;
-                if best.point == target {
+                if best.point() == target {
                     return Ok(best.parameters);
                 }
             }
@@ -110,7 +110,7 @@ impl NurbsSurface {
                     refined = true;
                     if candidate.compare(&best, target).is_lt() {
                         best = candidate;
-                        if best.point == target {
+                        if best.point() == target {
                             return Ok(best.parameters);
                         }
                     }
