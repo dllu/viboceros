@@ -37,6 +37,7 @@ use viboceros_io::{
 
 mod construction_plane;
 mod interface;
+mod isocurves;
 mod mass_properties;
 mod parameter_bounds;
 mod surface_closest;
@@ -390,6 +391,12 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: TrimmedBrepFixture,
+    },
+    TrimmedSurfaceIsocurves {
+        id: String,
+        #[serde(flatten)]
+        fixture: TrimmedBrepFixture,
+        parameters: Vec<[f64; 2]>,
     },
     DocumentObjectStateCycle {
         id: String,
@@ -1635,6 +1642,7 @@ impl Operation {
             | Self::CurveJoinClose { id, .. }
             | Self::PolycurveDocument { id, .. }
             | Self::TrimmedSurfaceMassProperties { id, .. }
+            | Self::TrimmedSurfaceIsocurves { id, .. }
             | Self::DocumentObjectStateCycle { id, .. }
             | Self::DocumentObjectSwapCycle { id }
             | Self::DocumentObjectIsolationCycle { id }
@@ -2090,6 +2098,11 @@ fn execute(
         Operation::TrimmedSurfaceMassProperties { fixture, .. } => {
             mass_properties::run(fixture, iterations, tolerance)?
         }
+        Operation::TrimmedSurfaceIsocurves {
+            fixture,
+            parameters,
+            ..
+        } => isocurves::run(fixture, parameters, iterations, tolerance)?,
         Operation::DocumentObjectStateCycle {
             object_count,
             hide_indices,

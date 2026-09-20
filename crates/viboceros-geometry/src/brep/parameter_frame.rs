@@ -11,6 +11,30 @@ pub(super) struct ParameterFrame<'a> {
     pub(super) origin: [Real; 2],
 }
 
+impl ParameterFrame<'_> {
+    pub(super) fn restore_curve_parameter_origin(
+        &self,
+        curve: NurbsCurve,
+        axis: usize,
+    ) -> Result<NurbsCurve, GeometryError> {
+        let origin = self.origin[axis];
+        if origin == 0. {
+            return Ok(curve);
+        }
+        let Some(knots) = curve
+            .knots()
+            .iter()
+            .map(|&k| exact_difference(k, -origin))
+            .collect::<Option<Vec<_>>>()
+        else {
+            // Newly computed trim intersections need not fit on the native
+            // parameter grid. Keep their local parameterization and geometry.
+            return Ok(curve);
+        };
+        NurbsCurve::try_new_rational(curve.degree(), curve.control_points().to_vec(), knots)
+    }
+}
+
 impl BrepFace {
     pub(super) fn local_parameter_frame(&self) -> Result<ParameterFrame<'_>, GeometryError> {
         let knots = [self.surface.knots_u(), self.surface.knots_v()];

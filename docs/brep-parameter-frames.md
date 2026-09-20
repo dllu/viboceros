@@ -26,6 +26,8 @@ coordinate. The frame is shared by:
 - containment scans after checking the caller's original native domain;
 - independent face meshing, density selection, and conforming shared-edge meshing;
 - planar and curved trimmed area/volume integration and rectangular patch integration.
+- [trimmed isocurve extraction and display wires](brep-isocurves.md), including
+  density-selected stations for trim-aware `ExtractIsocurve ExtractAll`.
 
 Temporary frames are per face, not per evaluation or trim. Unshifted faces borrow
 the original face; shifted faces own one temporary surface and trim set. Model
@@ -140,8 +142,11 @@ independent meshing, and a conforming retry currently prepare separate frames.
 
 An axis whose full representation cannot be translated exactly retains its
 native evaluation behavior. Other consumers of native UV outputs, including
-isocurve/structure-edit APIs and composed bounds algorithms, do not automatically
-inherit this frame. Nor does it fix a trim's own poorly resolved native knot
+closest-parameter results and structure-edit APIs, do not automatically inherit
+this frame. Composed bounds use their own homogeneous normalized evaluation;
+the [large-offset isocurve regressions](brep-isocurves.md) also verify those
+bounds without changing their implementation. Nor does the frame fix a trim's
+own poorly resolved native knot
 parameter, arbitrary near-degenerate topology, or model-space output rounding.
 These are bounded improvements, not universal translation-invariance or Rhino
 compatibility guarantees.

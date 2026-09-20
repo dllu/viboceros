@@ -12,7 +12,7 @@ use crate::{
 mod trimmed;
 
 #[cfg(test)]
-mod tests;
+pub(in crate::brep) mod tests;
 
 #[derive(Clone, Copy)]
 enum Measure {

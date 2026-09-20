@@ -1,0 +1,194 @@
+{
+  "baseline": "22625f5",
+  "profile": "release",
+  "architecture": "aarch64",
+  "rounds": 3,
+  "iterations_per_round": 1000,
+  "bitwise_equal_records": 24,
+  "comparison": "Degree, control counts, knots, Euclidean controls, weights and six native-domain point samples compared as full u64 bit vectors, without hashing.",
+  "workload": "Density 0 denotes six separate single-isocurve extractions at fixed 0, 0.125, 0.375 in both directions. Other densities call Brep::wireframe_curves. Construction and bit recording are outside timing; output allocation and destruction are inside.",
+  "caveat": "Single before/after process pair; other workspace stress tests and compilation were active. These are bounded measurements, not statistically established performance gains.",
+  "reproduction": "Compile the attached source as cfg(test) brep/wire_bench.rs in a detached worktree. Expose mass_properties::tests and its paraboloid/round_trim helpers within crate::brep. Run cargo test --release -p viboceros-geometry local_isocurve_performance_probe -- --nocapture before and after applying only the isocurve/parameter-frame kernel change.",
+  "cases": [
+    {
+      "fixture": "disk",
+      "density": 0,
+      "before_elapsed_ns": [
+        49464512,
+        49451536,
+        49512240
+      ],
+      "after_elapsed_ns": [
+        63316065,
+        49543216,
+        49523631
+      ],
+      "before_ns_per_iteration": 49464.512,
+      "after_ns_per_iteration": 49543.216,
+      "change_percent": 0.15911205188883226
+    },
+    {
+      "fixture": "disk",
+      "density": 1,
+      "before_elapsed_ns": [
+        13642429,
+        13651422,
+        13686509
+      ],
+      "after_elapsed_ns": [
+        13703681,
+        13686977,
+        13738593
+      ],
+      "before_ns_per_iteration": 13651.422,
+      "after_ns_per_iteration": 13703.681,
+      "change_percent": 0.3828099373091032
+    },
+    {
+      "fixture": "disk",
+      "density": 3,
+      "before_elapsed_ns": [
+        35504515,
+        35811954,
+        35785587
+      ],
+      "after_elapsed_ns": [
+        35551262,
+        35572446,
+        35829182
+      ],
+      "before_ns_per_iteration": 35785.587,
+      "after_ns_per_iteration": 35572.446,
+      "change_percent": -0.5956057113161162
+    },
+    {
+      "fixture": "disk",
+      "density": 5,
+      "before_elapsed_ns": [
+        36725188,
+        36999827,
+        37059284
+      ],
+      "after_elapsed_ns": [
+        36785647,
+        36933903,
+        36964288
+      ],
+      "before_ns_per_iteration": 36999.827,
+      "after_ns_per_iteration": 36933.903,
+      "change_percent": -0.1781738060559035
+    },
+    {
+      "fixture": "annulus",
+      "density": 0,
+      "before_elapsed_ns": [
+        79803245,
+        79580861,
+        79667854
+      ],
+      "after_elapsed_ns": [
+        79921590,
+        80680919,
+        80628151
+      ],
+      "before_ns_per_iteration": 79667.854,
+      "after_ns_per_iteration": 80628.151,
+      "change_percent": 1.205375759211469
+    },
+    {
+      "fixture": "annulus",
+      "density": 1,
+      "before_elapsed_ns": [
+        26906699,
+        26925050,
+        26953338
+      ],
+      "after_elapsed_ns": [
+        26973171,
+        26974274,
+        27017091
+      ],
+      "before_ns_per_iteration": 26925.05,
+      "after_ns_per_iteration": 26974.274,
+      "change_percent": 0.18281860200817235
+    },
+    {
+      "fixture": "annulus",
+      "density": 3,
+      "before_elapsed_ns": [
+        36338307,
+        36336323,
+        36388547
+      ],
+      "after_elapsed_ns": [
+        36281023,
+        36311166,
+        36355759
+      ],
+      "before_ns_per_iteration": 36338.307,
+      "after_ns_per_iteration": 36311.166,
+      "change_percent": -0.0746897757234577
+    },
+    {
+      "fixture": "annulus",
+      "density": 5,
+      "before_elapsed_ns": [
+        72241270,
+        72280038,
+        72342727
+      ],
+      "after_elapsed_ns": [
+        72295708,
+        71457420,
+        72390220
+      ],
+      "before_ns_per_iteration": 72280.038,
+      "after_ns_per_iteration": 72295.708,
+      "change_percent": 0.021679568015708917
+    }
+  ],
+  "probe_source": [
+    "use super::*;",
+    "use super::mass_properties::tests::{paraboloid, round_trim};",
+    "use std::{hint::black_box, time::Instant};",
+    "",
+    "#[test]",
+    "fn local_isocurve_performance_probe() {",
+    "    for round in 0..3 {",
+    "        for (name, radii) in [(\"disk\", vec![0.5]), (\"annulus\", vec![0.5, 0.25])] {",
+    "            let brep = round_trim(paraboloid(), &radii, false);",
+    "            for density in [0, 1, 3, 5] {",
+    "                let run = || {",
+    "                    if density == 0 {",
+    "                        let mut curves = Vec::new();",
+    "                        for fixed in [0., 0.125, 0.375] {",
+    "                            curves.extend(brep.faces[0].isocurve_u_segments(fixed, Tolerance::DEFAULT).unwrap());",
+    "                            curves.extend(brep.faces[0].isocurve_v_segments(fixed, Tolerance::DEFAULT).unwrap());",
+    "                        }",
+    "                        curves",
+    "                    } else {",
+    "                        brep.wireframe_curves(density, Tolerance::DEFAULT).unwrap()",
+    "                    }",
+    "                };",
+    "                let result = black_box(run());",
+    "                let bits = result.iter().flat_map(|c| {",
+    "                    let mut numbers = vec![c.degree() as u64, c.control_points().len() as u64, c.knots().len() as u64];",
+    "                    numbers.extend(c.knots().iter().map(|k| k.to_bits()));",
+    "                    for control in c.control_points() {",
+    "                        numbers.extend(control.point().to_array().map(f64::to_bits));",
+    "                        numbers.push(control.weight().to_bits());",
+    "                    }",
+    "                    for t in [0., 0.125, 0.3, 0.5, 0.875, 1.] {",
+    "                        numbers.extend(c.evaluate(c.parameter_at(t).unwrap()).unwrap().to_array().map(f64::to_bits));",
+    "                    }",
+    "                    numbers",
+    "                }).collect::<Vec<_>>();",
+    "                let start = Instant::now();",
+    "                for _ in 0..1000 { black_box(run()); }",
+    "                println!(\"WIRE_BENCH {{\\\"round\\\":{round},\\\"fixture\\\":\\\"{name}\\\",\\\"density\\\":{density},\\\"iterations\\\":1000,\\\"elapsed_ns\\\":{},\\\"geometry\\\":{bits:?}}}\", start.elapsed().as_nanos());",
+    "            }",
+    "        }",
+    "    }",
+    "}"
+  ]
+}

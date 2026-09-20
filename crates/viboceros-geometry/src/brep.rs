@@ -15,6 +15,7 @@ use crate::{
 
 mod combine;
 mod incidence;
+mod isocurves;
 mod loft;
 mod mass_properties;
 mod morph;
@@ -358,30 +359,6 @@ impl BrepFace {
     #[inline]
     pub fn loops(&self) -> &[BrepLoop] {
         &self.loops
-    }
-
-    /// Returns the exact underlying U-isocurve portions inside this face's
-    /// parameter-space trim region.
-    pub fn isocurve_u_segments(
-        &self,
-        v: Real,
-        tolerance: Tolerance,
-    ) -> Result<Vec<NurbsCurve>, GeometryError> {
-        let curve = self.surface.isocurve_u(v)?;
-        let intervals = trimmed_isocurve_intervals(self, 0, v, tolerance)?;
-        trim_isocurve_to_intervals(curve, intervals)
-    }
-
-    /// Returns the exact underlying V-isocurve portions inside this face's
-    /// parameter-space trim region.
-    pub fn isocurve_v_segments(
-        &self,
-        u: Real,
-        tolerance: Tolerance,
-    ) -> Result<Vec<NurbsCurve>, GeometryError> {
-        let curve = self.surface.isocurve_v(u)?;
-        let intervals = trimmed_isocurve_intervals(self, 1, u, tolerance)?;
-        trim_isocurve_to_intervals(curve, intervals)
     }
 
     /// Tests whether a natural surface parameter lies on or inside the face's
@@ -3394,44 +3371,6 @@ impl Brep {
         (0..self.faces.len())
             .map(|face| self.duplicate_faces(&[face], tolerance))
             .collect()
-    }
-
-    /// Returns every topological edge once, followed by the exact trimmed
-    /// interior isocurves selected by the OpenNURBS wire-density rules.
-    pub fn wireframe_curves(
-        &self,
-        wire_density: i32,
-        tolerance: Tolerance,
-    ) -> Result<Vec<NurbsCurve>, GeometryError> {
-        // Validate the density before staging any output, including for a
-        // hypothetical face whose interior contributes no curves.
-        self.faces[0].surface().wire_parameters_u(wire_density)?;
-        if self.edges.len() > crate::MAX_SURFACE_WIRES {
-            return Err(GeometryError::TooManySurfaceWires);
-        }
-        let mut curves = Vec::new();
-        curves
-            .try_reserve_exact(self.edges.len())
-            .map_err(|_| GeometryError::TooManySurfaceWires)?;
-        curves.extend(self.edges.iter().map(|edge| edge.curve().clone()));
-
-        for face in &self.faces {
-            let parameters_v = face.surface().wire_parameters_v(wire_density)?;
-            let interior_v_count = parameters_v.len().saturating_sub(2);
-            for v in parameters_v.into_iter().skip(1).take(interior_v_count) {
-                for curve in face.isocurve_u_segments(v, tolerance)? {
-                    push_brep_wire(&mut curves, curve)?;
-                }
-            }
-            let parameters_u = face.surface().wire_parameters_u(wire_density)?;
-            let interior_u_count = parameters_u.len().saturating_sub(2);
-            for u in parameters_u.into_iter().skip(1).take(interior_u_count) {
-                for curve in face.isocurve_v_segments(u, tolerance)? {
-                    push_brep_wire(&mut curves, curve)?;
-                }
-            }
-        }
-        Ok(curves)
     }
 
     /// Finds the selected model-space point's nearest underlying face

@@ -686,6 +686,50 @@ def _trimmed_brep_from_definition(operation, tolerance):
             geometry.Dispose()
 
 
+def _trimmed_surface_isocurves(operation, iterations, tolerance):
+    parameters = operation["parameters"]
+    if not 1 <= len(parameters) <= 64:
+        raise ValueError("isocurve probes require 1..=64 UV pairs")
+    for pair in parameters:
+        if len(pair) != 2:
+            raise ValueError("isocurve probes require UV pairs")
+        for value in pair:
+            _finite(value, "isocurve parameter")
+    brep = _trimmed_brep_from_definition(operation, tolerance)
+    try:
+        def sample(face, direction, fixed):
+            domain = face.Domain(1 - direction)
+            if not domain.T0 <= fixed <= domain.T1:
+                raise ValueError("isocurve parameter outside native domain")
+            curves = face.TrimAwareIsoCurve(direction, fixed)
+            if curves is None:
+                raise ValueError("trim-aware isocurve extraction failed")
+            try:
+                records = []
+                for curve in curves:
+                    # Reparameterize only after extraction. Native trim roots
+                    # have already been chosen and any lost bits remain lost.
+                    curve.Domain = Rhino.Geometry.Interval(0.0, 1.0)
+                    if curve.Domain.T0 != 0.0 or curve.Domain.T1 != 1.0:
+                        raise ValueError("isocurve reparameterization failed")
+                    reverse = _xyz(curve.PointAt(0.0)) > _xyz(curve.PointAt(1.0))
+                    records.append([
+                        [_finite(x, "isocurve sample") for x in _xyz(curve.PointAt(1.0-t if reverse else t))]
+                        for t in [0.0, 0.125, 0.3, 0.5, 0.875, 1.0]
+                    ])
+                return sorted(records)
+            finally:
+                for curve in curves:
+                    curve.Dispose()
+
+        def compute():
+            return [[[sample(face, 0, v), sample(face, 1, u)] for u, v in parameters]
+                    for face in brep.Faces]
+        return _measure(iterations, compute)
+    finally:
+        brep.Dispose()
+
+
 def _trimmed_surface_mass_properties(operation, iterations, tolerance):
     brep = _trimmed_brep_from_definition(operation, tolerance)
     try:
@@ -4732,6 +4776,8 @@ def _execute(operation, iterations, tolerance):
         return _polycurve_geometry(operation, iterations, tolerance)
     if kind == "trimmed_surface_mass_properties":
         return _trimmed_surface_mass_properties(operation, iterations, tolerance)
+    if kind == "trimmed_surface_isocurves":
+        return _trimmed_surface_isocurves(operation, iterations, tolerance)
     if kind == "mesh_weld_vertex":
         document = Rhino.RhinoDoc.ActiveDoc
         source = _triangle_mesh(operation["vertices"], operation["triangles"])

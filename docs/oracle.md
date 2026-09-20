@@ -2,6 +2,14 @@
 
 [Project overview](../README.md)
 
+The `trimmed_surface_isocurves` probe accepts a `TrimmedBrepFixture` and 1–64
+native `[u,v]` parameter pairs. It returns samples in face, query, U/V, segment,
+point order. Both engines normalize each extracted curve's domain *after*
+extraction, so differing output parameter origins do not hide geometric errors.
+The [paired isocurve fixtures and recorded comparison](brep-isocurves.md)
+cover local and translated paraboloid disks/annuli: local cases pass, while
+large-offset cases remain explicit Rhino discrepancies.
+
 The `mesh_face_normals` probe returns one normal per stored triangle or quad.
 Its [fixture](../tools/rhino_oracle/fixtures/mesh_face_normals.json) and
 [Rhino 8.32 record](../tools/rhino_oracle/observations/mesh_face_normals.json)

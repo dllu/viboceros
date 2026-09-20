@@ -298,6 +298,10 @@ for topology predicates, containment, and triangulation.
 `brep/parameter_frame` prepares [lossless local UV frames](brep-parameter-frames.md)
 for validation, containment, meshing, and mass integration, avoiding native UV
 rounding between trim and surface evaluation without altering stored geometry.
+`brep/isocurves` uses the same frames for trim intersections and density stations;
+it restores extracted curve domains only losslessly and keeps display wires
+locally parameterized. The `extract_isocurve` command module owns parsing,
+selection, and atomic document updates. See [isocurve precision](brep-isocurves.md).
 
 The [loft kernel](loft.md) and [one-rail sweep](sweep1.md) share exact degree/knot
 matching and the explicit common-basis end-weight policy in `section_basis`.

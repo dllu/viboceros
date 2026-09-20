@@ -99,12 +99,18 @@ model-space point on every selected NURBS surface or B-rep. B-rep results come
 from the nearest trimmed face and are split exactly around outer boundaries and
 holes; rational p-curve intersections determine the retained parameter
 intervals without faceting the output. Extracted curves preserve the varying
-direction's degree and parameter values even at non-clamped spans. Omit the
+direction's degree, including non-clamped spans. Trim-aware B-rep extraction
+uses a [lossless local UV frame](../brep-isocurves.md); native output parameters
+are restored only when every knot can be translated exactly. Otherwise the
+curve retains a local domain to avoid rounding its geometry. Omit the
 point to pick a surface location in the viewport. `IgnoreTrims=Yes` uses the
 full underlying B-rep face instead. `ExtractAll` emits the natural boundaries,
 knot wires, and density-dependent wires inside each knot span from all selected
 surfaces or B-rep faces; the per-object Rhino wire density survives 3DM I/O.
 The same wire-density rules drive viewport display and `ExtractWireframe`.
+Trim-aware `ExtractAll` generates its stations locally as well. B-rep display
+isocurves retain local domains for accurate sampling; source 3D edge domains
+are unchanged. Bare surfaces and `IgnoreTrims=Yes` still use native UV stations.
 That command emits each B-rep or exact-location-welded mesh topology edge once,
 adds exact trim-clipped interior surface isocurves, selects the results, and can
 place them on the current or input layer. `GroupOutput=Yes` forms one output

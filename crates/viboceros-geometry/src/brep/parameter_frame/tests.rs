@@ -56,6 +56,30 @@ fn unit_face() -> BrepFace {
 }
 
 #[test]
+fn curve_domain_restoration_never_rounds_an_interior_or_endpoint_knot() {
+    let face = translated_face(&unit_face(), [1e12, 0.]);
+    let frame = face.local_parameter_frame().unwrap();
+    for knots in [
+        vec![0., 0., 1., 1.],
+        vec![0., 0., 0.1, 1., 1.],
+        vec![0.1, 0.1, 0.9, 0.9],
+    ] {
+        let controls = (0..knots.len() - 2)
+            .map(|i| Point3::try_new(i as Real, 0., 0.).unwrap())
+            .collect();
+        let curve = NurbsCurve::try_new(1, controls, knots.clone()).unwrap();
+        let original = curve.clone();
+        let restored = frame.restore_curve_parameter_origin(curve, 0).unwrap();
+        assert_eq!(restored.control_points(), original.control_points());
+        if knots == [0., 0., 1., 1.] {
+            assert_eq!(restored.knots(), [1e12, 1e12, 1e12 + 1., 1e12 + 1.]);
+        } else {
+            assert_eq!(restored, original);
+        }
+    }
+}
+
+#[test]
 fn parameter_frames_are_lossless_source_preserving_and_idempotent() {
     use crate::nurbs::exact::rational;
     let unit = unit_face();

@@ -8,7 +8,7 @@ fn point(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }
 
-fn paraboloid() -> NurbsSurface {
+pub(in crate::brep) fn paraboloid() -> NurbsSurface {
     let coordinates = [-1.0, 0.0, 1.0];
     let squared_controls = [1.0, -1.0, 1.0];
     NurbsSurface::try_new(
@@ -91,7 +91,7 @@ fn trim_image_bounds_include_singular_poles_and_the_shared_spherical_seam() {
     assert!(bounds.max().distance_to(point(2., 0., 2.)).unwrap() < 1e-9);
 }
 
-fn round_trim(surface: NurbsSurface, radii: &[Real], capped: bool) -> Brep {
+pub(in crate::brep) fn round_trim(surface: NurbsSurface, radii: &[Real], capped: bool) -> Brep {
     let mut vertices = Vec::new();
     let mut edges = Vec::new();
     let mut loops = Vec::new();
