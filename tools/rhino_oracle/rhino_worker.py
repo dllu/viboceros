@@ -2145,6 +2145,10 @@ def _angle_command(operation):
     return _point_measurement_command("Angle", points, operation)
 
 
+def _evaluate_point_command(operation):
+    return _point_measurement_command("EvaluatePt", [operation["point"]], operation)
+
+
 def _point_measurement_command(name, points, operation):
     """Capture public command output in the oracle-owned document, without geometry edits."""
     document = Rhino.RhinoDoc.ActiveDoc
@@ -2156,7 +2160,8 @@ def _point_measurement_command(name, points, operation):
         _vector(operation.get("y_axis", [0, 1, 0])))
     if not plane.IsValid:
         raise ValueError("invalid measurement construction plane")
-    macro = "! _" + name + " " + " ".join("w" + _command_point(point) for point in points)
+    options = " _Label=Off" if name == "EvaluatePt" else ""
+    macro = "! _" + name + options + " " + " ".join("w" + _command_point(point) for point in points)
     try:
         viewport.SetConstructionPlane(plane)
         return _measurement_history(name, macro)
@@ -2173,7 +2178,9 @@ def _measurement_history(name, macro):
         raise ValueError("measurement command failed or history marker was lost: %s" %
                          Rhino.RhinoApp.CommandHistoryWindowText[-3000:])
     history = parts[1].strip()
-    if name + " =" not in history:
+    labels = (["Point in world coordinates =", "CPlane coordinates ="]
+              if name == "EvaluatePt" else [name + " ="])
+    if "Unknown command:" in history or not all(label in history for label in labels):
         raise ValueError("measurement command produced no measurement: %s" % history[-3000:])
     return {"history": history}, 0
 
@@ -4544,6 +4551,8 @@ def _execute(operation, iterations, tolerance):
         return _angle_objects_command(operation)
     if kind == "radius_command":
         return _radius_command(operation)
+    if kind == "evaluate_point_command":
+        return _evaluate_point_command(operation)
     if kind == "three_dm_curve_interchange":
         return _three_dm_curve_interchange(operation, iterations)
     if kind == "three_dm_brep_interchange":

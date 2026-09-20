@@ -29,10 +29,10 @@ impl Command for EvaluatePointCommand {
             if let Some((key, value)) = arguments[index].split_once('=') {
                 if label_seen
                     || !crate::option_name_eq(key, "Label")
-                    || crate::parse_yes_no(value) != Some(false)
+                    || !value.trim_start_matches('_').eq_ignore_ascii_case("Off")
                 {
                     return Err(CommandError::Usage(
-                        "EvaluatePt point [Label=No]; labels are not implemented",
+                        "EvaluatePt point [Label=Off]; labels are not implemented",
                     ));
                 }
                 label_seen = true;
@@ -42,10 +42,10 @@ impl Command for EvaluatePointCommand {
                 point = Some(value);
                 index += consumed;
             } else {
-                return Err(CommandError::Usage("EvaluatePt point [Label=No]"));
+                return Err(CommandError::Usage("EvaluatePt point [Label=Off]"));
             }
         }
-        let point = point.ok_or(CommandError::Usage("EvaluatePt point [Label=No]"))?;
+        let point = point.ok_or(CommandError::Usage("EvaluatePt point [Label=Off]"))?;
         let local = context.construction_plane.coordinates_of(point)?;
         let coordinates = |p: [f64; 3]| p.map(format_measurement).join(",");
         Ok(format!(
@@ -80,8 +80,8 @@ mod tests {
         .unwrap();
         for input in [
             "EvaluatePt 13,24,35",
-            "_EvaluatePt _Label=_No 13 24 35",
-            "EvaluatePt 13,24,35 Label=No",
+            "_EvaluatePt _Label=_Off 13 24 35",
+            "EvaluatePt 13,24,35 Label=Off",
         ] {
             assert_eq!(
                 registry
@@ -101,12 +101,36 @@ mod tests {
             "EvaluatePt",
             "EvaluatePt NaN,0,0",
             "EvaluatePt 0,0,0 extra",
-            "EvaluatePt 0,0,0 Label=Yes",
-            "EvaluatePt 0,0,0 Label=No Label=No",
+            "EvaluatePt 0,0,0 Label=On",
+            "EvaluatePt 0,0,0 Label=No",
+            "EvaluatePt 0,0,0 Label=Off Label=Off",
         ] {
             assert!(registry.execute(&mut doc, input).is_err());
             assert_eq!(format!("{doc:?}"), before);
         }
+    }
+
+    #[test]
+    fn evaluate_point_signed_plane_coordinates_match_live_rhino() {
+        // Rhino 8.32.26160.13001: docs/evaluate-point-rhino-reference.json.
+        let context = CommandContext {
+            construction_plane: Frame3::try_from_directions(
+                Point3::try_new(1., 2., 3.).unwrap(),
+                Vector3::try_new(0., -1., 0.).unwrap(),
+                Vector3::try_new(1., 0., 0.).unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        };
+        let mut document = Document::default();
+        let before = format!("{document:?}");
+        assert_eq!(
+            CommandRegistry::with_builtins()
+                .execute_in_context(&mut document, "EvaluatePt -5,0,2 Label=Off", context)
+                .unwrap(),
+            "World coordinates = -5,0,2\nCPlane coordinates = 2,-6,-1"
+        );
+        assert_eq!(format!("{document:?}"), before);
     }
 
     #[test]

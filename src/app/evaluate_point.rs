@@ -7,7 +7,7 @@ pub(super) fn start_command(arguments: &[&str]) -> Option<InteractiveCommand> {
         [option] => option.split_once('=').is_some_and(|(key, value)| {
             key.trim_start_matches(['_', '-'])
                 .eq_ignore_ascii_case("Label")
-                && value.trim_start_matches('_').eq_ignore_ascii_case("No")
+                && value.trim_start_matches('_').eq_ignore_ascii_case("Off")
         }),
         _ => false,
     };

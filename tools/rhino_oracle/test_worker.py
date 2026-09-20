@@ -83,6 +83,49 @@ class RhinoWorkerTests(unittest.TestCase):
                     self.worker._angle_command({"points": [[0,0,0]] * count})
             self.assertEqual(capture.call_count, 1)
 
+    def test_evaluate_point_probe_disables_labels_and_restores_cplane_on_error(self):
+        for failure in [False, True]:
+            viewport = SimpleNamespace(ConstructionPlane=lambda: "original", SetConstructionPlane=Mock())
+            rhino = SimpleNamespace(
+                RhinoDoc=SimpleNamespace(ActiveDoc=SimpleNamespace(
+                    Views=SimpleNamespace(ActiveView=SimpleNamespace(ActiveViewport=viewport)))),
+                Geometry=SimpleNamespace(Plane=lambda *args: SimpleNamespace(IsValid=True)))
+            capture = Mock(side_effect=ValueError("capture") if failure else None,
+                           return_value=({"history": "coordinates"}, 0))
+            with patch.object(self.worker, "Rhino", rhino), \
+                 patch.object(self.worker, "_point", lambda value: value), \
+                 patch.object(self.worker, "_vector", lambda value: value), \
+                 patch.object(self.worker, "_command_point", lambda value: ",".join(map(str, value))), \
+                 patch.object(self.worker, "_measurement_history", capture):
+                if failure:
+                    with self.assertRaisesRegex(ValueError, "capture"):
+                        self.worker._evaluate_point_command({"point": [13,24,35]})
+                else:
+                    self.assertEqual(self.worker._evaluate_point_command({"point": [13,24,35]}), ({"history": "coordinates"}, 0))
+            capture.assert_called_once_with("EvaluatePt", "! _EvaluatePt _Label=Off w13,24,35")
+            self.assertEqual(viewport.SetConstructionPlane.call_count, 2)
+            self.assertEqual(viewport.SetConstructionPlane.call_args.args, ("original",))
+
+    def test_evaluate_point_capture_requires_both_new_coordinate_reports_without_command_errors(self):
+        report = "Point in world coordinates = 13.000,24.000,35.000    CPlane coordinates = 4.000,5.000,3.000"
+        for output, valid in [(report, True), ("", False),
+                              ("Point in world coordinates = 1,2,3", False),
+                              ("Unknown command: _Label=No\n" + report, False)]:
+            app = SimpleNamespace(CommandHistoryWindowText=report + "\n")
+            def write(marker):
+                app.CommandHistoryWindowText += marker + "\n"
+            def run(macro, echo):
+                app.CommandHistoryWindowText += output
+                return True
+            app.WriteLine, app.RunScript = write, run
+            with patch.object(self.worker, "Rhino", SimpleNamespace(RhinoApp=app)), \
+                 patch.object(self.worker, "System", SimpleNamespace(Guid=SimpleNamespace(NewGuid=lambda: "unique-marker"))):
+                if valid:
+                    self.assertEqual(self.worker._measurement_history("EvaluatePt", "macro"), ({"history": report}, 0))
+                else:
+                    with self.assertRaisesRegex(ValueError, "no measurement"):
+                        self.worker._measurement_history("EvaluatePt", "macro")
+
     def test_distance_probe_restores_plane_and_requires_new_measurement_output(self):
         for success, output, valid in [
             (True, "Distance = 5 millimeters", True),

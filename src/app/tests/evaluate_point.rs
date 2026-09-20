@@ -16,7 +16,7 @@ fn evaluate_point_uses_pick_view_plane_and_preserves_selection_and_history() {
     )
     .unwrap();
     app.viewports[app.active_viewport].plane.set(frame);
-    for input in ["EvaluatePt", "_EvaluatePt _Label=_No"] {
+    for input in ["EvaluatePt", "_EvaluatePt _Label=_Off"] {
         assert!(app.try_start_interactive_command(input));
         assert!(app.try_continue_point_input("4,5,3"));
         assert!(app.active_command.is_none());
@@ -31,7 +31,8 @@ fn evaluate_point_uses_pick_view_plane_and_preserves_selection_and_history() {
     assert_eq!(format!("{:?}", app.document), before);
     app.execute_command("Redo");
     assert_eq!(app.document.objects().count(), 2);
-    assert!(!app.try_start_interactive_command("EvaluatePt Label=Yes"));
+    assert!(!app.try_start_interactive_command("EvaluatePt Label=On"));
+    assert!(!app.try_start_interactive_command("EvaluatePt Label=No"));
     assert!(!app.try_start_interactive_command("EvaluatePt 1,2,3"));
 }
 

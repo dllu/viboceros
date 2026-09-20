@@ -1,0 +1,11 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"op":"evaluate_point_command", "id":"world", "point":[13,24,35]},
+    {"op":"evaluate_point_command", "id":"rotated-translated", "point":[13,24,35],
+     "origin":[10,20,30], "x_axis":[0,1,0], "y_axis":[0,0,1]},
+    {"op":"evaluate_point_command", "id":"signed", "point":[-5,0,2],
+     "origin":[1,2,3], "x_axis":[0,-1,0], "y_axis":[1,0,0]}
+  ]
+}
