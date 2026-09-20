@@ -2,6 +2,58 @@ use super::*;
 use crate::WeightedPoint3;
 
 #[test]
+fn exact_surface_query_prepares_derivative_nets_lazily_and_reuses_their_storage() {
+    let surface = NurbsSurface::try_new_rational(
+        2,
+        2,
+        3,
+        3,
+        (0..9)
+            .map(|i| {
+                WeightedPoint3::try_new(
+                    Point3::try_new((i % 3) as Real, (i / 3) as Real, (i * i) as Real).unwrap(),
+                    if i == 4 { -0.25 } else { 1. },
+                )
+                .unwrap()
+            })
+            .collect(),
+        vec![0., 0., 0., 1., 1., 1.],
+        vec![0., 0., 0., 1., 1., 1.],
+    )
+    .unwrap();
+    let mut net = ExactJetNet::new(&surface, [2, 2]);
+    let controls = net.controls.as_ptr();
+    net.evaluate([0.1, 0.2], 0).unwrap();
+    assert!(net.first.is_none() && net.second.is_none());
+    net.evaluate([0.3, 0.4], 1).unwrap();
+    let first = net.first.as_ref().unwrap();
+    let first_ptrs = [first.u.as_ptr(), first.v.as_ptr()];
+    assert!(net.second.is_none());
+    net.evaluate([0.5, 0.6], 2).unwrap();
+    let second = net.second.as_ref().unwrap();
+    let second_ptrs = [
+        second.uu.as_ref().unwrap().as_ptr(),
+        second.uv.as_ptr(),
+        second.vv.as_ref().unwrap().as_ptr(),
+    ];
+    for order in [0, 1, 2, 2] {
+        net.evaluate([0.7, 0.8], order).unwrap();
+        assert_eq!(net.controls.as_ptr(), controls);
+        let first = net.first.as_ref().unwrap();
+        assert_eq!([first.u.as_ptr(), first.v.as_ptr()], first_ptrs);
+        let second = net.second.as_ref().unwrap();
+        assert_eq!(
+            [
+                second.uu.as_ref().unwrap().as_ptr(),
+                second.uv.as_ptr(),
+                second.vv.as_ref().unwrap().as_ptr()
+            ],
+            second_ptrs
+        );
+    }
+}
+
+#[test]
 fn exact_surface_jets_match_independent_fraction_bernstein_reference_bits() {
     let mut count = 0;
     let mut overflow_count = 0;
@@ -56,8 +108,14 @@ fn exact_surface_jets_match_independent_fraction_bernstein_reference_bits() {
                 }
             }
         }
-        for order in 0..=2 {
-            let result = surface.evaluate_jet([u, v], [ParameterSide::Right; 2], extended, order);
+        let mut prepared = ExactJetNet::new(&surface, [du, dv]);
+        for order in [2, 0, 1, 2] {
+            let result = prepared.evaluate([u, v], order);
+            assert_eq!(
+                result,
+                surface.evaluate_jet([u, v], [ParameterSide::Right; 2], extended, order),
+                "prepared dispatch case {count}, order {order}"
+            );
             if expected == ["pole"] {
                 assert_eq!(result, Err(GeometryError::ZeroWeightAtParameter));
                 continue;

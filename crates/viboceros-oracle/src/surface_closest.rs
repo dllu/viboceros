@@ -60,6 +60,18 @@ mod tests {
         );
     }
 
+    #[test]
+    fn closest_signed_surface_fixture_matches_recorded_rhino() {
+        // One signed Bernstein coefficient, but an independently certified
+        // positive denominator. Include endpoints and off-surface targets.
+        check_fixture(
+            include_str!("../../../tools/rhino_oracle/fixtures/surface-closest-signed.json"),
+            include_str!("../../../docs/surface-closest-signed-rhino-reference.json"),
+            1e-9,
+            5,
+        );
+    }
+
     fn check_fixture(request: &str, reference: &str, epsilon: f64, expected_count: usize) {
         let request = serde_json::from_str(request).unwrap();
         let response = run_request(&request).unwrap();

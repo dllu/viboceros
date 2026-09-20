@@ -289,6 +289,9 @@ floating-point evaluation. The [pole audit](surface-pole-recovery.md) documents
 why a finite rounded denominator is insufficient; ordinary same-sign nets stay fast.
 Shared [exact dyadic recurrences](exact-dyadic-evaluation.md) avoid repeated GCDs
 when the original homogeneous coefficients and exact factors permit it.
+Closest-point refinement owns a [last-span query cache](surface-query-cache.md)
+for prepared controls and lazy exact derivative nets. It does not change the
+surface, cache evaluated stations, or relax pole detection.
 The separate [curvature module](curvature.md) forms a scale-aware orthonormal
 shape operator from those jets. Geometry evaluation is independent of the
 command's closest-point selection, reports, and permanent markers.

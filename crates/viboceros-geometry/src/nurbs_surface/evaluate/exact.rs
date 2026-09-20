@@ -6,6 +6,27 @@ use num_traits::Zero;
 #[cfg(test)]
 mod tests;
 
+struct FirstNets {
+    u: Vec<Homogeneous>,
+    v: Vec<Homogeneous>,
+}
+
+struct SecondNets {
+    uu: Option<Vec<Homogeneous>>,
+    uv: Vec<Homogeneous>,
+    vv: Option<Vec<Homogeneous>>,
+}
+
+/// One immutable active span's coefficients. Derivative nets depend on knots,
+/// not the evaluation station, and are constructed only when requested.
+pub(super) struct ExactJetNet<'a> {
+    surface: &'a NurbsSurface,
+    spans: [usize; 2],
+    controls: Vec<Homogeneous>,
+    first: Option<FirstNets>,
+    second: Option<SecondNets>,
+}
+
 fn tensor(
     net: &[Homogeneous],
     u: Direction<'_>,
@@ -62,38 +83,67 @@ impl NurbsSurface {
         spans: [usize; 2],
         order: u8,
     ) -> Result<SurfaceJet2, GeometryError> {
+        ExactJetNet::new(self, spans).evaluate(parameters, order)
+    }
+}
+
+impl<'a> ExactJetNet<'a> {
+    pub(super) fn new(surface: &'a NurbsSurface, spans: [usize; 2]) -> Self {
+        Self {
+            surface,
+            spans,
+            controls: surface.exact_controls(spans),
+            first: None,
+            second: None,
+        }
+    }
+
+    pub(super) fn evaluate(
+        &mut self,
+        parameters: [Real; 2],
+        order: u8,
+    ) -> Result<SurfaceJet2, GeometryError> {
+        let spans = self.spans;
+        let surface = self.surface;
         let u = Direction {
-            knots: &self.knots_u,
-            degree: self.degree_u,
+            knots: &surface.knots_u,
+            degree: surface.degree_u,
             span: spans[0],
             parameter: parameters[0],
         };
         let v = Direction {
-            knots: &self.knots_v,
-            degree: self.degree_v,
+            knots: &surface.knots_v,
+            degree: surface.degree_v,
             span: spans[1],
             parameter: parameters[1],
         };
-        let net = self.exact_controls(spans);
-        let h = tensor(&net, u, v)?;
+        let h = tensor(&self.controls, u, v)?;
         if order == 0 {
-            return point_jet(self.exact_point_from_homogeneous(parameters, spans, &h)?);
+            return point_jet(surface.exact_point_from_homogeneous(parameters, spans, &h)?);
         }
         let w = &h[3];
         if w.is_zero() {
             return Err(GeometryError::ZeroWeightAtParameter);
         }
         let p: [Rational; 3] = std::array::from_fn(|i| &h[i] / w);
-        let point = if let Some(point) = self.interpolated_point(parameters, spans) {
+        let point = if let Some(point) = surface.interpolated_point(parameters, spans) {
             point
         } else {
             Point3::try_new(scalar(&p[0])?, scalar(&p[1])?, scalar(&p[2])?)?
         };
         let mut jet = point_jet(point)?;
-        let net_u = u.derivative_controls(&net, u.degree + 1, true)?;
-        let net_v = v.derivative_controls(&net, u.degree + 1, false)?;
-        let hu = tensor(&net_u, u.differentiated(), v)?;
-        let hv = tensor(&net_v, u, v.differentiated())?;
+        if self.first.is_none() {
+            self.first = Some(FirstNets {
+                u: u.derivative_controls(&self.controls, u.degree + 1, true)?,
+                v: v.derivative_controls(&self.controls, u.degree + 1, false)?,
+            });
+        }
+        let first = self
+            .first
+            .as_ref()
+            .expect("first derivative nets initialized");
+        let hu = tensor(&first.u, u.differentiated(), v)?;
+        let hv = tensor(&first.v, u, v.differentiated())?;
         let du: [Rational; 3] = std::array::from_fn(|i| (&hu[i] - &p[i] * &hu[3]) / w);
         let dv: [Rational; 3] = std::array::from_fn(|i| (&hv[i] - &p[i] * &hv[3]) / w);
         jet.derivative_u = vector(&du)?;
@@ -101,24 +151,42 @@ impl NurbsSurface {
         if order == 1 {
             return Ok(jet);
         }
-        let huu = if u.degree > 1 {
-            let second = u
-                .differentiated()
-                .derivative_controls(&net_u, u.degree, true)?;
-            tensor(&second, u.differentiated().differentiated(), v)?
+        if self.second.is_none() {
+            self.second = Some(SecondNets {
+                uu: if u.degree > 1 {
+                    Some(
+                        u.differentiated()
+                            .derivative_controls(&first.u, u.degree, true)?,
+                    )
+                } else {
+                    None
+                },
+                uv: v.derivative_controls(&first.u, u.degree, false)?,
+                vv: if v.degree > 1 {
+                    Some(
+                        v.differentiated()
+                            .derivative_controls(&first.v, u.degree + 1, false)?,
+                    )
+                } else {
+                    None
+                },
+            });
+        }
+        let second = self
+            .second
+            .as_ref()
+            .expect("second derivative nets initialized");
+        let huu = if let Some(net) = &second.uu {
+            tensor(net, u.differentiated().differentiated(), v)?
         } else {
             std::array::from_fn(|_| Rational::zero())
         };
-        let hvv = if v.degree > 1 {
-            let second = v
-                .differentiated()
-                .derivative_controls(&net_v, u.degree + 1, false)?;
-            tensor(&second, u, v.differentiated().differentiated())?
+        let hvv = if let Some(net) = &second.vv {
+            tensor(net, u, v.differentiated().differentiated())?
         } else {
             std::array::from_fn(|_| Rational::zero())
         };
-        let mixed = v.derivative_controls(&net_u, u.degree, false)?;
-        let huv = tensor(&mixed, u.differentiated(), v.differentiated())?;
+        let huv = tensor(&second.uv, u.differentiated(), v.differentiated())?;
         jet.derivative_uu = vector(&std::array::from_fn(|i| {
             (&huu[i] - &p[i] * &huu[3] - &du[i] * &hu[3] - &du[i] * &hu[3]) / w
         }))?;

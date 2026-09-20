@@ -12,6 +12,14 @@ Seed points use [batched tensor-grid evaluation](surface-grid-evaluation.md),
 reusing homogeneous U contractions within each V span while retaining the scalar
 arithmetic order, sample coverage, and per-cell failure fallback.
 
+Refinement and local polishing share a [query-owned last-span cache](surface-query-cache.md)
+of prepared controls and exact derivative nets. A successfully evaluated point
+whose coordinates equal the target terminates the search at distance zero,
+including the first corner before grid construction. Neither model tolerance nor
+a rounded zero distance is enough for this shortcut. Boundary-curve hits are
+confirmed on the original surface because isocurve extraction can round
+differently. Other targets retain the bounded multi-start search below.
+
 ## Affine bilinear fast path
 
 The direct path accepts only degree-one surfaces with a `2 × 2` control net,

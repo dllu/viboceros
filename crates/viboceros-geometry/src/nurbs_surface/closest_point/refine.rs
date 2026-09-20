@@ -6,9 +6,9 @@ mod polish;
 #[cfg(test)]
 mod tests;
 
-impl NurbsSurface {
+impl SurfaceQuery<'_> {
     pub(super) fn refine_closest_parameters(
-        &self,
+        &mut self,
         target: Point3,
         mut u: Real,
         mut v: Real,
@@ -16,7 +16,11 @@ impl NurbsSurface {
         v_domain: [Real; 2],
         tolerance: Tolerance,
     ) -> Result<(Real, Real, Real), GeometryError> {
-        let mut distance = self.evaluate(u, v)?.distance_to(target)?;
+        let initial = self.evaluate(u, v)?;
+        if initial == target {
+            return Ok((u, v, 0.));
+        }
+        let mut distance = initial.distance_to(target)?;
         for _ in 0..64 {
             let (point, derivative_u, derivative_v, second) =
                 match self.evaluate_with_second_derivatives(u, v) {
@@ -80,7 +84,12 @@ impl NurbsSurface {
                             || (candidate_distance == distance
                                 && !target.compare_distances(candidate, point).is_gt()))
                     {
-                        accepted = Some((candidate_u, candidate_v, candidate_distance));
+                        accepted = Some((
+                            candidate_u,
+                            candidate_v,
+                            candidate_distance,
+                            candidate == target,
+                        ));
                         break;
                     }
                     step *= 0.5;
@@ -89,12 +98,15 @@ impl NurbsSurface {
                     break;
                 }
             }
-            let Some((next_u, next_v, next_distance)) = accepted else {
+            let Some((next_u, next_v, next_distance, exact_hit)) = accepted else {
                 break;
             };
             u = next_u;
             v = next_v;
             distance = next_distance;
+            if exact_hit {
+                return Ok((u, v, 0.));
+            }
         }
         Ok((u, v, distance))
     }

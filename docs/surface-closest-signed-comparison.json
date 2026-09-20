@@ -1,0 +1,19 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 1e-09,
+  "passed": true,
+  "operations": [
+    {
+      "id": "signed-retained-sweep",
+      "passed": true,
+      "max_absolute_error": 3.1548319512353373e-11,
+      "viboceros_ns_per_iteration": 526202374.0,
+      "rhino_ns_per_iteration": 14556885.0,
+      "rhino_to_viboceros_ratio": 0.027664042807986268,
+      "differences": []
+    }
+  ],
+  "max_absolute_error": 3.1548319512353373e-11,
+  "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation."
+}

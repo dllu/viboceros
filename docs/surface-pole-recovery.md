@@ -167,6 +167,11 @@ sweep integration test passes in release mode (51.74 seconds in the focused
 run); debug execution is much slower. README therefore recommends running the
 complete, unfiltered test suite with `cargo test --workspace --release`.
 
+A subsequent [query-cache and terminal-hit optimization](surface-query-cache.md)
+reduces this two-query endpoint workload to 60.75 ms in a new repeated
+measurement. Its broader 270-query workload improves by only 1.22×, so the
+endpoint shortcut must not be mistaken for solving general exact-search cost.
+
 Ordinary same-sign fast evaluation is not universally correctly rounded, and
 this change does not solve every unflagged intermediate range-loss problem.
 It does not locate unsampled poles, certify trimmed topology, implement singular

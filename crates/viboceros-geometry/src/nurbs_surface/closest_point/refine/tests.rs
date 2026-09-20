@@ -89,7 +89,11 @@ fn closest_point_polish_is_local_and_respects_boundary_kkt_signs() {
     let surface = paraboloid();
     let initial = (0.1, 0.2);
     assert_eq!(
-        surface.polish_closest_parameters(point([0.3, -1.3, -0.84]), initial, Tolerance::DEFAULT),
+        SurfaceQuery::new(&surface).polish_closest_parameters(
+            point([0.3, -1.3, -0.84]),
+            initial,
+            Tolerance::DEFAULT
+        ),
         initial
     );
     for (parameter, outward) in [(0., -1.), (1., 1.)] {

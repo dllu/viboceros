@@ -5,7 +5,9 @@ use crate::nurbs::project_homogeneous;
 use crate::{GeometryError, ParameterSide, Point3, Real, Vector3, require_finite};
 mod exact;
 mod grid;
+mod query;
 mod tensor;
+pub(super) use query::SurfaceQuery;
 use tensor::{
     derivative_controls_u, derivative_controls_v, evaluate_tensor_product, project_derivative,
 };

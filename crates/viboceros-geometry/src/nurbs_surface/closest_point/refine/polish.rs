@@ -1,9 +1,9 @@
 //! Local stationarity recovery when positional roundoff obscures distance descent.
 use super::*;
 
-impl NurbsSurface {
+impl SurfaceQuery<'_> {
     pub(in crate::nurbs_surface::closest_point) fn polish_closest_parameters(
-        &self,
+        &mut self,
         target: Point3,
         parameters: (Real, Real),
         tolerance: Tolerance,
@@ -14,11 +14,17 @@ impl NurbsSurface {
         // A tiny domain may have usable first but overflowing second partials.
         // One normalized copy recovers local curvature without restarting the
         // search or repeatedly cloning the net for every refinement seed.
-        if (self.domain_u() != (0.0..=1.0) || self.domain_v() != (0.0..=1.0))
-            && let Ok(surface) = self.try_reparameterized(0.0..=1.0, 0.0..=1.0)
-            && let Ok([u, v]) = self.normalized_parameters(parameters.0, parameters.1)
-            && let Some((u, v)) = surface.polish_in_domain(target, (u, v), tolerance)
-            && let (Ok(u), Ok(v)) = (self.parameter_at_u(u), self.parameter_at_v(v))
+        if (self.surface.domain_u() != (0.0..=1.0) || self.surface.domain_v() != (0.0..=1.0))
+            && let Ok(surface) = self.surface.try_reparameterized(0.0..=1.0, 0.0..=1.0)
+            && let Ok([u, v]) = self
+                .surface
+                .normalized_parameters(parameters.0, parameters.1)
+            && let Some((u, v)) =
+                SurfaceQuery::new(&surface).polish_in_domain(target, (u, v), tolerance)
+            && let (Ok(u), Ok(v)) = (
+                self.surface.parameter_at_u(u),
+                self.surface.parameter_at_v(v),
+            )
             && self.evaluate(u, v).is_ok()
         {
             return (u, v);
@@ -27,13 +33,18 @@ impl NurbsSurface {
     }
 
     fn polish_in_domain(
-        &self,
+        &mut self,
         target: Point3,
         mut parameters: (Real, Real),
         tolerance: Tolerance,
     ) -> Option<(Real, Real)> {
-        let domains = [self.domain_u(), self.domain_v()].map(|d| [*d.start(), *d.end()]);
+        if self.evaluate(parameters.0, parameters.1).ok()? == target {
+            return Some(parameters);
+        }
+        let domains =
+            [self.surface.domain_u(), self.surface.domain_v()].map(|d| [*d.start(), *d.end()]);
         let scale = self
+            .surface
             .control_points
             .iter()
             .flat_map(|c| c.point().to_array())

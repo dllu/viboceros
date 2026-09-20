@@ -1,7 +1,10 @@
 //! Bounded surface closest-point search with affine and curvature-aware refinement.
+use super::evaluate::SurfaceQuery;
 use super::*;
 mod affine;
 mod refine;
+#[cfg(test)]
+mod tests;
 
 impl NurbsSurface {
     /// Finds natural surface parameters nearest to a finite model-space
@@ -31,6 +34,16 @@ impl NurbsSurface {
         let u_end = *u_domain.end();
         let v_start = *v_domain.start();
         let v_end = *v_domain.end();
+        let mut query = SurfaceQuery::new(self);
+        // This is the first grid station and wins any equal-distance tie.
+        // A coordinate-equal image attains the global lower bound zero; model
+        // tolerance or a rounded distance of zero is not sufficient.
+        if query
+            .evaluate(u_start, v_start)
+            .is_ok_and(|point| point == target)
+        {
+            return Ok((u_start, v_start));
+        }
         let u_seeds = closest_parameter_seeds(self.spans_u(), u_start, u_end);
         let v_seeds = closest_parameter_seeds(self.spans_v(), v_start, v_end);
         let mut seeds = Vec::with_capacity(u_seeds.len() * v_seeds.len());
@@ -46,7 +59,10 @@ impl NurbsSurface {
         let mut best = seeds.first().copied().ok_or(GeometryError::Degenerate {
             context: "NURBS surface closest-point search",
         })?;
-        let mut best_point = self.evaluate(best.1, best.2)?;
+        let mut best_point = query.evaluate(best.1, best.2)?;
+        if best_point == target {
+            return Ok((best.1, best.2));
+        }
         // Clamping a coupled two-parameter Newton step can stall before the
         // minimum along an active boundary. Solve all four natural boundary
         // curves independently, including their endpoints. Singular constant
@@ -69,12 +85,21 @@ impl NurbsSurface {
                 } else {
                     (distance, t, fixed)
                 };
+                // Isocurve projection can round differently from the tensor
+                // surface evaluator. Confirm any terminal hit on the surface.
+                if best_point == target
+                    && query
+                        .evaluate(best.1, best.2)
+                        .is_ok_and(|point| point == target)
+                {
+                    return Ok((best.1, best.2));
+                }
             }
         }
         let mut refined = false;
         let mut nonfinite_step = false;
         for (_, seed_u, seed_v) in seeds {
-            match self.refine_closest_parameters(
+            match query.refine_closest_parameters(
                 target,
                 seed_u,
                 seed_v,
@@ -84,10 +109,13 @@ impl NurbsSurface {
             ) {
                 Ok((u, v, distance)) => {
                     refined = true;
-                    let point = self.evaluate(u, v)?;
+                    let point = query.evaluate(u, v)?;
                     if target.compare_distances(point, best_point).is_lt() {
                         best = (distance, u, v);
                         best_point = point;
+                        if best_point == target {
+                            return Ok((best.1, best.2));
+                        }
                     }
                 }
                 Err(GeometryError::NonFinite { .. }) => nonfinite_step = true,
@@ -105,13 +133,13 @@ impl NurbsSurface {
         {
             let u = self.parameter_at_u(u)?;
             let v = self.parameter_at_v(v)?;
-            let point = self.evaluate(u, v)?;
+            let point = query.evaluate(u, v)?;
             let distance = point.distance_to(target)?;
             if target.compare_distances(point, best_point).is_lt() {
                 best = (distance, u, v);
             }
         }
-        Ok(self.polish_closest_parameters(target, (best.1, best.2), tolerance))
+        Ok(query.polish_closest_parameters(target, (best.1, best.2), tolerance))
     }
 }
 
