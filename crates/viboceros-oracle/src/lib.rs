@@ -39,6 +39,7 @@ mod construction_plane;
 mod interface;
 mod mass_properties;
 mod parameter_bounds;
+mod surface_closest;
 pub use parameter_bounds::ParameterCurveBoundsFixture;
 mod bounding_box;
 mod conversion;
@@ -156,6 +157,11 @@ pub enum Operation {
         surface: NurbsSurfaceDefinition,
         #[serde(default)]
         sample_grid: bool,
+    },
+    SurfaceClosestPoint {
+        id: String,
+        surface: NurbsSurfaceDefinition,
+        points: Vec<[f64; 3]>,
     },
     CurveBounds {
         id: String,
@@ -1581,6 +1587,7 @@ impl Operation {
             Self::PolycurveGeometry { id, .. }
             | Self::CurveBounds { id, .. }
             | Self::SurfaceBounds { id, .. }
+            | Self::SurfaceClosestPoint { id, .. }
             | Self::SurfaceParameterCurveBounds { id, .. }
             | Self::TrimBoundaryBounds { id, .. }
             | Self::TrimmedBrepBounds { id, .. }
@@ -1951,6 +1958,9 @@ fn execute(
         Operation::TrimmedBrepBounds { fixture, .. } => {
             parameter_bounds::run_brep(fixture, iterations, tolerance)?
         }
+        Operation::SurfaceClosestPoint {
+            surface, points, ..
+        } => surface_closest::run(surface, points, iterations, tolerance)?,
         Operation::SurfaceBounds {
             surface,
             sample_grid,

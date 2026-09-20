@@ -116,6 +116,37 @@ fn uv_replays_live_rhino_reports_and_created_points() {
 }
 
 #[test]
+fn uv_projection_and_normalization_survive_extreme_independent_parameter_scales() {
+    for (u_domain, v_domain) in [(0.0..=1e12, 0.0..=1.0), (0.0..=1e-308, 0.0..=1e308)] {
+        let registry = CommandRegistry::with_builtins();
+        let mut doc = Document::default();
+        let surface = NurbsSurface::try_bilinear(
+            [[0., 0., 0.], [4., 0., 0.], [4., 2., 0.], [0., 2., 0.]].map(point),
+        )
+        .unwrap()
+        .try_reparameterized(u_domain, v_domain)
+        .unwrap();
+        let id = doc.add_geometry(Geometry::NurbsSurface(surface)).unwrap();
+        doc.select_object(id, SelectionMode::Replace).unwrap();
+        let report = registry
+            .execute(
+                &mut doc,
+                "EvaluateUVPt Normalized=Yes CreatePoint=Yes 1.37,0.63,3",
+            )
+            .unwrap();
+        for (a, b) in uv(&report).iter().zip([0.3425, 0.315]) {
+            assert!((a - b).abs() < 1e-9);
+        }
+        let Geometry::Point(marker) = doc.objects().last().unwrap().geometry() else {
+            panic!("marker expected")
+        };
+        assert!(marker.distance_to(point([1.37, 0.63, 0.])).unwrap() < 1e-9);
+        registry.execute(&mut doc, "Undo").unwrap();
+        assert_eq!(doc.objects().count(), 1);
+    }
+}
+
+#[test]
 fn uv_preferences_are_shared_with_prompts_but_not_document_history_or_other_registries() {
     let registry = CommandRegistry::with_builtins();
     let mut doc = Document::default();

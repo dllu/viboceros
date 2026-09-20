@@ -2190,6 +2190,25 @@ def _measurement_history(name, macro, allow_cancel=False):
     return {"history": history}, 0
 
 
+def _surface_closest_point(operation, iterations):
+    surface = _nurbs_surface_from_definition(operation["surface"])
+    try:
+        targets = [_point(point) for point in operation["points"]]
+        parameters, elapsed = _measure(iterations, lambda: [surface.ClosestPoint(point) for point in targets])
+        result = []
+        for target, entry in zip(targets, parameters):
+            found, u, v = entry
+            if not found:
+                raise ValueError("surface closest point failed")
+            point = surface.PointAt(u,v)
+            result.append({"parameters": [u,v], "normalized_parameters": [
+                surface.Domain(0).NormalizedParameterAt(u), surface.Domain(1).NormalizedParameterAt(v)],
+                "point": _xyz(point), "distance": point.DistanceTo(target)})
+        return result, elapsed
+    finally:
+        surface.Dispose()
+
+
 def _evaluate_uv_macro(operation):
     for key in ("normalized", "create_point", "inherit_options", "undo_redo"):
         if key in operation and type(operation[key]) is not bool:
@@ -4596,6 +4615,8 @@ def _execute(operation, iterations, tolerance):
     if operation["op"] == "distribute":
         return _distribute(operation, tolerance)
     kind = operation["op"]
+    if kind == "surface_closest_point":
+        return _surface_closest_point(operation, iterations)
     if kind == "bounding_box_command":
         return _bounding_box_command(operation, tolerance)
     if kind == "surface_parameter_curve_bounds":

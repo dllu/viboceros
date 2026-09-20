@@ -1,5 +1,6 @@
 use std::ops::RangeInclusive;
 
+mod closest_point;
 mod evaluate;
 mod parameters;
 pub use evaluate::SurfaceJet2;
@@ -3124,137 +3125,6 @@ impl NurbsSurface {
         Frame3::try_from_directions(point, derivative_u, derivative_v, tolerance)
     }
 
-    /// Finds natural surface parameters nearest to a finite model-space
-    /// point. A bounded multi-start search followed by tangent-plane Newton
-    /// refinement handles rational and non-uniform surfaces without assuming
-    /// normalized parameter domains.
-    pub fn closest_parameters(
-        &self,
-        target: Point3,
-        tolerance: Tolerance,
-    ) -> Result<(Real, Real), GeometryError> {
-        let u_domain = self.domain_u();
-        let v_domain = self.domain_v();
-        let u_start = *u_domain.start();
-        let u_end = *u_domain.end();
-        let v_start = *v_domain.start();
-        let v_end = *v_domain.end();
-        let u_seeds = closest_parameter_seeds(self.spans_u(), u_start, u_end);
-        let v_seeds = closest_parameter_seeds(self.spans_v(), v_start, v_end);
-        let mut seeds = Vec::with_capacity(u_seeds.len() * v_seeds.len());
-        for &v in &v_seeds {
-            for &u in &u_seeds {
-                if let Ok(point) = self.evaluate(u, v)
-                    && let Ok(distance) = point.distance_to(target)
-                {
-                    seeds.push((distance, u, v));
-                }
-            }
-        }
-        seeds.sort_by(|left, right| left.0.total_cmp(&right.0));
-        seeds.truncate(16);
-        let mut best = seeds.first().copied().ok_or(GeometryError::Degenerate {
-            context: "NURBS surface closest-point search",
-        })?;
-        // Clamping a coupled two-parameter Newton step can stall before the
-        // minimum along an active boundary. Solve all four natural boundary
-        // curves independently, including their endpoints. Singular constant
-        // edges remain represented by the boundary seeds above.
-        for (curve, fixed_u, fixed) in [
-            (self.isocurve_u(v_start), false, v_start),
-            (self.isocurve_u(v_end), false, v_end),
-            (self.isocurve_v(u_start), true, u_start),
-            (self.isocurve_v(u_end), true, u_end),
-        ] {
-            if let Ok(curve) = curve
-                && let Ok(t) = curve.closest_parameter(target, tolerance)
-                && let Ok(point) = curve.evaluate(t)
-                && let Ok(distance) = point.distance_to(target)
-                && distance < best.0
-            {
-                best = if fixed_u {
-                    (distance, fixed, t)
-                } else {
-                    (distance, t, fixed)
-                };
-            }
-        }
-        for (_, seed_u, seed_v) in seeds {
-            if let Ok((u, v, distance)) = self.refine_closest_parameters(
-                target,
-                seed_u,
-                seed_v,
-                [u_start, u_end],
-                [v_start, v_end],
-                tolerance,
-            ) && distance < best.0
-            {
-                best = (distance, u, v);
-            }
-        }
-        Ok((best.1, best.2))
-    }
-
-    fn refine_closest_parameters(
-        &self,
-        target: Point3,
-        mut u: Real,
-        mut v: Real,
-        u_domain: [Real; 2],
-        v_domain: [Real; 2],
-        tolerance: Tolerance,
-    ) -> Result<(Real, Real, Real), GeometryError> {
-        let mut distance = self.evaluate(u, v)?.distance_to(target)?;
-        for _ in 0..64 {
-            let (point, derivative_u, derivative_v) = self.evaluate_with_derivatives(u, v)?;
-            let residual = point.vector_to(target)?;
-            let x_axis = derivative_u.normalized(tolerance)?;
-            let u_speed = derivative_u.length()?;
-            let v_along_x = derivative_v.dot(x_axis.as_vector())?;
-            let derivative_v_values = derivative_v.to_array();
-            let x_values = x_axis.as_vector().to_array();
-            let v_perpendicular = Vector3::try_new(
-                (-v_along_x).mul_add(x_values[0], derivative_v_values[0]),
-                (-v_along_x).mul_add(x_values[1], derivative_v_values[1]),
-                (-v_along_x).mul_add(x_values[2], derivative_v_values[2]),
-            )?;
-            let y_axis = v_perpendicular.normalized(tolerance)?;
-            let v_speed = v_perpendicular.length()?;
-            let tangent_x = residual.dot(x_axis.as_vector())?;
-            let tangent_y = residual.dot(y_axis.as_vector())?;
-            if tangent_x.hypot(tangent_y) <= tolerance.absolute() {
-                break;
-            }
-            let delta_v = tangent_y / v_speed;
-            let delta_u = tangent_x / u_speed - v_along_x * delta_v / u_speed;
-            require_finite([delta_u, delta_v], "surface closest-point step")?;
-            let mut step = 1.0;
-            let mut accepted = None;
-            for _ in 0..24 {
-                let candidate_u = (u + step * delta_u).clamp(u_domain[0], u_domain[1]);
-                let candidate_v = (v + step * delta_v).clamp(v_domain[0], v_domain[1]);
-                if candidate_u == u && candidate_v == v {
-                    break;
-                }
-                let candidate_distance = self
-                    .evaluate(candidate_u, candidate_v)?
-                    .distance_to(target)?;
-                if candidate_distance <= distance {
-                    accepted = Some((candidate_u, candidate_v, candidate_distance));
-                    break;
-                }
-                step *= 0.5;
-            }
-            let Some((next_u, next_v, next_distance)) = accepted else {
-                break;
-            };
-            u = next_u;
-            v = next_v;
-            distance = next_distance;
-        }
-        Ok((u, v, distance))
-    }
-
     /// Divides the U-varying isocurve at `v` into equal arc-length segments
     /// and returns natural U parameters.
     pub fn divide_u_isocurve_by_count(
@@ -4866,29 +4736,6 @@ fn nonempty_spans(
         .filter_map(|pair| (pair[0] < pair[1]).then_some((pair[0], pair[1])))
 }
 
-fn closest_parameter_seeds(
-    spans: impl Iterator<Item = (Real, Real)>,
-    domain_start: Real,
-    domain_end: Real,
-) -> Vec<Real> {
-    const MAX_SEEDS: usize = 33;
-    let spans = spans.collect::<Vec<_>>();
-    let mut seeds = Vec::new();
-    if spans.len() <= 10 {
-        for (start, end) in spans {
-            seeds.extend([start, start * 0.5 + end * 0.5, end]);
-        }
-    }
-    let remaining = MAX_SEEDS.saturating_sub(seeds.len()).max(2);
-    for index in 0..remaining {
-        let fraction = index as Real / (remaining - 1) as Real;
-        seeds.push(domain_start.mul_add(1.0 - fraction, domain_end * fraction));
-    }
-    seeds.sort_by(Real::total_cmp);
-    seeds.dedup();
-    seeds
-}
-
 fn normalized_parameter(
     normalized: Real,
     domain: RangeInclusive<Real>,
@@ -5041,6 +4888,100 @@ pub(crate) fn tessellation_triangle_is_nondegenerate(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn closest_point_is_invariant_under_independent_parameter_scale_changes() {
+        let plane = NurbsSurface::try_bilinear([
+            point(0., 0., 0.),
+            point(4., 0., 0.),
+            point(4., 2., 0.),
+            point(0., 2., 0.),
+        ])
+        .unwrap();
+        let target = point(1.37, 0.63, 3.);
+        for (u_domain, v_domain) in [
+            (0.0..=1.0, 0.0..=1.0),
+            (0.0..=1e12, 0.0..=1.0),
+            (-1e-12..=1e-12, -1e12..=1e12),
+            (0.0..=1e-308, 0.0..=1e308),
+            (-Real::MAX..=Real::MAX, 0.0..=1.0),
+        ] {
+            let surface = plane
+                .try_reparameterized(u_domain.clone(), v_domain.clone())
+                .unwrap();
+            let (u, v) = surface
+                .closest_parameters(target, Tolerance::DEFAULT)
+                .unwrap();
+            let closest = surface.evaluate(u, v).unwrap();
+            assert!(
+                closest.distance_to(point(1.37, 0.63, 0.)).unwrap() < 1e-9,
+                "domains {u_domain:?}, {v_domain:?}: {closest:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn closest_point_on_a_rational_cylinder_retains_scale_invariance_and_boundaries() {
+        let controls = [0., 3.]
+            .into_iter()
+            .flat_map(|z| {
+                [
+                    (2., 0., 1.),
+                    (2., 2., std::f64::consts::FRAC_1_SQRT_2),
+                    (0., 2., 1.),
+                ]
+                .map(move |(x, y, w)| WeightedPoint3::try_new(point(x, y, z), w).unwrap())
+            })
+            .collect();
+        let cylinder = NurbsSurface::try_new_rational(
+            2,
+            1,
+            3,
+            2,
+            controls,
+            vec![0., 0., 0., 1., 1., 1.],
+            vec![0., 0., 1., 1.],
+        )
+        .unwrap();
+        for (u_domain, v_domain) in [
+            (0.0..=1.0, 0.0..=1.0),
+            (-2e12..=6e12, 1e-12..=5e-12),
+            (0.0..=1e-308, 0.0..=1e308),
+        ] {
+            let surface = cylinder
+                .try_reparameterized(u_domain.clone(), v_domain.clone())
+                .unwrap();
+            for (target, expected) in [
+                (point(3., 4., 1.37), point(1.2, 1.6, 1.37)),
+                (point(3., 4., -1.), point(1.2, 1.6, 0.)),
+                (point(-3., 4., 4.), point(0., 2., 3.)),
+            ] {
+                let (u, v) = surface
+                    .closest_parameters(target, Tolerance::DEFAULT)
+                    .unwrap();
+                let actual = surface.evaluate(u, v).unwrap();
+                assert!(
+                    actual.distance_to(expected).unwrap() < 1e-8,
+                    "domains {u_domain:?}, {v_domain:?}: {actual:?}, expected {expected:?}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn closest_point_does_not_lose_tangential_accuracy_for_a_distant_query() {
+        let surface = NurbsSurface::try_bilinear([
+            point(0., 0., 0.),
+            point(4., 0., 0.),
+            point(4., 2., 0.),
+            point(0., 2., 0.),
+        ])
+        .unwrap();
+        let (u, v) = surface
+            .closest_parameters(point(1.37, 0.63, 1e15), Tolerance::DEFAULT)
+            .unwrap();
+        assert_point_near(surface.evaluate(u, v).unwrap(), point(1.37, 0.63, 0.));
+    }
 
     #[test]
     fn closest_point_minimizes_along_an_active_skew_surface_boundary() {

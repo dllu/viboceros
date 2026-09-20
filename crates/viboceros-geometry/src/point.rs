@@ -1,4 +1,5 @@
 use crate::{GeometryError, Real, Tolerance, UnitVector3, Vector3, require_finite};
+mod distance_order;
 
 /// A finite point in three-dimensional model space.
 #[derive(Clone, Copy, Debug, PartialEq)]

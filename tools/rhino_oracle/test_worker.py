@@ -11,6 +11,33 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_surface_closest_probe_times_only_queries_and_disposes_on_failure(self):
+        for failure in [None, "query", "not_found"]:
+            with self.subTest(failure=failure):
+                surface = Mock()
+                surface.ClosestPoint.side_effect = ValueError("query") if failure == "query" else None
+                surface.ClosestPoint.return_value = (failure != "not_found",2.,4.)
+                location = Mock(X=1.,Y=2.,Z=0.)
+                location.DistanceTo.return_value = 3.
+                surface.PointAt.return_value = location
+                surface.Domain.side_effect = lambda axis: SimpleNamespace(NormalizedParameterAt=lambda p:p/(4. if axis==0 else 8.))
+                def measure(iterations, query):
+                    self.assertEqual(iterations,3)
+                    value = query()
+                    surface.PointAt.assert_not_called()
+                    return value,42
+                with patch.object(self.worker,"_nurbs_surface_from_definition",return_value=surface), \
+                     patch.object(self.worker,"_point",lambda p:p), \
+                     patch.object(self.worker,"_measure",measure):
+                    operation = {"surface":{},"points":[[1,2,3]]}
+                    if failure:
+                        with self.assertRaises(ValueError): self.worker._surface_closest_point(operation,3)
+                    else:
+                        value,elapsed = self.worker._surface_closest_point(operation,3)
+                        self.assertEqual(value,[{"parameters":[2.,4.],"normalized_parameters":[0.5,0.5],"point":[1.,2.,0.],"distance":3.}])
+                        self.assertEqual(elapsed,42)
+                surface.Dispose.assert_called_once_with()
+
     def test_uv_macro_orders_events_inherits_only_when_requested_and_rejects_unsafe_input(self):
         host = patch.object(self.worker, "Rhino", SimpleNamespace(Geometry=SimpleNamespace(
             Point3d=lambda x,y,z: SimpleNamespace(X=x,Y=y,Z=z))))

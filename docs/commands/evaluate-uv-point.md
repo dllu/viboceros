@@ -45,6 +45,8 @@ Tests cover non-unit native domains, normalized values, off-surface projection,
 point undo/redo, underlying evaluation inside a trim hole, nearest component
 selection, UI handoff, option edits, and failed-pick recovery. Parameter normalization
 handles finite domain endpoints even when their difference overflows.
+The shared [closest-point solver](../surface-closest-point.md) also has regressions
+for strongly stretched UV domains, derivative overflow, and distant query points.
 
 The [Rhino 8.32 capture](../evaluate-uv-rhino-reference.json), generated from this
 [fixture](../../tools/rhino_oracle/fixtures/evaluate-uv-command.json), covers all four

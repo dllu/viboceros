@@ -209,7 +209,14 @@ original interval (checked at 33 parameters) instead of substituting a circle.
 
 ## Focused checks
 
+Surface projection uses [parameter-scale-independent tangent refinement and exact
+candidate distance ordering](surface-closest-point.md). Analytic regressions cover
+extreme UV domains and distant queries; seventeen ordinary-scale cases replay live
+Rhino observations.
+
 ```sh
+cargo test -p viboceros-geometry closest_point_
+cargo test -p viboceros-geometry exact_distance_order
 cargo test -p viboceros-geometry circularity
 cargo test -p viboceros-geometry point::
 cargo test -p viboceros-geometry vector::
