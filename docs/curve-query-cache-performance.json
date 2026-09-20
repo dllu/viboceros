@@ -1,0 +1,533 @@
+{
+  "baseline_commit": "8be40e156ce346148aa951f42b93e5fb7fa8c9ea",
+  "captured_utc": "2026-09-20 13:28:18 UTC",
+  "architecture": "aarch64",
+  "cpu_affinity": 5,
+  "executable_sha256": {
+    "before": "e0f891639555e4360e46a3a4c0c1ee4aee2a76bde2d4c003dad30cd75c09b5cf",
+    "after": "2b3d80b46f68b44188ff5828734c0a6e0dd733e621997b1b5c564bb05aa2551c"
+  },
+  "method": "Curve oracle: five batches of 500 iterations per case, timing search plus final evaluation/distance, excluding construction. Surface oracle: five batches of 200 iterations per ordinary case; one whole-process pair per signed workload. Before/after groups run sequentially. No concurrent build or Rhino launch; host frequency and core isolation were not controlled.",
+  "curves": [
+    {
+      "id": "rational-quarter-circle-closest-point",
+      "iterations": 500,
+      "before_elapsed_ns": [
+        14679803,
+        14568875,
+        14594411,
+        14553546,
+        14539819
+      ],
+      "after_elapsed_ns": [
+        12452841,
+        12328137,
+        12389577,
+        12390889,
+        12362681
+      ],
+      "before_ns_per_query": 29137.75,
+      "after_ns_per_query": 24779.154,
+      "speedup": 1.1758976920680988,
+      "values_bit_identical": true,
+      "value": {
+        "distance": 1.0,
+        "parameter": 0.5000000000000001,
+        "point": [
+          0.7071067811865475,
+          0.7071067811865477,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "rational-nonuniform-multispan-closest-point",
+      "iterations": 500,
+      "before_elapsed_ns": [
+        16044044,
+        15979740,
+        15990028,
+        16001691,
+        15952588
+      ],
+      "after_elapsed_ns": [
+        12491066,
+        12463738,
+        12493081,
+        12495241,
+        12460201
+      ],
+      "before_ns_per_query": 31980.056,
+      "after_ns_per_query": 24982.132,
+      "speedup": 1.2801171653404122,
+      "values_bit_identical": true,
+      "value": {
+        "distance": 0.92851223045679,
+        "parameter": 3.313564143576022,
+        "point": [
+          5.503305408799323,
+          -1.4561395545310791,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "curve-endpoint-closest-point",
+      "iterations": 500,
+      "before_elapsed_ns": [
+        4556467,
+        4565379,
+        4638868,
+        4572804,
+        4562883
+      ],
+      "after_elapsed_ns": [
+        4473843,
+        4493555,
+        4487572,
+        4480196,
+        4477988
+      ],
+      "before_ns_per_query": 9130.758,
+      "after_ns_per_query": 8960.392,
+      "speedup": 1.0190132306711581,
+      "values_bit_identical": true,
+      "value": {
+        "distance": 8.306623862918075,
+        "parameter": -5.0,
+        "point": [
+          -2.0,
+          3.0,
+          1.0
+        ]
+      }
+    }
+  ],
+  "allocation_profile": {
+    "method": "Same counting-allocator example source at both revisions. One warm-up followed by 500 queries, construction/printing excluded. Calls include reallocations; bytes are total requests, not live or peak memory. Timings include instrumentation and are not the oracle benchmark.",
+    "executable_sha256": {
+      "before": "984e4db044bd1ffd30bad249b08dd82230f774f281ee288274032d6e1dc21bb0",
+      "after": "bf40a66efd338b0621a15dcce9ef9de2d71c0027112f56ff7df02370327b2d66"
+    },
+    "before": [
+      {
+        "case": "circle",
+        "operation": "point",
+        "allocations": 1,
+        "requested_bytes": 96,
+        "instrumented_ns_per_query": 46.9
+      },
+      {
+        "case": "circle",
+        "operation": "second jet",
+        "allocations": 5,
+        "requested_bytes": 512,
+        "instrumented_ns_per_query": 132.7
+      },
+      {
+        "case": "circle",
+        "operation": "closest",
+        "allocations": 478,
+        "requested_bytes": 53936,
+        "instrumented_ns_per_query": 30335.5
+      },
+      {
+        "case": "multispan",
+        "operation": "point",
+        "allocations": 1,
+        "requested_bytes": 128,
+        "instrumented_ns_per_query": 63.7
+      },
+      {
+        "case": "multispan",
+        "operation": "second jet",
+        "allocations": 5,
+        "requested_bytes": 608,
+        "instrumented_ns_per_query": 172.5
+      },
+      {
+        "case": "multispan",
+        "operation": "closest",
+        "allocations": 575,
+        "requested_bytes": 76664,
+        "instrumented_ns_per_query": 32547.8
+      },
+      {
+        "case": "line",
+        "operation": "point",
+        "allocations": 1,
+        "requested_bytes": 64,
+        "instrumented_ns_per_query": 35.2
+      },
+      {
+        "case": "line",
+        "operation": "second jet",
+        "allocations": 4,
+        "requested_bytes": 288,
+        "instrumented_ns_per_query": 88.7
+      },
+      {
+        "case": "line",
+        "operation": "closest",
+        "allocations": 182,
+        "requested_bytes": 18976,
+        "instrumented_ns_per_query": 9299.8
+      }
+    ],
+    "after": [
+      {
+        "case": "circle",
+        "operation": "point",
+        "allocations": 1,
+        "requested_bytes": 96,
+        "instrumented_ns_per_query": 47.5
+      },
+      {
+        "case": "circle",
+        "operation": "second jet",
+        "allocations": 4,
+        "requested_bytes": 448,
+        "instrumented_ns_per_query": 136.5
+      },
+      {
+        "case": "circle",
+        "operation": "closest",
+        "allocations": 14,
+        "requested_bytes": 3392,
+        "instrumented_ns_per_query": 23460.0
+      },
+      {
+        "case": "multispan",
+        "operation": "point",
+        "allocations": 1,
+        "requested_bytes": 128,
+        "instrumented_ns_per_query": 63.6
+      },
+      {
+        "case": "multispan",
+        "operation": "second jet",
+        "allocations": 4,
+        "requested_bytes": 512,
+        "instrumented_ns_per_query": 185.0
+      },
+      {
+        "case": "multispan",
+        "operation": "closest",
+        "allocations": 59,
+        "requested_bytes": 9784,
+        "instrumented_ns_per_query": 24017.6
+      },
+      {
+        "case": "line",
+        "operation": "point",
+        "allocations": 1,
+        "requested_bytes": 64,
+        "instrumented_ns_per_query": 35.6
+      },
+      {
+        "case": "line",
+        "operation": "second jet",
+        "allocations": 3,
+        "requested_bytes": 256,
+        "instrumented_ns_per_query": 95.4
+      },
+      {
+        "case": "line",
+        "operation": "closest",
+        "allocations": 13,
+        "requested_bytes": 3120,
+        "instrumented_ns_per_query": 8669.9
+      }
+    ]
+  },
+  "surface_workloads": {
+    "captured_utc": "2026-09-20 13:28:18 UTC",
+    "architecture": "aarch64",
+    "baseline_commit": "8be40e156ce346148aa951f42b93e5fb7fa8c9ea",
+    "executable_sha256": {
+      "before": "e0f891639555e4360e46a3a4c0c1ee4aee2a76bde2d4c003dad30cd75c09b5cf",
+      "after": "2b3d80b46f68b44188ff5828734c0a6e0dd733e621997b1b5c564bb05aa2551c"
+    },
+    "cpu_affinity": 5,
+    "ordinary": [
+      {
+        "id": "plane-unit",
+        "queries_per_batch": 3,
+        "iterations": 200,
+        "before_elapsed_ns": [
+          603153,
+          597904,
+          593888,
+          593457,
+          597313
+        ],
+        "before_ns_per_query": 995.5216666666666,
+        "after_elapsed_ns": [
+          607216,
+          605025,
+          614544,
+          608448,
+          608224
+        ],
+        "after_ns_per_query": 1013.7066666666666,
+        "speedup": 0.9820608854632504
+      },
+      {
+        "id": "plane-wide-u",
+        "queries_per_batch": 3,
+        "iterations": 200,
+        "before_elapsed_ns": [
+          596432,
+          597969,
+          595489,
+          595008,
+          595808
+        ],
+        "before_ns_per_query": 993.0133333333333,
+        "after_elapsed_ns": [
+          608529,
+          616688,
+          611137,
+          605232,
+          605408
+        ],
+        "after_ns_per_query": 1014.215,
+        "speedup": 0.9790954909297667
+      },
+      {
+        "id": "plane-anisotropic",
+        "queries_per_batch": 3,
+        "iterations": 200,
+        "before_elapsed_ns": [
+          602369,
+          596560,
+          595424,
+          594337,
+          595777
+        ],
+        "before_ns_per_query": 992.9616666666667,
+        "after_elapsed_ns": [
+          605952,
+          609312,
+          611696,
+          605473,
+          607441
+        ],
+        "after_ns_per_query": 1012.4016666666666,
+        "speedup": 0.9807981351275269
+      },
+      {
+        "id": "skew-anisotropic",
+        "queries_per_batch": 2,
+        "iterations": 200,
+        "before_elapsed_ns": [
+          413664,
+          415904,
+          413216,
+          410208,
+          414160
+        ],
+        "before_ns_per_query": 1034.16,
+        "after_elapsed_ns": [
+          419216,
+          428849,
+          425185,
+          421040,
+          418992
+        ],
+        "after_ns_per_query": 1052.6,
+        "speedup": 0.9824814744442335
+      },
+      {
+        "id": "cylinder-unit",
+        "queries_per_batch": 3,
+        "iterations": 200,
+        "before_elapsed_ns": [
+          90800371,
+          91106147,
+          91106515,
+          91020195,
+          91124099
+        ],
+        "before_ns_per_query": 151843.57833333334,
+        "after_elapsed_ns": [
+          87016240,
+          88330305,
+          86983295,
+          86996431,
+          86974895
+        ],
+        "after_ns_per_query": 144994.05166666667,
+        "speedup": 1.0472400528706747
+      },
+      {
+        "id": "cylinder-anisotropic",
+        "queries_per_batch": 3,
+        "iterations": 200,
+        "before_elapsed_ns": [
+          92319413,
+          92346660,
+          92495029,
+          92349812,
+          92522340
+        ],
+        "before_ns_per_query": 153916.35333333333,
+        "after_elapsed_ns": [
+          88433681,
+          88307777,
+          88421312,
+          88337120,
+          88339920
+        ],
+        "after_ns_per_query": 147233.19999999998,
+        "speedup": 1.0453916191004022
+      },
+      {
+        "id": "paraboloid-unit",
+        "queries_per_batch": 9,
+        "iterations": 200,
+        "before_elapsed_ns": [
+          497413474,
+          496930257,
+          496985839,
+          497269902,
+          497638990
+        ],
+        "before_ns_per_query": 276261.05666666664,
+        "after_elapsed_ns": [
+          478454798,
+          478332317,
+          478804253,
+          478943597,
+          478662443
+        ],
+        "after_ns_per_query": 265923.57944444445,
+        "speedup": 1.0388738646035782
+      },
+      {
+        "id": "paraboloid-anisotropic",
+        "queries_per_batch": 9,
+        "iterations": 200,
+        "before_elapsed_ns": [
+          525323782,
+          525226756,
+          524300227,
+          524976131,
+          525346129
+        ],
+        "before_ns_per_query": 291792.6422222222,
+        "after_elapsed_ns": [
+          505240530,
+          505456145,
+          505464464,
+          505011102,
+          505930447
+        ],
+        "after_ns_per_query": 280808.96944444446,
+        "speedup": 1.0391143943852932
+      },
+      {
+        "id": "saddle-unit",
+        "queries_per_batch": 3,
+        "iterations": 200,
+        "before_elapsed_ns": [
+          75514152,
+          75738472,
+          75535351,
+          75516631,
+          75607863
+        ],
+        "before_ns_per_query": 125892.25166666666,
+        "after_elapsed_ns": [
+          74557494,
+          74298406,
+          74228758,
+          74201766,
+          74337590
+        ],
+        "after_ns_per_query": 123830.67666666668,
+        "speedup": 1.016648338323705
+      }
+    ],
+    "signed": [
+      {
+        "workload": "endpoint",
+        "queries_per_operation": [
+          1,
+          1
+        ],
+        "wall_ns": {
+          "before": [
+            60810812
+          ],
+          "after": [
+            62155725
+          ]
+        },
+        "values_bit_identical_across_all_runs": true,
+        "median_wall_ns": {
+          "before": 60810812,
+          "after": 62155725
+        },
+        "speedup": 0.9783622023554548
+      },
+      {
+        "workload": "off_surface",
+        "queries_per_operation": [
+          3,
+          3
+        ],
+        "wall_ns": {
+          "before": [
+            1008950922
+          ],
+          "after": [
+            1012040506
+          ]
+        },
+        "values_bit_identical_across_all_runs": true,
+        "median_wall_ns": {
+          "before": 1008950922,
+          "after": 1012040506
+        },
+        "speedup": 0.9969471735748885
+      },
+      {
+        "workload": "full_fixture_queries",
+        "queries_per_operation": [
+          135,
+          135
+        ],
+        "wall_ns": {
+          "before": [
+            39335598795
+          ],
+          "after": [
+            39255429201
+          ]
+        },
+        "values_bit_identical_across_all_runs": true,
+        "median_wall_ns": {
+          "before": 39335598795,
+          "after": 39255429201
+        },
+        "speedup": 1.0020422549347126
+      }
+    ],
+    "ordinary_values_bit_identical": true
+  },
+  "fixture_comparisons": [
+    {
+      "request": "nurbs_curve_closest_robust.json",
+      "operations": 5,
+      "values_bit_identical": true
+    },
+    {
+      "request": "nurbs_rational_jets.json",
+      "operations": 23,
+      "values_bit_identical": true
+    }
+  ],
+  "ordinary_surface_query_count_including_repeats": 190,
+  "signed_full_fixture_sample_count": 270
+}

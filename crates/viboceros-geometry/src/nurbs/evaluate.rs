@@ -2,7 +2,12 @@ use super::*;
 use crate::{ParameterSide, UnitVector3};
 
 mod exact;
+mod jet;
+mod query;
 mod tangent;
+use jet::FloatJet;
+pub(super) use query::CurveQuery;
+type CurveJet = (Point3, Vector3, Vector3);
 
 struct EvaluationControls {
     origin: Point3,
@@ -59,41 +64,8 @@ impl NurbsCurve {
         parameter: Real,
         side: ParameterSide,
     ) -> Result<(Point3, Vector3), GeometryError> {
-        let span = self.checked_span_on_side(parameter, side)?;
-        self.with_evaluation_controls(
-            span,
-            |origin, active| {
-                let homogeneous =
-                    de_boor(&self.knots, self.degree, span, parameter, active.clone())?;
-                let point = project_homogeneous(homogeneous)?;
-
-                let derivative_controls = self.derivative_controls(span, 1, &active)?;
-
-                let homogeneous_derivative = de_boor(
-                    &self.knots[1..self.knots.len() - 1],
-                    self.degree - 1,
-                    span - 1,
-                    parameter,
-                    derivative_controls,
-                )?;
-                let weight = homogeneous[3];
-                let weight_derivative = homogeneous_derivative[3];
-                let point_coordinates = point.to_array();
-                let derivative: [Real; 3] = std::array::from_fn(|coordinate| {
-                    (-point_coordinates[coordinate])
-                        .mul_add(weight_derivative, homogeneous_derivative[coordinate])
-                        / weight
-                });
-                Ok((
-                    self.restore_evaluated_point(span, parameter, point, origin)?,
-                    Vector3::try_from(derivative)?,
-                ))
-            },
-            || {
-                let (p, d, _) = self.exact_jet(span, parameter, 1)?;
-                Ok((p, d))
-            },
-        )
+        let (point, first, _) = self.jet_on_side(parameter, side, 1)?;
+        Ok((point, first))
     }
 
     /// Evaluates the point and exact first and second derivatives using
@@ -110,74 +82,21 @@ impl NurbsCurve {
         &self,
         parameter: Real,
         side: ParameterSide,
-    ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
+    ) -> Result<CurveJet, GeometryError> {
+        self.jet_on_side(parameter, side, 2)
+    }
+
+    fn jet_on_side(
+        &self,
+        parameter: Real,
+        side: ParameterSide,
+        order: u8,
+    ) -> Result<CurveJet, GeometryError> {
         let span = self.checked_span_on_side(parameter, side)?;
         self.with_evaluation_controls(
             span,
-            |origin, active| {
-                let homogeneous =
-                    de_boor(&self.knots, self.degree, span, parameter, active.clone())?;
-                let point = project_homogeneous(homogeneous)?;
-
-                let derivative_controls = self.derivative_controls(span, 1, &active)?;
-
-                let homogeneous_derivative = de_boor(
-                    &self.knots[1..self.knots.len() - 1],
-                    self.degree - 1,
-                    span - 1,
-                    parameter,
-                    derivative_controls.clone(),
-                )?;
-                let weight = homogeneous[3];
-                let weight_derivative = homogeneous_derivative[3];
-                let point_coordinates = point.to_array();
-                let first_derivative: [Real; 3] = std::array::from_fn(|coordinate| {
-                    (-point_coordinates[coordinate])
-                        .mul_add(weight_derivative, homogeneous_derivative[coordinate])
-                        / weight
-                });
-                let first_derivative = Vector3::try_from(first_derivative)?;
-
-                if self.degree == 1 {
-                    // A degree-one homogeneous curve has H'' = 0, but its
-                    // Euclidean second derivative is -2 (W'/W) C', not zero.
-                    let second = first_derivative.to_array().map(|value| {
-                        crate::parameter::scaled_ratio(value, weight_derivative, weight)
-                            .map(|value| -2.0 * value)
-                    });
-                    let [x, y, z] = second;
-                    return Ok((
-                        self.restore_evaluated_point(span, parameter, point, origin)?,
-                        first_derivative,
-                        Vector3::try_new(x?, y?, z?)?,
-                    ));
-                }
-
-                let second_derivative_controls =
-                    self.derivative_controls(span, 2, &derivative_controls)?;
-                let homogeneous_second_derivative = de_boor(
-                    &self.knots[2..self.knots.len() - 2],
-                    self.degree - 2,
-                    span - 2,
-                    parameter,
-                    second_derivative_controls,
-                )?;
-                let weight_second_derivative = homogeneous_second_derivative[3];
-                let first_coordinates = first_derivative.to_array();
-                let second_derivative: [Real; 3] = std::array::from_fn(|coordinate| {
-                    let quotient_terms = (2.0 * weight_derivative).mul_add(
-                        first_coordinates[coordinate],
-                        weight_second_derivative * point_coordinates[coordinate],
-                    );
-                    (homogeneous_second_derivative[coordinate] - quotient_terms) / weight
-                });
-                Ok((
-                    self.restore_evaluated_point(span, parameter, point, origin)?,
-                    first_derivative,
-                    Vector3::try_from(second_derivative)?,
-                ))
-            },
-            || self.exact_jet(span, parameter, 2),
+            |origin, active| FloatJet::new(origin, active).evaluate(self, span, parameter, order),
+            || self.exact_jet(span, parameter, order),
         )
     }
 

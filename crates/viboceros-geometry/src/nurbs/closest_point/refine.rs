@@ -1,9 +1,9 @@
 //! Monotone evaluated-point descent with range-safe tangent projections.
 use super::*;
 
-impl NurbsCurve {
+impl CurveQuery<'_> {
     pub(super) fn refine_closest_parameter_only(
-        &self,
+        &mut self,
         target: Point3,
         mut parameter: Real,
         domain: [Real; 2],

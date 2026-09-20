@@ -1,4 +1,5 @@
 //! Bounded NURBS closest-point search and curvature-aware refinement.
+use super::evaluate::CurveQuery;
 use super::*;
 use crate::point::PointDistance;
 mod refine;
@@ -13,10 +14,14 @@ struct Candidate {
 }
 
 impl Candidate {
-    fn new(curve: &NurbsCurve, target: Point3, parameter: Real) -> Result<Self, GeometryError> {
+    fn new(
+        query: &mut CurveQuery<'_>,
+        target: Point3,
+        parameter: Real,
+    ) -> Result<Self, GeometryError> {
         Ok(Self {
             parameter,
-            distance: PointDistance::new(target, curve.evaluate(parameter)?),
+            distance: PointDistance::new(target, query.evaluate(parameter)?),
         })
     }
 
@@ -68,9 +73,12 @@ impl NurbsCurve {
         refinement_target: Point3,
     ) -> Result<Real, GeometryError> {
         let domain = [*self.domain().start(), *self.domain().end()];
-        let mut candidates = Vec::new();
-        for parameter in curve_closest_parameter_seeds(self.spans(), domain[0], domain[1]) {
-            if let Ok(candidate) = Candidate::new(self, target, parameter) {
+        let mut query = CurveQuery::new(self);
+        let mut refinement = CurveQuery::new(refinement);
+        let seeds = curve_closest_parameter_seeds(self.spans(), domain[0], domain[1]);
+        let mut candidates = Vec::with_capacity(seeds.len());
+        for parameter in seeds {
+            if let Ok(candidate) = Candidate::new(&mut query, target, parameter) {
                 // The first native parameter wins every possible distance tie.
                 // Never use model tolerance or a rounded distance for this hit.
                 if parameter == domain[0] && candidate.distance.point() == target {
@@ -97,7 +105,7 @@ impl NurbsCurve {
                 seed.parameter,
                 domain,
                 tolerance,
-            ) && let Ok(candidate) = Candidate::new(self, target, parameter)
+            ) && let Ok(candidate) = Candidate::new(&mut query, target, parameter)
                 && candidate.compare(&best, target).is_lt()
             {
                 best = candidate;
@@ -115,7 +123,8 @@ impl NurbsCurve {
         domain: [Real; 2],
         tolerance: Tolerance,
     ) -> Result<(Real, Real), GeometryError> {
-        let parameter = self.refine_closest_parameter_only(target, parameter, domain, tolerance)?;
+        let parameter = CurveQuery::new(self)
+            .refine_closest_parameter_only(target, parameter, domain, tolerance)?;
         Ok((parameter, self.evaluate(parameter)?.distance_to(target)?))
     }
 }

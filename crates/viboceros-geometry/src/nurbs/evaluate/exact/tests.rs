@@ -32,6 +32,7 @@ fn exact_curve_jets_match_independent_fraction_basis_reference_bits() {
         let span = curve.checked_span_on_side(parameter, side).unwrap();
         assert!(curve.homogeneous_controls(span, true).unwrap().needs_exact);
         let expected = fields.collect::<Vec<_>>();
+        let mut query = CurveQuery::new(&curve);
         for order in 0..=2 {
             let actual = match order {
                 0 => curve
@@ -44,6 +45,22 @@ fn exact_curve_jets_match_independent_fraction_basis_reference_bits() {
                     .evaluate_with_second_derivative_on_side(parameter, side)
                     .map(|(p, d, dd)| [p.to_array(), d.to_array(), dd.to_array()].concat()),
             };
+            let cached = query.jet(parameter, side, order as u8).map(|(p, d, dd)| {
+                [p.to_array(), d.to_array(), dd.to_array()]
+                    .into_iter()
+                    .take(order + 1)
+                    .flatten()
+                    .map(Real::to_bits)
+                    .collect::<Vec<_>>()
+            });
+            assert_eq!(
+                cached,
+                actual
+                    .as_ref()
+                    .map(|values| values.iter().map(|x| x.to_bits()).collect::<Vec<_>>())
+                    .map_err(Clone::clone),
+                "cached independent reference case {count}, order {order}"
+            );
             if expected == ["pole"] {
                 assert_eq!(actual, Err(GeometryError::ZeroWeightAtParameter));
                 poles += 1;

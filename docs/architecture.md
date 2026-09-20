@@ -299,6 +299,10 @@ The [curve closest-point module](curve-closest-point.md) shares immutable distan
 keys with surfaces. It separates bounded candidate selection from range-safe
 Newton/tangent refinement; translated curves only propose parameters, whose
 original model-space images decide the result.
+Both frames own a [curve query cache](curve-query-cache.md): immutable active-span
+controls, lazy floating/exact derivative nets, and reusable floating scratch.
+No evaluated point or pole status is cached, and late failures do not change
+the span's normal floating-point dispatch.
 The separate [curvature module](curvature.md) forms a scale-aware orthonormal
 shape operator from those jets. Geometry evaluation is independent of the
 command's closest-point selection, reports, and permanent markers.

@@ -100,6 +100,10 @@ from replacing a better incumbent, but cannot invent an unproposed parameter.
 
 ## Performance
 
+The measurements below describe the original correctness checkpoint. The later
+[curve query cache](curve-query-cache.md) reuses span coefficients without
+changing candidate ordering, refinement steps, or evaluated geometry.
+
 The [release record](curve-closest-performance.json) compares `d35a779` with this
 implementation on aarch64, pinned to CPU 5. Five batches of 500 iterations per
 curve time search plus final evaluation/distance, excluding construction:
