@@ -33,6 +33,10 @@ fn object_filters_cover_geometry_and_memberships_without_changing_selection_poli
             (ObjectSelectionFilter::Any, [true, true, true, true, true]),
             (ObjectSelectionFilter::Grouped, [grouped; 5]),
             (
+                ObjectSelectionFilter::Join,
+                [false, true, true, false, false],
+            ),
+            (
                 ObjectSelectionFilter::Mesh,
                 [false, false, true, false, false],
             ),

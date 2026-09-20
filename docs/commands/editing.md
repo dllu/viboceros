@@ -72,6 +72,9 @@ lengths. See [plane arrays](../plane-arrays.md) for signed lengths and limits. `
 extends selected line, polyline, arc, NURBS, and polycurve chains within the
 document tolerance, retaining the seed's attributes and groups. Its one-pass
 seeded behavior differs from the batch joining API; see [joining policies](../curve-editing.md).
+Mesh inputs use a separate alignment and assembly path with remembered
+`JoinDisjointMeshes=Yes|No`; see [mesh joining](join.md) for exact topology,
+attribute, selection, and tolerance policies.
 `Explode` turns polylines into line segments and polycurves into exact
 NURBS segments in their composite parameter intervals, frees point-cloud
 members as points, duplicates polysurface faces as exact trimmed B-reps, and

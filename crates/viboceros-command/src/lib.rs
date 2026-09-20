@@ -105,7 +105,9 @@ use curve_cut::TRIM_CURVE_USAGE;
 use curve_cut::{
     CurveCutterInput, TrimCurveCommand, selected_curve_cutter_inputs, split_curve_with_cutters,
 };
-use curve_edit::{CloseCrvCommand, JoinCommand};
+use curve_edit::CloseCrvCommand;
+mod join;
+use join::JoinCommand;
 mod curvature;
 mod curve_domain;
 mod edge_surface;
@@ -798,7 +800,7 @@ impl CommandRegistry {
             .register(UnisolateLockCommand)
             .expect("unique built-in command");
         registry
-            .register(JoinCommand)
+            .register(JoinCommand::default())
             .expect("unique built-in command");
         registry
             .register(ExplodeCommand)
@@ -16960,7 +16962,9 @@ pub enum CommandError {
     #[error("Join requires at least two selected curves")]
     NotEnoughCurvesToJoin,
 
-    #[error("Join requires curve geometry")]
+    #[error(
+        "Join requires only curves or only meshes; surface and mixed-family joining is not implemented"
+    )]
     UnsupportedJoinGeometry,
 
     #[error("the selected curves do not have endpoints within the document tolerance")]

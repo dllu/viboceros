@@ -2,6 +2,12 @@
 
 [Project overview](../README.md)
 
+The `mesh_join_command` probe has 181 raw command records covering both
+`JoinDisjointMeshes` choices, precision thresholds, ordered selection, winding,
+attributes, groups, and identity replacement. It checks identical binary64
+vertices and face indices before and after inserting each Rhino source;
+no output normalization is used. See [mesh joining](commands/join.md).
+
 Border duplication has 86 matching live command records and offline replay
 checks, including edge-table permutations. See [border validation](borders.md)
 for the resolved polysurface seam discrepancies and identical-source 3DM protocol.

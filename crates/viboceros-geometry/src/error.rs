@@ -495,6 +495,10 @@ pub enum GeometryError {
 
     #[error("a polygon mesh must contain at least one face")]
     EmptyMesh,
+    #[error("mesh join alignment tolerance must be finite and nonnegative")]
+    InvalidMeshJoinTolerance,
+    #[error("mesh joining exceeded its input or matching-work limit")]
+    MeshJoinResourceLimit,
 
     #[error("a polygon mesh has too many vertices for 32-bit indices")]
     TooManyMeshVertices,

@@ -14,6 +14,7 @@ pub enum ObjectSelectionFilter {
     Grouped,
     Mesh,
     Curves,
+    Join,
     ToNurbs,
     Beziers,
     Parametric,
@@ -33,6 +34,7 @@ impl ObjectSelectionFilter {
             Self::PointCloudSources => matches!(geometry, Geometry::Point(_) | Geometry::Mesh(_)),
             Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
             Self::Curves => geometry.curve_ref().is_some(),
+            Self::Join => geometry.curve_ref().is_some() || matches!(geometry, Geometry::Mesh(_)),
             Self::ToNurbs => !matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_)),
             Self::Parametric => {
                 geometry.curve_ref().is_some()

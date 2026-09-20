@@ -115,8 +115,9 @@ pub use mesh::{
     MAX_MESH_ICO_SPHERE_SUBDIVISIONS, MAX_MESH_PLANE_FACES, MAX_MESH_QUAD_SPHERE_SUBDIVISIONS,
     MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MeshCapFaceStyle,
     MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshEllipsoidOptions, MeshFace,
-    MeshFaceExtraction, MeshHoleFill, MeshSubdivisionSphereOptions, MeshTopology, MeshTorusOptions,
-    MeshTruncatedConeOptions, MeshUvSphereOptions, TriangleMesh,
+    MeshFaceExtraction, MeshHoleFill, MeshJoinComponent, MeshJoinOptions,
+    MeshSubdivisionSphereOptions, MeshTopology, MeshTorusOptions, MeshTruncatedConeOptions,
+    MeshUvSphereOptions, TriangleMesh, join_meshes,
 };
 pub use morph::{
     MAX_MORPH_CURVE_CONTROL_POINTS, MAX_MORPH_SURFACE_AXIS_CONTROLS, MAX_MORPH_SURFACE_SAMPLES,

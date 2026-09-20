@@ -1,3 +1,6 @@
+mod append;
+mod join;
+pub use join::{MeshJoinComponent, MeshJoinOptions, join_meshes};
 #[cfg(test)]
 mod area_tests;
 #[cfg(test)]

@@ -1,0 +1,930 @@
+{
+  "protocol_version": 1,
+  "passed": true,
+  "reference_engine": "rhino",
+  "reference_engine_version": "8.32.26160.13001",
+  "fixture": "tools/rhino_oracle/fixtures/mesh_join.json",
+  "fixture_sha256": "b720af4422ae963c4d1a2e89490b58e7108d9aa0e4d0b216c711f79f24d646a9",
+  "observations": "tools/rhino_oracle/observations/mesh_join.json",
+  "observations_sha256": "55ff7d337630ea9f05f1b806feed10746afe23710bdafd30d3edfb04d215ef73",
+  "native_executable_sha256": "605d17041d727e96739de81d73a8a8390eebb03fddf87ac2dde02b8d1047f69a",
+  "absolute_epsilon": 0.0,
+  "relative_epsilon": 0.0,
+  "passing_operations": 181,
+  "maximum_absolute_error": 0.0,
+  "note": "Actual Join commands in owned private Xvfb; exact double-precision sources verified before and after Rhino insertion. Fresh full rerun equals saved observations. No coordinate, topology, winding, or output-order normalization. Timings are not measured.",
+  "validation": {
+    "rust_tests_passed": 2676,
+    "rust_tests_ignored": 18,
+    "python_tests_passed": 209,
+    "clippy_warnings_denied": true,
+    "rustdoc_warnings_denied": true
+  },
+  "operations": [
+    {
+      "id": "adjacent-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "adjacent-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "disjoint-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "disjoint-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "vertex-touch-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "vertex-touch-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "triangle-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "triangle-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fold-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fold-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "near-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "near-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "at-tolerance-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "at-tolerance-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "outside-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "outside-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "overlap-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "overlap-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "identical-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "identical-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "unused-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "unused-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "single-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "single-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "three-chain-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "three-chain-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "connected-and-disjoint-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "connected-and-disjoint-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "adjacent-reverse",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "disjoint-reverse",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "vertex-touch-reverse",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "triangle-reverse",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fold-reverse",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "near-reverse",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "adjacent-False-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "adjacent-True-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "disjoint-False-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "disjoint-True-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "vertex-touch-False-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "vertex-touch-True-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "triangle-False-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "triangle-True-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "reversed-adjacent-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "reversed-adjacent-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "reversed-seed-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "reversed-seed-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "vertex-other-corners-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "vertex-other-corners-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "vertex-side-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "vertex-side-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "already-disjoint-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "already-disjoint-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "interleaved-components-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "interleaved-components-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "unused-contact-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "unused-contact-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "opposite-overlap-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "opposite-overlap-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "nonmanifold-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "nonmanifold-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "small-gap-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "small-gap-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "internal-contact-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "internal-contact-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--8-tol-0.125-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--8-tol-0.125-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--10-tol-0.125-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--10-tol-0.125-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--12-tol-0.125-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--12-tol-0.125-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--16-tol-0.125-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--16-tol-0.125-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--18-tol-0.125-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--18-tol-0.125-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--19-tol-0.125-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--19-tol-0.125-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--20-tol-0.125-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--20-tol-0.125-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--21-tol-0.125-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--21-tol-0.125-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--24-tol-0.125-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--24-tol-0.125-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--8-tol-1e-06-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--8-tol-1e-06-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--10-tol-1e-06-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--10-tol-1e-06-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--12-tol-1e-06-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--12-tol-1e-06-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--16-tol-1e-06-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--16-tol-1e-06-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--18-tol-1e-06-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--18-tol-1e-06-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--19-tol-1e-06-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--19-tol-1e-06-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--20-tol-1e-06-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--20-tol-1e-06-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--21-tol-1e-06-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--21-tol-1e-06-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--24-tol-1e-06-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "gap--24-tol-1e-06-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-0.125-1.25e-06",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-0.125-6.25e-06",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-0.125-1.25e-05",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-0.125-2.5e-05",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-0.125-0.000125",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-0.125-0.00125",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-0.125-0.0125",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-0.125-0.0625",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-0.001-1e-08",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-0.001-5.0000000000000004e-08",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-0.001-1.0000000000000001e-07",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-0.001-2.0000000000000002e-07",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-0.001-1e-06",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-0.001-1e-05",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-0.001-0.0001",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-0.001-0.0005",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-1e-06-1.0000000000000001e-11",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-1e-06-5e-11",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-1e-06-1e-10",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-1e-06-2e-10",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-1e-06-1e-09",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-1e-06-1e-08",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-1e-06-1e-07",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-1e-06-5e-07",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-1.0-1e-05",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-1.0-5e-05",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-1.0-0.0001",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-1.0-0.0002",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-1.0-0.001",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-1.0-0.01",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-1.0-0.1",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "fine-1.0-0.5",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "close-chain-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "close-chain-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "close-chain-reverse-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "close-chain-reverse-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "translated-near-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "translated-near-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "translated-negative-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "translated-negative-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "closed-near-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "closed-near-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "internal-near-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "internal-near-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "disjoint-bridge-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "disjoint-bridge-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "diagonal-near-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "diagonal-near-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "three-components-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "three-components-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "closed-contact-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "closed-contact-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "single-disjoint-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "single-disjoint-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "float-boundary-0.5-9.999e-05",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "float-boundary-0.5-0.0001",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "float-boundary-0.5-0.00010001",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "float-boundary-1.0-9.999e-05",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "float-boundary-1.0-0.0001",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "float-boundary-1.0-0.00010001",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "float-boundary-2.0-9.999e-05",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "float-boundary-2.0-0.0001",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "float-boundary-2.0-0.00010001",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "float-boundary-4.0-9.999e-05",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "float-boundary-4.0-0.0001",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "float-boundary-4.0-0.00010001",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "float-boundary-8.0-9.999e-05",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "float-boundary-8.0-0.0001",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "float-boundary-8.0-0.00010001",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "anchors-[0, 8e-06, 1.6e-05, 2.4e-05]-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "anchors-[0, 8e-06, 1.6e-05, 2.4e-05]-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "anchors-[2.4e-05, 1.6e-05, 8e-06, 0]-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "anchors-[2.4e-05, 1.6e-05, 8e-06, 0]-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "anchors-[0, 1.6e-05, 8e-06]-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "anchors-[0, 1.6e-05, 8e-06]-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "anchors-[8e-06, 0, 1.6e-05]-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "anchors-[8e-06, 0, 1.6e-05]-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "reverse-pre-adjacent-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "reverse-pre-mixed-False",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "reverse-pre-adjacent-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "reverse-pre-mixed-True",
+      "passed": true,
+      "max_absolute_error": 0.0
+    }
+  ]
+}

@@ -186,6 +186,9 @@ class OracleClient:
             if any(op.get("op") == "border_command" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("border_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
+            if any(op.get("op") == "mesh_join_command" for op in request.get("operations", [])):
+                helper = Path(__file__).with_name("mesh_join_probe.py")
+                shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "document_units" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("generate_document_units_reference.py")
                 shutil.copyfile(helper, job_path / helper.name)

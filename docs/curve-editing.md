@@ -77,7 +77,8 @@ derivatives. Its observed maximum numeric difference is below `2.5e-14`.
 
 This is bounded compatibility evidence, not full equivalence for arbitrary curves.
 Rhino's full simplification, high-degree polyline recognition, tiny-segment removal,
-and all ambiguous/degenerate join cases remain incomplete. Higher-level joining of
-surfaces, B-reps, and meshes is not implemented by this command.
+and all ambiguous/degenerate join cases remain incomplete. The command also
+supports [mesh joining](commands/join.md), with an independent geometry policy.
+Surface and B-rep joining remain unimplemented.
 Probe timings include recording and command/document work and are not a
 kernel-only performance comparison.

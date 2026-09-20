@@ -260,7 +260,11 @@ parameter maps. Document geometry operations live in their own module, separate
 from object state and history. Polycurves are integrated with transforms, rendering,
 picking, endpoint snapping, extraction, explode, and 3DM interchange.
 Representation-aware ownership, endpoint editing, and joining live in separate
-geometry modules; `Join` and `CloseCrv` share a dedicated command module.
+geometry modules. `CloseCrv` stays in `curve_edit`; `Join` has a separate
+family dispatcher and curve-policy submodule. Mesh concatenation, matching,
+and component orientation live in the kernel's `mesh/append` and `mesh/join`
+modules; [mesh joining](commands/join.md) documents their explicit precision
+policy and the command's selection-order and group behavior.
 See [curve joining and closure](curve-editing.md) for tested policies and limits.
 All seven curve families share [native parameter evaluation](curve-parameters.md),
 including analytic derivatives and parameter-bearing arc-length samples. Circular
