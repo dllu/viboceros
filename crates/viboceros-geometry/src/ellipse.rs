@@ -1,5 +1,7 @@
 use std::f64::consts::{FRAC_1_SQRT_2, FRAC_PI_2};
 
+mod closest;
+
 use crate::{
     AffineTransform3, BoundingBox3, GeometryError, NurbsCurve, Point3, Real, Tolerance,
     UnitVector3, Vector3, WeightedPoint3, integration::integrate_adaptive, require_finite,

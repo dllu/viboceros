@@ -45,27 +45,49 @@ pub(super) fn run(
             frame.point_at(local)
         })
         .collect::<Result<Vec<_>, viboceros_geometry::GeometryError>>()?;
+    let curve = options
+        .curve
+        .map(|id| {
+            if document.is_selected(id) {
+                return Err(CommandError::AlignmentTargetSelected);
+            }
+            document
+                .object(id)
+                .ok_or(viboceros_document::DocumentError::ObjectNotFound(id).into())
+                .and_then(|object| {
+                    object
+                        .geometry()
+                        .curve_ref()
+                        .ok_or(CommandError::AlignmentTargetNotCurve)
+                })
+        })
+        .transpose()?;
     let projector = match options.mode {
-        Some(AlignmentMode::ToFitPlane) => PointProjection3::onto_best_fit_plane(&anchors)?,
-        Some(AlignmentMode::ToLine) => PointProjection3::onto_line(
+        Some(AlignmentMode::ToCurve) => None,
+        Some(AlignmentMode::ToFitPlane) => Some(PointProjection3::onto_best_fit_plane(&anchors)?),
+        Some(AlignmentMode::ToLine) => Some(PointProjection3::onto_line(
             options.references[0].unwrap(),
             options.references[1].unwrap(),
-        )?,
+        )?),
         Some(AlignmentMode::ToPlane) => {
             let [Some(a), Some(b), c] = options.references else {
                 return Err(CommandError::Usage(USAGE));
             };
-            if let Some(c) = c {
+            Some(if let Some(c) = c {
                 PointProjection3::onto_three_point_plane([a, b, c])?
             } else {
                 PointProjection3::onto_plane_parallel_to(a, b, orientation.z_axis().as_vector())?
-            }
+            })
         }
         _ => return Err(CommandError::Usage(USAGE)),
     };
     let mut replacements = Vec::new();
     for (object, anchor) in objects.iter().zip(anchors) {
-        let projected = projector.project(anchor)?;
+        let projected = if let Some(curve) = curve {
+            curve.evaluate(curve.closest_parameter(anchor, document.tolerance())?)?
+        } else {
+            projector.as_ref().unwrap().project(anchor)?
+        };
         if projected == anchor {
             continue;
         }

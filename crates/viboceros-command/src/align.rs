@@ -13,7 +13,7 @@ pub use options::{AlignmentMode, AlignmentOptions};
 #[cfg(test)]
 mod tests;
 
-const USAGE: &str = "Align mode [AlignTo=CPlane|World] [point|Auto]; ToLine start end; ToPlane [3Point] start end [third]";
+const USAGE: &str = "Align mode [AlignTo=CPlane|World] [point|Auto]; ToLine start end; ToPlane [3Point] start end [third]; ToFitPlane; ToCurve CurveId=uuid";
 
 #[derive(Default)]
 pub(super) struct AlignCommand {
@@ -198,7 +198,7 @@ fn offsets(
         VertCenter => [coordinate(0, 0), 0.],
         HorizCenter => [0., coordinate(1, 0)],
         Concentric => [coordinate(0, 0), coordinate(1, 0)],
-        ToLine | ToPlane | ToFitPlane => {
+        ToLine | ToPlane | ToFitPlane | ToCurve => {
             unreachable!("projection modes use individual object anchors")
         }
     }

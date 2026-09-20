@@ -66,6 +66,20 @@ impl PendingObjectCommand {
 }
 
 impl VibocerosApp {
+    pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
+        if self.picking_alignment_curve() {
+            return Some(ObjectSelectionFilter::Curves);
+        }
+        if self.group_prompt == Some(group_prompt::GroupPrompt::Target) {
+            return Some(ObjectSelectionFilter::Grouped);
+        }
+        self.object_prompt
+            .as_ref()
+            .map_or(Some(ObjectSelectionFilter::Any), |prompt| {
+                prompt.selection_filter()
+            })
+    }
+
     pub(super) fn try_start_object_prompt(&mut self, input: &str) -> bool {
         let description = match self.commands.object_selection_prompt(input) {
             Ok(Some(prompt)) => prompt,

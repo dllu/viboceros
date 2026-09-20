@@ -63,6 +63,14 @@ id_type!(ObjectId);
 id_type!(LayerId);
 id_type!(GroupId);
 
+impl std::str::FromStr for ObjectId {
+    type Err = uuid::Error;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        Uuid::parse_str(value).map(Self)
+    }
+}
+
 /// Whether independent copies retain the source set's group memberships.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CopyGroupPolicy {

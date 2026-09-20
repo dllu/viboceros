@@ -12,6 +12,7 @@ pub enum AlignmentMode {
     ToLine,
     ToPlane,
     ToFitPlane,
+    ToCurve,
 }
 
 impl AlignmentMode {
@@ -26,8 +27,9 @@ impl AlignmentMode {
         "ToLine",
         "ToPlane",
         "ToFitPlane",
+        "ToCurve",
     ];
-    const VALUES: [Self; 10] = [
+    const VALUES: [Self; 11] = [
         Self::Left,
         Self::Right,
         Self::Top,
@@ -38,6 +40,7 @@ impl AlignmentMode {
         Self::ToLine,
         Self::ToPlane,
         Self::ToFitPlane,
+        Self::ToCurve,
     ];
     pub const fn label(self) -> &'static str {
         match self {
@@ -51,6 +54,7 @@ impl AlignmentMode {
             Self::ToLine => "ToLine",
             Self::ToPlane => "ToPlane",
             Self::ToFitPlane => "ToFitPlane",
+            Self::ToCurve => "ToCurve",
         }
     }
     fn parse(value: &str) -> Option<Self> {
@@ -69,6 +73,7 @@ pub struct AlignmentOptions {
     pub automatic: bool,
     pub references: [Option<Point3>; 3],
     pub three_point: bool,
+    pub curve: Option<viboceros_document::ObjectId>,
 }
 
 impl AlignmentOptions {
@@ -81,6 +86,9 @@ impl AlignmentOptions {
         );
         if self.three_point {
             line.push_str(" 3Point");
+        }
+        if let Some(id) = self.curve {
+            line.push_str(&format!(" CurveId={id}"));
         }
         for p in self.target.iter().chain(self.references.iter().flatten()) {
             line.push_str(&format!(" {},{},{}", p.x(), p.y(), p.z()));
@@ -104,7 +112,9 @@ impl AlignmentOptions {
         }
     }
     pub fn ready(self) -> bool {
-        if self.mode == Some(AlignmentMode::ToFitPlane) {
+        if self.mode == Some(AlignmentMode::ToCurve) {
+            self.curve.is_some()
+        } else if self.mode == Some(AlignmentMode::ToFitPlane) {
             true
         } else if self.reference_count() == 0 {
             self.target.is_some() || self.automatic
@@ -115,7 +125,10 @@ impl AlignmentOptions {
         }
     }
     pub fn with_point(mut self, point: Point3) -> Result<Self, CommandError> {
-        if self.mode == Some(AlignmentMode::ToFitPlane) {
+        if matches!(
+            self.mode,
+            Some(AlignmentMode::ToFitPlane | AlignmentMode::ToCurve)
+        ) {
             return Err(CommandError::Usage(USAGE));
         }
         if self.reference_count() == 0 {
@@ -137,6 +150,7 @@ impl AlignmentOptions {
         let mut remaining = arguments;
         let (mut mode_seen, mut frame_seen, mut target_seen) = (false, false, false);
         let mut plane_seen = false;
+        let mut curve_seen = false;
         let mut points = Vec::new();
         let previous_mode = self.mode;
         while let Some(token) = remaining.first() {
@@ -165,6 +179,7 @@ impl AlignmentOptions {
             } else if token.contains('=')
                 || option_name_eq(token, "AlignTo")
                 || option_name_eq(token, "Mode")
+                || option_name_eq(token, "CurveId")
             {
                 let (name, value, used) = if let Some((name, value)) = token.split_once('=') {
                     (name, value, 1)
@@ -192,6 +207,9 @@ impl AlignmentOptions {
                     self.three_point =
                         crate::parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
                     plane_seen = true;
+                } else if option_name_eq(name, "CurveId") && !curve_seen {
+                    self.curve = Some(value.parse().map_err(|_| CommandError::Usage(USAGE))?);
+                    curve_seen = true;
                 } else {
                     return Err(CommandError::Usage(USAGE));
                 }
@@ -208,6 +226,9 @@ impl AlignmentOptions {
         if mode_seen && previous_mode != self.mode {
             self.references = [None; 3];
             self.target = None;
+            if !curve_seen {
+                self.curve = None;
+            }
             if !target_seen {
                 self.automatic = false;
             }
@@ -216,6 +237,7 @@ impl AlignmentOptions {
             }
         }
         if self.three_point && self.mode != Some(AlignmentMode::ToPlane)
+            || self.curve.is_some() && self.mode != Some(AlignmentMode::ToCurve)
             || self.projects() && (self.automatic || self.target.is_some())
             || self.references[self.reference_count()..]
                 .iter()
@@ -232,7 +254,12 @@ impl AlignmentOptions {
     pub const fn projects(self) -> bool {
         matches!(
             self.mode,
-            Some(AlignmentMode::ToLine | AlignmentMode::ToPlane | AlignmentMode::ToFitPlane)
+            Some(
+                AlignmentMode::ToLine
+                    | AlignmentMode::ToPlane
+                    | AlignmentMode::ToFitPlane
+                    | AlignmentMode::ToCurve
+            )
         )
     }
 }

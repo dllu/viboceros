@@ -3,6 +3,10 @@
 [Architecture](architecture.md) · [Surface candidate selection](surface-candidate-selection.md)
 
 `nurbs/closest_point` separates bounded search from curvature-aware refinement.
+Native ellipses now use a separate [monotone quadrant solver](ellipse-closest-point.md).
+Native arc endpoint and polyline/polycurve segment comparisons use the same
+exact evaluated-point distance ordering as the NURBS search. Regression cases
+cover falsely equal rounded distances and distances larger than binary64's range.
 This audit reproduces six failures of the previous search at `d35a779`: rounded
 distance ties, overflowing distances, overflowing displacements, overflowing
 derivative products, mixed-sign poles, and recentering that loses a target offset.

@@ -34,7 +34,7 @@ for geometry policy, viewport changes, verification, and remaining limitations.
 
 `Align` moves object/group bounds to an edge or center, in world or CPlane
 coordinates, using a target point or automatic overall bounds. See
-[alignment](align.md) for its seven bounding-box modes, line/plane projection modes, interactive workflow, selection
+[alignment](align.md) for its seven bounding-box modes, curve/line/plane projection modes, interactive workflow, selection
 cleanup, and recorded bounds discrepancies.
 
 `Distribute` moves at least three selected objects/group units along a CPlane

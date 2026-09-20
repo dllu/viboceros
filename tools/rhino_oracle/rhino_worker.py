@@ -4045,17 +4045,34 @@ def _distribute(operation, tolerance):
     return _object_layout(operation, tolerance, script, 3)
 
 
-def _align_script(operation):
+def _align_script(operation, target_id=None):
     mode = operation["mode"]
     coordinates = operation.get("align_to", "CPlane")
-    if mode not in ("Left", "Right", "Top", "Bottom", "HorizCenter", "VertCenter", "Concentric", "ToLine", "ToPlane", "ToFitPlane"):
+    if mode not in ("Left", "Right", "Top", "Bottom", "HorizCenter", "VertCenter", "Concentric", "ToLine", "ToPlane", "ToFitPlane", "ToCurve"):
         raise ValueError("invalid Align mode")
     if coordinates not in ("World", "CPlane"):
         raise ValueError("invalid Align coordinate system")
     three_point = operation.get("three_point", False)
     if type(three_point) is not bool or three_point and mode != "ToPlane":
         raise ValueError("invalid alignment plane option")
-    if mode in ("ToLine", "ToPlane"):
+    if mode != "ToCurve" and operation.get("curve") is not None:
+        raise ValueError("curve target requires ToCurve")
+    if mode == "ToCurve":
+        index = operation.get("curve")
+        sources = operation.get("sources", [])
+        if type(index) is not int or not 0 <= index < len(sources):
+            raise ValueError("invalid alignment target curve index")
+        if sources[index]["type"] not in ("line", "polyline", "polycurve", "circle", "arc", "ellipse", "nurbs"):
+            raise ValueError("alignment target must be a curve")
+        selected = operation.get("selected")
+        if selected is None or index in selected:
+            # SelID cannot pick an already selected moving source in Rhino's
+            # alignment-curve prompt; the macro would remain interactive.
+            raise ValueError("alignment target must not be selected")
+        if operation.get("target") is not None or operation.get("references"):
+            raise ValueError("curve alignment does not use reference points")
+        ending = "" if target_id is None else "_SelID %s" % target_id
+    elif mode in ("ToLine", "ToPlane"):
         references = operation.get("references", [])
         expected = 3 if three_point else 2
         if len(references) != expected or operation.get("target") is not None:
@@ -4079,6 +4096,8 @@ def _align_script(operation):
 
 def _align(operation, tolerance):
     script = _align_script(operation)
+    if operation["mode"] == "ToCurve":
+        script = lambda ids: _align_script(operation, ids[operation["curve"]])
     if operation["mode"] in ("ToLine", "ToPlane"):
         _validate_alignment_references(operation, tolerance)
     return _object_layout(operation, tolerance, script, 1)
@@ -4170,6 +4189,8 @@ def _object_layout(operation, tolerance, script, minimum_selection):
             for group in groups:
                 if document.Groups.Add("Viboceros layout " + str(System.Guid.NewGuid()), [ids[i] for i in group]) < 0:
                     raise ValueError("layout grouping failed")
+            if callable(script):
+                script = script(ids)
             if preselect:
                 for i in selected_indices:
                     document.Objects.Select(ids[i])

@@ -175,6 +175,60 @@ fn analytic_closest_locations_use_native_parameters_and_clamp_arc_ends() {
 }
 
 #[test]
+fn composite_closest_points_do_not_order_by_rounded_or_overflowing_distances() {
+    let p = |x, y, z| Point3::try_new(x, y, z).unwrap();
+    let polyline = Polyline3::try_new(
+        vec![p(0., 0., 0.), p(1., 0., 0.), p(1., 1., 0.)],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let polycurve = Curve3::Polyline(polyline.clone()).to_polycurve().unwrap();
+    for curve in [
+        CurveRef::Polyline(&polyline),
+        CurveRef::PolyCurve(&polycurve),
+    ] {
+        for target in [p(0.37, 1e100, 0.), p(f64::MAX, f64::MAX, f64::MAX)] {
+            let t = curve.closest_parameter(target, Tolerance::DEFAULT).unwrap();
+            assert_eq!(curve.evaluate(t).unwrap(), p(1., 1., 0.));
+        }
+    }
+}
+
+#[test]
+fn arc_endpoint_comparison_retains_small_offsets_at_large_distances() {
+    let r = 3.;
+    let circle = Circle3::try_new(
+        Point3::try_new(0., 0., 0.).unwrap(),
+        r,
+        Vector3::try_new(0., 0., 1.)
+            .unwrap()
+            .normalized_nonzero()
+            .unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let arc = crate::CircularArc3::try_from_circle_sweep(circle, std::f64::consts::PI).unwrap();
+    for x in [-0.3, 0.3] {
+        let target = Point3::try_new(x, -1., 1e100).unwrap();
+        assert_eq!(
+            target.distance_to(arc.start().unwrap()).unwrap(),
+            target.distance_to(arc.end().unwrap()).unwrap()
+        );
+        // Both endpoints are at the same height; the sign of X selects the
+        // unique nearer endpoint despite the enormous perpendicular offset.
+        let expected = if x < 0. {
+            *arc.domain().end()
+        } else {
+            *arc.domain().start()
+        };
+        let t = CurveRef::Arc(&arc)
+            .closest_parameter(target, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(t, expected);
+    }
+}
+
+#[test]
 fn wrapped_ellipse_length_station_matches_high_precision_reference() {
     let axis = |x, y, z| {
         Vector3::try_new(x, y, z)

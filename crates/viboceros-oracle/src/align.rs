@@ -17,6 +17,7 @@ pub struct AlignFixture {
     pub references: Vec<[f64; 3]>,
     #[serde(default)]
     pub three_point: bool,
+    pub curve: Option<usize>,
 }
 
 pub(super) fn run(f: &AlignFixture, tolerance: Tolerance) -> Result<(Value, u64), ProbeError> {
@@ -38,12 +39,23 @@ pub(super) fn run(f: &AlignFixture, tolerance: Tolerance) -> Result<(Value, u64)
     // target/reference fields that otherwise look like ordinary command points.
     if options.projects() && f.target.is_some()
         || options.reference_count() == 0 && !f.references.is_empty()
+        || (f.curve.is_some() != (options.mode == Some(viboceros_command::AlignmentMode::ToCurve)))
     {
         return Err(ProbeError::FixtureInvariant(
             "invalid alignment target/references",
         ));
     }
     object_layout::run(&f.layout, tolerance, 1, |document, construction_plane| {
+        if let Some(index) = f.curve {
+            let name = index.to_string();
+            let object = document
+                .objects()
+                .find(|o| o.attributes().name() == Some(name.as_str()))
+                .ok_or(ProbeError::FixtureInvariant(
+                    "invalid alignment curve index",
+                ))?;
+            command.push_str(&format!(" CurveId={}", object.id()));
+        }
         let registry = CommandRegistry::with_builtins();
         let context = CommandContext { construction_plane };
         let result = if f.layout.preselect {

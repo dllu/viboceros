@@ -2,7 +2,7 @@
 
 [Project overview](../README.md)
 
-The `align` object-layout probe compares actual bounding-box and line/plane alignment commands,
+The `align` object-layout probe compares actual bounding-box, curve and line/plane alignment commands,
 including retained IDs, source samples/domains, groups, layer assignment and
 pre/postselection cleanup. Its shared `object_layout` module supplies fixture
 ownership and recording for Align and Distribute, not the alignment algorithm.
@@ -10,6 +10,11 @@ ownership and recording for Align and Distribute, not the alignment algorithm.
 line/plane and [best-fit plane](plane-fit.md) commands. It retains raw curved-bound,
 mesh-storage and nonunique-normal discrepancies alongside successful comparisons.
 All Rhino command probes run on an owned private Xvfb display.
+For `ToCurve`, `curve` is an unselected curve's index in `sources` and `selected`
+must explicitly omit it. Target IDs are bound only after owned source creation;
+arbitrary command text is never accepted as a target. The native adapter uses
+the corresponding document UUID. The 39-case curve fixture includes all seven
+native target families and retains a separate incomplete-prompt diagnostic.
 
 The shared `serde_json` dependency explicitly enables round-trip float parsing.
 Standalone oracle/document builds must not depend on app or test dependencies

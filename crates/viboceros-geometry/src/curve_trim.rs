@@ -1,6 +1,7 @@
 //! Native-domain trimming, cyclic edits, and closest-point dispatch.
 
 use crate::parameter::{check_interval, map_parameter, shifted_parameter, wrapped_parameter};
+use crate::point::PointDistance;
 use crate::{
     Curve3, CurveRef, CurveSegment3, GeometryError, Point3, PolyCurve3, Polyline3, Real, Tolerance,
 };
@@ -35,35 +36,37 @@ impl CurveRef<'_> {
                     .rem_euclid(std::f64::consts::TAU);
                 if angle <= c.sweep_radians() {
                     map_parameter(angle, 0.0..=c.sweep_radians(), c.domain())
-                } else if c.start()?.distance_to(target)? <= c.end()?.distance_to(target)? {
+                } else if !target.compare_distances(c.start()?, c.end()?).is_gt() {
                     Ok(*c.domain().start())
                 } else {
                     Ok(*c.domain().end())
                 }
             }
-            Self::Ellipse(c) => c.to_nurbs()?.closest_parameter(target, tolerance),
+            Self::Ellipse(c) => c.closest_parameter(target),
             Self::NurbsCurve(c) => c.closest_parameter(target, tolerance),
             Self::Polyline(c) => {
-                let mut best = (Real::INFINITY, *c.domain().start());
+                let mut best: Option<(PointDistance, Real)> = None;
                 for segment in c.segments() {
                     let t = CurveRef::Line(&segment).closest_parameter(target, tolerance)?;
-                    let distance = segment.evaluate(t)?.distance_to(target)?;
-                    if distance < best.0 {
-                        best = (distance, t);
+                    let distance = PointDistance::new(target, segment.evaluate(t)?);
+                    if best.is_none_or(|(previous, _)| distance.compare(&previous, target).is_lt())
+                    {
+                        best = Some((distance, t));
                     }
                 }
-                Ok(best.1)
+                Ok(best.expect("a polyline contains at least one segment").1)
             }
             Self::PolyCurve(c) => {
-                let mut best = (Real::INFINITY, *c.domain().start());
+                let mut best: Option<(PointDistance, Real)> = None;
                 for (index, segment) in c.segments().iter().enumerate() {
                     let t = segment.as_ref().closest_parameter(target, tolerance)?;
-                    let distance = segment.evaluate(t)?.distance_to(target)?;
-                    if distance < best.0 {
-                        best = (distance, c.polycurve_parameter(index, t)?);
+                    let distance = PointDistance::new(target, segment.evaluate(t)?);
+                    if best.is_none_or(|(previous, _)| distance.compare(&previous, target).is_lt())
+                    {
+                        best = Some((distance, c.polycurve_parameter(index, t)?));
                     }
                 }
-                Ok(best.1)
+                Ok(best.expect("a polycurve contains at least one segment").1)
             }
         }
     }

@@ -18,6 +18,104 @@ fn positions(app: &VibocerosApp) -> Vec<Geometry> {
 }
 
 #[test]
+fn curve_picking_preserves_sources_rejects_invalid_hits_and_supports_typed_ids() {
+    for postselected in [false, true] {
+        let mut app = setup();
+        let sources = app.document.selected_object_ids().collect::<Vec<_>>();
+        enter(&mut app, "Line 0,0,0 10,0,0");
+        let target = app
+            .document
+            .objects()
+            .find(|o| matches!(o.geometry(), Geometry::Line(_)))
+            .unwrap()
+            .id();
+        let before = positions(&app);
+        if postselected {
+            enter(&mut app, "SelNone");
+            enter(&mut app, "Align ToCurve");
+            app.document
+                .select_objects_direct(sources.clone(), viboceros_document::SelectionMode::Replace)
+                .unwrap();
+            enter(&mut app, "");
+        } else {
+            enter(&mut app, "Align ToCurve");
+        }
+        assert!(app.picking_alignment_curve());
+        assert_eq!(
+            app.viewport_object_filter(),
+            Some(viboceros_command::ObjectSelectionFilter::Curves)
+        );
+        assert!(
+            app.active_command
+                .unwrap()
+                .prompt()
+                .contains("alignment curve")
+        );
+        enter(&mut app, "");
+        assert!(!app.accept_drafting_point(point(1., 2., 3.)));
+        for id in [None, Some(sources[0])] {
+            app.apply_selection_click(SelectionClick {
+                object_id: id,
+                mode: viboceros_document::SelectionMode::Replace,
+            });
+            assert!(app.picking_alignment_curve());
+            assert_eq!(positions(&app), before);
+            assert_eq!(
+                app.document.selected_object_ids().collect::<Vec<_>>(),
+                sources
+            );
+        }
+        if postselected {
+            enter(&mut app, &format!("CurveId={target}"));
+        } else {
+            app.apply_selection_click(SelectionClick {
+                object_id: Some(target),
+                mode: viboceros_document::SelectionMode::Replace,
+            });
+        }
+        assert!(app.active_command.is_none());
+        assert_eq!(
+            app.document.object(sources[0]).unwrap().geometry(),
+            &Geometry::Point(point(0., 0., 0.))
+        );
+        assert_eq!(
+            app.document.object(sources[1]).unwrap().geometry(),
+            &Geometry::Point(point(4., 0., 0.))
+        );
+        assert!(!app.document.is_selected(target));
+        assert_eq!(
+            app.document.selected_object_count(),
+            if postselected { 0 } else { 2 }
+        );
+        enter(&mut app, "Undo");
+        assert_eq!(positions(&app), before);
+    }
+}
+
+#[test]
+fn curve_pick_mode_changes_and_cancellation_discard_no_geometry() {
+    let mut app = setup();
+    let before = positions(&app);
+    enter(&mut app, "Align ToCurve");
+    assert!(app.picking_alignment_curve());
+    enter(&mut app, "ToLine");
+    assert!(!app.picking_alignment_curve());
+    assert!(app.accept_drafting_point(point(1., 2., 3.)));
+    enter(&mut app, "ToCurve");
+    assert_eq!(app.active_command.unwrap().anchor(), None);
+    app.cancel_interactive_command(true);
+    assert_eq!(positions(&app), before);
+    assert_eq!(app.document.selected_object_count(), 2);
+    enter(&mut app, "SelNone");
+    enter(&mut app, "Align ToCurve");
+    enter(&mut app, "SelAll");
+    enter(&mut app, "");
+    app.cancel_interactive_command(true);
+    assert_eq!(positions(&app), before);
+    assert_eq!(app.document.selected_object_count(), 0);
+}
+
+#[test]
 fn selection_mode_and_auto_target_are_distinct_phases() {
     let mut app = setup();
     enter(&mut app, "SelNone");

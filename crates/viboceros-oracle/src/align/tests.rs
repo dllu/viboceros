@@ -1,4 +1,5 @@
 use super::*;
+mod curve;
 mod fit;
 mod projection;
 

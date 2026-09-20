@@ -1,0 +1,3230 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            1
+          ],
+          "end": [
+            10,
+            0,
+            1
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "line-World-pre",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            1
+          ],
+          "end": [
+            10,
+            0,
+            1
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "line-World-post",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            1
+          ],
+          "end": [
+            10,
+            0,
+            1
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "line-CPlane-pre",
+      "align_to": "CPlane",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            1
+          ],
+          "end": [
+            10,
+            0,
+            1
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "line-CPlane-post",
+      "align_to": "CPlane",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              1
+            ],
+            [
+              10,
+              0,
+              1
+            ],
+            [
+              10,
+              10,
+              5
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "polyline-World-pre",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              1
+            ],
+            [
+              10,
+              0,
+              1
+            ],
+            [
+              10,
+              10,
+              5
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "polyline-World-post",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              1
+            ],
+            [
+              10,
+              0,
+              1
+            ],
+            [
+              10,
+              10,
+              5
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "polyline-CPlane-pre",
+      "align_to": "CPlane",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              1
+            ],
+            [
+              10,
+              0,
+              1
+            ],
+            [
+              10,
+              10,
+              5
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "polyline-CPlane-post",
+      "align_to": "CPlane",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "radius": 4,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "circle-World-pre",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "radius": 4,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "circle-World-post",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "radius": 4,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "circle-CPlane-pre",
+      "align_to": "CPlane",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "radius": 4,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "circle-CPlane-post",
+      "align_to": "CPlane",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "arc",
+          "points": [
+            [
+              4,
+              0,
+              2
+            ],
+            [
+              0,
+              4,
+              2
+            ],
+            [
+              -4,
+              0,
+              2
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "arc-World-pre",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "arc",
+          "points": [
+            [
+              4,
+              0,
+              2
+            ],
+            [
+              0,
+              4,
+              2
+            ],
+            [
+              -4,
+              0,
+              2
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "arc-World-post",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "arc",
+          "points": [
+            [
+              4,
+              0,
+              2
+            ],
+            [
+              0,
+              4,
+              2
+            ],
+            [
+              -4,
+              0,
+              2
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "arc-CPlane-pre",
+      "align_to": "CPlane",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "arc",
+          "points": [
+            [
+              4,
+              0,
+              2
+            ],
+            [
+              0,
+              4,
+              2
+            ],
+            [
+              -4,
+              0,
+              2
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "arc-CPlane-post",
+      "align_to": "CPlane",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "ellipse",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "radius_x": 5,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "ellipse-World-pre",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "ellipse",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "radius_x": 5,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "ellipse-World-post",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "ellipse",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "radius_x": 5,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "ellipse-CPlane-pre",
+      "align_to": "CPlane",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "ellipse",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "radius_x": 5,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "ellipse-CPlane-post",
+      "align_to": "CPlane",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ]
+            },
+            {
+              "point": [
+                5,
+                8,
+                3
+              ]
+            },
+            {
+              "point": [
+                10,
+                0,
+                5
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "nurbs-World-pre",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ]
+            },
+            {
+              "point": [
+                5,
+                8,
+                3
+              ]
+            },
+            {
+              "point": [
+                10,
+                0,
+                5
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "nurbs-World-post",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ]
+            },
+            {
+              "point": [
+                5,
+                8,
+                3
+              ]
+            },
+            {
+              "point": [
+                10,
+                0,
+                5
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "nurbs-CPlane-pre",
+      "align_to": "CPlane",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ]
+            },
+            {
+              "point": [
+                5,
+                8,
+                3
+              ]
+            },
+            {
+              "point": [
+                10,
+                0,
+                5
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "nurbs-CPlane-post",
+      "align_to": "CPlane",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                0,
+                1
+              ],
+              "end": [
+                10,
+                0,
+                1
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                10,
+                0,
+                1
+              ],
+              "end": [
+                10,
+                10,
+                5
+              ]
+            }
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "polycurve-World-pre",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                0,
+                1
+              ],
+              "end": [
+                10,
+                0,
+                1
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                10,
+                0,
+                1
+              ],
+              "end": [
+                10,
+                10,
+                5
+              ]
+            }
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "polycurve-World-post",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                0,
+                1
+              ],
+              "end": [
+                10,
+                0,
+                1
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                10,
+                0,
+                1
+              ],
+              "end": [
+                10,
+                10,
+                5
+              ]
+            }
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "polycurve-CPlane-pre",
+      "align_to": "CPlane",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                0,
+                1
+              ],
+              "end": [
+                10,
+                0,
+                1
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                10,
+                0,
+                1
+              ],
+              "end": [
+                10,
+                10,
+                5
+              ]
+            }
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "polycurve-CPlane-post",
+      "align_to": "CPlane",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "radius": 4,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "group-[[0, 1]]",
+      "align_to": "World",
+      "groups": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "radius": 4,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "group-[[0, 3]]",
+      "align_to": "World",
+      "groups": [
+        [
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "radius": 4,
+          "x_axis": [
+            1,
+            -1,
+            0
+          ],
+          "normal": [
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "oblique-circle-World",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "radius": 4,
+          "x_axis": [
+            1,
+            -1,
+            0
+          ],
+          "normal": [
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "oblique-circle-CPlane",
+      "align_to": "CPlane",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                8,
+                3
+              ],
+              "weight": 0.3
+            },
+            {
+              "point": [
+                10,
+                0,
+                5
+              ],
+              "weight": 2
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "domain": [
+            -7,
+            13
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "rational-3d-World",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                8,
+                3
+              ],
+              "weight": 0.3
+            },
+            {
+              "point": [
+                10,
+                0,
+                5
+              ],
+              "weight": 2
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "domain": [
+            -7,
+            13
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "rational-3d-CPlane",
+      "align_to": "CPlane",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              1
+            ],
+            [
+              10,
+              0,
+              1
+            ],
+            [
+              10,
+              10,
+              5
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "closed-polyline-World",
+      "align_to": "World",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            -10,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            5,
+            5,
+            3
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              19,
+              4,
+              2
+            ],
+            [
+              21,
+              6,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              1
+            ],
+            [
+              10,
+              0,
+              1
+            ],
+            [
+              10,
+              10,
+              5
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "curve": 3,
+      "id": "closed-polyline-CPlane",
+      "align_to": "CPlane",
+      "preselect": false
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "radius": 4,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "curve": 1,
+      "id": "circle-center-tie",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            5,
+            2,
+            3
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            1,
+            2,
+            3
+          ],
+          "radius": 4,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "curve": 1,
+      "id": "circle-noop",
+      "align_to": "World",
+      "preselect": true
+    },
+    {
+      "op": "align",
+      "mode": "ToCurve",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              -1,
+              -2,
+              0
+            ],
+            [
+              -1,
+              2,
+              0
+            ],
+            [
+              1,
+              2,
+              0
+            ],
+            [
+              1,
+              -2,
+              0
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "curve": 1,
+      "id": "polyline-tie",
+      "align_to": "World",
+      "preselect": true
+    }
+  ]
+}

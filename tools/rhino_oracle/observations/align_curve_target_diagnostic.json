@@ -1,0 +1,81 @@
+{
+  "status": "no_completed_observation",
+  "description": "An owned private Xvfb Rhino batch completed its preceding curve cases, then remained in ToCurve target selection after SelID named an already selected source. The client timed out and closed only its owned Rhino. This is prompt-safety evidence, not a geometry result or a claim about all mouse-picking behavior. Both the native command and adapter now require an unselected target.",
+  "request": {
+    "op": "align",
+    "mode": "ToCurve",
+    "origin": [
+      10,
+      -20,
+      30
+    ],
+    "x_axis": [
+      0,
+      1,
+      0
+    ],
+    "y_axis": [
+      0,
+      0,
+      1
+    ],
+    "sources": [
+      {
+        "type": "point",
+        "point": [
+          -10,
+          5,
+          3
+        ]
+      },
+      {
+        "type": "point",
+        "point": [
+          5,
+          5,
+          3
+        ]
+      },
+      {
+        "type": "point_cloud",
+        "points": [
+          [
+            19,
+            4,
+            2
+          ],
+          [
+            21,
+            6,
+            5
+          ]
+        ]
+      },
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          1
+        ],
+        "end": [
+          10,
+          0,
+          1
+        ]
+      }
+    ],
+    "selected": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "curve": 3,
+    "inspect": true,
+    "id": "line-selected-target-True",
+    "align_to": "World",
+    "preselect": true
+  },
+  "raw_client_diagnostic": "oracle failed: Rhino probe did not respond within 360 seconds (owned_pids=[3015431], owned_window='0x00a00006', ui_fallback_sent=True)\nWorker progress:\nworker: started\nworker: request loaded\noperation line-World-pre: start\nobject layout: _Align _AlignTo=_World _ToCurve _SelID 623f6df9-aea0-4042-9042-c740aafeca49\noperation line-World-post: start\nobject layout: _Align _SelID 829d9e99-aef5-44fe-ad31-56344ee52762 _SelID b26a69d4-8366-4cbb-b6a6-c0563b1df75e _SelID f3a9db16-4050-4ff9-83b1-500d0309dd24 _Enter _AlignTo=_World _ToCurve _SelID ff845fad-eaf3-4260-bd7a-60fa1c949a9e\noperation line-CPlane-pre: start\nobject layout: _Align _AlignTo=_CPlane _ToCurve _SelID a9c04a48-8671-4af4-8338-af259698b8a0\noperation line-CPlane-post: start\nobject layout: _Align _SelID c63eac91-3c87-4b28-9489-752bdf3184bf _SelID 6b4c5cbc-9f56-4fef-ae21-b73046a45d90 _SelID c40a7a14-36e3-46fc-a909-d3d12d2c593d _Enter _AlignTo=_CPlane _ToCurve _SelID 7b70d0b2-8ed3-48a7-9dc4-7027ae52e160\noperation polyline-World-pre: start\nobject layout: _Align _AlignTo=_World _ToCurve _SelID a5c7014f-37d7-4a13-999f-be0040054448\noperation polyline-World-post: start\nobject layout: _Align _SelID 189e5420-2424-4b0f-b698-422fc6342543 _SelID e047d487-57f5-422c-b7d0-1e25216aab65 _SelID f1abb179-54bb-4940-9ceb-bdb650535215 _Enter _AlignTo=_World _ToCurve _SelID 119defdf-cca8-4a62-801b-8800f3f141fa\noperation polyline-CPlane-pre: start\nobject layout: _Align _AlignTo=_CPlane _ToCurve _SelID 65be9ace-fd76-4ac2-8673-c39430f1e277\noperation polyline-CPlane-post: start\nobject layout: _Align _SelID f2806084-182f-4b37-bf22-5aa12511452a _SelID 4038a70c-c4e9-48d9-aa93-e4a94c9c4b6d _SelID 8e44e5de-f242-4641-8b85-d46e1adb3a96 _Enter _AlignTo=_CPlane _ToCurve _SelID b5c2e518-6c5e-4dbf-a095-8a8229f46988\noperation circle-World-pre: start\nobject layout: _Align _AlignTo=_World _ToCurve _SelID 28f95b6d-cfcb-447f-ad52-1defe79dd9d9\noperation circle-World-post: start\nobject layout: _Align _SelID 4c66c47e-7cd5-4700-ab87-0626cb098965 _SelID 82e36666-9ec1-4354-90f1-7a2d9e777b82 _SelID 49f63881-b408-40aa-be26-7d48422e8ec3 _Enter _AlignTo=_World _ToCurve _SelID 28a317bc-df68-4e21-92e0-b32033790628\noperation circle-CPlane-pre: start\nobject layout: _Align _AlignTo=_CPlane _ToCurve _SelID e71d71f5-381a-4f1d-b596-c825622d5c4e\noperation circle-CPlane-post: start\nobject layout: _Align _SelID 00613c95-de0a-4c68-9e64-88789fa917e3 _SelID dce4c780-a908-47cf-b332-3d60506d5696 _SelID 165cb60d-b138-41c3-93dd-2e7296205ee2 _Enter _AlignTo=_CPlane _ToCurve _SelID e8e1f09c-90e0-41b9-a533-4545ee513b92\noperation arc-World-pre: start\nobject layout: _Align _AlignTo=_World _ToCurve _SelID 4bcfa8e1-8c58-4dd4-a0d5-390cfa48ad47\noperation arc-World-post: start\nobject layout: _Align _SelID 7f08f880-7b12-467c-8d35-1a5fe8147f06 _SelID d2e94ec5-8494-4d41-84f0-8a15c5da829a _SelID 476c52d9-2ddb-4d3c-b66e-e9b0e4f5af9b _Enter _AlignTo=_World _ToCurve _SelID cad4ee13-2649-4c8e-89bd-7e113d1b5b7c\noperation arc-CPlane-pre: start\nobject layout: _Align _AlignTo=_CPlane _ToCurve _SelID 2ef37889-affb-42e0-bf6e-2f1be3b2a6d7\noperation arc-CPlane-post: start\nobject layout: _Align _SelID ea3c799d-1f91-428f-98b1-3e79b18923f9 _SelID f40d9f58-6e14-46b4-a87e-9395cd02d107 _SelID 3f0f1273-8f45-48f7-9125-3a2fd9bea096 _Enter _AlignTo=_CPlane _ToCurve _SelID 54871e08-b5ca-469a-ab62-4a4332f3176a\noperation ellipse-World-pre: start\nobject layout: _Align _AlignTo=_World _ToCurve _SelID fca50ebc-3626-42c0-b336-850cf65b61de\noperation ellipse-World-post: start\nobject layout: _Align _SelID fd6e7205-d54c-419a-9101-734349e93690 _SelID 6d3ab255-3278-4ddf-add2-154c1e45833a _SelID 8cad5574-6a0c-4ec7-bdef-09488a4571e5 _Enter _AlignTo=_World _ToCurve _SelID df7d226e-eaf6-4acc-a6a4-3910995d0a7e\noperation ellipse-CPlane-pre: start\nobject layout: _Align _AlignTo=_CPlane _ToCurve _SelID 5a899535-d3cf-495f-b8c8-5fe4d00f5b8b\noperation ellipse-CPlane-post: start\nobject layout: _Align _SelID c0fcc24e-c2a4-47f4-8a27-c154a7b1e217 _SelID 489a1cd3-4943-4464-bdc8-45c3f9589205 _SelID a9e70bee-7b8d-451f-8ac2-16f55ff452a6 _Enter _AlignTo=_CPlane _ToCurve _SelID 36e74633-1c6b-493e-88b5-4decae92fa29\noperation nurbs-World-pre: start\nobject layout: _Align _AlignTo=_World _ToCurve _SelID 5ba29914-bad8-4f30-b66f-eb2a039abd6c\noperation nurbs-World-post: start\nobject layout: _Align _SelID 8987f662-2dde-411f-8752-b62caea92b87 _SelID 38e58f96-a3b4-44da-a1ea-9e018f35a119 _SelID 387b3f70-cb5d-4905-8a32-9cbd19f98b1d _Enter _AlignTo=_World _ToCurve _SelID 07937a7e-076b-4d97-9f01-e42fa77082fc\noperation nurbs-CPlane-pre: start\nobject layout: _Align _AlignTo=_CPlane _ToCurve _SelID 6a128185-489b-4b0f-8878-1036504c1220\noperation nurbs-CPlane-post: start\nobject layout: _Align _SelID 9603e3d2-7719-4fb6-a843-b131206ad6dd _SelID 49f2a99a-c1e4-4968-98cf-f66fcee44690 _SelID bb951ea7-bbe0-467f-8b52-2d7aca2e5f8e _Enter _AlignTo=_CPlane _ToCurve _SelID da96986a-d2af-416e-bf4c-218396000166\noperation polycurve-World-pre: start\nobject layout: _Align _AlignTo=_World _ToCurve _SelID ab0c2c76-ffcd-4185-818c-7236614665ef\noperation polycurve-World-post: start\nobject layout: _Align _SelID ea4f01b0-c1c7-4a7e-9b0c-99314acd83ae _SelID 779131af-584b-4f09-b44c-c9568bacf339 _SelID ed3b18fd-02ae-40cd-9578-f899f3a9b857 _Enter _AlignTo=_World _ToCurve _SelID 00c2f1b0-f255-4a2b-ad18-0cc781817dca\noperation polycurve-CPlane-pre: start\nobject layout: _Align _AlignTo=_CPlane _ToCurve _SelID 1220d133-cf58-41f6-8bc0-beee7d8f47a6\noperation polycurve-CPlane-post: start\nobject layout: _Align _SelID 5e4568c3-c9bb-4bcb-8896-1c19c3508560 _SelID 05c29262-8963-4df4-aaae-001934e73857 _SelID f8f2d160-602d-4ae1-b060-ef7075f564ae _Enter _AlignTo=_CPlane _ToCurve _SelID 3f2243fb-5bbe-42e6-af6d-14a7d63d7a15\noperation line-selected-target-True: start\nobject layout: _Align _AlignTo=_World _ToCurve _SelID e70372e9-da7a-40d9-ac10-64c6b4524653\nLauncher output:\nLaunched Rhino 8 through direct ARM64 Wine\nWine: /home/dllu/wines/build/wine/wine-install-rhino-uxtheme/bin/wine\nWINEPREFIX: /home/dllu/wines/prefixes/rhino/prefix\nExecutable: /home/dllu/wines/prefixes/rhino/prefix/drive_c/Program Files/Rhino 8/System/Rhino.exe\nLauncher log: /home/dllu/wines/prefixes/rhino/logs/rhino-arm64-wine-direct.log\n"
+}

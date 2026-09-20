@@ -11,6 +11,21 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_curve_alignment_binds_only_an_owned_curve_id_after_source_creation(self):
+        op={"mode":"ToCurve","curve":1,"selected":[0],"sources":[{"type":"point"},{"type":"line"}]}
+        self.assertEqual(self.worker._align_script(op),"_Align _AlignTo=_CPlane _ToCurve ")
+        with patch.object(self.worker,"_object_layout",return_value=({},0)) as run:
+            self.worker._align(op,{})
+            args=run.call_args[0]
+            self.assertEqual(args[3],1)
+            self.assertEqual(args[2](["owned-point-id","owned-curve-id"]),
+                             "_Align _AlignTo=_CPlane _ToCurve _SelID owned-curve-id")
+        for fields in [{"curve":True},{"curve":-1},{"curve":2},{"curve":0},{"curve":"1 _Delete"},
+                       {"selected":None},{"selected":[0,1]},
+                       {"target":[0,0,0]},{"references":[[0,0,0]]},{"three_point":True},{"mode":"ToFitPlane"}]:
+            with self.subTest(fields=fields), self.assertRaises(ValueError):
+                self.worker._align_script(dict(op,**fields))
+
     def test_alignment_projection_macros_and_degenerate_prompt_safety(self):
         with patch.object(self.worker, "_command_point", lambda p: ",".join(str(x) for x in p)):
             base = {"mode": "ToLine", "align_to": "World", "references": [[1,2,3],[5,7,11]]}

@@ -17072,6 +17072,12 @@ pub enum CommandError {
     #[error("usage: {0}")]
     Usage(&'static str),
 
+    #[error("alignment target must be a curve")]
+    AlignmentTargetNotCurve,
+
+    #[error("alignment target must not be one of the objects being aligned")]
+    AlignmentTargetSelected,
+
     #[error("'{0}' is not a valid finite number")]
     InvalidNumber(String),
 

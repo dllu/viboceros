@@ -24,7 +24,7 @@ integer windows without weakening rounding or full-range recovery.
 | `third_party/` | Pinned OpenNURBS source and its license. |
 
 The [Align command](commands/align.md) separates option parsing, rigid layout,
-and interactive mode/point phases. Its `layout_units` helper shares top-group
+and interactive mode/point/target-curve phases. Its `layout_units` helper shares top-group
 selection with Distribute; both use `object_bounds` for geometry-local bounds.
 Projection alignment has a separate per-object bottom-center path: group units
 do not apply. Prepared `PointProjection3` definitions preserve exact endpoint
@@ -32,6 +32,10 @@ differences and plane normals, sharing finite rational conversion with NURBS
 evaluators through the kernel's independent `exact_scalar` module.
 Best-fit projection adds exact affine-rank checks and centroid accumulation,
 shared-denominator matrix normalization, and faer thin SVD; see [plane fitting](plane-fit.md).
+Curve targets are immutable document-ID references, independent of moving-source
+selection. The shared viewport filter includes curves-only single-target picking.
+Ellipse closest points use a monotone quadrant equation with exact coefficient
+formation; composite candidates share the kernel's exact distance ordering.
 Failed command-first selection cleanup is a separate registry hook that runs
 after model rollback, rather than a model edit inside a failed transaction.
 The oracle's `object_layout` module shares owned fixture setup and output

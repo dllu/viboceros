@@ -3,6 +3,7 @@ use crate::CommandRegistry;
 use viboceros_document::{Geometry, SelectionMode};
 use viboceros_geometry::{NurbsCurve, PointCloud3, WeightedPoint3};
 
+mod curve;
 mod fit;
 mod projection;
 

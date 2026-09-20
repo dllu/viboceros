@@ -509,7 +509,15 @@ impl InteractiveCommand {
                 "Domain: pick a component surface on the selected polysurface (Esc cancels)"
             }
             Self::Align { options, .. } if options.mode.is_none() => {
-                "Align: choose Left/Right/Top/Bottom/HorizCenter/VertCenter/Concentric/ToLine/ToPlane/ToFitPlane; AlignTo=CPlane|World"
+                "Align: choose Left/Right/Top/Bottom/HorizCenter/VertCenter/Concentric/ToLine/ToPlane/ToFitPlane/ToCurve; AlignTo=CPlane|World"
+            }
+            Self::Align { options, .. }
+                if matches!(
+                    options.mode,
+                    Some(viboceros_command::AlignmentMode::ToCurve)
+                ) =>
+            {
+                "Align: select the alignment curve or type CurveId=uuid (Esc cancels)"
             }
             Self::Align { options, .. } if options.reference_count() > 0 => {
                 match options.references {
@@ -4956,6 +4964,10 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.picking_alignment_curve() {
+            self.pick_alignment_curve(click.object_id);
+            return;
+        }
         if self.group_prompt == Some(group_prompt::GroupPrompt::Target) {
             self.pick_group_prompt_target(click.object_id);
             return;
@@ -4984,6 +4996,10 @@ impl VibocerosApp {
     }
 
     fn apply_selection_window(&mut self, selection: SelectionWindow) {
+        if self.picking_alignment_curve() {
+            // This phase needs one target; a window must not change the sources.
+            return;
+        }
         if self.group_prompt.is_some() {
             self.select_group_prompt_objects(selection.object_ids, selection.mode);
             return;
@@ -5334,7 +5350,8 @@ impl eframe::App for VibocerosApp {
         self.show_layers(ui);
         self.show_command_line(ui);
         let drafting = DraftingInput {
-            active: self.active_command.is_some() || self.plane_prompt.is_some(),
+            active: (self.active_command.is_some() && !self.picking_alignment_curve())
+                || self.plane_prompt.is_some(),
             osnap: self.osnap,
             smart_track: self.smart_track,
             grid_snap: self.grid_snap,

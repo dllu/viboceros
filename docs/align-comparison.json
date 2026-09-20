@@ -1,8 +1,8 @@
 {
-  "captured_utc": "2026-09-20 15:32:15 UTC",
-  "base_commit": "9bd7728a5f743947400e9c9af65d3820649f7fbe",
-  "native_executable_sha256": "8563948e61d65a7f864bb6c31aba9309de146f71c04aed6bc672ae497a70c571",
-  "method": "Actual native commands compared with saved public Rhino 8.32 commands from owned private Xvfb sessions. All value fields are compared. These probes return zero timings and do not establish performance parity. Thirteen retained diagnostics fail the unchanged raw threshold: four curved-bound cases, six mesh-storage cases, and three best-fit cases with different equally optimal normals. Independent tests check analytic extrema, exact binary32 storage rounding, and optimal residual/coplanarity/orthogonal motion respectively.",
+  "captured_utc": "2026-09-20 16:03:33 UTC",
+  "base_commit": "e6046c03a74c1aa00130587d6d342e0851fd8d5f",
+  "native_executable_sha256": "2832f778e561ccb00b8cd42de93ec42cceebb73bdda017d54b8fee5f959b9e6c",
+  "method": "Actual native commands compared with saved public Rhino 8.32 commands from owned private Xvfb sessions. All value fields are compared, including 39 curve-target cases. The separate selected-target timeout is prompt-safety evidence, not a geometry observation. These probes return zero timings and do not establish performance parity. Thirteen retained diagnostics fail the unchanged raw threshold: four curved-bound cases, six mesh-storage cases, and three best-fit cases with different equally optimal normals. Independent tests check analytic extrema, exact binary32 storage rounding, and optimal residual/coplanarity/orthogonal motion respectively.",
   "absolute_epsilon": 1e-08,
   "relative_epsilon": 1e-12,
   "fixtures": [
@@ -1171,8 +1171,293 @@
           ]
         }
       ]
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/align_curve.json",
+      "request_sha256": "29b6b3f8938a257794583aa2ce9da70d206fb817ff34801839c59fb48c86340a",
+      "rhino_reference": "tools/rhino_oracle/observations/align_curve.json",
+      "rhino_reference_sha256": "8715170ba1ee8f994a57b278bad2066831bbf8df7cc11e3eed7c395326689914",
+      "rhino_version": "8.32.26160.13001",
+      "native_value_fingerprint_sha256": "5f5818c55c38a96d362ec53f1052d4f90bbc835f85c7a681334cfbc089338b38",
+      "passed": true,
+      "max_absolute_error": 2.3092638912203256e-14,
+      "operations": [
+        {
+          "id": "line-World-pre",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "line-World-post",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "line-CPlane-pre",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "line-CPlane-post",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polyline-World-pre",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polyline-World-post",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polyline-CPlane-pre",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polyline-CPlane-post",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "circle-World-pre",
+          "passed": true,
+          "max_absolute_error": 7.771561172376096e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "circle-World-post",
+          "passed": true,
+          "max_absolute_error": 7.771561172376096e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "circle-CPlane-pre",
+          "passed": true,
+          "max_absolute_error": 7.771561172376096e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "circle-CPlane-post",
+          "passed": true,
+          "max_absolute_error": 7.771561172376096e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "arc-World-pre",
+          "passed": true,
+          "max_absolute_error": 1.1178957031324513e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "arc-World-post",
+          "passed": true,
+          "max_absolute_error": 1.1178957031324513e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "arc-CPlane-pre",
+          "passed": true,
+          "max_absolute_error": 1.1178957031324513e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "arc-CPlane-post",
+          "passed": true,
+          "max_absolute_error": 1.1178957031324513e-15,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "ellipse-World-pre",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-14,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "ellipse-World-post",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-14,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "ellipse-CPlane-pre",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-14,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "ellipse-CPlane-post",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-14,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "nurbs-World-pre",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "nurbs-World-post",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "nurbs-CPlane-pre",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "nurbs-CPlane-post",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polycurve-World-pre",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polycurve-World-post",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polycurve-CPlane-pre",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polycurve-CPlane-post",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "group-[[0, 1]]",
+          "passed": true,
+          "max_absolute_error": 7.771561172376096e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "group-[[0, 3]]",
+          "passed": true,
+          "max_absolute_error": 7.771561172376096e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "oblique-circle-World",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "oblique-circle-CPlane",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "rational-3d-World",
+          "passed": true,
+          "max_absolute_error": 2.3092638912203256e-14,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "rational-3d-CPlane",
+          "passed": true,
+          "max_absolute_error": 2.3092638912203256e-14,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "closed-polyline-World",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "closed-polyline-CPlane",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "circle-center-tie",
+          "passed": true,
+          "max_absolute_error": 7.771561172376096e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "circle-noop",
+          "passed": true,
+          "max_absolute_error": 7.771561172376096e-16,
+          "difference_count": 0,
+          "first_differences": []
+        },
+        {
+          "id": "polyline-tie",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "difference_count": 0,
+          "first_differences": []
+        }
+      ]
     }
   ],
-  "passing_operations": 129,
+  "passing_operations": 168,
   "retained_discrepancies": 13
 }

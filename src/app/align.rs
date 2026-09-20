@@ -3,6 +3,34 @@ use super::*;
 use viboceros_command::AlignmentOptions;
 
 impl VibocerosApp {
+    pub(super) fn picking_alignment_curve(&self) -> bool {
+        self.plane_prompt.is_none()
+            && self.object_prompt.is_none()
+            && matches!(
+                self.active_command,
+                Some(InteractiveCommand::Align {
+                    options: AlignmentOptions {
+                        mode: Some(viboceros_command::AlignmentMode::ToCurve),
+                        ..
+                    },
+                    ..
+                })
+            )
+    }
+
+    pub(super) fn pick_alignment_curve(&mut self, id: Option<viboceros_document::ObjectId>) {
+        let Some(id) = id else { return };
+        if !self.document.is_object_selectable(id) {
+            self.push_log("Error: alignment target is not selectable".into());
+            return;
+        }
+        let Some(InteractiveCommand::Align { mut options, .. }) = self.active_command else {
+            return;
+        };
+        options.curve = Some(id);
+        self.execute_align(options);
+    }
+
     pub(super) fn update_align_selection(
         &self,
         prompt: &viboceros_command::ObjectSelectionPrompt,
@@ -16,6 +44,7 @@ impl VibocerosApp {
             .parse(&line.split_whitespace().skip(1).collect::<Vec<_>>())?
             .parse(&input.split_whitespace().collect::<Vec<_>>())?;
         if options.target.is_some()
+            || options.curve.is_some()
             || options.automatic
             || options.references.iter().any(Option::is_some)
         {
@@ -69,7 +98,7 @@ impl VibocerosApp {
             .trim_start_matches('_');
         if !viboceros_command::AlignmentMode::LABELS
             .iter()
-            .chain(["AlignTo", "Mode", "Auto", "3Point"].iter())
+            .chain(["AlignTo", "Mode", "Auto", "3Point", "CurveId"].iter())
             .any(|name| first.eq_ignore_ascii_case(name))
         {
             return false;
