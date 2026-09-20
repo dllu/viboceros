@@ -3,6 +3,7 @@ use crate::{
 };
 
 mod jets;
+mod range;
 mod sides;
 
 fn p(x: f64, y: f64, z: f64) -> Point3 {

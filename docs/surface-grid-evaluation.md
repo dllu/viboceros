@@ -30,6 +30,8 @@ caches belong to the query, not the surface.
 A failed cached projection uses scalar evaluation for that cell. This preserves
 validation precedence, genuine poles, and the uncentered retry that can recover
 a finite signed-weight image when its local coordinates overflow.
+Prepared nets with subnormal/erased weights or weighted coordinates are not
+cached: these cells use the scalar [exact-rational fallback](surface-rational-range.md).
 
 ## Exact-control recovery
 
@@ -39,10 +41,12 @@ interpolated control. Point-only evaluation now recovers that stored control
 after a failed homogeneous projection. The knot multiplicities and selected
 spans must identify the control exactly; model tolerance is not involved.
 
-This recovery does not invent derivatives, suppress a genuine interior pole, or
-solve arbitrary within-span weight-range loss. A requested differential jet can
-still fail when its derivatives are unrepresentable. Both scalar and grid tests
-check every corner, both common weight signs, and exact signed-zero coordinates.
+The subsequent [range-loss audit](surface-rational-range.md) also found finite
+edges and silently incorrect interior results, and added a guarded exact-rational
+path for points and derivatives. Genuine poles and unrepresentable requested
+derivatives remain errors. Both scalar and grid tests check every corner, both
+common weight signs, and exact signed-zero coordinates. This does not solve every
+possible floating-point error in unflagged nets.
 
 ## Validation
 

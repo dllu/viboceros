@@ -3,6 +3,7 @@
 use super::{NurbsSurface, checked_span, extended_span};
 use crate::nurbs::project_homogeneous;
 use crate::{GeometryError, ParameterSide, Point3, Real, Vector3, require_finite};
+mod exact;
 mod grid;
 mod tensor;
 use tensor::{
@@ -22,6 +23,12 @@ pub struct SurfaceJet2 {
     pub derivative_uu: Vector3,
     pub derivative_uv: Vector3,
     pub derivative_vv: Vector3,
+}
+
+struct EvaluationControls {
+    origin: Point3,
+    homogeneous: Vec<[Real; 4]>,
+    range_loss: bool,
 }
 
 impl NurbsSurface {
@@ -130,13 +137,34 @@ impl NurbsSurface {
                 spans[axis] = k.partition_point(|value| *value < t) - 1;
             }
         }
-        let (origin, controls) = self.evaluation_controls(spans, true)?;
-        let result = self.jet_at_spans(parameters, spans, origin, &controls, order);
-        if matches!(result, Err(GeometryError::NonFinite { .. })) && origin.to_array() != [0.0; 3] {
+        let controls = self.evaluation_controls(spans, true)?;
+        if controls.range_loss {
+            return self.exact_jet_at_spans(parameters, spans, order);
+        }
+        let result = self.jet_at_spans(
+            parameters,
+            spans,
+            controls.origin,
+            &controls.homogeneous,
+            order,
+        );
+        if matches!(result, Err(GeometryError::NonFinite { .. }))
+            && controls.origin.to_array() != [0.0; 3]
+        {
             // Signed surfaces can leave their control hull. A local offset can
             // overflow while the final world-space point is representable.
-            let (origin, controls) = self.evaluation_controls(spans, false)?;
-            self.jet_at_spans(parameters, spans, origin, &controls, order)
+            let controls = self.evaluation_controls(spans, false)?;
+            if controls.range_loss {
+                self.exact_jet_at_spans(parameters, spans, order)
+            } else {
+                self.jet_at_spans(
+                    parameters,
+                    spans,
+                    controls.origin,
+                    &controls.homogeneous,
+                    order,
+                )
+            }
         } else {
             result
         }
@@ -168,9 +196,9 @@ impl NurbsSurface {
         let local = match project_homogeneous(h) {
             Ok(point) => point,
             Err(error) => {
-                // Weight normalization can erase a tiny but nonzero weight.
-                // At a fully interpolated control, the point itself is exact
-                // even when the normalized homogeneous projection is unusable.
+                // Preparation's range guard does not cover every subsequent
+                // floating-point failure. A fully interpolated control still
+                // gives an exact point when local projection is unusable.
                 // Do not fabricate derivatives when a jet was requested.
                 if order == 0
                     && let Some(point) = self.interpolated_point([u, v], [span_u, span_v])
@@ -280,7 +308,7 @@ impl NurbsSurface {
         &self,
         [span_u, span_v]: [usize; 2],
         center: bool,
-    ) -> Result<(Point3, Vec<[Real; 4]>), GeometryError> {
+    ) -> Result<EvaluationControls, GeometryError> {
         let first_u = span_u - self.degree_u;
         let first_v = span_v - self.degree_v;
         let candidate = self.control_points[self.control_index(first_u, first_v)].point();
@@ -306,21 +334,38 @@ impl NurbsSurface {
         } else {
             Point3::try_new(0.0, 0.0, 0.0)?
         };
+        let mut range_loss = false;
         let controls = active()
             .map(|control| {
                 let weight = control.weight() / weight_scale;
+                range_loss |= !weight.is_normal();
                 let point = control.point();
+                let local = [
+                    point.x() - origin.x(),
+                    point.y() - origin.y(),
+                    point.z() - origin.z(),
+                ];
                 let h = [
-                    (point.x() - origin.x()) * weight,
-                    (point.y() - origin.y()) * weight,
-                    (point.z() - origin.z()) * weight,
+                    local[0] * weight,
+                    local[1] * weight,
+                    local[2] * weight,
                     weight,
                 ];
+                // A rounded/subnormal product may later be divided by a small
+                // denominator and become a significant point or derivative.
+                range_loss |= local
+                    .into_iter()
+                    .zip(h)
+                    .any(|(a, product)| a != 0. && !product.is_normal());
                 require_finite(h, "local homogeneous NURBS surface control")?;
                 Ok(h)
             })
             .collect::<Result<_, GeometryError>>()?;
-        Ok((origin, controls))
+        Ok(EvaluationControls {
+            origin,
+            homogeneous: controls,
+            range_loss,
+        })
     }
 }
 

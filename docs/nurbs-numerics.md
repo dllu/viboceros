@@ -206,15 +206,17 @@ far from the origin, signed-weight poles, finite world points whose local offset
 overflow, and exact interpolated endpoints. Negative global weights remain covered
 in native tests: this oracle's public Rhino control-point setter rejected them.
 
-The kernel still uses `f64`, not extended-exponent arithmetic. Active-weight
-normalization can underflow when weights within one span have an unrepresentable
-dynamic range; derivative intermediates can also exceed the numeric range even
-when a final mathematical answer is finite. The separate-span fallback does not
-solve those within-span limitations. Sampling and passing tests are bounded
-evidence, not a universal error proof or full Rhino compatibility claim.
+The kernel stores geometry in `f64`. Active-weight normalization can underflow
+when weights within one span have an unrepresentable dynamic range; derivative
+intermediates can also exceed the numeric range even when a final mathematical
+answer is finite. The separate-span fallback does not solve those within-span
+limitations for curve evaluation and other homogeneous operations. Sampling and
+passing tests are bounded evidence, not a universal error proof or full Rhino
+compatibility claim.
 
-Surface point-only evaluation can recover an exactly interpolated control after
-normalization erases its nonzero weight. This narrow recovery uses knot
-multiplicity, not tolerance, and does not fabricate differential jets. See
-[surface-grid evaluation](surface-grid-evaluation.md#exact-control-recovery) for
-the independent corner regressions and remaining weight-range limits.
+Surface point and differential evaluation has a guarded
+[exact-rational fallback](surface-rational-range.md) when active homogeneous
+preparation produces subnormal/erased weights or weighted coordinates. It rounds
+only final requested components and preserves genuine poles and overflow errors.
+The grid dispatcher shares this policy. Unflagged floating-point nets can still
+lose accuracy later in evaluation; this is not a universal range/error bound.

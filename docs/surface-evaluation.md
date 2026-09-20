@@ -3,7 +3,7 @@
 [Architecture](architecture.md) · [Curve limits](curve-sided-evaluation.md) · [Oracle](oracle.md)
 
 `NurbsSurface` evaluates native U/V parameters in the dedicated
-`nurbs_surface/evaluate` module. `SurfaceJet2` contains the point and five exact
+`nurbs_surface/evaluate` module. `SurfaceJet2` contains the point and five analytic
 partial derivatives: `derivative_u`, `derivative_v`, `derivative_uu`,
 `derivative_uv`, and `derivative_vv`. The mixed partial is d²S/(du dv), with no
 factorial scaling. These are analytic rational derivatives, not finite differences.
@@ -40,7 +40,7 @@ that evaluates to zero remains an error.
 
 The active control rectangle is translated to a local origin and its weights
 are divided by their largest absolute value before homogeneous evaluation.
-First and second derivative nets are obtained by exact knot divided differences.
+First and second derivative nets are obtained by analytic knot divided differences.
 For homogeneous numerator A and denominator W, the quotient rules include:
 
 ```text
@@ -59,11 +59,12 @@ parameters, including the tested large world offsets.
 If subtracting the local origin would overflow, evaluation uses world coordinates.
 A signed-weight patch can also leave its control hull: a nonfinite local result
 is retried without centering when the world-space answer may be representable.
-This is not arbitrary-precision arithmetic. Extreme *relative* weights in one
-active rectangle can still underflow during normalization, derivative intermediate
-values can exceed `f64`, and ill-conditioned denominators amplify error. The
-[curve numerical limitations](nurbs-numerics.md) apply here too. Singular-surface
-limiting normals remain unsupported. The separate [curvature module](curvature.md)
+Subnormal/erased normalized weights or weighted coordinates now select a guarded
+[exact-rational fallback](surface-rational-range.md), with only final requested
+components rounded to binary64. The grid dispatcher shares this policy. It does
+not detect every later recurrence underflow or cancellation in otherwise unflagged
+nets, and ill-conditioned denominators can still amplify floating-point error.
+Singular-surface limiting normals remain unsupported. The separate [curvature module](curvature.md)
 computes principal, mean and Gaussian curvature from regular analytic surface
 jets, including one-sided limits.
 

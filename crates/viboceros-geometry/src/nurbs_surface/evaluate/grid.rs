@@ -59,7 +59,7 @@ impl NurbsSurface {
     }
 
     fn grid_columns(&self, parameters_u: &[Real], span_v: usize) -> Vec<Option<Column>> {
-        let mut active: Option<(usize, Point3, Vec<[Real; 4]>)> = None;
+        let mut active: Option<(usize, EvaluationControls)> = None;
         let mut work = vec![[0.; 4]; self.degree_u + 1];
         parameters_u
             .iter()
@@ -67,14 +67,18 @@ impl NurbsSurface {
                 let span_u =
                     checked_span(self.degree_u, self.control_point_count_u, &self.knots_u, u)
                         .ok()?;
-                if active.as_ref().is_none_or(|(span, _, _)| *span != span_u) {
-                    let (origin, controls) =
-                        self.evaluation_controls([span_u, span_v], true).ok()?;
-                    active = Some((span_u, origin, controls));
+                if active.as_ref().is_none_or(|(span, _)| *span != span_u) {
+                    let controls = self.evaluation_controls([span_u, span_v], true).ok()?;
+                    active = Some((span_u, controls));
                 }
-                let (_, origin, controls) = active.as_ref()?;
+                let (_, controls) = active.as_ref()?;
+                // Do not cache an already lossy floating-point representation.
+                // Scalar evaluation dispatches these cells to the exact path.
+                if controls.range_loss {
+                    return None;
+                }
                 let mut homogeneous = Vec::with_capacity(self.degree_v + 1);
-                for row in controls.chunks_exact(self.degree_u + 1) {
+                for row in controls.homogeneous.chunks_exact(self.degree_u + 1) {
                     work.copy_from_slice(row);
                     homogeneous.push(
                         de_boor_extended_in_place(
@@ -89,7 +93,7 @@ impl NurbsSurface {
                 }
                 Some(Column {
                     span_u,
-                    origin: *origin,
+                    origin: controls.origin,
                     homogeneous,
                 })
             })
