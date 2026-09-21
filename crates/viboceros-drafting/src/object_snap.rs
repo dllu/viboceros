@@ -2,6 +2,8 @@
 mod cache;
 mod centers;
 mod features;
+mod mid_hover;
+mod proximity;
 pub use cache::ObjectSnapCache;
 
 use super::{DraftingError, validate_capture_radius, validate_cursor_coordinates};
@@ -85,7 +87,7 @@ impl ObjectSnap {
     }
 
     /// Capture distance in the query's projection: to the point feature, or
-    /// to the source curve for hover-derived Center snaps.
+    /// to the source curve for hover-derived Center or Mid-only snaps.
     pub const fn distance(self) -> Real {
         self.distance
     }
@@ -142,7 +144,7 @@ pub fn nearest_object_snap_axis_aligned(
 /// Finds the closest visible feature after mapping candidates into an
 /// affine or projective viewport projection. The capture radius and the
 /// returned distance use the same units as `cursor` and `project`.
-/// `project` must reject points behind its camera/clipping plane. Center broad
+/// `project` must reject points behind its camera/clipping plane. Hover broad
 /// phase bounds rely on the projection preserving convexity in the visible half-space.
 pub fn nearest_object_snap_projected(
     document: &Document,
@@ -257,6 +259,25 @@ fn nearest_object_snap_with_metric(
             continue;
         }
         let mut object_best = None;
+        if modes == ObjectSnapModes::only(ObjectSnapKind::Mid) {
+            mid_hover::visit(
+                object.geometry(),
+                object.id(),
+                document.tolerance(),
+                cache,
+                metric,
+                &mut |point, distance| {
+                    consider_scored_candidate(
+                        &mut best,
+                        object.id(),
+                        ObjectSnapKind::Mid,
+                        point,
+                        distance,
+                    )
+                },
+            );
+            continue;
+        }
         let mut emit = |kind, point| {
             if !modes.contains(kind) {
                 return;
@@ -313,7 +334,7 @@ fn nearest_object_snap_with_metric(
                         _ => &[],
                     }
                 };
-                for &point in midpoints {
+                for point in midpoints.iter().filter_map(|feature| feature.point) {
                     emit(ObjectSnapKind::Mid, point);
                 }
             }
@@ -332,8 +353,10 @@ fn nearest_object_snap_with_metric(
                 }
                 // Mid belongs to each natural boundary, never to the UV center.
                 if modes.contains(ObjectSnapKind::Mid) {
-                    for &point in
-                        cache.surface_midpoints(object.id(), surface, document.tolerance())
+                    for point in cache
+                        .surface_midpoints(object.id(), surface, document.tolerance())
+                        .iter()
+                        .filter_map(|feature| feature.point)
                     {
                         emit(ObjectSnapKind::Mid, point);
                     }
@@ -344,11 +367,15 @@ fn nearest_object_snap_with_metric(
                     emit(ObjectSnapKind::End, vertex.point());
                 }
                 if modes.contains(ObjectSnapKind::Mid) {
-                    for &point in cache.midpoints(
-                        object.id(),
-                        brep.edges().iter().map(|edge| edge.curve()),
-                        document.tolerance(),
-                    ) {
+                    for point in cache
+                        .midpoints(
+                            object.id(),
+                            brep.edges().iter().map(|edge| edge.curve()),
+                            document.tolerance(),
+                        )
+                        .iter()
+                        .filter_map(|feature| feature.point)
+                    {
                         emit(ObjectSnapKind::Mid, point);
                     }
                 }

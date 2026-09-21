@@ -33,6 +33,12 @@ edge-constrained point prompts. The separate [Center-hover query](center-hover-s
 scores proximity to analytic curves and returns their off-cursor center. Direct
 features suppress Center only on the same object; cross-object ranking uses
 capture distance. Conservative projected bounds avoid refining distant conics.
+The [Mid-only hover query](mid-hover-snaps.md) shares `object_snap/proximity` with
+Center. It ranks individual segments/boundaries by curve distance and returns
+their cached half-arc-length targets; multiple enabled modes retain direct Mid
+capture. NURBS refinement evaluates separate sided knot spans, with common-sign
+control bounds and a straight-span fast path. Surface caches retain their actual
+boundary curves, and failed midpoint slots remain paired with their sources.
 The [snap-control adapter](object-snap-controls.md) passes the effective feature
 mask through ordinary and edge-constrained prompts. An empty mask exits the
 drafting query before traversing objects or refreshing caches; validation still

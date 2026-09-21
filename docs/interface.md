@@ -69,14 +69,16 @@ Edit to review current values. Deleting a layer closes its editor.
 Osnap captures visible Point, End, Mid, Center, and Quad features, including
 indexed members of point clouds and features on locked objects and layers.
 Mid uses half arc length on NURBS, individual polycurve segments and surface
-boundaries, not the surface's UV center. Center captures by hovering near an
-analytic circle, arc or ellipse (including polycurve arc leaves), not merely
+boundaries, not the surface's UV center. With Mid alone enabled (including one-shot
+Mid), hovering near any part of a segment captures its Mid; mixed-mode Mid requires
+proximity to the target. Circle/ellipse Mid is opposite the stored seam. Center
+captures by hovering near an analytic circle, arc or ellipse (including polycurve arc leaves), not merely
 near its empty center. Direct features on the same object take precedence.
 The Snap modes menu selects individual persistent modes; right-click isolates a
 mode and Shift-click selects it for one point. At point prompts, `Point`, `End`,
 `Mid`, `Cen`, `Quad` and `NoSnap` also supply one-shot overrides. See
-[controls and lifecycle](object-snap-controls.md), [Mid/End behavior](composite-feature-snaps.md)
-and [Center capture](center-hover-snaps.md) for remaining coverage limits.
+[controls and lifecycle](object-snap-controls.md), [Mid/End behavior](composite-feature-snaps.md),
+[Mid hover](mid-hover-snaps.md) and [Center capture](center-hover-snaps.md) for coverage limits.
 SmartTrack captures local plane-axis alignment from the first picked
 point in every viewport. Grid Snap rounds construction-plane picks to the unit grid. Right-drag
 pans parallel views and rotates the Perspective view; Shift-right-drag pans the

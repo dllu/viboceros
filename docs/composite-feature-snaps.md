@@ -54,9 +54,9 @@ outer parameter intervals alone do not invalidate geometric midpoints. Exact
 ordered leaf comparisons include length, preventing a stale prefix match when
 leaves are added or removed.
 
-Standalone surfaces cache boundary midpoints with a source surface/tolerance
-snapshot, avoiding repeated boundary extraction and integration. Geometry edits,
-Undo and tolerance changes invalidate entries; deletion/type conversion evicts
+Standalone surfaces cache boundary curves and midpoints with a source
+surface/tolerance snapshot, avoiding repeated extraction and integration. Geometry
+edits, Undo and tolerance changes invalidate entries; deletion/type conversion evicts
 them on the next query. Hidden objects cannot supply cached snaps. B-rep entries
 continue to retain only edge curves, not face surfaces/trims. Cold queries still
 process all visible eligible curves, and hot queries compare source geometry;
@@ -78,8 +78,9 @@ The subsequent [calibrated Center-hover audit](center-hover-snaps.md) replaces
 point-based standalone Cen capture and adds polycurve arc Center capture. Its
 new camera-calibrated records do not relabel the historical discrepancies above.
 The later [snap controls](object-snap-controls.md) add scoped UI one-shot overrides.
-Mid-only whole-segment hover, general conic/closed-boundary recognition, occlusion,
-CPlane-relative Quad, mesh features and arbitrary camera equivalence remain
-incomplete. No broad Rhino snapping parity follows from these fixtures.
+The [Mid-hover follow-up](mid-hover-snaps.md) adds whole-segment capture with Mid
+alone and opposite-seam circle/ellipse Mid targets. General conic/closed-boundary
+recognition, occlusion, CPlane-relative Quad, mesh features and arbitrary camera
+equivalence remain incomplete. No broad Rhino snapping parity follows from these fixtures.
 See [Rhino's object-snap reference](https://docs.mcneel.com/rhino/8/help/en-us/user_interface/object_snaps.htm)
 for the intended interface, including segment/edge Mid and one-shot behavior.

@@ -1,0 +1,32 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "calibrated_observations": 37,
+  "capture_derived_geometry_history_replays": 26,
+  "mixed_mode_admission_only_checks": 11,
+  "actual_undo_redo_observations": 36,
+  "failed_unsnapped_controls": ["rational-mixed"],
+  "raw_response_sha256": {
+    "final-response.json": "f5428f51308f43db9d7676fbcce713bdd867ea3504c665d586767452287ccd7d"
+  },
+  "preliminary_diagnostic_response_sha256": {
+    "response.json": "b8cd6e84f06302859c16ba3d4020292093b72bd4974eb3c2b95998d807eb4485"
+  },
+  "source_artifact_sha256": {
+    "box.3dm": "9ad7f078dc15cbe542751246f45371a3e97c514d13482aee66448a8129620a65"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/mid_hover_snaps.json": "ae457d3048fc6d7b9e8c777075fedf402739a90c648db174704f8621008015fc",
+    "tools/rhino_oracle/observations/mid_hover_snaps.json": "fa0ed55f444e5998c51d87e678dc1bb4ddc606e8cc570da49cb414e0710075e7"
+  },
+  "notes": [
+    "All observations use real SplitEdge component and point clicks and public Rhino APIs/commands in an owned private Xvfb session. User desktops and existing Rhino sessions were not used.",
+    "Portable requests substitute the exact source recipe for the shared box artifact. The final response is compacted as JSON without numerical normalization or array reordering.",
+    "The preliminary 29-case diagnostic used an incorrect ellipse target x=2. For center x=4 and radius_x=3 the opposite-seam target is analytically x=1; this was corrected before the independent final 37-case run. The preliminary response is not retained as a replay fixture.",
+    "Every point frame records the public World-to-Screen transform, world aim, WorldToClient result, integer click, viewport size and camera pose at the actual point prompt. Matrix projection is cross-checked against WorldToClient within 1e-7 pixels.",
+    "Nine geometry families each test one-shot Mid, persistent Mid-only and persistent Point+Mid. Eight circle/ellipse cases cover isolated hover, mixed-mode hover and target capture; two further cases test competing objects and polyline segments.",
+    "Native queries use the recorded projection, actual click and 12-pixel capture radius. Twenty-six native captured points drive complete ordered geometry, attributes, selection and history replay at absolute 1e-9 and relative 1e-10. Output positions are never used as snap input.",
+    "Eleven mixed-mode misses compare admission only, not unsnapped screen-to-edge geometry. Ten of these controls split and have actual Undo/Redo. The rational-mixed control fails to split and has no history replay; its failure is retained, not relabeled as a geometry match.",
+    "With all five modes enabled, the circle/ellipse target is both Mid and Quad. Geometry alone cannot establish Rhino's displayed snap label; native replay accepts either label only for these two coincident-target cases.",
+    "Midpoint location and hover selection are separate operations. Native curved hover is bounded numerical search, not a certified global closest-point solver or universal Rhino camera, priority or performance parity."
+  ]
+}

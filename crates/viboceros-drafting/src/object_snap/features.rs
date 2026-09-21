@@ -29,6 +29,9 @@ fn leaf(source: CurveRef<'_>, emit: &mut impl FnMut(ObjectSnapKind, Point3)) {
             }
         }
         CurveRef::Circle(circle) => {
+            if let Ok(point) = circle.point_at_angle(std::f64::consts::PI) {
+                emit(Mid, point);
+            }
             if let Ok(points) = circle.quadrants() {
                 for point in points {
                     emit(Quad, point);
@@ -44,6 +47,9 @@ fn leaf(source: CurveRef<'_>, emit: &mut impl FnMut(ObjectSnapKind, Point3)) {
             }
         }
         CurveRef::Ellipse(ellipse) => {
+            if let Ok(point) = ellipse.point_at_angle(std::f64::consts::PI) {
+                emit(Mid, point);
+            }
             if let Ok(points) = ellipse.quadrants() {
                 for point in points {
                     emit(Quad, point);

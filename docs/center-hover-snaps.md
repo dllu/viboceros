@@ -72,6 +72,9 @@ distance to a direct feature or to Center's source curve, not always to its targ
 queries, skipping expensive disabled midpoint queries. The later
 [snap controls](object-snap-controls.md) expose per-mode selection and scoped
 one-shot overrides in ordinary and edge-constrained prompts.
+The [Mid-only hover follow-up](mid-hover-snaps.md) extracts shared numerical
+proximity and projected bounds into `object_snap/proximity`; Center keeps its own
+target/priority rules.
 
 A conservatively expanded model-space cube provides a cheap projected bounding
 box rejection. Overflowing or unprojectable corners disable this rejection.

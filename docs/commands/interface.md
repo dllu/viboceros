@@ -71,8 +71,9 @@ exercise initialization, command, and recording errors. A forcibly terminated
 Rhino process cannot execute that cleanup.
 
 [Per-mode and one-shot snap controls](../object-snap-controls.md) expose the
-implemented Point/End/Mid/Center/Quad features; other feature kinds and Mid-only
-whole-segment hover remain incomplete. Grid spacing is one unit; SmartTrack is
+implemented Point/End/Mid/Center/Quad features, including
+[Mid-only whole-segment hover](../mid-hover-snaps.md). Other feature kinds remain
+incomplete. Grid spacing is one unit; SmartTrack is
 reference-axis tracking, not Rhino's complete inference system. SnapSize, custom
 display modes, UI-setting persistence, and full command macro interpretation
 remain unimplemented. The supported controls follow McNeel's documentation for

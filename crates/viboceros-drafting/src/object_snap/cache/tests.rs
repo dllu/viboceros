@@ -75,7 +75,7 @@ fn brep_edge_midpoints_use_arc_length_and_cache_only_spatial_edge_curves() {
         assert!(hit.point().distance_to(p(5., 0., 0.)).unwrap() < 1e-11);
     }
     assert_eq!(cache.builds, 1);
-    assert_eq!(cache.midpoints[&id].curves.len(), 4);
+    assert_eq!(cache.midpoints[&id].features.len(), 4);
 }
 
 #[test]

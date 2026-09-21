@@ -3,24 +3,50 @@ use super::*;
 use std::collections::BTreeMap;
 use viboceros_geometry::{CurveRef, NurbsCurve, NurbsSurface, Tolerance};
 
+/// Keep every source paired with its result, including failed integrations.
+/// Hover must never associate a later curve with an earlier midpoint.
+#[derive(Debug)]
+pub(super) struct CurveMidpoint {
+    pub(super) curve: NurbsCurve,
+    pub(super) point: Option<Point3>,
+    pub(super) bounds: Option<viboceros_geometry::BoundingBox3>,
+}
+
+impl CurveMidpoint {
+    fn new(curve: NurbsCurve, tolerance: Tolerance) -> Self {
+        let point = midpoint(&curve, tolerance);
+        let sign = curve.control_points()[0].weight().is_sign_positive();
+        let bounds = curve
+            .control_points()
+            .iter()
+            .all(|p| p.weight().is_sign_positive() == sign)
+            .then(|| curve.control_point_bounds());
+        Self {
+            curve,
+            point,
+            bounds,
+        }
+    }
+}
+
 #[derive(Debug)]
 struct Midpoints {
-    curves: Vec<NurbsCurve>,
     tolerance: Tolerance,
-    points: Vec<Point3>,
+    features: Vec<CurveMidpoint>,
 }
 
 #[derive(Debug)]
 struct SurfaceMidpoints {
     source: NurbsSurface,
     tolerance: Tolerance,
-    points: Vec<Point3>,
+    features: Vec<CurveMidpoint>,
 }
 
 /// Reusable camera-independent snap data. Analytic features and indexed point
 /// clouds keep their existing cheap queries. Cached NURBS arc-length midpoints
 /// include polycurve leaves and natural surface boundaries. B-reps retain only
-/// edge curves; standalone surfaces retain their source for invalidation.
+/// edge curves; standalone surfaces retain extracted boundaries and their source
+/// for invalidation. Common-sign control bounds accelerate curve-hover queries.
 /// Geometry and tolerance comparisons invalidate entries, including after Undo;
 /// removal and conversion to another geometry type release old entries.
 #[derive(Debug, Default)]
@@ -94,8 +120,8 @@ impl ObjectSnapCache {
         )
     }
 
-    /// Projected query with an explicit enabled-feature set. Center capture uses
-    /// a bounded numerical curve-proximity query, not center-point proximity.
+    /// Projected query with an explicit enabled-feature set. Center and Mid-only
+    /// capture use bounded curve-proximity queries, not just target proximity.
     /// Uses the affine/projective and clipping contract of
     /// [`nearest_object_snap_projected`].
     pub fn nearest_projected_with_modes(
@@ -141,34 +167,33 @@ impl ObjectSnapCache {
         id: ObjectId,
         curves: impl Iterator<Item = &'a NurbsCurve> + Clone,
         tolerance: Tolerance,
-    ) -> &[Point3] {
+    ) -> &[CurveMidpoint] {
         if curves.clone().next().is_none() {
             self.midpoints.remove(&id);
             return &[];
         }
         let fresh = self.midpoints.get(&id).is_some_and(|entry| {
-            entry.tolerance == tolerance && entry.curves.iter().eq(curves.clone())
+            entry.tolerance == tolerance
+                && entry.features.iter().map(|f| &f.curve).eq(curves.clone())
         });
         if !fresh {
             #[cfg(test)]
             {
                 self.builds += 1;
             }
-            let curves: Vec<_> = curves.cloned().collect();
-            let points = curves
-                .iter()
-                .filter_map(|curve| midpoint(curve, tolerance))
+            let features = curves
+                .cloned()
+                .map(|curve| CurveMidpoint::new(curve, tolerance))
                 .collect();
             self.midpoints.insert(
                 id,
                 Midpoints {
-                    curves,
                     tolerance,
-                    points,
+                    features,
                 },
             );
         }
-        &self.midpoints[&id].points
+        &self.midpoints[&id].features
     }
 
     pub(super) fn surface_midpoints(
@@ -176,7 +201,7 @@ impl ObjectSnapCache {
         id: ObjectId,
         surface: &NurbsSurface,
         tolerance: Tolerance,
-    ) -> &[Point3] {
+    ) -> &[CurveMidpoint] {
         let fresh = self
             .surfaces
             .get(&id)
@@ -191,7 +216,7 @@ impl ObjectSnapCache {
             // Extract exact natural-boundary isocurves, not control-net rows:
             // periodic and unclamped surfaces need evaluation at their domains.
             // A failed/degenerate boundary cannot suppress the other features.
-            let points = [
+            let features = [
                 surface.isocurve_u(*v.start()),
                 surface.isocurve_v(*u.end()),
                 surface.isocurve_u(*v.end()),
@@ -199,18 +224,18 @@ impl ObjectSnapCache {
             ]
             .into_iter()
             .filter_map(Result::ok)
-            .filter_map(|curve| midpoint(&curve, tolerance))
+            .map(|curve| CurveMidpoint::new(curve, tolerance))
             .collect();
             self.surfaces.insert(
                 id,
                 SurfaceMidpoints {
                     source: surface.clone(),
                     tolerance,
-                    points,
+                    features,
                 },
             );
         }
-        &self.surfaces[&id].points
+        &self.surfaces[&id].features
     }
 }
 

@@ -130,6 +130,11 @@ The [four two-pick one-shot records](object-snap-controls.md) add eight calibrat
 captures and complete history comparisons, including restoration of persistent
 modes after the first pick. Native menu/prompt lifecycle tests are separate from
 these camera-calibrated core capture replays.
+The [37 Mid-hover records](mid-hover-snaps.md) add 26 calibrated captures with
+complete geometry/history replay and 11 mixed-mode admission-only misses. One
+unsnapped control fails to split and has no Undo/Redo; that limitation is retained.
+These cases cover segment/boundary hover, opposite-seam conic targets and
+curve-distance ranking across competing objects and polyline segments.
 
 The shared `serde_json` dependency explicitly enables round-trip float parsing.
 Standalone oracle/document builds must not depend on app or test dependencies

@@ -4,6 +4,128 @@ use viboceros_geometry::{Brep, CircularArc3, CurveSegment3, LineSegment, PolyCur
 fn p(x: Real, y: Real) -> Point3 {
     Point3::try_new(x, y, 0.).unwrap()
 }
+
+#[test]
+fn mixed_sign_weights_do_not_cull_a_hover_outside_the_control_hull() {
+    use viboceros_geometry::WeightedPoint3;
+    let curve = NurbsCurve::try_new_rational(
+        2,
+        vec![
+            WeightedPoint3::try_new(p(2., -2.), 1.).unwrap(),
+            WeightedPoint3::try_new(p(5., 2.), -0.25).unwrap(),
+            WeightedPoint3::try_new(p(8., -2.), 1.).unwrap(),
+        ],
+        vec![0., 0., 0., 1., 1., 1.],
+    )
+    .unwrap();
+    let aim = curve.evaluate(0.1).unwrap();
+    assert!(aim.y() < -2.1); // Outside the entire control-point box.
+    let mut doc = Document::default();
+    let id = doc.add_geometry(Geometry::NurbsCurve(curve)).unwrap();
+    let mut cache = ObjectSnapCache::default();
+    let hit = cache
+        .nearest_projected_with_modes(
+            &doc,
+            [aim.x(), aim.y()],
+            0.05,
+            |p| Some([p.x(), p.y()]),
+            ObjectSnapModes::only(ObjectSnapKind::Mid),
+        )
+        .unwrap()
+        .unwrap();
+    assert!(hit.point().distance_to(p(5., -10. / 3.)).unwrap() < 1e-9);
+    assert!(cache.midpoints[&id].features[0].bounds.is_none());
+}
+
+#[test]
+fn far_common_sign_curve_is_rejected_before_hover_sampling() {
+    let mut doc = Document::default();
+    doc.add_geometry(Geometry::NurbsCurve(nurbs())).unwrap();
+    let mut cache = ObjectSnapCache::default();
+    for _ in 0..3 {
+        let projections = std::cell::Cell::new(0);
+        assert!(
+            cache
+                .nearest_projected_with_modes(
+                    &doc,
+                    [100., 100.],
+                    0.05,
+                    |p| {
+                        projections.set(projections.get() + 1);
+                        Some([p.x(), p.y()])
+                    },
+                    ObjectSnapModes::only(ObjectSnapKind::Mid),
+                )
+                .unwrap()
+                .is_none()
+        );
+        assert_eq!(projections.get(), 8);
+    }
+    assert_eq!(cache.builds, 1);
+}
+
+#[test]
+fn failed_midpoint_keeps_its_source_slot_and_hover_cache_tracks_edits() {
+    let collapsed =
+        NurbsCurve::try_new(1, vec![p(2., -2.), p(2., -2.)], vec![0., 0., 1., 1.]).unwrap();
+    let mut doc = Document::default();
+    let id = doc
+        .add_geometry(Geometry::PolyCurve(
+            PolyCurve3::try_new(vec![collapsed, nurbs()]).unwrap(),
+        ))
+        .unwrap();
+    let mut cache = ObjectSnapCache::default();
+    let hover = |cache: &mut ObjectSnapCache, doc: &Document| {
+        cache
+            .nearest_projected_with_modes(
+                doc,
+                [2.8, -2.],
+                0.05,
+                |p| Some([p.x(), p.y()]),
+                ObjectSnapModes::only(ObjectSnapKind::Mid),
+            )
+            .unwrap()
+    };
+    assert!(
+        hover(&mut cache, &doc)
+            .unwrap()
+            .point()
+            .distance_to(p(5., -2.))
+            .unwrap()
+            < 1e-10
+    );
+    assert_eq!(cache.midpoints[&id].features.len(), 2);
+    assert!(cache.midpoints[&id].features[0].point.is_none());
+    assert!(cache.midpoints[&id].features[1].point.is_some());
+    assert_eq!(cache.builds, 1);
+    for _ in 0..3 {
+        assert!(hover(&mut cache, &doc).is_some());
+    }
+    assert_eq!(cache.builds, 1);
+    let changed =
+        NurbsCurve::try_new(1, vec![p(2., -2.), p(10., -2.)], vec![0., 0., 1., 1.]).unwrap();
+    doc.replace_object_geometries([(id, Geometry::NurbsCurve(changed))])
+        .unwrap();
+    assert!(
+        hover(&mut cache, &doc)
+            .unwrap()
+            .point()
+            .distance_to(p(6., -2.))
+            .unwrap()
+            < 1e-10
+    );
+    assert_eq!(cache.builds, 2);
+    doc.undo().unwrap();
+    assert!(
+        hover(&mut cache, &doc)
+            .unwrap()
+            .point()
+            .distance_to(p(5., -2.))
+            .unwrap()
+            < 1e-10
+    );
+    assert_eq!(cache.builds, 3);
+}
 fn line(a: Point3, b: Point3) -> LineSegment {
     LineSegment::try_new(a, b, Tolerance::DEFAULT).unwrap()
 }
@@ -97,7 +219,7 @@ fn polycurve_nurbs_midpoints_are_cached_by_leaf_geometry_not_outer_parameter_map
         assert_hit(&mut cache, &doc, p(5., -2.), ObjectSnapKind::Mid);
     }
     assert_eq!(cache.builds, 1);
-    assert_eq!(cache.midpoints[&id].curves.len(), 1);
+    assert_eq!(cache.midpoints[&id].features.len(), 1);
     assert!(query(&mut cache, &doc, p(4., -2.)).is_none());
     doc.replace_object_geometries([(
         id,
@@ -121,11 +243,11 @@ fn polycurve_nurbs_midpoints_are_cached_by_leaf_geometry_not_outer_parameter_map
     .unwrap();
     assert_hit(&mut cache, &doc, p(8., -4.), ObjectSnapKind::Mid);
     assert_eq!(cache.builds, 2);
-    assert_eq!(cache.midpoints[&id].curves.len(), 2);
+    assert_eq!(cache.midpoints[&id].features.len(), 2);
     doc.undo().unwrap();
     assert_hit(&mut cache, &doc, p(5., -2.), ObjectSnapKind::Mid);
     assert_eq!(cache.builds, 3);
-    assert_eq!(cache.midpoints[&id].curves.len(), 1);
+    assert_eq!(cache.midpoints[&id].features.len(), 1);
 }
 
 #[test]
