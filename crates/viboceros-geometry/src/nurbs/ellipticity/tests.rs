@@ -147,7 +147,13 @@ fn rejects_parabolic_hyperbolic_linear_mixed_sign_and_nearly_linear_loci() {
             .is_none()
     );
     let curve = ellipse(p(0., 0., 0.), false);
-    let tiny_arc = curve.try_trimmed(0. ..=1e-5).unwrap();
+    // Quadratics now have an exact algebraic center path. A rounded general
+    // higher-degree fit must still reject this numerically unstable tiny arc.
+    let tiny_arc = curve
+        .try_trimmed(0. ..=1e-5)
+        .unwrap()
+        .try_change_degree(4, false)
+        .unwrap();
     assert!(
         tiny_arc
             .elliptical_center(Tolerance::DEFAULT)
@@ -291,5 +297,57 @@ fn independently_derived_quadratic_centers_and_circles_agree() {
                 .unwrap()
                 < 1e-9
         );
+    }
+}
+
+#[test]
+fn affine_preconditioning_recognizes_thin_rotated_higher_degree_ellipses() {
+    let center = p(4., -4., 7.);
+    let x = Vector3::try_new(3., 4., 0.)
+        .unwrap()
+        .normalized_nonzero()
+        .unwrap();
+    let y = Vector3::try_new(-4., 3., 5.)
+        .unwrap()
+        .normalized_nonzero()
+        .unwrap();
+    for aspect in [20., 200., 2000.] {
+        let source = Ellipse3::try_new(center, 2., 2. / aspect, x, y, Tolerance::DEFAULT)
+            .unwrap()
+            .to_nurbs()
+            .unwrap();
+        for degree in [2, 5] {
+            let curve = source.try_change_degree(degree, false).unwrap();
+            assert_center(&curve, center);
+            assert!(curve.circular_center(Tolerance::DEFAULT).unwrap().is_none());
+        }
+    }
+}
+
+#[test]
+fn short_quadratic_center_is_exact_for_independently_constructed_dyadic_controls() {
+    let w = 1. - 2.0_f64.powi(-12);
+    let q = w * w;
+    let h = 2.0_f64.powi(-12);
+    // These arithmetic operations are exactly representable. The conic center
+    // is (4,-4,7) even though fitting its short locus is poorly conditioned.
+    let points = [
+        p(2., -4., 7.),
+        p(2., -4. + h, 7.),
+        p(6. - 4. * q, -4. + 2. * q * h, 7.),
+    ];
+    for gauge in [1., -8.] {
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            points
+                .into_iter()
+                .zip([1., w, 1.])
+                .map(|(p, w)| WeightedPoint3::try_new(p, w * gauge).unwrap())
+                .collect(),
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        assert_center(&curve, p(4., -4., 7.));
+        assert!(curve.circular_center(Tolerance::DEFAULT).unwrap().is_none());
     }
 }

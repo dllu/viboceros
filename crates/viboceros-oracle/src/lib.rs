@@ -40,6 +40,7 @@ use viboceros_io::{
 mod construction_plane;
 #[cfg(test)]
 mod curve_closest_tests;
+mod curve_conic_centers;
 mod curve_parameter_samples;
 mod interface;
 mod isocurves;
@@ -582,6 +583,10 @@ pub enum Operation {
         id: String,
         curve: NurbsCurveDefinition,
         fractions: Vec<f64>,
+    },
+    NurbsCurveConicCenters {
+        id: String,
+        curve: NurbsCurveDefinition,
     },
     NurbsCurveClosestPoint {
         id: String,
@@ -1757,6 +1762,7 @@ impl Operation {
             | Self::PolylineJoin { id, .. }
             | Self::NurbsCurveEvaluate { id, .. }
             | Self::NurbsCurveParameterSamples { id, .. }
+            | Self::NurbsCurveConicCenters { id, .. }
             | Self::NurbsCurveClosestPoint { id, .. }
             | Self::NurbsCurveLength { id, .. }
             | Self::NurbsCurveShortFilter { id, .. }
@@ -2412,6 +2418,9 @@ fn execute(
         Operation::NurbsCurveParameterSamples {
             curve, fractions, ..
         } => curve_parameter_samples::run(curve, fractions, iterations)?,
+        Operation::NurbsCurveConicCenters { curve, .. } => {
+            curve_conic_centers::run(curve, iterations, tolerance)?
+        }
         Operation::NurbsCurveEvaluate {
             degree,
             control_points,

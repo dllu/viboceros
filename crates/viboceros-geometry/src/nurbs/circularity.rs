@@ -1,10 +1,12 @@
-//! Whole-span circular-locus recognition, without sparse point sampling.
+//! Whole-span circular-locus recognition with a center-stability screen.
 use super::*;
 
 impl NurbsCurve {
     /// Returns a candidate circle radius only when every rational Bezier span
     /// lies within absolute tolerance of its plane and sphere.
     /// Same-sign span weights are required for a denominator lower bound.
+    /// Regular curvature jets must also agree on center and radius, so a short
+    /// ellipse inside a circle's tolerance tube is not sufficient evidence.
     /// Inconclusive or ill-conditioned coefficient bounds return `None`.
     pub fn circular_radius(&self, tolerance: Tolerance) -> Result<Option<Real>, GeometryError> {
         Ok(self.circular_locus(tolerance)?.map(|(_, radius)| radius))
@@ -27,22 +29,55 @@ impl NurbsCurve {
             return Ok(None);
         }
         let spans = self.try_bezier_spans()?;
-        let mut proposal = None;
+        let mut proposal: Option<(Point3, Real, Vector3)> = None;
         for span in &spans {
             // A scalar parameter domain must not overflow geometric curvature
             // through its first/second derivatives. Normalize only this seed;
             // the whole-span test below retains the original control geometry.
-            let seed = span.try_reparameterized(0. ..=1.)?;
-            proposal = [0., 0.5, 1.]
-                .into_iter()
-                .find_map(|t| circle_proposal(&seed, t, tolerance).ok().flatten());
-            if proposal.is_some() {
-                break;
+            let origin = span.control_points()[0].point();
+            let controls = span
+                .control_points()
+                .iter()
+                .map(|p| {
+                    WeightedPoint3::try_new(
+                        Point3::try_from(origin.vector_to(p.point())?.to_array())?,
+                        p.weight(),
+                    )
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            let seed =
+                NurbsCurve::try_new_rational(span.degree(), controls, span.knots().to_vec())?
+                    .try_reparameterized(0. ..=1.)?;
+            for t in [0., 0.5, 1.] {
+                let Some((local_center, radius, normal)) =
+                    circle_proposal(&seed, t, tolerance).ok().flatten()
+                else {
+                    continue;
+                };
+                let center = origin.translated(Vector3::try_from(local_center.to_array())?)?;
+                if let Some((previous, previous_radius, _)) = proposal {
+                    // A short ellipse can lie in a circle's tolerance tube even
+                    // though its osculating center changes appreciably. Stable
+                    // jets are necessary, but not sufficient: whole-span bounds
+                    // below still reject bumps invisible to these samples.
+                    if previous.distance_to(center)? > tolerance.absolute()
+                        || (previous_radius - radius).abs() > tolerance.absolute()
+                    {
+                        return Ok(None);
+                    }
+                } else {
+                    proposal = Some((center, radius, normal));
+                }
             }
         }
         let Some((center, radius, normal)) = proposal else {
             return Ok(None);
         };
+        if self.degree() == 2
+            && !super::ellipticity::quadratic_circle_consistent(&spans, center, radius, tolerance)?
+        {
+            return Ok(None);
+        }
         let delta = (tolerance.absolute() / radius).min(0.25);
         for span in &spans {
             if !span_on_circle(span, center, radius, normal, delta)? {
@@ -155,6 +190,43 @@ pub(super) fn unit_sphere_bound(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn radial_tube_alone_does_not_make_a_short_ellipse_circular() {
+        let origin = Point3::try_new(0., 0., 0.).unwrap();
+        let x = Vector3::try_new(1., 0., 0.)
+            .unwrap()
+            .normalized_nonzero()
+            .unwrap();
+        let y = Vector3::try_new(0., 1., 0.)
+            .unwrap()
+            .normalized_nonzero()
+            .unwrap();
+        let ellipse = crate::Ellipse3::try_new(origin, 2., 1., x, y, Tolerance::DEFAULT)
+            .unwrap()
+            .to_nurbs()
+            .unwrap();
+        for end in [1e-3, 1e-6] {
+            let arc = ellipse.try_trimmed(0. ..=end).unwrap();
+            let seed = arc.try_reparameterized(0. ..=1.).unwrap();
+            let (center, radius, normal) = circle_proposal(&seed, 0., Tolerance::DEFAULT)
+                .unwrap()
+                .unwrap();
+            assert!(center.distance_to(origin).unwrap() > 1.);
+            assert!(
+                span_on_circle(
+                    &seed,
+                    center,
+                    radius,
+                    normal,
+                    Tolerance::DEFAULT.absolute() / radius
+                )
+                .unwrap()
+            );
+            assert!(arc.circular_center(Tolerance::DEFAULT).unwrap().is_none());
+            assert!(arc.circular_radius(Tolerance::DEFAULT).unwrap().is_none());
+        }
+    }
 
     #[test]
     fn circularity_rejects_a_bump_invisible_to_three_sample_second_order_jets() {

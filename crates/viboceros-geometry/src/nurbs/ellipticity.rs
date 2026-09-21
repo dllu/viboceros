@@ -2,6 +2,9 @@
 use super::*;
 use circularity::{binomial, unit_sphere_bound};
 use nalgebra::{Matrix2, Vector2};
+mod frame;
+mod quadratic;
+use frame::CoefficientFrame;
 
 #[cfg(test)]
 mod tests;
@@ -13,10 +16,30 @@ struct EllipticLocus {
     radii: [Real; 2],
 }
 
+/// On a sufficiently short ellipse even stable curvature jets and a circular
+/// tolerance tube do not determine the actual conic center. Quadratics have an
+/// algebraic center/axis proposal, so use that independent information too.
+pub(super) fn quadratic_circle_consistent(
+    spans: &[NurbsCurve],
+    center: Point3,
+    radius: Real,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    let Some(conic) = quadratic::proposal(spans, tolerance).ok().flatten() else {
+        return Ok(false);
+    };
+    Ok(conic.center.distance_to(center)? <= tolerance.absolute()
+        && conic
+            .radii
+            .iter()
+            .all(|r| (r - radius).abs() <= tolerance.absolute()))
+}
+
 impl NurbsCurve {
     /// Recognizes the center of an elliptical locus, including partial arcs and
     /// circles. Does not replace the curve or assert its sweep/parameterization.
-    /// A homogeneous coefficient system proposes the ellipse; every original
+    /// Quadratics use an exact rational center formula; otherwise an affine-
+    /// conditioned homogeneous coefficient system proposes the ellipse. Every original
     /// rational Bezier span must satisfy absolute plane and radial bounds after
     /// an affine map to a unit circle. Same-sign weights within each span are
     /// required. Inconclusive, degenerate or ill-conditioned cases return `None`.
@@ -26,6 +49,18 @@ impl NurbsCurve {
             return Ok(None);
         }
         let spans = self.try_bezier_spans()?;
+        if self.degree() == 2
+            && let Some(proposal) = quadratic::proposal(&spans, tolerance).ok().flatten()
+            && spans.iter().try_fold(true, |fits, span| {
+                if fits {
+                    proposal.contains_span(span, tolerance)
+                } else {
+                    Ok(false)
+                }
+            })?
+        {
+            return Ok(Some(proposal.center));
+        }
         let Some(proposal) = ellipse_proposal(&spans, tolerance).ok().flatten() else {
             return Ok(None);
         };
@@ -48,46 +83,12 @@ fn ellipse_proposal(
     tolerance: Tolerance,
 ) -> Result<Option<EllipticLocus>, GeometryError> {
     let controls: Vec<_> = spans.iter().flat_map(|s| s.control_points()).collect();
-    let mut sums: [crate::FiniteSum; 3] = std::array::from_fn(|_| crate::FiniteSum::default());
-    for control in &controls {
-        for (sum, coordinate) in sums.iter_mut().zip(control.point().to_array()) {
-            sum.add(coordinate)?;
-        }
-    }
-    // Center the coefficient coordinates near the data to avoid amplifying
-    // linear/constant terms through a distant origin. Exact sums avoid overflow
-    // and translation-dependent loss while retaining a single Euclidean scale.
-    let origin = Point3::try_new(sums[0].mean()?, sums[1].mean()?, sums[2].mean()?)?;
-    let offsets = controls
-        .iter()
-        .map(|p| origin.vector_to(p.point()))
-        .collect::<Result<Vec<_>, _>>()?;
-    let mut scale = 0.;
-    let mut x = offsets[0];
-    for &v in &offsets {
-        let length = v.length()?;
-        if length > scale {
-            (scale, x) = (length, v);
-        }
-    }
-    if scale <= tolerance.absolute() {
+    // Whiten the planar data before fitting its implicit conic. Isotropic
+    // scaling mistakes a thin, well-defined ellipse for an unstable conic.
+    // This changes only proposal coordinates, not the model-space certificate.
+    let Some(frame) = CoefficientFrame::from_controls(&controls, tolerance)? else {
         return Ok(None);
-    }
-    let x = x.normalized_nonzero()?.as_vector();
-    let mut normal = offsets[0];
-    let mut height = 0.;
-    for &v in &offsets {
-        let cross = x.cross(v.scaled(1. / scale)?)?;
-        let length = cross.length()?;
-        if length > height {
-            (height, normal) = (length, cross);
-        }
-    }
-    if height <= 128. * Real::EPSILON {
-        return Ok(None);
-    }
-    let normal = normal.normalized_nonzero()?.as_vector();
-    let y = normal.cross(x)?.normalized_nonzero()?.as_vector();
+    };
     let n = spans[0].degree();
     let b = binomial(n);
     let doubled = binomial(2 * n);
@@ -109,8 +110,12 @@ fn ellipse_proposal(
             if w <= 0. {
                 return Ok(None);
             }
-            let v = origin.vector_to(control.point())?.scaled(1. / scale)?;
-            q.push([v.dot(x)? * w, v.dot(y)? * w, w]);
+            let v = frame.origin.vector_to(control.point())?;
+            q.push([
+                v.dot(frame.axes[0])? / frame.scales[0] * w,
+                v.dot(frame.axes[1])? / frame.scales[1] * w,
+                w,
+            ]);
         }
         for (k, denominator) in doubled.iter().enumerate() {
             let row = span_index * (2 * n + 1) + k;
@@ -154,7 +159,8 @@ fn ellipse_proposal(
     let smallest = indices[0];
     let next = singular[indices[1]];
     let largest = singular[indices[5]];
-    if !next.is_finite() || next <= 0. || !largest.is_finite() {
+    let gap = next - singular[smallest];
+    if !gap.is_finite() || gap <= 0. || !largest.is_finite() {
         return Ok(None);
     }
     let coefficients: [Real; 6] = std::array::from_fn(|i| svd.V()[(i, smallest)]);
@@ -176,43 +182,56 @@ fn ellipse_proposal(
     if !level.is_finite() || level <= 0. {
         return Ok(None);
     }
-    let radii: [Real; 2] = std::array::from_fn(|i| (level / eigen.eigenvalues[i]).sqrt() * scale);
+    // Undo the affine fit coordinates, then recover orthogonal physical axes.
+    // The SVD avoids subtracting nearly equal squared lengths for thin ellipses.
+    let mapping = Matrix2::from_fn(|i, j| {
+        frame.scales[i] * eigen.eigenvectors[(i, j)] * (level / eigen.eigenvalues[j]).sqrt()
+    });
+    if mapping.iter().any(|v| !v.is_finite()) {
+        return Ok(None);
+    }
+    let physical = mapping.svd(true, false);
+    let radii: [Real; 2] = physical.singular_values.into();
+    let axes = physical.u.expect("requested left singular vectors");
     if radii
         .iter()
         .any(|r| !r.is_finite() || *r <= tolerance.absolute())
     {
         return Ok(None);
     }
-    let maximum_radius = radii[0].max(radii[1]);
     // A short, nearly linear arc can fit many ellipses within distance tolerance
     // while their centers differ drastically. Reject numerically unstable
     // nullspaces and positive-definite solves instead of trusting residual alone.
     // This is a conservative conditioning guard, not a certified error interval.
-    let sensitivity = 64.
-        * (n + 1) as Real
-        * Real::EPSILON
-        * (largest / next)
-        * (hi / lo)
-        * (1. + local_center.norm()).powi(2)
-        * maximum_radius;
+    // For A c = -b, perturbations satisfy
+    // |dc| <= eta (sqrt(2) + 2|c|) / (lambda_min(A) - 2 eta).
+    // Convert that coordinate sensitivity through the affine frame, rather
+    // than penalizing the physical aspect ratio of a well-determined ellipse.
+    let noise = 64. * (n + 1) as Real * Real::EPSILON * (largest / gap);
+    if lo <= 2. * noise {
+        return Ok(None);
+    }
+    let sensitivity = frame.scales[0].max(frame.scales[1])
+        * noise
+        * (std::f64::consts::SQRT_2 + 2. * local_center.norm())
+        / (lo - 2. * noise);
     if !sensitivity.is_finite() || sensitivity > tolerance.absolute() {
         return Ok(None);
     }
-    let combine = |a: Real, b: Real| {
-        Vector3::try_from(std::array::from_fn(|i| {
-            x.to_array()[i].mul_add(a, y.to_array()[i] * b)
-        }))
-    };
-    let center = origin.translated(combine(local_center.x * scale, local_center.y * scale)?)?;
+    let center = frame.origin.translated(frame.vector([
+        local_center.x * frame.scales[0],
+        local_center.y * frame.scales[1],
+    ])?)?;
     let axis = |i| -> Result<Vector3, GeometryError> {
-        combine(eigen.eigenvectors[(0, i)], eigen.eigenvectors[(1, i)])?
+        frame
+            .vector([axes[(0, i)], axes[(1, i)]])?
             .normalized_nonzero()
             .map(|v| v.as_vector())
     };
     Ok(Some(EllipticLocus {
         center,
         axes: [axis(0)?, axis(1)?],
-        normal,
+        normal: frame.normal,
         radii,
     }))
 }

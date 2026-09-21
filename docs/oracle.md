@@ -5,6 +5,10 @@
 [Diagnostic replay and Python API](oracle-replay.md) retain per-operation native
 errors while comparing every successful record against saved Rhino observations.
 
+The [conic-center audit](conic-center-audit.md) compares 32 full-coordinate public
+API records and 62 calibrated point-prompt records. It keeps API recognition,
+interactive snap policy, and their remaining discrepancies separate.
+
 The `join_command` probe has 181 raw mesh records covering both
 `JoinDisjointMeshes` choices, precision thresholds, ordered selection, winding,
 attributes, groups, and identity replacement. It checks identical binary64

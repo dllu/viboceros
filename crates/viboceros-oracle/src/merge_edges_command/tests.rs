@@ -3,6 +3,7 @@ use super::*;
 mod calibrated_snap;
 mod center_hover;
 mod circular_centers;
+mod elliptic_centers;
 mod face_history;
 mod face_splits;
 mod mid_hover;

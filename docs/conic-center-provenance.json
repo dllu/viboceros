@@ -1,0 +1,36 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "api_observations": 32,
+  "api_matches_absolute_1e_9": 29,
+  "api_differences": ["far-origin", "short-arc-0.01", "short-arc-0.001"],
+  "calibrated_snap_observations": 62,
+  "full_snap_command_replays": 42,
+  "admission_only_misses": 10,
+  "snap_gauge_differences": 6,
+  "snap_short_arc_differences": 4,
+  "actual_undo_redo_observations": 62,
+  "raw_response_sha256": {
+    "api-response.json": "90969881e65d368c0150a4b93bcd4e1f1df37fd0056c808308943ad6b0756e09",
+    "snap-response.json": "9b7eaf9cbe58da04cec8c35cf72924047d7be6fec41279145c91a1649fb2413c"
+  },
+  "source_artifact_sha256": {
+    "box.3dm": "9ad7f078dc15cbe542751246f45371a3e97c514d13482aee66448a8129620a65"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/conic_centers.json": "cd5c0eb96b46db8e445c60555de8b7530ad9188fd61844a1b04a2f85b8c8076e",
+    "tools/rhino_oracle/observations/conic_centers.json": "d6f9ec6237756d781119af2b447ea758b50837c914d635b7ea8289af818e4806",
+    "tools/rhino_oracle/fixtures/elliptic_center_snaps.json": "18b038dccac704d8dcc71c076d2ca927bdea0d7ab62073bf6e1618cb475ccc88",
+    "tools/rhino_oracle/observations/elliptic_center_snaps.json": "1c5c0489f98e05c4ad5a75eba121f450617231e6a55bca27566c5552510b49a0"
+  },
+  "notes": [
+    "Two fresh runs in owned private Xvfb sessions; only public Rhino APIs and owned-window point-prompt clicks were used. Existing Rhino sessions and the user desktop were not targeted.",
+    "The API probe calls TryGetCircle and TryGetEllipse with explicit absolute tolerance 1e-9 on original curve definitions and native parameter domains. Full three-coordinate centers are recorded, without axis canonicalization or model insertion.",
+    "The command probe uses the hash-verified shared box artifact from the earlier SplitEdge audit. Its 31 curve families use both one-shot Cen over five persistent modes and persistent Cen alone. Far-origin is API-only because a distant source cannot be captured in the same component-picking scene.",
+    "Portable point-prompt inputs omit only the shared box artifact path. Raw responses are compacted without numerical normalization or array reordering. The independent generator uses no native or Rhino output.",
+    "Prompt-time camera matrices agree with public WorldToClient within 1e-7 pixels; native admission uses the actual integer click and a 12-pixel radius. Forty-two independently computed native targets drive full ordered geometry/attribute/selection and Undo/Redo replay, at absolute 1e-9 and relative 1e-10. No recorded result point drives native snapping.",
+    "Positive x8, negative x-8 and positive x1e200 common gauges are recognized by Rhino's API but miss its interactive Center snap. Native geometry-invariant centers are retained; these six point-prompt records remain differences.",
+    "Rhino's centers drift on short arcs; on the shortest input its API reports x=4.005758751265903 while its interactive command splits at x=2.5000013131935046. Native exact quadratic centers stay within 1e-9 of the generator's analytic x=4. These are retained disagreements, not normalized matches.",
+    "The API misses the far-translated ellipse, while native recognition returns the translated center. API comparisons use absolute-only epsilon so the large origin cannot hide coordinate errors.",
+    "All 62 point commands succeed and perform actual Undo/Redo, including the ten nonconic admission misses. Misses compare admission only, not unsnapped constrained-point geometry. Point-prompt records are constrained SplitEdge observations, not unconstrained GetPoint or a proof of unrestricted camera/priority parity."
+  ]
+}

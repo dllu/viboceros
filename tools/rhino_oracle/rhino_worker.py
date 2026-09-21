@@ -924,6 +924,28 @@ def _curve_parameter_samples(operation, iterations):
         curve.Dispose()
 
 
+def _curve_conic_centers(operation, iterations, tolerance):
+    """Use public conic recognition without normalizing the source parameter domain."""
+    absolute = _finite(tolerance["absolute"], "conic tolerance")
+    if absolute <= 0:
+        raise ValueError("conic tolerance must be positive")
+    curve = _nurbs_curve_from_definition(operation["curve"])
+    try:
+        def center(result):
+            success, conic = result
+            if not success:
+                return None
+            if not conic.IsValid:
+                raise ValueError("conic recognition returned invalid geometry")
+            return [_finite(v, "conic center") for v in _xyz(conic.Center)]
+        def compute():
+            return dict(circle_center=center(curve.TryGetCircle(absolute)),
+                        ellipse_center=center(curve.TryGetEllipse(absolute)))
+        return _measure(iterations, compute)
+    finally:
+        curve.Dispose()
+
+
 def _nurbs_curve_from_definition(definition, dimension=3):
     degree = int(definition["degree"])
     controls = definition["control_points"]
@@ -8608,6 +8630,9 @@ def _execute(operation, iterations, tolerance):
 
     if kind == "nurbs_curve_parameter_samples":
         return _curve_parameter_samples(operation, iterations)
+
+    if kind == "nurbs_curve_conic_centers":
+        return _curve_conic_centers(operation, iterations, tolerance)
 
     if kind == "nurbs_curve_evaluate":
         degree = int(operation["degree"])

@@ -5,6 +5,8 @@
 The [elliptical NURBS follow-up](elliptic-center-snaps.md) resolves the four
 previously unsupported elliptic captures in this retained audit. Original inputs
 and Rhino observations are unchanged; current replay has 38 full matches.
+The [fresh conic audit](conic-center-audit.md) adds full-coordinate API and
+calibrated ellipse-snap evidence, with a center-stability screen for short arcs.
 
 Center now recognizes circular NURBS curves and arc leaves, natural surface
 boundaries, and spatial B-rep edges. Capture follows the original curve: hovering

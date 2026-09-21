@@ -201,8 +201,11 @@ lower bound. Plane control distances and the Bernstein coefficients of
 `Q·Q - W²` bound the entire normalized locus, with a floating-point roundoff
 allowance. Inconclusive bounds do not trigger automatic radius reporting. This
 is a conservative floating-point recognition test, not an exact algebraic predicate.
-Candidate spans use normalized scalar domains, with a regular-point fallback for
-stationary endpoints. Native knots/control geometry are unchanged. The
+Candidate spans use normalized scalar domains and local model coordinates, with
+a regular-point fallback for stationary endpoints. Regular jets must agree on
+center and radius: a short ellipse inside a circular tolerance tube is not enough.
+Quadratics additionally check their algebraic conic center and semi-axes.
+Whole-span bounds remain mandatory. Native knots/control geometry are unchanged. The
 [circular Center audit](circular-center-snaps.md) adds extreme-domain and signed-gauge
 tests and calibrated UI observations, including retained Rhino differences.
 
@@ -218,16 +221,21 @@ original interval (checked at 33 parameters) instead of substituting a circle.
 
 ## Whole-span ellipticity
 
-`NurbsCurve::elliptical_center` proposes a conic from a scaled six-column
+`NurbsCurve::elliptical_center` uses an exact rational center proposal for
+quadratics, or a conic from an affine-conditioned six-column
 homogeneous Bernstein coefficient system over all spans, using faer's SVD and a
-positive-definite two-dimensional quadratic form. Row/gauge normalization and a
+positive-definite two-dimensional quadratic form. Independent empirical-principal
+axis scales handle thin ellipses, with a small SVD restoring physical axes.
+Row/gauge normalization and a
 center-conditioning guard reject unstable fits. Acceptance maps every original
 span to a unit circle and uses the shared radial coefficient bound plus a plane
 bound; no sampled fit alone establishes ellipticity. Plane and radial bounds each
 receive half the absolute model-distance budget. Mixed-sign spans and
 inconclusive bounds are rejected. This remains a floating-point recognizer, not
 an exact conic predicate or certified center-error bound. See the
-[elliptical Center tests and retained replay](elliptic-center-snaps.md).
+[elliptical Center tests](elliptic-center-snaps.md) and the
+[fresh API/point-prompt audit](conic-center-audit.md), including exact quadratic
+center limits and retained Rhino disagreements.
 
 ## Focused checks
 

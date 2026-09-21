@@ -10,13 +10,19 @@ model-space elevation. Circle-only radius and extension operations are unchanged
 ## Recognition
 
 `NurbsCurve::elliptical_center` decomposes the curve into rational Bézier spans.
-An exactly accumulated control-point mean and a scaled planar frame keep fitting
-coordinates near the data. Each span contributes the Bernstein coefficients of
+Quadratics first use an exact rational formula for the center of their supplied
+binary64 controls, followed by the same whole-span validation described below.
+The [follow-up audit](conic-center-audit.md) documents its algebra and limits.
+
+For the general proposal, an exactly accumulated control-point mean and an
+affine-conditioned planar frame keep fitting coordinates near the data. Empirical
+principal directions have independent scales so physical eccentricity does not
+make the fit unnecessarily ill-conditioned. Each span contributes the Bernstein coefficients of
 `a X² + 2b XY + c Y² + 2d XW + 2e YW + f W²` to one six-column system.
 Common weight gauges and equation rows are normalized; faer's SVD proposes its
 null vector. Pooling all spans avoids depending on a short first span after
 refinement. A positive-definite quadratic form gives the center and principal
-axes through nalgebra. Degenerate, non-elliptic or numerically ill-conditioned
+axes through nalgebra, then another small SVD undoes the affine frame. Degenerate, non-elliptic or numerically ill-conditioned
 proposals are rejected, including nearly linear arcs with unstable centers.
 
 The proposal alone never admits a snap. Every original span must have common-sign
@@ -28,7 +34,7 @@ Neither sparse point sampling nor degree reduction establishes acceptance.
 
 This is conservative floating-point recognition, not an exact algebraic
 predicate or certified center-error interval. The conditioning guard is numerical;
-short arcs, very eccentric ellipses, extreme weight spreads and precision-limited
+general short-arc fits, extreme weight spreads and precision-limited
 coordinates can return no center. It does not implement Rhino's approximate-conic
 option or establish unrestricted ellipse-recognition parity.
 
@@ -46,7 +52,9 @@ centers. The perturbed quadratic has center `(3.75, -4, 0)` by the control-trian
 formula; the full ellipse has center `(4, -4, 0)`. Original requests, recorded
 Rhino outputs and their hashes remain unchanged. This is a new native replay of
 existing evidence, not a new Rhino run. The two negative-gauge differences and
-four admission-only misses remain explicit.
+four admission-only misses remain explicit. The subsequent
+[32 API and 62 point-prompt audit](conic-center-audit.md) supplies fresh evidence,
+including full-coordinate centers and explicitly different API/snap behavior.
 
 Native regressions cover rotation out of XY, translated origins, refinement,
 degree elevation, reversal, signed/extreme common weight gauges, unequal endpoint
@@ -56,7 +64,7 @@ nonplanar/altered later spans, ill-conditioned tiny arcs and a degree-nine bump
 invisible to three sampled second-order jets. UI tests cover the four viewport
 kinds, ordinary/constrained prompts, B-rep boundaries and a real off-plane click.
 
-Verification checkpoint: 3,075 release-mode workspace tests, 282 Python tests,
+Original implementation checkpoint: 3,075 release-mode workspace tests, 282 Python tests,
 seven offscreen GPU tests, formatting, and Clippy/Rustdoc with warnings denied.
 The workspace's 25 opt-in tests remain ignored in the ordinary run; the seven
 GPU tests were also run explicitly.
