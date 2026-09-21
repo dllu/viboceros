@@ -5,6 +5,13 @@ from . import join_probe
 
 
 class JoinProbeTests(unittest.TestCase):
+    def test_brep_commands_require_shared_artifacts_before_accessing_host(self):
+        for brep in (None, [], {}, {"artifact_path": None}, {"artifact_path": 1}, {"artifact_path": ""}):
+            with self.subTest(brep=brep), self.assertRaisesRegex(ValueError, "shared source artifacts"):
+                join_probe.run({"sources": [{"brep": brep}]}, None, {})
+        sources = [{"brep": {"artifact_path": "/owned/input.3dm"}}]
+        self.assertEqual(join_probe.validate({"sources": sources}), (sources, [0]))
+
     def test_invalid_selections_never_touch_host(self):
         for selected in ([], [0, 0], [1], [-1], [True], [0.0], "0"):
             with self.subTest(selected=selected), self.assertRaisesRegex(ValueError, "selection"):

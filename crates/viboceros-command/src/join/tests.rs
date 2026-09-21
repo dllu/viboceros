@@ -1,6 +1,7 @@
 use super::*;
 use viboceros_geometry::MeshFace;
 
+mod breps;
 mod copy;
 
 fn quad(x: f64) -> Geometry {

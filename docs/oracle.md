@@ -44,6 +44,15 @@ to spatial topology, tolerances, and mass properties. Raw orientation and
 gap-rebuilding policy differences are retained separately. This geometry-only
 probe does not establish interactive Join behavior or native automatic matching.
 
+The separate [surface Join command audit](commands/join.md#surfaces-and-polysurfaces)
+adds 92 actual Join/JoinCopy records with shared per-source 3DM artifacts.
+Sixty-six compare every raw field successfully; 26 explicitly retain partial-edge
+ordering/domain, duplicate-boundary competition, and gap-rebuilding/threshold
+differences. The command probe includes spatial and UV geometry, component
+tolerances, oriented topology, object identity/selection, attributes, and groups.
+Copies with a repeated source retain every disconnected piece. Neither failed
+comparisons nor domain differences are normalized out of the saved observations.
+
 The `align` object-layout probe compares actual bounding-box, curve and line/plane alignment commands,
 including retained IDs, source samples/domains, groups, layer assignment and
 pre/postselection cleanup. Its shared `object_layout` module supplies fixture

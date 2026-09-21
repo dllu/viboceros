@@ -49,6 +49,11 @@ def validate(operation):
         raise ValueError("invalid join tolerance")
     if operation.get("command", "Join") not in ("Join", "JoinCopy"):
         raise ValueError("invalid join command")
+    for source in sources:
+        if isinstance(source, dict) and "brep" in source:
+            brep = source["brep"]
+            if not isinstance(brep, dict) or not isinstance(brep.get("artifact_path"), (str, type(u""))) or not brep["artifact_path"]:
+                raise ValueError("B-rep Join commands require shared source artifacts")
     return sources, order
 
 
@@ -81,6 +86,9 @@ def run(operation, tolerance, host):
                 record["mesh"] = host["_polygon_mesh_value"](obj.Geometry)
             elif isinstance(obj.Geometry, Rhino.Geometry.Curve):
                 record["curve"] = host["_interchange_curve_record"](obj.Geometry)
+            elif isinstance(obj.Geometry, Rhino.Geometry.Brep):
+                import brep_join_probe
+                record["brep"] = brep_join_probe.geometry_record(obj.Geometry, tolerance, host)
             else:
                 raise ValueError("unexpected join geometry")
             records.append(record)
@@ -106,10 +114,27 @@ def run(operation, tolerance, host):
             mesh.Dispose()
             raise
     def source_geometry(source):
+        if "brep" in source:
+            path = source["brep"]["artifact_path"]
+            if path.startswith("/"): path = "Z:" + path.replace("/", "\\")
+            model = Rhino.FileIO.File3dm.Read(path)
+            if model is None: raise ValueError("cannot read Join source artifact")
+            try:
+                entries = list(model.Objects)
+                if len(entries) != 1: raise ValueError("Join artifact must have one source")
+                brep = entries[0].Geometry.Duplicate()
+            finally: model.Dispose()
+            if brep is None: raise ValueError("missing Join source geometry")
+            if not isinstance(brep, Rhino.Geometry.Brep) or not brep.IsValid:
+                brep.Dispose()
+                raise ValueError("invalid Join source B-rep")
+            return brep
         if "type" in source:
             return host["_join_close_input"](source)
         return source_mesh(source)
     def add_geometry(geometry, attributes=None):
+        if isinstance(geometry, Rhino.Geometry.Brep):
+            return document.Objects.AddBrep(geometry, attributes, None, False, False)
         if isinstance(geometry, Rhino.Geometry.Mesh):
             return document.Objects.AddMesh(geometry, attributes) if attributes else document.Objects.AddMesh(geometry)
         return document.Objects.AddCurve(geometry, attributes) if attributes else document.Objects.AddCurve(geometry)
@@ -135,7 +160,11 @@ def run(operation, tolerance, host):
                 object_id = add_geometry(mesh, attributes)
                 if object_id == System.Guid.Empty: raise ValueError("join insertion failed")
                 ids.append(object_id)
-                if "type" not in source and host["_polygon_mesh_value"](document.Objects.FindId(object_id).Geometry) != source:
+                if "brep" in source:
+                    import brep_join_probe
+                    if brep_join_probe.geometry_record(mesh, tolerance, host) != brep_join_probe.geometry_record(document.Objects.FindId(object_id).Geometry, tolerance, host):
+                        raise ValueError("Join insertion changed shared B-rep geometry")
+                elif "type" not in source and host["_polygon_mesh_value"](document.Objects.FindId(object_id).Geometry) != source:
                     raise ValueError("join source changed during document insertion")
             finally:
                 if mesh is not None: mesh.Dispose()

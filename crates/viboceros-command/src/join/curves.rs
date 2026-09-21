@@ -71,6 +71,7 @@ pub(super) fn stage(
         sources.len() - consumed.len()
     );
     Ok(JoinPlan {
+        release: vec![],
         copies,
         consumed,
         description,

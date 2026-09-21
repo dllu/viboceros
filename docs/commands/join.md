@@ -10,22 +10,75 @@ JoinCopy
 JoinCopy JoinDisjointMeshes=No
 ```
 
-`Join` and `JoinCopy` accept selected curves or selected polygon meshes. The command-first
-workflow filters eligible objects and exposes the remembered mesh option.
-Mixed object families, surfaces, B-reps, and SubD joining remain unimplemented.
-The [shared-edge B-rep assembly kernel](../brep-edge-joining.md) now supports
-explicit, certified boundary pairs; automatic matching and command integration
-remain outstanding.
+`Join` and `JoinCopy` accept curves, polygon meshes, or surfaces/polysurfaces.
+Each invocation uses one family; natural NURBS surfaces and B-reps can mix.
+The command-first workflow filters eligible objects and exposes the remembered
+mesh option. Mixed-family and SubD joining remain unimplemented. Surface joining
+uses [certified boundary assembly](../brep-edge-joining.md) with the coverage and
+Rhino differences described below.
 
 `JoinCopy` retains all original objects, including their exact geometry, IDs,
 attributes, and groups. Outputs inherit their seed's attributes and memberships.
-Preselection leaves originals and outputs selected. Command-first mesh copying
+Preselection leaves originals and outputs selected. Command-first surface/mesh copying
 and early closed-curve copying retain participating originals selected, with
 outputs unselected; ordinary open-curve copying clears selection.
 Neither command expands selection to unselected group peers.
 Disconnected curves and single selected objects are not duplicated. With
 multiple meshes and `JoinDisjointMeshes=No`, even isolated mesh components
 produce fresh copies. Both commands use the same staged geometry/document path.
+
+## Surfaces and polysurfaces
+
+Open inputs join at an absolute distance of twice the document tolerance.
+Complete boundaries must pass the kernel's whole-curve certificate; continuous,
+exactly straight boundaries also support independent degrees/parameter speeds
+and automatic partial-overlap splitting. Surfaces are never refitted. Newly
+closed nonzero-volume outputs are oriented outward. This is not a Boolean union.
+
+Preselection processes document order and emits every connected output, including
+fresh copies of unjoined open inputs. A disconnected source can contribute to
+multiple outputs, each inheriting its earliest contributing source's attributes
+and groups. Command-first picks grow the initial open assembly in pick order;
+nonconnecting picks are skipped and not retried. All resulting pieces use that
+initial seed's attributes. Enter completes selection, even after closure.
+JoinCopy retains participating originals selected and leaves these outputs
+unselected; ordinary command-first Join deselects its outputs and skipped picks.
+Closed inputs are ignored and deselected. An all-closed selection, one open
+input, or command-first picks with no connection fail without geometry/history
+edits. The latter retains only the first open seed selected.
+
+The [66 matching command cases](../../tools/rhino_oracle/fixtures/join_surfaces.json)
+and [raw Rhino records](../../tools/rhino_oracle/observations/join_surfaces.json)
+cover both commands and selection modes, adjacent/disconnected inputs, seeded
+pick order, outward closure, rational/closed boundaries, duplicate sheets,
+multi-component sources, source retention, layers/colors/groups, and unselected
+peers. Every recorded field is compared at `1e-10` absolute / `1e-12` relative
+epsilon, without geometry, domain, or ordering normalization. Inputs are shared
+3DM artifacts, checked after native roundtrip and Rhino document insertion.
+The [fresh live comparison](../join-surfaces-comparison.json) records fixture,
+observation, and release-binary hashes; maximum numeric residual is below `2.04e-12`.
+
+The separate [26-case difference fixture](../../tools/rhino_oracle/fixtures/join_surface_differences.json)
+and [raw records](../../tools/rhino_oracle/observations/join_surface_differences.json)
+retain three incomplete policies:
+
+- Partial straight overlaps join, but split-vertex ordering and retained spatial
+  and UV parameter domains differ. Native keeps the first source's subdivided
+  edge domain; Rhino keeps the recorded shorter edge's domain.
+- Three competing boundaries use deterministic distance/source-order pairing
+  natively. In the recorded duplicate-wall case, Rhino instead separates the
+  other sheet and joins the two duplicates, including during command-first picks.
+- Gap joins retain native spatial curves/vertices with conservative uncertainty;
+  Rhino can rebuild them toward midpoints. Threshold behavior also differs: with
+  document tolerance `0.001`, the recorded `0.002` gap joins command-first but
+  not preselected in Rhino; at `0.0021`, command-first Rhino creates two unjoined
+  copies and moves endpoints, while native fails unchanged.
+
+These are scoped observations, not general threshold rules. Generic curved
+partial overlaps, incompatible curved bases, nested/cavity-solid classification,
+and arbitrary ambiguous matching remain unsupported or unproven. Boundary search
+is bounded; command-first joining currently rebuilds the growing assembly at
+each accepted pick. No kernel speedup is claimed from command probe timings.
 
 ## Curves
 
@@ -91,7 +144,7 @@ indices are not welded together.
 
 ## Architecture and validation
 
-The command's `join` module separates curve/mesh geometry staging from shared
+The command's `join` module separates curve/mesh/B-rep geometry staging from shared
 copying, deletion, direct selection, and preferences. Kernel `mesh/append` performs checked linear
 concatenation; `mesh/join` handles matching, connectivity, and orientation.
 Candidate matching uses a widest-axis sweep, with 100,000 inputs, one million

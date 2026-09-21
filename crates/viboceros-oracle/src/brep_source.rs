@@ -2,6 +2,42 @@
 use super::*;
 use crate::{curve_join_close::CurveInput, object_source::ObjectSource};
 
+/// Shared topology-preserving source preparation for geometry and command probes.
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+pub(super) struct BrepSourceFixture {
+    source: BrepCommandSource,
+    #[serde(default)]
+    reversed: bool,
+    edge_order: Option<Vec<usize>>,
+    #[serde(default)]
+    splits: Vec<(usize, Vec<f64>)>,
+    pub(super) artifact_path: Option<String>,
+}
+
+impl BrepSourceFixture {
+    pub(super) fn build(&self, tolerance: Tolerance) -> Result<Brep, ProbeError> {
+        let mut brep = match self.source.geometry(tolerance)? {
+            Geometry::Brep(brep) => brep,
+            Geometry::NurbsSurface(surface) => Brep::try_surface_face(surface, tolerance)?,
+            _ => {
+                return Err(ProbeError::FixtureInvariant(
+                    "B-rep source needs a surface or B-rep",
+                ));
+            }
+        };
+        if let Some(order) = &self.edge_order {
+            brep = brep.reordered_edges(order, tolerance)?;
+        }
+        if !self.splits.is_empty() {
+            brep = brep.try_split_edges_at_parameters(&self.splits, tolerance)?;
+        }
+        if self.reversed {
+            brep = brep.reversed();
+        }
+        Ok(brep)
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(untagged)]
 pub(super) enum BrepCommandSource {

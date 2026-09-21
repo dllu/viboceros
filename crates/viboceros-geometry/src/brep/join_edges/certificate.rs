@@ -113,6 +113,64 @@ pub(super) fn curve_bound(
     reversed: bool,
     limit: Real,
 ) -> Option<Real> {
+    common_basis_bound(a, b, reversed, limit).or_else(|| {
+        let a = linear_endpoints(a)?;
+        let mut b = linear_endpoints(b)?;
+        if reversed {
+            b.reverse();
+        }
+        Some(point_bound(a[0], b[0], limit)?.max(point_bound(a[1], b[1], limit)?))
+    })
+}
+
+/// Exact straight, continuous, clamped, monotonically ordered positive-basis curves have
+/// the same oriented segment locus regardless of degree, knots or weight speed.
+pub(super) fn linear_endpoints(curve: &NurbsCurve) -> Option<[Point3; 2]> {
+    let controls = curve.control_points();
+    let domain = curve.domain();
+    let degree = curve.degree();
+    if curve.full_order_knots().next().is_some()
+        || !curve.knots()[..=degree].iter().all(|k| k == domain.start())
+        || !curve.knots()[curve.knots().len() - degree - 1..]
+            .iter()
+            .all(|k| k == domain.end())
+    {
+        return None;
+    }
+    let endpoints = [controls[0].point(), controls[controls.len() - 1].point()];
+    let [a, b] = endpoints.map(Point3::to_array);
+    let axis = (0..3).max_by(|&i, &j| (a[i] - b[i]).abs().total_cmp(&(a[j] - b[j]).abs()))?;
+    if a[axis] == b[axis] {
+        return None;
+    }
+    let increasing = a[axis] < b[axis];
+    let mut previous = a[axis];
+    let negative = controls[0].weight().is_sign_negative();
+    for control in controls {
+        let point = control.point().to_array();
+        if control.weight() == 0.
+            || control.weight().is_sign_negative() != negative
+            || (increasing && point[axis] < previous)
+            || (!increasing && point[axis] > previous)
+            || (0..3).any(|other| {
+                !same_fraction(
+                    point[axis],
+                    a[axis],
+                    b[axis],
+                    point[other],
+                    a[other],
+                    b[other],
+                )
+            })
+        {
+            return None;
+        }
+        previous = point[axis];
+    }
+    Some(endpoints)
+}
+
+fn common_basis_bound(a: &NurbsCurve, b: &NurbsCurve, reversed: bool, limit: Real) -> Option<Real> {
     let ac = a.control_points();
     let bc = b.control_points();
     if a.degree() != b.degree() || ac.len() != bc.len() {

@@ -34,7 +34,13 @@ impl ObjectSelectionFilter {
             Self::PointCloudSources => matches!(geometry, Geometry::Point(_) | Geometry::Mesh(_)),
             Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
             Self::Curves => geometry.curve_ref().is_some(),
-            Self::Join => geometry.curve_ref().is_some() || matches!(geometry, Geometry::Mesh(_)),
+            Self::Join => {
+                geometry.curve_ref().is_some()
+                    || matches!(
+                        geometry,
+                        Geometry::Mesh(_) | Geometry::NurbsSurface(_) | Geometry::Brep(_)
+                    )
+            }
             Self::ToNurbs => !matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_)),
             Self::Parametric => {
                 geometry.curve_ref().is_some()

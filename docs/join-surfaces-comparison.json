@@ -1,0 +1,361 @@
+{
+  "protocol_version": 1,
+  "passed": true,
+  "reference_engine": "rhino",
+  "reference_engine_version": "8.32.26160.13001",
+  "fixture": "tools/rhino_oracle/fixtures/join_surfaces.json",
+  "fixture_sha256": "6891b698dd4f2fa0f4bfb27703e17ea57033470a972e7579da5361bb032cca9e",
+  "observations": "tools/rhino_oracle/observations/join_surfaces.json",
+  "observations_sha256": "9bce72c0a7861d6da83e8a6bb415cbcc4e9d4ef6ff75ee19ab6d1a3ca7def5f6",
+  "native_executable_sha256": "04d5e212ce541fdec56ce38920f88562f1af21741e6da06e24b3ec8ffbb6cb28",
+  "absolute_epsilon": 1e-10,
+  "relative_epsilon": 1e-12,
+  "passing_operations": 66,
+  "maximum_absolute_error": 2.0321522242738865e-12,
+  "measurement_boundary": "Named public EndCommand result and document snapshot on identical per-source 3DM artifacts, in an owned private Xvfb session.",
+  "note": "Fresh live comparison of all 66 matching command cases. Archived raw observations come from the initial 92-case discovery run and are also replayed offline without geometry, order, or parameter normalization. Timings do not establish kernel performance.",
+  "known_differences": {
+    "count": 26,
+    "fixture": "tools/rhino_oracle/fixtures/join_surface_differences.json",
+    "fixture_sha256": "b7342179d0c1adeb983d3023b5520618093eeabe424b10c7f775ff9dc0cfe515",
+    "observations": "tools/rhino_oracle/observations/join_surface_differences.json",
+    "observations_sha256": "4066ffa7f53dbabda14369e60ef43e4c7eedd82b8fd584a555010ad722057ec0",
+    "policies": [
+      "partial-overlap vertex ordering and spatial/UV domains",
+      "competing duplicate-boundary pairing",
+      "gap rebuilding and pre/postselection thresholds"
+    ]
+  },
+  "operations": [
+    {
+      "id": "single-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "single-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "single-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "single-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "single-solid-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "single-solid-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "single-solid-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "single-solid-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "adjacent-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "adjacent-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "adjacent-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "adjacent-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "adjacent-reverse-picks-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "adjacent-reverse-picks-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "adjacent-reverse-picks-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "adjacent-reverse-picks-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "disjoint-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "disjoint-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "disjoint-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "disjoint-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "joined-and-loner-Join-post",
+      "passed": true,
+      "max_absolute_error": 5.329070518200751e-15
+    },
+    {
+      "id": "joined-and-loner-Join-pre",
+      "passed": true,
+      "max_absolute_error": 5.329070518200751e-15
+    },
+    {
+      "id": "joined-and-loner-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 5.329070518200751e-15
+    },
+    {
+      "id": "joined-and-loner-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 5.329070518200751e-15
+    },
+    {
+      "id": "two-pairs-Join-post",
+      "passed": true,
+      "max_absolute_error": 5.329070518200751e-15
+    },
+    {
+      "id": "two-pairs-Join-pre",
+      "passed": true,
+      "max_absolute_error": 5.329070518200751e-15
+    },
+    {
+      "id": "two-pairs-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 5.329070518200751e-15
+    },
+    {
+      "id": "two-pairs-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 5.329070518200751e-15
+    },
+    {
+      "id": "six-inward-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "six-inward-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "six-inward-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "six-inward-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "solid-and-sheet-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "solid-and-sheet-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "solid-and-sheet-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "solid-and-sheet-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "duplicate-sheets-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "duplicate-sheets-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "duplicate-sheets-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "duplicate-sheets-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "bridged-disjoint-source-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "bridged-disjoint-source-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "bridged-disjoint-source-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "bridged-disjoint-source-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "partly-connected-source-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "partly-connected-source-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "partly-connected-source-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "partly-connected-source-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "unselected-group-peer-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "unselected-group-peer-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "unselected-group-peer-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "unselected-group-peer-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "rational-Join-post",
+      "passed": true,
+      "max_absolute_error": 1.2541079286165768e-12
+    },
+    {
+      "id": "rational-Join-pre",
+      "passed": true,
+      "max_absolute_error": 1.2541079286165768e-12
+    },
+    {
+      "id": "rational-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 1.2541079286165768e-12
+    },
+    {
+      "id": "rational-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 1.2541079286165768e-12
+    },
+    {
+      "id": "opposite-edge-directions-Join-post",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15
+    },
+    {
+      "id": "opposite-edge-directions-Join-pre",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15
+    },
+    {
+      "id": "opposite-edge-directions-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15
+    },
+    {
+      "id": "opposite-edge-directions-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15
+    },
+    {
+      "id": "closed-rational-edge-Join-post",
+      "passed": true,
+      "max_absolute_error": 2.0321522242738865e-12
+    },
+    {
+      "id": "closed-rational-edge-Join-pre",
+      "passed": true,
+      "max_absolute_error": 2.0321522242738865e-12
+    },
+    {
+      "id": "closed-rational-edge-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 2.0321522242738865e-12
+    },
+    {
+      "id": "closed-rational-edge-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 2.0321522242738865e-12
+    },
+    {
+      "id": "gap-0.0021-Join-pre",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15
+    },
+    {
+      "id": "gap-0.0021-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15
+    }
+  ]
+}

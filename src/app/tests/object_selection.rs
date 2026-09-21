@@ -2,6 +2,61 @@ use super::*;
 use viboceros_document::SelectionMode;
 
 #[test]
+fn surface_join_picks_wait_for_enter_and_undo_restores_the_sources() {
+    use viboceros_geometry::{Brep, Frame3, Tolerance, Vector3};
+    for command in ["Join", "JoinCopy"] {
+        let mut app = test_app();
+        let frame = Frame3::try_from_normal(
+            point(0., 0., 0.),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cube =
+            Brep::try_box(frame, [[0., 2.], [0., 3.], [0., 5.]], Tolerance::DEFAULT).unwrap();
+        let ids = [0, 2].map(|i| {
+            app.document
+                .add_geometry(Geometry::Brep(
+                    cube.sub_brep(&[i], Tolerance::DEFAULT).unwrap(),
+                ))
+                .unwrap()
+        });
+        let peer = app
+            .document
+            .add_geometry(Geometry::Point(point(9., 0., 0.)))
+            .unwrap();
+        let before = app.document.objects().cloned().collect::<Vec<_>>();
+        app.document.clear_selection();
+        enter(&mut app, command);
+        for id in [peer, ids[0], ids[1]] {
+            app.apply_selection_click(SelectionClick {
+                object_id: Some(id),
+                mode: SelectionMode::Replace,
+            });
+            assert!(app.object_prompt.is_some());
+            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        }
+        assert!(!app.document.is_selected(peer));
+        assert_eq!(app.document.selected_object_count(), 2);
+        enter(&mut app, "");
+        assert!(app.object_prompt.is_none());
+        let output = app
+            .document
+            .objects()
+            .find(|o| !ids.contains(&o.id()) && o.id() != peer)
+            .unwrap();
+        assert!(matches!(output.geometry(), Geometry::Brep(b) if b.faces().len() == 2));
+        assert!(!app.document.is_selected(output.id()));
+        assert_eq!(
+            app.document.selected_object_count(),
+            if command == "JoinCopy" { 2 } else { 0 }
+        );
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    }
+}
+
+#[test]
 fn individual_join_picks_finish_on_closure_without_consuming_the_next_click() {
     for command in ["Join", "JoinCopy"] {
         let mut app = test_app();

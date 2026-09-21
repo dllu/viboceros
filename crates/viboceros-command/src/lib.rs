@@ -16986,11 +16986,14 @@ pub enum CommandError {
     #[error("Join requires an open curve or a mesh")]
     NoOpenCurvesToJoin,
 
+    #[error("Join requires an open surface or polysurface")]
+    NoOpenSurfacesToJoin,
+
     #[error("no objects were joined")]
     NothingJoined,
 
     #[error(
-        "Join requires only curves or only meshes; surface and mixed-family joining is not implemented"
+        "Join requires one object family: curves, meshes, or surfaces/polysurfaces; mixed-family joining is not implemented"
     )]
     UnsupportedJoinGeometry,
     #[error(

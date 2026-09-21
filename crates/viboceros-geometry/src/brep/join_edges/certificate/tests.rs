@@ -164,3 +164,58 @@ fn tolerance_addition_rounds_outward_and_rejects_overflow() {
     }
     assert!(add_bound(Real::MAX, Real::MAX).is_err());
 }
+
+#[test]
+fn straight_locus_certificate_rejects_breaks_bows_backtracking_and_mixed_weights() {
+    let line = NurbsCurve::try_new(
+        1,
+        vec![p([0., 0., 0.]), p([3., 0., 0.])],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap();
+    let make = |x: [Real; 4], y: Real, weights: [Real; 4]| {
+        NurbsCurve::try_new_rational(
+            3,
+            x.into_iter()
+                .enumerate()
+                .map(|(i, x)| {
+                    WeightedPoint3::try_new(p([x, if i == 1 { y } else { 0. }, 0.]), weights[i])
+                        .unwrap()
+                })
+                .collect(),
+            vec![0., 0., 0., 0., 1., 1., 1., 1.],
+        )
+        .unwrap()
+    };
+    for weights in [[1., 0.25, 2., 1.], [-1., -0.25, -2., -1.]] {
+        let cubic = make([0., 1., 2., 3.], 0., weights);
+        assert_eq!(curve_bound(&line, &cubic, false, 0.), Some(0.));
+        assert_eq!(
+            curve_bound(&line, &cubic.reversed().unwrap(), true, 0.),
+            Some(0.)
+        );
+    }
+    for bad in [
+        make([0., 1., 2., 3.], Real::from_bits(1), [1.; 4]),
+        make([0., 2., 1., 3.], 0., [1.; 4]),
+        make([0., 1., 2., 3.], 0., [1., -0.25, 2., 1.]),
+        NurbsCurve::try_new(
+            1,
+            [0., 1., 2., 3.]
+                .into_iter()
+                .map(|x| p([x, 0., 0.]))
+                .collect(),
+            vec![0., 0., 0.5, 0.5, 1., 1.],
+        )
+        .unwrap(),
+        NurbsCurve::try_new(
+            1,
+            vec![p([0., 0., 0.]), p([3., 0., 0.])],
+            vec![-1., 0., 1., 2.],
+        )
+        .unwrap(),
+    ] {
+        assert!(linear_endpoints(&bad).is_none());
+        assert!(curve_bound(&line, &bad, false, 0.).is_none());
+    }
+}

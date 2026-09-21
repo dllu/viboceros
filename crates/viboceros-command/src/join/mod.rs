@@ -1,5 +1,6 @@
 //! Object-family dispatch and preferences; geometry algorithms stay in the kernel.
 use super::*;
+mod breps;
 mod curves;
 mod meshes;
 #[cfg(test)]
@@ -83,8 +84,27 @@ impl Command for JoinCommand {
         error: &CommandError,
         postselected: bool,
     ) {
-        if matches!(error, CommandError::NoOpenCurvesToJoin) {
+        if matches!(
+            error,
+            CommandError::NoOpenCurvesToJoin | CommandError::NoOpenSurfacesToJoin
+        ) {
             document.clear_selection();
+        } else if matches!(error, CommandError::NothingJoined)
+            && document
+                .selected_objects()
+                .all(|o| breps::accepts(o.geometry()))
+        {
+            let open = document
+                .selected_objects()
+                .filter(|o| !breps::closed(o.geometry(), document.tolerance()).unwrap_or(false))
+                .map(|o| o.id())
+                .collect::<Vec<_>>();
+            let keep = if postselected {
+                &open[..open.len().min(1)]
+            } else {
+                &open[..]
+            };
+            let _ = document.select_objects_direct(keep.iter().copied(), SelectionMode::Replace);
         } else if postselected && matches!(error, CommandError::NothingJoined) {
             let seed = document
                 .selected_objects()
@@ -150,8 +170,11 @@ impl JoinCommand {
         let meshes = sources
             .iter()
             .all(|o| matches!(o.geometry(), Geometry::Mesh(_)));
+        let surfaces = sources.iter().all(|o| breps::accepts(o.geometry()));
         let plan = if meshes {
             meshes::stage(&sources, document.tolerance(), disjoint)?
+        } else if surfaces {
+            breps::stage(&sources, document.tolerance(), postselected)?
         } else {
             curves::stage(
                 &sources,
@@ -163,8 +186,9 @@ impl JoinCommand {
         if plan.copies.is_empty() && (sources.len() == 1 || postselected) {
             return Err(CommandError::NothingJoined);
         }
-        let keep_sources = self.copy_inputs && (meshes || plan.closed_on_pick);
-        let outputs = document.copy_object_geometries_into_source_groups_in_order(plan.copies)?;
+        let keep_sources = self.copy_inputs && (meshes || surfaces || plan.closed_on_pick);
+        let outputs = document.copy_object_pieces_into_source_groups(plan.copies)?;
+        document.select_objects_direct(plan.release, SelectionMode::Remove)?;
         if postselected && keep_sources {
             // Rejected/unconnected picks are not retained when the copied
             // chain completes; only the participating originals stay selected.
@@ -193,4 +217,5 @@ struct JoinPlan {
     consumed: Vec<ObjectId>,
     description: String,
     closed_on_pick: bool,
+    release: Vec<ObjectId>,
 }

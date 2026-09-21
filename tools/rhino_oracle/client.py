@@ -189,10 +189,11 @@ class OracleClient:
             if any(op.get("op") in ("join_command", "cap_command") for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("join_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
-            if any(op.get("op") in ("cap_command", "brep_join") for op in request.get("operations", [])):
+            brep_join_commands = any(op.get("op") == "join_command" and any("brep" in s for s in op.get("sources", [])) for op in request.get("operations", []))
+            if brep_join_commands or any(op.get("op") in ("cap_command", "brep_join") for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("cap_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
-            if any(op.get("op") == "brep_join" for op in request.get("operations", [])):
+            if brep_join_commands or any(op.get("op") == "brep_join" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("brep_join_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "document_units" for op in request.get("operations", [])):
@@ -305,6 +306,10 @@ class OracleClient:
                 elif operation.get("op") == "brep_join":
                     operation["artifact_paths"] = [str(Path(job) / f"join-{index}-{part}.3dm")
                         for part in range(len(operation["sources"]))]
+                elif operation.get("op") == "join_command":
+                    for part, source in enumerate(operation["sources"]):
+                        if "brep" in source:
+                            source["brep"]["artifact_path"] = str(Path(job) / f"join-command-{index}-{part}.3dm")
             viboceros = self.run_viboceros(prepared, timeout)
             rhino = self.run_rhino(prepared, timeout)
         return compare_responses(

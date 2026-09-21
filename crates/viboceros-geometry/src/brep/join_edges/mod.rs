@@ -1,6 +1,8 @@
 //! Transactional assembly of explicitly paired, complete naked boundaries.
 use super::*;
 
+mod automatic;
+pub use automatic::{BrepJoinComponent, join_breps};
 mod certificate;
 #[cfg(test)]
 mod tests;
@@ -22,11 +24,14 @@ impl Brep {
     /// [`Self::try_split_edges_at_parameters`]. This is an assembly primitive,
     /// not automatic edge discovery or the interactive Join command.
     ///
-    /// Acceptance is deliberately conservative: paired curves must have equal
+    /// Acceptance is deliberately conservative: paired curved edges must have equal
     /// degree/control count, exactly affine-equivalent full knot vectors and
     /// exactly proportional weights. Every corresponding control-point distance
     /// must be at most `join_distance`, in absolute model units. This supplies a
     /// whole-curve convex-hull bound, including rational and reversed curves.
+    /// Clamped straight edges with exactly collinear, monotone controls also
+    /// support different degrees, knots and rational parameter speeds. Their
+    /// endpoint distances bound the complete oriented segment loci.
     /// Other representations of the same locus are rejected, not sampled into
     /// an approximate match. Source component tolerances do not widen this test.
     ///

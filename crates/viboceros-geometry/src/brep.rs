@@ -20,6 +20,7 @@ mod edge_split;
 mod incidence;
 mod isocurves;
 mod join_edges;
+pub use join_edges::{BrepJoinComponent, join_breps};
 mod loft;
 mod mass_properties;
 mod morph;

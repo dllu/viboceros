@@ -19,6 +19,9 @@ pub struct JoinFixture {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(untagged)]
 enum Source {
+    Brep {
+        brep: crate::brep_source::BrepSourceFixture,
+    },
     Mesh {
         vertices: Vec<[f64; 3]>,
         faces: Vec<Vec<u32>>,
@@ -45,6 +48,13 @@ impl JoinAction {
 impl Source {
     fn geometry(&self, tolerance: Tolerance) -> Result<Geometry, ProbeError> {
         match self {
+            Self::Brep { brep } => {
+                let geometry = Geometry::Brep(brep.build(tolerance)?);
+                if let Some(path) = &brep.artifact_path {
+                    crate::brep_source::write_shared_artifact(&geometry, path, tolerance)?;
+                }
+                Ok(geometry)
+            }
             Self::Mesh { vertices, faces } => crate::object_source::ObjectSource::Vertices(
                 crate::object_source::VertexSource::Mesh {
                     vertices: vertices.clone(),
@@ -119,7 +129,11 @@ pub(super) fn run(f: &JoinFixture, tolerance: Tolerance) -> Result<(Value, u64),
     };
     let succeeded = match result {
         Ok(_) => true,
-        Err(CommandError::NoOpenCurvesToJoin | CommandError::NothingJoined) => false,
+        Err(
+            CommandError::NoOpenCurvesToJoin
+            | CommandError::NoOpenSurfacesToJoin
+            | CommandError::NothingJoined,
+        ) => false,
         Err(error) => return Err(error.into()),
     };
     let objects = document.objects().map(|object| {
@@ -133,6 +147,8 @@ pub(super) fn run(f: &JoinFixture, tolerance: Tolerance) -> Result<(Value, u64),
             "groups":memberships});
         if let Geometry::Mesh(mesh) = object.geometry() {
             record["mesh"] = polygon_mesh_value(mesh);
+        } else if let Geometry::Brep(brep) = object.geometry() {
+            record["brep"] = crate::brep_join::geometry_record(brep,tolerance)?;
         } else if let Some(curve) = object.geometry().curve_ref() {
             record["curve"] = crate::curve_interchange::curve_record(curve)?;
         } else { return Err(invalid()); }

@@ -280,8 +280,10 @@ The separate `brep/join_edges` module provides
 [certified explicit boundary assembly](brep-edge-joining.md), with exact-binary
 curve predicates separated from vertex unions, edge remapping, and face
 orientation. It composes with shared-edge subdivision and preserves all source
-surfaces and UV curves. Automatic B-rep Join and its command adapter are not yet
-implemented.
+surfaces and UV curves. Its `automatic` submodule separates broad-phase search,
+straight partial-overlap planning, and connected extraction. The `join/breps`
+command adapter owns batch/seeded selection policy; shared piece copying preserves
+all disconnected outputs even when several inherit one source's attributes/groups.
 See [curve joining and closure](curve-editing.md) for tested policies and limits.
 All seven curve families share [native parameter evaluation](curve-parameters.md),
 including analytic derivatives and parameter-bearing arc-length samples. Circular

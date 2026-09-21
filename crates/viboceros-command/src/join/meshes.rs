@@ -8,6 +8,7 @@ pub(super) fn stage(
 ) -> Result<JoinPlan, CommandError> {
     if sources.len() == 1 {
         return Ok(JoinPlan {
+            release: vec![],
             copies: vec![],
             consumed: vec![],
             description: "One mesh unchanged".into(),
@@ -31,6 +32,7 @@ pub(super) fn stage(
     )?;
     let count = components.len();
     Ok(JoinPlan {
+        release: vec![],
         copies: components
             .into_iter()
             .map(|part| {

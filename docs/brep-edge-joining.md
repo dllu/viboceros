@@ -3,10 +3,10 @@
 [Architecture](architecture.md) · [Join command status](commands/join.md)
 
 `Brep::try_join_edge_pairs` assembles explicitly paired, complete naked edges.
-This is a geometry-kernel foundation; **surface/polysurface Join and JoinCopy
-are not yet connected to it**. Automatic overlap discovery, candidate ranking,
-partial-overlap planning, output-component separation, and command/document
-policy remain separate work.
+`join_breps` adds automatic boundary search, straight partial-overlap splitting,
+and connected-output extraction. The surface/polysurface `Join` and `JoinCopy`
+adapters use this automatic path; [command policy and remaining Rhino
+differences](commands/join.md#surfaces-and-polysurfaces) are documented separately.
 
 Combine sources with `Brep::try_combine`, split partial boundaries with
 `try_split_edges_at_parameters`, then supply tuples of
@@ -16,7 +16,7 @@ pair. No source is mutated, including on failure.
 
 ## Whole-curve acceptance
 
-The current certificate requires equal degree and control count, exactly
+The common-basis certificate requires equal degree and control count, exactly
 affine-equivalent full knot vectors, and exactly proportional, sign-coherent
 weights. Reversed directions, shifted/scaled domains, and a common negative
 weight scale are supported. Each corresponding Euclidean control-point
@@ -27,7 +27,15 @@ These conditions give both curves the same nonnegative rational basis functions
 largest control-point distance bounds the entire curve, not just samples or
 endpoints. This test is sufficient, not necessary: degree-elevated curves,
 different knot refinements, non-affine reparameterizations, and independently
-fitted representations of the same locus can be rejected.
+fitted representations of the same curved locus can be rejected.
+
+A separate straight-locus certificate accepts exactly collinear, monotonically
+ordered control points with sign-coherent nonzero weights and clamped ends.
+Full-order interior knots are conservatively rejected: collinear controls alone
+do not exclude discontinuities or missing intervals. Continuity and monotonicity
+prove the complete oriented segment locus, allowing different degrees, knots,
+and rational speeds. Corresponding endpoint distances then bound the entire
+segment. Exact determinant tests reject even subnormal off-line controls.
 
 Knot-ratio and weight-proportion predicates compare exact binary64 product sums.
 Distance acceptance likewise compares exact squared distances with the squared
@@ -65,6 +73,38 @@ and four million input controls, checked before curve matching. Topology work
 is linear apart from disjoint-set operations; final geometric validation has
 the existing B-rep validator's cost and sampled trim/edge correspondence limits.
 
+## Automatic discovery and components
+
+`join_breps(&[&Brep], distance, tolerance)` returns connected B-reps with sorted
+source indices and joined-edge counts. A source can contribute to several
+outputs. Only boundaries between original input objects are considered; unmatched
+boundaries within one input are not implicitly sewn. Existing closed inputs
+remain unchanged, including inward orientation.
+
+A balanced, widest-axis AABB tree searches naked-edge control hulls without
+tolerance-scaled coordinate grids. The narrow-phase certificate only accepts
+sign-coherent rational bases, for which these hulls are conservative. Exact
+straight partial overlaps are planned in a dominant coordinate. Bounded binary
+search over the finite parameter lattice finds cuts; actual trimmed curve
+representations must pass the whole-curve certificate before cuts are proposed.
+Subdivision occurs within each source before combination, updating incident UV
+trims while preserving surface geometry and source table order. Matches are
+ranked by certified distance and edge index; each boundary piece is paired once.
+Overlapping proposals can introduce additional subdivisions even if some later
+candidates lose the greedy pairing. Conflicting orientation sets fail atomically.
+
+Connected extraction visits face/edge references and compacts each component's
+tables without rescanning the entire assembly per output. Newly joined closed
+shells with negative signed volume are reversed; zero-volume double sheets retain
+their first face sense. This is not cavity classification or a Boolean operation.
+Limits are 10,000 sources, 200,000 naked edges, one million candidate pairs, and
+16 million charged work units, plus the subdivision/explicit-assembly limits.
+These bound search work, not every validation or high-degree geometry cost.
+Tests cover 1,000 disconnected sheets, all 64 box-face orientation masks,
+one-to-many straight overlaps, independent rational speeds (including partial
+cuts on negative and large shifted parameter domains), immutable sources,
+and randomized tree searches against an all-pairs reference at varied scales.
+
 ## Oracle boundary and regression evidence
 
 The `brep_join` probe uses public
@@ -73,7 +113,9 @@ on owned geometry in a private Xvfb session, without inserting document objects.
 Native inputs are exported individually to 3DM and roundtrip-checked before
 Rhino reads the exact same files. The native side uses fixture-supplied edge
 pairs; Rhino discovers its own matches. This is evidence for the recorded
-connected assemblies, **not** native automatic matching or interactive Join.
+connected assemblies, not interactive Join. Separate actual-command records
+exercise automatic matching and document behavior; see the [surface command
+audit](commands/join.md#surfaces-and-polysurfaces).
 
 Records retain raw spatial edge definitions and order, vertices, component
 tolerances, oriented incidence, face senses, full underlying surfaces, every

@@ -1,24 +1,14 @@
 //! Explicit native edge assembly against public automatic Rhino JoinBreps.
 //! Fixtures must describe one connected output with unambiguous full-edge pairs.
 use super::*;
-use crate::brep_source::{BrepCommandSource, write_shared_artifact};
+use crate::brep_source::{BrepSourceFixture, write_shared_artifact};
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct BrepJoinFixture {
-    sources: Vec<Source>,
+    sources: Vec<BrepSourceFixture>,
     pairs: Vec<(usize, usize, bool)>,
     join_tolerance: f64,
     artifact_paths: Option<Vec<String>>,
-}
-
-#[derive(Clone, Debug, Deserialize, PartialEq)]
-struct Source {
-    source: BrepCommandSource,
-    #[serde(default)]
-    reversed: bool,
-    edge_order: Option<Vec<usize>>,
-    #[serde(default)]
-    splits: Vec<(usize, Vec<f64>)>,
 }
 
 pub(super) fn run(f: &BrepJoinFixture, tolerance: Tolerance) -> Result<(Value, u64), ProbeError> {
@@ -39,27 +29,7 @@ pub(super) fn run(f: &BrepJoinFixture, tolerance: Tolerance) -> Result<(Value, u
     let sources = f
         .sources
         .iter()
-        .map(|s| {
-            let mut brep = match s.source.geometry(tolerance)? {
-                Geometry::Brep(brep) => brep,
-                Geometry::NurbsSurface(surface) => Brep::try_surface_face(surface, tolerance)?,
-                _ => {
-                    return Err(ProbeError::FixtureInvariant(
-                        "B-rep Join needs surfaces or B-reps",
-                    ));
-                }
-            };
-            if let Some(order) = &s.edge_order {
-                brep = brep.reordered_edges(order, tolerance)?;
-            }
-            if !s.splits.is_empty() {
-                brep = brep.try_split_edges_at_parameters(&s.splits, tolerance)?;
-            }
-            if s.reversed {
-                brep = brep.reversed();
-            }
-            Ok(brep)
-        })
+        .map(|s| s.build(tolerance))
         .collect::<Result<Vec<_>, ProbeError>>()?;
     let inputs = sources
         .iter()
@@ -78,7 +48,7 @@ pub(super) fn run(f: &BrepJoinFixture, tolerance: Tolerance) -> Result<(Value, u
     ))
 }
 
-fn geometry_record(brep: &Brep, tolerance: Tolerance) -> Result<Value, ProbeError> {
+pub(super) fn geometry_record(brep: &Brep, tolerance: Tolerance) -> Result<Value, ProbeError> {
     let mut record = crate::cap_command::geometry_record(brep, tolerance)?;
     record["vertex_tolerances"] = json!(
         brep.vertices()

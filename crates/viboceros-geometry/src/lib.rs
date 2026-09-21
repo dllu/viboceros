@@ -65,8 +65,8 @@ pub use units::{LengthUnitSystem, UnitError};
 pub use bezier::MAX_BEZIER_CONTROL_POINTS;
 pub use bounds::BoundingBox3;
 pub use brep::{
-    Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex,
-    RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceIso,
+    Brep, BrepEdge, BrepFace, BrepJoinComponent, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType,
+    BrepVertex, RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceIso, join_breps,
 };
 pub use catenary::{
     CatenaryConstruction, CatenaryCurve, CatenaryOutput, CatenarySolution,
