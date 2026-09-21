@@ -65,6 +65,7 @@ mod document_units;
 mod group_memberships;
 mod group_picking;
 mod join_command;
+mod merge_edges_command;
 mod object_layout;
 mod object_source;
 mod plane_arrays;
@@ -214,6 +215,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: cap_command::CapFixture,
+    },
+    MergeEdgesCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: merge_edges_command::MergeEdgesFixture,
     },
     BrepJoin {
         id: String,
@@ -1656,6 +1662,7 @@ impl Operation {
             | Self::Align { id, .. }
             | Self::BorderCommand { id, .. }
             | Self::CapCommand { id, .. }
+            | Self::MergeEdgesCommand { id, .. }
             | Self::BrepJoin { id, .. }
             | Self::JoinCommand { id, .. }
             | Self::GroupMemberships { id, .. }
@@ -2066,6 +2073,9 @@ fn execute(
         Operation::Align { fixture, .. } => align::run(fixture, tolerance)?,
         Operation::BorderCommand { fixture, .. } => border::run(fixture, tolerance)?,
         Operation::CapCommand { fixture, .. } => cap_command::run(fixture, tolerance)?,
+        Operation::MergeEdgesCommand { fixture, .. } => {
+            merge_edges_command::run(fixture, tolerance)?
+        }
         Operation::BrepJoin { fixture, .. } => brep_join::run(fixture, tolerance)?,
         Operation::JoinCommand { fixture, .. } => join_command::run(fixture, tolerance)?,
         Operation::GroupMemberships { fixture, .. } => group_memberships::run(fixture, tolerance)?,

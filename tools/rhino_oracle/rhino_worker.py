@@ -4912,6 +4912,9 @@ def _execute(operation, iterations, tolerance):
     if operation["op"] == "cap_command":
         import cap_probe
         return cap_probe.run(operation, tolerance, globals())
+    if operation["op"] == "merge_edges_command":
+        import merge_edges_probe
+        return merge_edges_probe.run(operation, tolerance, globals())
     if operation["op"] == "brep_join":
         import brep_join_probe
         return brep_join_probe.run(operation, tolerance, globals())
@@ -14182,7 +14185,7 @@ def _response(request):
     return response
 
 
-def _main():
+def _main(at_idle=False):
     _record_progress("worker: started")
     job_directory = os.path.dirname(os.path.abspath(__file__))
     request_path = os.path.join(job_directory, "request.json")
@@ -14192,6 +14195,11 @@ def _main():
     try:
         with open(request_path, "r") as stream:
             request = json.load(stream)
+        if not at_idle and any(op.get("op") == "merge_edges_command" and
+                op.get("undo_redo", False) for op in request.get("operations", [])):
+            import merge_edges_probe
+            merge_edges_probe.at_idle(Rhino, lambda: _main(True))
+            return
         _record_progress("worker: request loaded")
         response = _response(request)
         _record_progress("worker: response computed")

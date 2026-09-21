@@ -33,6 +33,23 @@ def _response(engine: str, value: object, elapsed_ns: int = 100) -> dict:
 
 
 class OracleClientTests(unittest.TestCase):
+    def test_merge_edges_artifacts_are_owned_and_only_brep_paths_are_rewritten(self):
+        from .client import _owned_artifact_request
+        request = {"operations": [{"op": "merge_edges_command", "sources": [
+            {"brep": {"artifact_path": "/unowned/source.3dm"}},
+            {"type": "point", "point": [1,2,3]}, {"brep": {}},
+        ]}]}
+        original = copy.deepcopy(request)
+        with _owned_artifact_request(request) as prepared:
+            sources = prepared["operations"][0]["sources"]
+            paths = [Path(sources[i]["brep"]["artifact_path"]) for i in [0,2]]
+            self.assertNotEqual(paths[0], paths[1])
+            self.assertTrue(all(p.parent.is_dir() and not p.exists() for p in paths))
+            self.assertNotEqual(paths[0], Path("/unowned/source.3dm"))
+            self.assertEqual(sources[1], original["operations"][0]["sources"][1])
+        self.assertTrue(all(not p.parent.exists() for p in paths))
+        self.assertEqual(request, original)
+
     def test_join_command_shares_owned_brep_sources_without_overwriting_caller_paths(self):
         request = {"operations": [{"op": "join_command", "id": "../../untrusted", "sources": [
             {"brep": {"source": {"type": "box"}, "artifact_path": "/unowned/source.3dm"}},

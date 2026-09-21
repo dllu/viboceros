@@ -1,0 +1,74 @@
+{
+  "merge_edges_command": {
+    "cases": 39,
+    "engine_version": "8.32.26160.13001",
+    "shared_artifact_sha256": {
+      "quadratic-uv0-origin0-0.3dm": "136b42b0697fc5fd24411184f4e5974e846fe0cfbd53d30bd522b7a1348376f5",
+      "rational-cubic-uv0-origin0-0.3dm": "8091298545388be4e2d3765c7cc495c509d4e7ee2f9a72a759b6ed8a6becad4a",
+      "unclamped-uv0-origin0-0.3dm": "376d9ea71e59c793520ccca416741010315229bfcdec1cfadb0f5e2b772921f0",
+      "multispan-uv0-origin0-0.3dm": "151c20735c2c800b8e1fdd340c9aa50b7063064bcd5d048f2c6ce77b11530c61",
+      "command-box-0.3dm": "d605fbea2a8b447c6d54d9b20ea47015292ee41eff74d5c07c657a4abb0228e2",
+      "command-box-1.3dm": "67e727740a67e3d5edd6798bb4e2e839c5df014a186680d31740371a87f31adf"
+    },
+    "raw_response_sha256": {
+      "rhino-policy-final.json": "3f1134517534bdfbe1ae93730a22adfa930d40223527e6cbbfc601be246d3b1a",
+      "rhino-noops.json": "e359d28775c1360b9e07b5248bc02160b49538d803bf59f10abb80acb2b3127f"
+    }
+  },
+  "merge_edges_angles": {
+    "cases": 85,
+    "engine_version": "8.32.26160.13001",
+    "shared_artifact_sha256": {
+      "rotated-planar-kink-0.3dm": "fc305091c6b10707c13d5d4678d30489ddb4116fdffb75f1a05d48273a3bd886",
+      "rotated-planar-kink-0.1.3dm": "7d95bdbaa990095831b9d57571228475a9bed20c8d63deb43944da6dc352af12",
+      "rotated-planar-kink-0.49.3dm": "b0c3e001cb78df7a69a5147106f614262978d3fb55583afad477ee0e3134927e",
+      "rotated-planar-kink-0.99.3dm": "27ff0abeda87cf411b66cebe815076e03dc1074231ec879bff3e02277afa6430",
+      "rotated-planar-kink-0.999999.3dm": "9cf32fcaab78fab7d418052f4d606e89dfc135c31e280d4e5d671a93006fd3c3",
+      "rotated-planar-kink-1.3dm": "f14207d8286d0363847f52ac24e0a0190653baf69b5c09893999acc61e6477b7",
+      "rotated-planar-kink-1.000001.3dm": "43123f3573c31da8d4660099db8468ea3cd83630abdbde5453016d316d36e55d",
+      "rotated-planar-kink-1.01.3dm": "e2ef8fd3e285a7b69949aca85b3c3c3d380634a51e006ed59ea5ff714040bd4b",
+      "rotated-planar-kink-2.3dm": "1da882571fc208679ba7fc0123abb51bbd6ca99027efa55e9490b04522540470",
+      "rotated-planar-kink-5.3dm": "71f6e5b13ae9af7079918246878f47c9a87d6202958483c07d8c2d406f9b0247",
+      "bracket-planar-kink-0.100001.3dm": "f8f418b8f239d8d64045def62e5903f54b70c7e4dca7d208539c44b8fc72e9d7",
+      "bracket-planar-kink-0.11.3dm": "0b247d3fbce7cffbc73cc88327b6934cec0460f9d675e9c5264183d66c571e87",
+      "bracket-planar-kink-0.2.3dm": "db67f322f745c27845305eed6b68ce596fa69e6aa28ad3340a76ce409607e6cd",
+      "bracket-planar-kink-0.249999.3dm": "6883edb2a1fc8cafd7e74a80e3d6521b0e71c43aefe6b6e75dced6fc30eb3af7",
+      "bracket-planar-kink-0.25.3dm": "d4c1f9349a5cddadee2c03698973b30d6a9f688c889a5fcd7547a78484d96dde",
+      "bracket-planar-kink-0.250001.3dm": "3cc863a8536ec7e13fec33318480868995b4531967a095866f9d02fcde16b848",
+      "bracket-planar-kink-0.3.3dm": "dc5009008a9a5ee42f1139874a5773c638725df1b8ab8f6449e684272de6bf25",
+      "bracket-planar-kink-0.4.3dm": "d0abba9de1301046dafe7973ef89934ee42a02e2900592a8a600a81b46c559ee",
+      "bracket-planar-kink-0.5.3dm": "3f8605bd69d21ecbc651fcb6d4744247d950aa64b173e9fd5585420dc7a95c1b",
+      "bracket-planar-kink-0.500001.3dm": "f8e069c4ab8732d8dbe22c2ed85cc7835c7db77d05ed28376558902fbfc10a8b",
+      "bracket-planar-kink-0.75.3dm": "5aeff7706a475973a5a9a4ac3dac71078b663083c149428cffbe6e5acb3b8de5"
+    },
+    "raw_response_sha256": {
+      "rhino-rotated-planar-kinks.json": "fecd963332b3fd9d516281e281e5e059f607dcf6bb216491500eeaca2376a28b",
+      "rhino-bracket-kinks.json": "6a3b013c4fcf24b2b696f9ce07c2c4f222c27b7c3b7f3a9c4f6682272d33cff3"
+    }
+  },
+  "merge_edges_kinky_surfaces": {
+    "cases": 64,
+    "engine_version": "8.32.26160.13001",
+    "shared_artifact_sha256": {
+      "kink-0.3dm": "4dcaa33e841687540f7d26b8d03d4a4762da208dc8af02608d9da9e256960775",
+      "kink-4e-09.3dm": "73392bab6a558987fc0c0fc77df8839b9b0c49f5f146ceff7a0f4275f27aef08",
+      "kink-1e-06.3dm": "0e32573eadbb6e4fbbbcdae423cbe2d1417ef55956cb5c12526b5faef0d64631",
+      "kink-0.01.3dm": "1f947cc33f0138be44539ade6ba4d36c407640902466222fed21946d0a71347c",
+      "kink-0.1.3dm": "5210188738738e748eca64ead427f40dfeef893bed7c226eb27f01e7e85ab383",
+      "kink-0.49.3dm": "1eced4baeb33c28eb4b60ece5f5cdf507eab2e00fb541edb09ebdef5ad8f8e48",
+      "kink-0.5.3dm": "5e497b78df1ead54c6904ef453943dd437f28664af9dbbc175c5eb71b78e757f",
+      "kink-0.51.3dm": "0d919d438cdfa557e30a0a5fcb97f38929f92c7c0145def374d7d33664b63e9b",
+      "kink-0.99.3dm": "64ef33a8b4ff477a09ee769101501f027e60c1c7efbe5b83a2d31e846c0f471e",
+      "kink-1.3dm": "47681174b8ba103508a36e6ae6acd390528603305b5cd421f76cb664de2847ec",
+      "kink-1.01.3dm": "6df811b141e822554f2c08f963e9b469d4c7e15a06f7f2d832e83e502e31a576",
+      "kink-2.3dm": "b7cbaf57da6412a78ab1274d1a442be136ce2fe526fd862f6f6622922461c48d",
+      "kink-4.99.3dm": "13a1bce9c3a90e430a4de709472c2fb792c96b652b4bf6d93b21e114b87e572f",
+      "kink-5.01.3dm": "53ba981f970e31b4ad3eab289c638cc3dc75396370d37c45074b105f85af8b84",
+      "kink-10.3dm": "6b8df8abdf4cf3bcb5173a813b75e2f6e1237a36a0182ceb30ca488cd9519c92",
+      "kink-45.3dm": "6e67005656f440c9cc44f3e3460b13ac12eb3df53c619e5ed7355e4ee731a378"
+    },
+    "raw_response_sha256": {
+      "rhino-kinks.json": "72651bcd9188760679f4d70ace0f515546c98348241a0b2940232a256d57e4dc"
+    }
+  }
+}

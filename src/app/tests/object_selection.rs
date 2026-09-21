@@ -2,6 +2,55 @@ use super::*;
 use viboceros_document::SelectionMode;
 
 #[test]
+fn merge_all_edges_filters_picks_waits_for_enter_and_cancels_without_edits() {
+    use viboceros_geometry::{Brep, Tolerance};
+    for cancel in [false, true] {
+        let mut app = test_app();
+        let cube = Brep::try_box(
+            viboceros_command::CommandContext::default().construction_plane,
+            [[0., 2.]; 3],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cut = cube.edges()[0].curve().parameter_at(0.5).unwrap();
+        let split = cube
+            .try_split_edges_at_parameters(&[(0, vec![cut])], Tolerance::DEFAULT)
+            .unwrap();
+        let id = app.document.add_geometry(Geometry::Brep(split)).unwrap();
+        let peer = app
+            .document
+            .add_geometry(Geometry::Point(point(9., 0., 0.)))
+            .unwrap();
+        let before = app.document.objects().cloned().collect::<Vec<_>>();
+        app.document.clear_selection();
+        enter(&mut app, "MergeAllEdges");
+        for picked in [peer, id] {
+            app.apply_selection_click(SelectionClick {
+                object_id: Some(picked),
+                mode: SelectionMode::Replace,
+            });
+            assert!(app.object_prompt.is_some());
+            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        }
+        assert!(!app.document.is_selected(peer));
+        assert!(app.document.is_selected(id));
+        if cancel {
+            app.cancel_interactive_command(false);
+        } else {
+            enter(&mut app, "");
+            assert!(
+                matches!(app.document.object(id).unwrap().geometry(), Geometry::Brep(b) if b.edges().len() == 12)
+            );
+            assert_eq!(app.document.selected_object_count(), 0);
+            assert_eq!(app.document.undo_label(), Some("MergeAllEdges"));
+            enter(&mut app, "Undo");
+        }
+        assert!(app.object_prompt.is_none());
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    }
+}
+
+#[test]
 fn surface_join_picks_wait_for_enter_and_undo_restores_the_sources() {
     use viboceros_geometry::{Brep, Frame3, Tolerance, Vector3};
     for command in ["Join", "JoinCopy"] {

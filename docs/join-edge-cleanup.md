@@ -7,7 +7,8 @@ Automatic Join now coalesces smooth redundant edges in successfully joined
 components. The independent `Brep::try_merge_all_edges(angle, tolerance)` kernel
 operation is also available. Explicit `try_join_edge_pairs` remains a
 geometry-preserving assembly primitive; untouched Join components are not cleaned.
-This does not yet add an interactive MergeAllEdges command.
+The [MergeAllEdges command](commands/merge-edges.md) exposes the kernel with its
+own measured angular and selection policy.
 
 ## Geometry and topology guarantees
 

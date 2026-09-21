@@ -15,6 +15,7 @@ Rhino's complete command set is still a work in progress.
 - [Single-span surface conversion](single-spans.md)
 - [Surfaces and solids](surfaces.md)
 - [Cap planar surface/B-rep holes](cap.md)
+- [Merge redundant surface/B-rep edges](merge-edges.md)
 - [World/CPlane bounding boxes](bounding-box.md)
 - [Polygon meshes](meshes.md)
 - [Mesh conversion to NURBS](mesh-to-nurb.md)
@@ -189,6 +190,7 @@ Ungroup Assembly
 Join
 Join JoinDisjointMeshes=Yes
 JoinCopy
+MergeAllEdges
 Explode
 Length
 Curvature MarkCurvature=No 2,0,0

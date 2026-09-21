@@ -221,15 +221,18 @@ class OracleClient:
             if any(op.get("op") == "border_command" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("border_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
-            if any(op.get("op") in ("join_command", "cap_command") for op in request.get("operations", [])):
+            if any(op.get("op") in ("join_command", "cap_command", "merge_edges_command") for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("join_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
             brep_join_commands = any(op.get("op") == "join_command" and any("brep" in s for s in op.get("sources", [])) for op in request.get("operations", []))
-            if brep_join_commands or any(op.get("op") in ("cap_command", "brep_join") for op in request.get("operations", [])):
+            if brep_join_commands or any(op.get("op") in ("cap_command", "brep_join", "merge_edges_command") for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("cap_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
-            if brep_join_commands or any(op.get("op") == "brep_join" for op in request.get("operations", [])):
+            if brep_join_commands or any(op.get("op") in ("brep_join", "merge_edges_command") for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("brep_join_probe.py")
+                shutil.copyfile(helper, job_path / helper.name)
+            if any(op.get("op") == "merge_edges_command" for op in request.get("operations", [])):
+                helper = Path(__file__).with_name("merge_edges_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "document_units" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("generate_document_units_reference.py")
@@ -359,7 +362,7 @@ def _owned_artifact_request(request):
             elif operation.get("op") == "brep_join":
                 operation["artifact_paths"] = [str(Path(job) / f"join-{index}-{part}.3dm")
                     for part in range(len(_artifact_sources(operation)))]
-            elif operation.get("op") == "join_command":
+            elif operation.get("op") in ("join_command", "merge_edges_command"):
                 for part, source in enumerate(_artifact_sources(operation)):
                     if "brep" in source:
                         if not isinstance(source["brep"], Mapping):
