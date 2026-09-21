@@ -1,6 +1,93 @@
 use super::*;
 
 #[test]
+fn tensor_images_include_both_sides_of_fixed_and_varying_full_order_knots() {
+    for jump in [0., 9.] {
+        let surface = NurbsSurface::try_new_rational(
+            1,
+            1,
+            4,
+            2,
+            [0., 3.]
+                .into_iter()
+                .flat_map(|y| {
+                    [0., 1., 1. + jump, 2. + jump].map(|x| {
+                        WeightedPoint3::try_new(Point3::try_new(x, y, 0.).unwrap(), 1.).unwrap()
+                    })
+                })
+                .collect(),
+            vec![0., 0., 0.5, 0.5, 1., 1.],
+            vec![0., 0., 1., 1.],
+        )
+        .unwrap();
+        // A varying-direction jump at a trim end, with an interior fixed V.
+        // Then a fixed-direction jump along the entire constant-U trim.
+        for (uv, xyz) in [
+            (
+                [[0.25, 0.25], [0.5, 0.25]],
+                [[0.5, 0.75, 0.], [1., 0.75, 0.]],
+            ),
+            (
+                [[0.5, 0.25], [0.5, 0.75]],
+                [[1. + jump, 0.75, 0.], [1. + jump, 2.25, 0.]],
+            ),
+        ] {
+            for reverse in [false, true] {
+                let (mut uv, mut xyz) = (uv, xyz);
+                if reverse {
+                    uv.reverse();
+                    xyz.reverse();
+                }
+                let trim = BrepTrim::try_new(
+                    [0, 1],
+                    Some(0),
+                    false,
+                    NurbsCurve2::try_line(
+                        Point2::try_from(uv[0]).unwrap(),
+                        Point2::try_from(uv[1]).unwrap(),
+                    )
+                    .unwrap(),
+                    BrepTrimType::Boundary,
+                    SurfaceIso::NotIso,
+                    [0.; 2],
+                )
+                .unwrap();
+                let edge = NurbsCurve::try_new(
+                    1,
+                    xyz.map(|p| Point3::try_from(p).unwrap()).to_vec(),
+                    vec![0., 0., 1., 1.],
+                )
+                .unwrap();
+                let mut budget = Budget(MAX_WORK);
+                let image = BoundaryImage::new(&surface, &trim, &mut budget)
+                    .unwrap()
+                    .unwrap();
+                for reversed_3d in [false, true] {
+                    let edge = if reversed_3d {
+                        edge.reversed().unwrap()
+                    } else {
+                        edge.clone()
+                    };
+                    assert_eq!(
+                        image.bound(&edge, reversed_3d, true, &mut budget).unwrap(),
+                        Some(jump)
+                    );
+                }
+                for end in [false, true] {
+                    let i = usize::from(end);
+                    assert_eq!(
+                        image
+                            .endpoint_bound(Point3::try_from(xyz[i]).unwrap(), end, &mut budget)
+                            .unwrap(),
+                        Some(if uv[i][0] == 0.5 { jump } else { 0. })
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
 fn surface_images_cover_both_values_at_discontinuous_trim_endpoints() {
     for right in [1., 10.] {
         let surface = NurbsSurface::try_new_rational(
@@ -136,21 +223,6 @@ fn partial_natural_images_cover_both_axes_unclamped_rows_and_large_uv_origins() 
                     let image =
                         BoundaryImage::new(&source.faces[usage.face].surface, trim, &mut budget)
                             .unwrap();
-                    let (start, end) = (
-                        trim.curve.start_point().unwrap(),
-                        trim.curve.end_point().unwrap(),
-                    );
-                    let along_profile = if transpose {
-                        start.x() == end.x()
-                    } else {
-                        start.y() == end.y()
-                    };
-                    if unclamped && !along_profile {
-                        // The other two sides fix the *unclamped* direction:
-                        // they are not exact surface rows and remain unsupported.
-                        assert!(image.is_none());
-                        continue;
-                    }
                     let image = image.unwrap();
                     let edge = &source.edges[trim.edge.unwrap()];
                     assert!(
@@ -178,7 +250,7 @@ fn partial_natural_images_cover_both_axes_unclamped_rows_and_large_uv_origins() 
 }
 
 #[test]
-fn unsupported_interior_and_nonisoparametric_trims_do_not_get_a_false_row_certificate() {
+fn interior_isocurves_are_certified_but_nonisoparametric_trims_are_not() {
     let source = Brep::try_rectangular_surface_face(
         surface(0., false, false),
         0.125..=0.875,
@@ -187,10 +259,17 @@ fn unsupported_interior_and_nonisoparametric_trims_do_not_get_a_false_row_certif
     )
     .unwrap();
     for usage in source.trim_uses() {
+        let mut budget = Budget(MAX_WORK);
+        let image = BoundaryImage::new(&source.faces[0].surface, usage.trim, &mut budget)
+            .unwrap()
+            .unwrap();
+        let edge = &source.edges[usage.trim.edge.unwrap()];
         assert!(
-            BoundaryImage::new(&source.faces[0].surface, usage.trim, &mut Budget(MAX_WORK))
+            image
+                .bound(&edge.curve, usage.trim.reversed_3d, true, &mut budget)
                 .unwrap()
-                .is_none()
+                .unwrap()
+                < 1e-12
         );
     }
     let mut trim = source.faces[0].loops[0].trims[0].clone();

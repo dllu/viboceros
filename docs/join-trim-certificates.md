@@ -3,6 +3,10 @@
 [Kernel](brep-edge-joining.md) · [Command](commands/join.md) ·
 [Complete replay report](join-trim-certificates-comparison.json)
 
+This records the natural-boundary implementation at `9138205`. The
+[isocurve follow-up](join-isocurve-certificates.md) extends certification to
+interior trims and fixed-unclamped directions; the raw historical audit remains unchanged.
+
 Join now certifies partial natural surface boundaries against the original
 surface, without treating rounded knot-insertion controls as exact. This resolves
 all eighteen uncertainty-only differences from the [short-overlap audit](join-short-overlaps.md).

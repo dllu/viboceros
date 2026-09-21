@@ -1,0 +1,29 @@
+oracle failed: Rhino probe did not respond within 300 seconds (owned_pids=[4049663, 4050197], owned_window='0x00a00006', ui_fallback_sent=True)
+Worker progress:
+worker: started
+worker: request loaded
+operation extrusion-clamped-uv0-origin0-Join-pre: start
+join command: _-Join _Enter
+operation extrusion-clamped-uv0-origin0-Join-post: start
+join command: _-Join _JoinDisjointMeshes=No _SelID e08023f1-ef8e-4147-a9e3-b5e3837bbf2e _SelID 224e0c1e-76c5-4014-8dd0-08b375a3bad3 _Enter
+operation extrusion-clamped-uv0-origin0-JoinCopy-pre: start
+join command: _-JoinCopy _Enter
+operation extrusion-clamped-uv0-origin0-JoinCopy-post: start
+join command: _-JoinCopy _JoinDisjointMeshes=No _SelID cf8054c2-5eca-414f-9daf-7052a7b77178 _SelID be5cc45e-e7ff-4dce-aa8e-acc528ffc295 _Enter
+operation extrusion-clamped-uv1-origin0-Join-pre: start
+join command: _-Join _Enter
+operation extrusion-clamped-uv1-origin0-Join-post: start
+join command: _-Join _JoinDisjointMeshes=No _SelID a2f47c39-81d6-4c8d-8fd6-17f3518fb2e2 _SelID 4af17d1c-d5ad-4cf7-97c7-db6b6612d8df _Enter
+operation extrusion-clamped-uv1-origin0-JoinCopy-pre: start
+join command: _-JoinCopy _Enter
+operation extrusion-clamped-uv1-origin0-JoinCopy-post: start
+join command: _-JoinCopy _JoinDisjointMeshes=No _SelID df99f8e7-4806-4858-9530-47a6c3d90442 _SelID 6dc0573e-ddb2-43af-a8d7-eb65ebd79fe2 _Enter
+operation extrusion-clamped-uv0-origin1e+12-Join-pre: start
+join command: _-Join _Enter
+operation extrusion-clamped-uv0-origin1e+12-Join-post: start
+Launcher output:
+Launched Rhino 8 through direct ARM64 Wine
+Wine: /home/dllu/wines/build/wine/wine-install-rhino-uxtheme/bin/wine
+WINEPREFIX: /home/dllu/wines/prefixes/rhino/prefix
+Executable: /home/dllu/wines/prefixes/rhino/prefix/drive_c/Program Files/Rhino 8/System/Rhino.exe
+Launcher log: /home/dllu/wines/prefixes/rhino/logs/rhino-arm64-wine-direct.log

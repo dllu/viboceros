@@ -3,6 +3,7 @@ mod boundaries;
 mod corners;
 mod curved_certificates;
 mod gaps;
+mod isocurve_certificates;
 mod projective_correspondence;
 mod selection_distance;
 mod short_overlaps;

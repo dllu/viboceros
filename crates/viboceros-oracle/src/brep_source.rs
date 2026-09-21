@@ -58,6 +58,7 @@ pub(super) enum Primitive {
     },
     SurfaceFace {
         surface: NurbsSurfaceDefinition,
+        trim_bounds: Option<[[f64; 2]; 2]>,
     },
     Box {
         min: [f64; 3],
@@ -95,9 +96,22 @@ impl BrepCommandSource {
                 };
                 Geometry::Brep(Brep::try_from_mesh(&mesh, true, tolerance)?)
             }
-            Self::Primitive(Primitive::SurfaceFace { surface }) => Geometry::Brep(
-                Brep::try_surface_face(nurbs_surface_from_definition(surface)?, tolerance)?,
-            ),
+            Self::Primitive(Primitive::SurfaceFace {
+                surface,
+                trim_bounds,
+            }) => {
+                let surface = nurbs_surface_from_definition(surface)?;
+                Geometry::Brep(if let Some([u, v]) = trim_bounds {
+                    Brep::try_rectangular_surface_face(
+                        surface,
+                        u[0]..=u[1],
+                        v[0]..=v[1],
+                        tolerance,
+                    )?
+                } else {
+                    Brep::try_surface_face(surface, tolerance)?
+                })
+            }
             Self::Primitive(Primitive::Box {
                 min,
                 max,
@@ -190,4 +204,43 @@ pub(super) fn write_shared_artifact(
         ));
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn surface_face_fixture_keeps_underlying_surface_and_rejects_invalid_trim_bounds() {
+        let source = serde_json::json!({"source":{"type":"surface_face","surface":{
+            "degree_u":1,"degree_v":1,"control_point_count_u":2,"control_point_count_v":2,
+            "control_points":[{"point":[0,0,0],"weight":1},{"point":[4,0,0],"weight":1},
+                {"point":[0,4,0],"weight":1},{"point":[4,4,0],"weight":1}],
+            "knots_u":[0,0,1,1],"knots_v":[0,0,1,1]
+        },"trim_bounds":[[0.125,0.875],[0.25,0.75]]}});
+        let fixture: BrepSourceFixture = serde_json::from_value(source.clone()).unwrap();
+        let brep = fixture.build(Tolerance::DEFAULT).unwrap();
+        assert_eq!(brep.faces()[0].surface().domain_u(), 0. ..=1.);
+        assert_eq!(brep.faces()[0].surface().domain_v(), 0. ..=1.);
+        let points = brep
+            .vertices()
+            .iter()
+            .map(|v| v.point().to_array())
+            .collect::<Vec<_>>();
+        assert_eq!(
+            points,
+            [[0.5, 1., 0.], [3.5, 1., 0.], [3.5, 3., 0.], [0.5, 3., 0.]]
+        );
+        for bounds in [
+            serde_json::json!([[0.5, 0.5], [0.25, 0.75]]),
+            serde_json::json!([[-0.1, 0.5], [0., 1.]]),
+            serde_json::json!([[0.75, 0.25], [0., 1.]]),
+        ] {
+            let mut invalid = source.clone();
+            invalid["source"]["trim_bounds"] = bounds;
+            let invalid: BrepSourceFixture = serde_json::from_value(invalid).unwrap();
+            assert!(invalid.build(Tolerance::DEFAULT).is_err());
+        }
+        assert_eq!(fixture, serde_json::from_value(source).unwrap());
+    }
 }

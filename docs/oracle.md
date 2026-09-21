@@ -72,8 +72,14 @@ command's document-tolerance override, so both engines operate on the same
 short-feature inputs.
 The [partial-boundary certificate audit](join-trim-certificates.md) resolves
 eighteen of those differences and adds eighty pre-split curved records, retaining
-all newly exposed seam-cleanup, outer-knot and area differences. The latest total
+all newly exposed seam-cleanup, outer-knot and area differences. That audit's total
 is 651 full matches, 32 native errors and 201 other differences in 884 cases.
+The [tensor-isocurve audit](join-isocurve-certificates.md) adds 33 comparable
+records, with area/outer-knot differences retained: 651 full matches, 32 native
+errors and 234 other differences across 917 cases. Another 31 translated cases
+have native-only evidence, explicitly excluded from comparison counts. Its shared
+`surface_face` sources can use `trim_bounds: [[u0,u1],[v0,v1]]` while retaining the
+complete underlying surface.
 
 The `align` object-layout probe compares actual bounding-box, curve and line/plane alignment commands,
 including retained IDs, source samples/domains, groups, layer assignment and

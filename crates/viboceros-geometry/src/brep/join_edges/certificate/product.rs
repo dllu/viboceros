@@ -4,6 +4,7 @@
 use super::*;
 use crate::exact_scalar::{Rational, rational};
 mod extract;
+pub(super) mod isocurve;
 mod parameter_map;
 pub(super) mod restriction;
 #[cfg(test)]

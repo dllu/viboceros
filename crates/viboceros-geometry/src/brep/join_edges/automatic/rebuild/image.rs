@@ -1,11 +1,11 @@
-//! Exact natural surface rows restricted by the original, oriented UV trim.
+//! Exact surface isocurves restricted by the original, oriented UV trim.
 use super::*;
 
 #[cfg(test)]
 mod tests;
 
 pub(super) struct BoundaryImage {
-    curve: NurbsCurve,
+    curves: Vec<certificate::SurfaceCurve>,
     interval: [Real; 2],
     break_ends: [bool; 2],
 }
@@ -32,58 +32,37 @@ impl BoundaryImage {
         let domains = [surface.domain_u(), surface.domain_v()];
         let knots = [surface.knots_u(), surface.knots_v()];
         let degree = [surface.degree_u(), surface.degree_v()];
-        let counts = [
-            surface.control_point_count_u(),
-            surface.control_point_count_v(),
-        ];
         let fixed = 1 - varying;
-        let row = if a[fixed] == *domains[fixed].start()
-            && knots[fixed][..=degree[fixed]]
-                .iter()
-                .all(|k| *k == a[fixed])
-        {
-            0
-        } else if a[fixed] == *domains[fixed].end()
-            && knots[fixed][knots[fixed].len() - degree[fixed] - 1..]
-                .iter()
-                .all(|k| *k == a[fixed])
-        {
-            counts[fixed] - 1
-        } else {
-            return Ok(None);
-        };
         let interval = [a[varying], b[varying]];
         if interval[0] == interval[1] || interval.iter().any(|t| !domains[varying].contains(t)) {
             return Ok(None);
         }
-        budget.charge(counts[varying])?;
-        let curve = NurbsCurve::try_new_rational(
-            degree[varying],
-            (0..counts[varying])
-                .map(|i| {
-                    if varying == 0 {
-                        surface.control_point(i, row).unwrap()
-                    } else {
-                        surface.control_point(row, i).unwrap()
-                    }
-                })
-                .collect(),
-            knots[varying].to_vec(),
-        )?;
-        // The fixed direction is clamped, so this row/column is exact. The
-        // varying direction need not be clamped: exact span extraction handles
-        // its actual endpoints and every part of the restricted interval.
-        budget.charge(curve.knots().len())?;
-        let mut break_ends = [false; 2];
-        for knot in curve.full_order_knots() {
-            for i in 0..2 {
-                break_ends[i] |= interval[i] == knot;
+        budget.charge(knots[0].len().saturating_add(knots[1].len()))?;
+        let is_break = |axis: usize, t: Real| {
+            t > *domains[axis].start()
+                && t < *domains[axis].end()
+                && knots[axis].partition_point(|k| *k <= t)
+                    - knots[axis].partition_point(|k| *k < t)
+                    == degree[axis] + 1
+        };
+        let mut curves = Vec::with_capacity(2);
+        for left in [false, true] {
+            if left && !is_break(fixed, a[fixed]) {
+                break;
             }
+            let Some(curve) =
+                certificate::SurfaceCurve::new(surface, varying, a[fixed], left, &mut |n| {
+                    budget.charge(n)
+                })?
+            else {
+                return Ok(None);
+            };
+            curves.push(curve);
         }
         Ok(Some(Self {
-            curve,
+            curves,
             interval,
-            break_ends,
+            break_ends: interval.map(|t| is_break(varying, t)),
         }))
     }
 
@@ -98,31 +77,23 @@ impl BoundaryImage {
         if reversed_3d {
             interval.reverse();
         }
-        let Some(mut bound) = certificate::restricted_curve_bound(
-            edge,
-            &self.curve,
-            interval,
-            Real::MAX,
-            tighten,
-            |n| budget.charge(n),
-        )?
-        else {
-            return Ok(None);
-        };
-        for end in [false, true] {
-            if let Some((other, side)) = self.outside_endpoint(end ^ reversed_3d) {
-                let Some(gap) = certificate::curve_endpoint_bound(
-                    edge,
-                    &self.curve,
-                    other,
-                    [end, side],
-                    Real::MAX,
-                    |n| budget.charge(n),
-                )?
-                else {
-                    return Ok(None);
-                };
-                bound = bound.max(gap);
+        let mut bound: Real = 0.;
+        for curve in &self.curves {
+            let Some(gap) = curve.bound(edge, interval, tighten, &mut |n| budget.charge(n))? else {
+                return Ok(None);
+            };
+            bound = bound.max(gap);
+            for end in [false, true] {
+                if let Some((other, side)) = self.outside_endpoint(end ^ reversed_3d) {
+                    let Some(gap) =
+                        curve.edge_endpoint_bound(edge, other, [end, side], &mut |n| {
+                            budget.charge(n)
+                        })?
+                    else {
+                        return Ok(None);
+                    };
+                    bound = bound.max(gap);
+                }
             }
         }
         Ok(Some(bound))
@@ -134,30 +105,21 @@ impl BoundaryImage {
         end: bool,
         budget: &mut Budget,
     ) -> Result<Option<Real>, GeometryError> {
-        let Some(mut bound) = certificate::restricted_endpoint_bound(
-            point,
-            &self.curve,
-            self.interval,
-            end,
-            Real::MAX,
-            |n| budget.charge(n),
-        )?
-        else {
-            return Ok(None);
-        };
-        if let Some((other, side)) = self.outside_endpoint(end) {
-            let Some(gap) = certificate::restricted_endpoint_bound(
-                point,
-                &self.curve,
-                other,
-                side,
-                Real::MAX,
-                |n| budget.charge(n),
-            )?
+        let mut bound: Real = 0.;
+        for curve in &self.curves {
+            let Some(gap) =
+                curve.point_bound(point, self.interval, end, &mut |n| budget.charge(n))?
             else {
                 return Ok(None);
             };
             bound = bound.max(gap);
+            if let Some((other, side)) = self.outside_endpoint(end) {
+                let Some(gap) = curve.point_bound(point, other, side, &mut |n| budget.charge(n))?
+                else {
+                    return Ok(None);
+                };
+                bound = bound.max(gap);
+            }
         }
         Ok(Some(bound))
     }
@@ -170,11 +132,11 @@ impl BoundaryImage {
             return None;
         }
         let t = self.interval[i];
-        let domain = self.curve.domain();
+        let domain = self.curves[0].domain();
         Some(if t > self.interval[1 - i] {
-            ([t, *domain.end()], false)
+            ([t, domain[1]], false)
         } else {
-            ([*domain.start(), t], true)
+            ([domain[0], t], true)
         })
     }
 }

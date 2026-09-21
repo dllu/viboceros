@@ -4,6 +4,8 @@ use crate::binary_accumulator::{add_product, decompose};
 use std::cmp::Ordering;
 mod product;
 mod refine;
+pub(super) use product::isocurve::SurfaceCurve;
+#[cfg(test)]
 pub(super) use product::restriction::{
     curve_endpoint_bound, restricted_curve_bound, restricted_endpoint_bound,
 };

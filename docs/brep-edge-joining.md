@@ -143,11 +143,13 @@ edge-adjacency graph forbids any cluster from containing both distinct ends of
 an existing edge. This protects tiny features; it does not resolve the remaining
 general order-dependent clustering differences.
 The explicit `try_join_edge_pairs` primitive remains geometry-preserving.
-Natural surface rows/columns with a clamped fixed direction supply exact
-lifted-boundary certificates for updated uncertainty. Oriented partial intervals
-retain the original controls and normalize their knots exactly; one-sided exact
-endpoints certify vertices even with an unclamped varying direction. See the
-[partial-boundary audit](join-trim-certificates.md). Rational Bernstein subdivision can tighten curved-gap
+Natural clamped rows/columns and exactly evaluated tensor-product isocurves supply
+lifted-boundary certificates for updated uncertainty. Interior isocurves and
+unclamped fixed directions retain their exact homogeneous controls, without
+rounding a derived spatial curve. Oriented partial intervals normalize knots
+exactly; endpoint certificates cover both sides of full-order discontinuities.
+See the [partial-boundary](join-trim-certificates.md) and
+[general-isocurve audits](join-isocurve-certificates.md). Rational Bernstein subdivision can tighten curved-gap
 bounds across different rational bases without sampled acceptance. Unsupported certificates retain
 conservative propagation, not suppressed tolerances. Clusters or curve changes
 beyond the join distance fail atomically; nonclamped incident curves retain the

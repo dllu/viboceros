@@ -114,8 +114,12 @@ radius do not produce spurious cut-edge mates. The
 [partial-boundary certificate audit](../join-trim-certificates.md) resolves
 eighteen more uncertainty-only differences and adds eighty pre-split curved
 records, all retaining raw edge-cleanup or representation differences.
-In total, 651 of 884 cases fully match, with 32 native execution failures and 201
-other differences. Redundant seam coalescing, general surface-image uncertainty,
+The [tensor-isocurve follow-up](../join-isocurve-certificates.md) extends certified
+uncertainty to interior/unclamped isocurves. Its 33 comparable new cases retain
+area and outer-knot differences; 31 additional native cases lack Rhino records
+after a translated-UV batch exceeded its observation limit.
+In total, 651 of 917 comparable cases fully match, with 32 native execution
+failures and 234 other differences. Redundant seam coalescing, nonisoparametric surface-image uncertainty,
 offset cut ownership and ordered clustering remain incomplete. This is not general parity.
 
 These are scoped observations, not general threshold rules. Generic curved

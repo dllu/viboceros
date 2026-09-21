@@ -95,7 +95,7 @@ pub(in crate::brep::join_edges) fn curve_endpoint_bound(
     Ok(refine::norm_bound(&difference, limit))
 }
 
-fn endpoint_value(
+pub(super) fn endpoint_value(
     curve: &NurbsCurve,
     interval: [Real; 2],
     end: bool,
