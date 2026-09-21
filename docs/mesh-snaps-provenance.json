@@ -2,8 +2,9 @@
   "engine_version": "8.32.26160.13001",
   "calibrated_pick_observations": 16,
   "native_mathematical_captures": 7,
-  "complete_native_rhino_history_matches": 2,
-  "known_perspective_near_discrepancies": 5,
+  "complete_native_rhino_history_matches": 7,
+  "historical_screen_metric_discrepancies": 5,
+  "resolution_provenance": "point-snaps-provenance.json",
   "admission_only_misses": 9,
   "actual_undo_redo_observations": 12,
   "switch_state_observations": 14,
@@ -25,8 +26,8 @@
     "The first settings diagnostic failed because the host did not copy its helper module. After fixing packaging, a new session established Enable/Disable/Toggle grammar and disabled initial state. The failed diagnostic is not treated as evidence.",
     "Each mesh-pick request reads, sets, verifies and restores the mesh switch through its English public command prompt. The retained per-case settings records verify restoration.",
     "Mid-only and one-shot Mid did not hover-capture whole mesh wires in these fixtures. Mesh Mid is direct target capture; curve whole-segment hover is not generalized to meshes.",
-    "Independent Fraction references use only source wires and recorded camera/click. Mesh Near native targets follow exact projected proximity, but five constrained Rhino x coordinates differ by about 2.325e-5 through 1.1945e-3. No global epsilon was widened, no observed target was fed to snapping, and these five are not full parity matches.",
-    "Two Mid targets replay complete ordered geometry, attributes, selection and history at absolute 1e-9, relative 1e-10. Nine controls compare mesh admission only, not the absence of other scene snaps or their model-space positions: the receiving box can itself supply curve Mid. Four controls did not split and have no actual Undo/Redo.",
+    "At checkpoint 25ba7ba, independent screen-nearest references differed from five constrained Rhino x coordinates by about 2.325e-5 through 1.1945e-3. These historical reference points and raw observations remain unchanged. New unconstrained point probes establish mesh-specific endpoint-depth weighting and resolve those five native discrepancies; see point-snaps-provenance.json.",
+    "All seven Mid/Near captures now replay complete ordered geometry, attributes, selection and history at the unchanged absolute 1e-9, relative 1e-10. Nine controls compare mesh admission only, not the absence of other scene snaps or their model-space positions: the receiving box can itself supply curve Mid. Four controls did not split and have no actual Undo/Redo.",
     "SplitEdge exposes only a constrained x coordinate, not a Rhino unconstrained 3D snap target. Portable source recipes replace only the verified shared box artifact; raw output geometry is retained without numerical normalization."
   ]
 }

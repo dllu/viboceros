@@ -9,6 +9,12 @@ The [conic-center audit](conic-center-audit.md) compares 32 full-coordinate publ
 API records and 62 calibrated point-prompt records. It keeps API recognition,
 interactive snap policy, and their remaining discrepancies separate.
 
+The [unconstrained point-snap probe](point-snaps.md) records full 3D targets,
+snap kinds and source ownership through public `GetPoint` APIs. Its 101 retained
+line/mesh cases resolve the previous Mesh Near coordinate discrepancies while
+preserving three corner-edge selection differences. Source/camera-only rational
+references and native replay remain separate from the observed picked points.
+
 The `join_command` probe has 181 raw mesh records covering both
 `JoinDisjointMeshes` choices, precision thresholds, ordered selection, winding,
 attributes, groups, and identity replacement. It checks identical binary64

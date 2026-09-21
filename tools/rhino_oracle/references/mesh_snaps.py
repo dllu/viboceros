@@ -3,10 +3,10 @@ import argparse
 import copy
 import json
 from .near_snaps import operation
-from . import projected_lines, projected_near
+from . import mesh_near, projected_lines, projected_near
 
 
-def reference_target(item, frame):
+def reference_target(item, frame, mesh_weighted=False):
     """Independent mathematical target from sources, camera/click and policy only."""
     if not item["snap_to_meshes"]:
         return None
@@ -26,7 +26,8 @@ def reference_target(item, frame):
         depths = [projected_lines.homogeneous(matrix,p)[2] for p in vertices]
         if min(depths) <= 0:
             raise ValueError("this calibration reference requires fully visible mesh sources")
-        candidates = [projected_lines.closest(matrix,a,b,frame["click_client"],min(depths)/2) for a,b in wires]
+        candidates = [mesh_near.closest(matrix,a,b,frame["click_client"]) if mesh_weighted else
+                      projected_lines.closest(matrix,a,b,frame["click_client"],min(depths)/2) for a,b in wires]
         point, squared = min(candidates, key=lambda pair: pair[1])
         if squared <= 144:
             return dict(kind="Near", point=list(map(float,point)))
@@ -71,7 +72,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--artifact")
     parser.add_argument("--observations", help="read recorded camera/click only, emit mathematical targets")
+    parser.add_argument("--mesh-weighted",action="store_true",help="use measured mesh Near weighting instead of the historical screen-distance reference")
     args = parser.parse_args()
+    if args.mesh_weighted and not args.observations: parser.error("mesh weighting requires recorded camera input")
     if args.artifact and args.observations:
         parser.error("artifact requests and camera-derived targets are separate outputs")
     data = request()
@@ -80,7 +83,7 @@ if __name__ == "__main__":
             rows = json.load(source)["results"]
         if len(rows) != len(data["operations"]) or any(item["id"] != row["id"] for item,row in zip(data["operations"],rows)):
             raise ValueError("camera observations do not match the mesh request")
-        data = {item["id"]: reference_target(item,row["value"]["pick_frames"][0])
+        data = {item["id"]: reference_target(item,row["value"]["pick_frames"][0],args.mesh_weighted)
                 for item,row in zip(data["operations"],rows)}
     if args.artifact:
         for item in data["operations"]:

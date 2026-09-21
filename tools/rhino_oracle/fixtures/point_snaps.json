@@ -1,0 +1,6475 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_snap",
+      "id": "perspective-line-near-on",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2.0,
+            -2.0,
+            7.0
+          ],
+          "end": [
+            8.0,
+            -2.0,
+            7.0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "perspective-line-near-offset",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2.0,
+            -2.0,
+            7.0
+          ],
+          "end": [
+            8.0,
+            -2.0,
+            7.0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        4,
+        3
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "perspective-quad-near-on",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "perspective-quad-near-offset",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        4,
+        3
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "perspective-triangles-near-on",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        4.0,
+        -4.0,
+        7.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "perspective-triangles-near-offset",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        4.0,
+        -4.0,
+        7.0
+      ],
+      "offset": [
+        4,
+        3
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "perspective-quad-mid-hover",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Mid"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "perspective-quad-mid-direct",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.0,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        2,
+        1
+      ],
+      "persistent_snaps": [
+        "Mid"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "perspective-line-mid-hover",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2.0,
+            -2.0,
+            7.0
+          ],
+          "end": [
+            8.0,
+            -2.0,
+            7.0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Mid"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "perspective-quad-disabled",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": false
+    },
+    {
+      "op": "point_snap",
+      "id": "perspective-quad-no-modes",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "perspective-quad-no-diagonal",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        4.0,
+        -4.0,
+        7.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "top-line-near-on",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2.0,
+            -2.0,
+            7.0
+          ],
+          "end": [
+            8.0,
+            -2.0,
+            7.0
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "top-line-near-offset",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2.0,
+            -2.0,
+            7.0
+          ],
+          "end": [
+            8.0,
+            -2.0,
+            7.0
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        4,
+        3
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "top-quad-near-on",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "top-quad-near-offset",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        4,
+        3
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "top-triangles-near-on",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        4.0,
+        -4.0,
+        7.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "top-triangles-near-offset",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        4.0,
+        -4.0,
+        7.0
+      ],
+      "offset": [
+        4,
+        3
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "top-quad-mid-hover",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Mid"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "top-quad-mid-direct",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.0,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        2,
+        1
+      ],
+      "persistent_snaps": [
+        "Mid"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "top-line-mid-hover",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2.0,
+            -2.0,
+            7.0
+          ],
+          "end": [
+            8.0,
+            -2.0,
+            7.0
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Mid"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "top-quad-disabled",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": false
+    },
+    {
+      "op": "point_snap",
+      "id": "top-quad-no-modes",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "top-quad-no-diagonal",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        4.0,
+        -4.0,
+        7.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "reversed-0-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -8.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              2.0,
+              -2.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              3,
+              2,
+              1,
+              0
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "reversed-5--4",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -8.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              2.0,
+              -2.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              3,
+              2,
+              1,
+              0
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        5,
+        -4
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "reversed--4-5",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -8.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              2.0,
+              -2.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              3,
+              2,
+              1,
+              0
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        -4,
+        5
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "reversed-9-7",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -8.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              2.0,
+              -2.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              3,
+              2,
+              1,
+              0
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        -2.0,
+        7.0
+      ],
+      "offset": [
+        9,
+        7
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "tilted-0-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "tilted-5--4",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        5,
+        -4
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "tilted--4-5",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        -4,
+        5
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "tilted-9-7",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        9,
+        7
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "small-0-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0.03125,
+              -0.03125,
+              0.109375
+            ],
+            [
+              0.125,
+              -0.03125,
+              0.109375
+            ],
+            [
+              0.125,
+              -0.125,
+              0.109375
+            ],
+            [
+              0.03125,
+              -0.125,
+              0.109375
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -0.15625,
+          0.0
+        ],
+        [
+          0.15625,
+          0.0,
+          0.15625
+        ]
+      ],
+      "aim": [
+        0.0546875,
+        -0.03125,
+        0.109375
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "small-5--4",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0.03125,
+              -0.03125,
+              0.109375
+            ],
+            [
+              0.125,
+              -0.03125,
+              0.109375
+            ],
+            [
+              0.125,
+              -0.125,
+              0.109375
+            ],
+            [
+              0.03125,
+              -0.125,
+              0.109375
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -0.15625,
+          0.0
+        ],
+        [
+          0.15625,
+          0.0,
+          0.15625
+        ]
+      ],
+      "aim": [
+        0.0546875,
+        -0.03125,
+        0.109375
+      ],
+      "offset": [
+        5,
+        -4
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "small--4-5",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0.03125,
+              -0.03125,
+              0.109375
+            ],
+            [
+              0.125,
+              -0.03125,
+              0.109375
+            ],
+            [
+              0.125,
+              -0.125,
+              0.109375
+            ],
+            [
+              0.03125,
+              -0.125,
+              0.109375
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -0.15625,
+          0.0
+        ],
+        [
+          0.15625,
+          0.0,
+          0.15625
+        ]
+      ],
+      "aim": [
+        0.0546875,
+        -0.03125,
+        0.109375
+      ],
+      "offset": [
+        -4,
+        5
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "small-9-7",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0.03125,
+              -0.03125,
+              0.109375
+            ],
+            [
+              0.125,
+              -0.03125,
+              0.109375
+            ],
+            [
+              0.125,
+              -0.125,
+              0.109375
+            ],
+            [
+              0.03125,
+              -0.125,
+              0.109375
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -0.15625,
+          0.0
+        ],
+        [
+          0.15625,
+          0.0,
+          0.15625
+        ]
+      ],
+      "aim": [
+        0.0546875,
+        -0.03125,
+        0.109375
+      ],
+      "offset": [
+        9,
+        7
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "large-0-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              1152.0,
+              -2176.0,
+              960.0
+            ],
+            [
+              1536.0,
+              -2176.0,
+              960.0
+            ],
+            [
+              1536.0,
+              -2560.0,
+              960.0
+            ],
+            [
+              1152.0,
+              -2560.0,
+              960.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          1024.0,
+          -2688.0,
+          512.0
+        ],
+        [
+          1664.0,
+          -2048.0,
+          1152.0
+        ]
+      ],
+      "aim": [
+        1248.0,
+        -2176.0,
+        960.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "large-5--4",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              1152.0,
+              -2176.0,
+              960.0
+            ],
+            [
+              1536.0,
+              -2176.0,
+              960.0
+            ],
+            [
+              1536.0,
+              -2560.0,
+              960.0
+            ],
+            [
+              1152.0,
+              -2560.0,
+              960.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          1024.0,
+          -2688.0,
+          512.0
+        ],
+        [
+          1664.0,
+          -2048.0,
+          1152.0
+        ]
+      ],
+      "aim": [
+        1248.0,
+        -2176.0,
+        960.0
+      ],
+      "offset": [
+        5,
+        -4
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "large--4-5",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              1152.0,
+              -2176.0,
+              960.0
+            ],
+            [
+              1536.0,
+              -2176.0,
+              960.0
+            ],
+            [
+              1536.0,
+              -2560.0,
+              960.0
+            ],
+            [
+              1152.0,
+              -2560.0,
+              960.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          1024.0,
+          -2688.0,
+          512.0
+        ],
+        [
+          1664.0,
+          -2048.0,
+          1152.0
+        ]
+      ],
+      "aim": [
+        1248.0,
+        -2176.0,
+        960.0
+      ],
+      "offset": [
+        -4,
+        5
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "large-9-7",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              1152.0,
+              -2176.0,
+              960.0
+            ],
+            [
+              1536.0,
+              -2176.0,
+              960.0
+            ],
+            [
+              1536.0,
+              -2560.0,
+              960.0
+            ],
+            [
+              1152.0,
+              -2560.0,
+              960.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          1024.0,
+          -2688.0,
+          512.0
+        ],
+        [
+          1664.0,
+          -2048.0,
+          1152.0
+        ]
+      ],
+      "aim": [
+        1248.0,
+        -2176.0,
+        960.0
+      ],
+      "offset": [
+        9,
+        7
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "side-0-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "side-5--4",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        5,
+        -4
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "side--4-5",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -4,
+        5
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "side-9-7",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        9,
+        7
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "front-0-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              7.0,
+              2.0
+            ],
+            [
+              8.0,
+              7.0,
+              2.0
+            ],
+            [
+              8.0,
+              7.0,
+              8.0
+            ],
+            [
+              2.0,
+              7.0,
+              8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -0.0
+        ],
+        [
+          10.0,
+          10.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        7.0,
+        2.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "front-5--4",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              7.0,
+              2.0
+            ],
+            [
+              8.0,
+              7.0,
+              2.0
+            ],
+            [
+              8.0,
+              7.0,
+              8.0
+            ],
+            [
+              2.0,
+              7.0,
+              8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -0.0
+        ],
+        [
+          10.0,
+          10.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        7.0,
+        2.0
+      ],
+      "offset": [
+        5,
+        -4
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "front--4-5",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              7.0,
+              2.0
+            ],
+            [
+              8.0,
+              7.0,
+              2.0
+            ],
+            [
+              8.0,
+              7.0,
+              8.0
+            ],
+            [
+              2.0,
+              7.0,
+              8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -0.0
+        ],
+        [
+          10.0,
+          10.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        7.0,
+        2.0
+      ],
+      "offset": [
+        -4,
+        5
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "front-9-7",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              7.0,
+              2.0
+            ],
+            [
+              8.0,
+              7.0,
+              2.0
+            ],
+            [
+              8.0,
+              7.0,
+              8.0
+            ],
+            [
+              2.0,
+              7.0,
+              8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -0.0
+        ],
+        [
+          10.0,
+          10.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        3.5,
+        7.0,
+        2.0
+      ],
+      "offset": [
+        9,
+        7
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted--10-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        -10,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted--9-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        -9,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted--8-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        -8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted--7-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        -7,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted--6-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        -6,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted--5-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        -5,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted--4-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        -4,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted--3-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        -3,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted--2-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        -2,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted--1-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        -1,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted-0-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted-1-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        1,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted-2-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        2,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted-3-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        3,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted-4-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        4,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted-5-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        5,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted-6-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        6,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted-7-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        7,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted-8-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted-9-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        9,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-tilted-10-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        10,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side-10--7",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        10,
+        -7
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side-4--2",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        4,
+        -2
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side--9-9",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -9,
+        9
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side--2-3",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -2,
+        3
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side--3-4",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -3,
+        4
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side--8-8",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -8,
+        8
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side-3--1",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        3,
+        -1
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side-9--6",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        9,
+        -6
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side-5--3",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        5,
+        -3
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side--10-10",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -10,
+        10
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side--1-2",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -1,
+        2
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side--4-5",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -4,
+        5
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side--7-7",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -7,
+        7
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side-2-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        2,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side-8--5",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        8,
+        -5
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side-6--4",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        6,
+        -4
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side-0-1",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        0,
+        1
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side--5-6",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -5,
+        6
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side--6-6",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -6,
+        6
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "threshold-side-1-1",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        1,
+        1
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true
+    },
+    {
+      "op": "point_snap",
+      "id": "aperture-tilted--8-0-r8",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        -8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "capture_radius": 8
+    },
+    {
+      "op": "point_snap",
+      "id": "aperture-tilted--8-0-r10",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        -8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "capture_radius": 10
+    },
+    {
+      "op": "point_snap",
+      "id": "aperture-tilted--8-0-r12",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        -8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "capture_radius": 12
+    },
+    {
+      "op": "point_snap",
+      "id": "aperture-tilted--8-0-r16",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              3.75,
+              -1.0,
+              6.0
+            ],
+            [
+              9.75,
+              2.0,
+              6.0
+            ],
+            [
+              9.75,
+              -4.0,
+              3.0
+            ],
+            [
+              3.75,
+              -7.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          -10.0,
+          -5.0
+        ],
+        [
+          12.5,
+          5.0,
+          10.0
+        ]
+      ],
+      "aim": [
+        5.25,
+        -0.25,
+        6.0
+      ],
+      "offset": [
+        -8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "capture_radius": 16
+    },
+    {
+      "op": "point_snap",
+      "id": "aperture-side--2-3-r8",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -2,
+        3
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "capture_radius": 8
+    },
+    {
+      "op": "point_snap",
+      "id": "aperture-side--2-3-r10",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -2,
+        3
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "capture_radius": 10
+    },
+    {
+      "op": "point_snap",
+      "id": "aperture-side--2-3-r12",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -2,
+        3
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "capture_radius": 12
+    },
+    {
+      "op": "point_snap",
+      "id": "aperture-side--2-3-r16",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -2,
+        3
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "capture_radius": 16
+    },
+    {
+      "op": "point_snap",
+      "id": "aperture-side--4-5-r8",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -4,
+        5
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "capture_radius": 8
+    },
+    {
+      "op": "point_snap",
+      "id": "aperture-side--4-5-r10",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -4,
+        5
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "capture_radius": 10
+    },
+    {
+      "op": "point_snap",
+      "id": "aperture-side--4-5-r12",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -4,
+        5
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "capture_radius": 12
+    },
+    {
+      "op": "point_snap",
+      "id": "aperture-side--4-5-r16",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              7.0,
+              2.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -2.0
+            ],
+            [
+              7.0,
+              8.0,
+              -8.0
+            ],
+            [
+              7.0,
+              2.0,
+              -8.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          0.0,
+          0.0,
+          -10.0
+        ],
+        [
+          10.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "aim": [
+        7.0,
+        3.5,
+        -2.0
+      ],
+      "offset": [
+        -4,
+        5
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "capture_radius": 16
+    }
+  ]
+}

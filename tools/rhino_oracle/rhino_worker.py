@@ -4922,6 +4922,9 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
+    if operation.get("op") == "point_snap":
+        import point_snap_probe
+        return point_snap_probe.run(operation, tolerance, globals())
     if operation.get("op") == "mesh_snap_settings":
         import mesh_snap_settings_probe
         return mesh_snap_settings_probe.run(operation, globals())

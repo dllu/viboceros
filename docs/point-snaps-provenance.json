@@ -1,0 +1,32 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "direct_getpoint_observations": 101,
+  "full_3d_kind_and_source_matches": 90,
+  "verified_non_admissions": 8,
+  "known_corner_edge_priority_differences": 3,
+  "independent_fraction_cases": 630,
+  "previous_split_edge_captures_now_fully_replayed": 7,
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/point_snaps.json": "9d6e58b37013f7cca9a78f1684b60c9f4ab2ca6bc5d33ce2e212861ea35d0090",
+    "tools/rhino_oracle/fixtures/point_snap_targets.json": "ac531ec9642140ce52262bc040ec16ccf48762a034597ee4b592d224fe0ce10e",
+    "tools/rhino_oracle/observations/point_snaps.json": "454b90a62e0caaaea056f571fef7990f02858a40a722a7f9c0349de41d4a8e65",
+    "tools/rhino_oracle/fixtures/mesh_snap_weighted_targets.json": "40122a2590769fc37751647b5fd16ebd9a8e9707e81edc730e8bb2a5825ba249",
+    "crates/viboceros-drafting/src/object_snap/projected_line/mesh_reference.csv": "371d1d389a1231fcc446cd3ecd52348aaff5fd78ee0f69ee8699c1dd3565ba7f"
+  },
+  "raw_response_sha256": {
+    "discovery_24": "5010f1650b78366adf2e9663b0c0d3439b8bb28f6eb90678cd13f3f7a3a2cad7",
+    "fresh_transforms_24": "6cdc6743620a34f71a0956330cda31a62f4dbb70f182fa62b1e823479e0f28c2",
+    "endpoint_region_41": "ae9752cfa9000422dc588c6f271db627d66ed6b8310297e336d5fbece1f35fbb",
+    "fresh_apertures_12": "2f1bccfce017b071147aadea4f50e38e5adb4e19b8df4f34ef17a24e16891d62",
+    "component_diagnostic_10": "2fdadc7ae884e32fc5a32b6a53cd1b2a644300814822411f4835215f53133e54"
+  },
+  "notes": [
+    "All runs used newly owned private-Xvfb Rhino sessions and public APIs. GetPoint.Point, OsnapEventType and PointOnObject expose the unconstrained 3D point, snap kind and source; no proprietary implementation was inspected.",
+    "The retained observation concatenates the complete 24+24+41+12 responses without altering coordinates or dropping cases. Ten repeated component diagnostics are identified separately, not added to unique-case counts. Final aperture observations also retain public MeshTopologyEdge component indices.",
+    "Exact-rational references use only source wires, calibrated camera/click, modes and aperture. The first weighting hypothesis matched 23/24 fresh transformed cases; the counterexample and all subsequent endpoint controls are retained, not excluded.",
+    "An endpoint inside the square aperture selects ordinary projected distance; otherwise the measured per-wire target minimizes squared homogeneous cursor-relative X/Y divided by opposite-end depth squared. Fresh 8/10/12/16-pixel aperture cases confirm this branch.",
+    "Ninety actual point/kind/source captures agree with native and independent references within absolute 1e-9 in full 3D. Eight cases verify non-admission; their unsnapped CPlane points are not claimed to match native UI placement.",
+    "Three corner cases remain genuine mismatches: Rhino chooses an adjacent edge's endpoint, while native chooses a closer projected target. Tests preserve the observed point, the native/reference point, their >0.5 model-unit separation and the component witness where recorded. No parity epsilon was widened.",
+    "The previous five constrained Mesh Near discrepancies are resolved. All seven old mesh captures now replay complete ordered geometry, attributes, selection and Undo/Redo at absolute 1e-9, relative 1e-10. These new GetPoint probes themselves do not exercise model-history commands."
+  ]
+}

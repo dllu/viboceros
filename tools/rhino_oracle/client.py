@@ -197,6 +197,11 @@ class OracleClient:
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
         interaction = None
+        if any(op.get("op") == "point_snap" for op in request.get("operations", [])):
+            from .group_picking import IdlePicker
+            from .point_snap_probe import validate_request
+            validate_request(request)
+            interaction = IdlePicker()
         if any(op.get("op") in ("merge_edge_command", "split_edge_command") and op.get("pick") == "mouse"
                for op in request.get("operations", [])):
             from .group_picking import IdlePicker
@@ -224,6 +229,13 @@ class OracleClient:
             worker_request["_host"] = {"exit_rhino_when_complete": True}
             _write_json(request_path, worker_request)
             shutil.copyfile(worker_source, worker_path)
+            if any(op.get("op") in ("point_snap", "split_edge_command") for op in request.get("operations", [])):
+                helper = Path(__file__).with_name("snap_environment.py")
+                shutil.copyfile(helper, job_path / helper.name)
+            if any(op.get("op") == "point_snap" for op in request.get("operations", [])):
+                for name in ("point_snap_probe.py", "viewport_capture.py"):
+                    helper = Path(__file__).with_name(name)
+                    shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "mesh_snap_settings" or "snap_to_meshes" in op for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("mesh_snap_settings_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)

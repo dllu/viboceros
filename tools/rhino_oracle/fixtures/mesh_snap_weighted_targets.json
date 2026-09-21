@@ -1,0 +1,67 @@
+{
+  "quad-near-disabled": null,
+  "quad-near-enabled": {
+    "kind": "Near",
+    "point": [
+      3.807865960476447,
+      -2.0,
+      7.0
+    ]
+  },
+  "quad-mid-hover-disabled": null,
+  "quad-mid-hover-enabled": null,
+  "quad-mid-direct-disabled": null,
+  "quad-mid-direct-enabled": {
+    "kind": "Mid",
+    "point": [
+      5.0,
+      -2.0,
+      7.0
+    ]
+  },
+  "triangles-near-disabled": null,
+  "triangles-near-enabled": {
+    "kind": "Near",
+    "point": [
+      4.141242138525666,
+      -4.141242138525666,
+      7.0
+    ]
+  },
+  "soup-near-disabled": null,
+  "soup-near-enabled": {
+    "kind": "Near",
+    "point": [
+      4.141242138525666,
+      -4.141242138525666,
+      7.0
+    ]
+  },
+  "quad-no-diagonal-disabled": null,
+  "quad-no-diagonal-enabled": null,
+  "mid-one-shot": null,
+  "mid-near-hover": {
+    "kind": "Near",
+    "point": [
+      3.4669365136290824,
+      -2.0,
+      7.0
+    ]
+  },
+  "mid-near-direct": {
+    "kind": "Mid",
+    "point": [
+      5.0,
+      -2.0,
+      7.0
+    ]
+  },
+  "near-one-shot": {
+    "kind": "Near",
+    "point": [
+      3.4669365136290824,
+      -2.0,
+      7.0
+    ]
+  }
+}

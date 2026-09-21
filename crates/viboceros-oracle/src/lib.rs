@@ -4,6 +4,8 @@
 mod mesh_edit_replay_tests;
 #[cfg(test)]
 mod numeric_json_tests;
+#[cfg(test)]
+mod snap_calibration;
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;

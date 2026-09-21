@@ -1,5 +1,5 @@
 //! Snapshot-cached mesh wires with camera-independent bounds hierarchy.
-use super::{ObjectSnapKind, ObjectSnapModes, SnapMetric, near, proximity};
+use super::{ObjectSnapKind, ObjectSnapModes, SnapMetric, near, projected_line, proximity};
 use std::collections::{BTreeMap, HashMap};
 use viboceros_document::{Geometry, GeometrySnapshot, Object, ObjectId};
 use viboceros_geometry::{BoundingBox3, Point3, Real};
@@ -174,20 +174,16 @@ impl Cache {
                 );
             }
             if near && best_mid.is_none() {
-                near::line(
-                    wire.ends[0],
-                    wire.ends[1],
-                    metric,
-                    &mut |point, distance| {
-                        keep(
-                            &mut best_near,
-                            wire.order,
-                            point,
-                            distance,
-                            metric.capture_radius(),
-                        );
-                    },
-                );
+                let mut emit = |point, distance| {
+                    keep(
+                        &mut best_near,
+                        wire.order,
+                        point,
+                        distance,
+                        metric.capture_radius(),
+                    );
+                };
+                line(wire.ends[0], wire.ends[1], metric, &mut emit);
             }
         };
         index.visit(0, metric, &mut consider);
@@ -212,6 +208,18 @@ fn keep(
         })
     {
         *best = Some((order, point, distance));
+    }
+}
+
+fn line(a: Point3, b: Point3, metric: &impl SnapMetric, emit: &mut impl FnMut(Point3, Real)) {
+    match projected_line::capture_mesh(a, b, metric) {
+        projected_line::Capture::Point(point) => {
+            if let Some(distance) = metric.distance(point) {
+                emit(point, distance);
+            }
+        }
+        projected_line::Capture::Miss => {}
+        projected_line::Capture::Unresolved => near::line(a, b, metric, emit),
     }
 }
 

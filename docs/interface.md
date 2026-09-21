@@ -91,7 +91,8 @@ for coverage limits, [Near](near-snaps.md) for screen-space curve targets, and
 The separate **Snap to mesh wires** checkbox or `SnapToMeshes Enable` admits
 [mesh Near/Mid](mesh-snaps.md). It defaults off, does not change enabled modes,
 and preserves point prompts and one-shot overrides. Mesh Mid is direct-only;
-perspective Mesh Near has retained, unresolved Rhino coordinate differences.
+Mesh Near uses calibrated endpoint-depth weighting, with three retained corner-edge
+priority differences documented in the [full 3D point probes](point-snaps.md).
 SmartTrack captures local plane-axis alignment from the first picked
 point in every viewport. Grid Snap rounds construction-plane picks to the unit grid. Right-drag
 pans parallel views and rotates the Perspective view; Shift-right-drag pans the

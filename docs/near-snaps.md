@@ -5,7 +5,8 @@
 Near captures curve points in screen space, preserving their model-space height.
 It supports lines, polylines, circles, arcs, ellipses, NURBS, polycurve leaves,
 natural surface boundaries and spatial B-rep edges. [Mesh wire Near](mesh-snaps.md)
-is separately opt-in and has known perspective differences from Rhino.
+is separately opt-in and uses its own calibrated depth weighting; mesh corner-edge
+priorities remain incomplete. Curve Near's screen-Euclidean calculation is unchanged.
 Enable it in **Snap modes**, right-click to isolate/restore it, or Shift-click
 for one point. At a point prompt, `Near`/`Nearest` selects a one-shot override.
 Near is off by default: the default five landmark modes remain Point/End/Mid/Cen/Quad.

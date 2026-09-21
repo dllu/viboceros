@@ -1,0 +1,754 @@
+{
+  "perspective-line-near-on": {
+    "kind": "Near",
+    "point": [
+      3.4832516931198403,
+      -2.0,
+      7.0
+    ]
+  },
+  "perspective-line-near-offset": {
+    "kind": "Near",
+    "point": [
+      3.7712868015864127,
+      -2.0,
+      7.0
+    ]
+  },
+  "perspective-quad-near-on": {
+    "kind": "Near",
+    "point": [
+      3.483295192639422,
+      -2.0,
+      7.0
+    ]
+  },
+  "perspective-quad-near-offset": {
+    "kind": "Near",
+    "point": [
+      3.7714054459800943,
+      -2.0,
+      7.0
+    ]
+  },
+  "perspective-triangles-near-on": {
+    "kind": "Near",
+    "point": [
+      3.931294010984308,
+      -3.931294010984308,
+      7.0
+    ]
+  },
+  "perspective-triangles-near-offset": {
+    "kind": "Near",
+    "point": [
+      4.279550144228168,
+      -4.279550144228168,
+      7.0
+    ]
+  },
+  "perspective-quad-mid-hover": null,
+  "perspective-quad-mid-direct": {
+    "kind": "Midpoint",
+    "point": [
+      5.0,
+      -2.0,
+      7.0
+    ]
+  },
+  "perspective-line-mid-hover": {
+    "kind": "Midpoint",
+    "point": [
+      5.0,
+      -2.0,
+      7.0
+    ]
+  },
+  "perspective-quad-disabled": null,
+  "perspective-quad-no-modes": null,
+  "perspective-quad-no-diagonal": null,
+  "top-line-near-on": {
+    "kind": "Near",
+    "point": [
+      3.478082191780822,
+      -2.0,
+      7.0
+    ]
+  },
+  "top-line-near-offset": {
+    "kind": "Near",
+    "point": [
+      3.5986301369863014,
+      -2.0,
+      7.0
+    ]
+  },
+  "top-quad-near-on": {
+    "kind": "Near",
+    "point": [
+      3.478082191780822,
+      -2.0,
+      7.0
+    ]
+  },
+  "top-quad-near-offset": {
+    "kind": "Near",
+    "point": [
+      3.5986301369863014,
+      -2.0,
+      7.0
+    ]
+  },
+  "top-triangles-near-on": {
+    "kind": "Near",
+    "point": [
+      3.99041095890411,
+      -3.99041095890411,
+      7.0
+    ]
+  },
+  "top-triangles-near-offset": {
+    "kind": "Near",
+    "point": [
+      4.095890410958905,
+      -4.095890410958905,
+      7.0
+    ]
+  },
+  "top-quad-mid-hover": null,
+  "top-quad-mid-direct": {
+    "kind": "Midpoint",
+    "point": [
+      5.0,
+      -2.0,
+      7.0
+    ]
+  },
+  "top-line-mid-hover": {
+    "kind": "Midpoint",
+    "point": [
+      5.0,
+      -2.0,
+      7.0
+    ]
+  },
+  "top-quad-disabled": null,
+  "top-quad-no-modes": null,
+  "top-quad-no-diagonal": null,
+  "reversed-0-0": {
+    "kind": "Near",
+    "point": [
+      3.4832951926394218,
+      -2.0,
+      7.0
+    ]
+  },
+  "reversed-5--4": {
+    "kind": "Near",
+    "point": [
+      3.729367140034625,
+      -2.0,
+      7.0
+    ]
+  },
+  "reversed--4-5": {
+    "kind": "Near",
+    "point": [
+      3.317076959328241,
+      -2.0,
+      7.0
+    ]
+  },
+  "reversed-9-7": {
+    "kind": "Near",
+    "point": [
+      4.133897289199775,
+      -2.0,
+      7.0
+    ]
+  },
+  "tilted-0-0": {
+    "kind": "Near",
+    "point": [
+      5.1932550040933165,
+      -0.2783724979533418,
+      6.0
+    ]
+  },
+  "tilted-5--4": {
+    "kind": "Near",
+    "point": [
+      5.537103365316018,
+      -0.1064483173419906,
+      6.0
+    ]
+  },
+  "tilted--4-5": {
+    "kind": "Near",
+    "point": [
+      4.921710750537694,
+      -0.4141446247311528,
+      6.0
+    ]
+  },
+  "tilted-9-7": {
+    "kind": "Near",
+    "point": [
+      5.8382915360475,
+      0.0441457680237497,
+      6.0
+    ]
+  },
+  "small-0-0": {
+    "kind": "Near",
+    "point": [
+      0.05442648738498512,
+      -0.03125,
+      0.109375
+    ]
+  },
+  "small-5--4": {
+    "kind": "Near",
+    "point": [
+      0.05827136156303517,
+      -0.03125,
+      0.109375
+    ]
+  },
+  "small--4-5": {
+    "kind": "Near",
+    "point": [
+      0.05182932748949795,
+      -0.03125,
+      0.109375
+    ]
+  },
+  "small-9-7": {
+    "kind": "Near",
+    "point": [
+      0.06459214514374091,
+      -0.03125,
+      0.109375
+    ]
+  },
+  "large-0-0": {
+    "kind": "Near",
+    "point": [
+      1246.9308923289232,
+      -2176.0,
+      960.0
+    ]
+  },
+  "large-5--4": {
+    "kind": "Near",
+    "point": [
+      1262.679496962216,
+      -2176.0,
+      960.0
+    ]
+  },
+  "large--4-5": {
+    "kind": "Near",
+    "point": [
+      1236.2929253970076,
+      -2176.0,
+      960.0
+    ]
+  },
+  "large-9-7": {
+    "kind": "Near",
+    "point": [
+      1288.5694265087857,
+      -2176.0,
+      960.0
+    ]
+  },
+  "side-0-0": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.514545130691538,
+      -2.0
+    ]
+  },
+  "side-5--4": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      4.0198838140536655,
+      -2.0
+    ]
+  },
+  "side--4-5": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.028938038701043,
+      -2.0
+    ]
+  },
+  "side-9-7": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.6770735841747206,
+      -2.0
+    ]
+  },
+  "front-0-0": {
+    "kind": "Near",
+    "point": [
+      3.4625945116046415,
+      7.0,
+      2.0
+    ]
+  },
+  "front-5--4": {
+    "kind": "Near",
+    "point": [
+      3.699017838820425,
+      7.0,
+      2.0
+    ]
+  },
+  "front--4-5": {
+    "kind": "Near",
+    "point": [
+      3.3114193168636272,
+      7.0,
+      2.0
+    ]
+  },
+  "front-9-7": {
+    "kind": "Near",
+    "point": [
+      4.148634719013381,
+      7.0,
+      2.0
+    ]
+  },
+  "threshold-tilted--10-0": {
+    "kind": "Near",
+    "point": [
+      4.490436756224203,
+      -0.6297816218878984,
+      6.0
+    ]
+  },
+  "threshold-tilted--9-0": {
+    "kind": "Near",
+    "point": [
+      4.560761757842224,
+      -0.5946191210788883,
+      6.0
+    ]
+  },
+  "threshold-tilted--8-0": {
+    "kind": "Near",
+    "point": [
+      4.63107715271051,
+      -0.5594614236447449,
+      6.0
+    ]
+  },
+  "threshold-tilted--7-0": {
+    "kind": "Near",
+    "point": [
+      4.701382951034714,
+      -0.5243085244826433,
+      6.0
+    ]
+  },
+  "threshold-tilted--6-0": {
+    "kind": "Near",
+    "point": [
+      4.771679154900205,
+      -0.48916042254989717,
+      6.0
+    ]
+  },
+  "threshold-tilted--5-0": {
+    "kind": "Near",
+    "point": [
+      4.841965766265383,
+      -0.45401711686730856,
+      6.0
+    ]
+  },
+  "threshold-tilted--4-0": {
+    "kind": "Near",
+    "point": [
+      4.912242787088111,
+      -0.41887860645594455,
+      6.0
+    ]
+  },
+  "threshold-tilted--3-0": {
+    "kind": "Near",
+    "point": [
+      4.982510219325726,
+      -0.3837448903371368,
+      6.0
+    ]
+  },
+  "threshold-tilted--2-0": {
+    "kind": "Near",
+    "point": [
+      5.0527680649350355,
+      -0.34861596753248214,
+      6.0
+    ]
+  },
+  "threshold-tilted--1-0": {
+    "kind": "Near",
+    "point": [
+      5.1230163258723165,
+      -0.3134918370638418,
+      6.0
+    ]
+  },
+  "threshold-tilted-0-0": {
+    "kind": "Near",
+    "point": [
+      5.1932550040933165,
+      -0.2783724979533418,
+      6.0
+    ]
+  },
+  "threshold-tilted-1-0": {
+    "kind": "Near",
+    "point": [
+      5.263484101553255,
+      -0.24325794922337265,
+      6.0
+    ]
+  },
+  "threshold-tilted-2-0": {
+    "kind": "Near",
+    "point": [
+      5.333703620206822,
+      -0.2081481898965893,
+      6.0
+    ]
+  },
+  "threshold-tilted-3-0": {
+    "kind": "Near",
+    "point": [
+      5.403913562008178,
+      -0.17304321899591107,
+      6.0
+    ]
+  },
+  "threshold-tilted-4-0": {
+    "kind": "Near",
+    "point": [
+      5.474113928910957,
+      -0.13794303554452156,
+      6.0
+    ]
+  },
+  "threshold-tilted-5-0": {
+    "kind": "Near",
+    "point": [
+      5.544304722868263,
+      -0.10284763856586851,
+      6.0
+    ]
+  },
+  "threshold-tilted-6-0": {
+    "kind": "Near",
+    "point": [
+      5.614485945832673,
+      -0.0677570270836638,
+      6.0
+    ]
+  },
+  "threshold-tilted-7-0": {
+    "kind": "Near",
+    "point": [
+      5.684657599756234,
+      -0.032671200121883286,
+      6.0
+    ]
+  },
+  "threshold-tilted-8-0": {
+    "kind": "Near",
+    "point": [
+      5.754819686590467,
+      0.0024098432952332468,
+      6.0
+    ]
+  },
+  "threshold-tilted-9-0": {
+    "kind": "Near",
+    "point": [
+      5.824972208286364,
+      0.037486104143182195,
+      6.0
+    ]
+  },
+  "threshold-tilted-10-0": {
+    "kind": "Near",
+    "point": [
+      5.895115166794392,
+      0.0725575833971962,
+      6.0
+    ]
+  },
+  "threshold-side-10--7": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      4.48341635002729,
+      -2.0
+    ]
+  },
+  "threshold-side-4--2": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.856955071109107,
+      -2.0
+    ]
+  },
+  "threshold-side--9-9": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      2.5433232963882895,
+      -2.0
+    ]
+  },
+  "threshold-side--2-3": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.2457960232290652,
+      -2.0
+    ]
+  },
+  "threshold-side--3-4": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.1371290373473193,
+      -2.0
+    ]
+  },
+  "threshold-side--8-8": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      2.649387261256667,
+      -2.0
+    ]
+  },
+  "threshold-side-3--1": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.7455841765319335,
+      -2.0
+    ]
+  },
+  "threshold-side-9--6": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      4.369240329486353,
+      -2.0
+    ]
+  },
+  "threshold-side-5--3": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.968816621367144,
+      -2.0
+    ]
+  },
+  "threshold-side--10-10": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      2.43771908545326,
+      -2.0
+    ]
+  },
+  "threshold-side--1-2": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.3549368987035426,
+      -2.0
+    ]
+  },
+  "threshold-side--4-5": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.028938038701043,
+      -2.0
+    ]
+  },
+  "threshold-side--7-7": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      2.755913988955406,
+      -2.0
+    ]
+  },
+  "threshold-side-2-0": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.6347008108527534,
+      -2.0
+    ]
+  },
+  "threshold-side-8--5": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      4.255570288673067,
+      -2.0
+    ]
+  },
+  "threshold-side-6--4": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      4.081171979155509,
+      -2.0
+    ]
+  },
+  "threshold-side-0-1": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.4645537204514283,
+      -2.0
+    ]
+  },
+  "threshold-side--5-6": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      2.9212206777608847,
+      -2.0
+    ]
+  },
+  "threshold-side--6-6": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      2.862906514694887,
+      -2.0
+    ]
+  },
+  "threshold-side-1-1": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.5243018721450086,
+      -2.0
+    ]
+  },
+  "aperture-tilted--8-0-r8": {
+    "kind": "Near",
+    "point": [
+      4.63107715271051,
+      -0.5594614236447449,
+      6.0
+    ]
+  },
+  "aperture-tilted--8-0-r10": {
+    "kind": "Near",
+    "point": [
+      4.63107715271051,
+      -0.5594614236447449,
+      6.0
+    ]
+  },
+  "aperture-tilted--8-0-r12": {
+    "kind": "Near",
+    "point": [
+      4.63107715271051,
+      -0.5594614236447449,
+      6.0
+    ]
+  },
+  "aperture-tilted--8-0-r16": {
+    "kind": "Near",
+    "point": [
+      4.631077147759729,
+      -0.5594614261201355,
+      6.0
+    ]
+  },
+  "aperture-side--2-3-r8": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.2457960232290652,
+      -2.0
+    ]
+  },
+  "aperture-side--2-3-r10": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.2457960232290652,
+      -2.0
+    ]
+  },
+  "aperture-side--2-3-r12": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.2457960232290652,
+      -2.0
+    ]
+  },
+  "aperture-side--2-3-r16": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.245796804489795,
+      -2.0
+    ]
+  },
+  "aperture-side--4-5-r8": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.0289301223076155,
+      -2.0
+    ]
+  },
+  "aperture-side--4-5-r10": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.0289301223076155,
+      -2.0
+    ]
+  },
+  "aperture-side--4-5-r12": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.028938038701043,
+      -2.0
+    ]
+  },
+  "aperture-side--4-5-r16": {
+    "kind": "Near",
+    "point": [
+      7.0,
+      3.028938038701043,
+      -2.0
+    ]
+  }
+}

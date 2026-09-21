@@ -199,20 +199,45 @@ fn hierarchy_matches_individual_wires_across_perspective_clipping_and_ties() {
                             },
                         )
                         .unwrap();
-                    let expected = wire_cache
-                        .nearest_projected_with_modes(
-                            &wires,
+                    let expected = if kind == ObjectSnapKind::Near {
+                        let metric = super::super::ProjectedSnapMetric {
                             cursor,
-                            0.75,
+                            capture_radius: 0.75,
                             project,
-                            // Point has no targets on lines; including it
-                            // disables the curve-only whole-wire Mid hover.
-                            ObjectSnapModes::only(kind).with(ObjectSnapKind::Point, true),
-                        )
-                        .unwrap();
+                        };
+                        let mut best: Option<(Point3, Real)> = None;
+                        // Exhaustive canonical wire traversal, without any
+                        // hierarchy rejection or partition ordering. Mesh Near
+                        // differs from curve Near; its independent arithmetic
+                        // reference is tested in projected_line::tests.
+                        for object in wires.objects() {
+                            let Geometry::Line(wire) = object.geometry() else {
+                                panic!()
+                            };
+                            line(wire.start(), wire.end(), &metric, &mut |point, distance| {
+                                if distance <= 0.75 && best.is_none_or(|(_, d)| distance < d) {
+                                    best = Some((point, distance));
+                                }
+                            });
+                        }
+                        best.map(|(point, _)| (point, kind))
+                    } else {
+                        wire_cache
+                            .nearest_projected_with_modes(
+                                &wires,
+                                cursor,
+                                0.75,
+                                project,
+                                // Point has no targets on lines; including it
+                                // disables the curve-only whole-wire Mid hover.
+                                ObjectSnapModes::only(kind).with(ObjectSnapKind::Point, true),
+                            )
+                            .unwrap()
+                            .map(|s| (s.point(), s.kind()))
+                    };
                     assert_eq!(
                         actual.map(|s| (s.point(), s.kind())),
-                        expected.map(|s| (s.point(), s.kind())),
+                        expected,
                         "offset={offset} kind={kind:?} cursor={cursor:?}"
                     );
                 }

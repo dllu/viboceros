@@ -1,6 +1,48 @@
 use super::*;
 
 #[test]
+fn mesh_depth_weighting_matches_independent_fraction_reference() {
+    use super::super::ProjectedSnapMetric;
+    let mut count = 0;
+    for (index, row) in include_str!("mesh_reference.csv")
+        .lines()
+        .enumerate()
+        .skip(1)
+    {
+        let v: Vec<Real> = row.split(',').map(|x| x.parse().unwrap()).collect();
+        assert_eq!(v.len(), 25);
+        let p = |i| Point3::try_new(v[i], v[i + 1], v[i + 2]).unwrap();
+        let metric = ProjectedSnapMetric {
+            cursor: [v[18], v[19]],
+            capture_radius: v[20],
+            project: |point: Point3| {
+                let xyz = point.to_array();
+                let h: [Real; 3] = std::array::from_fn(|i| {
+                    (0..3).fold(v[4 * i + 3], |sum, j| v[4 * i + j].mul_add(xyz[j], sum))
+                });
+                (h[2] > 0.).then_some([h[0] / h[2], h[1] / h[2]])
+            },
+        };
+        let Capture::Point(actual) = capture_mesh(p(12), p(15), &metric) else {
+            panic!("mesh reference row {index}: missing capture");
+        };
+        for (a, e) in actual.to_array().into_iter().zip(p(21).to_array()) {
+            assert!(
+                (a - e).abs() <= 3e-11 * e.abs().max(1.),
+                "mesh reference row {index}: {actual:?} != {:?}",
+                p(21)
+            );
+        }
+        assert!(
+            (metric.distance(actual).unwrap() - v[24].sqrt()).abs() <= 3e-11,
+            "mesh reference row {index}: wrong distance"
+        );
+        count += 1;
+    }
+    assert_eq!(count, 630);
+}
+
+#[test]
 fn clipped_projective_lines_match_an_independent_exact_rational_corpus() {
     use super::super::ProjectedSnapMetric;
     let mut count = 0;

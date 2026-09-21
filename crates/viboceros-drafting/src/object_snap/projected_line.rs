@@ -62,6 +62,16 @@ pub(super) fn distance(a: Point3, b: Point3, metric: &impl SnapMetric) -> Option
 }
 
 pub(super) fn capture(a: Point3, b: Point3, metric: &impl SnapMetric) -> Capture {
+    capture_with_policy(a, b, metric, false)
+}
+
+/// Mesh Near uses measured endpoint-depth weighting when neither endpoint is
+/// inside the square snap aperture. Curve Near remains screen-Euclidean.
+pub(super) fn capture_mesh(a: Point3, b: Point3, metric: &impl SnapMetric) -> Capture {
+    capture_with_policy(a, b, metric, true)
+}
+
+fn capture_with_policy(a: Point3, b: Point3, metric: &impl SnapMetric, mesh: bool) -> Capture {
     let Some(segment) = visible_segment(a, b, metric) else {
         return Capture::Unresolved;
     };
@@ -76,8 +86,89 @@ pub(super) fn capture(a: Point3, b: Point3, metric: &impl SnapMetric) -> Capture
     if segment_distance(segment.pa, segment.pb).is_some_and(|d| d > metric.capture_radius()) {
         return Capture::Miss;
     }
-    visible_line(segment.a, segment.b, segment.pa, segment.pb, metric)
-        .map_or(Capture::Unresolved, Capture::Point)
+    let endpoint_in_box = [segment.pa, segment.pb]
+        .iter()
+        .any(|p| p.iter().all(|x| x.abs() <= radius));
+    let point = if mesh && !metric.is_affine() && !endpoint_in_box {
+        visible_mesh_line(segment, metric)
+    } else {
+        visible_line(segment.a, segment.b, segment.pa, segment.pb, metric)
+    };
+    point.map_or(Capture::Unresolved, Capture::Point)
+}
+
+fn visible_mesh_line(mut segment: Segment, metric: &impl SnapMetric) -> Option<Point3> {
+    // Recover relative homogeneous endpoint depths from an interior station.
+    // The projection callback deliberately exposes neither a camera nor W.
+    // Halving toward the shallow endpoint keeps the image fraction conditioned.
+    for orientation in 0..2 {
+        let Segment { a, b, pa, pb } = segment;
+        let scale = pa.into_iter().chain(pb).map(Real::abs).fold(0., Real::max);
+        if scale == 0. {
+            return Some(a);
+        }
+        let na = pa.map(|x| x / scale);
+        let nb = pb.map(|x| x / scale);
+        let delta = [nb[0] - na[0], nb[1] - na[1]];
+        let axis = usize::from(delta[1].abs() > delta[0].abs());
+        if delta[axis] == 0. {
+            return Some(a);
+        }
+        let mut lambda = 0.5;
+        for probe in 0..1075 {
+            let image = metric.offset(interpolate(a, b, lambda)?)?;
+            let mu = (image[axis] / scale - na[axis]) / delta[axis];
+            if (0.25..=0.75).contains(&mu) {
+                let wa = lambda * (1. - mu);
+                let wb = (1. - lambda) * mu;
+                let depth_scale = wa.max(wb);
+                let wa = wa / depth_scale;
+                let wb = wb / depth_scale;
+                // Virtual projected offsets are pa*wa² and pb*wb². Their
+                // inverse projection uses opposite endpoint depths. This is
+                // equivalent to minimizing |Hxy-cursor*W|² / W(1-t)².
+                let qa = na.map(|x| x * wa * wa);
+                let qb = nb.map(|x| x * wb * wb);
+                let qscale = qa.into_iter().chain(qb).map(Real::abs).fold(0., Real::max);
+                if qscale == 0. || wa == 0. || wb == 0. {
+                    return None;
+                }
+                let qa = qa.map(|x| x / qscale);
+                let qb = qb.map(|x| x / qscale);
+                let d = [qb[0] - qa[0], qb[1] - qa[1]];
+                let squared = d[0] * d[0] + d[1] * d[1];
+                if squared == 0. {
+                    return Some(a);
+                }
+                let from_a = -(qa[0] * d[0] + qa[1] * d[1]);
+                let from_b = qb[0] * d[0] + qb[1] * d[1];
+                if from_a <= 0. || from_b <= 0. {
+                    return Some(if from_a <= 0. { a } else { b });
+                }
+                let first = from_a * wb;
+                let second = from_b * wa;
+                return if first <= second {
+                    interpolate(a, b, first / (first + second))
+                } else {
+                    interpolate(b, a, second / (first + second))
+                };
+            }
+            if probe == 0 && mu < 0.25 && orientation == 0 {
+                break;
+            }
+            lambda *= 0.5;
+            if lambda == 0. {
+                return None;
+            }
+        }
+        segment = Segment {
+            a: segment.b,
+            b: segment.a,
+            pa: segment.pb,
+            pb: segment.pa,
+        };
+    }
+    None
 }
 
 /// Visible straight segments stay straight under the projection contract.

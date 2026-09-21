@@ -16,6 +16,12 @@ polyline segments and common-sign degree-one NURBS spans. Mid and polygon Center
 share its distance query; their target/visibility/priority policies are unchanged.
 The implementation is independent of egui and document mutations.
 
+[Mesh Near](point-snaps.md) shares clipping and interpolation utilities but has
+its own measured endpoint-depth weighting and square-aperture branch. It must
+not replace curve Near's Euclidean screen metric. A separate 630-case Fraction
+corpus validates that calculation, including endpoint reversal and asymmetric
+depths; live point probes retain three unresolved mesh corner-edge priorities.
+
 If one endpoint projects and the other does not, the visible boundary is bisected
 in model coordinates. Every retained inside point actually projects. Midpoint
 stagnation terminates the search; the 2,200-step guard covers the binary64 exponent

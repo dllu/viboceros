@@ -34,16 +34,16 @@ Twelve cases performed actual Undo/Redo; four controls did not split.
 
 Independent [Fraction-based references](../tools/rhino_oracle/references/mesh_snaps.py)
 compute wire targets from source geometry and recorded camera/click only, never
-from Rhino result coordinates. Native queries match all seven mathematical mesh
-captures within `1e-9` in 3D. This is **not seven Rhino parity matches**:
+from Rhino result coordinates. All seven mesh captures now drive complete ordered
+geometry, attributes, selection and history comparisons at absolute `1e-9`,
+relative `1e-10`:
 
-- Two Mid captures drive complete ordered geometry, attributes, selection and
-  history comparisons at absolute `1e-9`, relative `1e-10`.
-- Five perspective Near captures differ from Rhino's constrained x coordinates
-  by approximately `2.325e-5` through `1.1945e-3`. The discrepancies are retained,
-  with no widened parity epsilon or normalization of observed geometry. Native
-  Near uses the shared screen-nearest straight-line solution; Rhino's mesh-specific
-  target behavior remains unresolved.
+- Two captures are Mid and five are Near. The five previous perspective Near
+  discrepancies (`2.325e-5` through `1.1945e-3`) came from incorrectly using curve
+  Near's screen-Euclidean metric for mesh wires. The independently calibrated
+  mesh-specific depth weighting resolves all five without changing the epsilon.
+  The historical screen-nearest reference and raw geometry remain unchanged;
+  corrected reference targets are retained separately.
 - Nine controls establish mesh non-admission only. They do not assert that the
   entire scene has no snap: the receiving box can supply a curve Mid. Native tests
   check both the full-scene winner and an isolated mesh query. These controls do
@@ -51,9 +51,16 @@ captures within `1e-9` in 3D. This is **not seven Rhino parity matches**:
 
 SplitEdge constrains targets to an x-axis edge. The Rhino observations therefore
 establish only the target's constrained x coordinate, not its unconstrained 3D
-location. Near discrepancy cases still verify unchanged source geometry, native
-Undo/Redo, and matching before/Undo states. The `0.002` regression guard classifies
-known discrepancies; it is not a geometry acceptance tolerance.
+location. The subsequent [unconstrained calibration](point-snaps.md) records
+actual 3D targets, snap kinds and source ownership in 101 further cases. Ninety
+captures match in full 3D; eight verify non-admission. Three corner-edge priority
+differences remain explicitly tested, not treated as geometric parity passes.
+
+For mesh Near, an endpoint inside the square snap aperture selects ordinary
+screen-distance interpolation. Otherwise the measured wire calculation uses
+opposite-end depth weighting; parallel queries reduce to the affine solution.
+The [derivation and independent corpus](point-snaps.md#measured-per-wire-calculation)
+keep this separate from curve Near, whose Euclidean calculation is unchanged.
 
 Two additional [switch fixtures](../tools/rhino_oracle/fixtures/mesh_snap_switches.json)
 retain [14 states](../tools/rhino_oracle/observations/mesh_snap_switches.json),
@@ -78,12 +85,14 @@ before cache traversal, and modes with neither Mid nor Near do not build an inde
 
 A 4,096-quad regression contains 16,384 wires: each of 100 separated warm captures
 visits fewer than 64 wires and the index builds once. A separate differential test
-compares hierarchy queries with individual curve-wire queries under perspective
-clipping, including midpoint targets and ties. These are traversal/correctness
+compares hierarchy queries with exhaustive individual wire queries under perspective
+clipping, including midpoint targets and ties. A separate 630-case exact-rational
+corpus checks mesh Near interpolation. These are traversal/correctness
 checks, not timing measurements or a Rhino performance comparison. Cold topology
 construction, overlapping projected bounds and scene-object traversal remain
 unbounded by a fixed frame budget. Occlusion, general cross-object priorities and
-full Rhino Mesh Near parity remain incomplete.
+full Rhino mesh corner-edge priority parity remain incomplete. Live point probes
+cover fully visible wires, not arbitrary clipping or extreme coordinate ranges.
 
 All four viewport types exercise ordinary and edge-constrained mesh targets;
 real menu events preserve partial command input. Parser/state tests cover grammar,
@@ -91,7 +100,7 @@ idempotent switches, one-shot lifetime and model-history isolation.
 
 ## Reproduction
 
-Validation checkpoint: 3,137 ordinary release-workspace tests passed (29 opt-in
+Initial checkpoint (`25ba7ba`): 3,137 ordinary release-workspace tests passed (29 opt-in
 tests ignored), all 306 Python tests, and all seven offscreen GPU tests. Formatting,
 whitespace, strict Clippy and strict rustdoc checks also passed.
 
@@ -106,7 +115,7 @@ python3 -m tools.rhino_oracle.references.mesh_snaps
 For live calibration, generate requests with `--artifact /owned/box.3dm` using
 the verified box recipe/hash in provenance, then use the owned
 `tools/rhino_oracle/run_headless.sh rhino REQUEST --timeout 600` runner. Generate
-mathematical targets separately with `--observations RESPONSE`; only recorded
+mathematical targets separately with `--observations RESPONSE --mesh-weighted`; only recorded
 camera/click data are read. Raw native replay rejects unresolved mesh-pick aims.
 The calibrated test first computes native targets and then passes their model
 coordinates to the command adapter as resolved point inputs.

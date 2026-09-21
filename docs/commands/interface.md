@@ -74,7 +74,8 @@ Rhino process cannot execute that cleanup.
 [Per-mode and one-shot snap controls](../object-snap-controls.md) expose the
 implemented Point/End/Mid/Center/Quad and opt-in [Near](../near-snaps.md), including
 [Mid-only curve hover](../mid-hover-snaps.md). [Mesh wire snaps](../mesh-snaps.md)
-have a separate source switch, direct-only Mid, and known perspective Near differences;
+have a separate source switch, direct-only Mid, and calibrated depth-weighted Near;
+some mesh corner-edge priorities still differ from Rhino.
 14 retained mesh-switch states match Rhino exactly. Other feature kinds remain
 incomplete. Grid spacing is one unit; SmartTrack is
 reference-axis tracking, not Rhino's complete inference system. SnapSize, custom

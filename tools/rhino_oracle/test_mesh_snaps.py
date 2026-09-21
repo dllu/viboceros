@@ -14,10 +14,11 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class MeshSnapTests(unittest.TestCase):
-    def test_inputs_camera_targets_and_known_rhino_discrepancies_are_retained(self):
+    def test_historical_screen_discrepancies_and_corrected_mesh_targets_are_retained(self):
         request = json.loads((ROOT / "tools/rhino_oracle/fixtures/mesh_snaps.json").read_text())
         observed = json.loads((ROOT / "tools/rhino_oracle/observations/mesh_snaps.json").read_text())
         targets = json.loads((ROOT / "tools/rhino_oracle/fixtures/mesh_snap_targets.json").read_text())
+        mesh_targets = json.loads((ROOT / "tools/rhino_oracle/fixtures/mesh_snap_weighted_targets.json").read_text())
         self.assertEqual(request, mesh_snaps.request())
         self.assertEqual(len(request["operations"]), 16)
         self.assertEqual(len(observed["results"]), 16)
@@ -35,6 +36,8 @@ class MeshSnapTests(unittest.TestCase):
                     self.assertLess(abs(p-q), 1e-7)
                 target = mesh_snaps.reference_target(item, frame)
                 self.assertEqual(target, targets[item["id"]])
+                mesh_target = mesh_snaps.reference_target(item,frame,mesh_weighted=True)
+                self.assertEqual(mesh_target,mesh_targets[item["id"]])
                 self.assertEqual(value["mesh_snap_setting"]["requested"], item["snap_to_meshes"])
                 self.assertEqual(value["mesh_snap_setting"]["before"], value["mesh_snap_setting"]["restored"])
                 self.assertEqual(value["before"][1:], value["after"][1:])
@@ -48,11 +51,13 @@ class MeshSnapTests(unittest.TestCase):
                 counts[target["kind"]] += 1
                 self.assertTrue(value["succeeded"] and value["history_tested"])
                 x = value["after"][0]["geometry"]["brep"]["vertices"][-1][0]
+                self.assertLess(abs(x-mesh_target["point"][0]),1e-9)
                 residual = abs(x-target["point"][0])
                 if target["kind"] == "Mid":
                     self.assertLess(residual, 1e-9)
                 else:
-                    # These are explicitly NOT exact Rhino parity passes.
+                    # The historical screen-nearest metric remains distinct;
+                    # corrected mesh targets above now agree at the same epsilon.
                     self.assertGreater(residual, 1e-9)
                     self.assertLess(residual, 0.002)
         self.assertEqual(counts, dict(Mid=2, Near=5, misses=9, history=12))

@@ -2,7 +2,7 @@ use super::*;
 use viboceros_drafting::{ObjectSnapCache, ObjectSnapKind, ObjectSnapModes, ObjectSnapOptions};
 
 #[test]
-fn calibrated_mesh_snaps_validate_targets_and_retain_rhino_near_differences() {
+fn calibrated_mesh_snaps_replay_seven_complete_rhino_histories() {
     let request: ProbeRequest = serde_json::from_str(include_str!(
         "../../../../../tools/rhino_oracle/fixtures/mesh_snaps.json"
     ))
@@ -13,10 +13,14 @@ fn calibrated_mesh_snaps_validate_targets_and_retain_rhino_near_differences() {
     .unwrap();
     let (mut captures, mut misses) = (0, 0);
     let reference: Value = serde_json::from_str(include_str!(
+        "../../../../../tools/rhino_oracle/fixtures/mesh_snap_weighted_targets.json"
+    ))
+    .unwrap();
+    let screen_reference: Value = serde_json::from_str(include_str!(
         "../../../../../tools/rhino_oracle/fixtures/mesh_snap_targets.json"
     ))
     .unwrap();
-    let (mut matches, mut differences) = (0, 0);
+    let (mut mids, mut near) = (0, 0);
     for (operation, row) in request
         .operations
         .iter()
@@ -145,35 +149,21 @@ fn calibrated_mesh_snaps_validate_targets_and_retain_rhino_near_differences() {
             .as_object_mut()
             .unwrap()
             .remove("mesh_snap_setting");
+        // All seven now compare the complete, unnormalized observed history at
+        // the original epsilon, including the five previous Near discrepancies.
+        close(&actual, &expected, id);
         if snap.kind() == ObjectSnapKind::Mid {
-            close(&actual, &expected, id);
-            matches += 1;
+            mids += 1;
         } else {
-            // Preserve these discrepancies: the exact screen-nearest target is
-            // not Rhino's perspective mesh Near target. Do not widen the full
-            // history comparison epsilon or normalize the observed coordinates.
-            close(&actual["before"], &expected["before"], id);
-            close(&actual["undo"], &expected["undo"], id);
-            close(&actual["after"], &actual["redo"], id);
-            for state in ["after", "redo"] {
-                close(&actual[state][1], &expected[state][1], id);
-            }
-            let x = expected["after"][0]["geometry"]["brep"]["vertices"]
-                .as_array()
-                .unwrap()
-                .last()
-                .unwrap()[0]
-                .as_f64()
-                .unwrap();
-            let discrepancy = (snap.point().x() - x).abs();
+            let old_x = screen_reference[id]["point"][0].as_f64().unwrap();
             assert!(
-                discrepancy > 1e-9 && discrepancy < 0.002,
-                "{id}: {discrepancy}"
+                (snap.point().x() - old_x).abs() > 1e-9,
+                "{id}: mesh is not curve Near"
             );
-            differences += 1;
+            near += 1;
         }
         captures += 1;
     }
     assert_eq!((captures, misses), (7, 9));
-    assert_eq!((matches, differences), (2, 5));
+    assert_eq!((mids, near), (2, 5));
 }
