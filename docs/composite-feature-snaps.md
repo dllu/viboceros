@@ -13,7 +13,8 @@ UV-center Mid was incorrect and is removed, along with its incorrect test
 expectation. Boundary isocurves are evaluated at the natural domain endpoints;
 copying control rows would be wrong for unclamped/periodic surfaces. A failed or
 collapsed boundary does not suppress other features. Surface centers are not
-silently relabeled as Cen: general center recognition is separate unfinished work.
+silently relabeled as Cen: the later [polygon Center implementation](polygon-center-snaps.md)
+recognizes corner averages for polygonal planar boundaries separately from Mid.
 
 ## Evidence
 

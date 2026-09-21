@@ -1,4 +1,4 @@
-//! Cache expensive arc-length features independently of camera projection.
+//! Cache expensive arc-length and polygon Center features independently of projection.
 use super::*;
 use std::collections::BTreeMap;
 use viboceros_geometry::{CurveRef, NurbsCurve, NurbsSurface, Tolerance};
@@ -44,15 +44,18 @@ struct SurfaceMidpoints {
 
 /// Reusable camera-independent snap data. Analytic features and indexed point
 /// clouds keep their existing cheap queries. Cached NURBS arc-length midpoints
-/// include polycurve leaves and natural surface boundaries. B-reps retain only
-/// edge curves; standalone surfaces retain extracted boundaries and their source
-/// for invalidation. Common-sign control bounds accelerate curve-hover queries.
+/// include polycurve leaves and natural surface boundaries. Their B-rep entries
+/// retain only edge curves; standalone surfaces retain extracted boundaries and
+/// their source for invalidation. Polygon Center entries additionally retain
+/// relevant planar-face sources, but not UV trims. Failed recognitions are cached.
+/// Common-sign control bounds accelerate curve-hover queries.
 /// Geometry and tolerance comparisons invalidate entries, including after Undo;
 /// removal and conversion to another geometry type release old entries.
 #[derive(Debug, Default)]
 pub struct ObjectSnapCache {
     midpoints: BTreeMap<ObjectId, Midpoints>,
     surfaces: BTreeMap<ObjectId, SurfaceMidpoints>,
+    pub(super) polygons: super::polygon_centers::Cache,
     #[cfg(test)]
     builds: usize,
 }
@@ -147,6 +150,7 @@ impl ObjectSnapCache {
     }
 
     pub(super) fn retain_objects(&mut self, document: &Document) {
+        self.polygons.retain_objects(document);
         self.midpoints.retain(|id, _| {
             document.object(*id).is_some_and(|object| {
                 matches!(

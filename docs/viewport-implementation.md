@@ -39,6 +39,11 @@ their cached half-arc-length targets; multiple enabled modes retain direct Mid
 capture. NURBS refinement evaluates separate sided knot spans, with common-sign
 control bounds and a straight-span fast path. Surface caches retain their actual
 boundary curves, and failed midpoint slots remain paired with their sources.
+The [polygon Center cache](polygon-center-snaps.md) retains boundary segments,
+corner averages and failed recognitions. Its source keys include curve geometry,
+planar surfaces and relevant face boundary edges/orientations; UV trims and
+attributes are excluded. Geometry/tolerance edits and Undo refresh entries.
+Production queries share these targets across ordinary and constrained prompts.
 The [snap-control adapter](object-snap-controls.md) passes the effective feature
 mask through ordinary and edge-constrained prompts. An empty mask exits the
 drafting query before traversing objects or refreshing caches; validation still

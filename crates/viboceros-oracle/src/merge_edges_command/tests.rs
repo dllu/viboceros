@@ -6,6 +6,7 @@ mod face_history;
 mod face_splits;
 mod mid_hover;
 mod oneshot_snaps;
+mod polygon_centers;
 mod selected;
 mod snaps;
 mod split;

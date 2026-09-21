@@ -171,8 +171,11 @@ tests outside the crate root. See [viewport implementation and precision](viewpo
 for coordinate conventions, numeric safeguards, and their specific test coverage.
 `object_snap/features` shares cheap curve-leaf enumeration; `object_snap/cache`
 retains expensive NURBS arc-length and natural surface-boundary midpoints.
-See [composite feature snaps](composite-feature-snaps.md) for invalidation,
-independent numerical tests, retained Rhino evidence and known Center-capture gaps.
+`object_snap/polygon_centers` caches closed-boundary corner averages and planar
+face recognition independently of camera projection. See
+[composite feature snaps](composite-feature-snaps.md), [analytic Center](center-hover-snaps.md)
+and [polygon Center](polygon-center-snaps.md) for invalidation, independent numerical
+tests, retained Rhino evidence and remaining capture limits.
 
 `app/edge_commands` shares component ambiguity, hover highlighting and stale
 candidate checks for [MergeEdge](commands/merge-edge.md) and

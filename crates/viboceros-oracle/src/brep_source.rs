@@ -2,6 +2,8 @@
 use super::*;
 use crate::{curve_join_close::CurveInput, object_source::ObjectSource};
 
+mod surface_face;
+
 /// Shared topology-preserving source preparation for geometry and command probes.
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub(super) struct BrepSourceFixture {
@@ -57,8 +59,13 @@ pub(super) enum Primitive {
         faces: Vec<Vec<u32>>,
     },
     SurfaceFace {
-        surface: NurbsSurfaceDefinition,
+        surface: Box<NurbsSurfaceDefinition>,
         trim_bounds: Option<[[f64; 2]; 2]>,
+        // This shared-input recipe has always made unit-domain UV curves.
+        // Keep the recorded input definition independent of the kernel's
+        // natural-face constructor, which uses the surface axis intervals.
+        #[serde(default = "surface_face::unit_trim_domains")]
+        trim_domains: [[f64; 2]; 4],
     },
     Box {
         min: [f64; 3],
@@ -99,9 +106,10 @@ impl BrepCommandSource {
             Self::Primitive(Primitive::SurfaceFace {
                 surface,
                 trim_bounds,
+                trim_domains,
             }) => {
                 let surface = nurbs_surface_from_definition(surface)?;
-                Geometry::Brep(if let Some([u, v]) = trim_bounds {
+                let brep = if let Some([u, v]) = trim_bounds {
                     Brep::try_rectangular_surface_face(
                         surface,
                         u[0]..=u[1],
@@ -110,7 +118,12 @@ impl BrepCommandSource {
                     )?
                 } else {
                     Brep::try_surface_face(surface, tolerance)?
-                })
+                };
+                Geometry::Brep(surface_face::with_trim_domains(
+                    brep,
+                    *trim_domains,
+                    tolerance,
+                )?)
             }
             Self::Primitive(Primitive::Box {
                 min,

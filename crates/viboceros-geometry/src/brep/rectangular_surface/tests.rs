@@ -1,6 +1,91 @@
 use super::*;
 
 #[test]
+fn natural_trim_parameter_domains_follow_surface_axes_without_reversing_north_or_west() {
+    let surface = NurbsSurface::try_bilinear([
+        Point3::try_new(2., -2., 0.).unwrap(),
+        Point3::try_new(8., -2., 0.).unwrap(),
+        Point3::try_new(3., -5., 0.).unwrap(),
+        Point3::try_new(6., -8., 0.).unwrap(),
+    ])
+    .unwrap();
+    for [u, v] in [
+        [2.0..=4., -3.0..=5.],
+        [1e12..=1e12 + 2., -2e12..=-2e12 + 8.],
+    ] {
+        let shifted = surface.try_reparameterized(u.clone(), v.clone()).unwrap();
+        let brep = Brep::try_surface_face(shifted, Tolerance::DEFAULT).unwrap();
+        let corners = [
+            Point2::try_new(*u.start(), *v.start()).unwrap(),
+            Point2::try_new(*u.end(), *v.start()).unwrap(),
+            Point2::try_new(*u.end(), *v.end()).unwrap(),
+            Point2::try_new(*u.start(), *v.end()).unwrap(),
+        ];
+        for (side, trim) in brep.faces[0].loops[0].trims.iter().enumerate() {
+            assert_eq!(
+                trim.curve.domain(),
+                if side % 2 == 0 { u.clone() } else { v.clone() }
+            );
+            assert_eq!(trim.curve.start_point().unwrap(), corners[side]);
+            assert_eq!(trim.curve.end_point().unwrap(), corners[(side + 1) % 4]);
+        }
+    }
+}
+
+#[test]
+fn irregular_planar_face_with_polygon_hole_survives_collinear_sampling_normalization() {
+    let curve = |xyz: &[[Real; 3]], reverse: bool| {
+        let mut points = xyz
+            .iter()
+            .copied()
+            .map(|p| Point3::try_from(p).unwrap())
+            .collect::<Vec<_>>();
+        if reverse {
+            points.reverse();
+        }
+        crate::Polyline3::try_new(points, Tolerance::DEFAULT)
+            .unwrap()
+            .to_native_nurbs()
+            .unwrap()
+    };
+    for reverse in [false, true] {
+        let outer = curve(
+            &[
+                [2., -2., 0.],
+                [8., -2., 0.],
+                [6., -8., 0.],
+                [3., -5., 0.],
+                [2., -2., 0.],
+            ],
+            reverse,
+        );
+        let hole = curve(
+            &[
+                [4., -3., 0.],
+                [4., -4., 0.],
+                [5., -4., 0.],
+                [5., -3., 0.],
+                [4., -3., 0.],
+            ],
+            !reverse,
+        );
+        let brep = Brep::try_planar_face_with_holes(&outer, &[hole], Tolerance::DEFAULT).unwrap();
+        assert_eq!(brep.faces[0].loops.len(), 2);
+        assert!((brep.area(Tolerance::DEFAULT).unwrap() - 20.).abs() < 1e-10);
+        assert!(
+            (brep
+                .tessellate(4, Tolerance::DEFAULT)
+                .unwrap()
+                .area()
+                .unwrap()
+                - 20.)
+                .abs()
+                < 1e-10
+        );
+    }
+}
+
+#[test]
 fn approximate_surface_closure_cannot_pair_distinct_topological_endpoints() {
     let origin = 1e9;
     for transpose in [false, true] {

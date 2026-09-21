@@ -154,7 +154,6 @@ fn ordinary_and_edge_constrained_prompts_share_center_hover_in_all_views() {
 
 #[test]
 fn real_drafting_click_returns_off_cursor_center_not_construction_plane_intersection() {
-    let mut doc = Document::default();
     let arc = CircularArc3::try_from_three_points(
         p(-2., 0., 7.),
         p(0., 2., 7.),
@@ -162,7 +161,12 @@ fn real_drafting_click_returns_off_cursor_center_not_construction_plane_intersec
         Tolerance::DEFAULT,
     )
     .unwrap();
-    doc.add_geometry(Geometry::Arc(arc)).unwrap();
+    assert_center_click(Geometry::Arc(arc), p(-1.6, 1.2, 7.), p(0., 0., 7.));
+}
+
+fn assert_center_click(geometry: Geometry, aim: Point3, center: Point3) {
+    let mut doc = Document::default();
+    doc.add_geometry(geometry).unwrap();
     let mut view = Viewport::new(ViewKind::Top);
     let context = egui::Context::default();
     let mut frame = |events| {
@@ -196,9 +200,7 @@ fn real_drafting_click_returns_off_cursor_center_not_construction_plane_intersec
         (output, view.last_rect.unwrap())
     };
     let (_, rect) = frame(vec![]);
-    let pointer = Viewport::new(ViewKind::Top)
-        .project(p(-1.6, 1.2, 7.), rect)
-        .unwrap();
+    let pointer = Viewport::new(ViewKind::Top).project(aim, rect).unwrap();
     let button = |pressed| egui::Event::PointerButton {
         pos: pointer,
         button: PointerButton::Primary,
@@ -207,14 +209,81 @@ fn real_drafting_click_returns_off_cursor_center_not_construction_plane_intersec
     };
     frame(vec![egui::Event::PointerMoved(pointer), button(true)]);
     let (output, _) = frame(vec![button(false)]);
-    assert!(
-        output
-            .picked_point
-            .unwrap()
-            .distance_to(p(0., 0., 7.))
-            .unwrap()
-            < 1e-12
-    );
+    assert!(output.picked_point.unwrap().distance_to(center).unwrap() < 1e-12);
     assert!(output.selection_click.is_none());
     assert!(output.edge_click.is_none());
+}
+
+#[test]
+fn polygon_centers_reach_ordinary_and_constrained_queries_in_every_view() {
+    use viboceros_geometry::{Brep, NurbsSurface, Polyline3};
+    for kind in [
+        ViewKind::Top,
+        ViewKind::Front,
+        ViewKind::Right,
+        ViewKind::Perspective,
+    ] {
+        let map = |x, y| match kind {
+            ViewKind::Front => p(x, 7., y),
+            ViewKind::Right => p(7., x, y),
+            _ => p(x, y, 7.),
+        };
+        let corners = [map(-4., 3.), map(4., 3.), map(2., -4.), map(-2., -2.)];
+        let polyline = Polyline3::try_new(
+            corners.into_iter().chain([corners[0]]).collect(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let surface =
+            NurbsSurface::try_bilinear([corners[0], corners[1], corners[3], corners[2]]).unwrap();
+        let brep = Brep::try_planar_face(&polyline.to_native_nurbs().unwrap(), Tolerance::DEFAULT)
+            .unwrap();
+        for geometry in [
+            Geometry::Polyline(polyline),
+            Geometry::NurbsSurface(surface),
+            Geometry::Brep(brep),
+        ] {
+            let mut doc = Document::default();
+            let id = doc.add_geometry(geometry).unwrap();
+            let mut view = Viewport::new(kind);
+            view.target = NaVector3::from(map(0., 0.).to_array());
+            view.plane.set(Viewport::default_plane(ViewKind::Right));
+            let pointer = view.project(map(-2.8, 3.), area()).unwrap();
+            let input = DraftingInput {
+                active: true,
+                osnap: ObjectSnapModes::ALL,
+                ..Default::default()
+            };
+            let cursor = view.drafting_cursor(pointer, area(), &doc, input).unwrap();
+            assert_eq!(cursor.object_snap.unwrap().object_id(), id);
+            assert_eq!(cursor.object_snap.unwrap().kind(), ObjectSnapKind::Center);
+            assert!(
+                cursor.point.distance_to(map(0., 0.)).unwrap() < 1e-10,
+                "{kind:?}"
+            );
+            let edge =
+                NurbsCurve::try_new(1, vec![map(-6., -6.), map(6., -6.)], vec![0., 0., 12., 12.])
+                    .unwrap();
+            let location = view
+                .edge_point_cursor(&edge, None, pointer, area(), &doc, ObjectSnapModes::ALL)
+                .unwrap();
+            assert!((location.parameter - 6.).abs() < 1e-9, "{kind:?}");
+        }
+    }
+}
+
+#[test]
+fn real_polygon_center_click_retains_the_off_plane_average() {
+    let polyline = viboceros_geometry::Polyline3::try_new(
+        vec![
+            p(-4., 3., 7.),
+            p(4., 3., 7.),
+            p(2., -4., 7.),
+            p(-2., -2., 7.),
+            p(-4., 3., 7.),
+        ],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    assert_center_click(Geometry::Polyline(polyline), p(-2.8, 3., 7.), p(0., 0., 7.));
 }

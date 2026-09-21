@@ -1,6 +1,29 @@
 use super::*;
 
 #[test]
+fn triangulation_scaling_preserves_collinear_vertices_at_non_binary_extents() {
+    let points = [[0., 0.], [6., 6.], [-0.75, -2.25], [-1., -3.], [-0.5, -1.5]]
+        .map(|p| Point2::try_from(p).unwrap());
+    let normalized = TrimParameterNormalization::try_for_triangulation(&points)
+        .unwrap()
+        .unwrap();
+    let vertices = points[2..]
+        .iter()
+        .map(|&p| normalized.normalize(p).unwrap())
+        .collect::<Vec<_>>();
+    assert_eq!(polygon_cross(vertices[0], vertices[1], vertices[2]), 0.);
+    for scale in [Real::from_bits(1), 1e-200, 1e300] {
+        let points = [[0., 0.], [scale, 0.], [scale, scale], [0., scale]]
+            .map(|p| Point2::try_from(p).unwrap());
+        let frame = TrimParameterNormalization::try_for_triangulation(&points)
+            .unwrap()
+            .unwrap();
+        let normalized = points.map(|p| frame.normalize(p).unwrap());
+        assert!(normalized[2].iter().all(|&v| (1.0..2.0).contains(&v)));
+    }
+}
+
+#[test]
 fn uv_topology_normalization_keeps_independent_axis_ranges_and_origins() {
     let tiny = Real::from_bits(1);
     for [u, v] in [

@@ -79,7 +79,13 @@ records, with area/outer-knot differences retained: 651 full matches, 32 native
 errors and 234 other differences across 917 cases. Another 31 translated cases
 have native-only evidence, explicitly excluded from comparison counts. Its shared
 `surface_face` sources can use `trim_bounds: [[u0,u1],[v0,v1]]` while retaining the
-complete underlying surface.
+complete underlying surface. This shared-input recipe uses four unit-domain UV
+trim curves by default, preserving the exact inputs of the retained archives.
+`trim_domains: [[t0,t1], ...]` explicitly supplies the four scalar intervals in
+South/East/North/West order, before edge subdivision. This is independent of UV
+control coordinates and spatial edge domains. The kernel's natural-face
+constructor now follows surface-axis intervals instead; the harness builds its
+declared input curves, without rewriting expected output domains or observations.
 
 The [redundant-edge cleanup audit](join-edge-cleanup.md) adds 32 angular-tolerance
 records using the same sixteen shared source artifacts at four document angles.
@@ -135,6 +141,11 @@ complete geometry/history replay and 11 mixed-mode admission-only misses. One
 unsnapped control fails to split and has no Undo/Redo; that limitation is retained.
 These cases cover segment/boundary hover, opposite-seam conic targets and
 curve-distance ranking across competing objects and polyline segments.
+The [44 polygon Center records](polygon-center-snaps.md) add 34 complete calibrated
+capture/history matches and ten admission-only misses. Cases distinguish corner
+averages from area/bounds centers, retain collinear/repeated curve corners,
+exclude internal subdivisions of straight surface edges, and include nonplanar
+curve captures alongside warped-surface misses.
 
 The shared `serde_json` dependency explicitly enables round-trip float parsing.
 Standalone oracle/document builds must not depend on app or test dependencies

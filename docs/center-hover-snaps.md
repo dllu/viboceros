@@ -75,6 +75,9 @@ one-shot overrides in ordinary and edge-constrained prompts.
 The [Mid-only hover follow-up](mid-hover-snaps.md) extracts shared numerical
 proximity and projected bounds into `object_snap/proximity`; Center keeps its own
 target/priority rules.
+The [polygon Center follow-up](polygon-center-snaps.md) adds cached corner-average
+targets for closed linear boundaries and polygonal planar surfaces/faces without
+holes, using the same capture-distance and per-object priority rules.
 
 A conservatively expanded model-space cube provides a cheap projected bounding
 box rejection. Overflowing or unprojectable corners disable this rejection.
@@ -88,8 +91,8 @@ exposed insufficient refinement at 40 steps; tests now include scales through
 
 This is a numerical UI query, **not a certified global closest-point solver**.
 Extremely narrow visible slivers at camera-plane crossings may be missed, and
-arbitrary scale/translation accuracy is not established. General rational-conic,
-closed-boundary and surface Center recognition, B-rep conic-edge Center, occlusion,
+arbitrary scale/translation accuracy is not established. General rational-conic
+and curved-boundary Center recognition, B-rep conic-edge Center, occlusion,
 CPlane-relative Quad and broader priority/camera parity remain unfinished.
 
 Independent tests cover analytic distance witnesses, arc-sweep exclusion,

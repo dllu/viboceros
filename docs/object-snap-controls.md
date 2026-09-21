@@ -65,8 +65,11 @@ Toolbar regression tests also prevent model Undo/Redo during edge/group prompts.
 
 Coverage remains limited to the five currently implemented feature kinds. The
 subsequent [Mid-hover implementation](mid-hover-snaps.md) adds whole-segment
-capture when Mid alone is enabled, including one-shot Mid. General End/Near/Int/Tan/
-Perp behavior, surface/conic Center recognition, CPlane-relative Quad, occlusion,
+capture when Mid alone is enabled, including one-shot Mid.
+[Polygon Center](polygon-center-snaps.md) adds corner averages for closed linear
+boundaries and polygonal planar surfaces/faces without holes.
+General End/Near/Int/Tan/Perp behavior, curved NURBS/conic Center recognition,
+CPlane-relative Quad, occlusion,
 Alt suspension, full `Osnap` command grammar, persistence across app restarts and
 arbitrary macros remain incomplete. New controls do not establish broad snap
 parity or change the limits of the underlying geometry queries.

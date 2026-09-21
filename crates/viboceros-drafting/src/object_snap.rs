@@ -3,6 +3,7 @@ mod cache;
 mod centers;
 mod features;
 mod mid_hover;
+mod polygon_centers;
 mod proximity;
 pub use cache::ObjectSnapCache;
 
@@ -386,11 +387,8 @@ fn nearest_object_snap_with_metric(
         }
         // Direct features suppress Center on the same object, not on every
         // object in the document. Across objects, compare capture distance.
-        if object_best.is_none()
-            && modes.contains(ObjectSnapKind::Center)
-            && let Some(curve) = object.geometry().curve_ref()
-        {
-            centers::visit(curve, metric, &mut |point, distance| {
+        if object_best.is_none() && modes.contains(ObjectSnapKind::Center) {
+            let mut center = |point, distance| {
                 consider_scored_candidate(
                     &mut object_best,
                     object.id(),
@@ -398,7 +396,17 @@ fn nearest_object_snap_with_metric(
                     point,
                     distance,
                 );
-            });
+            };
+            if let Some(curve) = object.geometry().curve_ref() {
+                centers::visit(curve, metric, &mut center);
+            }
+            cache.polygons.visit(
+                object.id(),
+                object.geometry(),
+                document.tolerance(),
+                metric,
+                &mut center,
+            );
         }
         if let Some(candidate) = object_best {
             consider_scored_candidate(

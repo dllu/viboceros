@@ -196,9 +196,18 @@ impl Brep {
                     [corner_vertices[side], corner_vertices[(side + 1) % 4]],
                     edge_indices[side],
                     reversed_3d[side],
-                    NurbsCurve2::try_line(
-                        parameter_corners[side],
-                        parameter_corners[(side + 1) % 4],
+                    // Natural trims follow the corresponding native surface
+                    // interval, independently of edge orientation/local frames.
+                    // See openNURBS ON_Brep::NewOuterLoop in brep_tools.cpp.
+                    NurbsCurve2::try_new(
+                        1,
+                        vec![parameter_corners[side], parameter_corners[(side + 1) % 4]],
+                        vec![
+                            bounds[side % 2][0],
+                            bounds[side % 2][0],
+                            bounds[side % 2][1],
+                            bounds[side % 2][1],
+                        ],
                     )?,
                     trim_type,
                     iso[side],

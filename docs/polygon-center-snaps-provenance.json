@@ -1,0 +1,29 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "calibrated_observations": 44,
+  "captured_centers": 34,
+  "admission_only_misses": 10,
+  "actual_undo_redo_observations": 44,
+  "retained_rejected_target_hypotheses": ["subdivided-surface-one-shot", "subdivided-surface-persistent"],
+  "raw_response_sha256": {
+    "final-response.json": "0d1cfc61a064a6f6f8a3bd94dfbbec8aca5f99179a2408495e14b6578ad2397d"
+  },
+  "source_artifact_sha256": {
+    "box.3dm": "9ad7f078dc15cbe542751246f45371a3e97c514d13482aee66448a8129620a65"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/polygon_center_snaps.json": "def5f0e28707f25f273494e0583c325645ea5b9bb222640cc49b88b2d121cdc1",
+    "tools/rhino_oracle/observations/polygon_center_snaps.json": "6dfc25389f218878c14cfb377e528f9b4f7981fb775c1ea8d6086f340f03e6cc"
+  },
+  "notes": [
+    "Real SplitEdge component and point clicks, public Rhino APIs/commands, actual Undo/Redo and prompt-time camera calibration run in an owned private Xvfb session. User desktops and existing Rhino sessions were not used.",
+    "The 30-case initial diagnostic was followed by a fresh 44-case run adding elevated polygon NURBS, repeated and collinear loops, warped and subdivided surfaces and two coordinate-permuted nonplanar polygons. Only the final response is retained as a replay fixture.",
+    "Portable requests replace the shared box artifact path with its source recipe. Response values are compacted as JSON without numerical normalization or array reordering.",
+    "Each family has one-shot Cen over all five persistent modes and persistent Cen-only. Open, nearly closed, empty-center, surface-interior and warped-surface controls are admission-only misses.",
+    "Native queries use the recorded world-to-screen matrix, actual click pixel and 12-pixel capture radius. Captured native points, never Rhino output positions, drive command replay at absolute 1e-9 and relative 1e-10.",
+    "The original subdivided-surface target x=4.5 remains in the requests. The actual corner-average target is x=4.75 because collinear subdivisions within straight surface edges are not additional corners. Native replay computes the target from geometry.",
+    "The nonplanar polyline captures disagree with a planar-only reading of the Rhino help page. Separate coordinate permutations constrain its x, y and z mean components via the resulting SplitEdge x coordinate; no direct unconstrained GetPoint output is claimed.",
+    "The subdivided surface exposed native natural-trim parameter domains of [0,1] instead of the corresponding surface interval. OpenNURBS NewOuterLoop independently confirms the native-interval construction rule.",
+    "General conic recognition, occlusion, arbitrary camera/priority parity, high-degree or mixed-sign rational completeness and cross-engine performance remain unproved."
+  ]
+}

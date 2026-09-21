@@ -8550,9 +8550,13 @@ fn triangulate_trim_region(
     {
         return Ok(None);
     }
-    let Some(normalized) = normalized_trim_polygon(parameters)? else {
+    let Some(normalization) = TrimParameterNormalization::try_for_triangulation(parameters)? else {
         return Ok(None);
     };
+    let normalized = parameters
+        .iter()
+        .map(|&p| normalization.normalize(p))
+        .collect::<Result<Vec<_>, _>>()?;
     let mut loop_ranges = Vec::with_capacity(loop_lengths.len());
     let mut start = 0_usize;
     for length in loop_lengths {

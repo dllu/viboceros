@@ -330,9 +330,12 @@ fn nonuniform_surface_boundary_features_match_natural_brep_without_uv_center_mid
             for target in [p(5., -2.), p(8., -4.), p(5., -6.), p(2., -4.)] {
                 assert_hit(&mut cache, &doc, target, ObjectSnapKind::Mid);
             }
-            for target in [p(4., -4.), p(4., -2.), p(5., -4.)] {
+            for target in [p(4., -4.), p(5., -4.)] {
                 assert!(query(&mut cache, &doc, target).is_none());
             }
+            let center = query(&mut cache, &doc, p(4., -2.)).unwrap();
+            assert_eq!(center.kind(), ObjectSnapKind::Center);
+            assert_eq!(center.point(), p(5., -4.));
         }
         assert_eq!(cache.builds, 1);
     }
@@ -351,7 +354,9 @@ fn unclamped_surface_uses_evaluated_natural_boundaries_not_control_rows() {
     for target in [p(4., -2.), p(5.5, -4.), p(4., -6.), p(2.5, -4.)] {
         assert_hit(&mut cache, &doc, target, ObjectSnapKind::Mid);
     }
-    assert!(query(&mut cache, &doc, p(5., -2.)).is_none());
+    let center = query(&mut cache, &doc, p(5., -2.)).unwrap();
+    assert_eq!(center.kind(), ObjectSnapKind::Center);
+    assert_eq!(center.point(), p(4., -4.));
 }
 
 #[test]

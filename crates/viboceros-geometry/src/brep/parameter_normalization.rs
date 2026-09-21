@@ -33,6 +33,32 @@ pub(super) struct TrimParameterNormalization {
 
 impl TrimParameterNormalization {
     pub(super) fn try_from_points(parameters: &[Point2]) -> Result<Option<Self>, GeometryError> {
+        Self::prepare(parameters, false)
+    }
+
+    /// Constrained triangulation must not turn exactly collinear sampled
+    /// vertices into tiny faces by dividing their axes by non-binary extents.
+    /// Power-of-two divisors preserve normal-range significands. Translation
+    /// and subnormal rounding still have the usual binary64 limits.
+    pub(super) fn try_for_triangulation(
+        parameters: &[Point2],
+    ) -> Result<Option<Self>, GeometryError> {
+        Self::prepare(parameters, true)
+    }
+
+    fn prepare(parameters: &[Point2], dyadic: bool) -> Result<Option<Self>, GeometryError> {
+        let divisor = |scale: Real| {
+            if !dyadic || scale == 0. {
+                return scale;
+            }
+            let bits = scale.to_bits();
+            let exponent = bits & 0x7ff0_0000_0000_0000;
+            if exponent != 0 {
+                Real::from_bits(exponent)
+            } else {
+                Real::from_bits(1_u64 << (63 - bits.leading_zeros()))
+            }
+        };
         let Some(first) = parameters.first() else {
             return Ok(None);
         };
@@ -55,10 +81,12 @@ impl TrimParameterNormalization {
             } else {
                 // An overflowing difference uses scaled subtraction only on
                 // this axis; it must not erase a small extent on the other.
-                let scale = parameters
-                    .iter()
-                    .map(|p| p.to_array()[axis].abs())
-                    .fold(0., Real::max);
+                let scale = divisor(
+                    parameters
+                        .iter()
+                        .map(|p| p.to_array()[axis].abs())
+                        .fold(0., Real::max),
+                );
                 result.coordinate_scale[axis] = scale;
                 result.origin[axis] = origin / scale;
                 parameters
@@ -68,7 +96,7 @@ impl TrimParameterNormalization {
             };
             require_finite([relative_scale], "trim parameter normalization")?;
             if relative_scale > 0. {
-                result.relative_scale[axis] = relative_scale;
+                result.relative_scale[axis] = divisor(relative_scale);
                 any_extent = true;
             }
             // Constant axes retain divisor one, so their normalized values are
