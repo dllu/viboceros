@@ -207,7 +207,7 @@ impl Viewport {
         tolerance: Tolerance,
     ) -> ProjectedPrimitives {
         let mut projected = ProjectedPrimitives::default();
-        match &display.geometry {
+        match &*display.geometry {
             Geometry::Point(point) => projected.add_point(self.project(*point, rect)),
             Geometry::PointCloud(cloud) => {
                 for point in cloud.points() {

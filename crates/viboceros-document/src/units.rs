@@ -1,4 +1,4 @@
-use super::{Document, DocumentError, Edit, Geometry, ObjectId};
+use super::{Document, DocumentError, Edit, Geometry, GeometrySnapshot, ObjectId};
 use viboceros_geometry::{AffineTransform3, LengthUnitSystem, Point3, Tolerance};
 
 impl Document {
@@ -37,13 +37,13 @@ impl Document {
                     // Brep reconstruction additionally checks approximate topology;
                     // retain its dimensional matching allowance while the kernel
                     // scales stored vertex/edge tolerances and validates edge curves.
-                    let tolerance = if matches!(object.geometry, Geometry::Brep(_)) {
+                    let tolerance = if matches!(*object.geometry, Geometry::Brep(_)) {
                         Tolerance::try_new(
                             self.tolerance.absolute() * scale,
                             self.tolerance.relative(),
                             self.tolerance.angular(),
                         )?
-                    } else if matches!(object.geometry, Geometry::Mesh(_)) {
+                    } else if matches!(*object.geometry, Geometry::Mesh(_)) {
                         Tolerance::MESH_VALIDATION
                     } else {
                         Tolerance::NUMERICAL_VALIDATION
@@ -56,7 +56,10 @@ impl Document {
                     .iter_mut()
                     .zip(staged)
                     .map(|(object, geometry)| {
-                        (object.id, std::mem::replace(&mut object.geometry, geometry))
+                        (
+                            object.id,
+                            std::mem::replace(&mut object.geometry, geometry.into()),
+                        )
                     })
                     .collect(),
             )
@@ -81,7 +84,7 @@ pub(super) fn exchange_units(
     document: &mut Document,
     units: &mut LengthUnitSystem,
     tolerance: &mut Tolerance,
-    geometries: &mut Option<Vec<(ObjectId, Geometry)>>,
+    geometries: &mut Option<Vec<(ObjectId, GeometrySnapshot)>>,
 ) -> Result<(), DocumentError> {
     if let Some(geometries) = geometries {
         if geometries.len() != document.objects.len()

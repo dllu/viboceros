@@ -188,7 +188,7 @@ impl Document {
             let index = self.objects.len();
             self.objects.push(Object {
                 id: copy_id,
-                geometry,
+                geometry: geometry.into(),
                 attributes,
                 isolation: ObjectIsolation::None,
                 group_ids: Vec::new(),
@@ -272,7 +272,7 @@ impl Document {
                 let index = self.objects.len();
                 self.objects.push(Object {
                     id,
-                    geometry,
+                    geometry: geometry.into(),
                     attributes,
                     isolation: ObjectIsolation::None,
                     group_ids: Vec::new(),

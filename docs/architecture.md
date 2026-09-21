@@ -60,6 +60,10 @@ their reverse member index. Lightweight membership history records preserve
 order without cloning geometry; see [group invariants](groups.md).
 The `object_properties` module keeps attribute and isolation history separate
 from geometry; see [property history](history-selection.md#property-history).
+The document's `geometry_snapshot` module shares immutable geometry between live
+objects, history, clones, and [display caches](viewport-caching.md). Edits replace
+handles, so cache invalidation uses retained storage identity without rescanning
+geometry. Value equality remains structural; no mutable geometry handle is exposed.
 The [batch-deletion module](batch-deletion.md) moves removed objects into compact
 history records and restores table order without repeated vector insertions.
 The [ordered selection iterator](selection-iteration.md) shares efficient,

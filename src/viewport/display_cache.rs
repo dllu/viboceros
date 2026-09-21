@@ -1,14 +1,14 @@
 //! Camera-independent display data shared by the four viewports.
 //!
-//! The document has no geometry revision API. Retain an owned source snapshot
-//! and compare values before reuse: identity/address/history length alone cannot
-//! detect in-place replacement, undo, rollback, or a cloned document's edits.
+//! Immutable document snapshots give constant-time identity checks without
+//! rescanning geometry. Edits install new snapshots; history restores the old
+//! handles. Retaining ownership prevents address reuse from masquerading as a hit.
 
 use super::*;
 use std::cell::{OnceCell, RefCell};
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
-use viboceros_document::Object;
+use viboceros_document::{GeometrySnapshot, Object};
 
 #[derive(Default)]
 pub(super) struct DisplayCache {
@@ -20,17 +20,19 @@ impl DisplayCache {
         let density = object.attributes().wire_density();
         let entry = self.entries.entry(object.id()).or_insert_with(|| {
             Rc::new(DisplayGeometry::new(
-                object.geometry().clone(),
+                object.geometry_snapshot().clone(),
                 density,
                 tolerance,
             ))
         });
-        if entry.geometry != *object.geometry()
+        if !entry
+            .geometry
+            .shares_storage_with(object.geometry_snapshot())
             || entry.wire_density != density
             || entry.tolerance != tolerance
         {
             *entry = Rc::new(DisplayGeometry::new(
-                object.geometry().clone(),
+                object.geometry_snapshot().clone(),
                 density,
                 tolerance,
             ));
@@ -44,7 +46,7 @@ impl DisplayCache {
 }
 
 pub(super) struct DisplayGeometry {
-    pub(super) geometry: Geometry,
+    pub(super) geometry: GeometrySnapshot,
     wire_density: i32,
     tolerance: Tolerance,
     wires: OnceCell<Vec<[Point3; 2]>>,
@@ -54,7 +56,7 @@ pub(super) struct DisplayGeometry {
 }
 
 impl DisplayGeometry {
-    pub(super) fn new(geometry: Geometry, wire_density: i32, tolerance: Tolerance) -> Self {
+    pub(super) fn new(geometry: GeometrySnapshot, wire_density: i32, tolerance: Tolerance) -> Self {
         Self {
             geometry,
             wire_density,
@@ -70,7 +72,7 @@ impl DisplayGeometry {
         self.wires.get_or_init(|| {
             let mut lines = Vec::new();
             let mut visit = |a, b| lines.push([a, b]);
-            match &self.geometry {
+            match &*self.geometry {
                 Geometry::Point(_) | Geometry::PointCloud(_) => {}
                 Geometry::Line(line) => visit(line.start(), line.end()),
                 Geometry::Circle(circle) => curve_sampling::visit_parametric_segments(
@@ -127,11 +129,11 @@ impl DisplayGeometry {
 
     pub(super) fn mesh(&self) -> Option<&TriangleMesh> {
         // Mesh objects already own exactly the display mesh; don't copy it twice.
-        if let Geometry::Mesh(mesh) = &self.geometry {
+        if let Geometry::Mesh(mesh) = &*self.geometry {
             return Some(mesh);
         }
         self.mesh
-            .get_or_init(|| match &self.geometry {
+            .get_or_init(|| match &*self.geometry {
                 Geometry::NurbsSurface(surface) => surface
                     .tessellate(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
                     .ok(),
@@ -156,7 +158,7 @@ impl DisplayGeometry {
     pub(super) fn edges(&self) -> &[Vec<[Point3; 2]>] {
         self.edges.get_or_init(|| {
             let converted;
-            let brep = match &self.geometry {
+            let brep = match &*self.geometry {
                 Geometry::Brep(brep) => brep,
                 Geometry::NurbsSurface(surface) => {
                     let Ok(brep) =

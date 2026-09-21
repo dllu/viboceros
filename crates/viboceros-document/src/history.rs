@@ -43,7 +43,7 @@ pub(super) enum Edit {
     UnitsChanged {
         units: viboceros_geometry::LengthUnitSystem,
         tolerance: viboceros_geometry::Tolerance,
-        geometries: Option<Vec<(ObjectId, super::Geometry)>>,
+        geometries: Option<Vec<(ObjectId, super::GeometrySnapshot)>>,
     },
     ObjectInserted {
         index: usize,

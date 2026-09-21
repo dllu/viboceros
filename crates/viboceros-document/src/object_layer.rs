@@ -166,7 +166,7 @@ mod tests {
         eprintln!("20k points, copy to layer: {:?}", start.elapsed());
         assert_eq!(copied.len(), 20_000);
         for (i, object) in document.objects.iter().enumerate() {
-            assert_eq!(object.geometry, point((i % 20_000) as f64));
+            assert_eq!(*object.geometry, point((i % 20_000) as f64));
             assert_eq!(
                 object.attributes.layer_id,
                 if i < 20_000 {
@@ -266,7 +266,7 @@ mod tests {
                 assert_eq!(
                     copies
                         .iter()
-                        .map(|id| document.object(*id).unwrap().geometry.clone())
+                        .map(|id| document.object(*id).unwrap().geometry().clone())
                         .collect::<Vec<_>>(),
                     expected
                 );

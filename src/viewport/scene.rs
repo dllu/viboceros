@@ -85,7 +85,7 @@ fn point_position_key(point: Point3) -> [u64; 3] {
 }
 
 // Source snapshots are shared with the geometry cache; pointer equality here is
-// safe because DisplayCache validates their complete values before reuse.
+// safe because DisplayCache validates immutable snapshot identity before reuse.
 struct DisplayObject {
     geometry: Rc<DisplayGeometry>,
     color: Color32,
@@ -297,7 +297,7 @@ impl Viewport {
         let mut scene = GpuSceneBuilder::new();
         for object in &key.objects {
             let display = &object.geometry;
-            match &display.geometry {
+            match &*display.geometry {
                 Geometry::Point(point) => {
                     self.add_gpu_point(&mut scene, rect, *point, 4.5, object.color)
                 }

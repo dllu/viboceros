@@ -42,7 +42,7 @@ impl Document {
         history: ReplacementHistory,
     ) -> Result<usize, DocumentError> {
         if history == ReplacementHistory::ChangesOnly {
-            staged.retain(|(index, geometry)| self.objects[*index].geometry != *geometry);
+            staged.retain(|(index, geometry)| *self.objects[*index].geometry != *geometry);
         }
         if staged.is_empty() {
             return Ok(0);
@@ -56,14 +56,14 @@ impl Document {
             let source = &self.objects[index];
             let after = Object {
                 id: source.id,
-                geometry,
+                geometry: geometry.into(),
                 attributes: source.attributes.clone(),
                 isolation: source.isolation,
                 group_ids: source.group_ids.clone(),
             };
             let id = after.id;
-            // Move the old object into history; only the new geometry needs
-            // a clone for the separate live-document and redo states.
+            // Move the old object into history; live and redo states share
+            // the new immutable geometry without cloning its payload.
             let before = std::mem::replace(&mut self.objects[index], after.clone());
             self.record_edit(
                 edit_label,
@@ -143,7 +143,7 @@ mod tests {
                     }
                 }
                 let mut expected = original.objects.clone();
-                expected[1].geometry = Geometry::Point(Point3::try_new(2., 0., 0.).unwrap());
+                expected[1].geometry = Geometry::Point(Point3::try_new(2., 0., 0.).unwrap()).into();
                 assert_eq!(document.objects, expected);
                 assert_eq!(document.groups, original.groups);
                 assert_eq!(document.selection_order, original.selection_order);
@@ -207,7 +207,7 @@ mod tests {
                     for (index, id) in copies.iter().enumerate() {
                         let object = document.object(*id).unwrap();
                         assert_eq!(
-                            object.geometry,
+                            *object.geometry,
                             Geometry::Point(
                                 Point3::try_new(2. * (index + 1) as f64, 0., 0.).unwrap()
                             )

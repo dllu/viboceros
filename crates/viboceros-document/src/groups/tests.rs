@@ -263,7 +263,7 @@ fn benchmark_large_group_copy() {
     for (i, object) in document.objects.iter().skip(20_000).enumerate() {
         assert_eq!(object.group_ids, [copied_group]);
         assert_eq!(
-            object.geometry,
+            *object.geometry,
             Geometry::Point(Point3::try_new(i as f64, 0., 0.).unwrap())
         );
     }

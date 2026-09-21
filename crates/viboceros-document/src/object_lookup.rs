@@ -166,7 +166,7 @@ mod tests {
             let order = if ordered { [2, 1, 0] } else { [0, 1, 2] };
             for (copy, source) in copies.iter().zip(order) {
                 let object = document.object(*copy).unwrap();
-                assert_eq!(object.geometry, point(10. + source as f64));
+                assert_eq!(*object.geometry, point(10. + source as f64));
                 assert_eq!(object.group_ids, originals[source].group_ids);
                 assert_eq!(object.attributes, originals[source].attributes);
             }
@@ -397,7 +397,7 @@ mod tests {
                 ((i - 20_000) as f64 + 2., 4., 6.)
             };
             assert_eq!(
-                object.geometry,
+                *object.geometry,
                 Geometry::Point(Point3::try_new(x, y, z).unwrap())
             );
         }

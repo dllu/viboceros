@@ -2,6 +2,8 @@
 
 mod duplicate;
 mod geometry;
+mod geometry_snapshot;
+pub use geometry_snapshot::GeometrySnapshot;
 mod groups;
 mod history;
 mod object_copy;
@@ -241,7 +243,7 @@ impl ObjectAttributes {
 #[derive(Clone, Debug, PartialEq)]
 pub struct Object {
     id: ObjectId,
-    geometry: Geometry,
+    geometry: GeometrySnapshot,
     attributes: ObjectAttributes,
     isolation: ObjectIsolation,
     group_ids: Vec<GroupId>,
@@ -267,7 +269,13 @@ impl Object {
         self.id
     }
 
-    pub const fn geometry(&self) -> &Geometry {
+    pub fn geometry(&self) -> &Geometry {
+        &self.geometry
+    }
+
+    /// Retain a cheap immutable snapshot for caches or background readers.
+    /// Compare storage identity, not object ID, to detect geometry replacement.
+    pub const fn geometry_snapshot(&self) -> &GeometrySnapshot {
         &self.geometry
     }
 
@@ -1313,7 +1321,7 @@ impl Document {
         let index = self.objects.len();
         self.objects.push(Object {
             id,
-            geometry,
+            geometry: geometry.into(),
             attributes,
             isolation: ObjectIsolation::None,
             group_ids: Vec::new(),

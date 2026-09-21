@@ -2,6 +2,8 @@ use super::*;
 use std::sync::Arc;
 use viboceros_command::CommandRegistry;
 
+mod snapshots;
+
 fn fixture() -> Document {
     let mut document = Document::default();
     let commands = CommandRegistry::with_builtins();
@@ -276,5 +278,41 @@ fn benchmark_cached_viewport_frames() {
         cold,
         stationary,
         orbit
+    );
+}
+
+#[test]
+#[ignore = "manual large-source snapshot benchmark; run with --ignored --nocapture"]
+fn benchmark_large_geometry_snapshot_frames() {
+    use std::hint::black_box;
+    use std::time::Instant;
+    let points = (0..100_000)
+        .map(|i| Point3::try_new(i as f64 / 10_000., (i % 2) as f64, 0.).unwrap())
+        .collect();
+    let mut document = Document::default();
+    document
+        .add_geometry(Geometry::Polyline(
+            viboceros_geometry::Polyline3::try_new(points, document.tolerance()).unwrap(),
+        ))
+        .unwrap();
+    let views = Viewport::standard_views();
+    for view in &views {
+        black_box(view.object_scene(rect(), &document));
+    }
+    let start = Instant::now();
+    for _ in 0..100 {
+        for view in &views {
+            black_box(view.object_scene(rect(), &document));
+        }
+    }
+    let stationary = start.elapsed() / 100;
+    let start = Instant::now();
+    for _ in 0..100 {
+        black_box(document.clone());
+    }
+    eprintln!(
+        "100k polyline vertices: four-view stationary {:?}/frame, document clone {:?} (CPU only)",
+        stationary,
+        start.elapsed() / 100,
     );
 }

@@ -714,19 +714,48 @@ fn gpu_cached_scene_reuses_uploads_and_updates_after_edit_and_undo() {
         1,
         "stationary redraw must skip all uploads"
     );
+    let clone = document.clone();
+    assert_eq!(
+        renderer.render_cached(&view.object_scene(rect, &clone)),
+        pixels
+    );
+    assert_eq!(
+        renderer.preparations(),
+        1,
+        "a document clone shares unchanged geometry"
+    );
+    let layer = document
+        .add_layer("Cached source", viboceros_document::ColorRgb::BLACK)
+        .unwrap();
+    let ids: Vec<_> = document.objects().map(|o| o.id()).collect();
+    document.set_objects_layer(ids, layer).unwrap();
+    document.set_layer_visibility(layer, false).unwrap();
+    assert!(
+        renderer
+            .render_cached(&view.object_scene(rect, &document))
+            .iter()
+            .all(|p| p[3] == 0)
+    );
+    assert_eq!(renderer.preparations(), 2);
+    document.set_layer_visibility(layer, true).unwrap();
+    assert_eq!(
+        renderer.render_cached(&view.object_scene(rect, &document)),
+        pixels
+    );
+    assert_eq!(renderer.preparations(), 3);
     commands.execute(&mut document, "SelAll").unwrap();
     commands.execute(&mut document, "Move 0,0,0 1,0,0").unwrap();
     document.clear_selection();
     let moved = renderer.render_cached(&view.object_scene(rect, &document));
     assert_ne!(pixels, moved);
-    assert_eq!(renderer.preparations(), 2);
+    assert_eq!(renderer.preparations(), 4);
     commands.execute(&mut document, "Undo").unwrap();
     document.clear_selection();
     assert_eq!(
         renderer.render_cached(&view.object_scene(rect, &document)),
         pixels
     );
-    assert_eq!(renderer.preparations(), 3);
+    assert_eq!(renderer.preparations(), 5);
     commands.execute(&mut document, "SelAll").unwrap();
     commands.execute(&mut document, "Delete").unwrap();
     assert!(
@@ -735,12 +764,12 @@ fn gpu_cached_scene_reuses_uploads_and_updates_after_edit_and_undo() {
             .iter()
             .all(|p| p[3] == 0)
     );
-    assert_eq!(renderer.preparations(), 4);
+    assert_eq!(renderer.preparations(), 6);
     assert!(
         renderer
             .render_cached(&view.object_scene(rect, &document))
             .iter()
             .all(|p| p[3] == 0)
     );
-    assert_eq!(renderer.preparations(), 4);
+    assert_eq!(renderer.preparations(), 6);
 }
