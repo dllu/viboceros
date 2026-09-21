@@ -83,6 +83,61 @@ class PointSnapTests(unittest.TestCase):
         for path,digest in provenance["retained_file_sha256"].items():
             self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),digest)
 
+    def test_public_topology_order_is_preserved_and_nonfinite_wires_fail_closed(self):
+        class Mesh: pass
+        mesh = Mesh()
+        lines = [SimpleNamespace(From=[2.,3.,4.],To=[5.,6.,7.]),
+                 SimpleNamespace(From=[5.,6.,7.],To=[0.,0.,0.])]
+        mesh.TopologyEdges = SimpleNamespace(Count=2,EdgeLine=Mock(side_effect=lambda i:lines[i]))
+        host = dict(Rhino=SimpleNamespace(Geometry=SimpleNamespace(Mesh=Mesh)),_xyz=lambda p:p)
+        self.assertIsNone(probe.topology_wires(object(),host))
+        self.assertEqual(probe.topology_wires(mesh,host),[[line.From,line.To] for line in lines])
+        self.assertEqual(mesh.TopologyEdges.EdgeLine.call_count,2)
+        lines[1].To = [float("nan"),0.,0.]
+        with self.assertRaises(ValueError): probe.topology_wires(mesh,host)
+
+    def test_public_wire_picking_is_separate_and_always_disposes_context(self):
+        for failure in (None,"ray","transform","query","nonfinite","meshquery","meshpoint","meshdepth"):
+            with self.subTest(failure=failure):
+                class Matrix:
+                    def __getitem__(self,ij): return float(ij[0] == ij[1])
+                matrix = Matrix()
+                class Mesh: pass
+                context = SimpleNamespace(SetPickTransform=Mock(),UpdateClippingPlanes=Mock(),Dispose=Mock())
+                def query(line,*args):
+                    if args:
+                        self.assertEqual(args,("wireframe",))
+                        if failure == "meshquery": raise ValueError("mesh query failed")
+                        return (True,[float("nan") if failure == "meshpoint" else 1.,2.,3.],
+                                float("inf") if failure == "meshdepth" else 0.5,0.75,"Edge",2)
+                    if failure == "query": raise ValueError("query failed")
+                    return True,0.25,0.5,float("nan") if failure == "nonfinite" else 0.75
+                context.PickFrustumTest = query
+                def transform(rect):
+                    self.assertEqual(rect,(88,188,24,24))
+                    if failure == "transform": raise ValueError("transform failed")
+                    return matrix
+                viewport = SimpleNamespace(GetFrustumLine=lambda x,y:(failure != "ray","ray"),GetPickTransform=transform)
+                view = SimpleNamespace(ActiveViewport=viewport)
+                factory = Mock(return_value=context)
+                factory.MeshPickStyle = SimpleNamespace(WireframePicking="wireframe")
+                host = dict(Rhino=SimpleNamespace(
+                    Input=SimpleNamespace(Custom=SimpleNamespace(PickContext=factory,PickStyle=SimpleNamespace(PointPick="point"))),
+                    Geometry=SimpleNamespace(Mesh=Mesh,Line=lambda a,b:(a,b))),
+                    System=SimpleNamespace(Drawing=SimpleNamespace(Rectangle=lambda *args:args)),_point=lambda p:p,_xyz=lambda p:p)
+                result = dict(frame=dict(click_client=[100,200]),topology_wires=[None,[[[0.,0.,0.],[1.,2.,3.]]]])
+                geometries = [object(),Mesh()]
+                if failure:
+                    with self.assertRaises(ValueError): probe.wire_pick_diagnostics(view,result,12,host,geometries)
+                else:
+                    value = probe.wire_pick_diagnostics(view,result,12,host,geometries)
+                    self.assertEqual(value["sources"],[None,[dict(t=0.25,depth=0.5,distance=0.75)]])
+                    self.assertEqual(value["meshes"],[None,dict(point=[1.,2.,3.],depth=0.5,distance=0.75,flag="Edge",index=2)])
+                    self.assertEqual(context.PickLine,"ray")
+                    context.SetPickTransform.assert_called_once_with(matrix)
+                    context.UpdateClippingPlanes.assert_called_once()
+                context.Dispose.assert_called_once()
+
     def test_request_and_source_validation_precedes_host_access(self):
         base = request()
         probe.validate_request(base)
@@ -93,6 +148,7 @@ class PointSnapTests(unittest.TestCase):
                         dict(aim=[10**400,0,0]), dict(offset=[33,0]), dict(offset=[0.5,0]),
                         dict(offset=[True,0]), dict(snap_to_meshes=None), dict(snap_to_meshes=1),
                         dict(capture_radius=0), dict(capture_radius=65), dict(capture_radius=True), dict(capture_radius=12.5),
+                        dict(pick_diagnostics=None), dict(pick_diagnostics=1),
                         dict(persistent_snaps=["Near","Near"]), dict(persistent_snaps=[{}]),
                         dict(persistent_snaps=["Near _Delete"]), dict(persistent_snaps=None),
                         dict(bounds=[[2,2,2],[1,1,1]]), dict(view="Perspective _Delete"),
@@ -168,7 +224,7 @@ class PointSnapTests(unittest.TestCase):
             with self.subTest(failure=failure): self.exercise_pick(failure)
 
     def test_owned_sources_and_view_restore_after_setup_pick_and_cleanup_failures(self):
-        for failure in (None,"source","projection","fit","pick","owner","delete"):
+        for failure in (None,"source","projection","fit","pick","owner","topology","diagnostics","delete"):
             with self.subTest(failure=failure):
                 created, table, deleted = [], {}, []
                 class Curve:
@@ -212,7 +268,11 @@ class PointSnapTests(unittest.TestCase):
                     return dict(point=[3.,-2.,7.],kind="Near"), "foreign" if failure == "owner" else "owned-0"
                 op = copy.deepcopy(request()["operations"][0])
                 op["sources"] *= 2
-                with patch.object(probe,"pick",side_effect=pick), patch.object(probe.snap_environment,"environment",environment):
+                if failure == "diagnostics": op["pick_diagnostics"] = True
+                def topology(geometry,host):
+                    if failure == "topology": raise ValueError("topology query failed")
+                    return None
+                with patch.object(probe,"pick",side_effect=pick), patch.object(probe.snap_environment,"environment",environment), patch.object(probe,"topology_wires",side_effect=topology), patch.object(probe,"wire_pick_diagnostics",side_effect=ValueError("diagnostic failed")):
                     if failure:
                         with self.assertRaises(ValueError): probe.run(op,None,host)
                     else:
@@ -220,6 +280,7 @@ class PointSnapTests(unittest.TestCase):
                         self.assertEqual(elapsed,0)
                         self.assertEqual(value["source"],0)
                         self.assertEqual(value["before"],value["after"])
+                        self.assertEqual(value["topology_wires"],[None,None])
                 self.assertEqual(len(deleted),len(created))
                 for geometry in created: geometry.Dispose.assert_called_once()
                 saved.Dispose.assert_called_once()

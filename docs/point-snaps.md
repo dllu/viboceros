@@ -36,7 +36,7 @@ points are not a native placement-parity claim. All 101 retain unchanged source
 geometry and mesh-switch restoration. Four Mid captures distinguish direct mesh
 Mid from whole-segment curve Mid without inferring labels from point positions.
 
-Three genuine differences remain: `threshold-tilted--10-0`,
+Three genuine differences remain in this corpus: `threshold-tilted--10-0`,
 `threshold-tilted--9-0` and `aperture-tilted--8-0-r16`. Rhino selects an adjacent
 mesh edge's endpoint, whereas native snapping selects a closer projected point
 on the hovered edge. The aperture witness records `MeshTopologyEdge` index 1;
@@ -44,7 +44,9 @@ the other two were additionally checked by a separately hashed component
 diagnostic. Their model-space discrepancies exceed `0.5` units. These are not
 roundoff, toleranced matches, or silently skipped assertions: tests check the
 independent native target, observed endpoint, source/kind and distance ordering.
-General Rhino mesh corner-edge ranking remains unresolved.
+The [competition follow-up](mesh-snap-order.md) retains broader wire-selection
+counterexamples, repeated vertex-order effects, and a reusable native replay
+API. General Rhino mesh wire ranking remains unresolved, not only at corners.
 
 ## Measured per-wire calculation
 
@@ -93,7 +95,7 @@ attributes, selection and actual Undo/Redo with unchanged `1e-9` absolute /
 coordinates are retained. The new GetPoint probe itself makes no model-history
 claim.
 
-Validation checkpoint: the release workspace passes 3,139 tests (29 ignored);
+Validation checkpoint at `1fd0b8e`: the release workspace passes 3,139 tests (29 ignored);
 all seven explicitly enabled GPU raster checks and all 314 Python oracle tests
 pass. Workspace Clippy with warnings denied, rustdoc with warnings denied,
 formatting and whitespace checks also pass. These checks preserve the three
@@ -111,7 +113,9 @@ cargo test --release -p viboceros-oracle calibrated_mesh_snaps
 ```
 
 Run generated requests with the owned `tools/rhino_oracle/run_headless.sh rhino
-REQUEST --timeout 600` runner. This is a Rhino diagnostic operation; native replay
-uses the recorded camera/click in the dedicated tests, never an uncalibrated aim
-or an observed target as input. Separate generator flags reproduce each stage:
+REQUEST --timeout 600` runner. This is a Rhino diagnostic operation; native
+`projected_object_snap` replay uses the recorded camera/click, never an
+uncalibrated aim or an observed target as input. The [replay CLI](mesh-snap-order.md#reusable-native-replay)
+compares the whole corpus and exits with a parity failure for the three known
+differences. Separate generator flags reproduce each stage:
 no flag for discovery, `--held-out`, `--threshold`, or `--aperture`.

@@ -1,0 +1,29 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "competition_cases": 48,
+  "order_repetitions": 24,
+  "public_picking_diagnostic_repetitions": 12,
+  "retained_getpoint_observations": 84,
+  "observed_wire_target_matches": 84,
+  "native_replay_matches": 35,
+  "native_replay_mismatches": 49,
+  "original_101_case_native_replay_matches_including_non_admissions": 98,
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/mesh_snap_order.json": "1f8fdd4346036259c192974ed1f8980e86130cdee78b6851624214597c9500b0",
+    "tools/rhino_oracle/observations/mesh_snap_order.json": "116304614217a0572dadd7486fdf7190975b7aefa306050c9491a4c235ba97e7"
+  },
+  "raw_response_sha256": {
+    "competition_48": "d324e7f62ef713a6ff07dfcd491de4dd724cb28db9aaa0b69a9b7770e86c5228",
+    "order_repetitions_24": "5f50b84b7355dc220bc9c3ed652949aff2948ed3127c0ed5aeed33ecbb4be55d",
+    "preliminary_line_picks_12": "d71d05fc31b4a1e645d51169b7594d0c2cbcc620f4c91471e333e56c13cb7102",
+    "line_and_mesh_picks_12": "d7831feac69f5eba896e564d90dc9e798e955d158d61cd09ad2f6fc04f09f3b5"
+  },
+  "notes": [
+    "All four runs used newly owned private-Xvfb Rhino sessions and documented public APIs. No existing user window or proprietary implementation was inspected.",
+    "Retained observations concatenate all 48 competition results, all 24 order repetitions and all 12 final picking diagnostic results. The preliminary 12 line-only diagnostics repeat the same picking inputs and are hashed separately, not counted as additional retained cases.",
+    "Per-wire mathematical agreement uses the observed component only to identify the wire being tested; it is not a claim that native wire selection matches Rhino.",
+    "All 24 changed-sequence order repetitions reproduce the point and component. Raw vertex order can change selection without changing the boundary, camera or click.",
+    "Public ordinary picking and actual Near snapping select different edges in retained counterexamples. No first-edge, minimum-distance or ordinary-picking heuristic was substituted into native mesh snapping.",
+    "The native projected_object_snap diagnostic consumes only sources, camera/click and policy. Its Python replay leaves parity mismatches as failures, with no target-dependent inputs or widened epsilon. None compares non-admission only; these probes do not test history or establish speed parity."
+  ]
+}

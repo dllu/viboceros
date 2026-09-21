@@ -20,7 +20,8 @@ The implementation is independent of egui and document mutations.
 its own measured endpoint-depth weighting and square-aperture branch. It must
 not replace curve Near's Euclidean screen metric. A separate 630-case Fraction
 corpus validates that calculation, including endpoint reversal and asymmetric
-depths; live point probes retain three unresolved mesh corner-edge priorities.
+depths. The [competition probes](mesh-snap-order.md) retain unresolved mesh
+wire-selection differences separately from the per-wire target calculation.
 
 If one endpoint projects and the other does not, the visible boundary is bisected
 in model coordinates. Every retained inside point actually projects. Midpoint

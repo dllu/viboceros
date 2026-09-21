@@ -84,6 +84,8 @@ mod curve_frames;
 mod plane_primitives;
 mod plane_transforms;
 mod point_input;
+mod projected_object_snap;
+pub use projected_object_snap::ProjectedObjectSnapFixture;
 mod sweep;
 pub use sweep::SweepFixture;
 mod curve_area;
@@ -162,6 +164,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    ProjectedObjectSnap {
+        id: String,
+        #[serde(flatten)]
+        fixture: ProjectedObjectSnapFixture,
+    },
     SurfaceParameterCurveBounds {
         id: String,
         #[serde(flatten)]
@@ -1674,7 +1681,8 @@ pub enum SurfaceSplitCutterDefinition {
 impl Operation {
     pub fn id(&self) -> &str {
         match self {
-            Self::PolycurveGeometry { id, .. }
+            Self::ProjectedObjectSnap { id, .. }
+            | Self::PolycurveGeometry { id, .. }
             | Self::CurveBounds { id, .. }
             | Self::SurfaceBounds { id, .. }
             | Self::SurfaceClosestPoint { id, .. }
@@ -2026,6 +2034,11 @@ fn validate_request(request: &ProbeRequest) -> Result<(), ProbeError> {
         if id.trim().is_empty() || !ids.insert(id) {
             return Err(ProbeError::InvalidOperationId(id.to_owned()));
         }
+        if matches!(operation, Operation::ProjectedObjectSnap { .. }) && request.iterations != 1 {
+            return Err(ProbeError::FixtureInvariant(
+                "projected snaps require one iteration",
+            ));
+        }
         if matches!(
             operation,
             Operation::GroupPicking { .. } | Operation::UndoSelection { .. }
@@ -2052,6 +2065,9 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::ProjectedObjectSnap { fixture, .. } => {
+            projected_object_snap::run(fixture, tolerance)?
+        }
         Operation::SurfaceParameterCurveBounds { fixture, .. } => {
             parameter_bounds::run(fixture, tolerance)?
         }

@@ -24,11 +24,12 @@ def point(value):
 
 def validate(operation):
     required = set(("op", "id", "sources", "view", "bounds", "aim", "offset", "persistent_snaps", "snap_to_meshes"))
-    if (not isinstance(operation, dict) or set(operation)-set(("capture_radius",)) != required
+    if (not isinstance(operation, dict) or set(operation)-set(("capture_radius","pick_diagnostics")) != required
             or operation["op"] != "point_snap"):
         raise ValueError("invalid point snap fields")
     radius = operation.get("capture_radius",12)
     if type(radius) is not int or not 1 <= radius <= 64: raise ValueError("invalid snap aperture")
+    if type(operation.get("pick_diagnostics",False)) is not bool: raise ValueError("invalid picking diagnostic switch")
     name = operation["id"]
     if not isinstance(name, (str, type(u""))) or re.match(r"^[A-Za-z0-9_.-]{1,100}\Z", name) is None:
         raise ValueError("invalid point snap id")
@@ -141,6 +142,65 @@ def pick(operation, host):
         getter.Dispose()
 
 
+def topology_wires(geometry, host):
+    """Public topology indices/lines, not an inferred face-order mapping."""
+    if not isinstance(geometry, host["Rhino"].Geometry.Mesh): return None
+    edges, wires = geometry.TopologyEdges, []
+    for index in range(edges.Count):
+        line = edges.EdgeLine(index)
+        ends = [host["_xyz"](line.From),host["_xyz"](line.To)]
+        if not all(point(end) for end in ends): raise ValueError("nonfinite mesh topology wire")
+        wires.append(ends)
+    return wires
+
+
+def wire_pick_diagnostics(view, result, radius, host, geometries=()):
+    """Read-only public PickContext queries, distinct from actual GetPoint snaps."""
+    Rhino, System = host["Rhino"],host["System"]
+    context = Rhino.Input.Custom.PickContext()
+    try:
+        x,y = result["frame"]["click_client"]
+        viewport = view.ActiveViewport
+        success,line = viewport.GetFrustumLine(x,y)
+        if not success: raise ValueError("missing diagnostic pick ray")
+        context.View = view
+        context.PickStyle = Rhino.Input.Custom.PickStyle.PointPick
+        context.PickLine = line
+        transform = viewport.GetPickTransform(System.Drawing.Rectangle(x-radius,y-radius,2*radius,2*radius))
+        context.SetPickTransform(transform)
+        context.UpdateClippingPlanes()
+        sources = []
+        for wires in result["topology_wires"]:
+            if wires is None:
+                sources.append(None)
+                continue
+            values = []
+            for a,b in wires:
+                wire = Rhino.Geometry.Line(host["_point"](a),host["_point"](b))
+                hit,t,depth,distance = context.PickFrustumTest(wire)
+                if hit and not all(finite(v) for v in (t,depth,distance)):
+                    raise ValueError("nonfinite diagnostic pick")
+                values.append(dict(t=t,depth=depth,distance=distance) if hit else None)
+            sources.append(values)
+        meshes = []
+        for geometry in geometries:
+            if not isinstance(geometry,Rhino.Geometry.Mesh):
+                meshes.append(None)
+                continue
+            picked = context.PickFrustumTest(geometry,Rhino.Input.Custom.PickContext.MeshPickStyle.WireframePicking)
+            if picked[0]:
+                target = host["_xyz"](picked[1])
+                depth,distance,flag,index = picked[-4:]
+                if not point(target) or not all(finite(v) for v in (depth,distance)):
+                    raise ValueError("nonfinite diagnostic mesh pick")
+                meshes.append(dict(point=target,depth=depth,distance=distance,flag=str(flag),index=int(index)))
+            else:
+                meshes.append(None)
+        return dict(transform=[[float(transform[i,j]) for j in range(4)] for i in range(4)],sources=sources,meshes=meshes)
+    finally:
+        context.Dispose()
+
+
 def run(operation, tolerance, host):
     validate(operation)
     Rhino, System = host["Rhino"], host["System"]
@@ -180,6 +240,12 @@ def run(operation, tolerance, host):
         result.update(source=None if key is None else ids.index(key), before=before,
                       after=[record(document.Objects.FindId(key).Geometry) for key in ids],
                       mesh_snap_setting=state)
+        # Public topology order is diagnostic evidence, not an inferred mapping
+        # from face or vertex indices. Keep one entry per owned source.
+        result["topology_wires"] = [topology_wires(document.Objects.FindId(key).Geometry,host) for key in ids]
+        if operation.get("pick_diagnostics",False):
+            result["wire_picks"] = wire_pick_diagnostics(view,result,operation.get("capture_radius",12),host,
+                                                       [document.Objects.FindId(key).Geometry for key in ids])
         return result, 0
     finally:
         # Attempt every independent restoration even if one API fails. Never

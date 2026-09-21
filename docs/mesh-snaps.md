@@ -55,6 +55,9 @@ location. The subsequent [unconstrained calibration](point-snaps.md) records
 actual 3D targets, snap kinds and source ownership in 101 further cases. Ninety
 captures match in full 3D; eight verify non-admission. Three corner-edge priority
 differences remain explicitly tested, not treated as geometric parity passes.
+The [wire-competition follow-up](mesh-snap-order.md) adds 48 competition cases
+and 36 repetitions, exposing broader vertex-order and parallel-wire selection
+differences. Its native replay reports mismatches as failures.
 
 For mesh Near, an endpoint inside the square snap aperture selects ordinary
 screen-distance interpolation. Otherwise the measured wire calculation uses
@@ -91,7 +94,7 @@ corpus checks mesh Near interpolation. These are traversal/correctness
 checks, not timing measurements or a Rhino performance comparison. Cold topology
 construction, overlapping projected bounds and scene-object traversal remain
 unbounded by a fixed frame budget. Occlusion, general cross-object priorities and
-full Rhino mesh corner-edge priority parity remain incomplete. Live point probes
+full Rhino mesh wire-selection parity remain incomplete. Live point probes
 cover fully visible wires, not arbitrary clipping or extreme coordinate ranges.
 
 All four viewport types exercise ordinary and edge-constrained mesh targets;

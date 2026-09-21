@@ -13,7 +13,7 @@ settings, not document edits or model undo steps.
 The separate **Snap to mesh wires** checkbox (initially off), also controlled by
 `SnapToMeshes Enable|Disable|Toggle`, admits supported mesh Near/Mid sources
 without changing feature selection or pending overrides. [Mesh snapping](mesh-snaps.md)
-documents its direct-only Mid behavior, depth-weighted Near and remaining corner-edge
+documents its direct-only Mid behavior, depth-weighted Near and remaining wire-selection
 priority differences.
 
 While a command requests a point, Shift-click a mode for the next point only.
@@ -86,4 +86,4 @@ parity or change the limits of the underlying geometry queries.
 
 [Near](near-snaps.md) includes calibrated perspective captures and complete
 command/history replay. [Mesh wires](mesh-snaps.md) now support opt-in Near/Mid;
-Rhino mesh corner-edge priority parity and certified global curved proximity remain pending.
+Rhino mesh wire-selection parity and certified global curved proximity remain pending.

@@ -14,6 +14,11 @@ snap kinds and source ownership through public `GetPoint` APIs. Its 101 retained
 line/mesh cases resolve the previous Mesh Near coordinate discrepancies while
 preserving three corner-edge selection differences. Source/camera-only rational
 references and native replay remain separate from the observed picked points.
+The [mesh-competition follow-up and point replay API](mesh-snap-order.md) expose
+broader wire-selection differences with 84 retained captures, including repeated
+vertex-order checks and public picking diagnostics. `projected_object_snap`
+accepts calibrated native inputs; `python3 -m tools.rhino_oracle.point_snap_replay`
+compares target/kind/source and returns exit status 1 for real parity differences.
 
 The `join_command` probe has 181 raw mesh records covering both
 `JoinDisjointMeshes` choices, precision thresholds, ordered selection, winding,

@@ -75,7 +75,8 @@ Rhino process cannot execute that cleanup.
 implemented Point/End/Mid/Center/Quad and opt-in [Near](../near-snaps.md), including
 [Mid-only curve hover](../mid-hover-snaps.md). [Mesh wire snaps](../mesh-snaps.md)
 have a separate source switch, direct-only Mid, and calibrated depth-weighted Near;
-some mesh corner-edge priorities still differ from Rhino.
+mesh wire selection, including corners and competing parallel wires, still differs
+from Rhino; see the [competition diagnostics](../mesh-snap-order.md).
 14 retained mesh-switch states match Rhino exactly. Other feature kinds remain
 incomplete. Grid spacing is one unit; SmartTrack is
 reference-axis tracking, not Rhino's complete inference system. SnapSize, custom
