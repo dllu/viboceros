@@ -788,6 +788,12 @@ def _surface_wires(operation, iterations):
 def _trimmed_surface_mass_properties(operation, iterations, tolerance):
     brep = _trimmed_brep_from_definition(operation, tolerance)
     try:
+        def trim_records():
+            return [[[_nurbs_parameter_curve_definition(trim) for trim in loop.Trims]
+                     for loop in face.Loops] for face in brep.Faces]
+        # Keep extraction outside the timed measurements, and verify that the
+        # native API has not changed any trim parameterization while measuring.
+        trims = trim_records()
         def compute():
             properties = Rhino.Geometry.AreaMassProperties.Compute(
                 brep, True, False, False, False, tolerance["relative"], tolerance["absolute"]
@@ -810,7 +816,11 @@ def _trimmed_surface_mass_properties(operation, iterations, tolerance):
                 finally:
                     properties.Dispose()
             return {"area": area, "volume": volume, "is_solid": bool(brep.IsSolid)}
-        return _measure(iterations, compute)
+        value, elapsed = _measure(iterations, compute)
+        if trim_records() != trims:
+            raise ValueError("mass property measurement changed trim geometry")
+        value["trim_curves"] = trims
+        return value, elapsed
     finally:
         brep.Dispose()
 

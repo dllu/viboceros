@@ -3,6 +3,7 @@ use std::ops::RangeInclusive;
 use crate::nurbs::validate_direction;
 use crate::{GeometryError, Point2, Real, require_finite};
 mod evaluate;
+mod integration_frame;
 
 /// A two-dimensional Euclidean control point with a finite, nonzero weight.
 #[derive(Clone, Copy, Debug, PartialEq)]

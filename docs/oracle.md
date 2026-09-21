@@ -519,6 +519,10 @@ an optional cap surface sharing those boundaries. Rhino's public B-rep topology
 API builds the same input geometry as the native probe, avoiding changes to the
 input from a separate trim-fitting operation. Numerical API calls are timed;
 the native probe also checks `Area` and `Volume` command results and document state.
+The [35 trim-domain frame cases](mass-properties.md#trim-domain-regression-audit)
+vary trim parameters without changing UV coordinates or spatial edges. Their
+records include complete trim definitions, extracted outside the timed section,
+so implicit input normalization cannot masquerade as large-domain coverage.
 
 The `curve_area.json` fixture checks eight [enclosed curve-area cases](curve-area.md)
 against analytic references and Rhino's public API. The retained strict comparison

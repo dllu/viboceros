@@ -6,6 +6,9 @@ use viboceros_command::CommandRegistry;
 use viboceros_document::{Document, Geometry, SelectionMode};
 use viboceros_geometry::{GeometryError, Tolerance};
 
+#[cfg(test)]
+mod parameter_tests;
+
 pub(super) fn run(
     fixture: &TrimmedBrepFixture,
     iterations: u32,
@@ -13,6 +16,24 @@ pub(super) fn run(
 ) -> Result<(Value, u64), ProbeError> {
     let brep = build(fixture, tolerance)?;
     let is_solid = brep.is_solid();
+    // Untimed evidence that the measurement sees the requested trim domains,
+    // rather than an implicitly normalized/rebuilt fixture.
+    let trims = brep
+        .faces()
+        .iter()
+        .map(|face| {
+            face.loops()
+                .iter()
+                .map(|boundary| {
+                    boundary
+                        .trims()
+                        .iter()
+                        .map(|trim| super::nurbs_curve2_definition_value(trim.curve()))
+                        .collect::<Vec<_>>()
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
     let ((area, volume), elapsed) = measure(iterations, || -> Result<_, GeometryError> {
         Ok((
             brep.area(tolerance)?,
@@ -63,7 +84,7 @@ pub(super) fn run(
         ));
     }
     Ok((
-        json!({"area":area,"volume":volume,"is_solid":is_solid}),
+        json!({"area":area,"volume":volume,"is_solid":is_solid,"trim_curves":trims}),
         elapsed,
     ))
 }

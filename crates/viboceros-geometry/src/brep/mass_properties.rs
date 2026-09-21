@@ -12,6 +12,8 @@ use crate::{
 mod trimmed;
 
 #[cfg(test)]
+mod parameter_tests;
+#[cfg(test)]
 pub(in crate::brep) mod tests;
 
 #[derive(Clone, Copy)]
@@ -251,7 +253,8 @@ fn integrate_planar_trimmed_face_doubled_area(
     let mut sum = 0.0;
     let mut correction = 0.0;
     for trim in face.loops.iter().flat_map(|face_loop| &face_loop.trims) {
-        for (start, end) in trim.curve.spans() {
+        let curve = trim.curve.for_integration()?;
+        for (start, end) in curve.spans() {
             let doubled_area = integrate_adaptive(
                 start,
                 end,
@@ -259,7 +262,7 @@ fn integrate_planar_trimmed_face_doubled_area(
                 relative_tolerance,
                 |parameter| {
                     let (surface_parameter, parameter_derivative) =
-                        trim.curve.evaluate_with_derivative(parameter)?;
+                        curve.evaluate_with_derivative(parameter)?;
                     let (point, derivative_u, derivative_v) = surface
                         .evaluate_with_derivatives(surface_parameter.x(), surface_parameter.y())?;
                     let derivative = Vector3::try_new(

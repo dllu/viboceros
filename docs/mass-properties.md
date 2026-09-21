@@ -31,6 +31,14 @@ their own integration intervals.
 The implementation uses nested adaptive Gauss–Kronrod quadrature, compensated
 summation, and centered surface controls. Derivatives are scaled to integration
 intervals before cross products to reduce sensitivity to UV domain scaling.
+Trim-curve parameters have a separate temporary frame: an origin is removed only
+when every knot subtraction is exact, then exact power-of-two scaling keeps the
+active range near unit size. Every scaling step must round-trip all knots,
+including exterior knots. Control points, weights, multiplicities, relative span
+widths, and stored domains are unchanged. Planar quadrature and nonplanar
+surface-knot crossing isolation both use these frames; neither rounds integration
+stations or roots back onto a coarse native parameter grid.
+
 The absolute area budget is document distance tolerance times the control-bounds
 diagonal; volume uses distance tolerance times its square. Budgets are divided
 among faces, knot spans, boundary intervals, and inner integrations, alongside
@@ -38,6 +46,10 @@ relative error estimates. These are numerical estimates, not symbolic proofs.
 Nonconvergence, nonfinite values, invalid trim domains, or exhausted work limits
 return errors. Each nonplanar trimmed face allows at most 65,536 boundary intervals
 and two million surface evaluations, in addition to quadrature subdivision limits.
+An unrepresentable rescaling fails instead of collapsing knots. Lossless origin
+removal can be declined when exterior knots prevent it, and arbitrary relative
+span conditioning is not solved. These frames do not make every extreme-domain
+curve admissible to the B-rep constructor.
 
 ## Validation
 
@@ -60,4 +72,34 @@ Fixture construction and command checks are outside the timed measurements:
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/trimmed_mass_properties.json \
   --absolute-epsilon 1e-8 --relative-epsilon 1e-10
+```
+
+## Trim-domain regression audit
+
+[35 parameter-frame fixtures](../tools/rhino_oracle/fixtures/trim_parameter_frames.json)
+and [raw Rhino 8.32.26160.13001 observations](../tools/rhino_oracle/observations/trim_parameter_frames.json)
+cover a planar disk, a paraboloid disk and annulus, and outward/inward capped
+solids. Only trim-curve parameters change: origins are `0`, `±1e9`, and `±1e15`,
+with additional domain lengths `4e-100` and `4e100`. Surface UV coordinates and
+spatial edge geometry are unchanged.
+
+All 35 live comparisons pass at the existing `1e-8` absolute / `1e-10` relative
+oracle threshold, with maximum difference `1.212e-9`. Native values agree with
+the analytic formulas within `4.5e-16` in this run; regression assertions use
+`1e-12`. Rhino's unrounded integration residuals are retained, not replaced by
+analytic values. The probe now records every trim's degree, controls, weights,
+knots, and domain outside the timed section, and verifies Rhino measurement did
+not change them. Both engines' trim records match the requested data exactly.
+Native probes additionally exercise `Area`/`Volume` and check geometry, selection,
+identity, and undo history remain unchanged.
+
+Kernel regressions also cover surface-knot crossings, hole orientation, domain
+lengths around `1e±280`, nonuniform cubic spans, exterior knots, and rejected
+range loss. Frame-level point/derivative tests include the smallest subnormal
+interval and endpoints at the finite binary64 limits.
+
+```sh
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/trim_parameter_frames.json \
+  --timeout 600 --absolute-epsilon 1e-8 --relative-epsilon 1e-10
 ```

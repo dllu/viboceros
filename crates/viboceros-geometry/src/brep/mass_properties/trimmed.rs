@@ -19,13 +19,30 @@ pub(super) fn integrate(
     absolute_tolerance: Real,
     relative_tolerance: Real,
 ) -> Result<Real, GeometryError> {
+    let mut span_count = 0usize;
+    let curves = face
+        .loops
+        .iter()
+        .flat_map(|l| &l.trims)
+        .map(|trim| {
+            // Every nonempty trim span needs at least one boundary interval.
+            // Bound frame copies before root isolation constructs more pieces.
+            span_count = span_count
+                .checked_add(trim.curve.spans().count())
+                .filter(|&n| n <= MAX_BOUNDARY_INTERVALS)
+                .ok_or(GeometryError::NumericalIntegrationDidNotConverge)?;
+            trim.curve.for_integration()
+        })
+        .collect::<Result<Vec<_>, _>>()?;
     let mut intervals = Vec::new();
-    for trim in face.loops.iter().flat_map(|face_loop| &face_loop.trims) {
-        for interval in boundary_intervals(&trim.curve, surface)? {
+    for curve in &curves {
+        // Isolate surface-knot crossings in the same local parameter frame
+        // used for quadrature; never round roots back onto native knot origins.
+        for interval in boundary_intervals(curve, surface)? {
             if intervals.len() == MAX_BOUNDARY_INTERVALS {
                 return Err(GeometryError::NumericalIntegrationDidNotConverge);
             }
-            intervals.push((&trim.curve, interval));
+            intervals.push((curve.as_ref(), interval));
         }
     }
     if intervals.is_empty() {
@@ -163,4 +180,25 @@ fn boundary_intervals(
         .windows(2)
         .filter_map(|pair| (pair[0] < pair[1]).then_some([pair[0], pair[1]]))
         .collect())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn interval_budget_rejects_excessive_trim_frames_before_root_search() {
+        let source =
+            super::super::tests::round_trim(super::super::tests::paraboloid(), &[0.5], false);
+        let mut face = source.faces()[0].clone();
+        let trim = face.loops[0].trims[0].clone();
+        let count = MAX_BOUNDARY_INTERVALS / trim.curve.spans().count() + 1;
+        // This exercises the preflight guard, not construction of a multiply
+        // wound valid face: over-budget boundary data must never reach roots.
+        face.loops[0].trims = vec![trim; count];
+        assert!(matches!(
+            integrate(&face, &face.surface, Measure::Area, 1e-12, 1e-13),
+            Err(GeometryError::NumericalIntegrationDidNotConverge)
+        ));
+    }
 }

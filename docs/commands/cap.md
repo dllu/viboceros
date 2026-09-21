@@ -119,7 +119,9 @@ Two new discrepancies remain explicit, with complete input/output observations:
   vertices), while native Cap retains both (seven edges/six vertices). The
   wall's analytic area, `4√29 + √746 + 3√26 = 64.1507183368116966…`, agrees with
   native within `1e-12`; Rhino reports `64.150718708800468`. Native volume is
-  within `1e-9` of the analytic `30`, while Rhino differs by about `1.33e-7`.
+  within `1e-12` of the analytic `30` after the
+  [trim-domain integration correction](../mass-properties.md#trim-domain-regression-audit),
+  while Rhino differs by about `1.33e-7`.
   These are topology and integration discrepancies, not a claim that the
   retained curve loci differ by the per-edge sample-record differences.
 

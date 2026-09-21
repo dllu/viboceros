@@ -128,7 +128,7 @@ fn large_parameter_origin_retains_rhino_topology_and_integral_discrepancies() {
         assert_eq!(g["solid"], true);
         assert_eq!(g["faces"].as_array().unwrap().len(), 3);
     }
-    assert!((a["volume"].as_f64().unwrap() - 30.).abs() < 1e-9);
+    assert!((a["volume"].as_f64().unwrap() - 30.).abs() < 1e-12);
     assert!((b["volume"].as_f64().unwrap() - 30.).abs() > 1e-7);
 }
 
