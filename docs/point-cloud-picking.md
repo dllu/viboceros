@@ -20,7 +20,7 @@ slice API and interchange representation are unchanged.
 `point_cloud.rs` owns the public type, shared storage, and cache lifecycle.
 `point_cloud/index.rs` owns k-d tree construction, deterministic ordering, and
 bounded searches. `point_cloud/tests.rs` contains correctness, lifecycle,
-concurrency, and opt-in timing checks; the public query API stays unchanged.
+concurrency, and opt-in timing checks.
 
 `PointCloudProjection` selects XY, XZ, or YZ for
 `PointCloud3::nearest_projected_relative`. Queries keep the camera origin and
@@ -29,6 +29,13 @@ plane, and preserve the earliest stored point on exact-distance ties. Radius
 and offset validation happens before initializing an index. Existing XY APIs
 delegate to the same implementation. Cloud equality depends on ordered points,
 not cache state; transformed clouds rebuild their indexes from transformed data.
+
+Object snapping uses `nearest_projected_in_box_relative`: an inclusive square
+aperture with Euclidean ranking, sharing the same indexes and local-origin
+precision. A closer point outside the square cannot mask an admitted corner.
+An admitted but unrepresentable nearest distance returns an error. Existing
+circular queries and click-selection behavior are unchanged. See the
+[square-aperture calibration](snap-capture-box.md).
 
 Each index node also stores its subtree's earliest source index (one additional
 `usize` per node). Once a query finds a zero-distance hit, it visits eligible

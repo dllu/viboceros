@@ -56,9 +56,18 @@ fn visible_segment(a: Point3, b: Point3, metric: &impl SnapMetric) -> Option<Seg
     })
 }
 
+#[cfg(test)]
 pub(super) fn distance(a: Point3, b: Point3, metric: &impl SnapMetric) -> Option<Real> {
+    let [x, y] = closest_offset(a, b, metric)?;
+    let distance = x.hypot(y);
+    distance.is_finite().then_some(distance)
+}
+
+/// Hover needs the projected locus point, not a rounded absolute world point.
+/// Keeping this offset separate preserves sub-ULP cursor motion at large origins.
+pub(super) fn closest_offset(a: Point3, b: Point3, metric: &impl SnapMetric) -> Option<[Real; 2]> {
     let segment = visible_segment(a, b, metric)?;
-    segment_distance(segment.pa, segment.pb)
+    Some(segment_offset(segment.pa, segment.pb))
 }
 
 pub(super) fn capture(a: Point3, b: Point3, metric: &impl SnapMetric) -> Capture {
@@ -67,6 +76,7 @@ pub(super) fn capture(a: Point3, b: Point3, metric: &impl SnapMetric) -> Capture
 
 /// Mesh Near uses measured endpoint-depth weighting when neither endpoint is
 /// inside the square snap aperture. Curve Near remains screen-Euclidean.
+/// This does not yet reproduce Rhino's short-wire endpoint preference.
 pub(super) fn capture_mesh(a: Point3, b: Point3, metric: &impl SnapMetric) -> Capture {
     capture_with_policy(a, b, metric, true)
 }
@@ -83,7 +93,11 @@ fn capture_with_policy(a: Point3, b: Point3, metric: &impl SnapMetric, mesh: boo
     }) {
         return Capture::Miss;
     }
-    if segment_distance(segment.pa, segment.pb).is_some_and(|d| d > metric.capture_radius()) {
+    // A circumscribed circle is only a broad phase: the old inscribed-circle
+    // cutoff incorrectly rejected targets near square-aperture corners.
+    if segment_distance(segment.pa, segment.pb)
+        .is_some_and(|distance| distance > radius.hypot(radius).next_up())
+    {
         return Capture::Miss;
     }
     let endpoint_in_box = [segment.pa, segment.pb]
@@ -173,10 +187,16 @@ fn visible_mesh_line(mut segment: Segment, metric: &impl SnapMetric) -> Option<P
 
 /// Visible straight segments stay straight under the projection contract.
 pub(super) fn segment_distance(a: [Real; 2], b: [Real; 2]) -> Option<Real> {
+    let [x, y] = segment_offset(a, b);
+    let distance = x.hypot(y);
+    distance.is_finite().then_some(distance)
+}
+
+fn segment_offset(a: [Real; 2], b: [Real; 2]) -> [Real; 2] {
     // Normalize before differences/dots to avoid range loss in squares.
     let scale = a.into_iter().chain(b).map(Real::abs).fold(0., Real::max);
     if scale == 0. {
-        return Some(0.);
+        return [0.; 2];
     }
     let normalized_a = a.map(|v| v / scale);
     let normalized_b = b.map(|v| v / scale);
@@ -200,8 +220,7 @@ pub(super) fn segment_distance(a: [Real; 2], b: [Real; 2]) -> Option<Real> {
     };
     // Interpolate the original coordinates so a small perpendicular offset is
     // not lost when another axis has a vastly larger magnitude.
-    let distance = ((1. - t) * a[0] + t * b[0]).hypot((1. - t) * a[1] + t * b[1]);
-    distance.is_finite().then_some(distance)
+    std::array::from_fn(|i| (1. - t) * a[i] + t * b[i])
 }
 
 pub(super) fn interpolate(a: Point3, b: Point3, t: Real) -> Option<Point3> {

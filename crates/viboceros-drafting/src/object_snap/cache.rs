@@ -82,6 +82,8 @@ struct SurfaceCurves {
 /// document tolerance. Their source policy is supplied explicitly on each query.
 /// Changed snapshots and tolerances revalidate entries, including after Undo;
 /// removal and conversion to another geometry type release old entries.
+/// Every query's `capture_radius` is the half-width of an inclusive square
+/// aperture. Accepted targets retain Euclidean distance scoring.
 #[derive(Debug, Default)]
 pub struct ObjectSnapCache {
     curves: BTreeMap<ObjectId, CachedCurves>,

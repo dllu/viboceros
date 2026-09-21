@@ -5,6 +5,8 @@ Away from endpoint capture boxes, measured Rhino targets minimize
 divides by W(t)². A wire endpoint inside the square aperture selects the
 ordinary screen-distance calculation. This reference
 implements the mathematical hypothesis; it does not read observed target values.
+The retained snap_capture_box short-wire cases contradict this hypothesis's
+endpoint behavior. Those differences remain explicit, not fitted away here.
 """
 from fractions import Fraction as F
 import itertools

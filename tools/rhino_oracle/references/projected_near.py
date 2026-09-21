@@ -23,6 +23,11 @@ def distance(frame, point):
     return math.hypot(*(pixel[i] - frame["click_client"][i] for i in range(2)))
 
 
+def in_square(frame, point, half_width):
+    pixel = project(frame, list(map(float,point)))
+    return all(abs(pixel[i]-frame["click_client"][i]) <= half_width for i in range(2))
+
+
 def line_point(frame, start, end):
     """Closest point on a fully visible segment, including endpoint clamping."""
     matrix, cursor = frame["world_to_screen"], frame["click_client"]

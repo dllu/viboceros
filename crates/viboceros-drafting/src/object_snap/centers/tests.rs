@@ -1,4 +1,5 @@
 use super::*;
+use crate::object_snap::proximity::projected_distance;
 use crate::{ObjectSnapCache, ObjectSnapKind, ObjectSnapModes};
 use viboceros_document::{Document, Geometry};
 use viboceros_geometry::{

@@ -3,6 +3,27 @@
 use super::{Point3, PointCloudProjection, Real};
 use std::cmp::Ordering;
 
+#[derive(Clone, Copy)]
+pub(super) enum SearchRegion {
+    Circle(Real),
+    Square(Real),
+}
+
+impl SearchRegion {
+    pub(super) fn half_width(self) -> Real {
+        match self {
+            Self::Circle(r) | Self::Square(r) => r,
+        }
+    }
+
+    fn contains(self, offset: [Real; 2], distance: Real) -> bool {
+        match self {
+            Self::Circle(r) => distance <= r,
+            Self::Square(r) => offset[0].abs().max(offset[1].abs()) <= r,
+        }
+    }
+}
+
 #[derive(Debug)]
 pub(super) struct ProjectedIndex {
     pub(super) nodes: Vec<ProjectedNode>,
@@ -34,7 +55,7 @@ impl ProjectedIndex {
         points: &[Point3],
         origin: Point3,
         offset: [Real; 2],
-        maximum_distance: Real,
+        region: SearchRegion,
         best: &mut Option<(Real, usize)>,
     ) {
         let node = self.nodes[node_index];
@@ -51,7 +72,7 @@ impl ProjectedIndex {
             (coordinate(point, self.axes[1]) - coordinate(origin, self.axes[1])) - offset[1],
         ];
         let distance = relative[0].hypot(relative[1]);
-        if distance <= maximum_distance
+        if region.contains(relative, distance)
             && best.is_none_or(|(best_distance, best_index)| {
                 distance < best_distance
                     || (distance == best_distance && node.point_index < best_index)
@@ -76,19 +97,21 @@ impl ProjectedIndex {
             // Source order finds the winning exact tie before considering
             // subtrees whose minimum index can then rule them out entirely.
             for child in children.into_iter().flatten() {
-                self.nearest_from(child, points, origin, offset, maximum_distance, best);
+                self.nearest_from(child, points, origin, offset, region, best);
             }
             return;
         }
 
         if let Some(near) = near {
-            self.nearest_from(near, points, origin, offset, maximum_distance, best);
+            self.nearest_from(near, points, origin, offset, region, best);
         }
-        let search_distance = best.map_or(maximum_distance, |(distance, _)| distance);
+        let search_distance = best.map_or(region.half_width(), |(distance, _)| {
+            distance.min(region.half_width())
+        });
         if delta.abs() <= search_distance
             && let Some(far) = far
         {
-            self.nearest_from(far, points, origin, offset, maximum_distance, best);
+            self.nearest_from(far, points, origin, offset, region, best);
         }
     }
 }

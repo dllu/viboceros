@@ -1,0 +1,38 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "aperture_discovery_cases": 64,
+  "aperture_held_out_cases": 64,
+  "source_representation_cases": 72,
+  "aperture_captures": 70,
+  "aperture_non_admissions": 58,
+  "direct_or_near_captures_outside_inscribed_circle": 39,
+  "aperture_native_full_matches": 115,
+  "aperture_native_admission_kind_owner_matches": 128,
+  "aperture_competing_wire_differences": 5,
+  "aperture_short_wire_endpoint_differences": 8,
+  "separate_source_full_matches": 48,
+  "combined_mesh_full_matches": 17,
+  "source_native_full_matches": 65,
+  "captured_mesh_near_observations": 68,
+  "observed_wire_formula_matches": 60,
+  "observed_wire_formula_counterexamples": 8,
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/snap_capture_box.json": "44362adb735214f86da9f4238e7d6b37167b2fdc297b3b411092727e6ff40a8f",
+    "tools/rhino_oracle/observations/snap_capture_box.json": "6a85234820aa2f9a6b14aca3f72da3ccbd63ea68b031b0033f9b708190b37464",
+    "tools/rhino_oracle/fixtures/mesh_snap_sources.json": "a0560a01685638ec237c28f6814eb4ba5d56f443e8c33ff6da988a3cde65cb00",
+    "tools/rhino_oracle/observations/mesh_snap_sources.json": "c96e3d6e605090722a4c32de9b31645e2cb1f0a139aca00fa19ef060acb70cd8"
+  },
+  "raw_response_sha256": {
+    "aperture_discovery_64": "8a522761ba3d450ad1f572fc33e64292ded5789f58576154747881b48878ba39",
+    "aperture_held_out_64": "1e338453bbfed13a37da53ab50e9f023ad6524f30140cd813d364c0bae3a8980",
+    "source_representation_72": "648cd10e2e9ac03b62f50e271560eb203b7cae01d2333a8d696507207fb739ca"
+  },
+  "notes": [
+    "All three probes used newly owned private-Xvfb Rhino sessions and public APIs, never an existing user window or proprietary implementation.",
+    "All 200 results are retained without changing observation values; the two 64-case aperture batches are concatenated with identical response metadata.",
+    "The independent square reference and native replay retain 13 aperture target differences: five competing-wire cases and eight short-wire endpoint counterexamples on the reported component itself.",
+    "All 48 separate-object Near comparisons agree; seven combined-mesh comparisons differ. Between-object ranking is unchanged.",
+    "Native replay uses source geometry, actual camera/click, and snap policy only, at componentwise absolute epsilon 1e-9 and relative epsilon zero. None compares admission, not CPlane placement.",
+    "These probes do not establish full per-wire target or selection parity, arbitrary-scene behavior, model history, or a Rhino performance advantage."
+  ]
+}

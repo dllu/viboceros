@@ -18,23 +18,27 @@ def reference_target(operation, frame):
     radius = operation.get("capture_radius",12)
     modes = operation["persistent_snaps"]
     matrix = [frame["world_to_screen"][i] for i in (0,1,3)]
+    if "End" in modes and not mesh:
+        admitted = [p for p in edges[0] if projected_near.in_square(frame,p,radius)]
+        if admitted: return dict(kind="End",point=min(admitted,key=lambda p:projected_near.distance(frame,p)))
     if "Mid" in modes:
         mids = [[(a+b)/2 for a,b in zip(*edge)] for edge in edges]
-        target = min(mids,key=lambda p:projected_near.distance(frame,p))
-        admitted = projected_near.distance(frame,target) <= radius
+        admitted = [p for p in mids if projected_near.in_square(frame,p,radius)]
         if not mesh and modes == ["Mid"]:
             depths = [projected_lines.homogeneous(matrix,p)[2] for p in edges[0]]
-            _,squared = projected_lines.closest(matrix,*edges[0],frame["click_client"],min(depths)/2)
-            admitted = squared <= radius*radius
-        if admitted: return dict(kind="Midpoint",point=target)
+            hover,_ = projected_lines.closest(matrix,*edges[0],frame["click_client"],min(depths)/2)
+            if projected_near.in_square(frame,hover,radius): admitted = mids
+        if admitted: return dict(kind="Midpoint",point=min(admitted,key=lambda p:projected_near.distance(frame,p)))
     if "Near" in modes:
         if mesh:
             candidates = [mesh_near.closest(matrix,*edge,frame["click_client"],radius) for edge in edges]
         else:
             depths = [projected_lines.homogeneous(matrix,p)[2] for p in edges[0]]
             candidates = [projected_lines.closest(matrix,*edges[0],frame["click_client"],min(depths)/2)]
-        target,squared = min(candidates,key=lambda row:row[1])
-        if squared <= radius*radius: return dict(kind="Near",point=list(map(float,target)))
+        candidates = [row for row in candidates if projected_near.in_square(frame,row[0],radius)]
+        if candidates:
+            target,_ = min(candidates,key=lambda row:row[1])
+            return dict(kind="Near",point=list(map(float,target)))
     return None
 
 

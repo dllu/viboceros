@@ -155,10 +155,7 @@ pub(super) fn line(
 }
 
 fn emit_if_captured(point: Point3, metric: &impl SnapMetric, emit: &mut impl FnMut(Point3, Real)) {
-    if let Some(distance) = metric
-        .distance(point)
-        .filter(|d| *d <= metric.capture_radius())
-    {
+    if let Some(distance) = metric.captured_distance(point) {
         emit(point, distance);
     }
 }
@@ -254,7 +251,7 @@ fn curve(
         }
         previous = current;
     }
-    if let Some((best, _)) = best.filter(|(s, _)| s.distance <= metric.capture_radius()) {
+    if let Some((best, _)) = best.filter(|(s, _)| metric.captured_distance(s.point).is_some()) {
         emit(best.point, best.distance);
     }
 }

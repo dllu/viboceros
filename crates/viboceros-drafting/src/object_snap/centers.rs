@@ -1,5 +1,5 @@
 //! Center targets are admitted by proximity to their curve, not the empty center.
-use super::proximity::{outside_sphere, projected_distance};
+use super::proximity::{outside_sphere, projected_capture_distance};
 use super::{ObjectSnapCache, SnapMetric, proximity};
 use viboceros_document::Object;
 use viboceros_geometry::{CurveRef, Point3, Real, Tolerance};
@@ -27,7 +27,6 @@ pub(super) fn visit_nurbs(
         // A center is not on the curve and cannot use Mid's direct-hit fallback.
         if let Some(distance) =
             proximity::nurbs_distance(&feature.curve, feature.bounds.is_some(), metric)
-                .filter(|&d| d <= metric.capture_radius())
         {
             emit(center, distance);
         }
@@ -80,8 +79,7 @@ fn candidate(
     if metric.offset(center).is_none() || outside_sphere(center, radius, metric) {
         return;
     }
-    let distance = projected_distance(|t| metric.distance(evaluate(t)?));
-    if let Some(distance) = distance.filter(|&d| d <= metric.capture_radius()) {
+    if let Some(distance) = projected_capture_distance(evaluate, metric) {
         emit(center, distance);
     }
 }

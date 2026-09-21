@@ -110,7 +110,7 @@ impl Cache {
                 .iter()
                 .filter_map(|&line| proximity::line_distance(line, metric))
                 .min_by(Real::total_cmp);
-            if let Some(distance) = distance.filter(|&d| d <= metric.capture_radius()) {
+            if let Some(distance) = distance {
                 emit(target.point, distance);
             }
         }

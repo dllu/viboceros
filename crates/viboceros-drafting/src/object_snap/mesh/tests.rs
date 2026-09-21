@@ -215,7 +215,7 @@ fn hierarchy_matches_individual_wires_across_perspective_clipping_and_ties() {
                                 panic!()
                             };
                             line(wire.start(), wire.end(), &metric, &mut |point, distance| {
-                                if distance <= 0.75 && best.is_none_or(|(_, d)| distance < d) {
+                                if best.is_none_or(|(_, d)| distance < d) {
                                     best = Some((point, distance));
                                 }
                             });

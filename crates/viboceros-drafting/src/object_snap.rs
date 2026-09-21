@@ -1,5 +1,7 @@
 //! Visible-feature snap enumeration, projection metrics, and priority ordering.
 mod cache;
+#[cfg(test)]
+mod capture_tests;
 mod centers;
 mod features;
 mod mesh;
@@ -113,7 +115,7 @@ impl ObjectSnap {
         self.object_id
     }
 
-    /// Capture distance in the query's projection: to the point feature, or
+    /// Euclidean distance in the query's projection: to the point feature, or
     /// to the source curve for hover-derived Center or Mid-only snaps.
     pub const fn distance(self) -> Real {
         self.distance
@@ -125,6 +127,7 @@ impl ObjectSnap {
 /// explicit-mode query to enable Near.
 /// Locked objects remain snap targets, matching Rhino. Exact-distance ties use
 /// the stable priority encoded by [`ObjectSnapKind`].
+/// `capture_radius` is the half-width of the inclusive square snap aperture.
 pub fn nearest_object_snap(
     document: &Document,
     cursor: Point3,
@@ -171,7 +174,7 @@ pub fn nearest_object_snap_axis_aligned(
 }
 
 /// Finds the closest visible feature after mapping candidates into an
-/// affine or projective viewport projection. The capture radius and the
+/// affine or projective viewport projection. The square aperture half-width and the
 /// returned distance use the same units as `cursor` and `project`.
 /// `project` must reject points behind its camera/clipping plane. Hover broad
 /// phase bounds rely on the projection preserving convexity in the visible half-space.
@@ -190,10 +193,22 @@ trait SnapMetric {
     }
     fn capture_radius(&self) -> Real;
     fn offset(&self, point: Point3) -> Option<[Real; 2]>;
+    #[cfg(test)]
     fn distance(&self, point: Point3) -> Option<Real> {
         let [x, y] = self.offset(point)?;
         let d = x.hypot(y);
         d.is_finite().then_some(d)
+    }
+    /// The pick aperture is square; Euclidean distance still ranks targets.
+    fn captured_distance(&self, point: Point3) -> Option<Real> {
+        self.captured_offset_distance(self.offset(point)?)
+    }
+    fn captured_offset_distance(&self, [x, y]: [Real; 2]) -> Option<Real> {
+        if x.abs().max(y.abs()) > self.capture_radius() {
+            return None;
+        }
+        let distance = x.hypot(y);
+        distance.is_finite().then_some(distance)
     }
     fn nearest_point_cloud(&self, cloud: &PointCloud3) -> Result<Option<Point3>, GeometryError>;
 
@@ -258,7 +273,7 @@ impl SnapMetric for AxisAlignedSnapMetric {
 
     fn nearest_point_cloud(&self, cloud: &PointCloud3) -> Result<Option<Point3>, GeometryError> {
         Ok(cloud
-            .nearest_projected_relative(
+            .nearest_projected_in_box_relative(
                 self.projection,
                 self.origin,
                 self.cursor_offset,
@@ -293,8 +308,10 @@ where
             .points()
             .iter()
             .copied()
-            .filter_map(|point| self.distance(point).map(|distance| (distance, point)))
-            .filter(|(distance, _)| *distance <= self.capture_radius)
+            .filter_map(|point| {
+                self.captured_distance(point)
+                    .map(|distance| (distance, point))
+            })
             .min_by(|(first, _), (second, _)| first.total_cmp(second))
             .map(|(_, point)| point))
     }
@@ -359,14 +376,7 @@ fn nearest_object_snap_with_metric(
             if !modes.contains(kind) {
                 return;
             }
-            consider_candidate(
-                &mut object_best,
-                metric,
-                metric.capture_radius(),
-                object.id(),
-                kind,
-                point,
-            );
+            consider_candidate(&mut object_best, metric, object.id(), kind, point);
         };
         match object.geometry() {
             Geometry::Point(point) => emit(ObjectSnapKind::Point, *point),
@@ -476,17 +486,13 @@ fn nearest_object_snap_with_metric(
 fn consider_candidate(
     best: &mut Option<ObjectSnap>,
     metric: &impl SnapMetric,
-    capture_radius: Real,
     object_id: ObjectId,
     kind: ObjectSnapKind,
     point: Point3,
 ) {
-    let Some(distance) = metric.distance(point) else {
+    let Some(distance) = metric.captured_distance(point) else {
         return;
     };
-    if distance > capture_radius {
-        return;
-    }
     consider_scored_candidate(best, object_id, kind, point, distance);
 }
 

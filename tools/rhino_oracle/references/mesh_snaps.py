@@ -18,8 +18,9 @@ def reference_target(item, frame, mesh_weighted=False):
                        for face in source["faces"] for i in range(len(face))))
     if "Mid" in modes:
         mids = [([(x+y)/2. for x,y in zip(a,b)]) for a,b in wires]
-        point = min(mids, key=lambda p: projected_near.distance(frame,p))
-        if projected_near.distance(frame,point) <= 12.:
+        mids = [p for p in mids if projected_near.in_square(frame,p,12.)]
+        if mids:
+            point = min(mids, key=lambda p: projected_near.distance(frame,p))
             return dict(kind="Mid", point=point)
     if "Near" in modes:
         matrix = [frame["world_to_screen"][i] for i in (0,1,3)]
@@ -28,8 +29,9 @@ def reference_target(item, frame, mesh_weighted=False):
             raise ValueError("this calibration reference requires fully visible mesh sources")
         candidates = [mesh_near.closest(matrix,a,b,frame["click_client"]) if mesh_weighted else
                       projected_lines.closest(matrix,a,b,frame["click_client"],min(depths)/2) for a,b in wires]
-        point, squared = min(candidates, key=lambda pair: pair[1])
-        if squared <= 144:
+        candidates = [row for row in candidates if projected_near.in_square(frame,row[0],12.)]
+        if candidates:
+            point, _ = min(candidates, key=lambda pair: pair[1])
             return dict(kind="Near", point=list(map(float,point)))
     return None
 

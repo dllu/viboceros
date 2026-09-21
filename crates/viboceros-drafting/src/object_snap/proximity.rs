@@ -15,15 +15,13 @@ pub(super) fn nurbs_distance(
     sampler
         .spans()
         .filter_map(|span| {
-            let linear = if curve.degree() == 1 && common_sign_weights {
-                span.evaluate(0.)
-                    .ok()
-                    .zip(span.evaluate(1.).ok())
-                    .and_then(|(a, b)| projected_line::distance(a, b, metric))
-            } else {
-                None
-            };
-            linear.or_else(|| projected_distance(|t| metric.distance(span.evaluate(t).ok()?)))
+            if curve.degree() == 1
+                && common_sign_weights
+                && let (Ok(a), Ok(b)) = (span.evaluate(0.), span.evaluate(1.))
+            {
+                return segment_capture_distance(a, b, metric);
+            }
+            projected_capture_distance(|t| span.evaluate(t).ok(), metric)
         })
         .min_by(Real::total_cmp)
 }
@@ -68,22 +66,48 @@ pub(super) fn outside_bounds(lo: [Real; 3], hi: [Real; 3], metric: &impl SnapMet
         .chain(max)
         .map(Real::abs)
         .fold(1., Real::max);
-    closest[0].hypot(closest[1]) > metric.capture_radius() + 64. * Real::EPSILON * scale
+    closest[0].max(closest[1]) > metric.capture_radius() + 64. * Real::EPSILON * scale
 }
 
 pub(super) fn line_distance(line: LineSegment, metric: &impl SnapMetric) -> Option<Real> {
-    projected_line::distance(line.start(), line.end(), metric).or_else(|| {
-        // Projection overflow can hide both endpoints but leave finite interior
-        // points. Retain the bounded fallback only for unresolved intervals.
-        projected_distance(|t| metric.distance(line.point_at(t).ok()?))
-    })
+    segment_capture_distance(line.start(), line.end(), metric)
+}
+
+fn segment_capture_distance(a: Point3, b: Point3, metric: &impl SnapMetric) -> Option<Real> {
+    if let Some(offset) = projected_line::closest_offset(a, b, metric) {
+        return metric.captured_offset_distance(offset);
+    }
+    projected_capture_distance(|t| projected_line::interpolate(a, b, t), metric)
+}
+
+/// Minimize Euclidean distance first, then apply square-aperture admission to
+/// that locus point. Do not clamp a missed closest point to the box boundary.
+pub(super) fn projected_capture_distance(
+    evaluate: impl Fn(Real) -> Option<Point3>,
+    metric: &impl SnapMetric,
+) -> Option<Real> {
+    let mut best: Option<(Real, bool)> = None;
+    projected_distance(|t| {
+        let offset = metric.offset(evaluate(t)?)?;
+        let distance = offset[0].hypot(offset[1]);
+        if !distance.is_finite() {
+            return None;
+        }
+        let captured = offset.iter().all(|v| v.abs() <= metric.capture_radius());
+        if best.is_none_or(|(d, inside)| distance < d || (distance == d && captured && !inside)) {
+            best = Some((distance, captured));
+        }
+        Some(distance)
+    })?;
+    best.filter(|(_, captured)| *captured)
+        .map(|(distance, _)| distance)
 }
 
 /// Samples/refines one continuous normalized parameter interval. Every score
 /// is on the actual curve, never a chord across branches. This is not a
 /// certified global solver for high oscillation or arbitrarily narrow visible
 /// slivers at a camera-plane crossing. NURBS callers must separate knot spans.
-pub(super) fn projected_distance(score: impl Fn(Real) -> Option<Real>) -> Option<Real> {
+pub(super) fn projected_distance(mut score: impl FnMut(Real) -> Option<Real>) -> Option<Real> {
     const SAMPLES: usize = 64;
     const REFINEMENTS: usize = 8;
     const F: Real = 0.381_966_011_250_105_1;

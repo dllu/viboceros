@@ -140,3 +140,80 @@ fn protocol_replays_all_retained_point_inputs_without_observed_targets() {
     request.iterations = 2;
     assert!(run_request(&request).is_err());
 }
+
+fn retained_differences(input: &str, observations: &str) -> Vec<String> {
+    let input: Value = serde_json::from_str(input).unwrap();
+    let observed: Value = serde_json::from_str(observations).unwrap();
+    let operations = input["operations"].as_array().unwrap();
+    let rows = observed["results"].as_array().unwrap();
+    assert_eq!(operations.len(), rows.len());
+    let mut differences = Vec::new();
+    for (op, row) in operations.iter().zip(rows) {
+        assert_eq!(op["id"], row["id"]);
+        let value = &row["value"];
+        let frame = &value["frame"];
+        let fixture: ProjectedObjectSnapFixture = serde_json::from_value(json!({
+            "sources":op["sources"],
+            "camera":{"world_to_screen":frame["world_to_screen"],"location":frame["camera_location"],"direction":frame["camera_direction"]},
+            "cursor":frame["click_client"],"capture_radius":op.get("capture_radius").unwrap_or(&json!(12)),
+            "modes":op["persistent_snaps"],"snap_to_meshes":op["snap_to_meshes"]
+        })).unwrap();
+        let actual = run(&fixture, Tolerance::DEFAULT).unwrap().0;
+        // Admission and source/kind must agree even in unresolved target cases.
+        assert_eq!(actual["kind"], value["kind"], "{}", op["id"]);
+        assert_eq!(actual["source"], value["source"], "{}", op["id"]);
+        if value["kind"] == "None" {
+            assert!(actual["point"].is_null());
+        } else if (0..3).any(|i| {
+            (actual["point"][i].as_f64().unwrap() - value["point"][i].as_f64().unwrap()).abs()
+                > 1e-9
+        }) {
+            differences.push(op["id"].as_str().unwrap().to_owned());
+        }
+    }
+    differences
+}
+
+#[test]
+fn square_aperture_replays_all_128_admissions_but_preserves_13_mesh_target_differences() {
+    let differences = retained_differences(
+        include_str!("../../../../tools/rhino_oracle/fixtures/snap_capture_box.json"),
+        include_str!("../../../../tools/rhino_oracle/observations/snap_capture_box.json"),
+    );
+    let mut expected: Vec<String> = [
+        "box-top-mesh-near--10-10",
+        "box-perspective-mesh-near--8--8",
+        "box-perspective-mesh-near--10--10",
+        "box-perspective-mesh-near--10-10",
+        "box-perspective-mesh-near-10--10",
+    ]
+    .into_iter()
+    .map(str::to_owned)
+    .collect();
+    for rotation in 0..4 {
+        for reverse in 0..2 {
+            expected.push(format!("slanted-1-{rotation}-{reverse}-r16"));
+        }
+    }
+    assert_eq!(differences, expected);
+}
+
+#[test]
+fn all_48_separate_sources_match_and_combined_mesh_selection_differences_remain() {
+    let differences = retained_differences(
+        include_str!("../../../../tools/rhino_oracle/fixtures/mesh_snap_sources.json"),
+        include_str!("../../../../tools/rhino_oracle/observations/mesh_snap_sources.json"),
+    );
+    assert_eq!(
+        differences,
+        [
+            "sources-top-combined-0-10",
+            "sources-top-combined-1-8",
+            "sources-perspective-combined-0--4",
+            "sources-perspective-combined-0-0",
+            "sources-perspective-combined-1-4",
+            "sources-perspective-combined-1-8",
+            "sources-perspective-combined-1-10",
+        ]
+    );
+}

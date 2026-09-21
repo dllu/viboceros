@@ -8,6 +8,11 @@ The calibrated per-wire calculation remains supported by the new observations,
 but minimum screen distance does **not** reproduce Rhino's wire selection.
 This follow-up does not change native selection or claim to resolve it.
 
+Later [square-aperture and source-representation checks](snap-capture-box.md)
+confirm all 48 separate-source comparisons but retain seven combined-mesh
+selection differences. They also expose eight short-wire **per-wire target**
+counterexamples; the agreement reported below is limited to this earlier corpus.
+
 ## Evidence
 
 The [inputs](../tools/rhino_oracle/fixtures/mesh_snap_order.json) and

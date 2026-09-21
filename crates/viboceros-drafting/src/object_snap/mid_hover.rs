@@ -42,7 +42,7 @@ fn analytic(curve: CurveRef<'_>, metric: &impl SnapMetric, emit: &mut impl FnMut
             {
                 candidate(
                     point,
-                    proximity::projected_distance(|t| metric.distance(arc.point_at(t).ok()?)),
+                    proximity::projected_capture_distance(|t| arc.point_at(t).ok(), metric),
                     metric,
                     emit,
                 );
@@ -54,9 +54,10 @@ fn analytic(curve: CurveRef<'_>, metric: &impl SnapMetric, emit: &mut impl FnMut
             {
                 candidate(
                     point,
-                    proximity::projected_distance(|t| {
-                        metric.distance(circle.point_at_angle(std::f64::consts::TAU * t).ok()?)
-                    }),
+                    proximity::projected_capture_distance(
+                        |t| circle.point_at_angle(std::f64::consts::TAU * t).ok(),
+                        metric,
+                    ),
                     metric,
                     emit,
                 );
@@ -71,9 +72,10 @@ fn analytic(curve: CurveRef<'_>, metric: &impl SnapMetric, emit: &mut impl FnMut
             {
                 candidate(
                     point,
-                    proximity::projected_distance(|t| {
-                        metric.distance(ellipse.point_at_angle(std::f64::consts::TAU * t).ok()?)
-                    }),
+                    proximity::projected_capture_distance(
+                        |t| ellipse.point_at_angle(std::f64::consts::TAU * t).ok(),
+                        metric,
+                    ),
                     metric,
                     emit,
                 );
@@ -106,14 +108,13 @@ fn candidate(
     metric: &impl SnapMetric,
     emit: &mut impl FnMut(Point3, Real),
 ) {
-    let Some([x, y]) = metric.offset(point) else {
+    let Some(offset) = metric.offset(point) else {
         return;
     };
-    let direct = x.hypot(y);
+    let direct = metric.captured_offset_distance(offset);
     // The target is itself a point on the curve. Keep exact target hits even
     // when the bounded proximity refinement only approaches their parameter.
-    let distance = hover.map_or(direct, |d| d.min(direct));
-    if distance <= metric.capture_radius() {
+    if let Some(distance) = hover.into_iter().chain(direct).min_by(Real::total_cmp) {
         emit(point, distance)
     }
 }

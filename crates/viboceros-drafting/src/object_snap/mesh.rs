@@ -161,27 +161,15 @@ impl Cache {
             {
                 self.visited += 1;
             }
-            if mid && let Some(direct) = metric.distance(wire.midpoint) {
+            if mid && let Some(direct) = metric.captured_distance(wire.midpoint) {
                 // Retained Rhino mesh picks require proximity to the midpoint
                 // itself, including Mid-only and one-shot Mid. Curve whole-
                 // segment hover must not be generalized to mesh wires.
-                keep(
-                    &mut best_mid,
-                    wire.order,
-                    wire.midpoint,
-                    direct,
-                    metric.capture_radius(),
-                );
+                keep(&mut best_mid, wire.order, wire.midpoint, direct);
             }
             if near && best_mid.is_none() {
                 let mut emit = |point, distance| {
-                    keep(
-                        &mut best_near,
-                        wire.order,
-                        point,
-                        distance,
-                        metric.capture_radius(),
-                    );
+                    keep(&mut best_near, wire.order, point, distance);
                 };
                 line(wire.ends[0], wire.ends[1], metric, &mut emit);
             }
@@ -195,18 +183,10 @@ impl Cache {
     }
 }
 
-fn keep(
-    best: &mut Option<(usize, Point3, Real)>,
-    order: usize,
-    point: Point3,
-    distance: Real,
-    radius: Real,
-) {
-    if distance <= radius
-        && best.is_none_or(|(old_order, _, score)| {
-            distance < score || (distance == score && order < old_order)
-        })
-    {
+fn keep(best: &mut Option<(usize, Point3, Real)>, order: usize, point: Point3, distance: Real) {
+    if best.is_none_or(|(old_order, _, score)| {
+        distance < score || (distance == score && order < old_order)
+    }) {
         *best = Some((order, point, distance));
     }
 }
@@ -214,7 +194,7 @@ fn keep(
 fn line(a: Point3, b: Point3, metric: &impl SnapMetric, emit: &mut impl FnMut(Point3, Real)) {
     match projected_line::capture_mesh(a, b, metric) {
         projected_line::Capture::Point(point) => {
-            if let Some(distance) = metric.distance(point) {
+            if let Some(distance) = metric.captured_distance(point) {
                 emit(point, distance);
             }
         }

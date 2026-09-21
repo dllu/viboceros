@@ -6,6 +6,143 @@ fn point(x: Real, y: Real, z: Real) -> Point3 {
 }
 
 #[test]
+fn square_indexes_match_exhaustive_queries_in_each_plane() {
+    for translation in [0., 2.0_f64.powi(52), -2.0_f64.powi(52)] {
+        let origin = point(translation, translation, translation);
+        let points: Vec<_> = (0..137)
+            .map(|i| {
+                point(
+                    translation + Real::from(i % 17 - 8),
+                    translation + Real::from(i * 7 % 19 - 9),
+                    translation + Real::from(i * 11 % 23 - 11),
+                )
+            })
+            .collect();
+        let cloud = PointCloud3::try_new(points.clone()).unwrap();
+        for (projection, axes) in [
+            (PointCloudProjection::Xy, [0, 1]),
+            (PointCloudProjection::Xz, [0, 2]),
+            (PointCloudProjection::Yz, [1, 2]),
+        ] {
+            for i in 0..91 {
+                let offset = [Real::from(i % 13 - 6) / 2., Real::from(i * 5 % 17 - 8) / 2.];
+                for radius in [0., 0.5, 2., 100.] {
+                    let mut expected: Option<(usize, Point3, Real)> = None;
+                    for (index, &p) in points.iter().enumerate() {
+                        let coordinates = p.to_array();
+                        let x = (coordinates[axes[0]] - translation) - offset[0];
+                        let y = (coordinates[axes[1]] - translation) - offset[1];
+                        let distance = x.hypot(y);
+                        if x.abs() <= radius
+                            && y.abs() <= radius
+                            && expected.is_none_or(|(_, _, best)| distance < best)
+                        {
+                            expected = Some((index, p, distance));
+                        }
+                    }
+                    assert_eq!(
+                        cloud
+                            .nearest_projected_in_box_relative(projection, origin, offset, radius)
+                            .unwrap(),
+                        expected
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn square_admission_does_not_confuse_euclidean_ranking_or_circular_queries() {
+    let corner = point(1., 1., 7.);
+    let cloud =
+        PointCloud3::try_new(vec![point(1.01, 0., 0.), corner, point(-1., -1., 0.)]).unwrap();
+    let origin = point(0., 0., 0.);
+    assert_eq!(cloud.nearest_xy(origin, 1.).unwrap(), None);
+    assert_eq!(
+        cloud
+            .nearest_projected_in_box_relative(PointCloudProjection::Xy, origin, [0.; 2], 1.)
+            .unwrap(),
+        Some((1, corner, 2.0_f64.sqrt()))
+    );
+    assert_eq!(
+        cloud
+            .nearest_projected_in_box_relative(
+                PointCloudProjection::Xy,
+                origin,
+                [0.; 2],
+                1.0_f64.next_down()
+            )
+            .unwrap(),
+        None
+    );
+}
+
+#[test]
+fn square_queries_validate_before_initialization_and_reuse_circular_indexes() {
+    let cloud = PointCloud3::try_new(vec![point(0., 1., 2.), point(3., 4., 5.)]).unwrap();
+    let origin = point(0., 0., 0.);
+    for radius in [-1., Real::NAN, Real::INFINITY] {
+        assert!(
+            cloud
+                .nearest_projected_in_box_relative(
+                    PointCloudProjection::Xz,
+                    origin,
+                    [0.; 2],
+                    radius
+                )
+                .is_err()
+        );
+    }
+    for offset in [[Real::NAN, 0.], [0., Real::INFINITY]] {
+        assert!(
+            cloud
+                .nearest_projected_in_box_relative(PointCloudProjection::Xz, origin, offset, 1.)
+                .is_err()
+        );
+    }
+    assert!(cloud.data.xz.get().is_none());
+    cloud
+        .nearest_projected_relative(PointCloudProjection::Xz, origin, [0.; 2], 10.)
+        .unwrap();
+    let allocation = cloud.data.xz.get().unwrap().nodes.as_ptr();
+    for offset in [[0.; 2], [1.; 2], [7.; 2]] {
+        cloud
+            .nearest_projected_in_box_relative(PointCloudProjection::Xz, origin, offset, 10.)
+            .unwrap();
+        assert_eq!(cloud.data.xz.get().unwrap().nodes.as_ptr(), allocation);
+    }
+    assert!(cloud.data.yz.get().is_none());
+}
+
+#[test]
+fn square_distance_overflow_is_not_a_false_miss_or_a_masked_finite_target() {
+    let huge = point(Real::MAX, Real::MAX, 0.);
+    let origin = point(0., 0., 0.);
+    let cloud = PointCloud3::try_new(vec![huge]).unwrap();
+    assert!(matches!(
+        cloud.nearest_projected_in_box_relative(
+            PointCloudProjection::Xy,
+            origin,
+            [0.; 2],
+            Real::MAX
+        ),
+        Err(GeometryError::NonFinite {
+            context: "point cloud projected distance"
+        })
+    ));
+    let finite = point(0., Real::MAX, 0.);
+    let cloud =
+        PointCloud3::try_new(vec![huge, finite, point(-Real::MAX, -Real::MAX, 0.)]).unwrap();
+    assert_eq!(
+        cloud
+            .nearest_projected_in_box_relative(PointCloudProjection::Xy, origin, [0.; 2], Real::MAX)
+            .unwrap(),
+        Some((1, finite, Real::MAX))
+    );
+}
+
+#[test]
 fn projected_indexes_match_exhaustive_queries_in_each_plane() {
     for translation in [0.0, 2.0_f64.powi(52), -2.0_f64.powi(52)] {
         let origin = point(translation, translation, translation);

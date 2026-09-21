@@ -68,6 +68,8 @@ Edit to review current values. Deleting a layer closes its editor.
 
 Osnap captures visible Point, End, Mid, Center, Quad, and opt-in Near features, including
 indexed members of point clouds and features on locked objects and layers.
+The [capture aperture is square](snap-capture-box.md); admitted candidates retain
+Euclidean distance scoring. Curve-hover targets can lie outside the aperture.
 Mid uses half arc length on NURBS, individual polycurve segments and surface
 boundaries, not the surface's UV center. With Mid alone enabled (including one-shot
 Mid), hovering near any part of a curve segment captures its Mid; mixed-mode Mid requires
@@ -91,8 +93,8 @@ for coverage limits, [Near](near-snaps.md) for screen-space curve targets, and
 The separate **Snap to mesh wires** checkbox or `SnapToMeshes Enable` admits
 [mesh Near/Mid](mesh-snaps.md). It defaults off, does not change enabled modes,
 and preserves point prompts and one-shot overrides. Mesh Mid is direct-only;
-Mesh Near uses calibrated endpoint-depth weighting. Its remaining wire-selection
-differences include corners and competing parallel wires; see the
+Mesh Near uses calibrated endpoint-depth weighting. Remaining differences include
+corner/parallel-wire selection and short-wire endpoint preference; see the
 [full 3D point probes](point-snaps.md) and [competition follow-up](mesh-snap-order.md).
 SmartTrack captures local plane-axis alignment from the first picked
 point in every viewport. Grid Snap rounds construction-plane picks to the unit grid. Right-drag

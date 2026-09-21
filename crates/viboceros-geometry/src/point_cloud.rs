@@ -3,7 +3,7 @@ use std::sync::{Arc, OnceLock};
 use crate::{AffineTransform3, BoundingBox3, GeometryError, Point3, Real};
 
 mod index;
-use index::ProjectedIndex;
+use index::{ProjectedIndex, SearchRegion};
 
 /// Axis-aligned projection used by a point-cloud spatial query.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -114,6 +114,37 @@ impl PointCloud3 {
         offset: [Real; 2],
         maximum_distance: Real,
     ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
+        self.nearest_in_region(
+            projection,
+            origin,
+            offset,
+            SearchRegion::Circle(maximum_distance),
+        )
+    }
+
+    /// Nearest Euclidean target inside an inclusive square of `half_width`,
+    /// in projected model units. Admission and ordering are separate: a closer
+    /// point outside the square must not hide a farther point in its corner.
+    /// Reuses the axis-aligned indexes and local-origin precision. An admitted
+    /// but unrepresentable nearest distance is an error, not a missed point.
+    pub fn nearest_projected_in_box_relative(
+        &self,
+        projection: PointCloudProjection,
+        origin: Point3,
+        offset: [Real; 2],
+        half_width: Real,
+    ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
+        self.nearest_in_region(projection, origin, offset, SearchRegion::Square(half_width))
+    }
+
+    fn nearest_in_region(
+        &self,
+        projection: PointCloudProjection,
+        origin: Point3,
+        offset: [Real; 2],
+        region: SearchRegion,
+    ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
+        let maximum_distance = region.half_width();
         if !maximum_distance.is_finite() || maximum_distance < 0.0 {
             return Err(GeometryError::InvalidPointCloudSearchRadius);
         }
@@ -139,9 +170,14 @@ impl PointCloud3 {
             &self.data.points,
             origin,
             offset,
-            maximum_distance,
+            region,
             &mut best,
         );
+        if best.is_some_and(|(distance, _)| !distance.is_finite()) {
+            return Err(GeometryError::NonFinite {
+                context: "point cloud projected distance",
+            });
+        }
         Ok(best
             .map(|(distance, point_index)| (point_index, self.data.points[point_index], distance)))
     }
