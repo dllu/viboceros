@@ -1,5 +1,58 @@
 use super::*;
 
+#[test]
+fn closed_copy_seam_distinguishes_rational_speed_from_constant_weight_scaling() {
+    use viboceros_geometry::{NurbsCurve, WeightedPoint3};
+    for (weights, restored) in [
+        ([1., 1.], true),
+        ([2., 2.], true),
+        ([1., 4.], false),
+        ([1., 1. + 1e-12], true),
+    ] {
+        let mut doc = Document::default();
+        let source = NurbsCurve::try_new_rational(
+            1,
+            [[0., 0., 0.], [2., 0., 0.]]
+                .into_iter()
+                .zip(weights)
+                .map(|(p, w)| WeightedPoint3::try_new(Point3::try_from(p).unwrap(), w).unwrap())
+                .collect(),
+            vec![5., 5., 7., 7.],
+        )
+        .unwrap();
+        let ids = [
+            doc.add_geometry(Geometry::NurbsCurve(source)).unwrap(),
+            doc.add_geometry(line([2., 0., 0.], [2., 3., 0.])).unwrap(),
+            doc.add_geometry(line([2., 3., 0.], [0., 0., 0.])).unwrap(),
+        ];
+        let before = doc.objects().cloned().collect::<Vec<_>>();
+        doc.select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        let registry = CommandRegistry::with_builtins();
+        registry
+            .execute_postselected(&mut doc, "JoinCopy", Default::default())
+            .unwrap();
+        let output = doc.objects().find(|o| !ids.contains(&o.id())).unwrap();
+        let curve = output.geometry().curve_ref().unwrap();
+        assert_eq!(
+            curve.start_point().unwrap(),
+            Point3::try_from(if restored { [0., 0., 0.] } else { [2., 3., 0.] }).unwrap()
+        );
+        assert_eq!(doc.selected_object_count(), 3);
+        assert!(!doc.is_selected(output.id()));
+        for original in &before {
+            assert_eq!(doc.object(original.id()), Some(original));
+        }
+        let after = doc.objects().cloned().collect::<Vec<_>>();
+        for _ in 0..2 {
+            registry.execute(&mut doc, "Undo").unwrap();
+            assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+            registry.execute(&mut doc, "Redo").unwrap();
+            assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), after);
+        }
+    }
+}
+
 fn line(a: [f64; 3], b: [f64; 3]) -> Geometry {
     Geometry::Line(
         LineSegment::try_new(

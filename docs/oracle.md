@@ -17,6 +17,8 @@ handler. Callback errors fail the probe even if the host swallows exceptions.
 The native adapter stops individual selection at the same completion boundary.
 See [joining evidence and limits](commands/join.md) and the
 [event transcripts and measurement correction](join-cycles.md).
+Another [544 encoding and seam records](join-encodings.md) check rational weights,
+higher-degree controls, polycurve leaves, and their local/parent parameter maps.
 
 Border duplication has 86 matching live command records and offline replay
 checks, including edge-table permutations. See [border validation](borders.md)

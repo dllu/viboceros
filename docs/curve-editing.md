@@ -22,9 +22,11 @@ The kernel exposes two explicitly different `CurveJoinStyle` policies:
   and the seed's direction on a tie, even for a disconnected linear component.
 - `Seeded`, used for individual command-first picks, extends only the first open source in one pass through
   later inputs. An earlier skipped source is not revisited after a later extension.
-  The seed's direction and original parameter interval are retained, including
+  The seed's direction and usually its original parameter interval are retained, including
   negative parameters when another curve is prepended. Linear inputs preserve
   their individual vertex parameters. Unrelated later chains are not joined.
+  Consolidating linear runs in a mixed result instead rebuilds its native
+  domains; see [curve encodings](join-encodings.md).
 
 These differences were observed separately in Rhino's public `JoinCurves` API
 and interactive command. Endpoints of two flexible curves move to their midpoint.

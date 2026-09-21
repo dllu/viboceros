@@ -2,15 +2,27 @@
 use super::*;
 
 pub(super) fn is_linear(curve: &Curve3) -> bool {
+    is_linear_ref(curve.as_ref())
+}
+
+/// Join's piecewise-linear encodings; not the general collinearity predicate.
+fn is_linear_ref(curve: CurveRef<'_>) -> bool {
+    linear_vertex_count(curve).is_some()
+}
+
+pub(super) fn linear_vertex_count(curve: CurveRef<'_>) -> Option<usize> {
     match curve {
-        Curve3::Line(_) | Curve3::Polyline(_) => true,
-        Curve3::NurbsCurve(curve) => {
-            curve.degree() == 1
-                && curve.knots()[1..curve.knots().len() - 1]
-                    .windows(2)
-                    .all(|p| p[0] < p[1])
-        }
-        _ => false,
+        CurveRef::Line(_) => Some(2),
+        CurveRef::Polyline(curve) => Some(curve.vertices().len()),
+        CurveRef::NurbsCurve(curve) => (curve.degree() == 1
+            && curve.knots()[1..curve.knots().len() - 1]
+                .windows(2)
+                .all(|p| p[0] < p[1]))
+        .then_some(curve.control_points().len()),
+        CurveRef::PolyCurve(curve) => curve.segments().iter().try_fold(1usize, |count, segment| {
+            count.checked_add(linear_vertex_count(segment.as_ref())? - 1)
+        }),
+        _ => None,
     }
 }
 
@@ -22,7 +34,7 @@ pub(super) fn assemble(
     partners: &[Option<usize>],
     policy: AssemblyPolicy,
     validation: Tolerance,
-) -> Result<Curve3, GeometryError> {
+) -> Result<(Curve3, Option<Real>), GeometryError> {
     let mut parts = Vec::with_capacity(chain.len());
     let mut linear_points = Vec::new();
     let mut linear_parameters: Vec<Real> = Vec::new();
@@ -138,14 +150,19 @@ pub(super) fn assemble(
             )?
         };
         let curve = Curve3::Polyline(curve);
-        if policy.style == CurveJoinStyle::Batch
+        let curve = if policy.style == CurveJoinStyle::Batch
             && !policy.linear_batch
             && curve.as_ref().is_closed()?
         {
-            curve.try_change_closed_seam(seed_parameter)
+            curve.try_change_closed_seam(seed_parameter)?
         } else {
-            Ok(curve)
-        }
+            curve
+        };
+        Ok((
+            curve,
+            (policy.style == CurveJoinStyle::Seeded)
+                .then_some(*curves[seed].as_ref().domain().start()),
+        ))
     } else {
         let curve = PolyCurve3::concatenate(&parts)?;
         let curve = if policy.style == CurveJoinStyle::Seeded && seed_offset != 0.0 {
@@ -165,31 +182,50 @@ pub(super) fn assemble(
         let Curve3::PolyCurve(curve) = curve else {
             unreachable!()
         };
+        let before_count = curve.segments().len();
         let curve = merge_linear_runs(&curve, validation)?;
-        if policy.style == CurveJoinStyle::Batch || !curve.is_closed()? {
-            Ok(Curve3::PolyCurve(PolyCurve3::try_with_segment_domains(
-                curve
-                    .segments()
-                    .iter()
-                    .enumerate()
-                    .map(|(i, s)| s.try_reparameterized(curve.segment_domain(i)?))
-                    .collect::<Result<Vec<_>, _>>()?,
-                curve.parameters().to_vec(),
-            )?))
-        } else {
-            Ok(Curve3::PolyCurve(curve))
-        }
+        let mut mapped_seed = *curves[seed].as_ref().domain().start();
+        let curve =
+            if policy.style == CurveJoinStyle::Seeded && curve.segments().len() < before_count {
+                // Linear-run consolidation rebuilds the mixed composite from its
+                // local leaves. It does not retain the temporary seed offset.
+                let start = *curve.segments()[0].as_ref().domain().start();
+                let offset = start - *curve.domain().start();
+                mapped_seed += offset;
+                let parameters = curve.parameters().iter().map(|t| t + offset).collect();
+                Curve3::PolyCurve(PolyCurve3::try_with_segment_domains(
+                    curve.segments().to_vec(),
+                    parameters,
+                )?)
+            } else if policy.style == CurveJoinStyle::Batch || !curve.is_closed()? {
+                Curve3::PolyCurve(PolyCurve3::try_with_segment_domains(
+                    curve
+                        .segments()
+                        .iter()
+                        .enumerate()
+                        .map(|(i, s)| s.try_reparameterized(curve.segment_domain(i)?))
+                        .collect::<Result<Vec<_>, _>>()?,
+                    curve.parameters().to_vec(),
+                )?)
+            } else {
+                Curve3::PolyCurve(curve)
+            };
+        Ok((
+            curve,
+            (policy.style == CurveJoinStyle::Seeded).then_some(mapped_seed),
+        ))
     }
 }
 
-/// Merge adjacent exact line/polyline leaves without changing parent speeds.
+/// Coalesce Join's linear encodings with their original interval widths.
+/// Unequally weighted degree-one NURBS lose their rational parameter speed,
+/// just as when Join converts a standalone linear NURBS to a polyline.
 pub(super) fn merge_linear_runs(
     curve: &PolyCurve3,
     validation: Tolerance,
 ) -> Result<PolyCurve3, GeometryError> {
     use crate::CurveSegment3;
-    let linear =
-        |s: &CurveSegment3| matches!(s, CurveSegment3::Line(_) | CurveSegment3::Polyline(_));
+    let linear = |s: &CurveSegment3| is_linear_ref(s.as_ref());
     let mut segments = Vec::new();
     let mut parameters = vec![curve.parameters()[0]];
     let mut i = 0;
@@ -209,7 +245,7 @@ pub(super) fn merge_linear_runs(
             let mut points = Vec::new();
             let mut times = Vec::new();
             for j in start..i {
-                let part = linear_form(&curve.segments()[j].as_ref().to_owned(), validation)?;
+                let part = linear_form_ref(curve.segments()[j].as_ref(), validation)?;
                 let skip = usize::from(j != start);
                 for (&point, &t) in part.vertices().iter().zip(part.parameters()).skip(skip) {
                     points.push(point);
@@ -240,18 +276,35 @@ fn endpoint_is_arc(curve: &Curve3, start: bool) -> bool {
     }
 }
 
+pub(super) fn endpoint_is_linear(curve: &Curve3, start: bool) -> bool {
+    if let Curve3::PolyCurve(curve) = curve {
+        let segment = if start {
+            curve.segments().first()
+        } else {
+            curve.segments().last()
+        };
+        segment.is_some_and(|segment| is_linear_ref(segment.as_ref()))
+    } else {
+        is_linear(curve)
+    }
+}
+
 pub(super) fn linear_form(
     curve: &Curve3,
     tolerance: Tolerance,
 ) -> Result<Polyline3, GeometryError> {
+    linear_form_ref(curve.as_ref(), tolerance)
+}
+
+fn linear_form_ref(curve: CurveRef<'_>, tolerance: Tolerance) -> Result<Polyline3, GeometryError> {
     match curve {
-        Curve3::Line(line) => Polyline3::try_with_parameters(
+        CurveRef::Line(line) => Polyline3::try_with_parameters(
             vec![line.start(), line.end()],
             vec![*line.domain().start(), *line.domain().end()],
             tolerance,
         ),
-        Curve3::Polyline(line) => Ok(line.clone()),
-        Curve3::NurbsCurve(curve) => Polyline3::try_with_parameters(
+        CurveRef::Polyline(line) => Ok(line.clone()),
+        CurveRef::NurbsCurve(curve) => Polyline3::try_with_parameters(
             curve
                 .control_points()
                 .iter()
@@ -260,6 +313,23 @@ pub(super) fn linear_form(
             curve.knots()[1..curve.knots().len() - 1].to_vec(),
             tolerance,
         ),
-        _ => unreachable!("linear form is only used for line/polyline inputs"),
+        CurveRef::PolyCurve(curve) => {
+            let mut points = Vec::new();
+            let mut parameters = Vec::new();
+            for (index, segment) in curve.segments().iter().enumerate() {
+                let part = linear_form_ref(segment.as_ref(), tolerance)?;
+                for (&point, &t) in part
+                    .vertices()
+                    .iter()
+                    .zip(part.parameters())
+                    .skip(usize::from(index > 0))
+                {
+                    points.push(point);
+                    parameters.push(curve.polycurve_parameter(index, t)?);
+                }
+            }
+            Polyline3::try_with_parameters(points, parameters, tolerance)
+        }
+        _ => unreachable!("linear form is only used for recognized Join encodings"),
     }
 }

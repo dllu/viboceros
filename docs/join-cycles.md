@@ -25,6 +25,8 @@ that selection. Command-first mesh copies also retain their source selection.
   or changing parent parameter speeds. Batch and open individual results
   synchronize leaf domains to parent intervals. Early closed individual results
   retain independent local domains. Both are recorded and compared explicitly.
+  Mixed linear-run consolidation and rational seed exceptions are detailed in
+  [curve encodings](join-encodings.md).
 
 Endpoint matching remains separate from representation/parameter assembly in
 `curve_join/assembly`. Public OpenNURBS joining and polycurve-domain routines

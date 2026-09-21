@@ -53,8 +53,12 @@ pub(super) fn stage(
         let mut curve = component.curve().clone();
         if postselected && curve.as_ref().is_closed()? {
             closed_on_pick = true;
-            if copy_inputs {
-                curve = curve.try_change_closed_seam(*open[joined[0]].as_ref().domain().start())?;
+            if copy_inputs && copy_restores_seed_seam(&open[joined[0]], tolerance)? {
+                curve = curve.try_change_closed_seam(
+                    component
+                        .seed_start_parameter()
+                        .expect("a joined seeded component records its mapped seed parameter"),
+                )?;
             }
         }
         copies.push((sources[indices[joined[0]]].id(), Geometry::from(curve)));
@@ -72,4 +76,24 @@ pub(super) fn stage(
         description,
         closed_on_pick,
     })
+}
+
+fn copy_restores_seed_seam(
+    seed: &viboceros_geometry::Curve3,
+    tolerance: Tolerance,
+) -> Result<bool, CommandError> {
+    // The measured standalone two-control-point NURBS policy compares native and
+    // linear midpoint positions using the absolute document tolerance. This
+    // is not an exact-weight test or a maximum parameter-deviation bound.
+    if let viboceros_geometry::Curve3::NurbsCurve(curve) = seed
+        && curve.degree() == 1
+        && curve.control_points().len() == 2
+    {
+        let controls = curve.control_points();
+        let linear_midpoint = controls[0].point().midpoint(controls[1].point())?;
+        let native_midpoint = curve.evaluate(seed.as_ref().parameter_at(0.5)?)?;
+        Ok(native_midpoint.distance_to(linear_midpoint)? <= tolerance.absolute())
+    } else {
+        Ok(true)
+    }
 }

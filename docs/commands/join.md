@@ -30,7 +30,8 @@ Preselection scans document table order and batch-joins all compatible chains,
 using majority direction and chord-length parameters for wholly linear batches.
 Individual command-first picks extend only the first open curve, in pick order;
 skipped curves are not revisited and a second unrelated chain is not started.
-The seed's direction and parameter interval are retained in this mode.
+The seed's direction and usually its parameter interval are retained in this mode;
+[mixed linear-run consolidation](../join-encodings.md) has a distinct domain policy.
 An individually picked chain completes immediately on closure, without Enter.
 See [cycle seams and command-boundary evidence](../join-cycles.md).
 See [curve joining details](../curve-editing.md) for endpoint matching.
@@ -136,6 +137,8 @@ These observations establish the recorded cases, not full mesh compatibility.
 The four earlier closed-chain discrepancies are resolved in the additional
 [284-case cycle suite](../join-cycles.md). Measurements now capture the named
 command's EndCommand result and state, not subsequent macro commands.
+A further [544 encoding and seam cases](../join-encodings.md) cover weighted NURBS,
+polycurve consolidation, and representation-dependent seam/domain policies.
 Batch picks during a command, Undo-within-prompt, edge
 subobjects, cross-command sharing of remembered options, and Rhino construction
 history associations for JoinCopy still need independent coverage/implementation.

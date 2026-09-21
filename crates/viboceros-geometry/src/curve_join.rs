@@ -4,7 +4,7 @@ mod assembly;
 #[cfg(test)]
 mod tests;
 
-use assembly::{assemble, is_linear, linear_form};
+use assembly::{assemble, endpoint_is_linear, is_linear, linear_form};
 
 use std::collections::HashMap;
 
@@ -20,8 +20,9 @@ const MAX_JOIN_SCANS: usize = 16_000_000;
 pub enum CurveJoinStyle {
     /// Batch API: majority direction; wholly linear batches use chord lengths.
     Batch,
-    /// Extend only the first open source in one pass, retaining its direction
-    /// and interval. Unconnected sources remain singleton components.
+    /// Extend only the first open source in one pass, retaining its direction.
+    /// Native Join assembly retains seed intervals except when mixed linear
+    /// runs are consolidated. Unconnected sources remain singleton components.
     Seeded,
 }
 
@@ -43,6 +44,7 @@ struct AssemblyPolicy {
 pub struct JoinedCurve3 {
     curve: Curve3,
     source_indices: Vec<usize>,
+    seed_start_parameter: Option<Real>,
 }
 
 impl JoinedCurve3 {
@@ -55,6 +57,12 @@ impl JoinedCurve3 {
     /// Source indices in original input order, independent of traversal direction.
     pub fn source_indices(&self) -> &[usize] {
         &self.source_indices
+    }
+    /// Start of the earliest source in a newly assembled seeded result.
+    /// Rebuilt mixed composites can move it away from the source's old domain.
+    /// Batch results and unchanged singletons do not expose this mapping.
+    pub fn seed_start_parameter(&self) -> Option<Real> {
+        self.seed_start_parameter
     }
 }
 
@@ -149,6 +157,7 @@ pub fn join_curves(
             results.push(JoinedCurve3 {
                 curve: curves[first].clone(),
                 source_indices: vec![first],
+                seed_start_parameter: None,
             });
             continue;
         };
@@ -232,14 +241,15 @@ pub fn join_curves(
         sources.sort_unstable();
         // Representation is a property of this chain, not unrelated inputs.
         let all_linear = chain.iter().all(|&(index, _)| is_linear(&curves[index]));
-        let output = if chain.len() == 1 {
-            if all_linear {
+        let (output, seed_start_parameter) = if chain.len() == 1 {
+            let curve = if all_linear {
                 Curve3::Polyline(
                     linear_form(&curves[first], validation)?.try_chord_length_parameterized()?,
                 )
             } else {
                 curves[first].clone()
-            }
+            };
+            (curve, None)
         } else {
             assemble(
                 curves,
@@ -258,6 +268,7 @@ pub fn join_curves(
         results.push(JoinedCurve3 {
             curve: output,
             source_indices: sources,
+            seed_start_parameter,
         });
     }
     // Newly joined chains precede unchanged inputs; retain source order within
@@ -289,6 +300,7 @@ fn seeded_partners(
     {
         assigned[seed] = true;
         let mut last_source = seed;
+        let mut linear_vertices = assembly::linear_vertex_count(curves[seed].as_ref());
         loop {
             let mut sides: [Option<(usize, usize, usize, usize)>; 2] = [None, None];
             for side in 0..2 {
@@ -326,9 +338,17 @@ fn seeded_partners(
                 // A curve closing both free ends is prepended by individual
                 // Join picking. Copy commands may restore the seed seam later.
                 best = Some(
-                    if is_linear(&curves[left.0])
-                        && !is_linear(&curves[endpoints[free[0]].curve])
-                        && is_linear(&curves[endpoints[free[1]].curve])
+                    if (is_linear(&curves[left.0])
+                        && !endpoint_is_linear(
+                            &curves[endpoints[free[0]].curve],
+                            endpoints[free[0]].start,
+                        )
+                        && endpoint_is_linear(
+                            &curves[endpoints[free[1]].curve],
+                            endpoints[free[1]].start,
+                        ))
+                        || (matches!(curves[left.0], Curve3::Arc(_))
+                            && linear_vertices.is_some_and(|n| n > 2))
                     {
                         right
                     } else {
@@ -342,6 +362,9 @@ fn seeded_partners(
             partners[free[side]] = Some(other);
             partners[other] = Some(free[side]);
             assigned[source] = true;
+            linear_vertices = linear_vertices
+                .zip(assembly::linear_vertex_count(curves[source].as_ref()))
+                .and_then(|(a, b)| a.checked_add(b - 1));
             last_source = source;
             free[side] = ends[source].expect("open source")[usize::from(endpoints[other].start)];
             if adjacent[free[0]].iter().any(|&index| {

@@ -1,5 +1,6 @@
 use super::*;
 use crate::{CircularArc3, CurveClosure, LineSegment, NurbsCurve};
+mod encodings;
 
 #[test]
 fn merging_linear_leaves_preserves_parent_points_and_one_sided_derivatives() {

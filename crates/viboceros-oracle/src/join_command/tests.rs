@@ -70,6 +70,46 @@ fn closed_cycles_replay_raw_seams_local_domains_and_command_boundary_selection()
 }
 
 #[test]
+fn rational_and_composite_encodings_replay_every_raw_rhino_field() {
+    let request: ProbeRequest = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/join_encodings.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/join_encodings.json"
+    ))
+    .unwrap();
+    let actual = run_request(&request).unwrap();
+    let records = expected["results"].as_array().unwrap();
+    assert_eq!(actual.results.len(), 352);
+    assert_eq!(records.len(), 352);
+    for (a, b) in actual.results.iter().zip(records) {
+        assert_eq!(a.id, b["id"]);
+        compare(&a.value, &b["value"], &a.id);
+    }
+}
+
+#[test]
+fn weighted_copy_seams_replay_midpoint_tolerance_and_composite_closure_boundaries() {
+    let request: ProbeRequest = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/join_weight_seams.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/join_weight_seams.json"
+    ))
+    .unwrap();
+    let actual = run_request(&request).unwrap();
+    let records = expected["results"].as_array().unwrap();
+    assert_eq!(actual.results.len(), 192);
+    assert_eq!(records.len(), 192);
+    for (a, b) in actual.results.iter().zip(records) {
+        assert_eq!(a.id, b["id"]);
+        compare(&a.value, &b["value"], &a.id);
+    }
+}
+
+#[test]
 fn saved_events_distinguish_early_completion_and_nothing_from_macro_success() {
     let recorded: Value = serde_json::from_str(include_str!(
         "../../../../tools/rhino_oracle/observations/join_command_events.json"
