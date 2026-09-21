@@ -169,6 +169,12 @@ and randomized tree searches against an all-pairs reference at varied scales.
 
 ## Oracle boundary and regression evidence
 
+Successfully joined components also run [certified redundant-edge cleanup](join-edge-cleanup.md).
+`Brep::try_merge_all_edges` updates all incident trim rings at smooth valence-two
+vertices, retaining branches and singular vertices. Whole-curve certificates
+bound accumulated spatial changes and require exact UV preservation. The
+explicit pair-assembly primitive and untouched components do not perform cleanup.
+
 The `brep_join` probe uses public
 [RhinoCommon JoinBreps](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.brep/joinbreps)
 on owned geometry in a private Xvfb session, without inserting document objects.

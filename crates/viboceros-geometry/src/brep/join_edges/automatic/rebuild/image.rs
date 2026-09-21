@@ -4,7 +4,7 @@ use super::*;
 #[cfg(test)]
 mod tests;
 
-pub(super) struct BoundaryImage {
+pub(in crate::brep::join_edges) struct BoundaryImage {
     curves: Vec<certificate::SurfaceCurve>,
     interval: [Real; 2],
     break_ends: [bool; 2],

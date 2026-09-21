@@ -88,9 +88,12 @@ fn presplit_curved_boundaries_keep_certified_gaps_without_hiding_edge_cleanup_di
                 );
             }
         }
-        assert!(mates > 0);
-        // Rhino coalesces a representation-dependent subset of the split
-        // seams. These are all raw discrepancies, not normalized full matches.
+        assert_eq!(mates, 1, "{id}");
+        assert_eq!(a["edges"].as_array().unwrap().len(), 7, "{id}");
+        assert_eq!(a["vertices"].as_array().unwrap().len(), 6, "{id}");
+        // At this tiny angle Rhino coalesces a representation-dependent subset
+        // of the split seams. Native uses a stable atan2 predicate instead of
+        // copying cosine roundoff. Remaining discrepancies are not normalized.
         let rhino_edges = if id.starts_with("quadratic-tiny-") {
             8
         } else if id.starts_with("quadratic-") {

@@ -2,6 +2,7 @@ use super::*;
 mod boundaries;
 mod corners;
 mod curved_certificates;
+mod edge_cleanup;
 mod gaps;
 mod isocurve_certificates;
 mod projective_correspondence;

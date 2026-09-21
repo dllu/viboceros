@@ -81,6 +81,12 @@ have native-only evidence, explicitly excluded from comparison counts. Its share
 `surface_face` sources can use `trim_bounds: [[u0,u1],[v0,v1]]` while retaining the
 complete underlying surface.
 
+The [redundant-edge cleanup audit](join-edge-cleanup.md) adds 32 angular-tolerance
+records using the same sixteen shared source artifacts at four document angles.
+The cumulative total is 679 full matches, 32 native errors and 238 other
+differences in 949 cases. Twelve previous cases become matches and none regress;
+small-angle representation-dependent Rhino topology remains an explicit difference.
+
 The `align` object-layout probe compares actual bounding-box, curve and line/plane alignment commands,
 including retained IDs, source samples/domains, groups, layer assignment and
 pre/postselection cleanup. Its shared `object_layout` module supplies fixture

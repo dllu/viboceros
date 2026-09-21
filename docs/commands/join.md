@@ -118,9 +118,12 @@ The [tensor-isocurve follow-up](../join-isocurve-certificates.md) extends certif
 uncertainty to interior/unclamped isocurves. Its 33 comparable new cases retain
 area and outer-knot differences; 31 additional native cases lack Rhino records
 after a translated-UV batch exceeded its observation limit.
-In total, 651 of 917 comparable cases fully match, with 32 native execution
-failures and 234 other differences. Redundant seam coalescing, nonisoparametric surface-image uncertainty,
-offset cut ownership and ordered clustering remain incomplete. This is not general parity.
+The [redundant-edge cleanup follow-up](../join-edge-cleanup.md) adds certified
+valence-two coalescing and thirty-two angular-tolerance records. Twelve previous
+cases become full matches, with none lost. In total, 679 of 949 comparable cases
+fully match, with 32 native execution failures and 238 other differences.
+Small-angle Rhino cleanup artifacts, nonisoparametric surface-image uncertainty,
+offset cut ownership and ordered clustering remain unresolved. This is not general parity.
 
 These are scoped observations, not general threshold rules. Generic curved
 partial overlaps, non-projective curved correspondence, nested/cavity-solid classification,

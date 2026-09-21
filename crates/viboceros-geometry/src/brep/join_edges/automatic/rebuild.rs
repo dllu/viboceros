@@ -4,7 +4,7 @@ use crate::exact_scalar::{Rational, rational, scalar};
 
 mod bounds;
 mod clusters;
-mod image;
+pub(in crate::brep::join_edges) mod image;
 #[cfg(test)]
 mod tests;
 

@@ -5,10 +5,9 @@ use std::cmp::Ordering;
 mod product;
 mod refine;
 pub(super) use product::isocurve::SurfaceCurve;
+pub(super) use product::restriction::restricted_curve_bound;
 #[cfg(test)]
-pub(super) use product::restriction::{
-    curve_endpoint_bound, restricted_curve_bound, restricted_endpoint_bound,
-};
+pub(super) use product::restriction::{curve_endpoint_bound, restricted_endpoint_bound};
 pub(super) use refine::refined_curve_bound;
 
 /// Fast basis/locus certificates first; otherwise align exact knot spans and

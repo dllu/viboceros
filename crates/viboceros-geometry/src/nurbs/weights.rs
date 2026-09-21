@@ -27,7 +27,7 @@ pub(crate) fn rescale_controls(
 }
 
 impl NurbsCurve {
-    pub(super) fn try_append_clamped(&self, next: &Self) -> Result<Self, GeometryError> {
+    pub(crate) fn try_append_clamped(&self, next: &Self) -> Result<Self, GeometryError> {
         let a = self.control_points[self.control_points.len() - 1]
             .point
             .to_array();

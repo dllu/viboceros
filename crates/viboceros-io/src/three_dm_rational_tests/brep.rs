@@ -44,6 +44,44 @@ fn surface() -> NurbsSurface {
 }
 
 #[test]
+fn coalesced_rational_brep_edges_and_trims_round_trip_without_new_full_order_knots() {
+    let frame = viboceros_geometry::Frame3::try_from_normal(
+        p(0., 0., 0.),
+        viboceros_geometry::Vector3::try_new(0., 0., 1.).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let original = Brep::try_cylinder(frame, 2., 0., 5., Tolerance::DEFAULT).unwrap();
+    for edge in 0..original.edges().len() {
+        let curve = original.edges()[edge].curve();
+        let parameters = [0.125, 0.375, 0.875].map(|t| curve.parameter_at(t).unwrap());
+        let source = original
+            .try_split_edges_at_parameters(&[(edge, parameters.to_vec())], Tolerance::DEFAULT)
+            .unwrap()
+            .try_merge_all_edges(1e-10, Tolerance::DEFAULT)
+            .unwrap();
+        let ThreeDmGeometry::Brep(decoded) = round_trip(ThreeDmGeometry::Brep(source.clone()))
+        else {
+            panic!("expected B-rep")
+        };
+        assert!(decoded.is_solid());
+        assert_eq!(decoded.vertices(), source.vertices());
+        assert_eq!(decoded.edges().len(), original.edges().len());
+        for (a, b) in decoded.edges().iter().zip(source.edges()) {
+            assert_eq!(a.vertices(), b.vertices());
+            assert_eq!(a.tolerance(), b.tolerance());
+            curves_near(a.curve(), b.curve());
+        }
+        assert!(
+            (decoded.signed_volume(Tolerance::DEFAULT).unwrap()
+                - source.signed_volume(Tolerance::DEFAULT).unwrap())
+            .abs()
+                < 1e-10
+        );
+    }
+}
+
+#[test]
 fn brep_edges_uv_trims_and_signed_surfaces_share_safe_serialization() {
     let original = Brep::try_surface_face(surface(), Tolerance::DEFAULT).unwrap();
     for (edge_scale, trim_scale, surface_scale) in [

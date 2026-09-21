@@ -4,6 +4,7 @@ use super::*;
 mod automatic;
 pub use automatic::{BrepJoinComponent, BrepJoinReport, join_breps, join_breps_with_report};
 mod certificate;
+mod merge;
 #[cfg(test)]
 mod tests;
 mod topology;

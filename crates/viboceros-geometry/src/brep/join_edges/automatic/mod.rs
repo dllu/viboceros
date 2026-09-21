@@ -2,7 +2,7 @@
 use super::*;
 mod components;
 mod overlap;
-mod rebuild;
+pub(super) mod rebuild;
 mod search;
 mod selection;
 mod subdivision;
@@ -44,7 +44,7 @@ pub struct BrepJoinReport {
 /// Incident clamped edges use certified chord-based control adjustment;
 /// changed nonclamped edges retain the original assembly policy. Movement of
 /// a vertex cluster or adjusted edge beyond `join_distance` fails atomically.
-/// Natural surface boundaries can certify tighter component uncertainty;
+/// Exact surface isocurves can certify tighter component uncertainty;
 /// other boundaries propagate their validated uncertainty conservatively.
 /// Mutual unique candidates join first. Remaining ambiguous
 /// boundaries join only when they become mutually unique within a component
@@ -56,6 +56,9 @@ pub struct BrepJoinReport {
 /// candidate sets fail atomically. Newly closed positive-volume shells are
 /// oriented outward; zero-volume double sheets retain the first face's sense.
 /// This does not classify nested/cavity solids or compute a Boolean union.
+/// Successfully joined components coalesce redundant smooth valence-two edges
+/// at the angular tolerance; untouched components and explicit edge-pair
+/// assembly retain their original subdivisions. See [`Brep::try_merge_all_edges`].
 ///
 /// Empty input returns no components. Limits: 10,000 sources, 200,000 naked
 /// edges, one million broad-phase pairs, and 16 million charged work units.
@@ -192,8 +195,19 @@ pub fn join_breps_with_report(
         tolerance,
         &mut budget,
     )?;
+    let mut components = components::collect(joined, &combined, &pairs, &face_sources, tolerance)?;
+    for component in &mut components {
+        if component.joined_edge_count > 0 {
+            component.brep = super::merge::merge(
+                &component.brep,
+                tolerance.angular().min(std::f64::consts::PI),
+                tolerance,
+                &mut budget,
+            )?;
+        }
+    }
     Ok(BrepJoinReport {
-        components: components::collect(joined, &combined, &pairs, &face_sources, tolerance)?,
+        components,
         candidate_source_pairs,
     })
 }
