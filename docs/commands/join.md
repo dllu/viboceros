@@ -16,8 +16,10 @@ Mixed object families, surfaces, B-reps, and SubD joining remain unimplemented.
 
 `JoinCopy` retains all original objects, including their exact geometry, IDs,
 attributes, and groups. Outputs inherit their seed's attributes and memberships.
-Preselection leaves originals and outputs selected; command-first selection
-clears selection. Neither command expands selection to unselected group peers.
+Preselection leaves originals and outputs selected. Command-first mesh copying
+and early closed-curve copying retain participating originals selected, with
+outputs unselected; ordinary open-curve copying clears selection.
+Neither command expands selection to unselected group peers.
 Disconnected curves and single selected objects are not duplicated. With
 multiple meshes and `JoinDisjointMeshes=No`, even isolated mesh components
 produce fresh copies. Both commands use the same staged geometry/document path.
@@ -25,13 +27,17 @@ produce fresh copies. Both commands use the same staged geometry/document path.
 ## Curves
 
 Preselection scans document table order and batch-joins all compatible chains,
-using majority direction and chord-length parameters for linear outputs.
+using majority direction and chord-length parameters for wholly linear batches.
 Individual command-first picks extend only the first open curve, in pick order;
 skipped curves are not revisited and a second unrelated chain is not started.
 The seed's direction and parameter interval are retained in this mode.
+An individually picked chain completes immediately on closure, without Enter.
+See [cycle seams and command-boundary evidence](../join-cycles.md).
 See [curve joining details](../curve-editing.md) for endpoint matching.
 
-A single open curve or disconnected open curves succeed without geometry edits.
+A single object fails without geometry edits. Disconnected preselected open
+curves succeed unchanged; individually picked curves that cannot extend the seed
+fail and leave only the seed selected. Neither case changes undo/redo history.
 Existing closed curves are ignored when open curves are present; an all-closed
 selection fails and is released without changing geometry or undo/redo history.
 
@@ -47,7 +53,8 @@ face-use order and orients adjoining source meshes. A shared vertex can connect
 objects even without a shared edge; a vertex-only connection reverses the later
 mesh's winding in the recorded cases. Already-disconnected source meshes remain
 separate, even when another source bridges their pieces. Ordinary disconnected
-inputs are also replaced with fresh IDs. A single selected mesh is unchanged.
+inputs are also replaced with fresh IDs. A single selected mesh fails unchanged,
+retaining its selection.
 
 The earliest source supplies each output's layer, name, color, and group
 memberships. Preselection uses document table order; command-first selection
@@ -107,7 +114,7 @@ The additional [140-case workflow fixture](../../tools/rhino_oracle/fixtures/joi
 and [raw observations](../../tools/rhino_oracle/observations/join_workflow.json)
 check both commands, both selection modes, source identity/retention, creation
 order, layers/colors/groups, no-ops, closed inputs, independent chains, NURBS/line
-joins, unrelated nonlinear curves, and effective native parameter domains.
+joins, unrelated nonlinear curves, and raw local/parent parameter domains.
 They compare every recorded field, with absolute epsilon `1e-10` and relative
 epsilon `1e-12` for numbers; mesh indices and document metadata agree exactly.
 See the [workflow comparison](../join-workflow-comparison.json).
@@ -126,12 +133,9 @@ coverage or implementation. Inputs outside finite binary32 coordinate range
 retain binary64 matching natively; Rhino parity for that range is unproven.
 These observations establish the recorded cases, not full mesh compatibility.
 
-Four [closed-chain diagnostics](../../tools/rhino_oracle/fixtures/join_closed_chain_diagnostic.json)
-retain [raw nonmatching results](../../tools/rhino_oracle/observations/join_closed_chain_diagnostic.json).
-Rhino may finish an individually picked Join as soon as its chain closes, so
-later `_SelID` macro tokens execute outside Join and can select unrelated objects.
-Closed-chain seams and parameter origins also differ. These are not included in
-the 140 passing cases; neither early completion nor general cycle parameter
-parity is claimed. Batch picks during a command, Undo-within-prompt, edge
+The four earlier closed-chain discrepancies are resolved in the additional
+[284-case cycle suite](../join-cycles.md). Measurements now capture the named
+command's EndCommand result and state, not subsequent macro commands.
+Batch picks during a command, Undo-within-prompt, edge
 subobjects, cross-command sharing of remembered options, and Rhino construction
 history associations for JoinCopy still need independent coverage/implementation.

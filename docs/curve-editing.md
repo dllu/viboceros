@@ -17,8 +17,9 @@ The kernel exposes two explicitly different `CurveJoinStyle` policies:
 
 - `Batch`, used for preselection, matches nearest compatible endpoints, using tangent alignment to break
   distance ties. It forms independent chains, prefers the majority of original
-  directions, and favors the last source on a direction tie. Linear outputs are
-  chord-length-parameterized polylines, retaining intermediate vertices.
+  directions. Wholly linear batches favor the last source on a direction tie
+  and use chord-length parameters. Mixed batches retain native interval widths
+  and the seed's direction on a tie, even for a disconnected linear component.
 - `Seeded`, used for individual command-first picks, extends only the first open source in one pass through
   later inputs. An earlier skipped source is not revisited after a later extension.
   The seed's direction and original parameter interval are retained, including
@@ -41,7 +42,8 @@ Preselection scans document table order; command-first picks retain pick order.
 `JoinCopy` follows the same policies without deleting consumed sources. Linear
 representation is decided per chain: unrelated nonlinear inputs cannot turn a
 line chain into a polycurve. See [Join/JoinCopy](commands/join.md) for selection,
-no-op behavior, measured workflow coverage, and outstanding closed-chain limits.
+no-op behavior and measured workflow coverage; [cycle details](join-cycles.md)
+describe closure seams, source-order ties, and exact linear-segment coalescing.
 
 The older `curve_join_close` command probe used native preselection while its
 Rhino worker used command-first picks. It now invokes native postselection too;

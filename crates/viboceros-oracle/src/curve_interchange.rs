@@ -215,10 +215,7 @@ pub(super) fn curve_record(curve: CurveRef<'_>) -> Result<Value, ProbeError> {
         value["segments"] = json!(
             c.segments()
                 .iter()
-                .enumerate()
-                // Rhino's SegmentCurve exposes the effective parent interval.
-                // Native segments retain local domains plus an affine map.
-                .map(|(i, s)| curve_record(s.try_reparameterized(c.segment_domain(i)?)?.as_ref()))
+                .map(|s| curve_record(s.as_ref()))
                 .collect::<Result<Vec<_>, _>>()?
         );
     }

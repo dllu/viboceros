@@ -97,15 +97,21 @@ pub(super) fn run(f: &JoinFixture, tolerance: Tolerance) -> Result<(Value, u64),
         groups.push(document.add_group(Some(format!("Source {index}")), [id])?);
     }
     groups.push(document.add_group(Some("Shared".into()), ids.iter().copied())?);
-    for &index in &order {
-        document.select_objects_direct([ids[index]], SelectionMode::Add)?;
-    }
     let registry = CommandRegistry::with_builtins();
     let command = format!(
         "{} JoinDisjointMeshes={}",
         f.command.name(),
         if f.join_disjoint { "Yes" } else { "No" }
     );
+    let prompt = registry
+        .object_selection_prompt(&command)?
+        .ok_or_else(invalid)?;
+    for &index in &order {
+        document.select_objects_direct([ids[index]], SelectionMode::Add)?;
+        if !f.preselect && registry.object_selection_complete(&document, &prompt)? {
+            break;
+        }
+    }
     let result = if f.preselect {
         registry.execute(&mut document, &command)
     } else {
@@ -113,7 +119,7 @@ pub(super) fn run(f: &JoinFixture, tolerance: Tolerance) -> Result<(Value, u64),
     };
     let succeeded = match result {
         Ok(_) => true,
-        Err(CommandError::NoOpenCurvesToJoin) => false,
+        Err(CommandError::NoOpenCurvesToJoin | CommandError::NothingJoined) => false,
         Err(error) => return Err(error.into()),
     };
     let objects = document.objects().map(|object| {

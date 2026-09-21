@@ -422,5 +422,17 @@ impl VibocerosApp {
             Ok(count) => self.push_log(format!("Selected {count} object(s); Enter continues")),
             Err(error) => self.push_log(format!("Error: {error}")),
         }
+        if let Some(pending) = &self.object_prompt {
+            match self
+                .commands
+                .object_selection_complete(&self.document, &pending.description)
+            {
+                Ok(true) => {
+                    self.try_continue_object_prompt("");
+                }
+                Ok(false) => {}
+                Err(error) => self.push_log(format!("Error: {error}")),
+            }
+        }
     }
 }

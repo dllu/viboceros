@@ -2,6 +2,57 @@ use super::*;
 use viboceros_document::SelectionMode;
 
 #[test]
+fn individual_join_picks_finish_on_closure_without_consuming_the_next_click() {
+    for command in ["Join", "JoinCopy"] {
+        let mut app = test_app();
+        for input in [
+            "Line 0,0,0 1,0,0",
+            "Line 1,0,0 1,2,0",
+            "Line 1,2,0 0,0,0",
+            "Point 8,0,0",
+        ] {
+            enter(&mut app, input);
+        }
+        let ids = app.document.objects().map(|o| o.id()).collect::<Vec<_>>();
+        let before = app.document.objects().cloned().collect::<Vec<_>>();
+        app.document.clear_selection();
+        enter(&mut app, command);
+        for (index, &id) in ids[..3].iter().enumerate() {
+            app.apply_selection_click(SelectionClick {
+                object_id: Some(id),
+                mode: SelectionMode::Replace,
+            });
+            if index < 2 {
+                assert!(app.object_prompt.is_some());
+                assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+            }
+        }
+        assert!(app.object_prompt.is_none());
+        assert_eq!(app.document.undo_label(), Some(command));
+        assert_eq!(
+            app.document.selected_object_count(),
+            if command == "JoinCopy" { 3 } else { 0 }
+        );
+        let joined = app
+            .document
+            .objects()
+            .find(|o| !ids.contains(&o.id()))
+            .unwrap();
+        assert!(joined.geometry().curve_ref().unwrap().is_closed().unwrap());
+        assert!(!app.document.is_selected(joined.id()));
+        // The next input belongs to ordinary selection, not the completed Join.
+        app.apply_selection_click(SelectionClick {
+            object_id: Some(ids[3]),
+            mode: SelectionMode::Replace,
+        });
+        assert_eq!(app.document.selected_object_count(), 1);
+        assert!(app.document.is_selected(ids[3]));
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    }
+}
+
+#[test]
 fn mesh_join_and_copy_command_first_filter_points_and_retain_pick_order() {
     for command in ["Join", "JoinCopy"] {
         let mut app = test_app();
@@ -36,7 +87,10 @@ fn mesh_join_and_copy_command_first_filter_points_and_retain_pick_order() {
             app.document.objects().len(),
             if command == "Join" { 2 } else { 4 }
         );
-        assert_eq!(app.document.selected_object_count(), 0);
+        assert_eq!(
+            app.document.selected_object_count(),
+            if command == "Join" { 0 } else { 2 }
+        );
         let output = app
             .document
             .objects()

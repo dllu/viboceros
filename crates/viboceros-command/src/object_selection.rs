@@ -209,6 +209,21 @@ impl ObjectSelectionPrompt {
 }
 
 impl CommandRegistry {
+    pub fn object_selection_complete(
+        &self,
+        document: &Document,
+        prompt: &ObjectSelectionPrompt,
+    ) -> Result<bool, CommandError> {
+        let input = prompt.command_line();
+        let mut tokens = input.split_whitespace();
+        let name = normalize_command_name(tokens.next().ok_or(CommandError::EmptyInput)?);
+        let index = self
+            .lookup
+            .get(&name)
+            .ok_or_else(|| CommandError::UnknownCommand(name.clone()))?;
+        self.commands[*index].object_selection_complete(document, &tokens.collect::<Vec<_>>())
+    }
+
     pub fn object_selection_confirmation(
         &self,
         document: &Document,

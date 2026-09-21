@@ -25,6 +25,44 @@ fn run(
 }
 
 #[test]
+fn closure_completion_check_is_read_only_and_copy_keeps_only_participating_sources_selected() {
+    let mut doc = Document::default();
+    let ids = [
+        ([0., 0., 0.], [1., 0., 0.]),
+        ([8., 0., 0.], [9., 0., 0.]),
+        ([1., 0., 0.], [1., 2., 0.]),
+        ([1., 2., 0.], [0., 0., 0.]),
+    ]
+    .map(|(a, b)| doc.add_geometry(line(a, b)).unwrap());
+    let registry = CommandRegistry::with_builtins();
+    registry.execute(&mut doc, "Point 20,0,0").unwrap();
+    registry.execute(&mut doc, "Undo").unwrap();
+    let prompt = registry
+        .object_selection_prompt("JoinCopy")
+        .unwrap()
+        .unwrap();
+    let before = doc.objects().cloned().collect::<Vec<_>>();
+    for (index, id) in ids.into_iter().enumerate() {
+        doc.select_objects_direct([id], SelectionMode::Add).unwrap();
+        assert_eq!(
+            registry.object_selection_complete(&doc, &prompt).unwrap(),
+            index == 3
+        );
+        assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+        assert_eq!(doc.redo_label(), Some("Point"));
+    }
+    registry
+        .execute_postselected(&mut doc, "JoinCopy", Default::default())
+        .unwrap();
+    for (index, id) in ids.into_iter().enumerate() {
+        assert_eq!(doc.is_selected(id), index != 1);
+    }
+    let output = doc.objects().find(|o| !ids.contains(&o.id())).unwrap();
+    assert!(!doc.is_selected(output.id()));
+    assert_eq!(*output.geometry().curve_ref().unwrap().domain().start(), 0.);
+}
+
+#[test]
 fn join_copy_preserves_exact_sources_attributes_groups_and_two_history_cycles() {
     for post in [false, true] {
         for mesh in [false, true] {
@@ -74,7 +112,7 @@ fn join_copy_preserves_exact_sources_attributes_groups_and_two_history_cycles() 
             assert_eq!(output.attributes(), &attrs);
             assert_eq!(output.group_ids(), [group]);
             for id in [first, second, output.id()] {
-                assert_eq!(doc.is_selected(id), !post);
+                assert_eq!(doc.is_selected(id), !post || (mesh && id != output.id()));
             }
             assert_eq!(doc.undo_label(), Some("JoinCopy"));
             let after = doc.objects().cloned().collect::<Vec<_>>();
@@ -98,7 +136,7 @@ fn join_copy_preserves_exact_sources_attributes_groups_and_two_history_cycles() 
 }
 
 #[test]
-fn curve_singletons_and_disconnected_sources_are_successful_noops_preserving_redo() {
+fn nonjoining_selections_preserve_redo_and_report_the_named_command_result() {
     for command in ["Join", "JoinCopy"] {
         for count in [1, 2] {
             for post in [false, true] {
@@ -118,10 +156,15 @@ fn curve_singletons_and_disconnected_sources_are_successful_noops_preserving_red
                 doc.select_objects_direct(ids, SelectionMode::Replace)
                     .unwrap();
                 let before = doc.objects().cloned().collect::<Vec<_>>();
-                run(&registry, &mut doc, command, post).unwrap();
+                let result = run(&registry, &mut doc, command, post);
+                if post || count == 1 {
+                    assert!(matches!(result, Err(CommandError::NothingJoined)));
+                } else {
+                    result.unwrap();
+                }
                 assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
                 assert_eq!(doc.redo_label(), Some("Point"));
-                assert_eq!(doc.selected_object_count(), if post { 0 } else { count });
+                assert_eq!(doc.selected_object_count(), if post { 1 } else { count });
             }
         }
     }

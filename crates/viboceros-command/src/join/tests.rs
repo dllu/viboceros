@@ -106,7 +106,7 @@ fn disconnected_no_results_have_fresh_ids_even_when_geometry_is_unchanged() {
 }
 
 #[test]
-fn singleton_is_noop_and_preserves_redo() {
+fn singleton_reports_nothing_joined_and_preserves_redo_and_selection() {
     let mut document = Document::default();
     let id = document.add_geometry(quad(0.)).unwrap();
     let registry = CommandRegistry::with_builtins();
@@ -116,13 +116,17 @@ fn singleton_is_noop_and_preserves_redo() {
         .select_objects_direct([id], SelectionMode::Replace)
         .unwrap();
     let redo = document.redo_label().map(str::to_owned);
-    registry.execute(&mut document, "Join").unwrap();
+    assert!(matches!(
+        registry.execute(&mut document, "Join"),
+        Err(CommandError::NothingJoined)
+    ));
     assert_eq!(document.redo_label(), redo.as_deref());
     assert!(document.is_selected(id));
-    registry
-        .execute_postselected(&mut document, "Join", Default::default())
-        .unwrap();
-    assert!(!document.is_selected(id));
+    assert!(matches!(
+        registry.execute_postselected(&mut document, "Join", Default::default()),
+        Err(CommandError::NothingJoined)
+    ));
+    assert!(document.is_selected(id));
     assert_eq!(document.redo_label(), redo.as_deref());
 }
 

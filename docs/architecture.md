@@ -261,7 +261,10 @@ from object state and history. Polycurves are integrated with transforms, render
 picking, endpoint snapping, extraction, explode, and 3DM interchange.
 Representation-aware ownership, endpoint editing, and joining live in separate
 geometry modules. `CloseCrv` stays in `curve_edit`; `Join` and `JoinCopy` share a separate
-family dispatcher and curve-policy submodule. Mesh concatenation, matching,
+family dispatcher and curve-policy submodule. Curve representation and parameter
+assembly live in `curve_join/assembly`. A read-only command completion hook lets
+individual curve picks finish on closure, using the normal atomic execution path.
+Mesh concatenation, matching,
 and component orientation live in the kernel's `mesh/append` and `mesh/join`
 modules; [mesh joining](commands/join.md) documents their explicit precision
 policy and the command's selection-order and group behavior.

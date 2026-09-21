@@ -9,9 +9,14 @@ vertices and face indices before and after inserting each Rhino source;
 no mesh output normalization is used. A further 140 paired Join/JoinCopy
 workflow records cover curves and meshes, selection, no-ops, and source retention.
 Curve records include native type, domains, sampled positions, NURBS definitions,
-and effective polycurve segment domains (native segments have local domains plus
-affine maps). Four closed-chain early-completion/seam diagnostics remain separate
-from the passing set. See [joining evidence and limits](commands/join.md).
+and raw polycurve local domains plus parent intervals; no affine-domain
+normalization is applied during recording. Another 284 cases cover closed-chain
+seams and early completion. The probe snapshots the named command's public
+EndCommand event, requires exactly one completion, and always detaches its
+handler. Callback errors fail the probe even if the host swallows exceptions.
+The native adapter stops individual selection at the same completion boundary.
+See [joining evidence and limits](commands/join.md) and the
+[event transcripts and measurement correction](join-cycles.md).
 
 Border duplication has 86 matching live command records and offline replay
 checks, including edge-table permutations. See [border validation](borders.md)

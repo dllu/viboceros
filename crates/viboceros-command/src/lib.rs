@@ -205,6 +205,16 @@ pub trait Command: Send + Sync {
         Ok(None)
     }
 
+    /// Read-only completion check after command-first picking. A closed Join
+    /// chain can finish without Enter; ordinary selection prompts return false.
+    fn object_selection_complete(
+        &self,
+        _document: &Document,
+        _arguments: &[&str],
+    ) -> Result<bool, CommandError> {
+        Ok(false)
+    }
+
     /// Accepts choices entered at an object prompt, independently of model edits.
     fn accept_object_selection_options(&self, _arguments: &[&str]) -> Result<(), CommandError> {
         Ok(())
@@ -16970,6 +16980,9 @@ pub enum CommandError {
 
     #[error("Join requires an open curve or a mesh")]
     NoOpenCurvesToJoin,
+
+    #[error("no objects were joined")]
+    NothingJoined,
 
     #[error(
         "Join requires only curves or only meshes; surface and mixed-family joining is not implemented"

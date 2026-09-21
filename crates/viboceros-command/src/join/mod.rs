@@ -60,14 +60,44 @@ impl Command for JoinCommand {
         Ok(())
     }
 
+    fn object_selection_complete(
+        &self,
+        document: &Document,
+        arguments: &[&str],
+    ) -> Result<bool, CommandError> {
+        self.parse(arguments)?;
+        let sources = document.selected_objects().collect::<Vec<_>>();
+        if sources.len() < 2 || sources.iter().any(|o| o.geometry().curve_ref().is_none()) {
+            return Ok(false);
+        }
+        match curves::stage(&sources, document.tolerance(), true, self.copy_inputs) {
+            Ok(plan) => Ok(plan.closed_on_pick),
+            Err(CommandError::NoOpenCurvesToJoin) => Ok(false),
+            Err(error) => Err(error),
+        }
+    }
+
     fn cleanup_failed_selection(
         &self,
         document: &mut Document,
         error: &CommandError,
-        _postselected: bool,
+        postselected: bool,
     ) {
         if matches!(error, CommandError::NoOpenCurvesToJoin) {
             document.clear_selection();
+        } else if postselected && matches!(error, CommandError::NothingJoined) {
+            let seed = document
+                .selected_objects()
+                .find(|object| {
+                    object
+                        .geometry()
+                        .curve_ref()
+                        .is_none_or(|c| c.is_closed() == Ok(false))
+                })
+                .map(|object| object.id());
+            if let Some(seed) = seed {
+                let _ = document.select_objects_direct([seed], SelectionMode::Replace);
+            }
         }
     }
 }
@@ -117,20 +147,37 @@ impl JoinCommand {
                 .filter(|o| document.is_selected(o.id()))
                 .collect::<Vec<_>>()
         };
-        let plan = if sources
+        let meshes = sources
             .iter()
-            .all(|o| matches!(o.geometry(), Geometry::Mesh(_)))
-        {
+            .all(|o| matches!(o.geometry(), Geometry::Mesh(_)));
+        let plan = if meshes {
             meshes::stage(&sources, document.tolerance(), disjoint)?
         } else {
-            curves::stage(&sources, document.tolerance(), postselected)?
+            curves::stage(
+                &sources,
+                document.tolerance(),
+                postselected,
+                self.copy_inputs,
+            )?
         };
+        if plan.copies.is_empty() && (sources.len() == 1 || postselected) {
+            return Err(CommandError::NothingJoined);
+        }
+        let keep_sources = self.copy_inputs && (meshes || plan.closed_on_pick);
         let outputs = document.copy_object_geometries_into_source_groups_in_order(plan.copies)?;
+        if postselected && keep_sources {
+            // Rejected/unconnected picks are not retained when the copied
+            // chain completes; only the participating originals stay selected.
+            document
+                .select_objects_direct(plan.consumed.iter().copied(), SelectionMode::Replace)?;
+        }
         if !self.copy_inputs {
             document.delete_objects(plan.consumed)?;
         }
         if postselected {
-            document.clear_selection();
+            if !keep_sources {
+                document.clear_selection();
+            }
         } else {
             // Keep selected originals/singletons without expanding their groups.
             document.select_objects_direct(outputs, SelectionMode::Add)?;
@@ -145,4 +192,5 @@ struct JoinPlan {
     copies: Vec<(ObjectId, Geometry)>,
     consumed: Vec<ObjectId>,
     description: String,
+    closed_on_pick: bool,
 }

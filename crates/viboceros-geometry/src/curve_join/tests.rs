@@ -2,6 +2,83 @@ use super::*;
 use crate::{CircularArc3, CurveClosure, LineSegment, NurbsCurve};
 
 #[test]
+fn merging_linear_leaves_preserves_parent_points_and_one_sided_derivatives() {
+    use crate::{CurveSegment3, ParameterSide};
+    let first = LineSegment::try_new(p(0., 0.), p(2., 0.), Tolerance::DEFAULT)
+        .unwrap()
+        .try_reparameterized(-7.0..=-3.0)
+        .unwrap();
+    let second = Polyline3::try_with_parameters(
+        vec![p(2., 0.), p(2., 3.), p(5., 3.)],
+        vec![10., 11., 14.],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let original = PolyCurve3::try_with_segment_domains(
+        vec![CurveSegment3::Line(first), CurveSegment3::Polyline(second)],
+        vec![100., 102., 110.],
+    )
+    .unwrap();
+    let before = original.clone();
+    let merged = assembly::merge_linear_runs(&original, Tolerance::DEFAULT).unwrap();
+    assert_eq!(merged.segments().len(), 1);
+    assert_eq!(merged.parameters(), &[100., 110.]);
+    assert_eq!(merged.segments()[0].as_ref().domain(), -7.0..=3.0);
+    for i in 0..=100 {
+        for side in [ParameterSide::Left, ParameterSide::Right] {
+            let t = 100. + i as f64 / 10.;
+            let (a, da) = original.evaluate_with_derivative_on_side(t, side).unwrap();
+            let (b, db) = merged.evaluate_with_derivative_on_side(t, side).unwrap();
+            for (x, y) in a.to_array().into_iter().zip(b.to_array()) {
+                assert!((x - y).abs() < 1e-12);
+            }
+            for (x, y) in da.to_array().into_iter().zip(db.to_array()) {
+                assert!((x - y).abs() < 1e-12);
+            }
+        }
+    }
+    assert_eq!(original, before);
+}
+
+#[test]
+fn seeded_cycle_retains_seed_parameters_and_prepend_seam() {
+    let inputs = [
+        line([0., 0.], [1., 0.]),
+        line([1., 0.], [1., 2.]),
+        line([1., 2.], [0., 0.]),
+    ];
+    let before = inputs.clone();
+    let joined = join_curves(
+        &inputs,
+        CurveJoinOptions {
+            tolerance: 0.01,
+            preserve_direction: false,
+            style: CurveJoinStyle::Seeded,
+        },
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let Curve3::Polyline(curve) = joined[0].curve() else {
+        panic!("linear cycle")
+    };
+    assert_eq!(
+        curve.vertices(),
+        &[p(1., 2.), p(0., 0.), p(1., 0.), p(1., 2.)]
+    );
+    assert_eq!(curve.parameters(), &[-5_f64.sqrt(), 0., 1., 3.]);
+    assert_eq!(
+        curve.evaluate(0.).unwrap(),
+        inputs[0].as_ref().start_point().unwrap()
+    );
+    assert_eq!(
+        curve.evaluate(1.).unwrap(),
+        inputs[0].as_ref().end_point().unwrap()
+    );
+    assert_eq!(joined[0].source_indices(), &[0, 1, 2]);
+    assert_eq!(inputs, before);
+}
+
+#[test]
 fn join_rounds_subnormal_endpoint_midpoints_symmetrically() {
     let unit = Real::from_bits(1);
     for (left, right, expected) in [(1.0, 2.0, 2.0), (-1.0, 2.0, 0.0), (-31.0, -30.0, -30.0)] {

@@ -1,7 +1,10 @@
 //! Endpoint matching and representation-aware assembly of mixed curve chains.
 
+mod assembly;
 #[cfg(test)]
 mod tests;
+
+use assembly::{assemble, is_linear, linear_form};
 
 use std::collections::HashMap;
 
@@ -15,7 +18,7 @@ const MAX_JOIN_SCANS: usize = 16_000_000;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CurveJoinStyle {
-    /// Batch API: majority direction and chord-length linear outputs.
+    /// Batch API: majority direction; wholly linear batches use chord lengths.
     Batch,
     /// Extend only the first open source in one pass, retaining its direction
     /// and interval. Unconnected sources remain singleton components.
@@ -32,6 +35,7 @@ pub struct CurveJoinOptions {
 #[derive(Clone, Copy)]
 struct AssemblyPolicy {
     all_linear: bool,
+    linear_batch: bool,
     style: CurveJoinStyle,
 }
 
@@ -70,6 +74,11 @@ struct Candidate {
     right: usize,
 }
 
+struct SeededConnections {
+    partners: Vec<Option<usize>>,
+    closing_edge: Option<[usize; 2]>,
+}
+
 /// Joins nearest compatible endpoints without merging entire tolerance
 /// clusters. Each endpoint can have at most one partner, so branched input
 /// yields multiple traversable chains. Input geometry is never mutated.
@@ -87,6 +96,7 @@ pub fn join_curves(
             maximum: MAX_JOIN_INPUTS,
         });
     }
+    let linear_batch = options.style == CurveJoinStyle::Batch && curves.iter().all(is_linear);
     let mut endpoints = Vec::with_capacity(curves.len() * 2);
     let mut ends = vec![None; curves.len()];
     for (index, curve) in curves.iter().enumerate() {
@@ -115,8 +125,11 @@ pub fn join_curves(
             .then_with(|| (a.left, a.right).cmp(&(b.left, b.right)))
     });
     let mut partners = vec![None; endpoints.len()];
+    let mut closing_edge = None;
     if options.style == CurveJoinStyle::Seeded {
-        partners = seeded_partners(&endpoints, &ends, &candidates)?;
+        let seeded = seeded_partners(curves, &endpoints, &ends, &candidates)?;
+        partners = seeded.partners;
+        closing_edge = seeded.closing_edge;
     } else {
         for candidate in candidates {
             if partners[candidate.left].is_none() && partners[candidate.right].is_none() {
@@ -144,11 +157,34 @@ pub fn join_curves(
         // needed to decide the connectivity.
         let mut entered = first_ends[0];
         let mut count = 0;
+        let mut batch_cut = (0, 0, 0, entered);
         while let Some(partner) = partners[entered] {
+            if options.style == CurveJoinStyle::Seeded
+                && closing_edge.is_some_and(|edge| edge.contains(&entered))
+            {
+                break;
+            }
+            let a = endpoints[entered].curve;
+            let b = endpoints[partner].curve;
+            let tie = if linear_batch {
+                entered
+            } else {
+                endpoints.len() - entered
+            };
+            let key = (a.max(b), a.min(b), tie, entered);
+            if key > batch_cut {
+                batch_cut = key;
+            }
             let opposite = ends[endpoints[partner].curve].expect("open curve has endpoints");
             entered = opposite[usize::from(endpoints[partner].start)];
             count += 1;
-            if entered == first_ends[0] || count > curves.len() {
+            if entered == first_ends[0] {
+                // Accepted endpoint pairs are disjoint. Their source-order
+                // final connection is the batch loop's original seam.
+                entered = batch_cut.3;
+                break;
+            }
+            if count > curves.len() {
                 break;
             }
         }
@@ -176,7 +212,9 @@ pub fn join_curves(
             let reverse = match options.style {
                 CurveJoinStyle::Batch => {
                     2 * reverse_count > chain.len()
-                        || (2 * reverse_count == chain.len() && last_source_reversed)
+                        || (linear_batch
+                            && 2 * reverse_count == chain.len()
+                            && last_source_reversed)
                 }
                 CurveJoinStyle::Seeded => chain
                     .iter()
@@ -193,16 +231,7 @@ pub fn join_curves(
         let mut sources = chain.iter().map(|(index, _)| *index).collect::<Vec<_>>();
         sources.sort_unstable();
         // Representation is a property of this chain, not unrelated inputs.
-        let all_linear = chain.iter().all(|&(index, _)| match &curves[index] {
-            Curve3::Line(_) | Curve3::Polyline(_) => true,
-            Curve3::NurbsCurve(curve) => {
-                curve.degree() == 1
-                    && curve.knots()[1..curve.knots().len() - 1]
-                        .windows(2)
-                        .all(|pair| pair[0] < pair[1])
-            }
-            _ => false,
-        });
+        let all_linear = chain.iter().all(|&(index, _)| is_linear(&curves[index]));
         let output = if chain.len() == 1 {
             if all_linear {
                 Curve3::Polyline(
@@ -220,6 +249,7 @@ pub fn join_curves(
                 &partners,
                 AssemblyPolicy {
                     all_linear,
+                    linear_batch,
                     style: options.style,
                 },
                 validation,
@@ -236,177 +266,12 @@ pub fn join_curves(
     Ok(results)
 }
 
-fn assemble(
-    curves: &[Curve3],
-    chain: &[(usize, bool)],
-    ends: &[Option<[usize; 2]>],
-    endpoints: &[Endpoint],
-    partners: &[Option<usize>],
-    policy: AssemblyPolicy,
-    validation: Tolerance,
-) -> Result<Curve3, GeometryError> {
-    let mut parts = Vec::with_capacity(chain.len());
-    let mut linear_points = Vec::new();
-    let mut linear_parameters: Vec<Real> = Vec::new();
-    let seed = chain
-        .iter()
-        .map(|(index, _)| *index)
-        .min()
-        .expect("an assembly has sources");
-    let mut seed_offset = 0.0;
-    for &(source, reversed) in chain {
-        let source_ends = ends[source].expect("assembled curves are open");
-        let mut targets = [None; 2];
-        for side in 0..2 {
-            let endpoint = source_ends[side];
-            if let Some(partner) = partners[endpoint] {
-                let first = endpoints[endpoint];
-                let second = endpoints[partner];
-                let first_arc = endpoint_is_arc(&curves[first.curve], first.start);
-                let second_arc = endpoint_is_arc(&curves[second.curve], second.start);
-                let point = if first_arc && second_arc {
-                    first.point.midpoint(second.point)?
-                } else if first_arc {
-                    first.point
-                } else if second_arc {
-                    second.point
-                } else {
-                    first.point.midpoint(second.point)?
-                };
-                targets[side] = Some(point);
-            }
-        }
-        if policy.all_linear {
-            let polyline = linear_form(&curves[source], validation)?;
-            let mut points = polyline.vertices().to_vec();
-            if let Some(point) = targets[0] {
-                points[0] = point;
-            }
-            if let Some(point) = targets[1] {
-                *points.last_mut().expect("a polyline has vertices") = point;
-            }
-            if reversed {
-                points.reverse();
-            }
-            let parameters = if reversed {
-                polyline
-                    .parameters()
-                    .iter()
-                    .rev()
-                    .map(|t| -t)
-                    .collect::<Vec<_>>()
-            } else {
-                polyline.parameters().to_vec()
-            };
-            if linear_parameters.is_empty() {
-                linear_parameters.push(parameters[0]);
-            }
-            if source == seed {
-                seed_offset = parameters[0] - linear_parameters.last().unwrap();
-            }
-            for pair in parameters.windows(2) {
-                linear_parameters.push(linear_parameters.last().unwrap() + (pair[1] - pair[0]));
-            }
-            let skip = usize::from(!linear_points.is_empty());
-            linear_points.extend_from_slice(&points[skip..]);
-        } else {
-            let mut part = match &curves[source] {
-                Curve3::Arc(arc) => {
-                    Curve3::Arc(arc.try_with_endpoints(targets[0], targets[1], validation)?)
-                        .to_polycurve()?
-                }
-                curve => curve
-                    .to_polycurve()?
-                    .try_with_endpoints(targets[0], targets[1])?,
-            };
-            if reversed {
-                part = part.reversed()?;
-            }
-            if source == seed {
-                let start = parts
-                    .first()
-                    .map_or(*part.domain().start(), |curve: &PolyCurve3| {
-                        *curve.domain().start()
-                    });
-                let preceding = parts
-                    .iter()
-                    .map(|curve| curve.domain().end() - curve.domain().start())
-                    .sum::<Real>();
-                seed_offset = *part.domain().start() - (start + preceding);
-            }
-            parts.push(part);
-        }
-    }
-    if policy.all_linear {
-        let curve = match policy.style {
-            CurveJoinStyle::Batch => {
-                Polyline3::try_new(linear_points, validation)?.try_chord_length_parameterized()?
-            }
-            CurveJoinStyle::Seeded => Polyline3::try_with_parameters(
-                linear_points,
-                linear_parameters
-                    .into_iter()
-                    .map(|t| t + seed_offset)
-                    .collect(),
-                validation,
-            )?,
-        };
-        Ok(Curve3::Polyline(curve))
-    } else {
-        let curve = PolyCurve3::concatenate(&parts)?;
-        let curve = if policy.style == CurveJoinStyle::Seeded && seed_offset != 0.0 {
-            PolyCurve3::try_with_segment_domains(
-                curve.segments().to_vec(),
-                curve.parameters().iter().map(|t| t + seed_offset).collect(),
-            )?
-        } else {
-            curve
-        };
-        Ok(Curve3::PolyCurve(curve))
-    }
-}
-
-fn endpoint_is_arc(curve: &Curve3, start: bool) -> bool {
-    match curve {
-        Curve3::Arc(_) => true,
-        Curve3::PolyCurve(curve) => matches!(
-            if start {
-                curve.segments().first()
-            } else {
-                curve.segments().last()
-            },
-            Some(crate::CurveSegment3::Arc(_))
-        ),
-        _ => false,
-    }
-}
-
-fn linear_form(curve: &Curve3, tolerance: Tolerance) -> Result<Polyline3, GeometryError> {
-    match curve {
-        Curve3::Line(line) => Polyline3::try_with_parameters(
-            vec![line.start(), line.end()],
-            vec![*line.domain().start(), *line.domain().end()],
-            tolerance,
-        ),
-        Curve3::Polyline(line) => Ok(line.clone()),
-        Curve3::NurbsCurve(curve) => Polyline3::try_with_parameters(
-            curve
-                .control_points()
-                .iter()
-                .map(|point| point.point())
-                .collect(),
-            curve.knots()[1..curve.knots().len() - 1].to_vec(),
-            tolerance,
-        ),
-        _ => unreachable!("linear form is only used for line/polyline inputs"),
-    }
-}
-
 fn seeded_partners(
+    curves: &[Curve3],
     endpoints: &[Endpoint],
     ends: &[Option<[usize; 2]>],
     candidates: &[Candidate],
-) -> Result<Vec<Option<usize>>, GeometryError> {
+) -> Result<SeededConnections, GeometryError> {
     let mut adjacent = vec![Vec::new(); endpoints.len()];
     for (index, candidate) in candidates.iter().enumerate() {
         adjacent[candidate.left].push(index);
@@ -415,6 +280,7 @@ fn seeded_partners(
     let mut partners = vec![None; endpoints.len()];
     let mut assigned = vec![false; ends.len()];
     let mut scans = 0;
+    let mut closing_edge = None;
     if let Some((seed, Some(mut free))) = ends
         .iter()
         .copied()
@@ -424,7 +290,7 @@ fn seeded_partners(
         assigned[seed] = true;
         let mut last_source = seed;
         loop {
-            let mut best: Option<(usize, usize, usize, usize)> = None;
+            let mut sides: [Option<(usize, usize, usize, usize)>; 2] = [None, None];
             for side in 0..2 {
                 for &index in &adjacent[free[side]] {
                     scans += 1;
@@ -447,10 +313,28 @@ fn seeded_partners(
                     // Candidates already have distance/tangent order. Source
                     // order takes precedence in a seeded one-pass extension.
                     let key = (source, index, side, other);
-                    if best.is_none_or(|previous| key < previous) {
-                        best = Some(key);
+                    if sides[side].is_none_or(|previous| key < previous) {
+                        sides[side] = Some(key);
                     }
                 }
+            }
+            let mut best = sides.into_iter().flatten().min();
+            if let [Some(left), Some(right)] = sides
+                && left.0 == right.0
+                && left.3 != right.3
+            {
+                // A curve closing both free ends is prepended by individual
+                // Join picking. Copy commands may restore the seed seam later.
+                best = Some(
+                    if is_linear(&curves[left.0])
+                        && !is_linear(&curves[endpoints[free[0]].curve])
+                        && is_linear(&curves[endpoints[free[1]].curve])
+                    {
+                        right
+                    } else {
+                        left
+                    },
+                );
             }
             let Some((source, _, side, other)) = best else {
                 break;
@@ -466,11 +350,15 @@ fn seeded_partners(
             }) {
                 partners[free[0]] = Some(free[1]);
                 partners[free[1]] = Some(free[0]);
+                closing_edge = Some(free);
                 break;
             }
         }
     }
-    Ok(partners)
+    Ok(SeededConnections {
+        partners,
+        closing_edge,
+    })
 }
 
 fn find_candidates(

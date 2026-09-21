@@ -1,5 +1,6 @@
 """Validation must reject malformed fixtures before accessing the Rhino host."""
 import unittest
+from types import SimpleNamespace
 from . import join_probe
 
 
@@ -13,7 +14,7 @@ class JoinProbeTests(unittest.TestCase):
         for sources in ([], [{}] * 33, {}):
             with self.subTest(sources=sources), self.assertRaisesRegex(ValueError, "sources"):
                 join_probe.run({"sources": sources}, None, {})
-        for key in ("join_disjoint", "preselect"):
+        for key in ("join_disjoint", "preselect", "trace_commands"):
             for value in (0, 1, "Yes", None):
                 with self.subTest(key=key, value=value), self.assertRaisesRegex(ValueError, "boolean"):
                     join_probe.run({"sources": [{}], key: value}, None, {})
@@ -33,3 +34,52 @@ class JoinProbeTests(unittest.TestCase):
                 join_probe.run({"sources": [{}], "command": command}, None, {})
         for command in ("Join", "JoinCopy"):
             self.assertEqual(join_probe.validate({"sources": [{}], "command": command}), ([{}], [0]))
+
+
+class Event:
+    def __init__(self): self.handlers = []
+    def __iadd__(self, handler):
+        self.handlers.append(handler)
+        return self
+    def __isub__(self, handler):
+        self.handlers.remove(handler)
+        return self
+    def fire(self, name, result="Success"):
+        for handler in self.handlers:
+            handler(None, SimpleNamespace(CommandEnglishName=name, CommandResult=result))
+
+
+class JoinCommandObservationTests(unittest.TestCase):
+    def test_result_and_snapshot_belong_to_the_named_command_not_macro_tail(self):
+        source = SimpleNamespace(EndCommand=Event())
+        state = [1]
+        def run():
+            source.EndCommand.fire("JoinCopy", "Cancel")
+            state[:] = [2]
+            source.EndCommand.fire("SelID")
+            return True
+        succeeded, objects, trace = join_probe.observe_command(source, "JoinCopy", run,
+            lambda: list(state), lambda: list(state), True)
+        self.assertFalse(succeeded)
+        self.assertEqual(objects, [1])
+        self.assertEqual([e["selected"] for e in trace], [[1], [2]])
+        self.assertEqual(source.EndCommand.handlers, [])
+
+    def test_detaches_after_runner_failure_and_rejects_missing_or_duplicate_completions(self):
+        source = SimpleNamespace(EndCommand=Event())
+        def fail(): raise RuntimeError("script failed")
+        with self.assertRaisesRegex(RuntimeError, "script failed"):
+            join_probe.observe_command(source, "Join", fail, list, list)
+        self.assertEqual(source.EndCommand.handlers, [])
+        for count in (0,2):
+            with self.assertRaisesRegex(ValueError, "exactly one"):
+                join_probe.observe_command(source, "Join",
+                    lambda: [source.EndCommand.fire("Join") for _ in range(count)], list, list)
+            self.assertEqual(source.EndCommand.handlers, [])
+
+    def test_swallowed_event_handler_error_cannot_publish_a_partial_snapshot(self):
+        source = SimpleNamespace(EndCommand=Event())
+        def fail(): raise RuntimeError("snapshot failed")
+        with self.assertRaisesRegex(ValueError, "snapshot failed"):
+            join_probe.observe_command(source, "Join", lambda: source.EndCommand.fire("Join"), fail, list)
+        self.assertEqual(source.EndCommand.handlers, [])

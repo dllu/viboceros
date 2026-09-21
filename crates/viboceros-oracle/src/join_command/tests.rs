@@ -49,6 +49,55 @@ fn join_and_copy_replay_curve_mesh_geometry_and_complete_document_state() {
     }
 }
 
+#[test]
+fn closed_cycles_replay_raw_seams_local_domains_and_command_boundary_selection() {
+    let request: ProbeRequest = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/join_cycles.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/join_cycles.json"
+    ))
+    .unwrap();
+    let actual = run_request(&request).unwrap();
+    let records = expected["results"].as_array().unwrap();
+    assert_eq!(actual.results.len(), 284);
+    assert_eq!(records.len(), 284);
+    for (a, b) in actual.results.iter().zip(records) {
+        assert_eq!(a.id, b["id"]);
+        compare(&a.value, &b["value"], &a.id);
+    }
+}
+
+#[test]
+fn saved_events_distinguish_early_completion_and_nothing_from_macro_success() {
+    let recorded: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/join_command_events.json"
+    ))
+    .unwrap();
+    let rows = recorded["results"].as_array().unwrap();
+    assert_eq!(rows.len(), 8);
+    for command in ["Join", "JoinCopy"] {
+        let id = format!("closed_chain_{command}_False");
+        let value = &rows.iter().find(|r| r["id"] == id).unwrap()["value"];
+        let events = value["command_events"].as_array().unwrap();
+        let index = events.iter().position(|e| e["name"] == command).unwrap();
+        assert_eq!(events[index]["objects"], value["objects"]);
+        assert_eq!(events[index + 1]["name"], "SelID");
+        assert_eq!(events[index + 1]["selected"], json!([3]));
+        assert_ne!(events[index]["selected"], events[index + 1]["selected"]);
+    }
+    let value = &rows
+        .iter()
+        .find(|r| r["id"] == "single_Join_post_False")
+        .unwrap()["value"];
+    assert_eq!(value["succeeded"], false);
+    assert_eq!(
+        value["command_events"].as_array().unwrap().last().unwrap()["result"],
+        "Nothing"
+    );
+}
+
 fn request() -> ProbeRequest {
     serde_json::from_str(include_str!(
         "../../../../tools/rhino_oracle/fixtures/mesh_join.json"

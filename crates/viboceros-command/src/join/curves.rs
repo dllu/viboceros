@@ -5,6 +5,7 @@ pub(super) fn stage(
     sources: &[&viboceros_document::Object],
     tolerance: Tolerance,
     postselected: bool,
+    copy_inputs: bool,
 ) -> Result<JoinPlan, CommandError> {
     let curves = sources
         .iter()
@@ -43,15 +44,20 @@ pub(super) fn stage(
     )?;
     let mut copies = Vec::new();
     let mut consumed = Vec::new();
+    let mut closed_on_pick = false;
     for component in components {
         let joined = component.source_indices();
         if joined.len() < 2 {
             continue;
         }
-        copies.push((
-            sources[indices[joined[0]]].id(),
-            Geometry::from(component.curve().clone()),
-        ));
+        let mut curve = component.curve().clone();
+        if postselected && curve.as_ref().is_closed()? {
+            closed_on_pick = true;
+            if copy_inputs {
+                curve = curve.try_change_closed_seam(*open[joined[0]].as_ref().domain().start())?;
+            }
+        }
+        copies.push((sources[indices[joined[0]]].id(), Geometry::from(curve)));
         consumed.extend(joined.iter().map(|&i| sources[indices[i]].id()));
     }
     let description = format!(
@@ -64,5 +70,6 @@ pub(super) fn stage(
         copies,
         consumed,
         description,
+        closed_on_pick,
     })
 }

@@ -2,6 +2,35 @@
 """Owned, public Join/JoinCopy commands; no geometry/order normalization."""
 
 
+def observe_command(event_source, command, run, snapshot, selected, trace=False):
+    """Capture one command, not commands left over in its driving macro."""
+    results, events, errors = [], [], []
+    def ended(sender, event):
+        try:
+            name, result = event.CommandEnglishName, str(event.CommandResult)
+            objects = None
+            if name == command:
+                objects = snapshot()
+                results.append((result == "Success", objects))
+            if trace:
+                record = dict(name=name, result=result, selected=selected())
+                if objects is not None: record["objects"] = objects
+                events.append(record)
+        except Exception as error:
+            # Rhino event dispatch may swallow handler exceptions. Fail the
+            # probe after detaching instead of publishing an incomplete record.
+            errors.append(str(error))
+    event_source.EndCommand += ended
+    try:
+        run()
+    finally:
+        event_source.EndCommand -= ended
+    if errors: raise ValueError("join command observer failed: " + str(errors))
+    if len(results) != 1:
+        raise ValueError("expected exactly one completed %s command, got %d" % (command, len(results)))
+    return results[0][0], results[0][1], events
+
+
 def validate(operation):
     import math
     sources = operation["sources"]
@@ -12,7 +41,7 @@ def validate(operation):
             any(type(i) is not int or i < 0 or i >= len(sources) for i in order) or
             len(set(order)) != len(order)):
         raise ValueError("invalid join selection")
-    for key in ("join_disjoint", "preselect"):
+    for key in ("join_disjoint", "preselect", "trace_commands"):
         if type(operation.get(key, False)) is not bool:
             raise ValueError("join options must be boolean")
     absolute = operation.get("absolute_tolerance")
@@ -35,6 +64,27 @@ def run(operation, tolerance, host):
     layer_before = document.Layers.CurrentLayerIndex
     tolerance_before = document.ModelAbsoluteTolerance
     layers, groups, ids = [], [], []
+    def record_objects():
+        created = [obj for obj in objects() if obj.Id not in before]
+        created.sort(key=lambda obj: obj.RuntimeSerialNumber)
+        records = []
+        for obj in created:
+            attributes = obj.Attributes
+            color = attributes.ObjectColor
+            record = dict(
+                source=ids.index(obj.Id) if obj.Id in ids else None,
+                selected=bool(obj.IsSelected(False)), name=attributes.Name,
+                layer=layers.index(attributes.LayerIndex) if attributes.LayerIndex in layers else None,
+                color=[int(color.R), int(color.G), int(color.B)],
+                groups=sorted(groups.index(g) for g in (attributes.GetGroupList() or []) if g in groups))
+            if isinstance(obj.Geometry, Rhino.Geometry.Mesh):
+                record["mesh"] = host["_polygon_mesh_value"](obj.Geometry)
+            elif isinstance(obj.Geometry, Rhino.Geometry.Curve):
+                record["curve"] = host["_interchange_curve_record"](obj.Geometry)
+            else:
+                raise ValueError("unexpected join geometry")
+            records.append(record)
+        return records
     def source_mesh(source):
         mesh = Rhino.Geometry.Mesh()
         try:
@@ -118,27 +168,12 @@ def run(operation, tolerance, host):
         else:
             script = "_-%s %s %s _Enter" % (command, option, selectors)
         host["_record_progress"]("join command: " + script)
-        succeeded = host["_run_surface_script"](script, True)
-        created = [obj for obj in objects() if obj.Id not in before]
-        created.sort(key=lambda obj: obj.RuntimeSerialNumber)
-        records = []
-        for obj in created:
-            attributes = obj.Attributes
-            color = attributes.ObjectColor
-            record = dict(
-                source=ids.index(obj.Id) if obj.Id in ids else None,
-                selected=bool(obj.IsSelected(False)), name=attributes.Name,
-                layer=layers.index(attributes.LayerIndex) if attributes.LayerIndex in layers else None,
-                color=[int(color.R), int(color.G), int(color.B)],
-                groups=sorted(groups.index(g) for g in (attributes.GetGroupList() or []) if g in groups))
-            if isinstance(obj.Geometry, Rhino.Geometry.Mesh):
-                record["mesh"] = host["_polygon_mesh_value"](obj.Geometry)
-            elif isinstance(obj.Geometry, Rhino.Geometry.Curve):
-                record["curve"] = host["_interchange_curve_record"](obj.Geometry)
-            else:
-                raise ValueError("unexpected join geometry")
-            records.append(record)
+        trace = operation.get("trace_commands", False)
+        succeeded, records, events = observe_command(Rhino.Commands.Command, command,
+            lambda: host["_run_surface_script"](script, True), record_objects,
+            lambda: [ids.index(obj.Id) if obj.Id in ids else None for obj in objects() if obj.IsSelected(False)], trace)
         result = dict(succeeded=bool(succeeded), objects=records)
+        if trace: result["command_events"] = events
         if operation.get("absolute_tolerance") is not None:
             result["absolute_tolerance"] = float(document.ModelAbsoluteTolerance)
         return result, 0

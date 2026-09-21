@@ -11,6 +11,7 @@ pub(super) fn stage(
             copies: vec![],
             consumed: vec![],
             description: "One mesh unchanged".into(),
+            closed_on_pick: false,
         });
     }
     let meshes = sources
@@ -41,5 +42,6 @@ pub(super) fn stage(
             .collect(),
         consumed: sources.iter().map(|o| o.id()).collect(),
         description: format!("Joined {} mesh(es) into {count} mesh(es)", sources.len()),
+        closed_on_pick: false,
     })
 }
