@@ -6,6 +6,7 @@ mod decompose;
 mod evaluate;
 pub(crate) mod exact;
 mod integration_frame;
+mod parameter_frame;
 mod sampling;
 pub use sampling::{NurbsCurveParameterSampler, NurbsCurveSamplingSpan};
 mod weights;

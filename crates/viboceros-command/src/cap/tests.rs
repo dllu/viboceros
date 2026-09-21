@@ -125,3 +125,52 @@ fn planar_sheet_noop_preserves_surface_representation_and_creates_no_history() {
             .is_err()
     );
 }
+
+#[test]
+fn kink_boundary_subdivision_is_part_of_one_identity_preserving_history_step() {
+    let mut doc = Document::default();
+    let profile = NurbsCurve::try_clamped_uniform(
+        1,
+        [[0., 0., 0.], [4., 0., 0.], [0., 3., 0.], [0., 0., 0.]]
+            .into_iter()
+            .map(|p| Point3::try_from(p).unwrap())
+            .collect(),
+    )
+    .unwrap();
+    let solid = Brep::try_extruded_curve(
+        &profile,
+        Vector3::try_new(0., 0., 0.).unwrap(),
+        Vector3::try_new(1., 2., 5.).unwrap(),
+        doc.tolerance(),
+    )
+    .unwrap();
+    let wall = solid.sub_brep(&[0], doc.tolerance()).unwrap();
+    let id = doc
+        .add_geometry_with_attributes(
+            Geometry::Brep(wall),
+            ObjectAttributes::on_layer(doc.current_layer_id()).with_name("kinked wall"),
+        )
+        .unwrap();
+    let group = doc.add_group(Some("profile".into()), [id]).unwrap();
+    doc.select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    let before = doc.object(id).unwrap().clone();
+    let registry = CommandRegistry::with_builtins();
+    registry.execute(&mut doc, "Cap").unwrap();
+    let after = doc.object(id).unwrap().clone();
+    assert_eq!(after.attributes(), before.attributes());
+    assert_eq!(after.group_ids(), &[group]);
+    assert!(doc.is_selected(id));
+    assert_eq!(doc.objects().len(), 1);
+    let Geometry::Brep(brep) = after.geometry() else {
+        panic!("expected brep")
+    };
+    assert!(brep.is_solid());
+    assert_eq!(brep.faces().len(), 3);
+    assert_eq!(brep.edges().len(), 7);
+    assert_eq!(brep.vertices().len(), 6);
+    registry.execute(&mut doc, "Undo").unwrap();
+    assert_eq!(doc.object(id), Some(&before));
+    registry.execute(&mut doc, "Redo").unwrap();
+    assert_eq!(doc.object(id), Some(&after));
+}

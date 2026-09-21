@@ -29,8 +29,10 @@ Border duplication has 86 matching live command records and offline replay
 checks, including edge-table permutations. See [border validation](borders.md)
 for the resolved polysurface seam discrepancies and identical-source 3DM protocol.
 
-The [Cap command audit](commands/cap.md#oracle-evidence) adds 109 matching
-shared-input B-rep records and four retained kinked-boundary segmentation gaps.
+The [Cap command audit](commands/cap.md#oracle-evidence) adds 140 matching
+shared-input B-rep records, including four resolved kinked-boundary segmentation
+gaps. Two additional raw discrepancies cover negative rational weights and a
+large knot origin; the latter also retains analytic area/volume witnesses.
 Its schema compares exact spatial edge definitions and oriented incidence,
 not newly generated cap UV parameterizations. The probe verifies that Rhino
 document insertion preserves the shared source before invoking the command.

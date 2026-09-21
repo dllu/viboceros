@@ -1,0 +1,19 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {"absolute":1e-09,"relative":1e-12,"angular":1e-10},
+  "operations": [
+    {"op":"cap_command","id":"angle-0","source":{"type":"extrusion","curve":{"type":"polyline","vertices":[[0,0,0],[2,0,0],[4,0,0],[4,3,0],[0,3,0],[0,0,0]]},"vector":[1,2,5]}},
+    {"op":"cap_command","id":"angle-1e-8","source":{"type":"extrusion","curve":{"type":"polyline","vertices":[[0,0,0],[2,0,0],[4,3.490658503988659e-10,0],[4,3,0],[0,3,0],[0,0,0]]},"vector":[1,2,5]}},
+    {"op":"cap_command","id":"angle-0.00001","source":{"type":"extrusion","curve":{"type":"polyline","vertices":[[0,0,0],[2,0,0],[4,3.490658503988695e-07,0],[4,3,0],[0,3,0],[0,0,0]]},"vector":[1,2,5]}},
+    {"op":"cap_command","id":"angle-0.001","source":{"type":"extrusion","curve":{"type":"polyline","vertices":[[0,0,0],[2,0,0],[4,3.490658504343098e-05,0],[4,3,0],[0,3,0],[0,0,0]]},"vector":[1,2,5]}},
+    {"op":"cap_command","id":"angle-0.01","source":{"type":"extrusion","curve":{"type":"polyline","vertices":[[0,0,0],[2,0,0],[4,0.0003490658539432506,0],[4,3,0],[0,3,0],[0,0,0]]},"vector":[1,2,5]}},
+    {"op":"cap_command","id":"angle-0.05","source":{"type":"extrusion","curve":{"type":"polyline","vertices":[[0,0,0],[2,0,0],[4,0.0017453296950425425,0],[4,3,0],[0,3,0],[0,0,0]]},"vector":[1,2,5]}},
+    {"op":"cap_command","id":"angle-0.1","source":{"type":"extrusion","curve":{"type":"polyline","vertices":[[0,0,0],[2,0,0],[4,0.003490662048377601,0],[4,3,0],[0,3,0],[0,0,0]]},"vector":[1,2,5]}},
+    {"op":"cap_command","id":"angle-0.2","source":{"type":"extrusion","curve":{"type":"polyline","vertices":[[0,0,0],[2,0,0],[4,0.0069813453631925,0],[4,3,0],[0,3,0],[0,0,0]]},"vector":[1,2,5]}},
+    {"op":"cap_command","id":"angle-1","source":{"type":"extrusion","curve":{"type":"polyline","vertices":[[0,0,0],[2,0,0],[4,0.03491012985643517,0],[4,3,0],[0,3,0],[0,0,0]]},"vector":[1,2,5]}},
+    {"op":"cap_command","id":"weighted-1","source":{"type":"extrusion","curve":{"type":"nurbs","degree":1,"control_points":[{"point":[0,0,0],"weight":1},{"point":[4,0,0],"weight":2},{"point":[0,3,0],"weight":3},{"point":[0,0,0],"weight":1}],"knots":[0,0,1,2,3,3]},"vector":[1,2,5]}},
+    {"op":"cap_command","id":"degree-2","source":{"type":"extrusion","curve":{"type":"nurbs","degree":2,"control_points":[{"point":[0,0,0]},{"point":[2,0,0]},{"point":[4,0,0]},{"point":[2,1.5,0]},{"point":[0,3,0]},{"point":[0,1.5,0]},{"point":[0,0,0]}],"knots":[0,0,0,1,1,2,2,3,3,3]},"vector":[1,2,5]}},
+    {"op":"cap_command","id":"degree-3","source":{"type":"extrusion","curve":{"type":"nurbs","degree":3,"control_points":[{"point":[0,0,0]},{"point":[1.3333333333333333,0,0]},{"point":[2.6666666666666665,0,0]},{"point":[4,0,0]},{"point":[2.666666666666667,1,0]},{"point":[1.3333333333333335,2,0]},{"point":[0,3,0]},{"point":[0,2,0]},{"point":[0,1,0]},{"point":[0,0,0]}],"knots":[0,0,0,0,1,1,1,2,2,2,3,3,3,3]},"vector":[1,2,5]}}
+  ]
+}

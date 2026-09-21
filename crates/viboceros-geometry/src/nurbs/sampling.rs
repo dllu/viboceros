@@ -1,7 +1,7 @@
 //! Parameter-fraction sampling without first restoring a large knot origin.
 
 use super::*;
-use crate::{ParameterSide, parameter::lossless_parameter_origin};
+use crate::ParameterSide;
 use std::borrow::Cow;
 mod exact;
 
@@ -41,18 +41,11 @@ impl NurbsCurve {
     /// first round back onto a large native knot origin. Point evaluation
     /// retains the ordinary evaluator's guarded exact-arithmetic fallback.
     pub fn parameter_sampler(&self) -> Result<NurbsCurveParameterSampler<'_>, GeometryError> {
-        let origin = lossless_parameter_origin(self.domain(), self.knots.iter().copied());
+        let frame = self.local_parameter_frame()?;
+        let origin = frame.origin;
         let origin_declined =
             origin == 0. && (*self.domain().start() > 0. || *self.domain().end() < 0.);
-        let curve = if origin == 0. {
-            Cow::Borrowed(self)
-        } else {
-            Cow::Owned(Self::try_new_rational(
-                self.degree,
-                self.control_points.clone(),
-                self.knots.iter().map(|k| k - origin).collect(),
-            )?)
-        };
+        let curve = frame.curve;
         // A rounded whole-domain station must not choose the wrong branch
         // at a full-order interior knot. Ordinary C0/C1 joins stay fast.
         let discontinuous = curve.knots[curve.degree..=curve.control_points.len()]

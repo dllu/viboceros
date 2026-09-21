@@ -16,6 +16,7 @@ use crate::{
 mod borders;
 mod cap;
 mod combine;
+mod edge_split;
 mod incidence;
 mod isocurves;
 mod loft;

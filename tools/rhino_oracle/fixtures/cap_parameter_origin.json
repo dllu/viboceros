@@ -1,0 +1,8 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {"absolute":1e-09,"relative":1e-12,"angular":0.1},
+  "operations": [
+    {"op":"cap_command","id":"nonuniform-domain-1000000000","source":{"type":"extrusion","curve":{"type":"nurbs","degree":1,"control_points":[{"point":[0,0,0],"weight":1},{"point":[4,0,0],"weight":2},{"point":[0,3,0],"weight":3},{"point":[0,0,0],"weight":1}],"knots":[1000000000,1000000000,1000000007,1000000011,1000000019,1000000019]},"vector":[1,2,5]}}
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {"absolute":1e-09,"relative":1e-12,"angular":1e-10},
+  "operations": [
+    {"op":"cap_command","id":"weighted--1","source":{"type":"extrusion","curve":{"type":"nurbs","degree":1,"control_points":[{"point":[0,0,0],"weight":-1},{"point":[4,0,0],"weight":-2},{"point":[0,3,0],"weight":-3},{"point":[0,0,0],"weight":-1}],"knots":[0,0,1,2,3,3]},"vector":[1,2,5]}}
+  ]
+}

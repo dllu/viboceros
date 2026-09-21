@@ -12,7 +12,13 @@ pub(super) fn validate(
 ) -> Result<(), GeometryError> {
     // Reuse the stable sided rational evaluator for (u,v,0). This temporary
     // representation never turns parameter-space coordinates into model space.
-    let image = LiftedTrim::new(trim, &face.surface)?;
+    let mut image = LiftedTrim::new(trim, &face.surface)?;
+    // A native parameter near 1e9 has a ~1e-7 grid even for unit-sized
+    // geometry. Sample/search in losslessly translated domains instead of
+    // mistaking parameter quantization for an edge/trim geometric discrepancy.
+    if let std::borrow::Cow::Owned(curve) = image.curve.local_parameter_frame()?.curve {
+        image.curve = curve;
+    }
     let parameters = &image.curve;
     let allowed_uv = [
         tolerance.absolute().max(trim.tolerance[0]),
@@ -38,6 +44,8 @@ pub(super) fn validate(
         return Ok(());
     };
     let edge = &brep.edges[edge_index];
+    let edge_frame = edge.curve.local_parameter_frame()?;
+    let edge_curve = edge_frame.curve.as_ref();
     let allowed = tolerance.absolute().max(edge.tolerance);
     let search_tolerance = Tolerance::try_new(
         (allowed * 0.125).max(Real::MIN_POSITIVE),
@@ -49,20 +57,20 @@ pub(super) fn validate(
         if trim.reversed_3d {
             fraction = 1.0 - fraction;
         }
-        let direct = edge.curve.evaluate(edge.curve.parameter_at(fraction)?)?;
+        let direct = edge_curve.evaluate(edge_curve.parameter_at(fraction)?)?;
         if point.distance_to(direct)? <= allowed {
             continue;
         }
-        let closest = edge.curve.closest_parameter(point, search_tolerance)?;
-        if point.distance_to(edge.curve.evaluate(closest)?)? > allowed {
+        let closest = edge_curve.closest_parameter(point, search_tolerance)?;
+        if point.distance_to(edge_curve.evaluate(closest)?)? > allowed {
             return invalid("a p-curve interior leaves its model-space edge");
         }
     }
     // The opposite direction catches extra edge excursions even when the
     // entire trim locus is contained in the edge's locus.
-    for (parameter, side) in samples(&edge.curve)? {
-        let point = edge.curve.evaluate_on_side(parameter, side)?;
-        let mut fraction = normalized(parameter, edge.curve.domain())?;
+    for (parameter, side) in samples(edge_curve)? {
+        let point = edge_curve.evaluate_on_side(parameter, side)?;
+        let mut fraction = normalized(parameter, edge_curve.domain())?;
         if trim.reversed_3d {
             fraction = 1.0 - fraction;
         }

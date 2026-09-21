@@ -44,6 +44,22 @@ impl Command for CapCommand {
                 _ => return Err(CommandError::UnsupportedCapGeometry),
             };
             if let Some(mut capped) = brep.try_cap_planar_holes(document.tolerance())? {
+                // Subdivide newly capped boundaries at geometric tangent
+                // breaks, preserving every incident trim and native domain.
+                let original_uses = brep.edge_use_counts();
+                let uses = capped.edge_use_counts();
+                let boundaries = (0..brep.edges().len())
+                    .filter(|&edge| original_uses[edge] == 1 && uses[edge] == 2)
+                    .collect::<Vec<_>>();
+                let split = capped.try_split_kinky_edges(
+                    &boundaries,
+                    1_f64.to_radians(),
+                    document.tolerance(),
+                )?;
+                let split_edges = split.is_some();
+                if let Some(result) = split {
+                    capped = result;
+                }
                 // The kernel retains the source shell sense. Rhino's command
                 // orients newly closed solids outward, including inward inputs.
                 if capped.is_solid() && capped.signed_volume(document.tolerance())? < 0.0 {
@@ -51,7 +67,7 @@ impl Command for CapCommand {
                 }
                 // A single periodic face keeps its seam first in Rhino's
                 // capped B-rep. This is table ordering, not curve rebuilding.
-                if brep.faces().len() == 1 {
+                if brep.faces().len() == 1 && !split_edges {
                     let seam = brep.faces()[0]
                         .loops()
                         .iter()
