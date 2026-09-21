@@ -276,6 +276,12 @@ Mesh concatenation, matching,
 and component orientation live in the kernel's `mesh/append` and `mesh/join`
 modules; [mesh joining](commands/join.md) documents their explicit precision
 policy and the command's selection-order and group behavior.
+The separate `brep/join_edges` module provides
+[certified explicit boundary assembly](brep-edge-joining.md), with exact-binary
+curve predicates separated from vertex unions, edge remapping, and face
+orientation. It composes with shared-edge subdivision and preserves all source
+surfaces and UV curves. Automatic B-rep Join and its command adapter are not yet
+implemented.
 See [curve joining and closure](curve-editing.md) for tested policies and limits.
 All seven curve families share [native parameter evaluation](curve-parameters.md),
 including analytic derivatives and parameter-bearing arc-length samples. Circular

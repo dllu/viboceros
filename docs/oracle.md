@@ -37,6 +37,13 @@ Its schema compares exact spatial edge definitions and oriented incidence,
 not newly generated cap UV parameterizations. The probe verifies that Rhino
 document insertion preserves the shared source before invoking the command.
 
+The [B-rep edge assembly audit](brep-edge-joining.md) compares explicitly paired
+native boundaries with public automatic RhinoCommon `JoinBreps` on identical
+shared 3DM inputs. It records full surfaces and UV trim definitions in addition
+to spatial topology, tolerances, and mass properties. Raw orientation and
+gap-rebuilding policy differences are retained separately. This geometry-only
+probe does not establish interactive Join behavior or native automatic matching.
+
 The `align` object-layout probe compares actual bounding-box, curve and line/plane alignment commands,
 including retained IDs, source samples/domains, groups, layer assignment and
 pre/postselection cleanup. Its shared `object_layout` module supplies fixture

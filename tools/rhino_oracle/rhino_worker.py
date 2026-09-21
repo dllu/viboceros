@@ -4912,6 +4912,9 @@ def _execute(operation, iterations, tolerance):
     if operation["op"] == "cap_command":
         import cap_probe
         return cap_probe.run(operation, tolerance, globals())
+    if operation["op"] == "brep_join":
+        import brep_join_probe
+        return brep_join_probe.run(operation, tolerance, globals())
     kind = operation["op"]
     if kind == "surface_closest_point":
         return _surface_closest_point(operation, iterations)

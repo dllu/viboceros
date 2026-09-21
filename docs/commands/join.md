@@ -13,6 +13,9 @@ JoinCopy JoinDisjointMeshes=No
 `Join` and `JoinCopy` accept selected curves or selected polygon meshes. The command-first
 workflow filters eligible objects and exposes the remembered mesh option.
 Mixed object families, surfaces, B-reps, and SubD joining remain unimplemented.
+The [shared-edge B-rep assembly kernel](../brep-edge-joining.md) now supports
+explicit, certified boundary pairs; automatic matching and command integration
+remain outstanding.
 
 `JoinCopy` retains all original objects, including their exact geometry, IDs,
 attributes, and groups. Outputs inherit their seed's attributes and memberships.

@@ -19,6 +19,7 @@ mod combine;
 mod edge_split;
 mod incidence;
 mod isocurves;
+mod join_edges;
 mod loft;
 mod mass_properties;
 mod morph;

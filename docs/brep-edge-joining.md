@@ -1,0 +1,131 @@
+# Shared-edge B-rep assembly
+
+[Architecture](architecture.md) · [Join command status](commands/join.md)
+
+`Brep::try_join_edge_pairs` assembles explicitly paired, complete naked edges.
+This is a geometry-kernel foundation; **surface/polysurface Join and JoinCopy
+are not yet connected to it**. Automatic overlap discovery, candidate ranking,
+partial-overlap planning, output-component separation, and command/document
+policy remain separate work.
+
+Combine sources with `Brep::try_combine`, split partial boundaries with
+`try_split_edges_at_parameters`, then supply tuples of
+`(retained_edge, removed_edge, opposite_curve_directions)`. Indices refer to the
+combined, already-split input. Each edge must be naked and occur in only one
+pair. No source is mutated, including on failure.
+
+## Whole-curve acceptance
+
+The current certificate requires equal degree and control count, exactly
+affine-equivalent full knot vectors, and exactly proportional, sign-coherent
+weights. Reversed directions, shifted/scaled domains, and a common negative
+weight scale are supported. Each corresponding Euclidean control-point
+distance must be no greater than the explicit absolute join distance.
+
+These conditions give both curves the same nonnegative rational basis functions
+`R_i(t)`, whose sum is one. Their difference is `sum R_i(t) (P_i - Q_i)`, so the
+largest control-point distance bounds the entire curve, not just samples or
+endpoints. This test is sufficient, not necessary: degree-elevated curves,
+different knot refinements, non-affine reparameterizations, and independently
+fitted representations of the same locus can be rejected.
+
+Knot-ratio and weight-proportion predicates compare exact binary64 product sums.
+Distance acceptance likewise compares exact squared distances with the squared
+threshold, without rounding coordinate differences first. Fixed 66-limb
+accumulators cover finite binary64 coordinates, products, and carries. A normal
+`hypot` supplies only a candidate upper bound, subsequently checked exactly.
+Neither distant translations, source component tolerances, nor document-relative
+tolerance widen the join distance. Zero distance is permitted.
+
+## Topology and uncertainty
+
+The retained spatial edge, every underlying surface, and every UV trim remain
+unchanged, including their domains, controls, and weights. Surviving edge and
+vertex records retain source order. Vertex unions retain the lowest source
+index, and every member must be within the join distance of that representative;
+chains cannot silently move a remote endpoint beyond the distance.
+
+Edge and vertex tolerances include the original uncertainty and an outward-rounded
+displacement bound. For nonzero displacement, original uncertainty includes the
+model-tolerance floor under which the source was validated. This conservative
+propagation is distinct from Rhino's measured/rebuilt component tolerances.
+
+A face-adjacency parity graph reconciles orientation while holding the first
+face of each component fixed. Existing seam uses participate in the graph.
+Contradictory cycles, edges with more than two uses, repeated pairs, and attempts
+to reuse an already-mated edge fail. Paired trims become Mated or, for two uses
+in the same loop, Seam. Singular trims retain their parameter curves and update
+only their vertex references. The complete result passes normal B-rep validation.
+
+The primitive does not infer outward normals, classify cavities, reject
+zero-volume double sheets, deduplicate unrelated coincident vertices, or split
+disconnected topology into separate objects. An empty pair list preserves the
+source exactly after validation. Pair processing is limited to 100,000 pairs
+and four million input controls, checked before curve matching. Topology work
+is linear apart from disjoint-set operations; final geometric validation has
+the existing B-rep validator's cost and sampled trim/edge correspondence limits.
+
+## Oracle boundary and regression evidence
+
+The `brep_join` probe uses public
+[RhinoCommon JoinBreps](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.brep/joinbreps)
+on owned geometry in a private Xvfb session, without inserting document objects.
+Native inputs are exported individually to 3DM and roundtrip-checked before
+Rhino reads the exact same files. The native side uses fixture-supplied edge
+pairs; Rhino discovers its own matches. This is evidence for the recorded
+connected assemblies, **not** native automatic matching or interactive Join.
+
+Records retain raw spatial edge definitions and order, vertices, component
+tolerances, oriented incidence, face senses, full underlying surfaces, every
+trim-curve definition, face areas, and signed volume. Face incidence records
+use the same stable sorting as the Cap probe; no edges, vertices, surfaces, trim
+definitions, or differing output policies are normalized away. The probe checks
+that Rhino does not mutate its inputs and disposes all owned models and geometry
+on success and failure. Geometry extraction and calls are untimed; these cases
+do not establish a kernel performance ratio.
+
+The [matching fixture](../tools/rhino_oracle/fixtures/brep_join_edges.json) and
+[raw observations](../tools/rhino_oracle/observations/brep_join_edges.json) cover
+28 open and closed assemblies, reordered sources, mixed input orientations,
+opposite edge directions, pre-split partial overlaps, rational boundaries,
+different parameter scales and common weight scales. All recorded fields match
+at absolute epsilon `1e-10` and relative epsilon `1e-12`; maximum numeric residual
+is below `2.04e-12`. The original 22 matching box-sheet records have zero residual.
+The separate [policy fixture](../tools/rhino_oracle/fixtures/brep_join_policies.json)
+and [raw observations](../tools/rhino_oracle/observations/brep_join_policies.json)
+retain eight low-level policy differences: Rhino makes newly closed boxes
+outward, chooses a canonical orientation for the recorded coincident double
+sheets, and can move gap-joined vertices and spatial edges toward midpoints.
+The native assembly primitive keeps its first face sense and retained geometry.
+At the recorded `0.001` gap/tolerance boundary, Rhino returns two unjoined sheets
+but moves one endpoint in both outputs; the native explicit pair joins within
+its exact distance predicate. Neither side mutates its input objects.
+
+A [large-parameter-origin fixture](../tools/rhino_oracle/fixtures/brep_join_parameter_origin.json)
+and [raw observation](../tools/rhino_oracle/observations/brep_join_parameter_origin.json)
+retain a separate integration difference. The profile is
+`C(t) = (t+2t², 2t(1-t), 0)/(1-t+t²)` on `[0,1]`, extruded by height 3.
+Independent 70-digit integration gives area
+`10.22183381267366196861971010606321278774687575928505900910084421931395`.
+The native area differs by less than `2e-14`; Rhino's area is approximately
+`3.81e-9` low when the equivalent surface U domain starts at `1e9`.
+All other recorded fields still pass the ordinary comparison tolerance.
+
+Independent tests cover all 64 orientation masks of a six-face box, pair order,
+retaining a later edge slot, rational cylinders and cones, closed boundaries,
+same-face seam restoration, singular vertices, nonuniform UV parameter speed,
+pre-split partial overlaps, gap uncertainty, transitive-cluster rejection, and
+failure atomicity. Exact-predicate tests compare against independent arbitrary-
+precision rational arithmetic, including subnormal and overflowing squared
+distances, translated coordinates, and nearly equal knots or weights.
+
+```sh
+cargo test --release -p viboceros-geometry brep::join_edges
+cargo test --release -p viboceros-oracle brep_join
+python3 -m unittest tools.rhino_oracle.test_brep_join_probe
+tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/brep_join_edges.json --timeout 240 --absolute-epsilon 1e-10 --relative-epsilon 1e-12
+```
+
+Comparing `brep_join_policies.json` or `brep_join_parameter_origin.json` at the
+ordinary epsilon is expected to report the documented differences. Replay tests
+assert those raw differences explicitly.

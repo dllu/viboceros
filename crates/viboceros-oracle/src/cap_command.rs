@@ -73,7 +73,7 @@ pub(super) fn run(f: &CapFixture, tolerance: Tolerance) -> Result<(Value, u64), 
     ))
 }
 
-fn geometry_record(brep: &Brep, tolerance: Tolerance) -> Result<Value, ProbeError> {
+pub(super) fn geometry_record(brep: &Brep, tolerance: Tolerance) -> Result<Value, ProbeError> {
     // Integrals are witnesses, not modeling tolerances. Resolve them more
     // accurately than the comparison epsilon without changing source geometry.
     let measure = Tolerance::try_new(
