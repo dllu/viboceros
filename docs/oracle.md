@@ -22,6 +22,8 @@ higher-degree controls, polycurve leaves, and their local/parent parameter maps.
 An additional [48 endpoint-search records](join-endpoint-search.md) check nearby
 connections in the presence of distant unrelated sources, with absolute-only
 comparison and exact preservation of the distant source records.
+The [one-pass seeded-join audit](seeded-join.md) replays all 1,197 Join records and
+refreshes the 140 workflow cases against an owned private-Xvfb Rhino session.
 
 Border duplication has 86 matching live command records and offline replay
 checks, including edge-table permutations. See [border validation](borders.md)

@@ -267,6 +267,9 @@ individual curve picks finish on closure, using the normal atomic execution path
 The independent `curve_join/search` module uses conservative bounding-box pairs
 to find nearby endpoints without tolerance-scaled coordinate rounding; see
 [endpoint-search evidence](join-endpoint-search.md).
+The `curve_join/seeded` module instead implements individual picks as a single
+source pass, sharing the narrow-phase predicate and rank without constructing
+the batch candidate graph; see [seeded connectivity](seeded-join.md).
 Seeded joining records the seed's mapped result parameter, so representation
 consolidation does not force commands to guess its new seam from geometry.
 Mesh concatenation, matching,

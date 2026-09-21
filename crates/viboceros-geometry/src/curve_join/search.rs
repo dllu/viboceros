@@ -23,31 +23,14 @@ pub(super) fn find_candidates(
         if scans > MAX_JOIN_SCANS {
             return Err(limit("endpoint comparisons"));
         }
-        let a = endpoints[left];
-        let b = endpoints[right];
-        if a.curve == b.curve || (options.preserve_direction && a.start == b.start) {
-            return Ok(());
-        }
-        let distance = (a.point.x() - b.point.x())
-            .hypot(a.point.y() - b.point.y())
-            .hypot(a.point.z() - b.point.z());
-        if distance <= options.tolerance {
+        if let Some(candidate) = candidate(endpoints, left, right, options)? {
             if candidates.len() == MAX_JOIN_CANDIDATES {
                 return Err(GeometryError::CurveJoinLimit {
                     resource: "endpoint candidates",
                     maximum: MAX_JOIN_CANDIDATES,
                 });
             }
-            let tangent_dot = match (a.outward_tangent, b.outward_tangent) {
-                (Some(a), Some(b)) => a.as_vector().dot(b.as_vector())?,
-                _ => 1.0,
-            };
-            candidates.push(Candidate {
-                distance,
-                tangent_dot,
-                left: left.min(right),
-                right: left.max(right),
-            });
+            candidates.push(candidate);
         }
         Ok(())
     };
@@ -69,6 +52,36 @@ pub(super) fn find_candidates(
         tree.visit_pairs(0, 0, options.tolerance, &mut 0, &mut consider)?;
     }
     Ok(candidates)
+}
+
+/// Shared narrow-phase predicate and rank for batch and individual-pick joins.
+pub(super) fn candidate(
+    endpoints: &[Endpoint],
+    left: usize,
+    right: usize,
+    options: CurveJoinOptions,
+) -> Result<Option<Candidate>, GeometryError> {
+    let a = endpoints[left];
+    let b = endpoints[right];
+    if a.curve == b.curve || (options.preserve_direction && a.start == b.start) {
+        return Ok(None);
+    }
+    let distance = (a.point.x() - b.point.x())
+        .hypot(a.point.y() - b.point.y())
+        .hypot(a.point.z() - b.point.z());
+    if distance > options.tolerance {
+        return Ok(None);
+    }
+    let tangent_dot = match (a.outward_tangent, b.outward_tangent) {
+        (Some(a), Some(b)) => a.as_vector().dot(b.as_vector())?,
+        _ => 1.0,
+    };
+    Ok(Some(Candidate {
+        distance,
+        tangent_dot,
+        left: left.min(right),
+        right: left.max(right),
+    }))
 }
 
 fn limit(resource: &'static str) -> GeometryError {

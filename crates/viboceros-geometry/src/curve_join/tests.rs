@@ -2,6 +2,8 @@ use super::*;
 use crate::{CircularArc3, CurveClosure, LineSegment, NurbsCurve};
 mod encodings;
 mod search;
+mod seeded;
+mod seeded_reference;
 
 #[test]
 fn endpoint_search_does_not_lose_nearby_points_because_of_a_distant_origin() {

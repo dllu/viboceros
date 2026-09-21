@@ -10,8 +10,8 @@ apart and were never compared. Changing input order could change connectivity.
 
 ## Conservative search
 
-The kernel's separate `curve_join/search` module builds a balanced bounding-box
-tree for positive tolerances. Each node stores exact minima and maxima of the
+For batch joining, the kernel's separate `curve_join/search` module builds a
+balanced bounding-box tree for positive tolerances. Each node stores exact minima and maxima of the
 original finite endpoint coordinates. Median partitioning along the widest axis
 keeps recursion logarithmic even for coincident points. Paired traversal covers
 every unordered endpoint pair once, unless its boxes can be rejected.
@@ -33,7 +33,9 @@ The existing ceilings remain 100,000 input curves, one million accepted
 candidates, and 16 million endpoint comparisons. A separate 16-million limit
 also bounds tree-node pair visits. Dense or difficult searches fail explicitly,
 without partial document edits. The tree uses linear storage; worst-case pair
-search remains quadratic, bounded by these limits.
+search remains quadratic, bounded by these limits. Individual command-first
+joining now uses a separate [linear source pass](seeded-join.md), sharing only
+the endpoint predicate and rank, without building a global candidate graph.
 
 ## Evidence
 

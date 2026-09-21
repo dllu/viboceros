@@ -35,6 +35,8 @@ The seed's direction and usually its parameter interval are retained in this mod
 An individually picked chain completes immediately on closure, without Enter.
 See [cycle seams and command-boundary evidence](../join-cycles.md).
 See [curve joining details](../curve-editing.md) for endpoint matching.
+The [one-pass seeded matcher](../seeded-join.md) bounds connectivity work by pick
+count, without constructing candidate pairs between unrelated unconsumed sources.
 
 A single object fails without geometry edits. Disconnected preselected open
 curves succeed unchanged; individually picked curves that cannot extend the seed

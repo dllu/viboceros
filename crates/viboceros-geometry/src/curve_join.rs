@@ -2,6 +2,7 @@
 
 mod assembly;
 mod search;
+mod seeded;
 #[cfg(test)]
 mod tests;
 
@@ -82,6 +83,15 @@ struct Candidate {
     right: usize,
 }
 
+impl Candidate {
+    fn compare(&self, other: &Self) -> std::cmp::Ordering {
+        self.distance
+            .total_cmp(&other.distance)
+            .then_with(|| self.tangent_dot.total_cmp(&other.tangent_dot))
+            .then_with(|| (self.left, self.right).cmp(&(other.left, other.right)))
+    }
+}
+
 struct SeededConnections {
     partners: Vec<Option<usize>>,
     closing_edge: Option<[usize; 2]>,
@@ -125,27 +135,21 @@ pub fn join_curves(
             outward_tangent: endpoint_tangent(curve.as_ref(), false)?,
         });
     }
-    let mut candidates = find_candidates(&endpoints, options)?;
-    candidates.sort_by(|a, b| {
-        a.distance
-            .total_cmp(&b.distance)
-            .then_with(|| a.tangent_dot.total_cmp(&b.tangent_dot))
-            .then_with(|| (a.left, a.right).cmp(&(b.left, b.right)))
-    });
-    let mut partners = vec![None; endpoints.len()];
-    let mut closing_edge = None;
-    if options.style == CurveJoinStyle::Seeded {
-        let seeded = seeded_partners(curves, &endpoints, &ends, &candidates)?;
-        partners = seeded.partners;
-        closing_edge = seeded.closing_edge;
+    let (partners, closing_edge) = if options.style == CurveJoinStyle::Seeded {
+        let seeded = seeded::connect(curves, &endpoints, &ends, options)?;
+        (seeded.partners, seeded.closing_edge)
     } else {
+        let mut candidates = find_candidates(&endpoints, options)?;
+        candidates.sort_by(Candidate::compare);
+        let mut partners = vec![None; endpoints.len()];
         for candidate in candidates {
             if partners[candidate.left].is_none() && partners[candidate.right].is_none() {
                 partners[candidate.left] = Some(candidate.right);
                 partners[candidate.right] = Some(candidate.left);
             }
         }
-    }
+        (partners, None)
+    };
     let mut visited = vec![false; curves.len()];
     let mut results = Vec::new();
     for first in 0..curves.len() {
@@ -275,113 +279,6 @@ pub fn join_curves(
     // each category so an unrelated earlier input does not reorder the chain.
     results.sort_by_key(|result| (result.source_indices.len() == 1, result.source_indices[0]));
     Ok(results)
-}
-
-fn seeded_partners(
-    curves: &[Curve3],
-    endpoints: &[Endpoint],
-    ends: &[Option<[usize; 2]>],
-    candidates: &[Candidate],
-) -> Result<SeededConnections, GeometryError> {
-    let mut adjacent = vec![Vec::new(); endpoints.len()];
-    for (index, candidate) in candidates.iter().enumerate() {
-        adjacent[candidate.left].push(index);
-        adjacent[candidate.right].push(index);
-    }
-    let mut partners = vec![None; endpoints.len()];
-    let mut assigned = vec![false; ends.len()];
-    let mut scans = 0;
-    let mut closing_edge = None;
-    if let Some((seed, Some(mut free))) = ends
-        .iter()
-        .copied()
-        .enumerate()
-        .find(|(_, ends)| ends.is_some())
-    {
-        assigned[seed] = true;
-        let mut last_source = seed;
-        let mut linear_vertices = assembly::linear_vertex_count(curves[seed].as_ref());
-        loop {
-            let mut sides: [Option<(usize, usize, usize, usize)>; 2] = [None, None];
-            for side in 0..2 {
-                for &index in &adjacent[free[side]] {
-                    scans += 1;
-                    if scans > MAX_JOIN_SCANS {
-                        return Err(GeometryError::CurveJoinLimit {
-                            resource: "seeded candidate scans",
-                            maximum: MAX_JOIN_SCANS,
-                        });
-                    }
-                    let candidate = candidates[index];
-                    let other = if candidate.left == free[side] {
-                        candidate.right
-                    } else {
-                        candidate.left
-                    };
-                    let source = endpoints[other].curve;
-                    if source <= last_source || assigned[source] {
-                        continue;
-                    }
-                    // Candidates already have distance/tangent order. Source
-                    // order takes precedence in a seeded one-pass extension.
-                    let key = (source, index, side, other);
-                    if sides[side].is_none_or(|previous| key < previous) {
-                        sides[side] = Some(key);
-                    }
-                }
-            }
-            let mut best = sides.into_iter().flatten().min();
-            if let [Some(left), Some(right)] = sides
-                && left.0 == right.0
-                && left.3 != right.3
-            {
-                // A curve closing both free ends is prepended by individual
-                // Join picking. Copy commands may restore the seed seam later.
-                best = Some(
-                    if (is_linear(&curves[left.0])
-                        && !endpoint_is_linear(
-                            &curves[endpoints[free[0]].curve],
-                            endpoints[free[0]].start,
-                        )
-                        && endpoint_is_linear(
-                            &curves[endpoints[free[1]].curve],
-                            endpoints[free[1]].start,
-                        ))
-                        || (matches!(curves[left.0], Curve3::Arc(_))
-                            && linear_vertices.is_some_and(|n| n > 2))
-                    {
-                        right
-                    } else {
-                        left
-                    },
-                );
-            }
-            let Some((source, _, side, other)) = best else {
-                break;
-            };
-            partners[free[side]] = Some(other);
-            partners[other] = Some(free[side]);
-            assigned[source] = true;
-            linear_vertices = linear_vertices
-                .zip(assembly::linear_vertex_count(curves[source].as_ref()))
-                .and_then(|(a, b)| a.checked_add(b - 1));
-            last_source = source;
-            free[side] = ends[source].expect("open source")[usize::from(endpoints[other].start)];
-            if adjacent[free[0]].iter().any(|&index| {
-                let candidate = candidates[index];
-                candidate.left == free[1] || candidate.right == free[1]
-            }) {
-                partners[free[0]] = Some(free[1]);
-                partners[free[1]] = Some(free[0]);
-                closing_edge = Some(free);
-                break;
-            }
-        }
-    }
-    Ok(SeededConnections {
-        partners,
-        closing_edge,
-    })
 }
 
 fn endpoint_tangent(

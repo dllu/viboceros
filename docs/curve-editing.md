@@ -28,6 +28,10 @@ The kernel exposes two explicitly different `CurveJoinStyle` policies:
   Consolidating linear runs in a mixed result instead rebuilds its native
   domains; see [curve encodings](join-encodings.md).
 
+Seeded connectivity uses a [direct source pass](seeded-join.md), checking at most
+four endpoint combinations per later source and one closure pair per attachment.
+It does not construct or repeatedly scan a global candidate graph.
+
 These differences were observed separately in Rhino's public `JoinCurves` API
 and interactive command. Endpoints of two flexible curves move to their midpoint.
 An analytic arc stays fixed against a flexible curve. Two analytic arcs meet at
@@ -52,11 +56,11 @@ Rhino worker used command-first picks. It now invokes native postselection too;
 the newer `join_command` probe measures both workflows explicitly, including
 selection and creation order, without sorting objects by name.
 
-Positive tolerances use a conservative [endpoint bounding-box tree](join-endpoint-search.md),
+Batch positive tolerances use a conservative [endpoint bounding-box tree](join-endpoint-search.md),
 without origin subtraction or tolerance-scaled grid coordinates. Exact-zero
-tolerance uses exact coordinate keys. Limits of 100,000 inputs, one million
-candidate pairs, and 16 million comparisons each for endpoints, tree-node pairs,
-and seeded matching bound resource use. Reaching a limit reports an error rather
+tolerance uses exact coordinate keys. Both styles allow up to 100,000 inputs;
+batch searches additionally limit candidate pairs to one million and comparisons
+to 16 million each for endpoints and tree-node pairs. Reaching a limit reports an error rather
 than producing a partial edit.
 The older unambiguous `join_polylines` utility remains for topology algorithms
 that explicitly require branch rejection; it is not the interactive Join policy.
