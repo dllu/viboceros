@@ -101,6 +101,14 @@ arbitrary command text is never accepted as a target. The native adapter uses
 the corresponding document UUID. The 39-case curve fixture includes all seven
 native target families and retains a separate incomplete-prompt diagnostic.
 
+The `split_edge_command` operation uses the shared owned edge-edit fixture and
+history recorder, with a separate strict point-input grammar. Its
+[21-case record](split-edge-provenance.json) exercises actual mouse-selected
+SplitEdge commands, including full-batch duplicate failure and unchanged
+endpoint-only replacements with real Undo/Redo. Native replay compares all
+ordered geometry/attribute/history fields without component renumbering; see
+[SplitEdge](commands/split-edge.md) for interaction and search limitations.
+
 The shared `serde_json` dependency explicitly enables round-trip float parsing.
 Standalone oracle/document builds must not depend on app or test dependencies
 to enable numerical fidelity through Cargo feature unification. A package-only

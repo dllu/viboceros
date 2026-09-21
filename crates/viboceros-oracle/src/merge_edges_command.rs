@@ -44,7 +44,65 @@ pub(super) fn run_selected(
             "invalid selected-edge command fixture",
         ));
     }
-    run_impl(&f.base, construction, Some(f))
+    run_impl(&f.base, construction, EdgeAction::Merge(f))
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+pub struct SplitEdgeFixture {
+    #[serde(flatten)]
+    base: MergeEdgesFixture,
+    edge: usize,
+    parameters: Vec<f64>,
+    pick: Option<String>,
+    finish: Option<String>,
+    #[serde(default)]
+    object_preselect: bool,
+}
+
+pub(super) fn run_split(
+    f: &SplitEdgeFixture,
+    construction: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    if f.base.preselect
+        || f.base.cancel
+        || f.parameters.len() > 64
+        || f.parameters.iter().any(|t| !t.is_finite())
+        || f.pick.as_deref() != Some("mouse")
+        || f.finish
+            .as_deref()
+            .is_some_and(|s| !matches!(s, "Enter" | "Cancel"))
+    {
+        return Err(ProbeError::FixtureInvariant(
+            "invalid SplitEdge command fixture",
+        ));
+    }
+    run_impl(&f.base, construction, EdgeAction::Split(f))
+}
+
+#[derive(Clone, Copy)]
+enum EdgeAction<'a> {
+    All,
+    Merge(&'a SelectedEdgeFixture),
+    Split(&'a SplitEdgeFixture),
+}
+impl EdgeAction<'_> {
+    fn name(self) -> &'static str {
+        match self {
+            Self::All => "MergeAllEdges",
+            Self::Merge(_) => "MergeEdge",
+            Self::Split(_) => "SplitEdge",
+        }
+    }
+    fn component(self) -> bool {
+        !matches!(self, Self::All)
+    }
+    fn preselect(self) -> bool {
+        match self {
+            Self::All => false,
+            Self::Merge(f) => f.object_preselect,
+            Self::Split(f) => f.object_preselect,
+        }
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -83,13 +141,13 @@ pub(super) fn run(
     f: &MergeEdgesFixture,
     construction: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
-    run_impl(f, construction, None)
+    run_impl(f, construction, EdgeAction::All)
 }
 
 fn run_impl(
     f: &MergeEdgesFixture,
     construction: Tolerance,
-    selected_edge: Option<&SelectedEdgeFixture>,
+    action: EdgeAction<'_>,
 ) -> Result<(Value, u64), ProbeError> {
     let invalid = || ProbeError::FixtureInvariant("invalid edge merge fixture");
     let order = f
@@ -102,7 +160,7 @@ fn run_impl(
         || order.iter().any(|&i| i >= f.sources.len())
         || order.iter().collect::<BTreeSet<_>>().len() != order.len()
         || (f.cancel && f.preselect)
-        || (selected_edge.is_some() && order.len() != 1)
+        || (action.component() && order.len() != 1)
     {
         return Err(invalid());
     }
@@ -132,7 +190,7 @@ fn run_impl(
     }
     groups.push(document.add_group(Some("Shared".into()), ids.iter().copied())?);
     let registry = CommandRegistry::with_builtins();
-    if f.preselect || selected_edge.is_some_and(|f| f.object_preselect) {
+    if f.preselect || action.preselect() {
         document.select_objects_direct(order.iter().map(|&i| ids[i]), SelectionMode::Replace)?;
     }
     let snapshot = |document: &Document| -> Result<Value, ProbeError> {
@@ -160,7 +218,7 @@ fn run_impl(
         Ok(json!(rows))
     };
     let before = snapshot(&document)?;
-    if !f.preselect && selected_edge.is_none() {
+    if !f.preselect && !action.component() {
         let prompt = registry
             .object_selection_prompt("MergeAllEdges")?
             .ok_or_else(invalid)?;
@@ -171,7 +229,28 @@ fn run_impl(
             .collect::<Vec<_>>();
         document.select_objects_direct(accepted, SelectionMode::Replace)?;
     }
-    let succeeded = if let Some(selected) = selected_edge {
+    let succeeded = if let EdgeAction::Split(selected) = action {
+        document.clear_selection();
+        let mut session = viboceros_command::SplitEdgeSelection::prepare(
+            &document,
+            ids[order[0]],
+            selected.edge,
+        )?;
+        for &parameter in &selected.parameters {
+            // The public command receives evaluated model points, not native parameters.
+            let point = session.curve().evaluate(parameter)?;
+            session.add_point(point)?;
+        }
+        if selected.parameters.is_empty() {
+            false
+        } else {
+            match session.commit(&mut document) {
+                Ok(_) => true,
+                Err(CommandError::Geometry(GeometryError::InvalidCurveSplitParameter)) => false,
+                Err(error) => return Err(error.into()),
+            }
+        }
+    } else if let EdgeAction::Merge(selected) = action {
         document.clear_selection();
         let selection = viboceros_command::MergeEdgeSelection::prepare(
             &document,
@@ -209,12 +288,7 @@ fn run_impl(
     let mut result = json!({"before": before, "after": after, "succeeded": succeeded,
         "absolute_tolerance": tolerance.absolute(), "angular_tolerance": tolerance.angular()});
     if f.undo_redo {
-        let changed = document.undo_label()
-            == Some(if selected_edge.is_some() {
-                "MergeEdge"
-            } else {
-                "MergeAllEdges"
-            });
+        let changed = document.undo_label() == Some(action.name());
         result["history_tested"] = json!(changed);
         if changed {
             for (command, key) in [("Undo", "undo"), ("Redo", "redo")] {

@@ -161,6 +161,7 @@ state into document transactions:
 | `viewport/screen` | Shared clipping, containment, and screen-distance predicates |
 | `viewport/selection` | Object filters, click dispatch, and window/crossing selection |
 | `viewport/picking` | Face hit metrics and depth interpolation |
+| `viewport/edge_picking`, `viewport/edge_point` | Boundary-component capture and constrained screen-space edge locations |
 | `viewport/scene` | Object display, shading, depth staging, and GPU buffers |
 | `viewport/drafting` | Cursor resolution, construction-plane grid, and drafting overlays |
 
@@ -168,6 +169,13 @@ The `viboceros-drafting` crate separates feature snaps (`object_snap`), plane-lo
 drafting (`plane`), and typed coordinates (`point_input`), with API regression
 tests outside the crate root. See [viewport implementation and precision](viewport-implementation.md)
 for coordinate conventions, numeric safeguards, and their specific test coverage.
+
+`app/edge_commands` shares component ambiguity, hover highlighting and stale
+candidate checks for [MergeEdge](commands/merge-edge.md) and
+[SplitEdge](commands/split-edge.md). Command-owned prepared selections keep
+source/tolerance snapshots separate from document history. Merge chooses a
+certified neighboring chain; Split collects original-edge locations and performs
+one atomic subdivision when finishing, including when finishing with Escape.
 
 Viewport hit-testing applies the filter before hit priority; clicks/windows use
 the same selection adapter. Prompt choices live outside model history, while

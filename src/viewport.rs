@@ -43,6 +43,7 @@ mod raster_tests;
 use camera::zoom_pan;
 mod curve_sampling;
 mod edge_picking;
+mod edge_point;
 use curve_sampling::ViewportCurve;
 pub use edge_picking::EdgePick;
 const TRACK_CAPTURE_PIXELS: f32 = 8.0;
@@ -99,6 +100,8 @@ pub struct ViewportInput<'a> {
     pub edge_pick: bool,
     pub edge_highlights: &'a [EdgePick],
     pub edge_endpoints: Option<[Point3; 2]>,
+    pub edge_curve: Option<&'a NurbsCurve>,
+    pub edge_parameters: &'a [Real],
 }
 
 impl Default for ViewportInput<'_> {
@@ -110,6 +113,8 @@ impl Default for ViewportInput<'_> {
             edge_pick: false,
             edge_highlights: &[],
             edge_endpoints: None,
+            edge_curve: None,
+            edge_parameters: &[],
         }
     }
 }
@@ -117,6 +122,7 @@ impl Default for ViewportInput<'_> {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ViewportOutput {
     pub edge_click: Option<Vec<EdgePick>>,
+    pub edge_parameter: Option<Real>,
     pub picked_point: Option<Point3>,
     pub selection_click: Option<SelectionClick>,
     pub selection_window: Option<SelectionWindow>,
@@ -245,7 +251,8 @@ impl Viewport {
             }
         }
 
-        let selecting = !drafting.active && !input.edge_pick && input.object_filter.is_some();
+        let component_input = input.edge_pick || input.edge_curve.is_some();
+        let selecting = !drafting.active && !component_input && input.object_filter.is_some();
         let object_filter = input.object_filter.unwrap_or_default();
         if !selecting {
             self.selection_drag_start = None;
@@ -274,7 +281,7 @@ impl Viewport {
             None
         };
 
-        let drafting_cursor = if drafting.active && !input.edge_pick {
+        let drafting_cursor = if drafting.active && !component_input {
             response
                 .hover_pos()
                 .and_then(|pointer| self.drafting_cursor(pointer, rect, document, drafting))
@@ -324,6 +331,24 @@ impl Viewport {
             Vec::new()
         };
         self.paint_edge_highlights(&painter, rect, document, &edge_hover);
+        let edge_parameter = input.edge_curve.and_then(|curve| {
+            for &parameter in input.edge_parameters {
+                if let Ok(point) = curve.evaluate(parameter)
+                    && let Some(pixel) = self.project(point, rect)
+                {
+                    painter.circle_stroke(pixel, 4., Stroke::new(2., SELECTED_COLOR));
+                }
+            }
+            let pointer = response.hover_pos()?;
+            ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
+            let parameter = self.pick_edge_parameter(curve, pointer, rect, drafting.osnap)?;
+            if let Ok(point) = curve.evaluate(parameter)
+                && let Some(pixel) = self.project(point, rect)
+            {
+                painter.circle_filled(pixel, 4., SELECTED_COLOR);
+            }
+            Some(parameter)
+        });
         if drafting.active {
             self.paint_draft_points(&painter, rect, preview_polyline);
             // Non-curve prompts (for example Distance) have an accepted anchor
@@ -378,6 +403,10 @@ impl Viewport {
         );
 
         ViewportOutput {
+            edge_parameter: response
+                .clicked_by(PointerButton::Primary)
+                .then_some(edge_parameter)
+                .flatten(),
             edge_click: (input.edge_pick && response.clicked_by(PointerButton::Primary)).then(
                 || {
                     response

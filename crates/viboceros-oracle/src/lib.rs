@@ -234,6 +234,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: merge_edges_command::SelectedEdgeFixture,
     },
+    SplitEdgeCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: merge_edges_command::SplitEdgeFixture,
+    },
     BrepJoin {
         id: String,
         #[serde(flatten)]
@@ -1678,6 +1683,7 @@ impl Operation {
             | Self::BrepMergeEdge { id, .. }
             | Self::MergeEdgesCommand { id, .. }
             | Self::MergeEdgeCommand { id, .. }
+            | Self::SplitEdgeCommand { id, .. }
             | Self::BrepJoin { id, .. }
             | Self::JoinCommand { id, .. }
             | Self::GroupMemberships { id, .. }
@@ -2094,6 +2100,9 @@ fn execute(
         }
         Operation::MergeEdgeCommand { fixture, .. } => {
             merge_edges_command::run_selected(fixture, tolerance)?
+        }
+        Operation::SplitEdgeCommand { fixture, .. } => {
+            merge_edges_command::run_split(fixture, tolerance)?
         }
         Operation::BrepJoin { fixture, .. } => brep_join::run(fixture, tolerance)?,
         Operation::JoinCommand { fixture, .. } => join_command::run(fixture, tolerance)?,

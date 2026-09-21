@@ -1,5 +1,5 @@
 use super::*;
-use crate::app::merge_edge::MergeEdgePrompt;
+use crate::app::edge_commands::EdgePrompt;
 use crate::viewport::EdgePick;
 
 fn fixture(app: &mut VibocerosApp) -> EdgePick {
@@ -37,14 +37,11 @@ fn edge_choice_edits_only_after_confirmation_and_one_undo_restores_the_source() 
         edge_click: Some(vec![pick]),
         ..Default::default()
     }));
-    assert!(matches!(
-        app.merge_edge_prompt,
-        Some(MergeEdgePrompt::Choice(_))
-    ));
+    assert!(matches!(app.edge_prompt, Some(EdgePrompt::Choice(_))));
     assert_eq!(app.document.object(pick.object).unwrap(), &before);
     assert_eq!(app.document.undo_label(), history_before.as_deref());
     submit(&mut app, "Both");
-    assert!(app.merge_edge_prompt.is_none());
+    assert!(app.edge_prompt.is_none());
     assert_eq!(app.document.undo_label(), Some("MergeEdge"));
     let after = app.document.object(pick.object).unwrap().clone();
     let Geometry::Brep(brep) = after.geometry() else {
@@ -67,32 +64,23 @@ fn ambiguity_invalid_choices_cancel_and_noops_cannot_commit_accidentally() {
     let before = format!("{:?}", app.document);
     submit(&mut app, "MergeEdge");
     app.accept_edge_click(vec![EdgePick { edge: 1, ..pick }]);
-    assert!(matches!(app.merge_edge_prompt, Some(MergeEdgePrompt::Pick)));
+    assert!(matches!(app.edge_prompt, Some(EdgePrompt::Pick(_))));
     app.accept_edge_click(vec![pick, EdgePick { edge: 12, ..pick }]);
-    assert!(matches!(
-        app.merge_edge_prompt,
-        Some(MergeEdgePrompt::Ambiguous(..))
-    ));
+    assert!(matches!(app.edge_prompt, Some(EdgePrompt::Ambiguous(..))));
     submit(&mut app, "0");
     submit(&mut app, "99");
     submit(&mut app, "1,2,3");
-    assert!(matches!(
-        app.merge_edge_prompt,
-        Some(MergeEdgePrompt::Ambiguous(..))
-    ));
+    assert!(matches!(app.edge_prompt, Some(EdgePrompt::Ambiguous(..))));
     submit(&mut app, "1");
     submit(&mut app, "Edge"); // Only EdgeA/EdgeB/Both/All are offered here.
-    assert!(matches!(
-        app.merge_edge_prompt,
-        Some(MergeEdgePrompt::Choice(_))
-    ));
+    assert!(matches!(app.edge_prompt, Some(EdgePrompt::Choice(_))));
     submit(&mut app, "");
-    assert!(app.merge_edge_prompt.is_none());
+    assert!(app.edge_prompt.is_none());
     assert_eq!(format!("{:?}", app.document), before);
     submit(&mut app, "MergeEdge");
     app.accept_edge_click(vec![pick]);
     submit(&mut app, "Redo"); // A real new command cancels the menu first.
-    assert!(app.merge_edge_prompt.is_none());
+    assert!(app.edge_prompt.is_none());
     assert_eq!(app.document.objects().len(), 2);
 }
 
@@ -108,7 +96,7 @@ fn sidebar_changes_invalidate_pending_components_without_editing_hidden_geometry
     let before = format!("{:?}", app.document);
     submit(&mut app, "All");
     assert_eq!(format!("{:?}", app.document), before);
-    assert!(matches!(app.merge_edge_prompt, Some(MergeEdgePrompt::Pick)));
+    assert!(matches!(app.edge_prompt, Some(EdgePrompt::Pick(_))));
 }
 
 #[test]
@@ -126,7 +114,7 @@ fn geometry_changes_while_an_ambiguity_menu_is_open_invalidate_its_indices() {
     let before = format!("{:?}", app.document);
     submit(&mut app, "1");
     assert_eq!(format!("{:?}", app.document), before);
-    assert!(matches!(app.merge_edge_prompt, Some(MergeEdgePrompt::Pick)));
+    assert!(matches!(app.edge_prompt, Some(EdgePrompt::Pick(_))));
 }
 
 #[test]
@@ -144,7 +132,7 @@ fn egui_buttons_highlight_ambiguous_edges_and_commit_the_chosen_merge() {
                 events,
                 ..Default::default()
             },
-            |ui| app.show_merge_edge_choices(ui),
+            |ui| app.show_edge_choices(ui),
         )
     };
     let label_center = |output: &egui::FullOutput, label: &str| {
@@ -175,12 +163,12 @@ fn egui_buttons_highlight_ambiguous_edges_and_commit_the_chosen_merge() {
     output.drop_without_applying_deltas();
     frame(&mut app, vec![egui::Event::PointerMoved(second)]).drop_without_applying_deltas();
     assert_eq!(
-        app.merge_edge_prompt.as_ref().unwrap().highlights(),
+        app.edge_prompt.as_ref().unwrap().highlights(),
         vec![EdgePick { edge: 12, ..pick }]
     );
     frame(&mut app, vec![button(second, true)]).drop_without_applying_deltas();
     frame(&mut app, vec![button(second, false)]).drop_without_applying_deltas();
-    let Some(MergeEdgePrompt::Choice(selection)) = &app.merge_edge_prompt else {
+    let Some(EdgePrompt::Choice(selection)) = &app.edge_prompt else {
         panic!()
     };
     assert_eq!(selection.edge(), 12);
@@ -193,7 +181,7 @@ fn egui_buttons_highlight_ambiguous_edges_and_commit_the_chosen_merge() {
     )
     .drop_without_applying_deltas();
     frame(&mut app, vec![button(all, false)]).drop_without_applying_deltas();
-    assert!(app.merge_edge_prompt.is_none());
+    assert!(app.edge_prompt.is_none());
     assert_eq!(app.document.undo_label(), Some("MergeEdge"));
     let Geometry::Brep(brep) = app.document.object(pick.object).unwrap().geometry() else {
         panic!()

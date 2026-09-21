@@ -37,11 +37,11 @@ mod curve_preview;
 mod curve_prompt;
 mod distance;
 mod domain;
+mod edge_commands;
 mod evaluate_point;
 mod evaluate_uv;
 mod group_prompt;
 mod interface;
-mod merge_edge;
 mod object_selection;
 mod plane_primitives;
 mod point_grid;
@@ -1207,7 +1207,7 @@ pub struct VibocerosApp {
     plane_prompt: Option<construction_plane::PlanePrompt>,
     object_prompt: Option<object_selection::PendingObjectCommand>,
     group_prompt: Option<group_prompt::GroupPrompt>,
-    merge_edge_prompt: Option<merge_edge::MergeEdgePrompt>,
+    edge_prompt: Option<edge_commands::EdgePrompt>,
     curve_points: Vec<Point3>,
     points_session: Option<points::PointsSession>,
     evaluate_uv_session: Option<evaluate_uv::EvaluateUvSession>,
@@ -1247,7 +1247,7 @@ impl VibocerosApp {
             plane_prompt: None,
             object_prompt: None,
             group_prompt: None,
-            merge_edge_prompt: None,
+            edge_prompt: None,
             curve_points: Vec::new(),
             points_session: None,
             evaluate_uv_session: None,
@@ -1273,7 +1273,7 @@ impl VibocerosApp {
         if self.try_continue_group_prompt(&input) {
             return;
         }
-        if self.try_continue_merge_edge(&input) {
+        if self.try_continue_edge_command(&input) {
             return;
         }
         if self.try_continue_points(&input)
@@ -1302,7 +1302,7 @@ impl VibocerosApp {
             return;
         }
         self.command_input.clear();
-        if self.try_start_merge_edge(&input)
+        if self.try_start_edge_command(&input)
             || self.try_start_group_prompt(&input)
             || self.try_start_object_prompt(&input)
             || self.try_start_interactive_command(&input)
@@ -1317,7 +1317,7 @@ impl VibocerosApp {
     }
 
     fn try_execute_command(&mut self, input: &str) -> bool {
-        if self.try_continue_merge_edge(input) {
+        if self.try_continue_edge_command(input) {
             return true;
         }
         if self.try_continue_points(input)
@@ -3070,7 +3070,7 @@ impl VibocerosApp {
         self.finish_evaluate_uv_session();
         self.cancel_object_prompt(announce);
         self.cancel_group_prompt(announce);
-        self.cancel_merge_edge(announce);
+        self.finish_edge_command(announce);
         let command = self.active_command.take();
         if matches!(
             command,
@@ -5045,6 +5045,8 @@ impl VibocerosApp {
             self.run_command();
         } else if let Some(picks) = output.edge_click {
             self.accept_edge_click(picks);
+        } else if let Some(parameter) = output.edge_parameter {
+            self.accept_split_parameter(parameter);
         } else if let Some(point) = output.picked_point {
             if self.plane_prompt.is_some() {
                 self.accept_plane_prompt_point(point);
@@ -5163,7 +5165,7 @@ impl eframe::App for VibocerosApp {
             } else if self.active_command.is_some()
                 || self.object_prompt.is_some()
                 || self.group_prompt.is_some()
-                || self.merge_edge_prompt.is_some()
+                || self.edge_prompt.is_some()
             {
                 self.cancel_interactive_command(true);
             } else {
@@ -5181,7 +5183,7 @@ impl eframe::App for VibocerosApp {
         if self.active_command.is_none()
             && self.object_prompt.is_none()
             && self.group_prompt.is_none()
-            && self.merge_edge_prompt.is_none()
+            && self.edge_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.document.selected_object_count() > 0
             && !ui.ctx().egui_wants_keyboard_input()
@@ -5219,18 +5221,30 @@ impl eframe::App for VibocerosApp {
             std::array::from_fn(|_| ViewportOutput::default());
         let active_viewport = self.active_viewport;
         let object_filter = self.viewport_object_filter();
-        let edge_pick = self.merge_edge_prompt.is_some() && self.plane_prompt.is_none();
-        let edge_endpoints = match &self.merge_edge_prompt {
-            Some(merge_edge::MergeEdgePrompt::Choice(selection)) if edge_pick => {
+        let preview_curve = self.curve_draft_preview();
+        let edge_pick = self
+            .edge_prompt
+            .as_ref()
+            .is_some_and(edge_commands::EdgePrompt::picking_edge)
+            && self.plane_prompt.is_none();
+        let split_selection = self
+            .edge_prompt
+            .as_ref()
+            .and_then(edge_commands::EdgePrompt::split_selection)
+            .filter(|_| self.plane_prompt.is_none());
+        let edge_curve = split_selection.map(viboceros_command::SplitEdgeSelection::curve);
+        let edge_parameters =
+            split_selection.map_or(&[][..], viboceros_command::SplitEdgeSelection::parameters);
+        let edge_endpoints = match &self.edge_prompt {
+            Some(edge_commands::EdgePrompt::Choice(selection)) if edge_pick => {
                 Some(selection.endpoints())
             }
             _ => None,
         };
         let edge_highlights = self
-            .merge_edge_prompt
+            .edge_prompt
             .as_ref()
-            .map_or_else(Vec::new, merge_edge::MergeEdgePrompt::highlights);
-        let preview_curve = self.curve_draft_preview();
+            .map_or_else(Vec::new, edge_commands::EdgePrompt::highlights);
         let document = &self.document;
         let curve_points = self
             .plane_prompt
@@ -5264,6 +5278,8 @@ impl eframe::App for VibocerosApp {
                                         edge_pick,
                                         edge_highlights: &edge_highlights,
                                         edge_endpoints,
+                                        edge_curve,
+                                        edge_parameters,
                                     },
                                     curve_points,
                                     index,
@@ -5367,6 +5383,7 @@ mod tests {
     mod radius;
     mod rhino_curve_prompt;
     mod single_span_selection;
+    mod split_edge;
     use super::*;
     use std::collections::BTreeSet;
     use viboceros_document::{ColorRgb, Geometry};
@@ -5392,7 +5409,7 @@ mod tests {
             object_prompt: None,
             curve_points: Vec::new(),
             group_prompt: None,
-            merge_edge_prompt: None,
+            edge_prompt: None,
             points_session: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),

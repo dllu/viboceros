@@ -285,6 +285,12 @@ impl Viewport {
     }
 
     pub(super) fn project(&self, point: Point3, rect: Rect) -> Option<Pos2> {
+        self.project_precise(point, rect)
+            .map(|[x, y]| Pos2::new(x as f32, y as f32))
+    }
+
+    /// Keep model-point query minimization independent of egui's f32 raster coordinates.
+    pub(super) fn project_precise(&self, point: Point3, rect: Rect) -> Option<[Real; 2]> {
         let origin = self.world_origin(rect);
         let local = NaVector3::new(point.x(), point.y(), point.z()) - self.target;
         let (horizontal_pixels, vertical_pixels) = match self.kind {
@@ -322,7 +328,7 @@ impl Viewport {
         {
             return None;
         }
-        Some(Pos2::new(x as f32, y as f32))
+        Some([x, y])
     }
 
     // Coordinate-plane reference used by projection tests. Interactive drafting

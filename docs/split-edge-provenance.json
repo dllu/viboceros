@@ -1,0 +1,26 @@
+{
+  "cases": 21,
+  "engine_version": "8.32.26160.13001",
+  "scope": "Actual SplitEdge commands in owned private Xvfb sessions, using real component mouse picks followed by evaluated source-edge model points. Full geometry, ordered component tables, attributes, selection and Undo/Redo retained.",
+  "raw_response_sha256": {
+    "first-result.json": "986c08b2b2dadf8bf7a45074938afe9ffa7bd0ed251af27568b87ab997e6b9f5",
+    "policy-result.json": "9ccf3dfabd822f054c82854d5b286aae46dcdd17edbe5d3e9318bccc85893771",
+    "duplicates-result.json": "bc01840132bfc61fcc9f9363e50824c8a08f26782056186f7ff76512e5eda850"
+  },
+  "source_artifact_sha256": {
+    "box.3dm": "9ad7f078dc15cbe542751246f45371a3e97c514d13482aee66448a8129620a65",
+    "quadratic.3dm": "88bf78e5061f056f55f78a4d121c334fb6210df5066880906e4b04ceb117c0d5",
+    "crease.3dm": "f2924e1dec1be6068eba4192f7905b7251b1cf7bae5e9705e0d0f6346e50e53f"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/split_edge_command.json": "1429f878c01c7a26f2d0d482e85a73275f54081898fdc7fe5e27ab5808547b99",
+    "tools/rhino_oracle/observations/split_edge_command.json": "b501b1dc0f9c71c752f4b2157574c5b3e57ccefde40f1491c89d8f205052b4ae"
+  },
+  "notes": [
+    "Only transient source artifact paths were removed from portable requests. Raw result values are unchanged.",
+    "Rhino appends split vertices and edges in descending parameter order, independent of point entry order.",
+    "Escape after collected points applies the batch. Empty input has no replacement/history. Duplicate interior parameters fail the entire batch. Endpoint-only input has unchanged geometry but a real replacement and Undo/Redo.",
+    "The short-feature probes include 1e-12 from an endpoint and 0.0001 between points at document absolute tolerance 0.01. These are retained, not merged under model tolerance.",
+    "Construction tolerance is the request/worker tolerance, not Rhino's default document tolerance. No arbitrary-input, screen-picking equivalence, or performance claim follows from these bounded fixtures."
+  ]
+}

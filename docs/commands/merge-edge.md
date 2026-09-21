@@ -1,6 +1,6 @@
 # MergeEdge
 
-[Command reference](README.md) · [MergeAllEdges](merge-edges.md) · [Certified kernel](../selected-edge-merge.md)
+[Command reference](README.md) · [MergeAllEdges](merge-edges.md) · [SplitEdge](split-edge.md) · [Certified kernel](../selected-edge-merge.md)
 
 Enter `MergeEdge`, then click a surface or polysurface boundary edge. Object
 preselection is cleared. Surface isocurves, mesh wires and construction-plane

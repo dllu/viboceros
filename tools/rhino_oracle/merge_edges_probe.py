@@ -25,14 +25,21 @@ def validate_mouse_request(request):
         raise ValueError("edge mouse picking requires protocol 1, one iteration and 1 to 128 cases")
     names = set()
     for operation in operations:
-        if (not isinstance(operation, dict) or operation.get("op") != "merge_edge_command" or
+        if (not isinstance(operation, dict) or operation.get("op") not in ("merge_edge_command", "split_edge_command") or
                 operation.get("pick") != "mouse"):
             raise ValueError("edge mouse picking requires a dedicated request")
         name = operation.get("id")
         if not isinstance(name, (str, type(u""))) or re.match(r"^[A-Za-z0-9_.-]{1,100}\Z", name) is None or name in names:
             raise ValueError("invalid edge mouse picking id")
         names.add(name)
-        validate(operation)
+        if operation["op"] == "split_edge_command":
+            if __package__:
+                from . import split_edge_probe
+            else:
+                import split_edge_probe
+            split_edge_probe.validate(operation)
+        else:
+            validate(operation)
 
 
 def at_idle(Rhino, callback):
@@ -99,6 +106,11 @@ def validate(operation):
 
 def run(operation, tolerance, host):
     sources, order = validate(operation)
+    return run_owned(operation, tolerance, host, sources, order)
+
+
+def run_owned(operation, tolerance, host, sources, order, command_name=None, mouse_macro=None):
+    """Shared owned fixture/history recording; callers validate their own command grammar."""
     import brep_join_probe
     import join_probe
     Rhino, System = host["Rhino"], host["System"]
@@ -200,7 +212,7 @@ def run(operation, tolerance, host):
             document.ModelAngleToleranceRadians = float(operation["angular_tolerance"])
             if document.ModelAngleToleranceRadians != float(operation["angular_tolerance"]): raise ValueError("edge merge angular tolerance was not accepted")
         eligible = any(isinstance(owned[i], (Rhino.Geometry.Brep, Rhino.Geometry.Surface)) for i in order)
-        command = "MergeEdge" if "edge" in operation else "MergeAllEdges"
+        command = command_name or ("MergeEdge" if "edge" in operation else "MergeAllEdges")
         if operation.get("object_preselect", False):
             for i in order:
                 if not document.Objects.Select(ids[i]): raise ValueError("edge merge whole-object preselection failed")
@@ -230,7 +242,7 @@ def run(operation, tolerance, host):
                         raise ValueError("edge pick lies outside the owned viewport")
                     screen = view.ClientToScreen(System.Drawing.Point(int(pixel.X), int(pixel.Y)))
                     mouse_pick = "PICK %s %d %d" % (operation["id"], screen.X, screen.Y)
-                    script = mouse_command(operation)
+                    script = mouse_macro(operation, curve, host) if mouse_macro else mouse_command(operation)
                 else:
                     script = "_MergeEdge " + host["_command_point"](host["_xyz"](point)) + " _Enter"
         elif operation.get("preselect", False):
