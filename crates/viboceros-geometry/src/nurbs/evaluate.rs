@@ -4,6 +4,7 @@ use crate::{ParameterSide, UnitVector3};
 mod exact;
 mod jet;
 mod query;
+mod scaled_first;
 mod tangent;
 use jet::FloatJet;
 pub(super) use query::CurveQuery;

@@ -62,6 +62,28 @@ impl NurbsCurve {
 }
 
 impl NurbsCurveParameterSampler<'_> {
+    /// Point and first derivative with respect to the whole-domain fraction.
+    ///
+    /// The derivative is not native parameter speed: interval scaling is applied
+    /// to homogeneous derivative controls, with exact recovery for range loss.
+    /// A subnormal/huge knot domain need not overflow or underflow the result.
+    /// At discontinuities this returns the right-hand
+    /// limit (the natural end uses the left), not a derivative across the jump.
+    pub fn evaluate_with_derivative(
+        &self,
+        fraction: Real,
+    ) -> Result<(Point3, Vector3), GeometryError> {
+        let domain = self.curve.domain();
+        fractional_first(
+            &self.curve,
+            *domain.start(),
+            *domain.end(),
+            fraction,
+            None,
+            self.exact_domain,
+        )
+    }
+
     /// Evaluates a fraction in `[0, 1]` of the entire active domain, using the
     /// right side at interior knots. No native parameter is returned.
     pub fn evaluate(&self, fraction: Real) -> Result<Point3, GeometryError> {
@@ -103,6 +125,23 @@ impl NurbsCurveParameterSampler<'_> {
 }
 
 impl NurbsCurveSamplingSpan<'_> {
+    /// Point and first derivative with respect to this span's `[0, 1]` fraction.
+    /// Endpoint derivatives are one-sided on this span, including full-order
+    /// discontinuities. Scaling precedes rounding of native parameter speed.
+    pub fn evaluate_with_derivative(
+        self,
+        fraction: Real,
+    ) -> Result<(Point3, Vector3), GeometryError> {
+        fractional_first(
+            self.curve,
+            self.start,
+            self.end,
+            fraction,
+            Some(self.span),
+            self.exact_interval,
+        )
+    }
+
     /// Evaluates a fraction in `[0, 1]` of this span. The end uses its exact
     /// incoming limit, not a neighboring floating-point parameter. A rounded
     /// interior station also stays on this span's side of either boundary.
@@ -133,6 +172,32 @@ impl NurbsCurveSamplingSpan<'_> {
     }
 }
 
+fn fractional_first(
+    curve: &NurbsCurve,
+    start: Real,
+    end: Real,
+    fraction: Real,
+    span: Option<usize>,
+    exact_interval: bool,
+) -> Result<(Point3, Vector3), GeometryError> {
+    let parameter = sample_parameter(start, end, fraction)?;
+    let exact = || exact::first(curve, start, end, fraction, span);
+    let width = end - start;
+    if !width.is_normal()
+        || (fraction > 0.
+            && fraction < 1.
+            && (exact_interval || lost_station_range(start, end, fraction, parameter)))
+    {
+        return exact();
+    }
+    curve.scaled_first_jet(
+        span.unwrap_or_else(|| curve.find_span(parameter)),
+        parameter,
+        width,
+        exact,
+    )
+}
+
 fn exact_interval(start: Real, end: Real) -> bool {
     (end - start).is_subnormal() || start.next_up() == end
 }
@@ -156,6 +221,8 @@ fn sample_parameter(start: Real, end: Real, fraction: Real) -> Result<Real, Geom
     })
 }
 
+#[cfg(test)]
+mod derivative_tests;
 #[cfg(test)]
 mod reference_tests;
 #[cfg(test)]

@@ -82,6 +82,10 @@ discontinuous and mixed-sign rational curves, meshes, broad priority behavior an
 performance still require separate implementation and evidence. No global
 closest-point, full Rhino parity or cross-engine performance claim follows here.
 
-Verification checkpoint: all 298 Python tests pass, including 13 focused Near
-reference/probe tests; Rust formatting and whitespace checks pass. No native Rust
-code changed in this calibration checkpoint.
+The kernel now has [fractional first derivatives](curve-fractional-derivatives.md)
+for that query, including sided and extreme-domain NURBS sampling. This is a
+numerical prerequisite, not yet native Near capture.
+
+Initial calibration checkpoint (`cdb3c9a`): all 298 Python tests passed, including
+13 focused Near reference/probe tests, along with formatting and whitespace
+checks. No native Rust code changed at that checkpoint.

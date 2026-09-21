@@ -18,7 +18,7 @@ def rounded(value):
         return -math.inf if value < 0 else math.inf
 
 
-def reference(degree, knots, controls, parameter, side):
+def reference(degree, knots, controls, parameter, side, derivative_scale=F(1)):
     knots = list(map(F, knots))
     t = F(parameter)
     if t == knots[degree]:
@@ -56,7 +56,8 @@ def reference(degree, knots, controls, parameter, side):
     point = [h[i] / h[3] for i in range(3)]
     d = [(first[i] - point[i] * first[3]) / h[3] for i in range(3)]
     dd = [(second[i] - point[i] * second[3] - 2 * d[i] * first[3]) / h[3] for i in range(3)]
-    return [bits(rounded(x)) for values in [point, d, dd] for x in values]
+    return [bits(rounded(x * derivative_scale**order))
+            for order, values in enumerate([point, d, dd]) for x in values]
 
 
 def emit(degree, knots, controls, parameter, side):

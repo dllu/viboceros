@@ -8,6 +8,10 @@ changing the source's knots, controls, weights, or native domain. Its
 samplers with their own fractions in `[0,1]`. Fractions are parameter fractions,
 not arc-length fractions. Invalid fractions return errors.
 
+Both sampler forms also provide [fractional first derivatives](curve-fractional-derivatives.md)
+through `evaluate_with_derivative`, with interval scaling before native speed can
+overflow or underflow.
+
 ```rust
 let sampler = curve.parameter_sampler()?;
 let third = sampler.evaluate(1.0 / 3.0)?;
