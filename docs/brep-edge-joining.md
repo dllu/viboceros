@@ -107,6 +107,18 @@ The command uses these contacts to admit incremental picks while reconsidering
 the original accepted boundaries, without repeatedly sewing a temporary result.
 Contact does not itself imply a final topological join.
 
+Automatic assembly also [adjusts nearby spatial boundaries](join-gap-rebuilding.md),
+independently of this topological decision. Endpoint clusters use incident-edge
+weighted means; affected clamped curves preserve their chord profiles, weights,
+and knots. All incident edges participate, including existing mated edges.
+The explicit `try_join_edge_pairs` primitive remains geometry-preserving.
+Natural clamped surface rows/columns supply exact lifted-boundary certificates
+for updated uncertainty. Rational Bernstein subdivision can tighten single-span
+curved-gap bounds without sampled acceptance. Unsupported certificates retain
+conservative propagation, not suppressed tolerances. Clusters or curve changes
+beyond the join distance fail atomically; nonclamped incident curves retain the
+unadjusted policy for the entire assembly. The work budget covers this refinement.
+
 Connected extraction visits face/edge references and compacts each component's
 tables without rescanning the entire assembly per output. Newly joined closed
 shells with negative signed volume are reversed; zero-volume double sheets retain

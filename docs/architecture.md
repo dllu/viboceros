@@ -282,8 +282,13 @@ curve predicates separated from vertex unions, edge remapping, and face
 orientation. It composes with shared-edge subdivision and preserves all source
 surfaces and UV curves. Its `automatic` submodule separates broad-phase search,
 straight partial-overlap planning, mutual unique candidate selection, subdivision
-provenance, and connected extraction. Certified original-source contacts are
-separate from accepted mates. The `join/breps` adapter owns batch/seeded selection
+provenance, and connected extraction. The separate
+[spatial rebuilding policy](join-gap-rebuilding.md)
+uses exact weighted means and independent lifted-boundary uncertainty bounds.
+The small attributed OpenNURBS chord-adjustment adaptation lives in
+`third_party/opennurbs_rust`; rational Bernstein bounds live in `certificate/refine`.
+Certified original-source contacts are separate from accepted mates.
+The `join/breps` adapter owns batch/seeded selection
 policy and reconsiders original accepted boundaries; shared piece copying preserves
 all disconnected outputs even when several inherit one source's attributes/groups.
 See [curve joining and closure](curve-editing.md) for tested policies and limits.

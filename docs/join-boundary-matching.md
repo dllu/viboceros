@@ -59,7 +59,12 @@ negative/common extreme weight gauges, translated domains, overflowing coordinat
 differences, and subnormals. Higher-degree and genuinely rational lines retain
 their existing trimming paths; this does not claim universally exact NURBS editing.
 
-## Remaining differences
+## Discrepancy archive
+
+The later [gap-rebuilding audit](join-gap-rebuilding.md) resolves all six nearby
+three-way cases and fourteen older two-sheet gap cases below. Across these two
+original audits, 232 of 252 now fully match; the historical report is unchanged.
+The description below records the behavior at this audit's initial publication.
 
 The [18-case discrepancy fixture](../tools/rhino_oracle/fixtures/join_boundary_differences.json)
 and [raw observations](../tools/rhino_oracle/observations/join_boundary_differences.json)

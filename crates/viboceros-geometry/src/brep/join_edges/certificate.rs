@@ -2,6 +2,8 @@
 use super::*;
 use crate::binary_accumulator::{add_product, decompose};
 use std::cmp::Ordering;
+mod refine;
+pub(super) use refine::refined_curve_bound;
 
 // At most thirteen products, including repeated products: 66 limbs at 2^-2148
 // cover the entire finite binary64 range and all carries.

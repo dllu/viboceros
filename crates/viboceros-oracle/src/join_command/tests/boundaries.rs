@@ -47,7 +47,7 @@ pub(super) fn compare_zero_volume_face_senses(a: &Value, b: &Value, id: &str) {
 }
 
 #[test]
-fn remaining_zero_volume_orientation_and_unjoined_gap_rebuilding_are_explicit() {
+fn zero_volume_orientation_remains_explicit_and_unjoined_gap_rebuilding_matches() {
     let (actual, expected) = surfaces::replay(
         include_str!("../../../../../tools/rhino_oracle/fixtures/join_boundary_differences.json"),
         include_str!(
@@ -65,42 +65,7 @@ fn remaining_zero_volume_orientation_and_unjoined_gap_rebuilding_are_explicit() 
             compare_zero_volume_face_senses(&a.value, b, &a.id);
             continue;
         }
-        let gap: f64 =
-            a.id.strip_prefix("near-competition-")
-                .unwrap()
-                .split('-')
-                .next()
-                .unwrap()
-                .parse()
-                .unwrap();
-        assert_eq!(a.value["succeeded"], b["succeeded"]);
-        let (native, rhino) = (
-            a.value["objects"].as_array().unwrap(),
-            b["objects"].as_array().unwrap(),
-        );
-        assert_eq!(native.len(), rhino.len());
-        let mut outputs = 0;
-        for (n, r) in native.iter().zip(rhino) {
-            if !n["source"].is_null() {
-                compare(n, r, &a.id);
-                continue;
-            }
-            outputs += 1;
-            for field in ["source", "selected", "name", "layer", "color", "groups"] {
-                compare(&n[field], &r[field], &a.id);
-            }
-            for field in n["brep"].as_object().unwrap().keys() {
-                if !["vertices", "edges", "vertex_tolerances", "edge_tolerances"]
-                    .contains(&field.as_str())
-                {
-                    compare(&n["brep"][field], &r["brep"][field], &a.id);
-                }
-            }
-            assert_eq!(n["brep"]["surfaces"].as_array().unwrap().len(), 1);
-            compare(&r["brep"]["vertices"][0][2], &json!(gap / 3.), &a.id);
-            assert_ne!(n["brep"]["vertices"], r["brep"]["vertices"]);
-            assert_ne!(n["brep"]["edges"], r["brep"]["edges"]);
-        }
-        assert_eq!(outputs, 3);
+        assert!(a.id.starts_with("near-competition-"));
+        compare(&a.value, b, &a.id);
     }
 }

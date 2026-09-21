@@ -42,7 +42,7 @@ fn outputs(value: &Value) -> Vec<&Value> {
 }
 
 #[test]
-fn original_discrepancy_archive_tracks_resolved_partial_joins_and_remaining_policies() {
+fn original_discrepancy_archive_tracks_resolved_partial_and_gap_joins() {
     let (actual, expected) = replay(
         include_str!("../../../../../tools/rhino_oracle/fixtures/join_surface_differences.json"),
         include_str!(
@@ -83,7 +83,11 @@ fn original_discrepancy_archive_tracks_resolved_partial_joins_and_remaining_poli
                 compare(&json!(original_a), &json!(original_b), &a.id);
             }
         }
-        if a.id.starts_with("partial-edge-") {
+        if a.id.starts_with("partial-edge-")
+            || (a.id.starts_with("gap-")
+                && !a.id.starts_with("gap-0.0021-")
+                && !(a.id.starts_with("gap-0.002-") && a.id.ends_with("-pre")))
+        {
             compare(&a.value, b, &a.id);
         } else if a.id.starts_with("triple-boundary-") {
             assert_eq!((native.len(), rhino.len()), (2, 2));
@@ -98,14 +102,7 @@ fn original_discrepancy_archive_tracks_resolved_partial_joins_and_remaining_poli
             } else if a.id.starts_with("gap-0.002-") && a.id.ends_with("-pre") {
                 assert_eq!((native.len(), rhino.len()), (1, 2));
             } else {
-                assert_eq!((native.len(), rhino.len()), (1, 1));
-                let (n, r) = (&native[0]["brep"], &rhino[0]["brep"]);
-                for field in ["surfaces", "trim_curves"] {
-                    compare(&n[field], &r[field], &a.id);
-                }
-                assert_ne!(n["vertices"], r["vertices"]);
-                assert_ne!(n["edges"], r["edges"]);
-                assert_ne!(n["edge_tolerances"], r["edge_tolerances"]);
+                panic!("unclassified remaining discrepancy: {}", a.id);
             }
         }
     }

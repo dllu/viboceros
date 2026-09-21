@@ -2,6 +2,7 @@
 use super::*;
 mod components;
 mod overlap;
+mod rebuild;
 mod search;
 mod selection;
 mod subdivision;
@@ -51,9 +52,14 @@ pub struct BrepJoinReport {
 /// necessary cuts update every incident UV trim before assembly. Other curved
 /// partial overlaps and incompatible curved representations remain unmatched.
 ///
-/// Surfaces and UV geometry are never refitted. Spatial edges/vertices retain
-/// the assembly primitive's geometry-preserving policy, not Rhino's gap-edge
-/// rebuilding policy. Mutual unique candidates join first. Remaining ambiguous
+/// Surfaces and UV geometry are never refitted. Nearby boundary vertices are
+/// aligned to incident-edge-weighted means, even when no mate is accepted.
+/// Incident clamped edges use certified chord-based control adjustment;
+/// changed nonclamped edges retain the original assembly policy. Movement of
+/// a vertex cluster or adjusted edge beyond `join_distance` fails atomically.
+/// Natural surface boundaries can certify tighter component uncertainty;
+/// other boundaries propagate their validated uncertainty conservatively.
+/// Mutual unique candidates join first. Remaining ambiguous
 /// boundaries join only when they become mutually unique within a component
 /// established by other edges. Every certified candidate participates, even
 /// when another candidate has a smaller distance. Each piece is paired once.
@@ -149,10 +155,25 @@ pub fn join_breps_with_report(
         search::find(&combined, join_distance, &mut budget)?
     };
     let mut matches = Vec::new();
+    let mut vertex_contacts = Vec::new();
     let source_of_edge = edge_sources(&combined, &face_sources);
     for (a, b) in candidates {
         if source_of_edge[a] == source_of_edge[b] {
             continue;
+        }
+        budget.charge(4)?;
+        for &av in &combined.edges[a].vertices {
+            for &bv in &combined.edges[b].vertices {
+                if certificate::point_bound(
+                    combined.vertices[av].point,
+                    combined.vertices[bv].point,
+                    join_distance,
+                )
+                .is_some()
+                {
+                    vertex_contacts.push((av, bv));
+                }
+            }
         }
         let ac = &combined.edges[a].curve;
         let bc = &combined.edges[b].curve;
@@ -176,7 +197,24 @@ pub fn join_breps_with_report(
         .collect::<Vec<_>>();
     candidate_source_pairs.sort_unstable();
     candidate_source_pairs.dedup();
-    let joined = combined.try_join_edge_pairs(&pairs, join_distance, tolerance)?;
+    let edge_uncertainty = combined.edges.iter().map(|e| e.tolerance).collect();
+    if let Some(rebuilt) = rebuild::apply(
+        &combined,
+        &vertex_contacts,
+        join_distance,
+        tolerance,
+        &mut budget,
+    )? {
+        combined = rebuilt;
+    }
+    let mut joined = combined.try_join_edge_pairs(&pairs, join_distance, tolerance)?;
+    rebuild::tighten_joined_edges(
+        &mut joined,
+        &pairs,
+        edge_uncertainty,
+        tolerance,
+        &mut budget,
+    )?;
     Ok(BrepJoinReport {
         components: components::collect(joined, &combined, &pairs, &face_sources, tolerance)?,
         candidate_source_pairs,

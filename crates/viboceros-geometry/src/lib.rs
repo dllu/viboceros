@@ -40,6 +40,8 @@ mod morph;
 mod nurbs;
 mod nurbs2;
 mod nurbs_surface;
+#[path = "../../../third_party/opennurbs_rust/chord_adjust.rs"]
+mod opennurbs_chord_adjust;
 mod parameter;
 mod plane;
 mod point;

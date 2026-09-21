@@ -1,0 +1,511 @@
+{
+  "protocol_version": 1,
+  "passed": true,
+  "reference_engine": "rhino",
+  "reference_engine_version": "8.32.26160.13001",
+  "fixture": "tools/rhino_oracle/fixtures/join_gap_matching.json",
+  "fixture_sha256": "c5e09c8d21b6f01db00af419642efd1a1c5580a8be7ba6c2c0833461723368e0",
+  "observations": "tools/rhino_oracle/observations/join_gap_matching.json",
+  "observations_sha256": "d9a6f8a9e1fa89325cd3f2e6177fe9ceee07e828804c00af59a3f2b4887b765a",
+  "native_executable_sha256": "0a53cfbf087d0a2e1f09b07825be4394768bce07a960de34b961b8b76dd6bda7",
+  "absolute_epsilon": 1e-10,
+  "relative_epsilon": 1e-12,
+  "passing_operations": 88,
+  "maximum_absolute_error": 5.648814749292796e-13,
+  "measurement_boundary": "Named public EndCommand result and document snapshot on identical per-source 3DM artifacts, in an owned private Xvfb session.",
+  "note": "Fresh live comparison of all 88 matching cases. Archived observations are independent discovery records replayed without geometry, order, or parameter normalization. These untimed command probes do not establish kernel performance.",
+  "other_observations": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/join_gap_chains.json",
+      "fixture_sha256": "4c8bdcacdce513f63c4c43c9d85a48367bbe163404dccfe729609f10dadff17d",
+      "observations": "tools/rhino_oracle/observations/join_gap_chains.json",
+      "observations_sha256": "232e006522ac6ae8d00b227b63bdcfbd11a16a78170e4acfb09f9d7a5f4c2ccb",
+      "operations": 4,
+      "fully_matching": 2,
+      "transitive_cluster_rejections": 2
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/join_chord_adjustment.json",
+      "fixture_sha256": "3f9eb3219516f0362c620721c79764e6346c99f85309b93737d3fb33219ee45b",
+      "observations": "tools/rhino_oracle/observations/join_chord_adjustment.json",
+      "observations_sha256": "7c6cb1aa9095986c4c4195705c28eeefb37a2f273683319015a9d7dc1952e535",
+      "operations": 16,
+      "fully_matching": 8,
+      "area_differences": 8
+    }
+  ],
+  "combined_surface_audits": {
+    "recorded_cases": 360,
+    "fully_matching_cases": 330,
+    "zero_volume_face_sense_differences": 16,
+    "threshold_differences": 4,
+    "transitive_cluster_differences": 2,
+    "area_differences": 8
+  },
+  "verification": {
+    "rust_passed": 2809,
+    "rust_ignored": 20,
+    "python_passed": 222,
+    "clippy_warnings_denied": true,
+    "rustdoc_warnings_denied": true
+  },
+  "area_witness": {
+    "script": "tools/rhino_oracle/join_chord_witness.py",
+    "script_sha256": "3513ca37ada6ce4651c34e6c612d6c974c8ec60f8ea1edcfdff3a89bc402eeb8",
+    "precision_digits": 100,
+    "values": [
+      {
+        "id": "chord-3-0.5-Join-pre",
+        "source": 0,
+        "area": "12.28040145167907361665105130122077131389640028996756650786170354538752491381655801299182978274852716"
+      },
+      {
+        "id": "chord-4-1-Join-pre",
+        "source": 1,
+        "area": "20.00000122954106091838789687125619051596630454859415812035294782052049526963546117104904027579749657"
+      }
+    ]
+  },
+  "operations": [
+    {
+      "id": "normal-Join-post",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "normal-Join-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "normal-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "normal-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "side-Join-post",
+      "passed": true,
+      "max_absolute_error": 2.7755575615628914e-16
+    },
+    {
+      "id": "side-Join-pre",
+      "passed": true,
+      "max_absolute_error": 2.7755575615628914e-16
+    },
+    {
+      "id": "side-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 2.7755575615628914e-16
+    },
+    {
+      "id": "side-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 2.7755575615628914e-16
+    },
+    {
+      "id": "along-Join-post",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "along-Join-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "along-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "along-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "diagonal-Join-post",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "diagonal-Join-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "diagonal-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "diagonal-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "taper-Join-post",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "taper-Join-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "taper-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "taper-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "opposite-Join-post",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15
+    },
+    {
+      "id": "opposite-Join-pre",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15
+    },
+    {
+      "id": "opposite-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15
+    },
+    {
+      "id": "opposite-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15
+    },
+    {
+      "id": "curve-False-1-Join-post",
+      "passed": true,
+      "max_absolute_error": 5.648814749292796e-13
+    },
+    {
+      "id": "curve-False-1-Join-pre",
+      "passed": true,
+      "max_absolute_error": 5.648814749292796e-13
+    },
+    {
+      "id": "curve-False-1-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 5.648814749292796e-13
+    },
+    {
+      "id": "curve-False-1-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 5.648814749292796e-13
+    },
+    {
+      "id": "curve-interior-False-1-Join-post",
+      "passed": true,
+      "max_absolute_error": 5.648814749292796e-13
+    },
+    {
+      "id": "curve-interior-False-1-Join-pre",
+      "passed": true,
+      "max_absolute_error": 5.648814749292796e-13
+    },
+    {
+      "id": "curve-interior-False-1-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 5.648814749292796e-13
+    },
+    {
+      "id": "curve-interior-False-1-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 5.648814749292796e-13
+    },
+    {
+      "id": "curve-False-0.5-Join-post",
+      "passed": true,
+      "max_absolute_error": 2.0961010704922955e-13
+    },
+    {
+      "id": "curve-False-0.5-Join-pre",
+      "passed": true,
+      "max_absolute_error": 2.0961010704922955e-13
+    },
+    {
+      "id": "curve-False-0.5-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 2.0961010704922955e-13
+    },
+    {
+      "id": "curve-False-0.5-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 2.0961010704922955e-13
+    },
+    {
+      "id": "curve-interior-False-0.5-Join-post",
+      "passed": true,
+      "max_absolute_error": 1.9895196601282805e-13
+    },
+    {
+      "id": "curve-interior-False-0.5-Join-pre",
+      "passed": true,
+      "max_absolute_error": 1.9895196601282805e-13
+    },
+    {
+      "id": "curve-interior-False-0.5-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 1.9895196601282805e-13
+    },
+    {
+      "id": "curve-interior-False-0.5-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 1.9895196601282805e-13
+    },
+    {
+      "id": "curve-True-1-Join-post",
+      "passed": true,
+      "max_absolute_error": 5.648814749292796e-13
+    },
+    {
+      "id": "curve-True-1-Join-pre",
+      "passed": true,
+      "max_absolute_error": 5.648814749292796e-13
+    },
+    {
+      "id": "curve-True-1-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 5.648814749292796e-13
+    },
+    {
+      "id": "curve-True-1-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 5.648814749292796e-13
+    },
+    {
+      "id": "curve-interior-True-1-Join-post",
+      "passed": true,
+      "max_absolute_error": 5.648814749292796e-13
+    },
+    {
+      "id": "curve-interior-True-1-Join-pre",
+      "passed": true,
+      "max_absolute_error": 5.648814749292796e-13
+    },
+    {
+      "id": "curve-interior-True-1-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 5.648814749292796e-13
+    },
+    {
+      "id": "curve-interior-True-1-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 5.648814749292796e-13
+    },
+    {
+      "id": "curve-True-0.5-Join-post",
+      "passed": true,
+      "max_absolute_error": 1.7408297026122455e-13
+    },
+    {
+      "id": "curve-True-0.5-Join-pre",
+      "passed": true,
+      "max_absolute_error": 1.7408297026122455e-13
+    },
+    {
+      "id": "curve-True-0.5-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 1.7408297026122455e-13
+    },
+    {
+      "id": "curve-True-0.5-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 1.7408297026122455e-13
+    },
+    {
+      "id": "curve-interior-True-0.5-Join-post",
+      "passed": true,
+      "max_absolute_error": 1.8474111129762605e-13
+    },
+    {
+      "id": "curve-interior-True-0.5-Join-pre",
+      "passed": true,
+      "max_absolute_error": 1.8474111129762605e-13
+    },
+    {
+      "id": "curve-interior-True-0.5-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 1.8474111129762605e-13
+    },
+    {
+      "id": "curve-interior-True-0.5-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 1.8474111129762605e-13
+    },
+    {
+      "id": "cluster-012-Join-post",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-012-Join-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-012-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-012-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-021-Join-post",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16
+    },
+    {
+      "id": "cluster-021-Join-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-021-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16
+    },
+    {
+      "id": "cluster-021-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-102-Join-post",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-102-Join-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-102-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-102-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-120-Join-post",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-120-Join-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-120-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-120-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-201-Join-post",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16
+    },
+    {
+      "id": "cluster-201-Join-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-201-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16
+    },
+    {
+      "id": "cluster-201-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-210-Join-post",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-210-Join-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-210-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "cluster-210-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16
+    },
+    {
+      "id": "corner-only-Join-post",
+      "passed": true,
+      "max_absolute_error": 7.105427357601002e-15
+    },
+    {
+      "id": "corner-only-Join-pre",
+      "passed": true,
+      "max_absolute_error": 7.105427357601002e-15
+    },
+    {
+      "id": "corner-only-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 7.105427357601002e-15
+    },
+    {
+      "id": "corner-only-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 7.105427357601002e-15
+    },
+    {
+      "id": "prejoined-Join-post",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16
+    },
+    {
+      "id": "prejoined-Join-pre",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16
+    },
+    {
+      "id": "prejoined-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16
+    },
+    {
+      "id": "prejoined-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16
+    }
+  ]
+}
