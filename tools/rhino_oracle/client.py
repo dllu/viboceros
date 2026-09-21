@@ -241,8 +241,9 @@ class OracleClient:
                 helper = Path(__file__).with_name("merge_edges_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "split_edge_command" for op in request.get("operations", [])):
-                helper = Path(__file__).with_name("split_edge_probe.py")
-                shutil.copyfile(helper, job_path / helper.name)
+                for name in ("split_edge_probe.py", "viewport_capture.py"):
+                    helper = Path(__file__).with_name(name)
+                    shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "brep_merge_edge" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("merge_edge_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)

@@ -1,5 +1,6 @@
 //! Visible-feature snap enumeration, projection metrics, and priority ordering.
 mod cache;
+mod centers;
 mod features;
 pub use cache::ObjectSnapCache;
 
@@ -14,6 +15,29 @@ pub enum ObjectSnapKind {
     Mid,
     Center,
     Quad,
+}
+
+/// Enabled feature kinds, independent of the UI's persistent/one-shot lifetime.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct ObjectSnapModes(u8);
+
+impl ObjectSnapModes {
+    pub const NONE: Self = Self(0);
+    pub const ALL: Self = Self(0b1_1111);
+
+    pub const fn only(kind: ObjectSnapKind) -> Self {
+        Self(1 << kind.priority())
+    }
+    pub const fn contains(self, kind: ObjectSnapKind) -> bool {
+        self.0 & Self::only(kind).0 != 0
+    }
+    pub const fn with(self, kind: ObjectSnapKind, enabled: bool) -> Self {
+        if enabled {
+            Self(self.0 | Self::only(kind).0)
+        } else {
+            Self(self.0 & !Self::only(kind).0)
+        }
+    }
 }
 
 impl ObjectSnapKind {
@@ -59,7 +83,8 @@ impl ObjectSnap {
         self.object_id
     }
 
-    /// Distance from the cursor in the projection used for the snap query.
+    /// Capture distance in the query's projection: to the point feature, or
+    /// to the source curve for hover-derived Center snaps.
     pub const fn distance(self) -> Real {
         self.distance
     }
@@ -114,8 +139,10 @@ pub fn nearest_object_snap_axis_aligned(
 }
 
 /// Finds the closest visible feature after mapping candidates into an
-/// arbitrary two-dimensional viewport projection. The capture radius and the
+/// affine or projective viewport projection. The capture radius and the
 /// returned distance use the same units as `cursor` and `project`.
+/// `project` must reject points behind its camera/clipping plane. Center broad
+/// phase bounds rely on the projection preserving convexity in the visible half-space.
 pub fn nearest_object_snap_projected(
     document: &Document,
     cursor: [Real; 2],
@@ -127,7 +154,12 @@ pub fn nearest_object_snap_projected(
 
 trait SnapMetric {
     fn capture_radius(&self) -> Real;
-    fn distance(&self, point: Point3) -> Option<Real>;
+    fn offset(&self, point: Point3) -> Option<[Real; 2]>;
+    fn distance(&self, point: Point3) -> Option<Real> {
+        let [x, y] = self.offset(point)?;
+        let d = x.hypot(y);
+        d.is_finite().then_some(d)
+    }
     fn nearest_point_cloud(&self, cloud: &PointCloud3) -> Result<Option<Point3>, GeometryError>;
 }
 
@@ -143,7 +175,7 @@ impl SnapMetric for AxisAlignedSnapMetric {
         self.capture_radius
     }
 
-    fn distance(&self, point: Point3) -> Option<Real> {
+    fn offset(&self, point: Point3) -> Option<[Real; 2]> {
         let project = |p: Point3| match self.projection {
             PointCloudProjection::Xy => [p.x(), p.y()],
             PointCloudProjection::Xz => [p.x(), p.z()],
@@ -151,9 +183,11 @@ impl SnapMetric for AxisAlignedSnapMetric {
         };
         let p = project(point);
         let origin = project(self.origin);
-        let distance = ((p[0] - origin[0]) - self.cursor_offset[0])
-            .hypot((p[1] - origin[1]) - self.cursor_offset[1]);
-        distance.is_finite().then_some(distance)
+        let delta = [
+            (p[0] - origin[0]) - self.cursor_offset[0],
+            (p[1] - origin[1]) - self.cursor_offset[1],
+        ];
+        delta.iter().all(|v| v.is_finite()).then_some(delta)
     }
 
     fn nearest_point_cloud(&self, cloud: &PointCloud3) -> Result<Option<Point3>, GeometryError> {
@@ -182,10 +216,10 @@ where
         self.capture_radius
     }
 
-    fn distance(&self, point: Point3) -> Option<Real> {
+    fn offset(&self, point: Point3) -> Option<[Real; 2]> {
         let projected = (self.project)(point)?;
-        let distance = (projected[0] - self.cursor[0]).hypot(projected[1] - self.cursor[1]);
-        distance.is_finite().then_some(distance)
+        let delta = [projected[0] - self.cursor[0], projected[1] - self.cursor[1]];
+        delta.iter().all(|v| v.is_finite()).then_some(delta)
     }
 
     fn nearest_point_cloud(&self, cloud: &PointCloud3) -> Result<Option<Point3>, GeometryError> {
@@ -204,6 +238,7 @@ fn nearest_object_snap_with_metric(
     document: &Document,
     metric: &impl SnapMetric,
     cache: &mut ObjectSnapCache,
+    modes: ObjectSnapModes,
 ) -> Result<Option<ObjectSnap>, DraftingError> {
     cache.retain_objects(document);
     let mut best = None;
@@ -215,9 +250,13 @@ fn nearest_object_snap_with_metric(
         if !attributes.is_visible() || !layer.is_visible() {
             continue;
         }
+        let mut object_best = None;
         let mut emit = |kind, point| {
+            if !modes.contains(kind) {
+                return;
+            }
             consider_candidate(
-                &mut best,
+                &mut object_best,
                 metric,
                 metric.capture_radius(),
                 object.id(),
@@ -228,7 +267,9 @@ fn nearest_object_snap_with_metric(
         match object.geometry() {
             Geometry::Point(point) => emit(ObjectSnapKind::Point, *point),
             Geometry::PointCloud(cloud) => {
-                if let Some(point) = metric.nearest_point_cloud(cloud)? {
+                if modes.contains(ObjectSnapKind::Point)
+                    && let Some(point) = metric.nearest_point_cloud(cloud)?
+                {
                     emit(ObjectSnapKind::Point, point);
                 }
             }
@@ -246,19 +287,25 @@ fn nearest_object_snap_with_metric(
                 features::curve(curve, &mut emit);
                 // Analytic leaf features are cheap. Cache only the expensive
                 // NURBS integrations, together under the owning object's ID.
-                let midpoints = match curve {
-                    viboceros_geometry::CurveRef::NurbsCurve(curve) => {
-                        cache.midpoints(object.id(), std::iter::once(curve), document.tolerance())
+                let midpoints = if !modes.contains(ObjectSnapKind::Mid) {
+                    &[][..]
+                } else {
+                    match curve {
+                        viboceros_geometry::CurveRef::NurbsCurve(curve) => cache.midpoints(
+                            object.id(),
+                            std::iter::once(curve),
+                            document.tolerance(),
+                        ),
+                        viboceros_geometry::CurveRef::PolyCurve(curve) => cache.midpoints(
+                            object.id(),
+                            curve.segments().iter().filter_map(|segment| match segment {
+                                viboceros_geometry::CurveSegment3::NurbsCurve(curve) => Some(curve),
+                                _ => None,
+                            }),
+                            document.tolerance(),
+                        ),
+                        _ => &[],
                     }
-                    viboceros_geometry::CurveRef::PolyCurve(curve) => cache.midpoints(
-                        object.id(),
-                        curve.segments().iter().filter_map(|segment| match segment {
-                            viboceros_geometry::CurveSegment3::NurbsCurve(curve) => Some(curve),
-                            _ => None,
-                        }),
-                        document.tolerance(),
-                    ),
-                    _ => &[],
                 };
                 for &point in midpoints {
                     emit(ObjectSnapKind::Mid, point);
@@ -278,25 +325,56 @@ fn nearest_object_snap_with_metric(
                     }
                 }
                 // Mid belongs to each natural boundary, never to the UV center.
-                for &point in cache.surface_midpoints(object.id(), surface, document.tolerance()) {
-                    emit(ObjectSnapKind::Mid, point);
+                if modes.contains(ObjectSnapKind::Mid) {
+                    for &point in
+                        cache.surface_midpoints(object.id(), surface, document.tolerance())
+                    {
+                        emit(ObjectSnapKind::Mid, point);
+                    }
                 }
             }
             Geometry::Brep(brep) => {
                 for vertex in brep.vertices() {
                     emit(ObjectSnapKind::End, vertex.point());
                 }
-                for &point in cache.midpoints(
-                    object.id(),
-                    brep.edges().iter().map(|edge| edge.curve()),
-                    document.tolerance(),
-                ) {
-                    emit(ObjectSnapKind::Mid, point);
+                if modes.contains(ObjectSnapKind::Mid) {
+                    for &point in cache.midpoints(
+                        object.id(),
+                        brep.edges().iter().map(|edge| edge.curve()),
+                        document.tolerance(),
+                    ) {
+                        emit(ObjectSnapKind::Mid, point);
+                    }
                 }
             }
             // Mesh features need a spatial index rather than an O(vertices)
             // walk per pointer frame.
             Geometry::Mesh(_) => {}
+        }
+        // Direct features suppress Center on the same object, not on every
+        // object in the document. Across objects, compare capture distance.
+        if object_best.is_none()
+            && modes.contains(ObjectSnapKind::Center)
+            && let Some(curve) = object.geometry().curve_ref()
+        {
+            centers::visit(curve, metric, &mut |point, distance| {
+                consider_scored_candidate(
+                    &mut object_best,
+                    object.id(),
+                    ObjectSnapKind::Center,
+                    point,
+                    distance,
+                );
+            });
+        }
+        if let Some(candidate) = object_best {
+            consider_scored_candidate(
+                &mut best,
+                candidate.object_id,
+                candidate.kind,
+                candidate.point,
+                candidate.distance,
+            );
         }
     }
     Ok(best)
@@ -316,6 +394,16 @@ fn consider_candidate(
     if distance > capture_radius {
         return;
     }
+    consider_scored_candidate(best, object_id, kind, point, distance);
+}
+
+fn consider_scored_candidate(
+    best: &mut Option<ObjectSnap>,
+    object_id: ObjectId,
+    kind: ObjectSnapKind,
+    point: Point3,
+    distance: Real,
+) {
     let candidate = ObjectSnap {
         point,
         kind,

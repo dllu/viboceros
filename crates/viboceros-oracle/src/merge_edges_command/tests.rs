@@ -1,5 +1,6 @@
 use super::*;
 
+mod center_hover;
 mod face_history;
 mod face_splits;
 mod selected;

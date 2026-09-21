@@ -41,6 +41,26 @@ impl ObjectSnapCache {
         cursor_offset: [Real; 2],
         capture_radius: Real,
     ) -> Result<Option<ObjectSnap>, DraftingError> {
+        self.nearest_axis_aligned_with_modes(
+            document,
+            projection,
+            origin,
+            cursor_offset,
+            capture_radius,
+            ObjectSnapModes::ALL,
+        )
+    }
+
+    /// Axis-aligned query with an explicit enabled-feature set.
+    pub fn nearest_axis_aligned_with_modes(
+        &mut self,
+        document: &Document,
+        projection: PointCloudProjection,
+        origin: Point3,
+        cursor_offset: [Real; 2],
+        capture_radius: Real,
+        modes: ObjectSnapModes,
+    ) -> Result<Option<ObjectSnap>, DraftingError> {
         validate_capture_radius(capture_radius)?;
         validate_cursor_coordinates(cursor_offset)?;
         nearest_object_snap_with_metric(
@@ -52,16 +72,39 @@ impl ObjectSnapCache {
                 capture_radius,
             },
             self,
+            modes,
         )
     }
 
-    /// Arbitrary projection with reusable model-space arc-length feature data.
+    /// Affine/projective viewport query with reusable model-space feature data.
+    /// Uses the projection contract of `nearest_object_snap_projected`.
     pub fn nearest_projected(
         &mut self,
         document: &Document,
         cursor: [Real; 2],
         capture_radius: Real,
         project: impl Fn(Point3) -> Option<[Real; 2]>,
+    ) -> Result<Option<ObjectSnap>, DraftingError> {
+        self.nearest_projected_with_modes(
+            document,
+            cursor,
+            capture_radius,
+            project,
+            ObjectSnapModes::ALL,
+        )
+    }
+
+    /// Projected query with an explicit enabled-feature set. Center capture uses
+    /// a bounded numerical curve-proximity query, not center-point proximity.
+    /// Uses the affine/projective and clipping contract of
+    /// [`nearest_object_snap_projected`].
+    pub fn nearest_projected_with_modes(
+        &mut self,
+        document: &Document,
+        cursor: [Real; 2],
+        capture_radius: Real,
+        project: impl Fn(Point3) -> Option<[Real; 2]>,
+        modes: ObjectSnapModes,
     ) -> Result<Option<ObjectSnap>, DraftingError> {
         validate_capture_radius(capture_radius)?;
         validate_cursor_coordinates(cursor)?;
@@ -73,6 +116,7 @@ impl ObjectSnapCache {
                 project,
             },
             self,
+            modes,
         )
     }
 

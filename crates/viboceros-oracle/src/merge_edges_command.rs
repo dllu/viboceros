@@ -60,6 +60,10 @@ pub struct SplitEdgeFixture {
     finish: Option<String>,
     #[serde(default)]
     object_preselect: bool,
+    #[serde(default)]
+    record_viewport: bool,
+    #[serde(default)]
+    persistent_snaps: Vec<SplitEdgeSnap>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -75,6 +79,8 @@ enum SplitEdgeInput {
 #[serde(deny_unknown_fields)]
 struct SplitEdgePick {
     point: [f64; 3],
+    #[serde(default, deserialize_with = "present_split_input")]
+    aim: Option<[f64; 3]>,
     osnap: SplitEdgeSnap,
     #[serde(default)]
     offset: [i32; 2],
@@ -88,6 +94,7 @@ enum SplitEdgeSnap {
     Mid,
     Cen,
     Quad,
+    Persistent,
 }
 
 // Missing alternatives are optional; an explicitly present null is not a list.
@@ -106,6 +113,17 @@ pub(super) fn run_split(
     if f.base.preselect
         || f.base.cancel
         || f.parameters.is_some() == f.inputs.is_some()
+        || (f.record_viewport
+            && f.inputs.as_ref().is_none_or(|steps| {
+                !steps
+                    .iter()
+                    .any(|step| matches!(step, SplitEdgeInput::Pick(_) | SplitEdgeInput::Mouse(_)))
+            }))
+        || f.persistent_snaps.len() > 5
+        || f.persistent_snaps.iter().enumerate().any(|(i, mode)| {
+            matches!(mode, SplitEdgeSnap::NoSnap | SplitEdgeSnap::Persistent)
+                || f.persistent_snaps[..i].contains(mode)
+        })
         || f.parameters
             .as_ref()
             .is_some_and(|v| v.len() > 64 || v.iter().any(|t| !t.is_finite()))
@@ -117,6 +135,9 @@ pub(super) fn run_split(
                     | SplitEdgeInput::Distance(t) => !t.is_finite(),
                     SplitEdgeInput::Pick(p) => {
                         p.point.iter().any(|v| !v.is_finite())
+                            || p.aim.is_some_and(|aim| aim.iter().any(|v| !v.is_finite()))
+                            || (p.osnap == SplitEdgeSnap::Persistent
+                                && f.persistent_snaps.is_empty())
                             || p.offset.iter().any(|v| !(-32..=32).contains(v))
                     }
                 })

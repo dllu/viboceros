@@ -3,7 +3,7 @@
 mod object_snap;
 pub mod plane;
 pub use object_snap::{
-    ObjectSnap, ObjectSnapCache, ObjectSnapKind, nearest_object_snap,
+    ObjectSnap, ObjectSnapCache, ObjectSnapKind, ObjectSnapModes, nearest_object_snap,
     nearest_object_snap_axis_aligned, nearest_object_snap_projected, nearest_object_snap_relative,
 };
 mod point_input;

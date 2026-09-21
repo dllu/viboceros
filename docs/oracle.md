@@ -118,8 +118,14 @@ geometry/history; two uncalibrated screen-only controls are explicitly unsupport
 Nonuniform curve and edge witnesses distinguish arc-length Mid from parameter Mid.
 The [composite/surface snap audit](composite-feature-snaps.md) adds eleven matching
 End/Mid captures, one retained uncaptured-center discrepancy and five Center
-hover diagnostics. The latter explicitly expose missing native capture behavior;
+hover diagnostics. Those historical uncalibrated discrepancies remain explicit;
 they are not relabeled as passing model-target or pixel replays.
+The subsequent [22 calibrated Center-hover observations](center-hover-snaps.md)
+record the camera at the actual point prompt. Fourteen independently computed
+native captures drive complete geometry/history replay; eight empty-center misses
+compare admission only. Strict optional `record_viewport`, `persistent_snaps` and
+separate `pick.aim` fields keep camera input and declared model targets distinct.
+Two rejected point-target hypotheses remain unchanged in the requests.
 
 The shared `serde_json` dependency explicitly enables round-trip float parsing.
 Standalone oracle/document builds must not depend on app or test dependencies

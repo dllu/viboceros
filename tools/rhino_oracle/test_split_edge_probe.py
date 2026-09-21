@@ -96,7 +96,7 @@ class SplitEdgeProbeTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             split_edge_probe.mouse_command(dict(base, inputs=[dict(mouse=2)]), curve, host)
 
-    def exercise_mouse_driver(self, failure=None, feature_picks=False):
+    def exercise_mouse_driver(self, failure=None, feature_picks=False, calibrated=False):
         class Event:
             def __init__(self): self.handlers = []
             def __iadd__(self, handler): self.handlers.append(handler); return self
@@ -119,8 +119,14 @@ class SplitEdgeProbeTests(unittest.TestCase):
         system = SimpleNamespace(Drawing=SimpleNamespace(Point=pixel))
         operation = dict(id="owned", inputs=[dict(point=0), dict(distance=2), dict(mouse=8), dict(mouse=6)])
         if feature_picks:
-            operation["inputs"] = [dict(pick=dict(point=[8,0,0], osnap="Point", offset=[5,-2])),
+            operation["inputs"] = [dict(pick=dict(point=[88,0,0], aim=[8,0,0], osnap="Point", offset=[5,-2])),
                                    dict(pick=dict(point=[6,0,0], osnap="End", offset=[-4,3]))]
+        operation["record_viewport"] = calibrated
+        frames, captures = [], []
+        def capture(viewport, point, pixel, host):
+            captures.append(point)
+            if failure == "camera": raise ValueError("invalid calibration")
+            return dict(aim=[point,0,0],click_client=pixel)
         output = mock_open()
         if failure == "write": output.side_effect = OSError("cannot request input")
         def run(script, echo):
@@ -131,10 +137,11 @@ class SplitEdgeProbeTests(unittest.TestCase):
             app.CommandHistoryWindowText += "_SplitEdge _Pause\n"
             timer.Tick.fire()
             self.assertEqual(output.call_count, 0)  # Only the component-selection Pause.
+            if calibrated: viewport.WorldToClient = lambda t: pixel(120+t,220)
             if failure == "history": app.CommandHistoryWindowText = "replaced history _Pause _Pause"
             else: app.CommandHistoryWindowText += "point prompt _Pause\n"
             timer.Tick.fire()
-            if failure in ("write", "history"):
+            if failure in ("write", "history", "camera"):
                 self.assertFalse(timer.active)
                 return True
             self.assertEqual(output.call_count, 1)
@@ -151,24 +158,33 @@ class SplitEdgeProbeTests(unittest.TestCase):
                     _point=lambda coordinates: coordinates[0])
         modules = {"clr": SimpleNamespace(AddReference=lambda name: None),
                    "System.Windows.Forms": SimpleNamespace(Timer=lambda: timer)}
-        with patch.dict(sys.modules, modules), patch("builtins.open", output):
+        with patch.dict(sys.modules, modules), patch("builtins.open", output), patch("tools.rhino_oracle.viewport_capture.capture", side_effect=capture):
             if failure:
                 with self.assertRaises(ValueError):
-                    split_edge_probe.drive(operation, "bounded macro", SimpleNamespace(PointAt=lambda t: t), host)
+                    split_edge_probe.drive(operation, "bounded macro", SimpleNamespace(PointAt=lambda t: t), host, frames)
             else:
-                self.assertTrue(split_edge_probe.drive(operation, "bounded macro", SimpleNamespace(PointAt=lambda t: t), host))
+                self.assertTrue(split_edge_probe.drive(operation, "bounded macro", SimpleNamespace(PointAt=lambda t: t), host, frames))
                 self.assertEqual([call.args[0] for call in output().write.call_args_list],
+                                 ["PICK @split:owned:0 138 225\n", "PICK @split:owned:1 127 230\n"] if calibrated else
                                  ["PICK @split:owned:0 118 205\n", "PICK @split:owned:1 107 210\n"] if feature_picks else
                                  ["PICK @split:owned:0 113 207\n", "PICK @split:owned:1 111 207\n"])
         self.assertFalse(timer.active)
         self.assertTrue(timer.disposed)
         self.assertEqual(timer.Tick.handlers, [])
+        self.assertEqual(len(frames), 2 if calibrated and not failure else 0)
+        if calibrated and not failure:
+            self.assertEqual(captures, [8,6])
+            self.assertEqual([f["click_client"] for f in frames],[[133,218],[122,223]])
 
     def test_mouse_driver_waits_for_each_prompt_and_never_repeats_clicks(self):
         self.exercise_mouse_driver()
 
     def test_mouse_driver_applies_bounded_offsets_to_real_feature_picks(self):
         self.exercise_mouse_driver(feature_picks=True)
+
+    def test_calibrated_clicks_use_prompt_time_camera_and_fail_closed_on_invalid_calibration(self):
+        self.exercise_mouse_driver(feature_picks=True,calibrated=True)
+        self.exercise_mouse_driver(failure="camera",feature_picks=True,calibrated=True)
 
     def test_mouse_driver_disposes_timer_on_command_io_and_history_failures(self):
         for failure in ("script", "incomplete", "write", "history"):

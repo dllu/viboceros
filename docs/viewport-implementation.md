@@ -29,7 +29,10 @@ regression tests live in a separate `tests.rs` module.
 The shared [leaf-feature/cache modules](composite-feature-snaps.md) keep polycurve
 segment enumeration and expensive arc-length/surface-boundary queries independent
 of camera projection. The viewport retains the cache across ordinary and
-edge-constrained point prompts.
+edge-constrained point prompts. The separate [Center-hover query](center-hover-snaps.md)
+scores proximity to analytic curves and returns their off-cursor center. Direct
+features suppress Center only on the same object; cross-object ranking uses
+capture distance. Conservative projected bounds avoid refining distant conics.
 Basic XY tracking treats an overflowing distance as out of range only on that
 axis, preserving valid perpendicular capture. Projected tracking accepts an
 in-range anchor before computing plane-local axis candidates; an unusable cursor

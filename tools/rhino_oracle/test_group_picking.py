@@ -12,6 +12,21 @@ from .group_picking import IdlePicker, validate_request
 
 
 class GroupPickingTests(unittest.TestCase):
+    def test_fatal_point_input_cancels_only_the_owned_window_once_and_suppresses_clicks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            job = Path(directory)
+            (job / "worker-progress.log").write_text("PICK pending 10 20\nPICK_ABORT probe-1\n",encoding="utf-8")
+            picker = IdlePicker()
+            with patch("tools.rhino_oracle.group_picking._rhino_window_for_pids",return_value=None) as window, patch("tools.rhino_oracle.group_picking.subprocess.run") as run:
+                picker(job,set()); window.assert_not_called(); run.assert_not_called()
+                picker(job,{42}); window.assert_called_once_with({42}); run.assert_not_called()
+            with patch("tools.rhino_oracle.group_picking._rhino_window_for_pids",return_value="owned") as window, patch("tools.rhino_oracle.group_picking.subprocess.run") as run:
+                picker(job,{42}); picker(job,{42})
+                window.assert_called_once_with({42})
+                run.assert_called_once_with(["xdotool","windowactivate","--sync","owned","key","--clearmodifiers","Escape"],check=True,timeout=10)
+                self.assertFalse((job / "click-ack.json").exists())
+                self.assertEqual(picker.aborted,{"probe-1"})
+
     def test_mesh_explode_observations_differ_from_split_in_retained_source_selection(self):
         root = Path(__file__).parent
         request = json.loads((root / "fixtures/mesh_explode_picking.json").read_text())

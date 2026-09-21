@@ -337,6 +337,8 @@ pub(super) fn clip_drafting_line(
 }
 
 #[cfg(test)]
+mod center_tests;
+#[cfg(test)]
 mod grid_tests {
     use super::*;
 

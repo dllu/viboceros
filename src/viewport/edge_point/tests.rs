@@ -358,7 +358,12 @@ fn feature_kinds_share_capture_and_hidden_objects_cannot_supply_stale_snap_point
         let id = document.add_geometry(source).unwrap();
         let mut view = Viewport::new(ViewKind::Top);
         view.target = NaVector3::new(5., 0., 7.);
-        let pointer = view.project(point, rect()).unwrap() + Vec2::new(5., 0.);
+        let aim = if kind == ObjectSnapKind::Center {
+            circle.point_at_angle(0.7).unwrap()
+        } else {
+            point
+        };
+        let pointer = view.project(aim, rect()).unwrap() + Vec2::new(5., 0.);
         let cursor = view
             .edge_point_cursor(&curve, None, pointer, rect(), &document, true)
             .unwrap();

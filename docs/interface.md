@@ -69,8 +69,11 @@ Edit to review current values. Deleting a layer closes its editor.
 Osnap captures visible Point, End, Mid, Center, and Quad features, including
 indexed members of point clouds and features on locked objects and layers.
 Mid uses half arc length on NURBS, individual polycurve segments and surface
-boundaries, not the surface's UV center. Feature/type coverage is incomplete;
-see [snap behavior and known Center-capture gaps](composite-feature-snaps.md).
+boundaries, not the surface's UV center. Center captures by hovering near an
+analytic circle, arc or ellipse (including polycurve arc leaves), not merely
+near its empty center. Direct features on the same object take precedence.
+Feature/type coverage and per-mode UI controls remain incomplete; see
+[Mid/End behavior](composite-feature-snaps.md) and [Center capture](center-hover-snaps.md).
 SmartTrack captures local plane-axis alignment from the first picked
 point in every viewport. Grid Snap rounds construction-plane picks to the unit grid. Right-drag
 pans parallel views and rotates the Perspective view; Shift-right-drag pans the

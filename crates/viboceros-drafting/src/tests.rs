@@ -474,7 +474,12 @@ fn circle_and_arc_features_are_available_to_osnap() {
         ))
         .unwrap();
 
-    let center = nearest_object_snap(&document, point(0.02, -0.01, 0.0), 0.1)
+    assert!(
+        nearest_object_snap(&document, point(0.02, -0.01, 0.0), 0.1)
+            .unwrap()
+            .is_none()
+    );
+    let center = nearest_object_snap(&document, point(1.2, 1.6, 0.0), 0.1)
         .unwrap()
         .unwrap();
     assert_eq!(center.object_id(), circle_id);
@@ -511,7 +516,12 @@ fn ellipse_center_and_quadrants_are_available_to_osnap() {
     .unwrap();
     let id = document.add_geometry(Geometry::Ellipse(ellipse)).unwrap();
 
-    let center = nearest_object_snap(&document, point(2.02, 3.01, 0.0), 0.1)
+    assert!(
+        nearest_object_snap(&document, point(2.02, 3.01, 0.0), 0.1)
+            .unwrap()
+            .is_none()
+    );
+    let center = nearest_object_snap(&document, ellipse.point_at_angle(0.7).unwrap(), 0.1)
         .unwrap()
         .unwrap();
     assert_eq!(center.object_id(), id);

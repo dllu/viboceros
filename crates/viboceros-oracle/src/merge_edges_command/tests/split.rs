@@ -97,6 +97,10 @@ fn distance_fixture_rejects_ambiguous_and_oversized_input_grammars() {
         json!({"parameters":[],"inputs":[]}),
         json!({"inputs":vec![json!({"distance":1});65]}),
         json!({"inputs":[{"pick":{"point":[2,0,0],"osnap":"Point","offset":[33,0]}}]}),
+        json!({"record_viewport":true,"inputs":[{"point":1}]}),
+        json!({"persistent_snaps":["Cen","Cen"],"inputs":[{"point":1}]}),
+        json!({"persistent_snaps":["NoSnap"],"inputs":[{"point":1}]}),
+        json!({"inputs":[{"pick":{"point":[2,0,0],"osnap":"Persistent"}}]}),
     ] {
         let mut fixture = json!({"sources":[{"brep":{"source":{"type":"box","min":[0,0,0],"max":[10,12,14]}}}],"edge":0,"pick":"mouse"});
         fixture
@@ -120,6 +124,8 @@ fn distance_fixture_rejects_ambiguous_and_oversized_input_grammars() {
         json!({"pick":{"point":[true,0,0],"osnap":"Point"}}),
         json!({"pick":{"point":[2,0,0],"osnap":"Point","offset":[0.5,0]}}),
         json!({"pick":{"point":[2,0,0],"osnap":"Point","unexpected":true}}),
+        json!({"pick":{"point":[2,0,0],"aim":null,"osnap":"Cen"}}),
+        json!({"pick":{"point":[2,0,0],"aim":[true,0,0],"osnap":"Cen"}}),
     ] {
         let fixture = json!({"sources":[],"edge":0,"pick":"mouse","inputs":[step]});
         assert!(serde_json::from_value::<SplitEdgeFixture>(fixture).is_err());

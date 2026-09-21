@@ -77,9 +77,25 @@ class IdlePicker:
     def __init__(self):
         self.seen = set()
         self.ready = {}
+        self.aborted = set()
 
     def __call__(self, job, owned_pids):
-        for name, x, y in re.findall(r"^PICK (\S+) (\d+) (\d+)$", _read_optional_text(job / "worker-progress.log"), re.MULTILINE):
+        progress = _read_optional_text(job / "worker-progress.log")
+        aborts = re.findall(r"^PICK_ABORT ([A-Za-z0-9_.-]{1,100})$", progress, re.MULTILINE)
+        if aborts:
+            for name in aborts:
+                if name in self.aborted or not owned_pids: continue
+                window = _rhino_window_for_pids(owned_pids)
+                if window is None: continue
+                try:
+                    subprocess.run(["xdotool","windowactivate","--sync",window,
+                                    "key","--clearmodifiers","Escape"],check=True,timeout=10)
+                except subprocess.SubprocessError as error:
+                    raise OracleError("cannot cancel failed point input in owned window %s: %s" % (window,error)) from error
+                self.aborted.add(name)
+            # Never deliver remaining point requests after a fatal input error.
+            return
+        for name, x, y in re.findall(r"^PICK (\S+) (\d+) (\d+)$", progress, re.MULTILINE):
             if name in self.seen:
                 continue
             # Let the viewport redraw and return to Rhino's normal event loop.

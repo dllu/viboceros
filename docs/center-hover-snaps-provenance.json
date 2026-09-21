@@ -1,0 +1,28 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "calibrated_observations": 22,
+  "capture_derived_geometry_history_replays": 14,
+  "empty_center_admission_only_checks": 8,
+  "retained_rejected_point_target_hypotheses": 2,
+  "raw_response_sha256": {
+    "final-response.json": "1179fb753bdb6a4a380e55b57c4a6fa31faccf74e88efce9e2511f89f9e55886"
+  },
+  "source_artifact_sha256": {
+    "box.3dm": "9ad7f078dc15cbe542751246f45371a3e97c514d13482aee66448a8129620a65"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/center_hover_snaps.json": "9b8bbd64929ffbadfa6ecfd2d3ac7ba8c230a2e4daca4419f4cfc069def5ff2e",
+    "tools/rhino_oracle/observations/center_hover_snaps.json": "2bbe2ad189427c20a30a05c421c0711b500214037f636176c3de26f7a30be071"
+  },
+  "notes": [
+    "All observations use real SplitEdge component and point clicks, public Rhino APIs/commands, and actual Undo/Redo in an owned private Xvfb session. User desktops and existing Rhino sessions were not used.",
+    "Portable requests substitute the exact source recipe for the existing shared box artifact. Response values are compacted as JSON without numerical normalization or array reordering.",
+    "Each point frame records the public World-to-Screen transform, world aim, WorldToClient result, integer click, viewport size and camera pose at the actual point prompt. Matrix projection is independently cross-checked against WorldToClient within 1e-7 pixels.",
+    "A preliminary pre-command calibration failed a strict prompt-time viewport equality guard. Its owned Rhino prompt was cancelled, and calibration/reprojection moved to the actual Pause callback. Only the final prompt-time calibrated 22-case run is retained here.",
+    "Native projection uses recorded camera/matrix/pixels and a 12-pixel capture radius. Fourteen native captured points feed complete ordered geometry/attribute/history replay at absolute 1e-9 and relative 1e-10; output points are not used as input.",
+    "Eight empty-center observations compare admission only. Their unsnapped screen-to-edge parameters are not replayed or counted as geometry matches.",
+    "Two original nearby-Point hypotheses remain unchanged in requests, although both Rhino and native capture select the circle Center. The dedicated calibrated replay uses independently computed native capture, not those hypotheses or Rhino output positions.",
+    "End/Mid/Quad suppress Center on the same object in the tested overlap cases. Center is not a global fallback: its curve capture distance can beat a nearby point on another object. General priority, occlusion and camera equivalence remain incomplete.",
+    "Older uncalibrated archives and their provenance remain unchanged as historical evidence. No universal screen hit-testing, conic recognition or cross-engine performance claim follows from these observations."
+  ]
+}
