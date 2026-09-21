@@ -47,13 +47,15 @@ probe does not establish interactive Join behavior or native automatic matching.
 The separate [surface Join command audit](commands/join.md#surfaces-and-polysurfaces)
 adds 92 actual Join/JoinCopy records with shared per-source 3DM artifacts.
 Its original 26-case discrepancy archive is retained, but four partial-overlap
-and fourteen gap cases now fully match; four duplicate-wall cases differ only in zero-volume
+and sixteen gap cases now fully match; four duplicate-wall cases differ only in zero-volume
 face senses. The [follow-up boundary audit](join-boundary-matching.md) adds 160
 records, now 148 fully matching and 12 explicit zero-volume orientation differences.
 The [gap-rebuilding audit](join-gap-rebuilding.md) adds 108 cases and resolves
-20 earlier differences. Across these three audits, 330 of 360 cases fully match;
-the remaining 30 explicitly cover zero-volume orientation, thresholds, transitive
-clusters, and area integration. The command probe includes spatial and UV geometry, component
+20 earlier differences. The [selection-distance audit](join-selection-distance.md)
+adds 150 cases and resolves two more earlier differences. Across all four audits,
+427 of 510 cases fully match; the remaining 83 explicitly cover zero-volume
+orientation, cutoff endpoints, order-dependent clusters, and area integration.
+The command probe includes spatial and UV geometry, component
 tolerances, oriented topology, object identity/selection, attributes, and groups.
 Copies with a repeated source retain every disconnected piece. Neither failed
 comparisons nor domain differences are normalized out of the saved observations.

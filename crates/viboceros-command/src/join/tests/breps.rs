@@ -1,6 +1,8 @@
 use super::*;
 use viboceros_geometry::Frame3;
 
+mod thresholds;
+
 fn box_brep(height: f64) -> Brep {
     let frame = Frame3::try_from_normal(
         Point3::try_new(0., 0., 0.).unwrap(),

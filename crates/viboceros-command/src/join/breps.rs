@@ -43,7 +43,17 @@ pub(super) fn stage(
     if open.len() == 1 {
         return Err(CommandError::NothingJoined);
     }
-    let distance = tolerance.absolute() * 2.;
+    // Shared-input Rhino 8 command probes put the ordinary batch acceptance
+    // radius below 1.8 model tolerances and command-first acceptance below 2.1.
+    // Exact-cutoff endpoint behavior still differs; retain the kernel's
+    // certified distance predicate rather than copying rounding artifacts.
+    let radius = tolerance.absolute() * if postselected { 2.1 } else { 1.8 };
+    let distance = if radius.is_finite() {
+        radius.next_down()
+    } else {
+        // Preserve invalid-distance rejection rather than saturating overflow.
+        radius
+    };
     let (parts, consumed) = if postselected {
         let mut closed = false;
         let mut accepted = vec![geometry[open[0]].as_ref()];

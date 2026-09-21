@@ -32,7 +32,7 @@ fn surface_commands_replay_all_raw_geometry_and_document_fields() {
     }
 }
 
-fn outputs(value: &Value) -> Vec<&Value> {
+pub(super) fn outputs(value: &Value) -> Vec<&Value> {
     value["objects"]
         .as_array()
         .unwrap()
@@ -70,23 +70,10 @@ fn original_discrepancy_archive_tracks_resolved_partial_and_gap_joins() {
         };
         if a.id.contains("JoinCopy") {
             let (original_a, original_b) = (originals(&a.value), originals(b));
-            if a.id == "gap-0.0021-JoinCopy-post" {
-                assert_eq!((original_a.len(), original_b.len()), (2, 2));
-                for (i, (n, r)) in original_a.iter().zip(&original_b).enumerate() {
-                    for field in ["source", "name", "layer", "color", "groups", "brep"] {
-                        compare(&n[field], &r[field], &a.id);
-                    }
-                    assert_eq!(n["selected"], json!(i == 0));
-                    assert_eq!(r["selected"], true);
-                }
-            } else {
-                compare(&json!(original_a), &json!(original_b), &a.id);
-            }
+            compare(&json!(original_a), &json!(original_b), &a.id);
         }
         if a.id.starts_with("partial-edge-")
-            || (a.id.starts_with("gap-")
-                && !a.id.starts_with("gap-0.0021-")
-                && !(a.id.starts_with("gap-0.002-") && a.id.ends_with("-pre")))
+            || (a.id.starts_with("gap-") && !a.id.starts_with("gap-0.0021-"))
         {
             compare(&a.value, b, &a.id);
         } else if a.id.starts_with("triple-boundary-") {
@@ -95,12 +82,9 @@ fn original_discrepancy_archive_tracks_resolved_partial_and_gap_joins() {
         } else {
             assert!(a.id.starts_with("gap-"));
             if a.id.starts_with("gap-0.0021-") {
-                assert!(native.is_empty());
-                assert_eq!(rhino.len(), 2);
-                assert_eq!(a.value["succeeded"], false);
-                assert_eq!(b["succeeded"], true);
-            } else if a.id.starts_with("gap-0.002-") && a.id.ends_with("-pre") {
                 assert_eq!((native.len(), rhino.len()), (1, 2));
+                assert_eq!(a.value["succeeded"], true);
+                assert_eq!(b["succeeded"], true);
             } else {
                 panic!("unclassified remaining discrepancy: {}", a.id);
             }

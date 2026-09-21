@@ -29,7 +29,11 @@ produce fresh copies. Both commands use the same staged geometry/document path.
 
 ## Surfaces and polysurfaces
 
-Open inputs join at an absolute distance of twice the document tolerance.
+Open inputs use a certified distance strictly below 1.8 times the document
+tolerance for preselection, or 2.1 times for command-first selection. These
+[measured command policies](../join-selection-distance.md) do not change the
+explicit kernel assembly API's distance argument; exact-cutoff endpoint behavior
+still has recorded differences.
 Complete boundaries must pass the kernel's whole-curve certificate; continuous,
 exactly straight boundaries also support independent degrees/parameter speeds
 and automatic partial-overlap splitting. Surfaces are never refitted. Newly
@@ -62,7 +66,7 @@ observation, and release-binary hashes; maximum numeric residual is below `2.04e
 
 The original [26-case discrepancy archive](../../tools/rhino_oracle/fixtures/join_surface_differences.json)
 and [raw records](../../tools/rhino_oracle/observations/join_surface_differences.json)
-now has four fully resolved partial-overlap and fourteen resolved gap cases. Its duplicate-wall cases now
+now has four fully resolved partial-overlap and sixteen resolved gap cases. Its duplicate-wall cases now
 have the correct two outputs, raw edge order, retained domains, and document
 state; only the zero-volume shell's face senses differ. Remaining policies are:
 
@@ -70,10 +74,11 @@ state; only the zero-volume shell's face senses differ. Remaining policies are:
   chosen sense differs for the recorded duplicated vertical walls.
 - [Spatial boundary rebuilding](../join-gap-rebuilding.md) now matches the
   recorded ordinary gaps, including incident curves and component tolerances.
-  Threshold behavior still differs: with
-  document tolerance `0.001`, the recorded `0.002` gap joins command-first but
-  not preselected in Rhino; at `0.0021`, command-first Rhino creates two unjoined
-  copies and moves endpoints, while native fails unchanged.
+  Selection-dependent distances now match the recorded `0.002` gap at document
+  tolerance `0.001`: joined command-first, unjoined preselected. At the archived
+  translated `0.0021` cutoff, command-first Rhino creates two unjoined copies
+  and moves only their top corners, while native joins them. The complete raw
+  discrepancy remains in the tests.
 
 The [boundary-matching audit](../join-boundary-matching.md) adds 160 cases:
 148 now match every recorded field; 12 retain zero-volume orientation differences.
@@ -86,8 +91,11 @@ the earlier description of a separate UV-domain policy gap was incorrect.
 The [gap-rebuilding audit](../join-gap-rebuilding.md) adds 108 cases: 98 fully
 match, two expose transitive-cluster selection differences, and eight have area
 integration differences despite matching every other field. Independent
-high-precision integration supports the native areas. Across these three
-surface-command audits, 330 of 360 cases fully match.
+high-precision integration supports the native areas. The
+[selection-distance and clustering audit](../join-selection-distance.md) adds
+150 cases, including every discovery discrepancy. Across all four surface-command
+audits, 427 of 510 cases fully match; the new data expands the known limitations,
+not the claim of general parity.
 
 These are scoped observations, not general threshold rules. Generic curved
 partial overlaps, incompatible curved bases, nested/cavity-solid classification,

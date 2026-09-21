@@ -92,11 +92,14 @@ tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/join_gap_
 ```
 
 Twenty older gap discrepancies now fully match; their archived observations stay
-unchanged and replay every field. Across all three surface-command audits, 330
-of 360 cases fully match. Thirty explicit differences remain: 16 zero-volume
+unchanged and replay every field. At the time of this audit, 330
+of 360 cases fully matched. Thirty explicit differences remained: 16 zero-volume
 face-sense cases, four threshold cases, two transitive-chain cases, and eight
 area cases above. These suites do not establish general curved partial-overlap,
-nonclamped rebuilding, solid-classification, or performance parity.
+nonclamped rebuilding, solid-classification, or performance parity. The subsequent
+[selection-distance and clustering audit](join-selection-distance.md) resolves
+two threshold records and adds 150 discovery cases; its report gives the current
+aggregate results without modifying these historical observations.
 
 The initial large discovery run lost its owned Rhino process while entering an
 opposite-sign taper case; no numerical result was recorded from that run. The

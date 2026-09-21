@@ -289,7 +289,8 @@ The small attributed OpenNURBS chord-adjustment adaptation lives in
 `third_party/opennurbs_rust`; rational Bernstein bounds live in `certificate/refine`.
 Certified original-source contacts are separate from accepted mates.
 The `join/breps` adapter owns batch/seeded selection
-policy and reconsiders original accepted boundaries; shared piece copying preserves
+policy, [selection-dependent distances](join-selection-distance.md), and
+reconsiders original accepted boundaries; shared piece copying preserves
 all disconnected outputs even when several inherit one source's attributes/groups.
 See [curve joining and closure](curve-editing.md) for tested policies and limits.
 All seven curve families share [native parameter evaluation](curve-parameters.md),
