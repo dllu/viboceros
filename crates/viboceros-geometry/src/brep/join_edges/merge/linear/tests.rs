@@ -147,7 +147,15 @@ fn cleanup_covers_every_incident_trim_without_changing_surfaces_or_join_policy()
             result
         );
         assert!(
-            merge_with_cleanup(&source, 1e-10, Tolerance::DEFAULT, &mut Budget(0), true).is_err()
+            merge_with_cleanup(
+                &source,
+                1e-10,
+                Tolerance::DEFAULT,
+                &mut Budget(0),
+                true,
+                None
+            )
+            .is_err()
         );
     }
 }

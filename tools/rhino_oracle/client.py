@@ -221,18 +221,21 @@ class OracleClient:
             if any(op.get("op") == "border_command" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("border_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
-            if any(op.get("op") in ("join_command", "cap_command", "merge_edges_command") for op in request.get("operations", [])):
+            if any(op.get("op") in ("join_command", "cap_command", "merge_edges_command", "merge_edge_command") for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("join_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
             brep_join_commands = any(op.get("op") == "join_command" and any("brep" in s for s in op.get("sources", [])) for op in request.get("operations", []))
-            if brep_join_commands or any(op.get("op") in ("cap_command", "brep_join", "merge_edges_command") for op in request.get("operations", [])):
+            if brep_join_commands or any(op.get("op") in ("cap_command", "brep_join", "merge_edges_command", "merge_edge_command", "brep_merge_edge") for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("cap_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
-            if brep_join_commands or any(op.get("op") in ("brep_join", "merge_edges_command") for op in request.get("operations", [])):
+            if brep_join_commands or any(op.get("op") in ("brep_join", "merge_edges_command", "merge_edge_command", "brep_merge_edge") for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("brep_join_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
-            if any(op.get("op") == "merge_edges_command" for op in request.get("operations", [])):
+            if any(op.get("op") in ("merge_edges_command", "merge_edge_command") for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("merge_edges_probe.py")
+                shutil.copyfile(helper, job_path / helper.name)
+            if any(op.get("op") == "brep_merge_edge" for op in request.get("operations", [])):
+                helper = Path(__file__).with_name("merge_edge_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "document_units" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("generate_document_units_reference.py")
@@ -346,7 +349,12 @@ def _owned_artifact_request(request):
     """Keep comparison/replay exports off caller paths, with scoped cleanup."""
     with tempfile.TemporaryDirectory(prefix="viboceros-interchange-") as job:
         prepared = copy.deepcopy(dict(request))
-        for index, operation in enumerate(prepared.get("operations", [])):
+        for index, original in enumerate(prepared.get("operations", [])):
+            # Python callers may repeat the same dict object. A single deepcopy
+            # preserves that alias, so isolate each occurrence before assigning
+            # its unique owned artifact path.
+            operation = copy.deepcopy(original)
+            prepared["operations"][index] = operation
             if operation.get("op") == "three_dm_curve_interchange":
                 operation["artifact_path"] = str(Path(job) / f"curve-{index}.3dm")
             elif operation.get("op") == "three_dm_brep_interchange":
@@ -359,11 +367,18 @@ def _owned_artifact_request(request):
                     operation["artifact_path"] = str(Path(job) / f"border-{index}.3dm")
             elif operation.get("op") == "cap_command":
                 operation["artifact_path"] = str(Path(job) / f"cap-{index}.3dm")
+            elif operation.get("op") == "brep_merge_edge":
+                source = operation.get("source")
+                if not isinstance(source, Mapping):
+                    raise OracleProtocolError("selected edge merge requires a source object")
+                source["artifact_path"] = str(Path(job) / f"merge-edge-{index}.3dm")
             elif operation.get("op") == "brep_join":
                 operation["artifact_paths"] = [str(Path(job) / f"join-{index}-{part}.3dm")
                     for part in range(len(_artifact_sources(operation)))]
-            elif operation.get("op") in ("join_command", "merge_edges_command"):
-                for part, source in enumerate(_artifact_sources(operation)):
+            elif operation.get("op") in ("join_command", "merge_edges_command", "merge_edge_command"):
+                for part, original_source in enumerate(_artifact_sources(operation)):
+                    source = copy.deepcopy(original_source)
+                    operation["sources"][part] = source
                     if "brep" in source:
                         if not isinstance(source["brep"], Mapping):
                             raise OracleProtocolError("join artifact setup requires a B-rep source object")

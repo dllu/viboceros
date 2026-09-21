@@ -15,7 +15,8 @@ boundaries are not simplified again. Smooth sphere/cone poles are not creases.
 The absolute tolerance still bounds the accumulated spatial curve
 change. Branch vertices, singular-trim vertices, incompatible trim incidence,
 and uncertifiable merges are retained. This is not a general edge repair or
-surface healing command; interactive `MergeEdge` is not implemented.
+surface healing command; interactive `MergeEdge` is not implemented. Its
+[selected-chain kernel and API comparisons](../selected-edge-merge.md) are available.
 
 Certified straight edges become degree-one, unit-weight curves parameterized
 from zero to chord length. Exactly straight non-seam UV trims are simplified too;

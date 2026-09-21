@@ -4,32 +4,7 @@ mod face_history;
 mod face_splits;
 
 fn close(a: &Value, b: &Value, path: &str) {
-    match (a, b) {
-        (Value::Number(a), Value::Number(b)) => {
-            let (a, b) = (a.as_f64().unwrap(), b.as_f64().unwrap());
-            assert!(
-                (a - b).abs() <= 1e-9_f64.max(1e-10 * a.abs().max(b.abs())),
-                "{path}: {a} != {b}"
-            );
-        }
-        (Value::Array(a), Value::Array(b)) => {
-            assert_eq!(a.len(), b.len(), "{path}");
-            for (i, (a, b)) in a.iter().zip(b).enumerate() {
-                close(a, b, &format!("{path}/{i}"));
-            }
-        }
-        (Value::Object(a), Value::Object(b)) => {
-            assert_eq!(
-                a.keys().collect::<Vec<_>>(),
-                b.keys().collect::<Vec<_>>(),
-                "{path}"
-            );
-            for (key, a) in a {
-                close(a, &b[key], &format!("{path}/{key}"));
-            }
-        }
-        _ => assert_eq!(a, b, "{path}"),
-    }
+    crate::test_json::close(a, b, path, 1e-9, 1e-10);
 }
 
 // Only the recorded representation differences are excluded. Every spatial

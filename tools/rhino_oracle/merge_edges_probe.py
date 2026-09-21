@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Owned MergeAllEdges commands on shared source topology, with undo records."""
+"""Owned MergeAllEdges/MergeEdge commands on shared topology, with undo records."""
 import math
 
 
@@ -28,6 +28,18 @@ def validate(operation):
             raise ValueError("edge merge options must be boolean")
     if operation.get("cancel", False) and operation.get("preselect", False):
         raise ValueError("edge merge cancellation requires command-first selection")
+    selected_edge = operation.get("op") == "merge_edge_command"
+    if selected_edge != ("edge" in operation):
+        raise ValueError("selected edge requests require the separate merge_edge_command operation")
+    if selected_edge:
+        edge = operation["edge"]
+        pick = operation.get("pick", "preselect")
+        if (type(edge) is not int or edge < 0 or len(order) != 1 or
+                pick not in ("preselect", "point") or
+                operation.get("cancel", False) or
+                (pick == "point" and operation.get("preselect", False)) or
+                (pick == "preselect" and not operation.get("preselect", False))):
+            raise ValueError("selected edge command probe requires one edge and a valid pick mode")
     for key in ("absolute_tolerance", "angular_tolerance"):
         value = operation.get(key)
         if value is not None and (type(value) not in (int, float) or
@@ -43,6 +55,8 @@ def validate(operation):
         elif source.get("type") not in ("point", "point_cloud", "mesh", "surface", "line", "nurbs",
                 "arc", "circle", "ellipse", "polyline", "polycurve"):
             raise ValueError("unsupported edge merge source kind")
+    if selected_edge and "brep" not in sources[order[0]] and sources[order[0]].get("type") != "surface":
+        raise ValueError("selected edge command requires a surface or B-rep")
     return sources, order
 
 
@@ -132,8 +146,12 @@ def run(operation, tolerance, host):
             finally: attributes.Dispose()
             if key == System.Guid.Empty: raise ValueError("edge merge source insertion failed")
             ids.append(key)
-            if geometry_record(document.Objects.FindId(key).Geometry) != geometry_record(geometry):
-                raise ValueError("edge merge insertion changed source geometry")
+            inserted, expected = geometry_record(document.Objects.FindId(key).Geometry), geometry_record(geometry)
+            if inserted != expected:
+                before_brep, after_brep = expected.get("brep", {}), inserted.get("brep", {})
+                raise ValueError("edge merge insertion changed source geometry: face senses %s -> %s; volume %s -> %s" % (
+                    before_brep.get("face_reversed"), after_brep.get("face_reversed"),
+                    before_brep.get("volume"), after_brep.get("volume")))
         for members in [[key] for key in ids] + [ids]:
             index = document.Groups.Add("Viboceros edge merge " + str(System.Guid.NewGuid()), members)
             if index < 0: raise ValueError("edge merge group insertion failed")
@@ -145,7 +163,22 @@ def run(operation, tolerance, host):
             document.ModelAngleToleranceRadians = float(operation["angular_tolerance"])
             if document.ModelAngleToleranceRadians != float(operation["angular_tolerance"]): raise ValueError("edge merge angular tolerance was not accepted")
         eligible = any(isinstance(owned[i], (Rhino.Geometry.Brep, Rhino.Geometry.Surface)) for i in order)
-        if operation.get("preselect", False):
+        command = "MergeEdge" if "edge" in operation else "MergeAllEdges"
+        if "edge" in operation:
+            obj = document.Objects.FindId(ids[order[0]])
+            edge = operation["edge"]
+            if not isinstance(obj.Geometry, Rhino.Geometry.Brep) or edge >= obj.Geometry.Edges.Count:
+                raise ValueError("selected edge command index outside source")
+            if operation.get("pick", "preselect") == "preselect":
+                component = Rhino.Geometry.ComponentIndex(Rhino.Geometry.ComponentIndexType.BrepEdge, edge)
+                if obj.SelectSubObject(component, True, True, False) == 0:
+                    raise ValueError("selected edge command preselection failed")
+                script = "_MergeEdge _Enter"
+            else:
+                curve = obj.Geometry.Edges[edge]
+                point = curve.PointAt(curve.Domain.ParameterAt(0.375))
+                script = "_MergeEdge " + host["_command_point"](host["_xyz"](point)) + " _Enter"
+        elif operation.get("preselect", False):
             for i in order:
                 if not document.Objects.Select(ids[i]): raise ValueError("edge merge preselection failed")
             script = "_MergeAllEdges" if eligible else "_MergeAllEdges _Cancel"
@@ -156,7 +189,7 @@ def run(operation, tolerance, host):
         initial_serials = dict((o.Id, o.RuntimeSerialNumber) for o in objects() if o.Id not in before)
         host["_record_progress"]("edge merge command: " + script)
         trace = operation.get("trace_commands", False)
-        succeeded, after, events = join_probe.observe_command(Rhino.Commands.Command, "MergeAllEdges",
+        succeeded, after, events = join_probe.observe_command(Rhino.Commands.Command, command,
             lambda: host["_run_surface_script"](script, True), snapshot, lambda: [], trace)
         result = dict(before=initial, after=after, succeeded=succeeded,
             absolute_tolerance=float(document.ModelAbsoluteTolerance), angular_tolerance=float(document.ModelAngleToleranceRadians))

@@ -65,10 +65,13 @@ mod document_units;
 mod group_memberships;
 mod group_picking;
 mod join_command;
+mod merge_edge;
 mod merge_edges_command;
 mod object_layout;
 mod object_source;
 mod plane_arrays;
+#[cfg(test)]
+mod test_json;
 mod trimmed_brep;
 mod undo_selection;
 pub use trimmed_brep::{TrimBoundary, TrimmedBrepFixture};
@@ -215,6 +218,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: cap_command::CapFixture,
+    },
+    BrepMergeEdge {
+        id: String,
+        #[serde(flatten)]
+        fixture: merge_edge::MergeEdgeFixture,
     },
     MergeEdgesCommand {
         id: String,
@@ -1662,6 +1670,7 @@ impl Operation {
             | Self::Align { id, .. }
             | Self::BorderCommand { id, .. }
             | Self::CapCommand { id, .. }
+            | Self::BrepMergeEdge { id, .. }
             | Self::MergeEdgesCommand { id, .. }
             | Self::BrepJoin { id, .. }
             | Self::JoinCommand { id, .. }
@@ -2073,6 +2082,7 @@ fn execute(
         Operation::Align { fixture, .. } => align::run(fixture, tolerance)?,
         Operation::BorderCommand { fixture, .. } => border::run(fixture, tolerance)?,
         Operation::CapCommand { fixture, .. } => cap_command::run(fixture, tolerance)?,
+        Operation::BrepMergeEdge { fixture, .. } => merge_edge::run(fixture, tolerance)?,
         Operation::MergeEdgesCommand { fixture, .. } => {
             merge_edges_command::run(fixture, tolerance)?
         }

@@ -33,6 +33,16 @@ def _response(engine: str, value: object, elapsed_ns: int = 100) -> dict:
 
 
 class OracleClientTests(unittest.TestCase):
+    def test_repeated_source_dicts_get_distinct_artifacts(self):
+        from .client import _owned_artifact_request
+        source = {"brep": {"artifact_path": "/unowned/source.3dm"}}
+        request = {"operations": [{"op": "merge_edges_command", "sources": [source, source]}]}
+        original = copy.deepcopy(request)
+        with _owned_artifact_request(request) as prepared:
+            sources = prepared["operations"][0]["sources"]
+            self.assertNotEqual(sources[0]["brep"]["artifact_path"], sources[1]["brep"]["artifact_path"])
+        self.assertEqual(request, original)
+
     def test_merge_edges_artifacts_are_owned_and_only_brep_paths_are_rewritten(self):
         from .client import _owned_artifact_request
         request = {"operations": [{"op": "merge_edges_command", "sources": [

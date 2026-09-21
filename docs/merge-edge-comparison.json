@@ -1,0 +1,444 @@
+{
+  "cases": 45,
+  "full_matches": 40,
+  "report": {
+    "protocol_version": 1,
+    "absolute_epsilon": 1e-09,
+    "relative_epsilon": 1e-10,
+    "passed": false,
+    "operations": [
+      {
+        "id": "box-0-seed0",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "box-0-seed12",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "box-0-seed13",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "box-0-seed14",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "box-0-seed1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "box-1-seed0",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "box-1-seed12",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "box-1-seed13",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "box-1-seed14",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "box-1-seed1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "quadratic-seed0",
+        "passed": true,
+        "max_absolute_error": 2.8990143619012088e-12,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "quadratic-seed4",
+        "passed": true,
+        "max_absolute_error": 2.8990143619012088e-12,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "quadratic-seed5",
+        "passed": true,
+        "max_absolute_error": 2.8990143619012088e-12,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "quadratic-seed6",
+        "passed": true,
+        "max_absolute_error": 2.8990143619012088e-12,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "quadratic-seed1",
+        "passed": true,
+        "max_absolute_error": 2.8990143619012088e-12,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "rational-cubic-seed0",
+        "passed": true,
+        "max_absolute_error": 5.213962595007615e-11,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "rational-cubic-seed4",
+        "passed": true,
+        "max_absolute_error": 5.213962595007615e-11,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "rational-cubic-seed5",
+        "passed": true,
+        "max_absolute_error": 5.213962595007615e-11,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "rational-cubic-seed6",
+        "passed": true,
+        "max_absolute_error": 5.213962595007615e-11,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "rational-cubic-seed1",
+        "passed": true,
+        "max_absolute_error": 5.213962595007615e-11,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unclamped-seed0",
+        "passed": false,
+        "max_absolute_error": 1.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": [
+          "unclamped-seed0.value.after.surfaces[0].knots_u[0]: -2 != -1 (error 1, limit 1e-09)",
+          "unclamped-seed0.value.after.surfaces[0].knots_u[5]: 3 != 2 (error 1, limit 1e-09)",
+          "unclamped-seed0.value.before.surfaces[0].knots_u[0]: -2 != -1 (error 1, limit 1e-09)",
+          "unclamped-seed0.value.before.surfaces[0].knots_u[5]: 3 != 2 (error 1, limit 1e-09)"
+        ]
+      },
+      {
+        "id": "unclamped-seed4",
+        "passed": false,
+        "max_absolute_error": 1.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": [
+          "unclamped-seed4.value.after.surfaces[0].knots_u[0]: -2 != -1 (error 1, limit 1e-09)",
+          "unclamped-seed4.value.after.surfaces[0].knots_u[5]: 3 != 2 (error 1, limit 1e-09)",
+          "unclamped-seed4.value.before.surfaces[0].knots_u[0]: -2 != -1 (error 1, limit 1e-09)",
+          "unclamped-seed4.value.before.surfaces[0].knots_u[5]: 3 != 2 (error 1, limit 1e-09)"
+        ]
+      },
+      {
+        "id": "unclamped-seed5",
+        "passed": false,
+        "max_absolute_error": 1.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": [
+          "unclamped-seed5.value.after.surfaces[0].knots_u[0]: -2 != -1 (error 1, limit 1e-09)",
+          "unclamped-seed5.value.after.surfaces[0].knots_u[5]: 3 != 2 (error 1, limit 1e-09)",
+          "unclamped-seed5.value.before.surfaces[0].knots_u[0]: -2 != -1 (error 1, limit 1e-09)",
+          "unclamped-seed5.value.before.surfaces[0].knots_u[5]: 3 != 2 (error 1, limit 1e-09)"
+        ]
+      },
+      {
+        "id": "unclamped-seed6",
+        "passed": false,
+        "max_absolute_error": 1.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": [
+          "unclamped-seed6.value.after.surfaces[0].knots_u[0]: -2 != -1 (error 1, limit 1e-09)",
+          "unclamped-seed6.value.after.surfaces[0].knots_u[5]: 3 != 2 (error 1, limit 1e-09)",
+          "unclamped-seed6.value.before.surfaces[0].knots_u[0]: -2 != -1 (error 1, limit 1e-09)",
+          "unclamped-seed6.value.before.surfaces[0].knots_u[5]: 3 != 2 (error 1, limit 1e-09)"
+        ]
+      },
+      {
+        "id": "unclamped-seed1",
+        "passed": false,
+        "max_absolute_error": 1.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": [
+          "unclamped-seed1.value.after.surfaces[0].knots_u[0]: -2 != -1 (error 1, limit 1e-09)",
+          "unclamped-seed1.value.after.surfaces[0].knots_u[5]: 3 != 2 (error 1, limit 1e-09)",
+          "unclamped-seed1.value.before.surfaces[0].knots_u[0]: -2 != -1 (error 1, limit 1e-09)",
+          "unclamped-seed1.value.before.surfaces[0].knots_u[5]: 3 != 2 (error 1, limit 1e-09)"
+        ]
+      },
+      {
+        "id": "multispan-seed0",
+        "passed": true,
+        "max_absolute_error": 6.581046818610048e-11,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "multispan-seed4",
+        "passed": true,
+        "max_absolute_error": 6.581046818610048e-11,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "multispan-seed5",
+        "passed": true,
+        "max_absolute_error": 6.581046818610048e-11,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "multispan-seed6",
+        "passed": true,
+        "max_absolute_error": 6.581046818610048e-11,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "multispan-seed1",
+        "passed": true,
+        "max_absolute_error": 6.581046818610048e-11,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "seam-linear-seed1",
+        "passed": true,
+        "max_absolute_error": 1.3002932064409833e-12,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "seam-linear-seed3",
+        "passed": true,
+        "max_absolute_error": 1.3002932064409833e-12,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "seam-linear-seed4",
+        "passed": true,
+        "max_absolute_error": 1.3002932064409833e-12,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "seam-linear-seed5",
+        "passed": true,
+        "max_absolute_error": 1.3002932064409833e-12,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "seam-linear-seed2",
+        "passed": true,
+        "max_absolute_error": 1.3002932064409833e-12,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "seam-quadratic-1-seed1",
+        "passed": true,
+        "max_absolute_error": 2.615436756059353e-10,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "seam-quadratic-1-seed3",
+        "passed": true,
+        "max_absolute_error": 2.615436756059353e-10,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "seam-quadratic-1-seed4",
+        "passed": true,
+        "max_absolute_error": 2.615436756059353e-10,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "seam-quadratic-1-seed5",
+        "passed": true,
+        "max_absolute_error": 2.615436756059353e-10,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "seam-quadratic-1-seed2",
+        "passed": true,
+        "max_absolute_error": 2.615436756059353e-10,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "seam-quadratic--1-seed1",
+        "passed": true,
+        "max_absolute_error": 2.615436756059353e-10,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "seam-quadratic--1-seed3",
+        "passed": true,
+        "max_absolute_error": 2.615436756059353e-10,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "seam-quadratic--1-seed4",
+        "passed": true,
+        "max_absolute_error": 2.615436756059353e-10,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "seam-quadratic--1-seed5",
+        "passed": true,
+        "max_absolute_error": 2.615436756059353e-10,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "seam-quadratic--1-seed2",
+        "passed": true,
+        "max_absolute_error": 2.615436756059353e-10,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      }
+    ],
+    "max_absolute_error": 1.0,
+    "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation."
+  }
+}

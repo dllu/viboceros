@@ -9,6 +9,8 @@ operation is also available. Explicit `try_join_edge_pairs` remains a
 geometry-preserving assembly primitive; untouched Join components are not cleaned.
 The [MergeAllEdges command](commands/merge-edges.md) exposes the kernel with its
 own measured angular and selection policy.
+The [selected-edge API](selected-edge-merge.md), `Brep::try_merge_edge`, visits
+only the chain containing one chosen edge, leaving unrelated chains untouched.
 
 `Brep::try_cleanup_edges(angle, tolerance)` additionally simplifies certified
 straight spatial edges and exactly straight non-seam UV trims, including unmerged

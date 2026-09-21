@@ -1,0 +1,49 @@
+{
+  "cases": 45,
+  "engine_version": "8.32.26160.13001",
+  "scope": "Public BrepEdgeList.MergeEdge followed by Compact and a fresh deep-copy snapshot. No document command, no timing or general equivalence claim.",
+  "shared_artifact_sha256": {
+    "box-0-fixed.3dm": "67a051086e4b3f517121d96648fc1deb320f8a88922e9eed0f73d5758ad52fd9",
+    "box-1-fixed.3dm": "dbc2d0d1baec450d76981f339b0efc801e2e18deed3f09396c9a3afc27cb28f0",
+    "multispan-fixed.3dm": "1ad91b5c5621e3f50a32b75f3ac4fdf53cd69d7854f624265389acc73a53ca0d",
+    "quadratic-fixed.3dm": "5d0d1fcd6dbb965883a88b1e9441a84f1f063e00721dbaf8cc3ac5d668e918c1",
+    "rational-cubic-fixed.3dm": "56ce17341d1381a5be6b2778de90ff2107ce27f02eac26a62949f24dea435b78",
+    "seam-linear-fixed.3dm": "fe03cf1b38ee98fecb2dd774830af1ebe652c1a53cecf050ed5427133d8bacdc",
+    "seam-quadratic--1-fixed.3dm": "8d749176b80d5d98dc7dccc0afaed16c15fb8ba239623de684612e11ca8a7c98",
+    "seam-quadratic-1-fixed.3dm": "31d2450f2b8c3652811fe9f87972e64dfc6a93989195064ec3f621fc304c6805",
+    "unclamped-fixed.3dm": "5fd9b4f230a629f0feb10d306d9f7ca0243157a9a1bdf3f1d5cf561b428bffb8"
+  },
+  "raw_response_sha256": {
+    "rhino-fresh.json": "8180aae484a0eb247126a3ce0f06366247b359e234963dbf0a14c0982371e475"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/brep_merge_edge.json": "eb4da7465110256e6e0055a5b2db647addf0b18531a41c91e3889f0d50f8d403",
+    "tools/rhino_oracle/observations/brep_merge_edge.json": "1eac04005630a69e8eafa2d459e0adea5dd1ec617fcc09aaeb15030f5b6e9669"
+  },
+  "preparation_failures": [
+    "Initial four profile sources used positive split parameters on reversed top edges with domain [-1,0]; corrected to negative parameters, exported fresh -fixed.3dm files, and verified all nine native round trips before the successful probe.",
+    "An initial guard incorrectly equated the public return with removed edges. Retained successful observations record api_return independently: 4 for three removed edges, 1 for no change.",
+    "Reading previously accessed managed trim wrappers after Compact threw Rhino.Geometry.BrepTrim. The final probe mutates an independent copy and records a fresh deep copy, without rebuilding or normalizing geometry.",
+    "An initial native request with existing source artifact paths failed safely with File exists. Final native replay requests omit artifact paths; only separate verified exports supply Rhino sources."
+  ],
+  "command_diagnostics": {
+    "scope": "Rhino-only picking diagnostics, excluded from API equivalence totals. Both preselection and typed world coordinates failed to select an edge; all commands canceled without replacements. Native merge_edge_command is not implemented.",
+    "batches": {
+      "preselection": {
+        "cases": 6,
+        "raw_response_sha256": "18188d8ab54ee40b30743b771ee7ad9571ce3bf9652ca7283ecfd9954727176e"
+      },
+      "point": {
+        "cases": 6,
+        "raw_response_sha256": "d23d7c471be69c63fbab205df38a8f34e3792cfdc83d741e85bf4a2f2a377ee8"
+      }
+    },
+    "retained_file_sha256": {
+      "tools/rhino_oracle/diagnostics/merge_edge/preselection-request.json": "e0963cdf27d74e3e868d7be8344be0de6c8b4d075a1d3992d2683fad9227acbb",
+      "tools/rhino_oracle/diagnostics/merge_edge/preselection-response.json": "8aabe5194a20cd027f29011ee42121b3d2a661539472a6abaf647513601678c4",
+      "tools/rhino_oracle/diagnostics/merge_edge/point-request.json": "8cb19e3488acaeea8dd5cc0edaf0414b1d616f43e805fceea35e66bce95aa3b1",
+      "tools/rhino_oracle/diagnostics/merge_edge/point-response.json": "81180286af73b5f3222c72183ac013e85c7a2593abbe6e44a50801df63ba571a"
+    },
+    "rejected_source": "The first seven-case command probe failed the unchanged-insertion guard on a reversed closed box. The two final six-case batches omit that source, without weakening or normalizing the guard."
+  }
+}

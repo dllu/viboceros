@@ -4,6 +4,8 @@ use crate::ParameterSide;
 mod curves;
 mod linear;
 #[cfg(test)]
+mod selected_tests;
+#[cfg(test)]
 mod tests;
 
 struct Edge {
@@ -64,6 +66,30 @@ impl Brep {
         merge(self, angle_tolerance, tolerance, &mut Budget(MAX_WORK))
     }
 
+    /// Recursively coalesces mergeable neighbors of one edge. Only that edge's
+    /// chain is visited: other smooth chains and straight-edge representations
+    /// remain untouched. Uses [`Self::try_merge_all_edges`]'s angular, spatial,
+    /// exact-UV, uncertainty, and bounded-work guarantees.
+    ///
+    /// `edge` is an index in the source table. Surviving source edges retain
+    /// their relative order; the merged edge follows them. No change returns an
+    /// equal B-rep. Invalid indices or validation failures leave the source intact.
+    pub fn try_merge_edge(
+        &self,
+        edge: usize,
+        angle_tolerance: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        merge_with_cleanup(
+            self,
+            angle_tolerance,
+            tolerance,
+            &mut Budget(MAX_WORK),
+            false,
+            Some(edge),
+        )
+    }
+
     /// Merges redundant edges and simplifies certified straight spatial edges
     /// and their exactly straight non-seam UV trims. Simplified curves have unit
     /// weights and domain `0..chord_length` in model units. Surfaces are unchanged.
@@ -85,6 +111,7 @@ impl Brep {
             tolerance,
             &mut Budget(MAX_WORK),
             true,
+            None,
         )
     }
 }
@@ -95,7 +122,7 @@ pub(super) fn merge(
     tolerance: Tolerance,
     budget: &mut Budget,
 ) -> Result<Brep, GeometryError> {
-    merge_with_cleanup(source, angle, tolerance, budget, false)
+    merge_with_cleanup(source, angle, tolerance, budget, false, None)
 }
 
 fn merge_with_cleanup(
@@ -104,6 +131,7 @@ fn merge_with_cleanup(
     tolerance: Tolerance,
     budget: &mut Budget,
     simplify_lines: bool,
+    seed: Option<usize>,
 ) -> Result<Brep, GeometryError> {
     if !angle.is_finite() || !(0.0..=std::f64::consts::PI).contains(&angle) {
         return Err(invalid("edge merge angle must be in [0, pi] radians"));
@@ -111,9 +139,13 @@ fn merge_with_cleanup(
     if !source.is_manifold() {
         return Err(invalid("edge merging requires manifold input"));
     }
+    if seed.is_some_and(|e| e >= source.edges.len()) {
+        return Err(invalid("edge merge references a missing edge"));
+    }
     let mut state = State::new(source, budget)?;
     let mut changed = false;
-    for original in 0..source.edges.len() {
+    let originals = seed.map_or(0..source.edges.len(), |e| e..e + 1);
+    for original in originals {
         let mut current = original;
         while let Some(edge) = &state.edges[current] {
             let vertices = edge.geometry.vertices;
