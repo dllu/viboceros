@@ -1,4 +1,5 @@
 use super::*;
+mod projective;
 
 fn curve(points: &[[Real; 3]], weights: &[Real], degree: usize, knots: &[Real]) -> NurbsCurve {
     NurbsCurve::try_new_rational(
@@ -216,9 +217,24 @@ fn differing_rational_weights_have_certified_bounds_covering_exact_samples() {
         a.knots(),
     );
     let mut budget = Budget(MAX_WORK);
-    let upper = refined_curve_bound(&a, &b, false, 1., |n| budget.charge(n))
+    let aa = extract::Spline::new(&a, false, &mut |n| budget.charge(n))
         .unwrap()
         .unwrap();
+    let bb = extract::Spline::new(&b, false, &mut |n| budget.charge(n))
+        .unwrap()
+        .unwrap();
+    // This independent evaluator compares equal parameters. Request that
+    // specific map, not the public locus certificate's best correspondence.
+    let upper = mapped_bound(
+        &aa,
+        &bb,
+        &parameter_map::Map::identity(),
+        1.,
+        true,
+        &mut |n| budget.charge(n),
+    )
+    .unwrap()
+    .unwrap();
     assert!(upper < 0.001);
     for i in 0..=256 {
         let t = rational(i as Real / 256.);
@@ -261,7 +277,24 @@ fn rational_multispan_difference_covers_independently_evaluated_curves() {
         } else {
             b.clone()
         };
-        let upper = certify(&a, &candidate, reversed, 0.002).unwrap();
+        assert!(certify(&a, &candidate, reversed, 0.002).is_some());
+        let mut budget = Budget(MAX_WORK);
+        let aa = extract::Spline::new(&a, false, &mut |n| budget.charge(n))
+            .unwrap()
+            .unwrap();
+        let bb = extract::Spline::new(&candidate, reversed, &mut |n| budget.charge(n))
+            .unwrap()
+            .unwrap();
+        let upper = mapped_bound(
+            &aa,
+            &bb,
+            &parameter_map::Map::identity(),
+            0.002,
+            false,
+            &mut |n| budget.charge(n),
+        )
+        .unwrap()
+        .unwrap();
         for i in 0..=256 {
             let t = rational(i as Real / 256.);
             let av = exact_value(&a, &t);

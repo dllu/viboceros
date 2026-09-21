@@ -37,8 +37,9 @@ still has recorded differences.
 Complete boundaries must pass the kernel's whole-curve certificate. Different
 curved degrees, knot refinements and positive rational weights now have an
 [exact span/product certificate](../join-curved-certificates.md) through degree 16;
-continuous,
-exactly straight boundaries also support independent degrees/parameter speeds
+[projective parameter alignment](../join-projective-correspondence.md) also
+certifies changed rational speeds. Continuous, exactly straight boundaries
+support independent degrees/parameter speeds
 and automatic partial-overlap splitting. Surfaces are never refitted. Newly
 closed nonzero-volume outputs are oriented outward. This is not a Boolean union.
 
@@ -102,11 +103,15 @@ endpoint movement from edge mating. The
 [curved-certificate audit](../join-curved-certificates.md) adds 48 cases: 40 full
 matches, four redundant outer-knot interchange differences and four larger native
 uncertainty bounds. The previous 594 records retain exactly their results.
-Across these surface-command audits, 511 of 642 cases fully match, with 32 native
-execution failures and 99 other differences. This is not general parity.
+The [projective-correspondence follow-up](../join-projective-correspondence.md)
+adds sixty records: forty full matches, eight area-only differences, four
+uncertainty differences, four short-overlap orientation failures and four
+unsupported non-projective correspondences. Across these surface-command audits,
+551 of 702 cases fully match, with 36 native execution failures and 115 other
+differences. This is not general parity.
 
 These are scoped observations, not general threshold rules. Generic curved
-partial overlaps, non-affine curved correspondence, nested/cavity-solid classification,
+partial overlaps, non-projective curved correspondence, nested/cavity-solid classification,
 and arbitrary ambiguous matching remain unsupported or unproven. Boundary search
 is bounded; command-first joining currently rebuilds the growing assembly at
 each attempted pick. No kernel speedup is claimed from command probe timings.

@@ -35,9 +35,18 @@ an out-of-range interior control is not itself evidence of an excessive gap.
 Unclamped domains and either common weight sign are supported. All algebra uses
 the exact input binary64 values, without rounded knot insertion or sampling.
 
+When affine correspondence fails, endpoint derivatives can propose up to two
+positive projective maps `F(t) = c*t/(1-t+c*t)`. Each map is an increasing
+bijection of the complete domains. Knots are aligned using its exact inverse,
+and each extracted span is exactly composed with its local projective map before
+the same Bernstein difference proof. Stationary, equal-degree endpoints can
+instead suggest a map through adjacent weight ratios. A proposal never bypasses
+the proof. This supports changed rational parameter speeds without changing the
+retained curves or surfaces; see the [projective audit](join-projective-correspondence.md).
+
 These are sufficient, not necessary, tests. A hull still inconclusive after
 16 subdivision levels remains unmatched; exhausting the shared work budget is
-an atomic error. General non-affine parameter correspondence and curved partial
+an atomic error. General non-projective parameter correspondence and curved partial
 overlaps remain unsupported. The [curved-certificate audit](join-curved-certificates.md)
 records both newly matched cases and remaining differences.
 

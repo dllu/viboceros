@@ -4,6 +4,7 @@
 use super::*;
 use crate::exact_scalar::{Rational, rational};
 mod extract;
+mod parameter_map;
 #[cfg(test)]
 mod tests;
 
@@ -37,20 +38,57 @@ pub(super) fn bound(
     let Some(b) = extract::Spline::new(b, reversed, charge)? else {
         return Ok(None);
     };
+    let mut best = mapped_bound(
+        &a,
+        &b,
+        &parameter_map::Map::identity(),
+        limit,
+        tighten,
+        charge,
+    )?;
+    if best == Some(0.) || (!tighten && best.is_some()) {
+        return Ok(best);
+    }
+    // Endpoint derivatives propose correspondences; they never certify one.
+    // Every positive projective map is a bijection of the complete domains,
+    // and every accepted map must pass the same exact whole-span proof.
+    for map in parameter_map::candidates(&a, &b, charge)? {
+        if let Some(bound) = mapped_bound(&a, &b, &map, best.unwrap_or(limit), tighten, charge)? {
+            best = Some(bound);
+            if bound == 0. || !tighten {
+                break;
+            }
+        }
+    }
+    Ok(best)
+}
+
+fn mapped_bound(
+    a: &extract::Spline<'_>,
+    b: &extract::Spline<'_>,
+    map: &parameter_map::Map,
+    limit: Real,
+    tighten: bool,
+    charge: &mut impl FnMut(usize) -> Result<(), GeometryError>,
+) -> Result<Option<Real>, GeometryError> {
     let (mut ai, mut bi) = (a.degree(), b.degree());
     let mut left = rational(0.);
     let one = rational(1.);
     let mut answer: Real = 0.;
     while left < one {
+        charge(8)?;
+        let b_left = map.apply(&left);
         while a.knots[ai + 1] <= left {
             ai += 1;
         }
-        while b.knots[bi + 1] <= left {
+        while b.knots[bi + 1] <= b_left {
             bi += 1;
         }
-        let right = std::cmp::min(&a.knots[ai + 1], &b.knots[bi + 1]).clone();
+        let right = std::cmp::min(a.knots[ai + 1].clone(), map.inverse(&b.knots[bi + 1]));
         let ac = a.extract(ai, &left, &right, charge)?;
-        let bc = b.extract(bi, &left, &right, charge)?;
+        let mut bc = b.extract(bi, &b_left, &map.apply(&right), charge)?;
+        charge(4 * bc.len())?;
+        map.compose_span(&mut bc, &left, &right);
         charge(4 * ac.len() * bc.len())?;
         let net = multiply(&ac, &bc);
         let Some(upper) = hull_bound(net, limit, tighten, charge)? else {

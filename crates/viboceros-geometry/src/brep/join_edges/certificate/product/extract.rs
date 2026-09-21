@@ -56,6 +56,23 @@ impl<'a> Spline<'a> {
         self.curve.degree()
     }
 
+    pub fn end_span(
+        &self,
+        end: bool,
+        charge: &mut impl FnMut(usize) -> Result<(), GeometryError>,
+    ) -> Result<(Vec<H>, Rational), GeometryError> {
+        let mut spans = self.degree()..self.curve.control_points().len();
+        let nonempty = |&i: &usize| self.knots[i] < self.knots[i + 1];
+        let span = if end {
+            spans.rev().find(nonempty)
+        } else {
+            spans.find(nonempty)
+        }
+        .expect("validated nonempty active domain");
+        let (left, right) = (&self.knots[span], &self.knots[span + 1]);
+        Ok((self.extract(span, left, right, charge)?, right - left))
+    }
+
     pub fn extract(
         &self,
         span: usize,

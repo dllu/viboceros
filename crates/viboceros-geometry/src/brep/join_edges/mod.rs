@@ -40,8 +40,10 @@ impl Brep {
     /// rational basis permits a fast corresponding-control convex-hull bound.
     /// Otherwise, positive-basis curves of degree at most 16 are aligned over
     /// exact normalized knot spans. Rational Bernstein products and at most 16
-    /// subdivision levels certify their difference under affine parameter
-    /// correspondence, including different degrees, knots, weights and reversal.
+    /// subdivision levels certify their difference under affine or positive
+    /// projective parameter correspondences, including different degrees, knots,
+    /// weights and reversal. Endpoint data only proposes a projective map;
+    /// every accepted map must pass the complete span certificate.
     /// Clamped straight edges with exactly collinear, monotone controls also
     /// support different degrees, knots and rational parameter speeds. Their
     /// endpoint distances bound the complete oriented segment loci.

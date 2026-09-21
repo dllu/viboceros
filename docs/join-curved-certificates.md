@@ -3,6 +3,10 @@
 [Kernel contract](brep-edge-joining.md) · [Command](commands/join.md) ·
 [Complete replay report](join-curved-certificates-comparison.json)
 
+This records the initial affine-correspondence implementation. The subsequent
+[projective-correspondence audit](join-projective-correspondence.md) extends its
+parameter-speed coverage; the observations and historical report below are unchanged.
+
 Join now certifies complete curved boundaries with different degrees, knots and
 positive rational weights, including reversed directions and unclamped domains.
 The retained spatial curve, surfaces and UV geometry are not refitted by this
