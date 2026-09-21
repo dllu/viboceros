@@ -66,6 +66,10 @@ handles, so cache invalidation uses retained storage identity without rescanning
 geometry. Value equality remains structural; no mutable geometry handle is exposed.
 The [object-snap caches](snap-caching.md) reuse those snapshots, inspect feature-specific
 source changes only after replacement, and index object/layer lookups per query.
+The independent `object_snap/mesh` module caches a camera-free bounds hierarchy
+over exact-location face-boundary wires. `ObjectSnapOptions` supplies feature
+modes and mesh eligibility without coupling cache contents to UI lifetime;
+[mesh snapping](mesh-snaps.md) documents calibration and precision limits.
 The [batch-deletion module](batch-deletion.md) moves removed objects into compact
 history records and restores table order without repeated vector insertions.
 The [ordered selection iterator](selection-iteration.md) shares efficient,

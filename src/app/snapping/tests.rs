@@ -7,6 +7,32 @@ fn enter(app: &mut VibocerosApp, input: &str) {
 }
 
 #[test]
+fn mesh_wire_policy_preserves_one_shot_lifetime_and_suspension() {
+    let mut app = test_app();
+    assert!(!app.snaps.mesh_edges);
+    enter(&mut app, "Points");
+    enter(&mut app, "Near");
+    enter(&mut app, "SnapToMeshes Enable");
+    assert!(app.snaps.mesh_edges);
+    assert_eq!(app.one_shot_snap_label(), Some("Near"));
+    enter(&mut app, "DisableOsnap Disable");
+    assert_eq!(
+        app.effective_snap_modes(),
+        ObjectSnapModes::only(ObjectSnapKind::Near)
+    );
+    assert!(app.accept_drafting_point(point(1., 2., 7.)));
+    assert_eq!(app.effective_snap_modes(), ObjectSnapModes::NONE);
+    enter(&mut app, "SnapToMeshes Toggle");
+    assert!(!app.snaps.mesh_edges);
+    assert_eq!(app.effective_snap_modes(), ObjectSnapModes::NONE);
+    assert_eq!(app.active_command, Some(InteractiveCommand::Points));
+    enter(&mut app, "SnapToMeshes Enable");
+    app.cancel_interactive_command(false);
+    assert!(app.snaps.mesh_edges);
+    assert!(app.document.objects().len() == 1);
+}
+
+#[test]
 fn near_is_opt_in_and_one_shot_restores_persistent_modes_after_accept_or_cancel() {
     let mut app = test_app();
     assert!(!app.snaps.persistent.contains(ObjectSnapKind::Near));

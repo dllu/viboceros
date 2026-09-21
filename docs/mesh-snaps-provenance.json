@@ -1,0 +1,32 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "calibrated_pick_observations": 16,
+  "native_mathematical_captures": 7,
+  "complete_native_rhino_history_matches": 2,
+  "known_perspective_near_discrepancies": 5,
+  "admission_only_misses": 9,
+  "actual_undo_redo_observations": 12,
+  "switch_state_observations": 14,
+  "source_artifact_sha256": "9ad7f078dc15cbe542751246f45371a3e97c514d13482aee66448a8129620a65",
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/mesh_snaps.json": "6d1b27eb1596df64c333ad2de5a5db7da8c88236455a3f9900127ce33401ad0b",
+    "tools/rhino_oracle/fixtures/mesh_snap_targets.json": "37bb8223db64c80f379cdad857c024a4b13582fb3deeae7640ceda631405ced3",
+    "tools/rhino_oracle/fixtures/mesh_snap_switches.json": "65807bb369b279253e48a4524d6301f98c1ae60572fcd977696de8a48eca9c2c",
+    "tools/rhino_oracle/observations/mesh_snaps.json": "05321582bd522742b804799626dba679808a280743871a6431bbd35c33dd9bd5",
+    "tools/rhino_oracle/observations/mesh_snap_switches.json": "0c650b30a146cc08ed5adcd5e0ce36b0297e124c29022e505d39be7a7d0b6679"
+  },
+  "raw_response_sha256": {
+    "picks": "a448c5e280349a3f247cbd7b64981b1814edf2480b374e45588d3165c7c69151",
+    "settings": "29f252847c0e617d1936f296008eb873fc9d7711a98f1844cb56bbeabcaf4ebb",
+    "switches": "581b06142ad63024dad393546a36bda4b31db09fdcab0bf0831f41c2f7b4bb3f"
+  },
+  "notes": [
+    "All Rhino commands and real clicks used newly owned private-Xvfb sessions and public APIs; no user desktop or existing Rhino process was accessed.",
+    "The first settings diagnostic failed because the host did not copy its helper module. After fixing packaging, a new session established Enable/Disable/Toggle grammar and disabled initial state. The failed diagnostic is not treated as evidence.",
+    "Each mesh-pick request reads, sets, verifies and restores the mesh switch through its English public command prompt. The retained per-case settings records verify restoration.",
+    "Mid-only and one-shot Mid did not hover-capture whole mesh wires in these fixtures. Mesh Mid is direct target capture; curve whole-segment hover is not generalized to meshes.",
+    "Independent Fraction references use only source wires and recorded camera/click. Mesh Near native targets follow exact projected proximity, but five constrained Rhino x coordinates differ by about 2.325e-5 through 1.1945e-3. No global epsilon was widened, no observed target was fed to snapping, and these five are not full parity matches.",
+    "Two Mid targets replay complete ordered geometry, attributes, selection and history at absolute 1e-9, relative 1e-10. Nine controls compare mesh admission only, not the absence of other scene snaps or their model-space positions: the receiving box can itself supply curve Mid. Four controls did not split and have no actual Undo/Redo.",
+    "SplitEdge exposes only a constrained x coordinate, not a Rhino unconstrained 3D snap target. Portable source recipes replace only the verified shared box artifact; raw output geometry is retained without numerical normalization."
+  ]
+}

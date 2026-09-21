@@ -2,6 +2,7 @@
 mod cache;
 mod centers;
 mod features;
+mod mesh;
 mod mid_hover;
 mod near;
 mod polygon_centers;
@@ -27,6 +28,24 @@ pub enum ObjectSnapKind {
 /// Defaults to no enabled features.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct ObjectSnapModes(u8);
+
+/// Feature selection and source policy, independent of viewport/prompt lifetime.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct ObjectSnapOptions {
+    pub modes: ObjectSnapModes,
+    /// Enable supported wire snaps on meshes. This does not enable a feature
+    /// mode or turn suspended snaps back on.
+    pub mesh_edges: bool,
+}
+
+impl From<ObjectSnapModes> for ObjectSnapOptions {
+    fn from(modes: ObjectSnapModes) -> Self {
+        Self {
+            modes,
+            mesh_edges: false,
+        }
+    }
+}
 
 impl ObjectSnapModes {
     pub const NONE: Self = Self(0);
@@ -285,8 +304,9 @@ fn nearest_object_snap_with_metric(
     document: &Document,
     metric: &impl SnapMetric,
     cache: &mut ObjectSnapCache,
-    modes: ObjectSnapModes,
+    options: ObjectSnapOptions,
 ) -> Result<Option<ObjectSnap>, DraftingError> {
+    let modes = options.modes;
     // Suspension is O(1), including with large surface/B-rep documents. Cache
     // cleanup resumes on the next enabled query; public input validation still runs.
     if modes == ObjectSnapModes::NONE {
@@ -304,6 +324,16 @@ fn nearest_object_snap_with_metric(
     for object in document.objects() {
         let attributes = object.attributes();
         if !attributes.is_visible() || !visible_layers.contains(&attributes.layer_id()) {
+            continue;
+        }
+        if matches!(object.geometry(), Geometry::Mesh(_)) {
+            if options.mesh_edges {
+                cache
+                    .meshes
+                    .visit(object, modes, metric, &mut |kind, point, distance| {
+                        consider_scored_candidate(&mut best, object.id(), kind, point, distance);
+                    });
+            }
             continue;
         }
         let mut object_best = None;
@@ -379,8 +409,7 @@ fn nearest_object_snap_with_metric(
                     emit(ObjectSnapKind::End, vertex.point());
                 }
             }
-            // Mesh features need a spatial index rather than an O(vertices)
-            // walk per pointer frame.
+            // Mesh queries use the independently cached wire index above.
             Geometry::Mesh(_) | Geometry::NurbsSurface(_) | Geometry::Brep(_) => {}
         }
         // Mid and Center share source discovery. Each expensive feature is

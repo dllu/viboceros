@@ -87,10 +87,20 @@ impl ViewKind {
 pub struct DraftingInput {
     pub active: bool,
     pub osnap: viboceros_drafting::ObjectSnapModes,
+    pub mesh_edges: bool,
     pub smart_track: bool,
     pub grid_snap: bool,
     pub anchor: Option<Point3>,
     pub reference: Option<Point3>,
+}
+
+impl DraftingInput {
+    fn snap_options(self) -> viboceros_drafting::ObjectSnapOptions {
+        viboceros_drafting::ObjectSnapOptions {
+            modes: self.osnap,
+            mesh_edges: self.mesh_edges,
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -361,7 +371,7 @@ impl Viewport {
                 pointer,
                 rect,
                 document,
-                drafting.osnap,
+                drafting.snap_options(),
             )?;
             self.paint_edge_point_cursor(&painter, rect, curve, cursor);
             Some(cursor.parameter)
@@ -2377,6 +2387,7 @@ mod tests {
                             DraftingInput {
                                 active: true,
                                 osnap: viboceros_drafting::ObjectSnapModes::ALL,
+                                mesh_edges: false,
                                 ..Default::default()
                             },
                         )
@@ -2415,6 +2426,7 @@ mod tests {
                 DraftingInput {
                     active: true,
                     osnap: viboceros_drafting::ObjectSnapModes::ALL,
+                    mesh_edges: false,
                     smart_track: true,
                     grid_snap: false,
                     anchor: Some(point(0.0, 0.0, 8.0)),
@@ -2448,6 +2460,7 @@ mod tests {
                 DraftingInput {
                     active: true,
                     osnap: viboceros_drafting::ObjectSnapModes::ALL,
+                    mesh_edges: false,
                     smart_track: false,
                     grid_snap: false,
                     anchor: None,
@@ -2474,6 +2487,7 @@ mod tests {
                 DraftingInput {
                     active: true,
                     osnap: viboceros_drafting::ObjectSnapModes::ALL,
+                    mesh_edges: false,
                     smart_track: true,
                     grid_snap: false,
                     anchor: Some(anchor),
@@ -2499,6 +2513,7 @@ mod tests {
                 DraftingInput {
                     active: true,
                     osnap: viboceros_drafting::ObjectSnapModes::ALL,
+                    mesh_edges: false,
                     smart_track: true,
                     grid_snap: true,
                     anchor: Some(point(8.0, 8.0, 6.0)),
@@ -2530,6 +2545,7 @@ mod tests {
                 DraftingInput {
                     active: true,
                     osnap: viboceros_drafting::ObjectSnapModes::NONE,
+                    mesh_edges: false,
                     smart_track: false,
                     grid_snap: false,
                     anchor: None,

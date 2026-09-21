@@ -123,7 +123,12 @@ pub(super) fn unit_screen(v: [Real; 2]) -> Option<[Real; 2]> {
     Some(v.map(|x| x / length))
 }
 
-fn line(a: Point3, b: Point3, metric: &impl SnapMetric, emit: &mut impl FnMut(Point3, Real)) {
+pub(super) fn line(
+    a: Point3,
+    b: Point3,
+    metric: &impl SnapMetric,
+    emit: &mut impl FnMut(Point3, Real),
+) {
     match projected_line::capture(a, b, metric) {
         projected_line::Capture::Miss => return,
         projected_line::Capture::Point(point) => {

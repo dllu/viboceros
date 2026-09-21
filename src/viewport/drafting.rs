@@ -1,7 +1,9 @@
 //! Drafting cursor resolution and construction-plane overlays.
 
 use super::*;
-use viboceros_drafting::{ObjectSnap, ObjectSnapModes, OrthogonalTrack, TrackAxis};
+#[cfg(test)]
+use viboceros_drafting::ObjectSnapModes;
+use viboceros_drafting::{ObjectSnap, OrthogonalTrack, TrackAxis};
 
 #[derive(Clone, Copy, Debug)]
 pub(super) struct DraftingCursor {
@@ -20,15 +22,16 @@ impl Viewport {
         pointer: Pos2,
         rect: Rect,
         document: &Document,
-        modes: ObjectSnapModes,
+        options: impl Into<viboceros_drafting::ObjectSnapOptions>,
     ) -> Option<ObjectSnap> {
+        let options = options.into();
         if let Some(projection) = self.point_cloud_projection() {
             let origin = self.world_origin(rect);
             let scale = Real::from(self.pixels_per_unit);
             let target = Point3::try_new(self.target.x, self.target.y, self.target.z).ok()?;
             self.object_snap_cache
                 .borrow_mut()
-                .nearest_axis_aligned_with_modes(
+                .nearest_axis_aligned_with_options(
                     document,
                     projection,
                     target,
@@ -37,19 +40,19 @@ impl Viewport {
                         (Real::from(origin.y) - Real::from(pointer.y)) / scale,
                     ],
                     Real::from(OSNAP_CAPTURE_PIXELS) / scale,
-                    modes,
+                    options,
                 )
                 .ok()
                 .flatten()
         } else {
             self.object_snap_cache
                 .borrow_mut()
-                .nearest_projected_with_modes(
+                .nearest_projected_with_options(
                     document,
                     [Real::from(pointer.x), Real::from(pointer.y)],
                     Real::from(OSNAP_CAPTURE_PIXELS),
                     |point| self.project_precise(point, rect),
-                    modes,
+                    options,
                 )
                 .ok()
                 .flatten()
@@ -66,7 +69,7 @@ impl Viewport {
         let raw_point = self.unproject_drafting_plane(pointer, rect, input.anchor);
         // Object snaps are a camera-space query. They remain available even
         // when the construction plane is edge-on or behind the camera.
-        let object_snap = self.object_snap(pointer, rect, document, input.osnap);
+        let object_snap = self.object_snap(pointer, rect, document, input.snap_options());
         let track = if object_snap.is_none() && input.smart_track {
             raw_point.zip(input.anchor).and_then(|(cursor, anchor)| {
                 viboceros_drafting::plane::orthogonal_track_projected(
@@ -338,6 +341,8 @@ pub(super) fn clip_drafting_line(
 
 #[cfg(test)]
 mod center_tests;
+#[cfg(test)]
+mod mesh_tests;
 #[cfg(test)]
 mod mid_tests;
 #[cfg(test)]

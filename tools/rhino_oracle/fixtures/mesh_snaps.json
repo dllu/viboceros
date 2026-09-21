@@ -1,0 +1,1470 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "split_edge_command",
+      "id": "quad-near-disabled",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              3.5,
+              -2.0,
+              7.0
+            ],
+            "aim": [
+              3.5,
+              -2.0,
+              7.0
+            ],
+            "offset": [
+              4,
+              3
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true,
+      "snap_to_meshes": false
+    },
+    {
+      "op": "split_edge_command",
+      "id": "quad-near-enabled",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              3.5,
+              -2.0,
+              7.0
+            ],
+            "aim": [
+              3.5,
+              -2.0,
+              7.0
+            ],
+            "offset": [
+              4,
+              3
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true,
+      "snap_to_meshes": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "quad-mid-hover-disabled",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              3.5,
+              -2.0,
+              7.0
+            ],
+            "aim": [
+              3.5,
+              -2.0,
+              7.0
+            ],
+            "offset": [
+              0,
+              0
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Mid"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true,
+      "snap_to_meshes": false
+    },
+    {
+      "op": "split_edge_command",
+      "id": "quad-mid-hover-enabled",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              3.5,
+              -2.0,
+              7.0
+            ],
+            "aim": [
+              3.5,
+              -2.0,
+              7.0
+            ],
+            "offset": [
+              0,
+              0
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Mid"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true,
+      "snap_to_meshes": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "quad-mid-direct-disabled",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              5.0,
+              -2.0,
+              7.0
+            ],
+            "aim": [
+              5.0,
+              -2.0,
+              7.0
+            ],
+            "offset": [
+              2,
+              1
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Mid"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true,
+      "snap_to_meshes": false
+    },
+    {
+      "op": "split_edge_command",
+      "id": "quad-mid-direct-enabled",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              5.0,
+              -2.0,
+              7.0
+            ],
+            "aim": [
+              5.0,
+              -2.0,
+              7.0
+            ],
+            "offset": [
+              2,
+              1
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Mid"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true,
+      "snap_to_meshes": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "triangles-near-disabled",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              4.0,
+              -4.0,
+              7.0
+            ],
+            "aim": [
+              4.0,
+              -4.0,
+              7.0
+            ],
+            "offset": [
+              3,
+              2
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true,
+      "snap_to_meshes": false
+    },
+    {
+      "op": "split_edge_command",
+      "id": "triangles-near-enabled",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              4.0,
+              -4.0,
+              7.0
+            ],
+            "aim": [
+              4.0,
+              -4.0,
+              7.0
+            ],
+            "offset": [
+              3,
+              2
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true,
+      "snap_to_meshes": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "soup-near-disabled",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              4.0,
+              -4.0,
+              7.0
+            ],
+            "aim": [
+              4.0,
+              -4.0,
+              7.0
+            ],
+            "offset": [
+              3,
+              2
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true,
+      "snap_to_meshes": false
+    },
+    {
+      "op": "split_edge_command",
+      "id": "soup-near-enabled",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              4.0,
+              -4.0,
+              7.0
+            ],
+            "aim": [
+              4.0,
+              -4.0,
+              7.0
+            ],
+            "offset": [
+              3,
+              2
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true,
+      "snap_to_meshes": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "quad-no-diagonal-disabled",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              4.0,
+              -4.0,
+              7.0
+            ],
+            "aim": [
+              4.0,
+              -4.0,
+              7.0
+            ],
+            "offset": [
+              0,
+              0
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true,
+      "snap_to_meshes": false
+    },
+    {
+      "op": "split_edge_command",
+      "id": "quad-no-diagonal-enabled",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              4.0,
+              -4.0,
+              7.0
+            ],
+            "aim": [
+              4.0,
+              -4.0,
+              7.0
+            ],
+            "offset": [
+              0,
+              0
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true,
+      "snap_to_meshes": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "mid-one-shot",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              3.5,
+              -2.0,
+              7.0
+            ],
+            "aim": [
+              3.5,
+              -2.0,
+              7.0
+            ],
+            "offset": [
+              0,
+              0
+            ],
+            "osnap": "Mid"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Point",
+        "Near"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true,
+      "snap_to_meshes": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "mid-near-hover",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              3.5,
+              -2.0,
+              7.0
+            ],
+            "aim": [
+              3.5,
+              -2.0,
+              7.0
+            ],
+            "offset": [
+              0,
+              0
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Mid",
+        "Near"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true,
+      "snap_to_meshes": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "mid-near-direct",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              4.95,
+              -2.0,
+              7.0
+            ],
+            "aim": [
+              4.95,
+              -2.0,
+              7.0
+            ],
+            "offset": [
+              0,
+              0
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Mid",
+        "Near"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true,
+      "snap_to_meshes": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "near-one-shot",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -2.0,
+              7.0
+            ],
+            [
+              8.0,
+              -8.0,
+              7.0
+            ],
+            [
+              2.0,
+              -8.0,
+              7.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              3.5,
+              -2.0,
+              7.0
+            ],
+            "aim": [
+              3.5,
+              -2.0,
+              7.0
+            ],
+            "offset": [
+              0,
+              0
+            ],
+            "osnap": "Near"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Point",
+        "Mid"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true,
+      "snap_to_meshes": true
+    }
+  ]
+}

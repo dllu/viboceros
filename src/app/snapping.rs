@@ -2,7 +2,7 @@
 use super::*;
 use viboceros_drafting::{ObjectSnapKind, ObjectSnapModes};
 
-pub(super) const HELP: &str = "Snap modes: choose Point/End/Mid/Cen/Quad/Near in the toolbar menu. Right-click a mode to isolate/restore it; Shift-click for one pick. At a point prompt type Point, End, Mid, Cen, Quad, Near or NoSnap for one pick. Near is off by default. Persistent modes are restored after an accepted point. DisableOsnap/F4 suspends persistent modes without changing the selection.";
+pub(super) const HELP: &str = "Snap modes: choose Point/End/Mid/Cen/Quad/Near in the toolbar menu. Right-click a mode to isolate/restore it; Shift-click for one pick. At a point prompt type Point, End, Mid, Cen, Quad, Near or NoSnap for one pick. Near and mesh-wire snapping are off by default. Enable mesh Near/Mid with SnapToMeshes Enable or the mesh-wire checkbox. Persistent modes are restored after an accepted point. DisableOsnap/F4 suspends persistent modes without changing the selection.";
 
 const FEATURES: [(ObjectSnapKind, &str); 6] = [
     (ObjectSnapKind::Point, "Point"),
@@ -14,6 +14,7 @@ const FEATURES: [(ObjectSnapKind, &str); 6] = [
 ];
 
 pub(super) struct SnapControls {
+    pub(super) mesh_edges: bool,
     pub(super) persistent: ObjectSnapModes,
     pub(super) model_override: Option<ObjectSnapModes>,
     // Transparent CPlane prompts must not consume the suspended model prompt's override.
@@ -24,6 +25,7 @@ pub(super) struct SnapControls {
 impl Default for SnapControls {
     fn default() -> Self {
         Self {
+            mesh_edges: false,
             persistent: ObjectSnapModes::LANDMARKS,
             model_override: None,
             plane_override: None,
@@ -171,6 +173,16 @@ impl VibocerosApp {
             }
         }
         ui.separator();
+        let mut mesh_edges = self.snaps.mesh_edges;
+        if ui.checkbox(&mut mesh_edges, "Snap to mesh wires").changed() {
+            self.apply_interface_command(
+                viboceros_command::interface::InterfaceCommand::SnapToMeshes(if mesh_edges {
+                    viboceros_command::interface::SwitchAction::On
+                } else {
+                    viboceros_command::interface::SwitchAction::Off
+                }),
+            );
+        }
         if ui
             .add_enabled(
                 self.requests_snap_point(),

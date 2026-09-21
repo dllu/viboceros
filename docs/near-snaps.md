@@ -4,7 +4,8 @@
 
 Near captures curve points in screen space, preserving their model-space height.
 It supports lines, polylines, circles, arcs, ellipses, NURBS, polycurve leaves,
-natural surface boundaries and spatial B-rep edges. Mesh Near is not implemented.
+natural surface boundaries and spatial B-rep edges. [Mesh wire Near](mesh-snaps.md)
+is separately opt-in and has known perspective differences from Rhino.
 Enable it in **Snap modes**, right-click to isolate/restore it, or Shift-click
 for one point. At a point prompt, `Near`/`Nearest` selects a one-shot override.
 Near is off by default: the default five landmark modes remain Point/End/Mid/Cen/Quad.
@@ -111,8 +112,8 @@ do not prevent refinement into their adjacent interval.
 This is **not a certified global closest-point solver**. Highly oscillatory spans,
 stationary/cusp configurations, narrow visible slivers and unresolved projections
 can evade the sampling/bracketing scheme. Extreme projective/coordinate roundoff
-is not universally bounded by the retained fixture epsilon. Mesh Near, occlusion,
-CPlane-projected snaps, broader priority behavior and spatial indexing remain
+is not universally bounded by the retained fixture epsilon. Full Mesh Near parity,
+occlusion, CPlane-projected snaps, broader priority behavior and scene spatial indexing remain
 unfinished. Work scales with scene/span complexity, not a guaranteed frame budget.
 
 Native tests cover the supported geometry families, nonzero-distance conic

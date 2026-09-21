@@ -1,0 +1,4 @@
+{"protocol_version":1,"iterations":1,"operations":[
+  {"op":"interface_commands","id":"mesh-initial-disabled","grid_snap":true,"osnap":true,"smart_track":false,"snap_to_meshes":false,"active_viewport":0,"display_modes":["Wireframe","Shaded","Ghosted","Wireframe"],"commands":["SnapToMeshes Enable","SnapToMeshes Enable","SnapToMeshes Toggle","SnapToMeshes Disable","SnapToMeshes Disable","SnapToMeshes Toggle"]},
+  {"op":"interface_commands","id":"mesh-initial-enabled","grid_snap":false,"osnap":false,"smart_track":true,"snap_to_meshes":true,"active_viewport":2,"display_modes":["Shaded","Wireframe","Wireframe","Ghosted"],"commands":["SnapToMeshes Disable","SnapToMeshes Disable","SnapToMeshes Toggle","SnapToMeshes Enable","SnapToMeshes Enable","SnapToMeshes Toggle"]}
+]}

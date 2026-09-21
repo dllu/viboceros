@@ -5211,6 +5211,7 @@ impl eframe::App for VibocerosApp {
             active: (self.active_command.is_some() && !self.picking_alignment_curve())
                 || self.plane_prompt.is_some(),
             osnap: self.effective_snap_modes(),
+            mesh_edges: self.snaps.mesh_edges,
             smart_track: self.smart_track,
             grid_snap: self.grid_snap,
             anchor: if let Some(prompt) = &self.plane_prompt {

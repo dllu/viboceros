@@ -187,6 +187,8 @@ fn interface_commands_preserve_a_front_view_polyline_and_one_model_undo_step() {
         "Snap",
         "SetSnap On",
         "'DisableOsnap Disable",
+        "SnapToMeshes Enable",
+        "SnapToMeshes Toggle",
         "SmartTrack Off",
         "-_SetDisplayMode Viewport=All Mode=Ghosted",
         "Help",
@@ -241,6 +243,7 @@ fn interface_errors_remain_editable_without_cancelling_the_point_prompt() {
         "SetSnap",
         "Snap On",
         "DisableOsnap Yes",
+        "SnapToMeshes On",
         "SmartTrack Maybe",
         "SetDisplayMode Rendered",
         "Help Invalid",
@@ -633,6 +636,11 @@ fn snap_menu_real_clicks_toggle_isolate_and_apply_a_one_shot_without_losing_inpu
         ("Mid", egui::PointerButton::Primary, egui::Modifiers::NONE),
         ("Cen", egui::PointerButton::Secondary, egui::Modifiers::NONE),
         ("Cen", egui::PointerButton::Secondary, egui::Modifiers::NONE),
+        (
+            "Snap to mesh wires",
+            egui::PointerButton::Primary,
+            egui::Modifiers::NONE,
+        ),
         ("Near", egui::PointerButton::Primary, egui::Modifiers::SHIFT),
     ] {
         frame(&context, &mut app, 1000., vec![])
@@ -665,6 +673,7 @@ fn snap_menu_real_clicks_toggle_isolate_and_apply_a_one_shot_without_losing_inpu
         assert!(app.document.objects().next().is_none());
     }
     assert_eq!(app.one_shot_snap_label(), Some("Near"));
+    assert!(app.snaps.mesh_edges);
     assert_eq!(
         app.effective_snap_modes(),
         ObjectSnapModes::only(ObjectSnapKind::Near)

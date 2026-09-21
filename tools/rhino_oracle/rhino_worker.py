@@ -3503,6 +3503,8 @@ def _interface_script(command):
         return "_%s _%s" % (switches[name], tokens[0].lstrip("_").title())
     if name == "disableosnap" and len(tokens) == 1 and tokens[0].lstrip("_").lower() in ("enable", "disable", "toggle"):
         return "_DisableOsnap _%s" % tokens[0].lstrip("_").title()
+    if name == "snaptomeshes" and len(tokens) == 1 and tokens[0].lstrip("_").lower() in ("enable", "disable", "toggle"):
+        return "_SnapToMeshes _%s" % tokens[0].lstrip("_").title()
     if name != "setdisplaymode":
         raise ValueError("unsupported interface command or options")
     options = {}
@@ -3540,6 +3542,11 @@ def _interface_commands(operation):
     if not isinstance(commands, list) or not 1 <= len(commands) <= 128:
         raise ValueError("expected 1 to 128 interface commands")
     scripts = [_interface_script(command) for command in commands]
+    mesh_requested = "snap_to_meshes" in operation
+    if mesh_requested and type(operation["snap_to_meshes"]) is not bool:
+        raise ValueError("snap_to_meshes must be boolean")
+    if not mesh_requested and any(script.startswith("_SnapToMeshes ") for script in scripts):
+        raise ValueError("mesh snap commands require an explicit initial setting")
     if any(not isinstance(operation[key], bool) for key in ("grid_snap", "osnap", "smart_track")):
         raise ValueError("interface flags must be booleans")
     index = operation["active_viewport"]
@@ -3561,29 +3568,44 @@ def _interface_commands(operation):
     original_track = track.GetCurrentState()
     original_modes = [view.ActiveViewport.DisplayMode for view in views]
     original_view = document.Views.ActiveView
+    original_mesh = None
+    def record():
+        value = _interface_state(views, aid, track)
+        if mesh_requested:
+            value["snap_to_meshes"] = mesh_snap_settings_probe.current(globals())
+        return value
     try:
+        if mesh_requested:
+            import mesh_snap_settings_probe
+            original_mesh = mesh_snap_settings_probe.current(globals())
+            mesh_snap_settings_probe.set_enabled(operation["snap_to_meshes"], globals())
         aid.GridSnap = operation["grid_snap"]
         aid.Osnap = operation["osnap"]
         track.UseSmartTrack = operation["smart_track"]
         for view, mode in zip(views, modes):
             view.ActiveViewport.DisplayMode = mode
         document.Views.ActiveView = views[index]
-        states = [_interface_state(views, aid, track)]
+        states = [record()]
         for script in scripts:
             _record_progress("interface command: " + script)
             if not _run_surface_script(script, True):
                 raise ValueError("interface command failed: " + script)
-            states.append(_interface_state(views, aid, track))
+            states.append(record())
         return {"states": states}, 0
     finally:
         # Settings are application-global even in a private Xvfb. Restore the
         # full snapshots, not just the three switches under test.
-        Rhino.RhinoApp.RunScript("!", False)
-        aid.UpdateFromState(original_aid)
-        track.UpdateFromState(original_track)
-        for view, mode in zip(views, original_modes):
-            view.ActiveViewport.DisplayMode = mode
-        document.Views.ActiveView = original_view
+        try:
+            Rhino.RhinoApp.RunScript("!", False)
+            aid.UpdateFromState(original_aid)
+            track.UpdateFromState(original_track)
+            for view, mode in zip(views, original_modes):
+                view.ActiveViewport.DisplayMode = mode
+            document.Views.ActiveView = original_view
+        finally:
+            # A failure restoring another setting must not skip this switch.
+            if original_mesh is not None:
+                mesh_snap_settings_probe.set_enabled(original_mesh, globals())
 
 
 def _construction_plane_script(step):
@@ -4900,6 +4922,9 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
+    if operation.get("op") == "mesh_snap_settings":
+        import mesh_snap_settings_probe
+        return mesh_snap_settings_probe.run(operation, globals())
     if operation.get("op") == "points_command":
         return _points_command(operation)
     if operation.get("op") == "point_cloud_command":

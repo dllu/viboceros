@@ -70,7 +70,7 @@ Osnap captures visible Point, End, Mid, Center, Quad, and opt-in Near features, 
 indexed members of point clouds and features on locked objects and layers.
 Mid uses half arc length on NURBS, individual polycurve segments and surface
 boundaries, not the surface's UV center. With Mid alone enabled (including one-shot
-Mid), hovering near any part of a segment captures its Mid; mixed-mode Mid requires
+Mid), hovering near any part of a curve segment captures its Mid; mixed-mode Mid requires
 proximity to the target. Circle/ellipse Mid is opposite the stored seam. Center
 captures by hovering near an analytic circle, arc or ellipse (including polycurve
 arc leaves), or a closed polygonal boundary. Polygon targets average corners;
@@ -88,6 +88,10 @@ mode and Shift-click selects it for one point. At point prompts, `Point`, `End`,
 [polygon Center](polygon-center-snaps.md) and [circular NURBS Center](circular-center-snaps.md)
 for coverage limits, [Near](near-snaps.md) for screen-space curve targets, and
 [snap caching](snap-caching.md) for invalidation and performance.
+The separate **Snap to mesh wires** checkbox or `SnapToMeshes Enable` admits
+[mesh Near/Mid](mesh-snaps.md). It defaults off, does not change enabled modes,
+and preserves point prompts and one-shot overrides. Mesh Mid is direct-only;
+perspective Mesh Near has retained, unresolved Rhino coordinate differences.
 SmartTrack captures local plane-axis alignment from the first picked
 point in every viewport. Grid Snap rounds construction-plane picks to the unit grid. Right-drag
 pans parallel views and rotates the Perspective view; Shift-right-drag pans the

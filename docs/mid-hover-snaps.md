@@ -9,6 +9,9 @@ enabled, Mid still requires proximity to the midpoint itself. This distinction
 follows [Rhino's Mid documentation](https://docs.mcneel.com/rhino/8/help/en-us/user_interface/object_snaps.htm)
 and the retained clicks below.
 
+This curve behavior does not extend to [mesh wires](mesh-snaps.md): their retained
+Mid-only and one-shot cases require proximity to the midpoint itself.
+
 The target is halfway along the segment's **arc length**, not its parameter
 interval. Polyline/polycurve segments, natural surface boundaries and spatial
 B-rep edges each supply their own Mid. Analytic circles and ellipses now supply

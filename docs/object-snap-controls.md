@@ -10,6 +10,11 @@ then right-click it again to restore the previous set. An ordinary checkbox edit
 starts a new set and discards the old isolation snapshot. These are session UI
 settings, not document edits or model undo steps.
 
+The separate **Snap to mesh wires** checkbox (initially off), also controlled by
+`SnapToMeshes Enable|Disable|Toggle`, admits supported mesh Near/Mid sources
+without changing feature selection or pending overrides. [Mesh snapping](mesh-snaps.md)
+documents its direct-only Mid behavior and known perspective Near differences.
+
 While a command requests a point, Shift-click a mode for the next point only.
 Alternatively submit `Point`, `End`, `Mid`, `Cen`, `Quad`, `Near` or `NoSnap` at the command
 line, then pick or type the point. `Endpoint`, `Midpoint`, `Center`, `Quadrant`
@@ -34,7 +39,7 @@ claimed to be fully equivalent to Rhino in every interaction.
 ## Shared capture and evidence
 
 `app/snapping` owns persistent selection and scoped overrides. Each frame passes
-the effective `ObjectSnapModes` into the shared drafting cache. Parallel queries
+the effective modes and mesh-source policy as `ObjectSnapOptions` into the shared drafting cache. Parallel queries
 retain their indexed point-cloud and relative-coordinate behavior; Perspective
 uses the same mode mask with camera projection. The SplitEdge endpoint shortcut
 now explicitly requires End, rather than incorrectly activating for any mode.
@@ -79,4 +84,5 @@ arbitrary macros remain incomplete. New controls do not establish broad snap
 parity or change the limits of the underlying geometry queries.
 
 [Near](near-snaps.md) includes calibrated perspective captures and complete
-command/history replay. Mesh Near and certified global curved proximity remain pending.
+command/history replay. [Mesh wires](mesh-snaps.md) now support opt-in Near/Mid;
+exact Rhino Mesh Near parity and certified global curved proximity remain pending.

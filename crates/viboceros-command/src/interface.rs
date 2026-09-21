@@ -87,6 +87,7 @@ pub enum InterfaceCommand {
     ZoomAllSelected,
     SetSnap(SwitchAction),
     SetOsnap(SwitchAction),
+    SnapToMeshes(SwitchAction),
     SmartTrack(SwitchAction),
     SetDisplayMode {
         viewport: ViewportTarget,
@@ -94,7 +95,8 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 10] = [
+pub const COMMAND_NAMES: [&str; 11] = [
+    "SnapToMeshes",
     "Zoom",
     "ZE",
     "ZS",
@@ -107,7 +109,7 @@ pub const COMMAND_NAMES: [&str; 10] = [
     "Snap",
 ];
 
-pub const HELP: &str = "Interface: Zoom [All] Extents|Selected (ZE, ZS, ZEA, ZSA); Zoom Factor <positive number>; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [All] Extents|Selected (ZE, ZS, ZEA, ZSA); Zoom Factor <positive number>; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -202,6 +204,19 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
             }
         } else if name.eq_ignore_ascii_case("SmartTrack") {
             switch("SmartTrack On|Off|Toggle").map(InterfaceCommand::SmartTrack)
+        } else if name.eq_ignore_ascii_case("SnapToMeshes") {
+            match args.as_slice() {
+                [value] if keyword(value, "Enable") => {
+                    Ok(InterfaceCommand::SnapToMeshes(SwitchAction::On))
+                }
+                [value] if keyword(value, "Disable") => {
+                    Ok(InterfaceCommand::SnapToMeshes(SwitchAction::Off))
+                }
+                [value] if keyword(value, "Toggle") => {
+                    Ok(InterfaceCommand::SnapToMeshes(SwitchAction::Toggle))
+                }
+                _ => Err(InterfaceError::Usage("SnapToMeshes Enable|Disable|Toggle")),
+            }
         } else if name.eq_ignore_ascii_case("SetDisplayMode") {
             parse_display_mode(&args)
         } else {
@@ -248,6 +263,7 @@ fn parse_display_mode(args: &[&str]) -> Result<InterfaceCommand, InterfaceError>
 pub struct InterfaceState {
     pub grid_snap: bool,
     pub osnap: bool,
+    pub snap_to_meshes: bool,
     pub smart_track: bool,
     pub display_modes: Vec<DisplayMode>,
     pub active_viewport: usize,
@@ -275,6 +291,10 @@ impl InterfaceState {
             InterfaceCommand::SetOsnap(action) => {
                 self.osnap = action.apply(self.osnap);
                 format!("Object snaps: {}", on_off(self.osnap))
+            }
+            InterfaceCommand::SnapToMeshes(action) => {
+                self.snap_to_meshes = action.apply(self.snap_to_meshes);
+                format!("Mesh wire snaps: {}", on_off(self.snap_to_meshes))
             }
             InterfaceCommand::SmartTrack(action) => {
                 self.smart_track = action.apply(self.smart_track);

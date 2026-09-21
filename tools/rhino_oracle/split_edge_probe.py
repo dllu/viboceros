@@ -20,6 +20,8 @@ def validate(operation):
             return False
     if type(operation.get("record_viewport", False)) is not bool:
         raise ValueError("record_viewport must be boolean")
+    if "snap_to_meshes" in operation and type(operation["snap_to_meshes"]) is not bool:
+        raise ValueError("snap_to_meshes must be boolean")
     persistent = operation.get("persistent_snaps", [])
     if (not isinstance(persistent, list) or len(persistent) > 6 or
             any(mode not in ("Point", "End", "Mid", "Cen", "Quad", "Near") for mode in persistent) or
@@ -55,6 +57,8 @@ def validate(operation):
         raise ValueError("unsupported SplitEdge finish")
     if operation.get("record_viewport", False) and not any("mouse" in step or "pick" in step for step in operation.get("inputs", [])):
         raise ValueError("viewport calibration requires a point click")
+    if "snap_to_meshes" in operation and (not operation.get("record_viewport", False) or not any("pick" in step for step in operation.get("inputs", []))):
+        raise ValueError("mesh snap probes require a calibrated point pick")
     shared = dict(operation, op="merge_edge_command")
     return merge_edges_probe.validate(shared)
 
@@ -173,10 +177,11 @@ def run(operation, tolerance, host):
     frames = []
     def driver(operation, script, curve, host):
         return drive(operation, script, curve, host, frames)
-    with snapping_environment(operation, host):
+    with snapping_environment(operation, host) as mesh_state:
         value, elapsed = merge_edges_probe.run_owned(operation, tolerance, host, sources, order,
                                                    "SplitEdge", mouse_command, driver)
     if operation.get("record_viewport", False): value["pick_frames"] = frames
+    if mesh_state is not None: value["mesh_snap_setting"] = mesh_state
     return value, elapsed
 
 
@@ -202,7 +207,15 @@ def snapping_environment(operation, host):
         aid.ProjectSnapToCPlane = False
         aid.SnapToLocked = aid.SnapToOccluded = True
         track.UseSmartTrack = False
-        yield
+        if "snap_to_meshes" in operation:
+            if __package__:
+                from . import mesh_snap_settings_probe
+            else:
+                import mesh_snap_settings_probe
+            with mesh_snap_settings_probe.environment(operation["snap_to_meshes"], host) as state:
+                yield state
+        else:
+            yield
     finally:
         try:
             aid.UpdateFromState(original_aid)

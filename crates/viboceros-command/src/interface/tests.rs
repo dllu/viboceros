@@ -1,6 +1,33 @@
 use super::*;
 
 #[test]
+fn mesh_snap_switch_uses_enable_disable_toggle_and_preserves_other_state() {
+    let mut current = state();
+    let initial = current.clone();
+    for (input, expected) in [
+        ("SnapToMeshes Enable", true),
+        ("SnapToMeshes Enable", true),
+        ("'_SnapToMeshes _Toggle", false),
+        ("SnapToMeshes Disable", false),
+        ("SnapToMeshes Toggle", true),
+    ] {
+        current.apply(parse(input).unwrap().unwrap()).unwrap();
+        assert_eq!(current.snap_to_meshes, expected);
+        let mut unchanged = current.clone();
+        unchanged.snap_to_meshes = initial.snap_to_meshes;
+        assert_eq!(unchanged, initial);
+    }
+    for input in [
+        "SnapToMeshes",
+        "SnapToMeshes On",
+        "SnapToMeshes Enable _Delete",
+        "SnapToMeshes Enable Disable",
+    ] {
+        assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
+    }
+}
+
+#[test]
 fn zoom_factor_is_finite_positive_and_does_not_mutate_interface_state() {
     for (input, value) in [
         ("Zoom Factor 2", 2.0),
@@ -93,6 +120,7 @@ fn state() -> InterfaceState {
     InterfaceState {
         grid_snap: true,
         osnap: true,
+        snap_to_meshes: false,
         smart_track: false,
         display_modes: vec![DisplayMode::Wireframe; 4],
         active_viewport: 2,

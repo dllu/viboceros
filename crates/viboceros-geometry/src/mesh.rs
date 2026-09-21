@@ -2325,6 +2325,17 @@ impl TriangleMesh {
         self.topology_data().topological_points
     }
 
+    /// Exact-location-welded face-boundary edges, with no tessellation diagonals.
+    /// Unlike constructing new lines, querying existing edges does not apply a
+    /// document length tolerance or discard short but nonzero mesh edges.
+    pub fn topology_edge_points(&self) -> Vec<[Point3; 2]> {
+        let data = self.topology_data();
+        data.edges
+            .keys()
+            .map(|&(a, b)| [data.topological_points[a], data.topological_points[b]])
+            .collect()
+    }
+
     /// Returns every exact-location-welded topology edge exactly once.
     ///
     /// This is the curve set Rhino displays and extracts for a triangle mesh:

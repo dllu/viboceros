@@ -18,6 +18,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `Snap` | Toggle the one-unit grid snap. |
 | `SetSnap On\|Off\|Toggle` | Set or toggle grid snapping. |
 | `DisableOsnap Enable\|Disable\|Toggle` | Enable, suspend, or toggle object snaps. |
+| `SnapToMeshes Enable\|Disable\|Toggle` | Admit mesh Near/Mid wires independently of feature modes; initially disabled. |
 | `SmartTrack On\|Off\|Toggle` | Set or toggle reference-point axis tracking. |
 | `SetDisplayMode [Viewport=Active\|All] Mode=Wireframe\|Shaded\|Ghosted` | Change the active viewport (default) or all four viewports. |
 
@@ -40,7 +41,7 @@ r4,3
 ```
 
 The line still starts at the accepted origin. Interface changes do not consume
-model undo steps or destroy redo history. `DisableOsnap` uses **Enable/Disable**,
+model undo steps or destroy redo history. `DisableOsnap` and `SnapToMeshes` use **Enable/Disable**,
 not On/Off; the toolbar's Osnap indicator is lit when snapping is enabled.
 
 F9 toggles grid snap; F4 toggles object snaps. Ctrl/Cmd+Alt+W, S, and G select
@@ -71,8 +72,10 @@ exercise initialization, command, and recording errors. A forcibly terminated
 Rhino process cannot execute that cleanup.
 
 [Per-mode and one-shot snap controls](../object-snap-controls.md) expose the
-implemented Point/End/Mid/Center/Quad features, including
-[Mid-only whole-segment hover](../mid-hover-snaps.md). Other feature kinds remain
+implemented Point/End/Mid/Center/Quad and opt-in [Near](../near-snaps.md), including
+[Mid-only curve hover](../mid-hover-snaps.md). [Mesh wire snaps](../mesh-snaps.md)
+have a separate source switch, direct-only Mid, and known perspective Near differences;
+14 retained mesh-switch states match Rhino exactly. Other feature kinds remain
 incomplete. Grid spacing is one unit; SmartTrack is
 reference-axis tracking, not Rhino's complete inference system. SnapSize, custom
 display modes, UI-setting persistence, and full command macro interpretation

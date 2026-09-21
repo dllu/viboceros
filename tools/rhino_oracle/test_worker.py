@@ -858,6 +858,9 @@ class RhinoWorkerTests(unittest.TestCase):
             ("Snap", "_Snap"), ("'_-sEtSnAp _oFf", "_SetSnap _Off"),
             ("DisableOsnap Toggle", "_DisableOsnap _Toggle"), ("SmartTrack On", "_SmartTrack _On"),
             ("DisableOsnap Enable", "_DisableOsnap _Enable"), ("DisableOsnap Disable", "_DisableOsnap _Disable"),
+            ("SnapToMeshes Enable", "_SnapToMeshes _Enable"),
+            ("'_SnapToMeshes _Disable", "_SnapToMeshes _Disable"),
+            ("SnapToMeshes Toggle", "_SnapToMeshes _Toggle"),
             ("SetDisplayMode Shaded", "_-SetDisplayMode _Viewport=_Active _Mode=_Shaded"),
             ("SetDisplayMode _Mode=_Ghosted _Viewport=_All", "_-SetDisplayMode _Viewport=_All _Mode=_Ghosted"),
             ("SetDisplayMode Viewport Active Mode Wireframe", "_-SetDisplayMode _Viewport=_Active _Mode=_Wireframe"),
@@ -866,13 +869,15 @@ class RhinoWorkerTests(unittest.TestCase):
         for invalid in [None, "", " ", "x" * 513, "Delete", "Snap _Delete", "SetSnap", "SetSnap Yes",
                         "SetDisplayMode", "SetDisplayMode Mode", "SetDisplayMode Viewport=All",
                         "SetDisplayMode Rendered", "SetDisplayMode Shaded Wireframe", "SetDisplayMode Mode=Shaded Extra=All",
-                        "SetDisplayMode Viewport=Top Wireframe", "SetSnap On\n_Delete", "DisableOsnap On", "DisableOsnap Off"]:
+                        "SetDisplayMode Viewport=Top Wireframe", "SetSnap On\n_Delete", "DisableOsnap On", "DisableOsnap Off",
+                        "SnapToMeshes", "SnapToMeshes On", "SnapToMeshes Enable _Delete"]:
             with self.subTest(invalid=invalid), self.assertRaises(ValueError):
                 self.worker._interface_script(invalid)
 
     def test_interface_probes_restore_full_global_settings_and_views_on_every_exit(self):
-        for failure in [None, "initialization", "command", "record"]:
-            with self.subTest(failure=failure):
+        for mesh_enabled, failure in [(mesh, fail) for mesh in (None, False, True)
+                                      for fail in (None, "initialization", "command", "record", "restore")]:
+            with self.subTest(mesh_enabled=mesh_enabled, failure=failure):
                 class Settings:
                     def __init__(self, **values):
                         self.values = values
@@ -900,6 +905,13 @@ class RhinoWorkerTests(unittest.TestCase):
                 self.worker.Rhino.RhinoApp.RunScript = Mock()
                 operation = {"grid_snap":True, "osnap":False, "smart_track":False, "active_viewport":2,
                              "display_modes":["Wireframe", "Shaded", "Ghosted", "Wireframe"], "commands":["Snap"]}
+                mesh = SimpleNamespace(enabled=True)
+                mesh_api = SimpleNamespace(current=lambda host: mesh.enabled,
+                                           set_enabled=lambda value, host: setattr(mesh, "enabled", value))
+                if mesh_enabled is not None:
+                    operation["snap_to_meshes"] = mesh_enabled
+                if failure == "restore":
+                    self.worker.Rhino.RhinoApp.RunScript.side_effect = ValueError("restore failure")
                 def run(script, verify):
                     self.assertEqual(script, "_Snap")
                     self.assertTrue(verify)
@@ -916,7 +928,7 @@ class RhinoWorkerTests(unittest.TestCase):
                     if failure == "record" and calls[0] == 2:
                         raise ValueError("record failure")
                     return real_record(*args)
-                with patch.object(self.worker, "_run_surface_script", side_effect=run), patch.object(self.worker, "_interface_state", side_effect=record), patch.object(self.worker, "_record_progress"):
+                with patch.object(self.worker, "_run_surface_script", side_effect=run), patch.object(self.worker, "_interface_state", side_effect=record), patch.object(self.worker, "_record_progress"), patch.dict(sys.modules, {"mesh_snap_settings_probe": mesh_api}):
                     if failure:
                         with self.assertRaisesRegex(ValueError, failure + " failure"):
                             self.worker._interface_commands(operation)
@@ -926,6 +938,13 @@ class RhinoWorkerTests(unittest.TestCase):
                         self.assertEqual([state["grid_snap"] for state in value["states"]], [True, False])
                         self.assertEqual([state["active_viewport"] for state in value["states"]], [2, 2])
                         self.assertEqual(value["states"][0]["display_modes"], operation["display_modes"])
+                        if mesh_enabled is not None:
+                            self.assertEqual([state["snap_to_meshes"] for state in value["states"]], [mesh_enabled] * 2)
+                self.assertTrue(mesh.enabled, "mesh switch must restore even when other cleanup fails")
+                if failure == "restore":
+                    # Cancellation failed before the pre-existing view/settings
+                    # cleanup. Only the separate mesh finally can run here.
+                    continue
                 self.assertEqual(aid.GetCurrentState(), original_aid)
                 self.assertEqual(track.GetCurrentState(), original_track)
                 self.assertEqual([view.ActiveViewport.DisplayMode for view in views], original_modes)
@@ -938,7 +957,9 @@ class RhinoWorkerTests(unittest.TestCase):
         # The mock deliberately has no ApplicationSettings or Display APIs.
         for changes in [dict(commands=[]), dict(commands=["Snap"] * 129), dict(commands=["Delete"]),
                         dict(grid_snap="On"), dict(osnap=1), dict(active_viewport=True), dict(active_viewport=4),
-                        dict(display_modes=["Wireframe"]), dict(display_modes=["Rendered"] * 4)]:
+                        dict(display_modes=["Wireframe"]), dict(display_modes=["Rendered"] * 4),
+                        dict(snap_to_meshes=None), dict(snap_to_meshes=1),
+                        dict(commands=["SnapToMeshes Toggle"])]:
             with self.subTest(changes=changes), self.assertRaises(ValueError):
                 self.worker._interface_commands(dict(operation, **changes))
 

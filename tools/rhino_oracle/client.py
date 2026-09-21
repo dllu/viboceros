@@ -224,6 +224,9 @@ class OracleClient:
             worker_request["_host"] = {"exit_rhino_when_complete": True}
             _write_json(request_path, worker_request)
             shutil.copyfile(worker_source, worker_path)
+            if any(op.get("op") == "mesh_snap_settings" or "snap_to_meshes" in op for op in request.get("operations", [])):
+                helper = Path(__file__).with_name("mesh_snap_settings_probe.py")
+                shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "border_command" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("border_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)

@@ -64,6 +64,8 @@ pub struct SplitEdgeFixture {
     record_viewport: bool,
     #[serde(default)]
     persistent_snaps: Vec<SplitEdgeSnap>,
+    #[serde(default, deserialize_with = "present_split_input")]
+    snap_to_meshes: Option<bool>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -111,6 +113,11 @@ pub(super) fn run_split(
     f: &SplitEdgeFixture,
     construction: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
+    if f.snap_to_meshes.is_some() {
+        return Err(ProbeError::FixtureInvariant(
+            "mesh snap picks require calibrated camera-derived targets",
+        ));
+    }
     if f.base.preselect
         || f.base.cancel
         || f.parameters.is_some() == f.inputs.is_some()

@@ -10,6 +10,7 @@ impl VibocerosApp {
         InterfaceState {
             grid_snap: self.grid_snap,
             osnap: self.osnap,
+            snap_to_meshes: self.snaps.mesh_edges,
             smart_track: self.smart_track,
             active_viewport: self.active_viewport,
             display_modes: self.viewports.iter().map(|v| v.display_mode).collect(),
@@ -74,6 +75,7 @@ impl VibocerosApp {
                 }
                 self.grid_snap = state.grid_snap;
                 self.osnap = state.osnap;
+                self.snaps.mesh_edges = state.snap_to_meshes;
                 self.smart_track = state.smart_track;
                 for (viewport, mode) in self.viewports.iter_mut().zip(state.display_modes) {
                     viewport.display_mode = mode;

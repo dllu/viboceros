@@ -78,6 +78,8 @@ struct SurfaceCurves {
 /// or leaf curves; standalone surfaces retain extracted boundaries. Polygon
 /// Center targets share the same document storage. Failed recognitions are cached.
 /// Common-sign control bounds accelerate curve-hover queries.
+/// Mesh-wire bounds hierarchies are lazy and snapshot-keyed, independent of
+/// document tolerance. Their source policy is supplied explicitly on each query.
 /// Changed snapshots and tolerances revalidate entries, including after Undo;
 /// removal and conversion to another geometry type release old entries.
 #[derive(Debug, Default)]
@@ -85,6 +87,7 @@ pub struct ObjectSnapCache {
     curves: BTreeMap<ObjectId, CachedCurves>,
     surfaces: BTreeMap<ObjectId, SurfaceCurves>,
     pub(super) polygons: super::polygon_centers::Cache,
+    pub(super) meshes: super::mesh::Cache,
     #[cfg(test)]
     builds: usize,
     #[cfg(test)]
@@ -121,6 +124,26 @@ impl ObjectSnapCache {
         capture_radius: Real,
         modes: ObjectSnapModes,
     ) -> Result<Option<ObjectSnap>, DraftingError> {
+        self.nearest_axis_aligned_with_options(
+            document,
+            projection,
+            origin,
+            cursor_offset,
+            capture_radius,
+            modes.into(),
+        )
+    }
+
+    /// Axis-aligned capture with explicit feature and mesh-wire policy.
+    pub fn nearest_axis_aligned_with_options(
+        &mut self,
+        document: &Document,
+        projection: PointCloudProjection,
+        origin: Point3,
+        cursor_offset: [Real; 2],
+        capture_radius: Real,
+        options: ObjectSnapOptions,
+    ) -> Result<Option<ObjectSnap>, DraftingError> {
         validate_capture_radius(capture_radius)?;
         validate_cursor_coordinates(cursor_offset)?;
         nearest_object_snap_with_metric(
@@ -132,7 +155,7 @@ impl ObjectSnapCache {
                 capture_radius,
             },
             self,
-            modes,
+            options,
         )
     }
 
@@ -166,6 +189,19 @@ impl ObjectSnapCache {
         project: impl Fn(Point3) -> Option<[Real; 2]>,
         modes: ObjectSnapModes,
     ) -> Result<Option<ObjectSnap>, DraftingError> {
+        self.nearest_projected_with_options(document, cursor, capture_radius, project, modes.into())
+    }
+
+    /// Projected capture with explicit feature and mesh-wire policy. Uses the
+    /// same affine/projective clipping contract as the mode-only query.
+    pub fn nearest_projected_with_options(
+        &mut self,
+        document: &Document,
+        cursor: [Real; 2],
+        capture_radius: Real,
+        project: impl Fn(Point3) -> Option<[Real; 2]>,
+        options: ObjectSnapOptions,
+    ) -> Result<Option<ObjectSnap>, DraftingError> {
         validate_capture_radius(capture_radius)?;
         validate_cursor_coordinates(cursor)?;
         nearest_object_snap_with_metric(
@@ -176,12 +212,16 @@ impl ObjectSnapCache {
                 project,
             },
             self,
-            modes,
+            options,
         )
     }
 
     pub(super) fn retain_objects(&mut self, document: &Document) {
-        if self.curves.is_empty() && self.surfaces.is_empty() && self.polygons.is_empty() {
+        if self.curves.is_empty()
+            && self.surfaces.is_empty()
+            && self.polygons.is_empty()
+            && self.meshes.is_empty()
+        {
             return;
         }
         // One temporary index instead of a linear document search per cache
@@ -189,10 +229,14 @@ impl ObjectSnapCache {
         // ties still use document order, never hash-table iteration order.
         let live: HashMap<_, _> = document
             .objects()
-            .filter(|o| super::polygon_centers::supported(o.geometry()))
+            .filter(|o| {
+                super::polygon_centers::supported(o.geometry())
+                    || matches!(o.geometry(), Geometry::Mesh(_))
+            })
             .map(|o| (o.id(), o.geometry()))
             .collect();
         self.polygons.retain_objects(&live);
+        self.meshes.retain_objects(&live);
         self.curves.retain(|id, _| {
             live.get(id).is_some_and(|geometry| {
                 matches!(

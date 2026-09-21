@@ -6,6 +6,7 @@ mod circular_centers;
 mod elliptic_centers;
 mod face_history;
 mod face_splits;
+mod mesh_snaps;
 mod mid_hover;
 mod near;
 mod oneshot_snaps;
