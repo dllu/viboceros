@@ -134,7 +134,7 @@ fn rational_certificates_accept_affine_domains_and_common_weight_scales() {
 }
 
 #[test]
-fn endpoint_agreement_and_almost_equal_basis_do_not_certify_a_join() {
+fn fast_basis_certificate_requires_exact_compatibility_and_bounds_every_control() {
     let a = curve(&[1., 0.5, 2., 1.], &[0., 0., 0., 0.25, 1., 1., 1.], 0.);
     let mut controls = a.control_points().to_vec();
     controls[1] = WeightedPoint3::try_new(p([1., 2., 0.]), 0.5).unwrap();

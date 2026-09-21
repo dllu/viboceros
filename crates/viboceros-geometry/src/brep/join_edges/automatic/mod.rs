@@ -12,19 +12,6 @@ mod tests;
 const MAX_SOURCES: usize = 10_000;
 const MAX_NAKED: usize = 200_000;
 const MAX_CANDIDATES: usize = 1_000_000;
-const MAX_WORK: usize = 16_000_000;
-
-struct Budget(usize);
-impl Budget {
-    fn charge(&mut self, amount: usize) -> Result<(), GeometryError> {
-        self.0 = self
-            .0
-            .checked_sub(amount)
-            .ok_or_else(|| invalid("B-rep join work budget exceeded"))?;
-        Ok(())
-    }
-}
-
 /// One connected output, with sorted indices of the sources contributing faces.
 /// A disconnected source can contribute to more than one output.
 #[derive(Clone, Debug, PartialEq)]
@@ -119,13 +106,7 @@ pub fn join_breps_with_report(
         }
         let a_curve = &combined.edges[a].curve;
         let b_curve = &combined.edges[b].curve;
-        budget.charge(
-            a_curve
-                .control_points()
-                .len()
-                .saturating_add(b_curve.control_points().len()),
-        )?;
-        if full_match(a_curve, b_curve, join_distance).is_some() {
+        if full_match(a_curve, b_curve, join_distance, &mut budget)?.is_some() {
             continue;
         }
         if let Some(intervals) = overlap::intervals(a_curve, b_curve, join_distance, &mut budget)? {
@@ -177,12 +158,7 @@ pub fn join_breps_with_report(
         }
         let ac = &combined.edges[a].curve;
         let bc = &combined.edges[b].curve;
-        budget.charge(
-            ac.control_points()
-                .len()
-                .saturating_add(bc.control_points().len()),
-        )?;
-        if let Some((reversed, bound)) = full_match(ac, bc, join_distance) {
+        if let Some((reversed, bound)) = full_match(ac, bc, join_distance, &mut budget)? {
             matches.push((bound, a, b, reversed));
         }
     }
@@ -207,7 +183,8 @@ pub fn join_breps_with_report(
     )? {
         combined = rebuilt;
     }
-    let mut joined = combined.try_join_edge_pairs(&pairs, join_distance, tolerance)?;
+    let mut joined =
+        combined.join_edge_pairs_with_budget(&pairs, join_distance, tolerance, &mut budget)?;
     rebuild::tighten_joined_edges(
         &mut joined,
         &pairs,
@@ -231,9 +208,20 @@ fn edge_sources(brep: &Brep, face_sources: &[usize]) -> Vec<usize> {
     result
 }
 
-fn full_match(a: &NurbsCurve, b: &NurbsCurve, distance: Real) -> Option<(bool, Real)> {
-    [false, true]
-        .into_iter()
-        .filter_map(|r| certificate::curve_bound(a, b, r, distance).map(|d| (r, d)))
-        .min_by(|a, b| a.1.total_cmp(&b.1).then_with(|| a.0.cmp(&b.0)))
+fn full_match(
+    a: &NurbsCurve,
+    b: &NurbsCurve,
+    distance: Real,
+    budget: &mut Budget,
+) -> Result<Option<(bool, Real)>, GeometryError> {
+    let mut best = None;
+    for reversed in [false, true] {
+        if let Some(bound) =
+            certificate::whole_curve_bound(a, b, reversed, distance, |n| budget.charge(n))?
+            && best.is_none_or(|(_, previous)| bound < previous)
+        {
+            best = Some((reversed, bound));
+        }
+    }
+    Ok(best)
 }

@@ -25,9 +25,21 @@ distance must be no greater than the explicit absolute join distance.
 These conditions give both curves the same nonnegative rational basis functions
 `R_i(t)`, whose sum is one. Their difference is `sum R_i(t) (P_i - Q_i)`, so the
 largest control-point distance bounds the entire curve, not just samples or
-endpoints. This test is sufficient, not necessary: degree-elevated curves,
-different knot refinements, non-affine reparameterizations, and independently
-fitted representations of the same curved locus can be rejected.
+endpoints. A second exact certificate covers different degrees, knot refinements
+and positive rational weights through degree 16. It aligns the union of the
+normalized knot spans, extracts homogeneous Bernstein controls with exact
+polar-form evaluation, and forms the rational difference
+`(Na Wb - Nb Wa) / (Wa Wb)`. Its positive denominator makes the projected control
+hull a whole-span bound. Midpoint subdivision can resolve inconclusive hulls;
+an out-of-range interior control is not itself evidence of an excessive gap.
+Unclamped domains and either common weight sign are supported. All algebra uses
+the exact input binary64 values, without rounded knot insertion or sampling.
+
+These are sufficient, not necessary, tests. A hull still inconclusive after
+16 subdivision levels remains unmatched; exhausting the shared work budget is
+an atomic error. General non-affine parameter correspondence and curved partial
+overlaps remain unsupported. The [curved-certificate audit](join-curved-certificates.md)
+records both newly matched cases and remaining differences.
 
 A separate straight-locus certificate accepts exactly collinear, monotonically
 ordered control points with sign-coherent nonzero weights and clamped ends.
@@ -69,7 +81,9 @@ The primitive does not infer outward normals, classify cavities, reject
 zero-volume double sheets, deduplicate unrelated coincident vertices, or split
 disconnected topology into separate objects. An empty pair list preserves the
 source exactly after validation. Pair processing is limited to 100,000 pairs
-and four million input controls, checked before curve matching. Topology work
+and four million input controls, checked before curve matching. Matching has a
+16-million-unit work budget, shared with automatic discovery when used there;
+assembly does not reset that budget. Topology work
 is linear apart from disjoint-set operations; final geometric validation has
 the existing B-rep validator's cost and sampled trim/edge correspondence limits.
 
@@ -113,8 +127,8 @@ weighted means; affected clamped curves preserve their chord profiles, weights,
 and knots. All incident edges participate, including existing mated edges.
 The explicit `try_join_edge_pairs` primitive remains geometry-preserving.
 Natural clamped surface rows/columns supply exact lifted-boundary certificates
-for updated uncertainty. Rational Bernstein subdivision can tighten single-span
-curved-gap bounds without sampled acceptance. Unsupported certificates retain
+for updated uncertainty. Rational Bernstein subdivision can tighten curved-gap
+bounds across different rational bases without sampled acceptance. Unsupported certificates retain
 conservative propagation, not suppressed tolerances. Clusters or curve changes
 beyond the join distance fail atomically; nonclamped incident curves retain the
 unadjusted policy for the entire assembly. The work budget covers this refinement.

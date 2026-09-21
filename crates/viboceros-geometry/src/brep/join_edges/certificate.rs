@@ -1,9 +1,30 @@
-//! Exact binary64 predicates for a common rational B-spline basis.
+//! Whole-curve certificates: exact binary64 predicates and rational span bounds.
 use super::*;
 use crate::binary_accumulator::{add_product, decompose};
 use std::cmp::Ordering;
+mod product;
 mod refine;
 pub(super) use refine::refined_curve_bound;
+
+/// Fast basis/locus certificates first; otherwise align exact knot spans and
+/// bound the rational difference without rounded knot insertion or sampling.
+pub(super) fn whole_curve_bound(
+    a: &NurbsCurve,
+    b: &NurbsCurve,
+    reversed: bool,
+    limit: Real,
+    mut charge: impl FnMut(usize) -> Result<(), GeometryError>,
+) -> Result<Option<Real>, GeometryError> {
+    charge(
+        a.control_points()
+            .len()
+            .saturating_add(b.control_points().len()),
+    )?;
+    if let Some(bound) = curve_bound(a, b, reversed, limit) {
+        return Ok(Some(bound));
+    }
+    product::bound(a, b, reversed, limit, false, &mut charge)
+}
 
 // At most thirteen products, including repeated products: 66 limbs at 2^-2148
 // cover the entire finite binary64 range and all carries.

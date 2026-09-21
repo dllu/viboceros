@@ -59,7 +59,7 @@ pub(super) fn intervals(
     )?;
     let ac = a.try_trimmed(parameters[0][0]..=parameters[0][1])?;
     let bc = b.try_trimmed(parameters[1][0]..=parameters[1][1])?;
-    Ok(full_match(&ac, &bc, distance).map(|_| parameters))
+    Ok(full_match(&ac, &bc, distance, budget)?.map(|_| parameters))
 }
 
 fn ordered(value: Real) -> u64 {

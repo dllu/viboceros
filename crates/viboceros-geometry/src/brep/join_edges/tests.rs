@@ -11,6 +11,31 @@ fn cube() -> Brep {
     Brep::try_box(frame, [[0., 2.], [0., 3.], [0., 5.]], tolerance).unwrap()
 }
 
+#[test]
+fn automatic_assembly_cannot_reset_its_callers_exhausted_work_budget() {
+    let original = cube();
+    let source = Brep::try_combine(
+        (0..6)
+            .map(|i| original.sub_brep(&[i], Tolerance::DEFAULT).unwrap())
+            .collect(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let snapshot = source.clone();
+    let pairs = pairs(&source);
+    let error = source
+        .join_edge_pairs_with_budget(&pairs, 0., Tolerance::DEFAULT, &mut Budget(0))
+        .unwrap_err();
+    assert_eq!(error, invalid("B-rep join work budget exceeded"));
+    assert_eq!(source, snapshot);
+    assert!(
+        source
+            .try_join_edge_pairs(&pairs, 0., Tolerance::DEFAULT)
+            .unwrap()
+            .is_solid()
+    );
+}
+
 // Test fixture correspondence, not a production automatic matcher.
 fn pairs(source: &Brep) -> Vec<(usize, usize, bool)> {
     let counts = source.edge_use_counts();

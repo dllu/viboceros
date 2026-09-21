@@ -1,6 +1,7 @@
 use super::*;
 mod boundaries;
 mod corners;
+mod curved_certificates;
 mod gaps;
 mod selection_distance;
 mod surfaces;

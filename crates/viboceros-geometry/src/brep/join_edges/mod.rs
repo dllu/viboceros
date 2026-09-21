@@ -10,6 +10,18 @@ mod topology;
 
 const MAX_JOIN_PAIRS: usize = 100_000;
 const MAX_JOIN_CONTROLS: usize = 4_000_000;
+const MAX_WORK: usize = 16_000_000;
+
+struct Budget(usize);
+impl Budget {
+    fn charge(&mut self, amount: usize) -> Result<(), GeometryError> {
+        self.0 = self
+            .0
+            .checked_sub(amount)
+            .ok_or_else(|| invalid("B-rep join work budget exceeded"))?;
+        Ok(())
+    }
+}
 
 fn invalid(context: &'static str) -> GeometryError {
     GeometryError::InvalidBrepTopology { context }
@@ -24,11 +36,12 @@ impl Brep {
     /// [`Self::try_split_edges_at_parameters`]. This is an assembly primitive,
     /// not automatic edge discovery or the interactive Join command.
     ///
-    /// Acceptance is deliberately conservative: paired curved edges must have equal
-    /// degree/control count, exactly affine-equivalent full knot vectors and
-    /// exactly proportional weights. Every corresponding control-point distance
-    /// must be at most `join_distance`, in absolute model units. This supplies a
-    /// whole-curve convex-hull bound, including rational and reversed curves.
+    /// Acceptance uses whole-curve bounds in absolute model units. A shared
+    /// rational basis permits a fast corresponding-control convex-hull bound.
+    /// Otherwise, positive-basis curves of degree at most 16 are aligned over
+    /// exact normalized knot spans. Rational Bernstein products and at most 16
+    /// subdivision levels certify their difference under affine parameter
+    /// correspondence, including different degrees, knots, weights and reversal.
     /// Clamped straight edges with exactly collinear, monotone controls also
     /// support different degrees, knots and rational parameter speeds. Their
     /// endpoint distances bound the complete oriented segment loci.
@@ -44,7 +57,8 @@ impl Brep {
     /// component fixed (no outward-solid or cavity classification). Nonmanifold
     /// inputs and inconsistent orientation cycles are rejected.
     ///
-    /// At most 100,000 pairs and 4,000,000 paired controls are accepted. Inputs
+    /// At most 100,000 pairs, 4,000,000 paired controls and 16 million charged
+    /// work units are accepted. Inputs
     /// are never mutated, including on error; the assembled result is validated
     /// at the separately supplied modeling `tolerance`.
     pub fn try_join_edge_pairs(
@@ -52,6 +66,16 @@ impl Brep {
         pairs: &[(usize, usize, bool)],
         join_distance: Real,
         tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        self.join_edge_pairs_with_budget(pairs, join_distance, tolerance, &mut Budget(MAX_WORK))
+    }
+
+    fn join_edge_pairs_with_budget(
+        &self,
+        pairs: &[(usize, usize, bool)],
+        join_distance: Real,
+        tolerance: Tolerance,
+        budget: &mut Budget,
     ) -> Result<Self, GeometryError> {
         require_nonnegative_finite(join_distance, "B-rep join distance")?;
         if pairs.len() > MAX_JOIN_PAIRS {
@@ -87,12 +111,13 @@ impl Brep {
         let bounds = pairs
             .iter()
             .map(|&(a, b, reversed)| {
-                certificate::curve_bound(
+                certificate::whole_curve_bound(
                     &self.edges[a].curve,
                     &self.edges[b].curve,
                     reversed,
                     join_distance,
-                )
+                    |n| budget.charge(n),
+                )?
                 .ok_or_else(|| invalid("edge curves lack a whole-curve join certificate"))
             })
             .collect::<Result<Vec<_>, _>>()?;

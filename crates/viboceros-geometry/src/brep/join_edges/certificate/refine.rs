@@ -10,7 +10,7 @@ pub(in crate::brep::join_edges) fn refined_curve_bound(
     mut charge: impl FnMut(usize) -> Result<(), GeometryError>,
 ) -> Result<Option<Real>, GeometryError> {
     let Some(initial) = curve_bound(a, b, reversed, limit) else {
-        return Ok(None);
+        return product::bound(a, b, reversed, limit, true, &mut charge);
     };
     let n = a.control_points().len();
     if initial == 0.
@@ -50,7 +50,8 @@ pub(in crate::brep::join_edges) fn refined_curve_bound(
         charge(points.len())?;
         let mut upper: Real = 0.;
         for (i, p) in points.iter().enumerate() {
-            let bound = norm_bound(p, initial)?;
+            let bound = norm_bound(p, initial)
+                .ok_or_else(|| invalid("invalid rational difference hull"))?;
             upper = upper.max(bound);
             if i == 0 || i + 1 == points.len() {
                 lower = lower.max(bound.next_down().max(0.));
@@ -68,24 +69,29 @@ pub(in crate::brep::join_edges) fn refined_curve_bound(
     Ok(Some(answer.min(initial)))
 }
 
-fn norm_bound(point: &[Rational; 4], limit: Real) -> Result<Real, GeometryError> {
+pub(super) fn norm_bound(point: &[Rational; 4], limit: Real) -> Option<Real> {
     let coordinates: [Rational; 3] = std::array::from_fn(|i| &point[i] / &point[3]);
     let square: Rational = coordinates.iter().map(|x| x * x).sum();
-    let mut bound = scalar(&coordinates[0])?
-        .hypot(scalar(&coordinates[1])?)
-        .hypot(scalar(&coordinates[2])?)
+    let r = rational(limit);
+    if square > &r * &r {
+        return None;
+    }
+    let mut bound = scalar(&coordinates[0])
+        .unwrap_or(limit)
+        .hypot(scalar(&coordinates[1]).unwrap_or(limit))
+        .hypot(scalar(&coordinates[2]).unwrap_or(limit))
         .min(limit);
     for _ in 0..4 {
         let r = rational(bound);
         if &r * &r >= square {
-            return Ok(bound);
+            return Some(bound);
         }
         bound = bound.next_up().min(limit);
     }
-    Ok(limit)
+    Some(limit)
 }
 
-fn split(mut points: Vec<[Rational; 4]>) -> (Vec<[Rational; 4]>, Vec<[Rational; 4]>) {
+pub(super) fn split(mut points: Vec<[Rational; 4]>) -> (Vec<[Rational; 4]>, Vec<[Rational; 4]>) {
     let n = points.len();
     let mut left = vec![points[0].clone()];
     let mut right = vec![points[n - 1].clone()];

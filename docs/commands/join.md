@@ -34,7 +34,10 @@ tolerance for preselection, or 2.1 times for command-first selection. These
 [measured command policies](../join-selection-distance.md) do not change the
 explicit kernel assembly API's distance argument; exact-cutoff endpoint behavior
 still has recorded differences.
-Complete boundaries must pass the kernel's whole-curve certificate; continuous,
+Complete boundaries must pass the kernel's whole-curve certificate. Different
+curved degrees, knot refinements and positive rational weights now have an
+[exact span/product certificate](../join-curved-certificates.md) through degree 16;
+continuous,
 exactly straight boundaries also support independent degrees/parameter speeds
 and automatic partial-overlap splitting. Surfaces are never refitted. Newly
 closed nonzero-volume outputs are oriented outward. This is not a Boolean union.
@@ -95,12 +98,15 @@ high-precision integration supports the native areas. The
 [selection-distance and clustering audit](../join-selection-distance.md) adds
 150 cases, including every discovery discrepancy. The
 [corner-only follow-up](../join-corner-clustering.md) adds 84 cases that isolate
-endpoint movement from edge mating. Across all five surface-command
-audits, 471 of 594 cases fully match; the new data expands the known limitations,
-not the claim of general parity.
+endpoint movement from edge mating. The
+[curved-certificate audit](../join-curved-certificates.md) adds 48 cases: 40 full
+matches, four redundant outer-knot interchange differences and four larger native
+uncertainty bounds. The previous 594 records retain exactly their results.
+Across these surface-command audits, 511 of 642 cases fully match, with 32 native
+execution failures and 99 other differences. This is not general parity.
 
 These are scoped observations, not general threshold rules. Generic curved
-partial overlaps, incompatible curved bases, nested/cavity-solid classification,
+partial overlaps, non-affine curved correspondence, nested/cavity-solid classification,
 and arbitrary ambiguous matching remain unsupported or unproven. Boundary search
 is bounded; command-first joining currently rebuilds the growing assembly at
 each attempted pick. No kernel speedup is claimed from command probe timings.
