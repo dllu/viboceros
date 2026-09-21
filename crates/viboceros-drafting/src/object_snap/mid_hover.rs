@@ -1,17 +1,16 @@
 //! When Mid is the only enabled mode, discover the target from its whole segment.
 use super::{ObjectSnapCache, SnapMetric, cache::CurveFeatures, proximity};
-use viboceros_document::{Geometry, ObjectId};
+use viboceros_document::Object;
 use viboceros_geometry::{CurveRef, Point3, Real, Tolerance};
 
 pub(super) fn visit(
-    geometry: &Geometry,
-    id: ObjectId,
+    object: &Object,
     tolerance: Tolerance,
     cache: &mut ObjectSnapCache,
     metric: &impl SnapMetric,
     emit: &mut impl FnMut(Point3, Real),
 ) {
-    if let Some(curve) = geometry.curve_ref() {
+    if let Some(curve) = object.geometry().curve_ref() {
         if let CurveRef::PolyCurve(curve) = curve {
             for segment in curve.segments() {
                 analytic(segment.as_ref(), metric, emit);
@@ -20,7 +19,7 @@ pub(super) fn visit(
             analytic(curve, metric, emit);
         }
     }
-    for feature in cache.geometry_curves(id, geometry, tolerance) {
+    for feature in cache.geometry_curves(object, tolerance) {
         nurbs(feature, metric, emit);
     }
 }
@@ -86,15 +85,17 @@ fn analytic(curve: CurveRef<'_>, metric: &impl SnapMetric, emit: &mut impl FnMut
 }
 
 fn nurbs(feature: &CurveFeatures, metric: &impl SnapMetric, emit: &mut impl FnMut(Point3, Real)) {
-    let Some(point) = feature.midpoint() else {
-        return;
-    };
     if feature
         .bounds
         .is_some_and(|b| proximity::outside_bounds(b.min().to_array(), b.max().to_array(), metric))
     {
         return;
     }
+    // A common-sign control hull bounds both the curve and its Mid target.
+    // Reject distant sources before cold arc-length integration, not afterward.
+    let Some(point) = feature.midpoint() else {
+        return;
+    };
     let distance = proximity::nurbs_distance(&feature.curve, feature.bounds.is_some(), metric);
     candidate(point, distance, metric, emit);
 }

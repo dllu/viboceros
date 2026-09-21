@@ -56,7 +56,8 @@ Each cached NURBS keeps its source, optional midpoint and common-sign control
 bounds together, including failed midpoint slots. Surface entries retain their
 actual extracted boundary curves. Geometry/tolerance changes and Undo invalidate
 these data; deletion and conversion evict stale entries. Mixed-sign rational
-weights disable the convex-hull broad phase. Analytic leaves need no NURBS cache.
+weights disable the convex-hull broad phase. Analytic leaves need no NURBS integration;
+empty NURBS-leaf discovery in composites is cached as well.
 
 Visible lines and common-sign degree-one NURBS spans use projected segment
 distance. Curved proximity samples 64 intervals and refines eight by up to 72
@@ -68,8 +69,9 @@ convexity in their visible half-space (affine/projective viewport transforms).
 
 This is a numerical UI search, **not a certified global closest-point solver**.
 Highly oscillatory spans and arbitrarily narrow visible slivers may be missed;
-unrestricted scale/translation accuracy is not established. Cold queries integrate
-all eligible NURBS and hot queries still compare source geometry. Work scales with
+unrestricted scale/translation accuracy is not established. Mid-only queries reject
+distant control bounds before cold integration. [Shared snapshots](snap-caching.md)
+avoid source comparisons on unchanged objects. Work still scales with
 scene/span complexity, not a fixed frame budget. Occlusion, broader priority rules,
 Near/Int/Tan/Perp, general conic recognition and universal Rhino camera parity remain
 unfinished. No cross-engine performance claim follows from these observations.

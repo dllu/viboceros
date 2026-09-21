@@ -250,20 +250,23 @@ fn nearest_object_snap_with_metric(
         return Ok(None);
     }
     cache.retain_objects(document);
+    // Visibility lookups must not scan every layer for every object. Locked
+    // geometry remains eligible for snapping, independently of selection rules.
+    let visible_layers: std::collections::HashSet<_> = document
+        .layers()
+        .filter(|layer| layer.is_visible())
+        .map(|layer| layer.id())
+        .collect();
     let mut best = None;
     for object in document.objects() {
         let attributes = object.attributes();
-        let Some(layer) = document.layer(attributes.layer_id()) else {
-            continue;
-        };
-        if !attributes.is_visible() || !layer.is_visible() {
+        if !attributes.is_visible() || !visible_layers.contains(&attributes.layer_id()) {
             continue;
         }
         let mut object_best = None;
         if modes == ObjectSnapModes::only(ObjectSnapKind::Mid) {
             mid_hover::visit(
-                object.geometry(),
-                object.id(),
+                object,
                 document.tolerance(),
                 cache,
                 metric,
@@ -312,9 +315,9 @@ fn nearest_object_snap_with_metric(
                     .geometry()
                     .curve_ref()
                     .expect("matched a curve geometry");
-                features::curve(curve, &mut emit);
+                features::curve(curve, modes, &mut emit);
             }
-            Geometry::NurbsSurface(surface) => {
+            Geometry::NurbsSurface(surface) if modes.contains(ObjectSnapKind::End) => {
                 let u = surface.domain_u();
                 let v = surface.domain_v();
                 for (u, v) in [
@@ -328,21 +331,19 @@ fn nearest_object_snap_with_metric(
                     }
                 }
             }
-            Geometry::Brep(brep) => {
+            Geometry::Brep(brep) if modes.contains(ObjectSnapKind::End) => {
                 for vertex in brep.vertices() {
                     emit(ObjectSnapKind::End, vertex.point());
                 }
             }
             // Mesh features need a spatial index rather than an O(vertices)
             // walk per pointer frame.
-            Geometry::Mesh(_) => {}
+            Geometry::Mesh(_) | Geometry::NurbsSurface(_) | Geometry::Brep(_) => {}
         }
         // Mid and Center share source discovery. Each expensive feature is
         // independently lazy; surface Mid belongs to boundaries, not UV center.
         if modes.contains(ObjectSnapKind::Mid) {
-            for feature in
-                cache.geometry_curves(object.id(), object.geometry(), document.tolerance())
-            {
+            for feature in cache.geometry_curves(object, document.tolerance()) {
                 if let Some(point) = feature.midpoint() {
                     emit(ObjectSnapKind::Mid, point);
                 }
@@ -363,21 +364,10 @@ fn nearest_object_snap_with_metric(
             if let Some(curve) = object.geometry().curve_ref() {
                 centers::visit(curve, metric, &mut center);
             }
-            centers::visit_nurbs(
-                object.geometry(),
-                object.id(),
-                document.tolerance(),
-                cache,
-                metric,
-                &mut center,
-            );
-            cache.polygons.visit(
-                object.id(),
-                object.geometry(),
-                document.tolerance(),
-                metric,
-                &mut center,
-            );
+            centers::visit_nurbs(object, document.tolerance(), cache, metric, &mut center);
+            cache
+                .polygons
+                .visit(object, document.tolerance(), metric, &mut center);
         }
         if let Some(candidate) = object_best {
             consider_scored_candidate(

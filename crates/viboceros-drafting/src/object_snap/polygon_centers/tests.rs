@@ -1,9 +1,60 @@
 use super::*;
 use crate::{ObjectSnapCache, ObjectSnapKind, ObjectSnapModes};
+use viboceros_document::Document;
+use viboceros_document::{ColorRgb, ReplacementHistory};
 use viboceros_geometry::{CurveSegment3, PolyCurve3, Polyline3, WeightedPoint3};
 
 fn p(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
+}
+
+#[test]
+fn polygon_snapshots_avoid_repeated_source_scans_and_refresh_equal_replacements_once() {
+    let polyline = polyline(corners(0.));
+    let surface = NurbsSurface::try_bilinear([
+        p(2., -2., 0.),
+        p(8., -2., 0.),
+        p(3., -5., 0.),
+        p(6., -8., 0.),
+    ])
+    .unwrap();
+    for geometry in [
+        Geometry::Polyline(polyline.clone()),
+        Geometry::NurbsCurve(CurveRef::Polyline(&polyline).to_nurbs().unwrap()),
+        Geometry::NurbsSurface(surface.clone()),
+        Geometry::Brep(Brep::try_surface_face(surface, Tolerance::DEFAULT).unwrap()),
+    ] {
+        let mut doc = Document::default();
+        let id = doc.add_geometry(geometry.clone()).unwrap();
+        let mut cache = ObjectSnapCache::default();
+        let expected = capture(&mut cache, &doc, [2.8, -2.]).unwrap();
+        assert_eq!(expected.point(), p(4.75, -4.25, 0.));
+        let mut clone = doc.clone();
+        clone
+            .set_objects_color([id], Some(ColorRgb::new(10, 20, 30)))
+            .unwrap();
+        for _ in 0..8 {
+            assert_eq!(capture(&mut cache, &clone, [2.8, -2.]), Some(expected));
+            assert_eq!(capture(&mut cache, &doc, [2.8, -2.]), Some(expected));
+        }
+        assert_eq!(cache.polygons.source_comparisons, 0);
+        assert_eq!(cache.polygons.builds, 1);
+        doc.replace_object_geometries_with_history(
+            [(id, geometry)],
+            ReplacementHistory::EveryReplacement,
+        )
+        .unwrap();
+        for _ in 0..8 {
+            assert_eq!(capture(&mut cache, &doc, [2.8, -2.]), Some(expected));
+        }
+        assert_eq!(cache.polygons.source_comparisons, 1);
+        assert_eq!(cache.polygons.builds, 1);
+        assert!(
+            cache.polygons.entries[&id]
+                .source
+                .shares_storage_with(doc.object(id).unwrap().geometry_snapshot())
+        );
+    }
 }
 fn corners(z: Real) -> Vec<Point3> {
     vec![

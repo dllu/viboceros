@@ -34,13 +34,14 @@ origins, reversal, refinement, elevation, signed gauges, extreme intervals and
 a stationary quartic parameterization, plus the existing adversarial degree-nine
 perturbation invisible to three sampled second-order jets.
 
-`ObjectSnapCache` now retains one source/bounds snapshot per NURBS leaf or edge.
+`ObjectSnapCache` retains source curves/bounds per NURBS leaf or edge, with
+[shared document snapshots](snap-caching.md) avoiding unchanged-source comparisons.
 Mid integration and circular-center recognition are independent lazy results,
 including failures; using Cen alone does not integrate arc length. Geometry,
 tolerance, Undo and type changes invalidate those results. Surface entries share
 their extracted natural boundaries. Polycurve failures keep their own source
-slots. Center bounds are checked before recognition; Mid preserves its existing
-eight-projection distant-source rejection. Both use the same sided-span proximity
+slots. Center bounds are checked before recognition; Mid-only queries use their
+eight-projection distant-source rejection before integration. Both use the same sided-span proximity
 query, but only Mid can admit a direct target hit because its target lies on the
 curve. Circular recognition in the UI is capped at degree 32; the kernel API has
 no such UI cap. This does not bound total scene work or establish a frame budget.

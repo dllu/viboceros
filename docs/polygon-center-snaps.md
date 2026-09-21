@@ -50,9 +50,10 @@ tests; those cases are not part of the retained Rhino click matrix.
 `object_snap/polygon_centers` owns recognition, exact corner averaging and capture.
 `FiniteSum` accumulates each coordinate exactly before one final mean rounding,
 including when an intermediate sum would overflow. The camera-independent cache
-retains failed recognitions too. Its source snapshots include curve/surface data
-and relevant face boundary curves/orientations, not B-rep UV trims or attributes.
-Geometry changes, tolerance edits and Undo invalidate entries; deleted or
+retains failed recognitions too. Its [shared source snapshots](snap-caching.md)
+check storage identity on unchanged objects. After replacement, relevant curve/surface
+data and face boundary curves/orientations are compared, not B-rep UV trims or attributes.
+Relevant geometry changes, tolerance edits and Undo invalidate entries; deleted or
 ineligible object types are evicted. Hidden geometry cannot supply cached snaps.
 
 Common-sign degree-one spans are sampled on their exact knot sides. Higher-degree
@@ -60,8 +61,8 @@ curves require every extracted Bézier span to pass the kernel's zero-tolerance
 linearity predicate. Adjacent parts must meet exactly; no bridging segment is
 invented across a gap. Mixed-sign weights are excluded rather than assuming a
 bounded line locus across a possible pole. Projected bounding boxes reject distant
-targets before boundary proximity tests. Cold recognition and hot source comparisons
-still scale with scene geometry; this is not a scene spatial index or a fixed frame
+targets before boundary proximity tests. Cold recognition and changed-source comparisons
+still scale with geometry; this is not a scene spatial index or a fixed frame
 budget. Curved/conic NURBS recognition, toleranced gap recovery, occlusion, arbitrary
 camera/priority equivalence and cross-engine performance remain incomplete.
 The subsequent [circular NURBS implementation](circular-center-snaps.md) adds

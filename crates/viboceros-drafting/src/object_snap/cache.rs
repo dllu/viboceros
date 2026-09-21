@@ -1,7 +1,8 @@
 //! Cache expensive arc-length and polygon Center features independently of projection.
 use super::*;
 use std::cell::OnceCell;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
+use viboceros_document::{GeometrySnapshot, Object};
 use viboceros_geometry::{CurveRef, CurveSegment3, NurbsCurve, NurbsSurface, Tolerance};
 
 /// One source snapshot shared by independently lazy, camera-free features.
@@ -57,13 +58,14 @@ impl CurveFeatures {
 
 #[derive(Debug)]
 struct CachedCurves {
+    source: GeometrySnapshot,
     tolerance: Tolerance,
     features: Vec<CurveFeatures>,
 }
 
 #[derive(Debug)]
 struct SurfaceCurves {
-    source: NurbsSurface,
+    source: GeometrySnapshot,
     tolerance: Tolerance,
     features: Vec<CurveFeatures>,
 }
@@ -71,12 +73,12 @@ struct SurfaceCurves {
 /// Reusable camera-independent snap data. Analytic features and indexed point
 /// clouds keep their existing cheap queries. Cached NURBS sources lazily compute
 /// arc-length Mid and circular/elliptical Center, including polycurve leaves and natural
-/// surface boundaries. Their B-rep entries
-/// retain only edge curves; standalone surfaces retain extracted boundaries and
-/// their source for invalidation. Polygon Center entries additionally retain
-/// relevant planar-face sources, but not UV trims. Failed recognitions are cached.
+/// surface boundaries. Immutable document snapshots provide constant-time
+/// invalidation checks on unchanged objects. NURBS features retain spatial edge
+/// or leaf curves; standalone surfaces retain extracted boundaries. Polygon
+/// Center targets share the same document storage. Failed recognitions are cached.
 /// Common-sign control bounds accelerate curve-hover queries.
-/// Geometry and tolerance comparisons invalidate entries, including after Undo;
+/// Changed snapshots and tolerances revalidate entries, including after Undo;
 /// removal and conversion to another geometry type release old entries.
 #[derive(Debug, Default)]
 pub struct ObjectSnapCache {
@@ -85,6 +87,8 @@ pub struct ObjectSnapCache {
     pub(super) polygons: super::polygon_centers::Cache,
     #[cfg(test)]
     builds: usize,
+    #[cfg(test)]
+    source_comparisons: usize,
 }
 
 impl ObjectSnapCache {
@@ -177,41 +181,50 @@ impl ObjectSnapCache {
     }
 
     pub(super) fn retain_objects(&mut self, document: &Document) {
-        self.polygons.retain_objects(document);
+        if self.curves.is_empty() && self.surfaces.is_empty() && self.polygons.is_empty() {
+            return;
+        }
+        // One temporary index instead of a linear document search per cache
+        // entry. Unsupported objects need no index storage. Traversal and snap
+        // ties still use document order, never hash-table iteration order.
+        let live: HashMap<_, _> = document
+            .objects()
+            .filter(|o| super::polygon_centers::supported(o.geometry()))
+            .map(|o| (o.id(), o.geometry()))
+            .collect();
+        self.polygons.retain_objects(&live);
         self.curves.retain(|id, _| {
-            document.object(*id).is_some_and(|object| {
+            live.get(id).is_some_and(|geometry| {
                 matches!(
-                    object.geometry(),
+                    geometry,
                     Geometry::Brep(_) | Geometry::NurbsCurve(_) | Geometry::PolyCurve(_)
                 )
             })
         });
         self.surfaces.retain(|id, _| {
-            document
-                .object(*id)
-                .is_some_and(|object| matches!(object.geometry(), Geometry::NurbsSurface(_)))
+            live.get(id)
+                .is_some_and(|geometry| matches!(geometry, Geometry::NurbsSurface(_)))
         });
     }
 
     pub(super) fn geometry_curves(
         &mut self,
-        id: ObjectId,
-        geometry: &Geometry,
+        object: &Object,
         tolerance: Tolerance,
     ) -> &[CurveFeatures] {
-        match geometry {
-            Geometry::NurbsCurve(curve) => self.curves(id, std::iter::once(curve), tolerance),
+        match object.geometry() {
+            Geometry::NurbsCurve(curve) => self.curves(object, std::iter::once(curve), tolerance),
             Geometry::PolyCurve(curve) => self.curves(
-                id,
+                object,
                 curve.segments().iter().filter_map(|s| match s {
                     CurveSegment3::NurbsCurve(c) => Some(c),
                     _ => None,
                 }),
                 tolerance,
             ),
-            Geometry::NurbsSurface(surface) => self.surface_curves(id, surface, tolerance),
+            Geometry::NurbsSurface(surface) => self.surface_curves(object, surface, tolerance),
             Geometry::Brep(brep) => {
-                self.curves(id, brep.edges().iter().map(|e| e.curve()), tolerance)
+                self.curves(object, brep.edges().iter().map(|e| e.curve()), tolerance)
             }
             _ => &[],
         }
@@ -219,17 +232,30 @@ impl ObjectSnapCache {
 
     pub(super) fn curves<'a>(
         &mut self,
-        id: ObjectId,
+        object: &Object,
         curves: impl Iterator<Item = &'a NurbsCurve> + Clone,
         tolerance: Tolerance,
     ) -> &[CurveFeatures] {
-        if curves.clone().next().is_none() {
-            self.curves.remove(&id);
-            return &[];
-        }
-        let fresh = self.curves.get(&id).is_some_and(|entry| {
-            entry.tolerance == tolerance
-                && entry.features.iter().map(|f| &f.curve).eq(curves.clone())
+        let id = object.id();
+        let source = object.geometry_snapshot();
+        let fresh = self.curves.get_mut(&id).is_some_and(|entry| {
+            if entry.tolerance != tolerance {
+                return false;
+            }
+            if entry.source.shares_storage_with(source) {
+                return true;
+            }
+            // Outer polycurve domains and unrelated B-rep data need not
+            // invalidate leaf features. Inspect these only on a changed snapshot.
+            #[cfg(test)]
+            {
+                self.source_comparisons += 1;
+            }
+            if !entry.features.iter().map(|f| &f.curve).eq(curves.clone()) {
+                return false;
+            }
+            entry.source = source.clone();
+            true
         });
         if !fresh {
             #[cfg(test)]
@@ -243,6 +269,7 @@ impl ObjectSnapCache {
             self.curves.insert(
                 id,
                 CachedCurves {
+                    source: source.clone(),
                     tolerance,
                     features,
                 },
@@ -253,14 +280,29 @@ impl ObjectSnapCache {
 
     pub(super) fn surface_curves(
         &mut self,
-        id: ObjectId,
+        object: &Object,
         surface: &NurbsSurface,
         tolerance: Tolerance,
     ) -> &[CurveFeatures] {
-        let fresh = self
-            .surfaces
-            .get(&id)
-            .is_some_and(|entry| entry.source == *surface && entry.tolerance == tolerance);
+        let id = object.id();
+        let source = object.geometry_snapshot();
+        let fresh = self.surfaces.get_mut(&id).is_some_and(|entry| {
+            if entry.tolerance != tolerance {
+                return false;
+            }
+            if entry.source.shares_storage_with(source) {
+                return true;
+            }
+            #[cfg(test)]
+            {
+                self.source_comparisons += 1;
+            }
+            if *entry.source != **source {
+                return false;
+            }
+            entry.source = source.clone();
+            true
+        });
         if !fresh {
             #[cfg(test)]
             {
@@ -284,7 +326,7 @@ impl ObjectSnapCache {
             self.surfaces.insert(
                 id,
                 SurfaceCurves {
-                    source: surface.clone(),
+                    source: source.clone(),
                     tolerance,
                     features,
                 },
@@ -307,5 +349,9 @@ fn midpoint(curve: &NurbsCurve, tolerance: Tolerance) -> Option<Point3> {
 mod circular_tests;
 #[cfg(test)]
 mod composite_tests;
+#[cfg(test)]
+mod performance_tests;
+#[cfg(test)]
+mod snapshot_tests;
 #[cfg(test)]
 mod tests;

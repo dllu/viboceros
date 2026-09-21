@@ -86,7 +86,7 @@ mode and Shift-click selects it for one point. At point prompts, `Point`, `End`,
 [controls and lifecycle](object-snap-controls.md), [Mid/End behavior](composite-feature-snaps.md),
 [Mid hover](mid-hover-snaps.md), [analytic Center](center-hover-snaps.md) and
 [polygon Center](polygon-center-snaps.md) and [circular NURBS Center](circular-center-snaps.md)
-for coverage limits.
+for coverage limits, and [snap caching](snap-caching.md) for invalidation and performance.
 SmartTrack captures local plane-axis alignment from the first picked
 point in every viewport. Grid Snap rounds construction-plane picks to the unit grid. Right-drag
 pans parallel views and rotates the Perspective view; Shift-right-drag pans the

@@ -1,14 +1,13 @@
 //! Cached corner-average Center targets for closed piecewise-linear boundaries.
 use super::{SnapMetric, proximity};
-use std::collections::BTreeMap;
-use viboceros_document::{Document, Geometry, ObjectId};
+use std::collections::{BTreeMap, HashMap};
+use viboceros_document::{Geometry, GeometrySnapshot, Object, ObjectId};
 use viboceros_geometry::{
     BoundingBox3, Brep, BrepFace, CurveRef, FiniteSum, LineSegment, NurbsCurve, NurbsSurface,
     Point3, Real, Tolerance,
 };
 
 mod source;
-use source::Source;
 
 #[derive(Debug)]
 struct Target {
@@ -19,7 +18,7 @@ struct Target {
 
 #[derive(Debug)]
 struct Entry {
-    source: Source,
+    source: GeometrySnapshot,
     tolerance: Tolerance,
     targets: Vec<Target>,
 }
@@ -29,9 +28,11 @@ pub(super) struct Cache {
     entries: BTreeMap<ObjectId, Entry>,
     #[cfg(test)]
     builds: usize,
+    #[cfg(test)]
+    source_comparisons: usize,
 }
 
-fn supported(geometry: &Geometry) -> bool {
+pub(super) fn supported(geometry: &Geometry) -> bool {
     matches!(
         geometry,
         Geometry::Polyline(_)
@@ -43,30 +44,44 @@ fn supported(geometry: &Geometry) -> bool {
 }
 
 impl Cache {
-    pub(super) fn retain_objects(&mut self, document: &Document) {
-        self.entries.retain(|id, _| {
-            document
-                .object(*id)
-                .is_some_and(|o| supported(o.geometry()))
-        });
+    pub(super) fn is_empty(&self) -> bool {
+        self.entries.is_empty()
+    }
+
+    pub(super) fn retain_objects(&mut self, live: &HashMap<ObjectId, &Geometry>) {
+        self.entries.retain(|id, _| live.contains_key(id));
     }
 
     pub(super) fn visit(
         &mut self,
-        id: ObjectId,
-        geometry: &Geometry,
+        object: &Object,
         tolerance: Tolerance,
         metric: &impl SnapMetric,
         emit: &mut impl FnMut(Point3, Real),
     ) {
+        let geometry = object.geometry();
+        let snapshot = object.geometry_snapshot();
+        let id = object.id();
         if !supported(geometry) {
             return;
         }
-        if !self
-            .entries
-            .get(&id)
-            .is_some_and(|entry| entry.tolerance == tolerance && entry.source.matches(geometry))
-        {
+        if !self.entries.get_mut(&id).is_some_and(|entry| {
+            if entry.tolerance != tolerance {
+                return false;
+            }
+            if entry.source.shares_storage_with(snapshot) {
+                return true;
+            }
+            #[cfg(test)]
+            {
+                self.source_comparisons += 1;
+            }
+            if !source::same_target_source(&entry.source, geometry) {
+                return false;
+            }
+            entry.source = snapshot.clone();
+            true
+        }) {
             #[cfg(test)]
             {
                 self.builds += 1;
@@ -74,7 +89,7 @@ impl Cache {
             self.entries.insert(
                 id,
                 Entry {
-                    source: Source::new(geometry),
+                    source: snapshot.clone(),
                     tolerance,
                     targets: targets(geometry, tolerance),
                 },

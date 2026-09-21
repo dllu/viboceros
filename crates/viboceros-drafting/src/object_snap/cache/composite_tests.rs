@@ -198,7 +198,9 @@ fn polycurve_and_polyline_supply_each_segment_midpoint_not_whole_curve_midpoint(
             }
             assert!(query(&mut cache, &doc, p(7., -2.)).is_none());
         }
-        assert!(cache.curves.is_empty()); // Analytic leaves require no cached integrations.
+        // Cache even empty discovery so analytic-only polycurves are not
+        // rescanned for NURBS leaves. They still require no cached integrations.
+        assert!(cache.curves.values().all(|entry| entry.features.is_empty()));
     }
 }
 

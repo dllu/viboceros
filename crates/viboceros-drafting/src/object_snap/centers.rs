@@ -1,18 +1,17 @@
 //! Center targets are admitted by proximity to their curve, not the empty center.
 use super::proximity::{outside_sphere, projected_distance};
 use super::{ObjectSnapCache, SnapMetric, proximity};
-use viboceros_document::{Geometry, ObjectId};
+use viboceros_document::Object;
 use viboceros_geometry::{CurveRef, Point3, Real, Tolerance};
 
 pub(super) fn visit_nurbs(
-    geometry: &Geometry,
-    id: ObjectId,
+    object: &Object,
     tolerance: Tolerance,
     cache: &mut ObjectSnapCache,
     metric: &impl SnapMetric,
     emit: &mut impl FnMut(Point3, Real),
 ) {
-    for feature in cache.geometry_curves(id, geometry, tolerance) {
+    for feature in cache.geometry_curves(object, tolerance) {
         if feature.bounds.is_some_and(|b| {
             proximity::outside_bounds(b.min().to_array(), b.max().to_array(), metric)
         }) {

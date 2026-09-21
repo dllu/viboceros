@@ -72,10 +72,12 @@ fn far_circular_sources_are_rejected_before_center_recognition_and_integration()
     let id = doc.add_geometry(Geometry::NurbsCurve(circle())).unwrap();
     let mut cache = ObjectSnapCache::default();
     for _ in 0..3 {
-        assert!(query(&mut cache, &doc, [100., 100.], ObjectSnapKind::Center).is_none());
-        let feature = &cache.curves[&id].features[0];
-        assert!(feature.midpoint.get().is_none());
-        assert!(feature.conic_center.get().is_none());
+        for mode in [ObjectSnapKind::Center, ObjectSnapKind::Mid] {
+            assert!(query(&mut cache, &doc, [100., 100.], mode).is_none());
+            let feature = &cache.curves[&id].features[0];
+            assert!(feature.midpoint.get().is_none());
+            assert!(feature.conic_center.get().is_none());
+        }
     }
     assert_eq!(cache.builds, 1);
 }
@@ -246,8 +248,7 @@ fn elliptic_sources_share_lazy_features_and_capture_only_the_original_arc() {
         let id = doc.add_geometry(geometry).unwrap();
         let mut cache = ObjectSnapCache::default();
         assert!(query(&mut cache, &doc, [100., 100.], ObjectSnapKind::Center).is_none());
-        let features =
-            cache.geometry_curves(id, doc.object(id).unwrap().geometry(), doc.tolerance());
+        let features = cache.geometry_curves(doc.object(id).unwrap(), doc.tolerance());
         assert!(
             features
                 .iter()
@@ -259,8 +260,7 @@ fn elliptic_sources_share_lazy_features_and_capture_only_the_original_arc() {
             assert!((hit.point().x() - 4.).abs() < 1e-10 && (hit.point().y() + 4.).abs() < 1e-10);
             assert!((hit.point().z() - 7.).abs() < 1e-10 || (hit.point().z() - 10.).abs() < 1e-10);
         }
-        let features =
-            cache.geometry_curves(id, doc.object(id).unwrap().geometry(), doc.tolerance());
+        let features = cache.geometry_curves(doc.object(id).unwrap(), doc.tolerance());
         assert!(features.iter().all(|f| f.midpoint.get().is_none()));
         assert!(
             features

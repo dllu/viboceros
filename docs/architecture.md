@@ -64,6 +64,8 @@ The document's `geometry_snapshot` module shares immutable geometry between live
 objects, history, clones, and [display caches](viewport-caching.md). Edits replace
 handles, so cache invalidation uses retained storage identity without rescanning
 geometry. Value equality remains structural; no mutable geometry handle is exposed.
+The [object-snap caches](snap-caching.md) reuse those snapshots, inspect feature-specific
+source changes only after replacement, and index object/layer lookups per query.
 The [batch-deletion module](batch-deletion.md) moves removed objects into compact
 history records and restores table order without repeated vector insertions.
 The [ordered selection iterator](selection-iteration.md) shares efficient,

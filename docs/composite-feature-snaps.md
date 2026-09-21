@@ -49,8 +49,9 @@ replays. Output positions are never substituted into the request targets.
 ## Architecture and verification
 
 `object_snap/features` shares cheap leaf enumeration without allocating converted
-curves. `ObjectSnapCache` integrates only NURBS leaves and retains just their
-spatial curves; analytic-only composites create no cache entries. Changes to
+curves and skips disabled feature kinds before evaluating them. `ObjectSnapCache`
+integrates only NURBS leaves and retains their spatial curves plus a shared
+immutable document snapshot; analytic-only composites cache empty leaf discovery. Changes to
 outer parameter intervals alone do not invalidate geometric midpoints. Exact
 ordered leaf comparisons include length, preventing a stale prefix match when
 leaves are added or removed.
@@ -59,9 +60,10 @@ Standalone surfaces cache boundary curves and midpoints with a source
 surface/tolerance snapshot, avoiding repeated extraction and integration. Geometry
 edits, Undo and tolerance changes invalidate entries; deletion/type conversion evicts
 them on the next query. Hidden objects cannot supply cached snaps. B-rep entries
-continue to retain only edge curves, not face surfaces/trims. Cold queries still
-process all visible eligible curves, and hot queries compare source geometry;
-these caches are not a scene spatial index or a cross-engine performance claim.
+copy only spatial edge curves for features and share the full source snapshot.
+[Snapshot identity](snap-caching.md) skips hot source comparisons on unchanged objects;
+Mid-only queries reject distant control bounds before integration. These caches
+are not a scene spatial index or a cross-engine performance claim.
 
 Independent tests distinguish parameter/arc midpoints, unclamped boundary/control
 rows, per-segment/whole-curve Mid, and a projectively reparameterized rational
