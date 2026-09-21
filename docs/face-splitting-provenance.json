@@ -1,7 +1,7 @@
 {
   "cases": 107,
   "engine_version": "8.32.26160.13001",
-  "scope": "Public MergeAllEdges observations to guide face partitioning; command integration is pending. No native equivalence or performance claim.",
+  "scope": "Public MergeAllEdges observations guiding face partitioning and command replacement/history replay. Raw observations do not themselves establish native equivalence or performance.",
   "shared_artifact_sha256": {
     "crease-0.099.3dm": "d710d085ccc1f069ddf011f28ce1a625cb79f5e2c3f03e8965e8467263738ca9",
     "crease-0.1001.3dm": "c7f1c115af02429d613074ad5685990734f41c1653b9616a38cefd53d0f240b6",

@@ -65,15 +65,15 @@ impl Brep {
     }
 
     /// Merges redundant edges and simplifies certified straight spatial edges
-    /// and their exactly straight UV trims. Simplified curves have unit weights
-    /// and domain `0..chord_length` in model units. Surfaces are not changed.
+    /// and their exactly straight non-seam UV trims. Simplified curves have unit
+    /// weights and domain `0..chord_length` in model units. Surfaces are unchanged.
     ///
     /// Unlike [`Self::try_merge_all_edges`], this also visits untouched edges.
     /// Linearity tests only propose replacements; every spatial replacement
     /// must have a whole-curve certificate. Displacement accumulates with the
     /// preceding merges under one absolute-tolerance and work budget. Stored
-    /// uncertainty grows conservatively for nonzero changes. Nonlinear UV trims
-    /// retain their original representation and exact locus.
+    /// uncertainty grows conservatively for nonzero changes. Nonlinear and seam
+    /// UV trims retain their original representation and exact locus.
     pub fn try_cleanup_edges(
         &self,
         angle_tolerance: Real,

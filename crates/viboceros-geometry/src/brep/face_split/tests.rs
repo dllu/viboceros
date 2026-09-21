@@ -536,7 +536,7 @@ fn source_uncertainties_survive_subdivision_in_every_incident_trim() {
 }
 
 #[test]
-fn crossing_singular_trims_and_discontinuous_tensor_knots_are_rejected() {
+fn singular_trim_partition_reuses_the_pole_and_preserves_a_closed_cone() {
     let frame = Frame3::try_from_normal(
         Point3::try_new(0., 0., 0.).unwrap(),
         Vector3::try_new(0., 0., 1.).unwrap(),
@@ -561,14 +561,43 @@ fn crossing_singular_trims_and_discontinuous_tensor_knots_are_rejected() {
         .find(|&&k| k > *surface.domain_u().start())
         .unwrap();
     let before = cone.clone();
-    assert!(matches!(
-        cone.try_split_face_at_knot(side, SurfaceKnotDirection::U, cut, Tolerance::DEFAULT),
-        Err(GeometryError::InvalidBrepTopology {
-            context: "face partition crosses a singular trim"
-        })
-    ));
+    let result = cone
+        .try_split_face_at_knot(side, SurfaceKnotDirection::U, cut, Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
     assert_eq!(cone, before);
+    assert!(result.is_solid());
+    assert_eq!(result.faces.len(), cone.faces.len() + 1);
+    assert_eq!(result.vertices.len(), cone.vertices.len() + 1); // rim only, no duplicate pole
+    assert_eq!(&result.vertices[..cone.vertices.len()], cone.vertices);
+    assert!(
+        (result.area(Tolerance::DEFAULT).unwrap() - cone.area(Tolerance::DEFAULT).unwrap()).abs()
+            < 1e-9
+    );
+    assert!(
+        (result.signed_volume(Tolerance::DEFAULT).unwrap()
+            - cone.signed_volume(Tolerance::DEFAULT).unwrap())
+        .abs()
+            < 1e-9
+    );
+    let count = |b: &Brep| {
+        b.trim_uses()
+            .iter()
+            .filter(|t| t.trim.trim_type == BrepTrimType::Singular)
+            .count()
+    };
+    assert_eq!(count(&result), count(&cone) + 1);
+    assert!(
+        result
+            .trim_uses()
+            .iter()
+            .filter(|t| t.trim.edge.is_none())
+            .all(|t| t.trim.vertices[0] == t.trim.vertices[1])
+    );
+}
 
+#[test]
+fn discontinuous_tensor_knots_are_rejected() {
     let disconnected = NurbsSurface::try_new(
         1,
         1,
@@ -588,6 +617,80 @@ fn crossing_singular_trims_and_discontinuous_tensor_knots_are_rejected() {
             context: "face partition requires a continuous full-degree knot"
         })
     ));
+}
+
+#[test]
+fn smooth_clamped_poles_are_neutral_but_regular_samples_detect_real_creases() {
+    let frame = Frame3::try_from_normal(
+        Point3::try_new(0., 0., 0.).unwrap(),
+        Vector3::try_new(0., 0., 1.).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    for original in [
+        NurbsSurface::try_sphere(frame, 2.).unwrap(),
+        NurbsSurface::try_cone(frame, 2., 3.).unwrap(),
+    ] {
+        for transpose in [false, true] {
+            let original = if transpose {
+                original.try_swapped_uv().unwrap()
+            } else {
+                original.clone()
+            };
+            for gauge in [1., -1., 1e-200, 1e200] {
+                let surface = NurbsSurface::try_new_rational(
+                    original.degree_u(),
+                    original.degree_v(),
+                    original.control_point_count_u(),
+                    original.control_point_count_v(),
+                    original
+                        .control_points()
+                        .iter()
+                        .map(|p| WeightedPoint3::try_new(p.point(), p.weight() * gauge).unwrap())
+                        .collect(),
+                    original.knots_u().to_vec(),
+                    original.knots_v().to_vec(),
+                )
+                .unwrap();
+                assert_eq!(
+                    surface.sampled_kink_parameters(1e-10).unwrap(),
+                    [vec![], vec![]]
+                );
+                let source = Brep::try_surface_face(surface, Tolerance::DEFAULT).unwrap();
+                assert!(
+                    source
+                        .try_split_kinky_faces(1e-10, Tolerance::DEFAULT)
+                        .unwrap()
+                        .is_none()
+                );
+            }
+        }
+    }
+    for radius in [0., 1e-12] {
+        let surface = NurbsSurface::try_new(
+            1,
+            1,
+            3,
+            2,
+            [
+                [0., 0., 0.],
+                [1., 0., 0.],
+                [2., 1., 0.],
+                [0., 0., 3.],
+                [radius, 0., 3.],
+                [2. * radius, radius, 3.],
+            ]
+            .map(|p| Point3::try_from(p).unwrap())
+            .to_vec(),
+            vec![0., 0., 1., 2., 2.],
+            vec![0., 0., 1., 1.],
+        )
+        .unwrap();
+        assert_eq!(
+            surface.sampled_kink_parameters(0.1).unwrap(),
+            [vec![1.], vec![]]
+        );
+    }
 }
 
 #[test]

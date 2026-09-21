@@ -11,7 +11,9 @@ The [MergeAllEdges command](commands/merge-edges.md) exposes the kernel with its
 own measured angular and selection policy.
 
 `Brep::try_cleanup_edges(angle, tolerance)` additionally simplifies certified
-straight spatial edges and exactly straight UV trims, including unmerged edges.
+straight spatial edges and exactly straight non-seam UV trims, including unmerged
+edges. Spatial seam edges can simplify, but their UV representations remain intact,
+including knots from preceding coalescing, matching the measured command policy.
 The command uses this entry point; automatic Join keeps its existing merge-only
 policy. Line proposals share accumulated displacement and work accounting with
 coalescing. Constant-sign monotone collinear controls have an exact locus

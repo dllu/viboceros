@@ -1,86 +1,7 @@
 use super::*;
 
-#[test]
-fn partition_kernel_replays_retained_face_split_geometry() {
-    let request: ProbeRequest = serde_json::from_str(include_str!(
-        "../../../../tools/rhino_oracle/fixtures/merge_edges_face_splits.json"
-    ))
-    .unwrap();
-    let expected: Value = serde_json::from_str(include_str!(
-        "../../../../tools/rhino_oracle/observations/merge_edges_face_splits.json"
-    ))
-    .unwrap();
-    assert_eq!(request.operations.len(), 107);
-    assert_eq!(expected["results"].as_array().unwrap().len(), 107);
-    let mut cutoff_differences = 0;
-    for (op, row) in request
-        .operations
-        .iter()
-        .zip(expected["results"].as_array().unwrap())
-    {
-        let Operation::MergeEdgesCommand { fixture, .. } = op else {
-            panic!()
-        };
-        let Source::Brep { brep } = &fixture.sources[0] else {
-            panic!()
-        };
-        let tolerance =
-            Tolerance::try_new(1e-9, 1e-12, fixture.angular_tolerance.unwrap()).unwrap();
-        let source = brep.build(Tolerance::DEFAULT).unwrap();
-        let cleaned = source
-            .try_cleanup_edges(
-                tolerance
-                    .angular()
-                    .clamp(0.1_f64.to_radians(), 1_f64.to_radians()),
-                tolerance,
-            )
-            .unwrap();
-        let partitioned = cleaned
-            .try_split_kinky_faces(
-                tolerance
-                    .angular()
-                    .clamp(0.1_f64.to_radians(), 2_f64.to_radians()),
-                tolerance,
-            )
-            .unwrap_or_else(|error| panic!("{}: {error}", row["id"]))
-            .unwrap_or(cleaned);
-        let actual = crate::brep_join::geometry_record(&partitioned, Tolerance::DEFAULT).unwrap();
-        let observed = row["value"]["after"][0]["geometry"]["brep"].clone();
-        if ["crease-2-doc0.0872665", "upper-2-doc2.5", "upper-2-doc10"]
-            .contains(&row["id"].as_str().unwrap())
-        {
-            cutoff_differences += 1;
-            assert_eq!(partitioned.faces().len(), 1);
-            assert_eq!(partitioned.edges().len(), 5);
-            assert_eq!(observed["faces"].as_array().unwrap().len(), 2);
-            assert_eq!(observed["edges"].as_array().unwrap().len(), 7);
-            let surface = source.faces()[0].surface();
-            let profile = surface.isocurve_u(*surface.domain_v().start()).unwrap();
-            let a = profile
-                .tangent_at_on_side(1., viboceros_geometry::ParameterSide::Left)
-                .unwrap();
-            let b = profile
-                .tangent_at_on_side(1., viboceros_geometry::ParameterSide::Right)
-                .unwrap();
-            let angle = a
-                .as_vector()
-                .cross(b.as_vector())
-                .unwrap()
-                .length()
-                .unwrap()
-                .atan2(a.as_vector().dot(b.as_vector()).unwrap());
-            let cutoff = 2_f64.to_radians();
-            assert!(angle <= cutoff && cutoff - angle < 1e-14);
-            // Stable atan2 does not exceed the requested cutoff here; Rhino's
-            // cosine comparison splits. Keep the raw disagreement explicit.
-            continue;
-        }
-        // Compare the complete raw geometry record, including face/trim order
-        // and all native parameter intervals; no representation normalization.
-        close(&actual, &observed, row["id"].as_str().unwrap());
-    }
-    assert_eq!(cutoff_differences, 3);
-}
+mod face_history;
+mod face_splits;
 
 fn close(a: &Value, b: &Value, path: &str) {
     match (a, b) {
@@ -306,40 +227,6 @@ fn planar_angle_matrix_matches_raw_records_except_four_exact_cutoff_roundoffs() 
         );
     }
     assert_eq!(cutoffs, 4);
-}
-
-#[test]
-fn kinky_surface_replacement_remains_an_explicit_topology_difference() {
-    let request: ProbeRequest = serde_json::from_str(include_str!(
-        "../../../../tools/rhino_oracle/fixtures/merge_edges_kinky_surfaces.json"
-    ))
-    .unwrap();
-    let expected: Value = serde_json::from_str(include_str!(
-        "../../../../tools/rhino_oracle/observations/merge_edges_kinky_surfaces.json"
-    ))
-    .unwrap();
-    let actual = run_request(&request).unwrap();
-    assert_eq!(actual.results.len(), 64);
-    let mut split_surfaces = 0;
-    for (a, b) in actual
-        .results
-        .iter()
-        .zip(expected["results"].as_array().unwrap())
-    {
-        assert_eq!(a.id, b["id"]);
-        close(&a.value["before"], &b["value"]["before"], &a.id);
-        let x = &a.value["after"][0]["geometry"]["brep"];
-        let y = &b["value"]["after"][0]["geometry"]["brep"];
-        assert_eq!(x["faces"].as_array().unwrap().len(), 1);
-        if y["faces"].as_array().unwrap().len() == 2 {
-            split_surfaces += 1;
-            assert_eq!(x["edges"].as_array().unwrap().len(), 5);
-            assert_eq!(y["edges"].as_array().unwrap().len(), 7);
-        } else {
-            close(&a.value, &b["value"], &a.id);
-        }
-    }
-    assert_eq!(split_surfaces, 33);
 }
 
 #[test]

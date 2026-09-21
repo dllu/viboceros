@@ -43,34 +43,15 @@ pub(super) fn crossings(
         if super::rings::side(&trim.curve, axis, cut)?.is_some() {
             continue;
         }
-        if trim.curve.degree() > 16 {
-            return invalid("face partition root proposal exceeds degree 16");
-        }
         let Some(edge_index) = trim.edge else {
-            return invalid("face partition crosses a singular trim");
+            // Singular UV boundaries have no spatial edge to subdivide.
+            // They are partitioned separately after shared-edge certification.
+            continue;
         };
         let edge = &source.edges[edge_index];
-        let mut roots = Vec::new();
-        budget.charge(
-            trim.curve
-                .control_points()
-                .len()
-                .saturating_mul((trim.curve.degree() + 1).pow(3)),
-        )?;
-        for span in scalar_bezier_spans(&local.curve, axis, local_cut)? {
-            roots_in_span(&span.coefficients, span.parameter, 0, &mut roots, budget)?;
-        }
-        roots.sort_by(Real::total_cmp);
-        roots.dedup();
         let domain = trim.curve.domain();
-        for t in roots {
-            if t <= *domain.start() || t >= *domain.end() {
-                continue;
-            }
+        for t in crossing_parameters(&local.curve, axis, local_cut, budget)? {
             let uv = local.curve.evaluate(t)?;
-            if parameter_coordinate(uv, axis) != local_cut {
-                return invalid("face partition UV crossing is not exactly representable");
-            }
             let target = frame.face.surface.evaluate(uv.x(), uv.y())?;
             let fraction = (t - *domain.start()) / (*domain.end() - *domain.start());
             let fraction = if trim.reversed_3d {
@@ -108,6 +89,40 @@ pub(super) fn crossings(
         }
     }
     Ok(splits.into_iter().collect())
+}
+
+pub(super) fn crossing_parameters(
+    curve: &NurbsCurve2,
+    axis: usize,
+    cut: Real,
+    budget: &mut Budget,
+) -> Result<Vec<Real>, GeometryError> {
+    if curve.degree() > 16 {
+        return invalid("face partition root proposal exceeds degree 16");
+    }
+    budget.charge(
+        curve
+            .control_points()
+            .len()
+            .saturating_mul((curve.degree() + 1).pow(3)),
+    )?;
+    let mut roots = Vec::new();
+    for span in scalar_bezier_spans(curve, axis, cut)? {
+        roots_in_span(&span.coefficients, span.parameter, 0, &mut roots, budget)?;
+    }
+    roots.sort_by(Real::total_cmp);
+    roots.dedup();
+    if roots.len() > MAX_PARTS {
+        return invalid("too many face partition crossings");
+    }
+    let domain = curve.domain();
+    roots.retain(|&t| t > *domain.start() && t < *domain.end());
+    for &t in &roots {
+        if parameter_coordinate(curve.evaluate(t)?, axis) != cut {
+            return invalid("face partition UV crossing is not exactly representable");
+        }
+    }
+    Ok(roots)
 }
 
 fn roots_in_span(
@@ -244,7 +259,7 @@ pub(super) fn certify(
     Ok(())
 }
 
-fn exact_partition(
+pub(super) fn exact_partition(
     pieces: &[&NurbsCurve],
     original: &NurbsCurve,
     budget: &mut Budget,

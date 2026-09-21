@@ -5,6 +5,7 @@ use crate::SurfaceKnotDirection;
 
 mod curves;
 mod rings;
+mod singular;
 mod surface;
 #[cfg(test)]
 mod tests;
@@ -35,11 +36,12 @@ impl Brep {
     /// Root searches and edge correspondence only propose subdivisions. Every
     /// spatial and UV partition must certify the original locus exactly: either
     /// zero-displacement restrictions or ordered, gap-free collinear segments.
-    /// Whole control hulls certify which side of the cut a
-    /// trim occupies. Unrepresentable exact splits, ambiguous/touching cut
-    /// incidence, mixed-sign trim hulls, crossing singular trims, and collapsed
-    /// interior seams are errors,
-    /// never silently approximated. General certificates support degree 16.
+    /// Singular UV trims are subdivided with the same certificates, retaining
+    /// their original pole vertex without creating spatial boundary edges.
+    /// Whole control hulls certify which side of the cut a trim occupies.
+    /// Unrepresentable exact splits, ambiguous/touching cut incidence,
+    /// mixed-sign trim hulls, and collapsed interior seams are errors, never
+    /// silently approximated. General certificates support degree 16.
     ///
     /// Returns `None` when the knot line does not divide the trimmed region.
     /// The source is unchanged on every outcome. `Both` is not a direction;
@@ -169,6 +171,7 @@ impl Brep {
         let splits = curves::crossings(self, face, axis, parameter, tolerance, budget)?;
         let mut result = self.try_split_edges_at_parameters(&splits, tolerance)?;
         curves::certify(self, &mut result, &splits, budget)?;
+        singular::split(&mut result.faces[face], axis, parameter, budget)?;
         let Some(partitions) = rings::partition(
             &mut result,
             face,

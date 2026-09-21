@@ -35,6 +35,12 @@ impl State {
             let mut trims = Vec::with_capacity(edge.uses.len());
             for &index in &edge.uses {
                 let old = &self.trim(index).geometry;
+                // A seam has two independent UV uses on the same surface.
+                // Rhino preserves both representations while simplifying its
+                // spatial edge, including UV knots left by prior seam merges.
+                if old.trim_type == BrepTrimType::Seam {
+                    continue;
+                }
                 budget.charge(old.curve.control_points().len())?;
                 // Exact positive-basis collinearity proves identical UV loci
                 // without assuming that UV distance is a model-space distance.

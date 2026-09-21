@@ -61,6 +61,13 @@ fn merge(
         return Err(CommandError::NoObjectsSelected);
     }
     let tolerance = document.tolerance();
+    // Independent cutoffs measured on planar trims and kinked surfaces.
+    let edge_angle = tolerance
+        .angular()
+        .clamp(0.1_f64.to_radians(), 1_f64.to_radians());
+    let face_angle = tolerance
+        .angular()
+        .clamp(0.1_f64.to_radians(), 2_f64.to_radians());
     let mut eligible = 0;
     let mut removed = 0;
     let mut replacements = Vec::new();
@@ -75,14 +82,16 @@ fn merge(
             _ => continue,
         };
         eligible += 1;
-        // Public command probes on planar trims isolate this clamp from
-        // Rhino's separate replacement-time splitting of kinky surfaces.
-        let angle = tolerance
-            .angular()
-            .clamp(0.1_f64.to_radians(), 1_f64.to_radians());
-        let merged = brep.try_cleanup_edges(angle, tolerance)?;
+        let merged = brep.try_cleanup_edges(edge_angle, tolerance)?;
         let count = brep.edges().len() - merged.edges().len();
         removed += count;
+        // Replacement splits faces *after* cleanup. New boundary segments
+        // retain their source parameter intervals; do not simplify them again.
+        // Count removed edges beforehand: partitioning can add more than were
+        // removed. Stage every object before changing the document/history.
+        let merged = merged
+            .try_split_kinky_faces(face_angle, tolerance)?
+            .unwrap_or(merged);
         replacements.push((object.id(), Geometry::Brep(merged)));
     }
     if eligible == 0 {

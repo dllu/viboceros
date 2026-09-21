@@ -128,10 +128,14 @@ fn cleanup_covers_every_incident_trim_without_changing_surfaces_or_join_policy()
             assert_eq!(a.surface, b.surface);
             assert_eq!(a.reversed, b.reversed);
         }
-        for usage in result.trim_uses() {
+        for (usage, original) in result.trim_uses().iter().zip(source.trim_uses()) {
             let Some(edge) = usage.trim.edge else {
                 continue;
             };
+            if usage.trim.trim_type == BrepTrimType::Seam {
+                assert_eq!(usage.trim.curve, original.trim.curve);
+                continue;
+            }
             if certificate::linear_endpoints(&result.edges[edge].curve).is_some() {
                 assert_eq!(usage.trim.curve.domain(), result.edges[edge].curve.domain());
                 assert_eq!(usage.trim.curve.degree(), 1);

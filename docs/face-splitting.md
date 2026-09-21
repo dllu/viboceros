@@ -4,8 +4,8 @@
 
 `Brep::try_split_face_at_knot` partitions a selected face along one continuous
 interior U or V knot of full degree multiplicity. `try_split_kinky_faces`
-repeatedly partitions qualifying surface creases. These are kernel APIs;
-replacement-time splitting is not yet wired into `MergeAllEdges`.
+repeatedly partitions qualifying surface creases. `MergeAllEdges` applies the
+latter after edge cleanup, before its atomic document replacement.
 
 ## Preservation and topology
 
@@ -32,17 +32,24 @@ predicate. Boundary, mated and seam labels are recomputed from face ownership.
 New spatial isocurves carry a certified construction-error bound; this bound must
 not exceed model absolute tolerance.
 
+Collapsed boundaries can cross the UV cut. Their UV subdivision requires the
+same whole-locus certificate, retains the original pole vertex, and creates no
+spatial boundary edge. This supports creases reaching poles without weakening
+ordinary edge/trim correspondence checks.
+
 ## Limits
 
 - General curve certificates and crossing proposals support degree 16.
 - Mixed-sign trim hulls, unresolved or unrepresentable exact restrictions,
-  ambiguous/touching incidence, crossing singular trims, discontinuous full-order
-  surface knots and collapsed new interior seams are rejected atomically.
+  ambiguous/touching incidence, discontinuous full-order surface knots and
+  collapsed new interior seams are rejected atomically.
 - A trim whose hull straddles the cut can be rejected even if its curve does not
   cross. Arbitrary curved-region Boolean splitting is not implemented.
 - Angular detection samples one-sided isocurve tangents at transverse span ends
   and midpoints. It follows the existing surface candidate API, not a continuous
-  maximum-angle certificate.
+  maximum-angle certificate. Exactly collapsed sign-coherent clamped boundary
+  control rows are neutral: no tangent there does not imply a crease. Regular
+  transverse samples still detect genuine creases reaching a pole.
 - All face partitions share 16 million charged work units. Tensor copies,
   angular-scan multiplicative cost, root proposals and exact certificates are
   charged. The edge-subdivision helper also retains its separate four-million
@@ -69,14 +76,27 @@ domains show cleanup before face splitting: newly split boundary segments keep
 their source parameter intervals instead of receiving another straight-edge
 cleanup pass.
 
-The kernel replay applies edge cleanup followed by face partitioning and matches
-**104/107 complete raw output geometry records** at absolute epsilon `1e-9` and
-relative epsilon `1e-10`. It retains all surface/curve definitions, component
+Both kernel and actual command replays apply edge cleanup followed by face
+partitioning. The command matches **104/107 complete raw records**, including
+selection, attributes, groups and available history states, at absolute epsilon
+`1e-9` and relative epsilon `1e-10`. It retains all surface/curve definitions, component
 uncertainties, face order, trim order and parameter intervals without normalization.
 Three exact 2° cases differ: native stable `atan2` is at or just below the cutoff
 while Rhino splits. Tests explicitly retain this topology disagreement and bound
-the angular discrepancy below `1e-14` radians. This kernel replay does not yet
-establish command selection, replacement or history equivalence for face splitting.
+the angular discrepancy below `1e-14` radians.
+
+[24 additional fixtures](../tools/rhino_oracle/fixtures/merge_edges_face_history.json),
+[raw observations](../tools/rhino_oracle/observations/merge_edges_face_history.json)
+and [provenance](face-history-provenance.json) exercise preselection and
+command-first picking through Undo/Redo on eleven additional shared sources.
+These cover both UV directions together, trimmed regions, spheres, cones,
+creased poles, mixed selection and linear/pre-split/rational closed seams.
+**22/24 full raw records match.** The two-direction cases differ only in
+vertex/edge numbering: tests require a bijective relabeling of every reference,
+then compare complete geometry and history unchanged. Face/trim order and curve
+parameters already agree. The raw report retains both differences.
+Smooth poles remain unsplit. Measured seam UV definitions survive spatial-edge
+simplification, including interior knots from seam coalescing.
 
 An initial extended source export used a parameter outside a localized edge's
 domain. It was corrected before exporting fresh artifacts; that failed attempt
@@ -88,9 +108,12 @@ Focused tests cover shared neighbors, holes, disconnected clipped regions,
 quadratic UV crossings, closed seams, reversed faces, repeated U/V splits,
 out-of-region knots, uncertainty preservation, UV origins `±2^40`, UV scale
 `2^-30`, signed/extreme weight gauges, unclamped knots, atomic rejection, and
-work-budget exhaustion. A closed cylinder remains solid after partitioning its
-side, updates both caps, and round-trips through 3DM with exactly equal geometry
-and topology. Its area and signed volume agree with analytic values.
+work-budget exhaustion. Closed cylinders, cones and spheres in either face sense
+remain solid after partitioning, update incident cap trims, and round-trip
+through 3DM with exactly equal geometry and topology. Area and signed volume
+are preserved; cylinder tests also compare analytic values. Command tests
+exercise independent angular cutoffs and roll back all objects, selection and
+the existing redo branch when a face cannot be certified.
 
 That cylinder exposed an existing integration defect: subdividing a cap boundary
 switches it from rectangular integration to planar boundary integration. The
@@ -102,9 +125,9 @@ edge-only subdivision tests reproduce and guard this fix without face splitting.
 ```sh
 cargo test -p viboceros-geometry brep::face_split
 cargo test -p viboceros-geometry brep::mass_properties
-cargo test -p viboceros-io partitioned_cylinder_faces
-cargo test -p viboceros-oracle partition_kernel_replays
+cargo test -p viboceros-io partitioned_closed_faces
+cargo test -p viboceros-oracle merge_edges_command
 ```
 
-Verification checkpoint: 2,929 release-mode workspace tests, seven opt-in GPU
+Verification checkpoint: 2,935 release-mode workspace tests, seven opt-in GPU
 tests, 237 Python tests, formatting, and Clippy/Rustdoc with warnings denied.

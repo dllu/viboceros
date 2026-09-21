@@ -1,0 +1,26 @@
+{
+  "cases": 24,
+  "engine_version": "8.32.26160.13001",
+  "shared_artifact_sha256": {
+    "crease_u.3dm": "c3de52dfa673fbbabb24f9df570be06bbfd3018529d8bb09dd013223528695fe",
+    "crease_v.3dm": "033339806a3cddb23e692d18cf863647ce9cc62165398dc660d4207b6ff9b81e",
+    "two_directions.3dm": "3a20277ead4dd9d3c6ae07c0ed89dec56bf897f16ffc75578b11042a3bbf6f56",
+    "trimmed.3dm": "1f9cc33a78c74a9bae2ee98622120fd6f726208bbf100de3e983ec8825162341",
+    "sphere.3dm": "1ce55436d80432288c63b360f18c1dc14ef6d312c61d841a5e0d2b159d54a3b6",
+    "cone.3dm": "f550bc722d659e91a7a7f538f977641918ab664314c76bba727489cf9f1f5655",
+    "creased_pole.3dm": "a7a6a4a492123b68b82d84c4ca1199ad0cfe42eb947cec3b4c9c0dc503ed76e9",
+    "seam-linear.3dm": "5201313c1a1e4980f2505fd8fc0b81df756dcf900d868fc1e963e857d7afef91",
+    "seam-presplit.3dm": "c1b93757e078bd19b7fd9b951b8fa66f6be87bbe524c79b9ef0c06e1e4c9af5f",
+    "seam-quadratic-1.3dm": "47a96516c2abea08d91626bf8e372b140001ea5c0b6639cae86baba4bac84058",
+    "seam-quadratic--1.3dm": "b49d31c368749139ad61d818b27d38aba2d52db014ffa866add0313203c95f73"
+  },
+  "raw_response_sha256": {
+    "rhino.json": "9b18900b67cbd79a9b841a91e9d165d6d71b9c53dc0482a0aeca5622b74fd336",
+    "rhino-seams.json": "ae4607b3ba1dc3db93c8e9eb5dc0d81a78c8a14e758be93d765d115b35cac096"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/merge_edges_face_history.json": "74c9d7842a2b6a538ba649a133c9c5ae0534e4042e2611956e2499a79440e65a",
+    "tools/rhino_oracle/observations/merge_edges_face_history.json": "3ed20fdceb493805e0bdcc4c9448afc46f95b970b7e6839d1def92e345248c83"
+  },
+  "scope": "Public MergeAllEdges commands, pre/postselection, attributes/groups and Undo/Redo on shared unchanged 3DM sources. No performance claim. Raw values unchanged; only fixture artifact paths and serialization formatting removed."
+}

@@ -2258,9 +2258,11 @@ impl NurbsSurface {
 
     /// Interior fully multiple knots whose sampled one-sided isocurve tangents
     /// differ by more than `angle_radians`. Tests transverse span endpoints and
-    /// midpoints, like the OpenNURBS discontinuity predicate; this is not a
-    /// continuous maximum-angle certificate. Smooth rational circle knots are
-    /// not creases merely because their multiplicity equals the degree.
+    /// midpoints; this is not a continuous maximum-angle certificate. Exactly
+    /// collapsed, sign-coherent clamped boundary rows have no tangent and are
+    /// ignored; regular samples still detect creases reaching a pole. Smooth
+    /// rational circle knots are not creases merely because their multiplicity
+    /// equals the degree.
     pub fn sampled_kink_parameters(
         &self,
         angle_radians: Real,
@@ -2323,6 +2325,12 @@ impl NurbsSurface {
         };
         let mut maximum: Real = 0.0;
         for parameter in parameters {
+            // A collapsed clamped boundary has no tangent in this direction.
+            // Its exactly constant control row is not evidence of a crease;
+            // regular transverse samples still detect creases reaching a pole.
+            if self.is_collapsed_clamped_boundary(direction, parameter) {
+                continue;
+            }
             let isocurve = match direction {
                 SurfaceKnotDirection::U => self.isocurve_u(parameter)?,
                 SurfaceKnotDirection::V => self.isocurve_v(parameter)?,
@@ -2331,6 +2339,54 @@ impl NurbsSurface {
             maximum = maximum.max(isocurve.kink_angle_at(knot)?);
         }
         Ok(maximum)
+    }
+
+    fn is_collapsed_clamped_boundary(
+        &self,
+        direction: SurfaceKnotDirection,
+        parameter: Real,
+    ) -> bool {
+        let (degree, knots, domain, count, width) = match direction {
+            SurfaceKnotDirection::U => (
+                self.degree_v,
+                self.knots_v(),
+                self.domain_v(),
+                self.control_point_count_v,
+                self.control_point_count_u,
+            ),
+            SurfaceKnotDirection::V => (
+                self.degree_u,
+                self.knots_u(),
+                self.domain_u(),
+                self.control_point_count_u,
+                self.control_point_count_v,
+            ),
+            SurfaceKnotDirection::Both => return false,
+        };
+        let row =
+            if parameter == *domain.start() && knots[..=degree].iter().all(|&k| k == parameter) {
+                0
+            } else if parameter == *domain.end()
+                && knots[knots.len() - degree - 1..]
+                    .iter()
+                    .all(|&k| k == parameter)
+            {
+                count - 1
+            } else {
+                return false;
+            };
+        let control = |i| match direction {
+            SurfaceKnotDirection::U => self.control_point(i, row).unwrap(),
+            SurfaceKnotDirection::V => self.control_point(row, i).unwrap(),
+            SurfaceKnotDirection::Both => unreachable!(),
+        };
+        let first = control(0);
+        (0..width).all(|i| {
+            let p = control(i);
+            p.point() == first.point()
+                && p.weight() != 0.
+                && p.weight().is_sign_negative() == first.weight().is_sign_negative()
+        })
     }
 
     /// Matches the high-dimensional non-rational curve that OpenNURBS uses

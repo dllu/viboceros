@@ -1,4 +1,14 @@
 {
+  "merge_edges_face_splits": {
+    "cases": 107,
+    "engine_version": "8.32.26160.13001",
+    "provenance_file": "face-splitting-provenance.json"
+  },
+  "merge_edges_face_history": {
+    "cases": 24,
+    "engine_version": "8.32.26160.13001",
+    "provenance_file": "face-history-provenance.json"
+  },
   "merge_edges_command": {
     "cases": 39,
     "engine_version": "8.32.26160.13001",
