@@ -12,6 +12,9 @@ volume. Both commands preserve selection, geometry, attributes, and undo history
 B-rep measurements use the NURBS surfaces and parameter-space trim curves.
 Display tessellation is not involved. Full domains and rectangular trims are
 integrated per knot-span rectangle; planar trims use oriented boundary integrals.
+Both planar and nonplanar boundary integrals are split at surface-knot crossings:
+even a planar surface can have a non-affine UV map. This is necessary, for example,
+after [subdividing a cylindrical cap's boundary](face-splitting.md).
 
 For nonplanar trims, Green's theorem reduces the integral of a surface density
 over the retained UV region to a boundary integral:
@@ -44,7 +47,7 @@ diagonal; volume uses distance tolerance times its square. Budgets are divided
 among faces, knot spans, boundary intervals, and inner integrations, alongside
 relative error estimates. These are numerical estimates, not symbolic proofs.
 Nonconvergence, nonfinite values, invalid trim domains, or exhausted work limits
-return errors. Each nonplanar trimmed face allows at most 65,536 boundary intervals
+return errors. Each boundary-integrated face allows at most 65,536 boundary intervals
 and two million surface evaluations, in addition to quadrature subdivision limits.
 An unrepresentable rescaling fails instead of collapsing knots. Lossless origin
 removal can be declined when exterior knots prevent it, and arbitrary relative

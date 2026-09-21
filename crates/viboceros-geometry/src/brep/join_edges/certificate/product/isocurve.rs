@@ -4,7 +4,7 @@ use super::*;
 #[cfg(test)]
 mod tests;
 
-pub(in crate::brep::join_edges) enum SurfaceCurve {
+pub(in crate::brep) enum SurfaceCurve {
     Natural(NurbsCurve),
     Tensor {
         degree: usize,

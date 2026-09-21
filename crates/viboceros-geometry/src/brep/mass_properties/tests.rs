@@ -8,6 +8,52 @@ fn point(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }
 
+#[test]
+fn planar_polar_caps_keep_analytic_masses_after_boundary_subdivision() {
+    let frame = crate::Frame3::try_from_normal(
+        point(0., 0., 0.),
+        Vector3::try_new(0., 0., 1.).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let cylinder = Brep::try_cylinder(frame, 2., 0., 5., Tolerance::DEFAULT).unwrap();
+    for reversed in [false, true] {
+        let original = if reversed {
+            cylinder.reversed()
+        } else {
+            cylinder.clone()
+        };
+        for (edge, source) in original
+            .edges()
+            .iter()
+            .enumerate()
+            .filter(|(_, e)| e.vertices()[0] == e.vertices()[1])
+        {
+            for fraction in [0.25, 0.5, 0.75] {
+                let split = original
+                    .try_split_edges_at_parameters(
+                        &[(edge, vec![source.curve().parameter_at(fraction).unwrap()])],
+                        Tolerance::DEFAULT,
+                    )
+                    .unwrap();
+                assert_eq!(split.faces().len(), original.faces().len());
+                assert!(
+                    split
+                        .faces()
+                        .iter()
+                        .zip(original.faces())
+                        .all(|(a, b)| a.surface() == b.surface())
+                );
+                let area = split.area(Tolerance::DEFAULT).unwrap();
+                let volume = split.signed_volume(Tolerance::DEFAULT).unwrap();
+                assert!((area - 28. * std::f64::consts::PI).abs() < 1e-10);
+                let sign = if reversed { -1. } else { 1. };
+                assert!((volume - sign * 20. * std::f64::consts::PI).abs() < 1e-10);
+            }
+        }
+    }
+}
+
 pub(in crate::brep) fn paraboloid() -> NurbsSurface {
     let coordinates = [-1.0, 0.0, 1.0];
     let squared_controls = [1.0, -1.0, 1.0];

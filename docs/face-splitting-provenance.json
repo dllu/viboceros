@@ -1,0 +1,68 @@
+{
+  "cases": 107,
+  "engine_version": "8.32.26160.13001",
+  "scope": "Public MergeAllEdges observations to guide face partitioning; command integration is pending. No native equivalence or performance claim.",
+  "shared_artifact_sha256": {
+    "crease-0.099.3dm": "d710d085ccc1f069ddf011f28ce1a625cb79f5e2c3f03e8965e8467263738ca9",
+    "crease-0.1001.3dm": "c7f1c115af02429d613074ad5685990734f41c1653b9616a38cefd53d0f240b6",
+    "crease-0.11.3dm": "f2f8c1cc79e852e0c552a41bc5b412b01108b63850cc7fcc725c92d77041ca4e",
+    "crease-0.2.3dm": "bc1263e7ab189f6d3c3391f322fd46f957b202025d6a4c231c17337f969d9b84",
+    "crease-0.99.3dm": "1afcb57fe64b8980f7beddb8a25c0ec3ac4d3c7a97c36aa0783470b9e2179801",
+    "crease-1.3dm": "ecde6966e853ceb1ab8c4d6894c1af83198bd530156162bb45b2e12a73a5c855",
+    "crease-1.0001.3dm": "83982ade96c39f726496d42d3e3218af02305b526f6022abb7d7d8bb1210b29d",
+    "crease-1.01.3dm": "4939fb2c23574ec7c13a8cefa963bcec0c02aa7526ff9e6e5dd76f365046b6b8",
+    "crease-1.05.3dm": "ac612dfcc5ceffedd3a17152af3ff154397df606913d1ee1df6710db6b972e5f",
+    "crease-1.1.3dm": "4449ec265e83fc77e03b7856a89465aede4b8b19d210af00e10bb794363aa7f9",
+    "crease-1.2.3dm": "c2fa65384cf6520bd1a1298eac6995e7d6701b9a9d2f81826ddc415a9dac5ce3",
+    "crease-1.25.3dm": "42575419e04ae3a50382a4f7043896c8bf062c1ea22d1255d2267a3f09a3b5da",
+    "crease-1.4.3dm": "10abdc3a128638dbbb19366e56346be8ae83869ccc91b9f715109e6169938e6a",
+    "crease-1.5.3dm": "68e8821a8e29b35580aa4190dc1b2da8643d09b48aa0102807eff0a4d5a24437",
+    "crease-1.6.3dm": "8d0e06ddda9bfd9e3a7600c8f1a38b50f8cfdfc0ed21550f45fb57b4246fbe79",
+    "crease-1.75.3dm": "8a8e86b86cda20a2ee7bb32a7d053aa74196263896ba6ec0199ea813de334747",
+    "crease-1.9.3dm": "c576435c098a0b93d5eae28168004a048c01dad4ed44a771954f53e921e5ae56",
+    "crease-2.3dm": "596ecbeb0962a16c26ce603bf40473f80a22d1263db79574afea0e54a495efc0",
+    "upper-1.9999-fixed.3dm": "dfc72358dd12828879c5976cbdeaf775c7de3b810c9d098a30e36db88a279ff4",
+    "upper-2-fixed.3dm": "ae1f7aec6f034961e7970bdc762be7819369c8bcc7382c93d53c9816d14c4f83",
+    "upper-2.0001-fixed.3dm": "c2441ecdf44a9c528500fe3d411ef727c99df0af1d95d4c1bf8b765ebf653cd2",
+    "upper-2.1-fixed.3dm": "26b6a2d89fdc9ace54c6aa739933f37dbf2ce6c09bf8ddf6ef6ad38f0d86418a",
+    "upper-2.49-fixed.3dm": "342fdac351120a4edcbdc4a43c9ef7685c06a0b5c4b935a25ec711881b62618f",
+    "upper-2.5-fixed.3dm": "4c87fc46bc5b27e236b5413f53aca8420a491d05a743e4c4c2ef6cee32800318",
+    "upper-2.51-fixed.3dm": "0001781453055e2494e91c316aef35052d9c9f79c2c50709f32e58741b805fbf",
+    "layout-axis0-split0-reverse0-shift0-fixed.3dm": "d9aff432ed84e80e0a740401bd6e501aff26e351297c0b475eff1ec3e6dfe8fc",
+    "layout-axis0-split0-reverse0-shift1-fixed.3dm": "7ae5006aaa5145e2b93b12d244d39d7b3ec3f2ce14a614806841b0f67e49ffc6",
+    "layout-axis0-split0-reverse1-shift0-fixed.3dm": "4083962fbc309a0ba091fa0bb1203fa9429a642232fa0527afe31de34d36d82f",
+    "layout-axis0-split0-reverse1-shift1-fixed.3dm": "dc9892254bef6c14053ca77a5556a375e78531e13aaf0ae7c1b7bce393be7a1a",
+    "layout-axis0-split1-reverse0-shift0-fixed.3dm": "7377911125815be255525fa76d3b80b0ec71173642572bb1dae812aa722757f6",
+    "layout-axis0-split1-reverse0-shift1-fixed.3dm": "33d62d14e355c77890e83b7f805d29a2bb008f26acd34d9748071568d3890586",
+    "layout-axis0-split1-reverse1-shift0-fixed.3dm": "fed610d04e3f073f045db648962cb74365f11af302f7f4a894b1c623b3454347",
+    "layout-axis0-split1-reverse1-shift1-fixed.3dm": "69b3e45f09be04265542625b14bbbaf62e32f0041e7587d26125146a3e995456",
+    "layout-axis1-split0-reverse0-shift0-fixed.3dm": "931681c703a64256bca53f351a9fc4d0cc99165f04815a2c538a7d70bca0c7a5",
+    "layout-axis1-split0-reverse0-shift1-fixed.3dm": "7bef4d445b0840aa875245310fa8fad492a053d097f23f7630fe25d811ccf72b",
+    "layout-axis1-split0-reverse1-shift0-fixed.3dm": "8c855101d59b02e33fa7cae5e4cdf3a25adde9951ff5c698cf1fdc9fa2410d7d",
+    "layout-axis1-split0-reverse1-shift1-fixed.3dm": "cc8e082192e6044e52cc26a3d2346fed3968478394e7fa9b2f9b651d0fe8ae11",
+    "layout-axis1-split1-reverse0-shift0-fixed.3dm": "65549194c8b2ec731fbc04a3cb12b531072ed456dc6f7f8d39f50fd0df9913a7",
+    "layout-axis1-split1-reverse0-shift1-fixed.3dm": "49878978ed6591d3e6f435f326ea9c22b777894625b57a7d02570d70685abdeb",
+    "layout-axis1-split1-reverse1-shift0-fixed.3dm": "c283737ce74616731523862a92e531777b636a67e5642644f9e267a9163aa494",
+    "layout-axis1-split1-reverse1-shift1-fixed.3dm": "b4c747f990bbb2b140848673cfe267d48df3b2903cc38412a161e81d1a027a7d"
+  },
+  "raw_response_sha256": {
+    "rhino-probe.json": "fb4658e872302104a886b9414e8f3d7472bfef51650c480abbf4342a0f63c783",
+    "rhino-fixed.json": "1e1eb18051dd31c1d47890f02b0144fee1d0f13cbd4f78af452ff37eea69291d"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/merge_edges_face_splits.json": "21107a079da25c882e7ab646714cb5a5b9364c02d7d6dc0c5cb4051d0e218f7e",
+    "tools/rhino_oracle/observations/merge_edges_face_splits.json": "0549d2bfdda30b635fbb4dc5f067db828be208494ac09fbef1920eb62574da8d"
+  },
+  "retention": "Only serialization whitespace/key order and fixture artifact paths changed; raw observation fields and values were retained.",
+  "failed_initial_extended_export": {
+    "error": {
+      "protocol_version": 1,
+      "engine": "viboceros",
+      "engine_version": "0.1.0",
+      "iterations": 1,
+      "results": [],
+      "error": "a NURBS curve split parameter must lie strictly inside its domain"
+    },
+    "cause": "Shifted V fixture used edge parameter 8, outside the native-localized domain 0..6. Corrected to 3; exported fresh -fixed.3dm paths and verified all 23 export results before the successful 53-case Rhino probe. Failed run is not a comparison."
+  }
+}

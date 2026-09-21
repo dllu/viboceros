@@ -1,7 +1,7 @@
 //! Restrict the exact parameter domain, not a rounded knot-insertion result.
 use super::*;
 
-pub(in crate::brep::join_edges) fn restricted_curve_bound(
+pub(in crate::brep) fn restricted_curve_bound(
     a: &NurbsCurve,
     b: &NurbsCurve,
     interval: [Real; 2],

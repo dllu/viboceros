@@ -82,6 +82,81 @@ fn coalesced_rational_brep_edges_and_trims_round_trip_without_new_full_order_kno
 }
 
 #[test]
+fn partitioned_cylinder_faces_keep_solid_incidence_and_round_trip() {
+    use viboceros_geometry::{BrepTrimType, Frame3, SurfaceKnotDirection, Vector3};
+    let frame = Frame3::try_from_normal(
+        p(0., 0., 0.),
+        Vector3::try_new(0., 0., 1.).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let cylinder = Brep::try_cylinder(frame, 2., 0., 5., Tolerance::DEFAULT).unwrap();
+    for reversed in [false, true] {
+        let original = if reversed {
+            cylinder.reversed()
+        } else {
+            cylinder.clone()
+        };
+        let side = original
+            .faces()
+            .iter()
+            .position(|f| {
+                f.loops()
+                    .iter()
+                    .flat_map(|l| l.trims())
+                    .any(|t| t.trim_type() == BrepTrimType::Seam)
+            })
+            .unwrap();
+        let surface = original.faces()[side].surface();
+        let cut = surface
+            .knots_u()
+            .iter()
+            .copied()
+            .find(|&k| k > *surface.domain_u().start())
+            .unwrap();
+        let source = original
+            .try_split_face_at_knot(side, SurfaceKnotDirection::U, cut, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert_eq!(source.faces().len(), original.faces().len() + 1);
+        assert!(source.is_solid());
+        assert!(source.edge_use_counts().iter().all(|&count| count == 2));
+        for (i, face) in original
+            .faces()
+            .iter()
+            .enumerate()
+            .filter(|&(i, _)| i != side)
+        {
+            assert_eq!(source.faces()[i].surface(), face.surface());
+            assert_eq!(
+                source.faces()[i].loops()[0].trims().len(),
+                face.loops()[0].trims().len() + 1
+            );
+        }
+        let ThreeDmGeometry::Brep(decoded) = round_trip(ThreeDmGeometry::Brep(source.clone()))
+        else {
+            panic!("expected B-rep")
+        };
+        assert!(decoded.is_solid());
+        assert_eq!(decoded.vertices(), source.vertices());
+        assert_eq!(decoded.faces(), source.faces());
+        assert_eq!(decoded.edges(), source.edges());
+        assert!(
+            (decoded.area(Tolerance::DEFAULT).unwrap()
+                - original.area(Tolerance::DEFAULT).unwrap())
+            .abs()
+                < 1e-9
+        );
+        assert!(
+            (decoded.signed_volume(Tolerance::DEFAULT).unwrap()
+                - original.signed_volume(Tolerance::DEFAULT).unwrap())
+            .abs()
+                < 1e-9
+        );
+    }
+}
+
+#[test]
 fn brep_edges_uv_trims_and_signed_surfaces_share_safe_serialization() {
     let original = Brep::try_surface_face(surface(), Tolerance::DEFAULT).unwrap();
     for (edge_scale, trim_scale, surface_scale) in [

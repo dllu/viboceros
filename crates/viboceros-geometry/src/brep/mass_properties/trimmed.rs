@@ -2,15 +2,12 @@
 //! region as ∮ (∫[u0,u] density(s,v) ds) dv. Inner loops subtract naturally.
 //! Both integrations use exact NURBS evaluations and bounded adaptive rules.
 
-use super::super::{collect_bernstein_roots, floating_parameter_epsilon, scalar_bezier_spans};
-use super::{BrepFace, Measure, neumaier_add};
+use super::super::floating_parameter_epsilon;
+use super::{BrepFace, Measure, boundary, neumaier_add};
 use crate::{
-    GeometryError, NurbsCurve2, NurbsSurface, Real, Vector3, integration::integrate_adaptive,
-    require_finite, vector::product_three,
+    GeometryError, NurbsSurface, Real, Vector3, integration::integrate_adaptive, require_finite,
+    vector::product_three,
 };
-
-const MAX_BOUNDARY_INTERVALS: usize = 65_536;
-const MAX_SURFACE_EVALUATIONS: usize = 2_000_000;
 
 pub(super) fn integrate(
     face: &BrepFace,
@@ -19,44 +16,20 @@ pub(super) fn integrate(
     absolute_tolerance: Real,
     relative_tolerance: Real,
 ) -> Result<Real, GeometryError> {
-    let mut span_count = 0usize;
-    let curves = face
-        .loops
-        .iter()
-        .flat_map(|l| &l.trims)
-        .map(|trim| {
-            // Every nonempty trim span needs at least one boundary interval.
-            // Bound frame copies before root isolation constructs more pieces.
-            span_count = span_count
-                .checked_add(trim.curve.spans().count())
-                .filter(|&n| n <= MAX_BOUNDARY_INTERVALS)
-                .ok_or(GeometryError::NumericalIntegrationDidNotConverge)?;
-            trim.curve.for_integration()
-        })
-        .collect::<Result<Vec<_>, _>>()?;
-    let mut intervals = Vec::new();
-    for curve in &curves {
-        // Isolate surface-knot crossings in the same local parameter frame
-        // used for quadrature; never round roots back onto native knot origins.
-        for interval in boundary_intervals(curve, surface)? {
-            if intervals.len() == MAX_BOUNDARY_INTERVALS {
-                return Err(GeometryError::NumericalIntegrationDidNotConverge);
-            }
-            intervals.push((curve.as_ref(), interval));
-        }
-    }
-    if intervals.is_empty() {
-        return Err(GeometryError::NumericalIntegrationDidNotConverge);
-    }
+    let curves = boundary::prepare(face, surface)?;
+    let interval_count = curves.iter().map(|c| c.intervals.len()).sum::<usize>();
     let outer_tolerance =
-        (absolute_tolerance * 0.5 / intervals.len() as Real).max(Real::MIN_POSITIVE);
+        (absolute_tolerance * 0.5 / interval_count as Real).max(Real::MIN_POSITIVE);
     let spans_u = surface.spans_u().collect::<Vec<_>>();
     let inner_tolerance = (outer_tolerance * 0.25 / spans_u.len() as Real).max(Real::MIN_POSITIVE);
     let relative_tolerance = (relative_tolerance * 0.125).max(Real::MIN_POSITIVE);
-    let mut remaining_evaluations = MAX_SURFACE_EVALUATIONS;
+    let mut remaining_evaluations = boundary::MAX_SURFACE_EVALUATIONS;
     let mut sum = 0.0;
     let mut correction = 0.0;
-    for (curve, interval) in intervals {
+    for (curve, interval) in curves
+        .iter()
+        .flat_map(|c| c.intervals.iter().map(move |&i| (c.curve.as_ref(), i)))
+    {
         let half_t = interval[1] * 0.5 - interval[0] * 0.5;
         let value = integrate_adaptive(0.0, 1.0, outer_tolerance, relative_tolerance, |t| {
             let parameter = interval[0].mul_add(1.0 - t, interval[1] * t);
@@ -142,63 +115,4 @@ fn clamp_roundoff(
         });
     }
     Ok(value.clamp(*domain.start(), *domain.end()))
-}
-
-fn boundary_intervals(
-    curve: &NurbsCurve2,
-    surface: &NurbsSurface,
-) -> Result<Vec<[Real; 2]>, GeometryError> {
-    let domain = curve.domain();
-    let mut breaks = vec![*domain.start(), *domain.end()];
-    breaks.extend(curve.spans().map(|(_, end)| end));
-    for (axis, knots) in [
-        (0, surface.spans_u().map(|(_, end)| end).collect::<Vec<_>>()),
-        (1, surface.spans_v().map(|(_, end)| end).collect::<Vec<_>>()),
-    ] {
-        // Natural-domain endpoints cannot be crossed by a valid trim.
-        for &knot in knots.iter().take(knots.len().saturating_sub(1)) {
-            for span in scalar_bezier_spans(curve, axis, knot)? {
-                if !span.coefficients.iter().all(|value| *value == 0.0) {
-                    collect_bernstein_roots(
-                        &span.coefficients,
-                        span.parameter,
-                        0,
-                        true,
-                        true,
-                        &mut breaks,
-                    );
-                    if breaks.len() > MAX_BOUNDARY_INTERVALS {
-                        return Err(GeometryError::NumericalIntegrationDidNotConverge);
-                    }
-                }
-            }
-        }
-    }
-    breaks.sort_by(Real::total_cmp);
-    breaks.dedup();
-    Ok(breaks
-        .windows(2)
-        .filter_map(|pair| (pair[0] < pair[1]).then_some([pair[0], pair[1]]))
-        .collect())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn interval_budget_rejects_excessive_trim_frames_before_root_search() {
-        let source =
-            super::super::tests::round_trim(super::super::tests::paraboloid(), &[0.5], false);
-        let mut face = source.faces()[0].clone();
-        let trim = face.loops[0].trims[0].clone();
-        let count = MAX_BOUNDARY_INTERVALS / trim.curve.spans().count() + 1;
-        // This exercises the preflight guard, not construction of a multiply
-        // wound valid face: over-budget boundary data must never reach roots.
-        face.loops[0].trims = vec![trim; count];
-        assert!(matches!(
-            integrate(&face, &face.surface, Measure::Area, 1e-12, 1e-13),
-            Err(GeometryError::NumericalIntegrationDidNotConverge)
-        ));
-    }
 }

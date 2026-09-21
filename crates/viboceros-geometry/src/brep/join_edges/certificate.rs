@@ -4,8 +4,8 @@ use crate::binary_accumulator::{add_product, decompose};
 use std::cmp::Ordering;
 mod product;
 mod refine;
-pub(super) use product::isocurve::SurfaceCurve;
-pub(super) use product::restriction::restricted_curve_bound;
+pub(in crate::brep) use product::isocurve::SurfaceCurve;
+pub(in crate::brep) use product::restriction::restricted_curve_bound;
 #[cfg(test)]
 pub(super) use product::restriction::{curve_endpoint_bound, restricted_endpoint_bound};
 pub(super) use refine::refined_curve_bound;
@@ -167,7 +167,7 @@ pub(super) fn curve_bound(
 
 /// Exact straight, continuous, clamped, monotonically ordered positive-basis curves have
 /// the same oriented segment locus regardless of degree, knots or weight speed.
-pub(super) fn linear_endpoints(curve: &NurbsCurve) -> Option<[Point3; 2]> {
+pub(in crate::brep) fn linear_endpoints(curve: &NurbsCurve) -> Option<[Point3; 2]> {
     let controls = curve.control_points();
     let domain = curve.domain();
     let degree = curve.degree();

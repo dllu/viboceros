@@ -17,6 +17,7 @@ mod borders;
 mod cap;
 mod combine;
 mod edge_split;
+mod face_split;
 mod incidence;
 mod isocurves;
 mod join_edges;

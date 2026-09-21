@@ -9,6 +9,7 @@ use crate::{
     nurbs_surface::integrate_area_patch, require_finite, vector::product_three,
 };
 
+mod boundary;
 mod trimmed;
 
 #[cfg(test)]
@@ -236,31 +237,23 @@ fn integrate_planar_trimmed_face_doubled_area(
     absolute_area_tolerance: Real,
     relative_tolerance: Real,
 ) -> Result<Real, GeometryError> {
-    let span_count = face
-        .loops
-        .iter()
-        .flat_map(|face_loop| &face_loop.trims)
-        .map(|trim| trim.curve.spans().count())
-        .try_fold(0_usize, |total, count| {
-            total
-                .checked_add(count)
-                .ok_or(GeometryError::NumericalIntegrationDidNotConverge)
-        })?;
-    if span_count == 0 {
-        return Err(GeometryError::NumericalIntegrationDidNotConverge);
-    }
+    let curves = boundary::prepare(face, surface)?;
+    let span_count = curves.iter().map(|c| c.intervals.len()).sum::<usize>();
     let span_tolerance = (absolute_area_tolerance / span_count as Real).max(Real::MIN_POSITIVE);
+    let mut remaining_evaluations = boundary::MAX_SURFACE_EVALUATIONS;
     let mut sum = 0.0;
     let mut correction = 0.0;
-    for trim in face.loops.iter().flat_map(|face_loop| &face_loop.trims) {
-        let curve = trim.curve.for_integration()?;
-        for (start, end) in curve.spans() {
+    for boundary::BoundaryCurve { curve, intervals } in curves {
+        for [start, end] in intervals {
             let doubled_area = integrate_adaptive(
                 start,
                 end,
                 span_tolerance,
                 relative_tolerance,
                 |parameter| {
+                    remaining_evaluations = remaining_evaluations
+                        .checked_sub(1)
+                        .ok_or(GeometryError::NumericalIntegrationDidNotConverge)?;
                     let (surface_parameter, parameter_derivative) =
                         curve.evaluate_with_derivative(parameter)?;
                     let (point, derivative_u, derivative_v) = surface

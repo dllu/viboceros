@@ -68,6 +68,9 @@ Full raw Rhino equivalence is **not** claimed:
 - Rhino can split kinked surfaces into additional faces during replacement.
   Native edge cleanup does not split surfaces. Planar trim fixtures isolate the
   edge-angle policy from this separate behavior.
+  A [certified face-partition kernel and 107 additional observations](../face-splitting.md)
+  now cover this behavior; command integration remains pending and those probes
+  are not included in the command equivalence totals below.
 - At an exact floating-point angular cutoff, Rhino's cosine comparison and the
   native stable `atan2` comparison can disagree. Near-cutoff raw results are
   retained; the geometry kernel does not round genuine kinks away.
@@ -96,6 +99,6 @@ round-trip guard; no classification difference is silently normalized.
 The [kernel guarantees and limits](../join-edge-cleanup.md) also apply, including
 exact UV preservation certificates, bounded work, and degree limits.
 
-Verification: 2,912 release-mode Rust tests, seven opt-in GPU tests, 237 Python
+Verification: 2,929 release-mode Rust tests, seven opt-in GPU tests, 237 Python
 tests, formatting, and Clippy/Rustdoc with warnings denied. The focused debug
 kernel, document, command, and oracle regressions also pass.
