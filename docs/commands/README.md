@@ -14,6 +14,7 @@ Rhino's complete command set is still a work in progress.
 - [Bézier conversion](beziers.md)
 - [Single-span surface conversion](single-spans.md)
 - [Surfaces and solids](surfaces.md)
+- [Cap planar surface/B-rep holes](cap.md)
 - [World/CPlane bounding boxes](bounding-box.md)
 - [Polygon meshes](meshes.md)
 - [Mesh conversion to NURBS](mesh-to-nurb.md)

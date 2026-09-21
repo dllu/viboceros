@@ -14,6 +14,7 @@ use crate::{
 };
 
 mod borders;
+mod cap;
 mod combine;
 mod incidence;
 mod isocurves;
@@ -24,6 +25,7 @@ mod parameter_frame;
 mod parameter_normalization;
 mod polygon_boundaries;
 mod rectangular_surface;
+mod reorder;
 use parameter_normalization::{
     TrimParameterNormalization, floating_parameter_epsilon, trim_parameter_epsilon,
 };

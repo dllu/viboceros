@@ -38,12 +38,13 @@ class OracleClientTests(unittest.TestCase):
             {"id": "../../untrusted", "op": "three_dm_curve_interchange"},
             {"id": "../../untrusted-brep", "op": "three_dm_brep_interchange", "artifact_path": "/unowned/model.3dm"},
             {"id": "../../untrusted-border", "op": "border_command", "source": {"type": "box"}, "artifact_path": "/unowned/model.3dm"},
+            {"id": "../../untrusted-cap", "op": "cap_command", "artifact_path": "/unowned/model.3dm"},
         ]}
         original = copy.deepcopy(request)
         paths = []
 
         def native(prepared, timeout):
-            for operation, name in zip(prepared["operations"], ["curve-0.3dm", "brep-1.3dm", "border-2.3dm"]):
+            for operation, name in zip(prepared["operations"], ["curve-0.3dm", "brep-1.3dm", "border-2.3dm", "cap-3.3dm"]):
                 path = Path(operation["artifact_path"])
                 self.assertEqual(path.name, name)
                 self.assertFalse(path.exists())

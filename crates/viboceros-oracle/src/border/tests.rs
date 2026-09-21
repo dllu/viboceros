@@ -192,7 +192,7 @@ fn source_artifacts_never_overwrite_existing_files() {
             Operation::BorderCommand { fixture, .. }
                 if matches!(
                     fixture.source,
-                    BorderSource::Primitive(BorderPrimitive::Box { .. })
+                    BrepCommandSource::Primitive(crate::brep_source::Primitive::Box { .. })
                 ) =>
             {
                 Some(fixture.clone())

@@ -1,13 +1,13 @@
 //! Actual border commands and representation-preserving output records.
 use super::*;
-use crate::{curve_join_close::CurveInput, object_source::ObjectSource};
+use crate::brep_source::{BrepCommandSource, reorder_edges, write_shared_artifact};
 #[cfg(test)]
 mod tests;
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct BorderFixture {
     command: String,
-    source: BorderSource,
+    source: BrepCommandSource,
     output_layer: Option<String>,
     faces: Option<Vec<usize>>,
     #[serde(default)]
@@ -15,81 +15,6 @@ pub struct BorderFixture {
     artifact_path: Option<String>,
     /// New edge order, expressed as old indices; geometry is unchanged.
     edge_order: Option<Vec<usize>>,
-}
-
-#[derive(Clone, Debug, Deserialize, PartialEq)]
-#[serde(untagged)]
-enum BorderSource {
-    Primitive(BorderPrimitive),
-    Object(ObjectSource),
-}
-
-#[derive(Clone, Debug, Deserialize, PartialEq)]
-#[serde(tag = "type", rename_all = "snake_case")]
-enum BorderPrimitive {
-    MeshBrep {
-        vertices: Vec<[f64; 3]>,
-        faces: Vec<Vec<u32>>,
-    },
-    SurfaceFace {
-        surface: NurbsSurfaceDefinition,
-    },
-    Box {
-        min: [f64; 3],
-        max: [f64; 3],
-        keep_faces: Option<Vec<usize>>,
-    },
-    Extrusion {
-        curve: CurveInput,
-        vector: [f64; 3],
-    },
-}
-
-impl BorderSource {
-    fn geometry(&self, tolerance: Tolerance) -> Result<Geometry, ProbeError> {
-        Ok(match self {
-            Self::Object(source) => source.geometry(tolerance)?,
-            Self::Primitive(BorderPrimitive::MeshBrep { vertices, faces }) => {
-                let source = ObjectSource::Vertices(crate::object_source::VertexSource::Mesh {
-                    vertices: vertices.clone(),
-                    faces: faces.clone(),
-                })
-                .geometry(tolerance)?;
-                let Geometry::Mesh(mesh) = source else {
-                    unreachable!()
-                };
-                Geometry::Brep(Brep::try_from_mesh(&mesh, true, tolerance)?)
-            }
-            Self::Primitive(BorderPrimitive::SurfaceFace { surface }) => Geometry::Brep(
-                Brep::try_surface_face(nurbs_surface_from_definition(surface)?, tolerance)?,
-            ),
-            Self::Primitive(BorderPrimitive::Box {
-                min,
-                max,
-                keep_faces,
-            }) => {
-                let brep = Brep::try_box(
-                    viboceros_command::CommandContext::default().construction_plane,
-                    std::array::from_fn(|i| [min[i], max[i]]),
-                    tolerance,
-                )?;
-                Geometry::Brep(if let Some(faces) = keep_faces {
-                    brep.duplicate_faces(faces, tolerance)?
-                } else {
-                    brep
-                })
-            }
-            Self::Primitive(BorderPrimitive::Extrusion { curve, vector }) => Geometry::Brep(
-                Brep::try_extruded_curve(
-                    &curve.geometry()?.as_ref().to_nurbs()?,
-                    Vector3::try_new(0., 0., 0.)?,
-                    Vector3::try_from(*vector)?,
-                    tolerance,
-                )?
-                .duplicate_faces(&[0], tolerance)?,
-            ),
-        })
-    }
 }
 
 pub(super) fn run(f: &BorderFixture, tolerance: Tolerance) -> Result<(Value, u64), ProbeError> {
@@ -120,57 +45,9 @@ pub(super) fn run(f: &BorderFixture, tolerance: Tolerance) -> Result<(Value, u64
         geometry = Geometry::Brep(reorder_edges(brep, order, tolerance)?);
     }
     if let Some(path) = &f.artifact_path {
-        use viboceros_io::{
-            ThreeDmGeometry, ThreeDmLayer, ThreeDmModel, ThreeDmObject, read_3dm_file,
-            write_3dm_file,
-        };
-        let geometry = match &geometry {
-            Geometry::Brep(brep) => ThreeDmGeometry::Brep(brep.clone()),
-            _ => {
-                return Err(ProbeError::FixtureInvariant(
-                    "border source artifact requires B-rep",
-                ));
-            }
-        };
-        let model = ThreeDmModel::new(
-            vec![ThreeDmLayer {
-                name: "Source".into(),
-                color: [0, 0, 0],
-                visible: true,
-                locked: false,
-            }],
-            vec![],
-            vec![ThreeDmObject::new(geometry, 0)],
-        );
-        drop(
-            std::fs::OpenOptions::new()
-                .write(true)
-                .create_new(true)
-                .open(path)?,
-        );
-        write_3dm_file(path, &model)?;
-        let decoded = read_3dm_file(path, tolerance)?;
-        let (
-            ThreeDmGeometry::Brep(source),
-            Some(ThreeDmObject {
-                geometry: ThreeDmGeometry::Brep(restored),
-                ..
-            }),
-        ) = (&model.objects[0].geometry, decoded.objects.first())
-        else {
-            return Err(ProbeError::FixtureInvariant(
-                "border source artifact lost its B-rep",
-            ));
-        };
-        if !super::brep_interchange::roundtrip_equal(
-            &super::brep_interchange::geometry_record(source)?,
-            &super::brep_interchange::geometry_record(restored)?,
-        ) {
-            return Err(ProbeError::FixtureInvariant(
-                "border source artifact changed topology or geometry",
-            ));
-        }
+        write_shared_artifact(&geometry, path, tolerance)?;
     }
+
     let source = document.add_geometry_with_attributes(
         geometry,
         ObjectAttributes::on_layer(input_layer)
@@ -211,54 +88,4 @@ pub(super) fn run(f: &BorderFixture, tolerance: Tolerance) -> Result<(Value, u64
         json!({"succeeded":true,"source_retained":document.object(source).is_some(),"source_selected":document.is_selected(source),"outputs":outputs,"new_groups":document.groups().len()-1}),
         0,
     ))
-}
-
-fn reorder_edges(brep: &Brep, order: &[usize], tolerance: Tolerance) -> Result<Brep, ProbeError> {
-    use viboceros_geometry::{BrepLoop, BrepTrim};
-    if order.len() != brep.edges().len()
-        || order.iter().copied().collect::<BTreeSet<_>>() != (0..order.len()).collect()
-    {
-        return Err(ProbeError::FixtureInvariant(
-            "border edge order must be a permutation",
-        ));
-    }
-    let mut inverse = vec![0; order.len()];
-    for (new, &old) in order.iter().enumerate() {
-        inverse[old] = new;
-    }
-    let faces = brep
-        .faces()
-        .iter()
-        .map(|face| {
-            let loops = face
-                .loops()
-                .iter()
-                .map(|boundary| {
-                    let trims = boundary
-                        .trims()
-                        .iter()
-                        .map(|trim| {
-                            BrepTrim::try_new(
-                                trim.vertices(),
-                                trim.edge().map(|edge| inverse[edge]),
-                                trim.is_reversed_3d(),
-                                trim.curve().clone(),
-                                trim.trim_type(),
-                                trim.iso(),
-                                trim.tolerance(),
-                            )
-                        })
-                        .collect::<Result<Vec<_>, _>>()?;
-                    BrepLoop::try_new(boundary.loop_type(), trims)
-                })
-                .collect::<Result<Vec<_>, _>>()?;
-            BrepFace::try_new(face.surface().clone(), face.is_reversed(), loops)
-        })
-        .collect::<Result<Vec<_>, _>>()?;
-    Ok(Brep::try_new(
-        brep.vertices().to_vec(),
-        order.iter().map(|&i| brep.edges()[i].clone()).collect(),
-        faces,
-        tolerance,
-    )?)
 }

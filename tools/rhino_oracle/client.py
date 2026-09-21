@@ -186,8 +186,11 @@ class OracleClient:
             if any(op.get("op") == "border_command" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("border_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
-            if any(op.get("op") == "join_command" for op in request.get("operations", [])):
+            if any(op.get("op") in ("join_command", "cap_command") for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("join_probe.py")
+                shutil.copyfile(helper, job_path / helper.name)
+            if any(op.get("op") == "cap_command" for op in request.get("operations", [])):
+                helper = Path(__file__).with_name("cap_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "document_units" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("generate_document_units_reference.py")
@@ -292,8 +295,10 @@ class OracleClient:
                     operation["artifact_path"] = str(Path(job) / f"curve-{index}.3dm")
                 elif operation.get("op") == "three_dm_brep_interchange":
                     operation["artifact_path"] = str(Path(job) / f"brep-{index}.3dm")
-                elif operation.get("op") == "border_command" and operation["source"]["type"] in ("box", "extrusion", "brep", "mesh_brep", "surface_face"):
+                elif operation.get("op") == "border_command" and operation["source"]["type"] in ("box", "extrusion", "brep", "mesh_brep", "surface_face", "tube"):
                     operation["artifact_path"] = str(Path(job) / f"border-{index}.3dm")
+                elif operation.get("op") == "cap_command":
+                    operation["artifact_path"] = str(Path(job) / f"cap-{index}.3dm")
             viboceros = self.run_viboceros(prepared, timeout)
             rhino = self.run_rhino(prepared, timeout)
         return compare_responses(

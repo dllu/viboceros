@@ -5,7 +5,7 @@ from . import border_probe
 
 class BorderProbeTests(unittest.TestCase):
     def test_brep_sources_require_identical_geometry_before_host_access(self):
-        for kind in ("box", "extrusion", "brep", "mesh_brep", "surface_face"):
+        for kind in ("box", "extrusion", "brep", "mesh_brep", "surface_face", "tube"):
             with self.subTest(kind=kind), self.assertRaisesRegex(ValueError, "shared source artifact"):
                 border_probe.run({"command": "DupBorder", "source": {"type": kind}}, None, {})
 

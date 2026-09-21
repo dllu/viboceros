@@ -85,4 +85,14 @@ impl TrimParameterNormalization {
         require_finite(normalized, "normalized trim parameter")?;
         Ok(normalized)
     }
+
+    /// Logarithm of the area multiplier from normalized to original units.
+    /// Avoids overflowing or underflowing products when ordering loop areas.
+    pub(super) fn log_area_scale(self) -> Real {
+        self.coordinate_scale
+            .iter()
+            .chain(&self.relative_scale)
+            .map(|s| s.ln())
+            .sum()
+    }
 }

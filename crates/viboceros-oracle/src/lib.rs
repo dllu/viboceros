@@ -51,6 +51,8 @@ pub use parameter_bounds::ParameterCurveBoundsFixture;
 mod align;
 mod border;
 mod bounding_box;
+mod brep_source;
+mod cap_command;
 mod conversion;
 mod conversion_session;
 mod distribute;
@@ -202,6 +204,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: border::BorderFixture,
+    },
+    CapCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: cap_command::CapFixture,
     },
     JoinCommand {
         id: String,
@@ -1638,6 +1645,7 @@ impl Operation {
             | Self::Distribute { id, .. }
             | Self::Align { id, .. }
             | Self::BorderCommand { id, .. }
+            | Self::CapCommand { id, .. }
             | Self::JoinCommand { id, .. }
             | Self::GroupMemberships { id, .. }
             | Self::GroupPicking { id, .. }
@@ -2046,6 +2054,7 @@ fn execute(
         Operation::Distribute { fixture, .. } => distribute::run(fixture, tolerance)?,
         Operation::Align { fixture, .. } => align::run(fixture, tolerance)?,
         Operation::BorderCommand { fixture, .. } => border::run(fixture, tolerance)?,
+        Operation::CapCommand { fixture, .. } => cap_command::run(fixture, tolerance)?,
         Operation::JoinCommand { fixture, .. } => join_command::run(fixture, tolerance)?,
         Operation::GroupMemberships { fixture, .. } => group_memberships::run(fixture, tolerance)?,
         Operation::GroupPicking { fixture, .. } => group_picking::run(fixture, tolerance)?,

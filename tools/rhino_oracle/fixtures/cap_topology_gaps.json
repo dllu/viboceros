@@ -1,0 +1,11 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {"absolute":1e-9,"relative":1e-12,"angular":1e-10},
+  "operations": [
+    {"op":"cap_command","id":"extrusion-triangle-false","source":{"type":"extrusion","curve":{"type":"polyline","vertices":[[0,0,0],[4,0,0],[0,3,0],[0,0,0]]},"vector":[1,2,5]},"reversed":false},
+    {"op":"cap_command","id":"extrusion-triangle-true","source":{"type":"extrusion","curve":{"type":"polyline","vertices":[[0,0,0],[4,0,0],[0,3,0],[0,0,0]]},"vector":[1,2,5]},"reversed":true},
+    {"op":"cap_command","id":"extrusion-concave-false","source":{"type":"extrusion","curve":{"type":"polyline","vertices":[[0,0,0],[4,0,0],[4,1,0],[1,1,0],[1,3,0],[0,3,0],[0,0,0]]},"vector":[1,2,5]},"reversed":false},
+    {"op":"cap_command","id":"extrusion-concave-true","source":{"type":"extrusion","curve":{"type":"polyline","vertices":[[0,0,0],[4,0,0],[4,1,0],[1,1,0],[1,3,0],[0,3,0],[0,0,0]]},"vector":[1,2,5]},"reversed":true}
+  ]
+}

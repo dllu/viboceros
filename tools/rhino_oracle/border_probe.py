@@ -26,7 +26,7 @@ def validate(operation):
 
 def run(operation, tolerance, host):
     command, output_layer, preselect, faces = validate(operation)
-    if operation["source"]["type"] in ("box", "extrusion", "brep", "mesh_brep", "surface_face") and not operation.get("artifact_path"):
+    if operation["source"]["type"] in ("box", "extrusion", "brep", "mesh_brep", "surface_face", "tube") and not operation.get("artifact_path"):
         raise ValueError("B-rep border probes require compare mode with a shared source artifact")
     Rhino, System = host["Rhino"], host["System"]
     document = Rhino.RhinoDoc.ActiveDoc
