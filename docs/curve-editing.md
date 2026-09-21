@@ -52,10 +52,12 @@ Rhino worker used command-first picks. It now invokes native postselection too;
 the newer `join_command` probe measures both workflows explicitly, including
 selection and creation order, without sorting objects by name.
 
-Positive tolerances use spatial endpoint buckets. Exact-zero tolerance uses exact
-coordinate keys; extreme coordinates use a widest-axis sweep. Limits of 100,000
-inputs, one million candidate pairs, and 16 million matching scans bound resource
-use. Reaching a limit reports an error rather than producing a partial edit.
+Positive tolerances use a conservative [endpoint bounding-box tree](join-endpoint-search.md),
+without origin subtraction or tolerance-scaled grid coordinates. Exact-zero
+tolerance uses exact coordinate keys. Limits of 100,000 inputs, one million
+candidate pairs, and 16 million comparisons each for endpoints, tree-node pairs,
+and seeded matching bound resource use. Reaching a limit reports an error rather
+than producing a partial edit.
 The older unambiguous `join_polylines` utility remains for topology algorithms
 that explicitly require branch rejection; it is not the interactive Join policy.
 

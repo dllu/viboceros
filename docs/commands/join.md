@@ -139,6 +139,8 @@ The four earlier closed-chain discrepancies are resolved in the additional
 command's EndCommand result and state, not subsequent macro commands.
 A further [544 encoding and seam cases](../join-encodings.md) cover weighted NURBS,
 polycurve consolidation, and representation-dependent seam/domain policies.
+The [48 endpoint-search cases](../join-endpoint-search.md) ensure unrelated distant
+sources do not hide nearby connections through spatial-index rounding.
 Batch picks during a command, Undo-within-prompt, edge
 subobjects, cross-command sharing of remembered options, and Rhino construction
 history associations for JoinCopy still need independent coverage/implementation.

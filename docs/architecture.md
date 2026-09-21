@@ -264,6 +264,9 @@ geometry modules. `CloseCrv` stays in `curve_edit`; `Join` and `JoinCopy` share 
 family dispatcher and curve-policy submodule. Curve representation and parameter
 assembly live in `curve_join/assembly`. A read-only command completion hook lets
 individual curve picks finish on closure, using the normal atomic execution path.
+The independent `curve_join/search` module uses conservative bounding-box pairs
+to find nearby endpoints without tolerance-scaled coordinate rounding; see
+[endpoint-search evidence](join-endpoint-search.md).
 Seeded joining records the seed's mapped result parameter, so representation
 consolidation does not force commands to guess its new seam from geometry.
 Mesh concatenation, matching,

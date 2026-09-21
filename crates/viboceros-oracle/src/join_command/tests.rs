@@ -110,6 +110,38 @@ fn weighted_copy_seams_replay_midpoint_tolerance_and_composite_closure_boundarie
 }
 
 #[test]
+fn endpoint_search_replays_distant_outliers_without_losing_nearby_joins() {
+    let request: ProbeRequest = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/join_search.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/join_search.json"
+    ))
+    .unwrap();
+    let actual = run_request(&request).unwrap();
+    let records = expected["results"].as_array().unwrap();
+    assert_eq!(actual.results.len(), 48);
+    assert_eq!(records.len(), 48);
+    for (a, b) in actual.results.iter().zip(records) {
+        assert_eq!(a.id, b["id"]);
+        compare(&a.value, &b["value"], &a.id);
+        for (index, object) in b["value"]["objects"].as_array().unwrap().iter().enumerate() {
+            if object["curve"]["samples"][0]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|v| v.as_f64().unwrap().abs() > 1e12)
+            {
+                // A relative epsilon must not hide movement of the distant,
+                // untouched source. Its entire record must agree exactly.
+                assert_eq!(a.value["objects"][index], *object, "{}", a.id);
+            }
+        }
+    }
+}
+
+#[test]
 fn saved_events_distinguish_early_completion_and_nothing_from_macro_success() {
     let recorded: Value = serde_json::from_str(include_str!(
         "../../../../tools/rhino_oracle/observations/join_command_events.json"

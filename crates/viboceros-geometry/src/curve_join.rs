@@ -1,12 +1,12 @@
 //! Endpoint matching and representation-aware assembly of mixed curve chains.
 
 mod assembly;
+mod search;
 #[cfg(test)]
 mod tests;
 
 use assembly::{assemble, endpoint_is_linear, is_linear, linear_form};
-
-use std::collections::HashMap;
+use search::find_candidates;
 
 use crate::{
     Curve3, CurveRef, GeometryError, Point3, PolyCurve3, Polyline3, Real, Tolerance, UnitVector3,
@@ -382,143 +382,6 @@ fn seeded_partners(
         partners,
         closing_edge,
     })
-}
-
-fn find_candidates(
-    endpoints: &[Endpoint],
-    options: CurveJoinOptions,
-) -> Result<Vec<Candidate>, GeometryError> {
-    let mut candidates = Vec::new();
-    let mut scans = 0;
-    let mut consider = |left: usize, right: usize| -> Result<(), GeometryError> {
-        scans += 1;
-        if scans > MAX_JOIN_SCANS {
-            return Err(GeometryError::CurveJoinLimit {
-                resource: "endpoint comparisons",
-                maximum: MAX_JOIN_SCANS,
-            });
-        }
-        let a = endpoints[left];
-        let b = endpoints[right];
-        if a.curve == b.curve || (options.preserve_direction && a.start == b.start) {
-            return Ok(());
-        }
-        let delta = [
-            a.point.x() - b.point.x(),
-            a.point.y() - b.point.y(),
-            a.point.z() - b.point.z(),
-        ];
-        let distance = delta[0].hypot(delta[1]).hypot(delta[2]);
-        if distance <= options.tolerance {
-            if candidates.len() == MAX_JOIN_CANDIDATES {
-                return Err(GeometryError::CurveJoinLimit {
-                    resource: "endpoint candidates",
-                    maximum: MAX_JOIN_CANDIDATES,
-                });
-            }
-            let tangent_dot = match (a.outward_tangent, b.outward_tangent) {
-                (Some(a), Some(b)) => a.as_vector().dot(b.as_vector())?,
-                _ => 1.0,
-            };
-            candidates.push(Candidate {
-                distance,
-                tangent_dot,
-                left: left.min(right),
-                right: left.max(right),
-            });
-        }
-        Ok(())
-    };
-    if options.tolerance == 0.0 {
-        let mut exact = HashMap::<[u64; 3], Vec<usize>>::new();
-        for (index, endpoint) in endpoints.iter().enumerate() {
-            let key = endpoint
-                .point
-                .to_array()
-                .map(|value| if value == 0.0 { 0 } else { value.to_bits() });
-            let bucket = exact.entry(key).or_default();
-            for &other in bucket.iter() {
-                consider(other, index)?;
-            }
-            bucket.push(index);
-        }
-        return Ok(candidates);
-    }
-    let origin = endpoints
-        .first()
-        .map(|endpoint| endpoint.point.to_array())
-        .unwrap_or([0.0; 3]);
-    let cells = endpoints
-        .iter()
-        .map(|endpoint| {
-            let mut cell = [0_i64; 3];
-            for axis in 0..3 {
-                let value =
-                    ((endpoint.point.to_array()[axis] - origin[axis]) / options.tolerance).floor();
-                if !value.is_finite() || value <= i64::MIN as Real || value >= i64::MAX as Real {
-                    return None;
-                }
-                cell[axis] = value as i64;
-            }
-            Some(cell)
-        })
-        .collect::<Option<Vec<_>>>();
-    if let Some(cells) = cells {
-        let mut grid = HashMap::<[i64; 3], Vec<usize>>::new();
-        for (index, cell) in cells.into_iter().enumerate() {
-            for dx in -1..=1 {
-                for dy in -1..=1 {
-                    for dz in -1..=1 {
-                        let Some(x) = cell[0].checked_add(dx) else {
-                            continue;
-                        };
-                        let Some(y) = cell[1].checked_add(dy) else {
-                            continue;
-                        };
-                        let Some(z) = cell[2].checked_add(dz) else {
-                            continue;
-                        };
-                        if let Some(nearby) = grid.get(&[x, y, z]) {
-                            for &other in nearby {
-                                consider(other, index)?;
-                            }
-                        }
-                    }
-                }
-            }
-            grid.entry(cell).or_default().push(index);
-        }
-    } else {
-        // Extreme coordinates use a sweep along the widest axis, avoiding
-        // all-pairs work for data lying in a plane perpendicular to x.
-        let mut minimum = [Real::INFINITY; 3];
-        let mut maximum = [Real::NEG_INFINITY; 3];
-        for endpoint in endpoints {
-            for axis in 0..3 {
-                let value = endpoint.point.to_array()[axis];
-                minimum[axis] = minimum[axis].min(value);
-                maximum[axis] = maximum[axis].max(value);
-            }
-        }
-        let axis = (0..3)
-            .max_by(|&a, &b| (maximum[a] - minimum[a]).total_cmp(&(maximum[b] - minimum[b])))
-            .unwrap();
-        let mut sorted = (0..endpoints.len()).collect::<Vec<_>>();
-        sorted.sort_by(|&a, &b| {
-            endpoints[a].point.to_array()[axis].total_cmp(&endpoints[b].point.to_array()[axis])
-        });
-        for (position, &right) in sorted.iter().enumerate() {
-            for &left in sorted[..position].iter().rev() {
-                if endpoints[right].point.to_array()[axis] - endpoints[left].point.to_array()[axis]
-                    > options.tolerance
-                {
-                    break;
-                }
-                consider(left, right)?;
-            }
-        }
-    }
-    Ok(candidates)
 }
 
 fn endpoint_tangent(

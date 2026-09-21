@@ -1,6 +1,60 @@
 use super::*;
 use crate::{CircularArc3, CurveClosure, LineSegment, NurbsCurve};
 mod encodings;
+mod search;
+
+#[test]
+fn endpoint_search_does_not_lose_nearby_points_because_of_a_distant_origin() {
+    let endpoints = [-9_007_199_254_740_992.0, 1.0, 2.0]
+        .into_iter()
+        .enumerate()
+        .map(|(curve, x)| Endpoint {
+            curve,
+            start: true,
+            point: p(x, 0.0),
+            outward_tangent: None,
+        })
+        .collect::<Vec<_>>();
+    let found = find_candidates(
+        &endpoints,
+        CurveJoinOptions {
+            tolerance: 1.0,
+            preserve_direction: false,
+            style: CurveJoinStyle::Batch,
+        },
+    )
+    .unwrap();
+    assert_eq!(
+        found.iter().map(|c| (c.left, c.right)).collect::<Vec<_>>(),
+        [(1, 2)]
+    );
+}
+
+#[test]
+fn distant_unrelated_input_does_not_prevent_nearby_curve_joining() {
+    let inputs = [
+        line(
+            [-9_007_199_254_740_992.0, 0.0],
+            [-9_007_199_254_740_992.0, 1e6],
+        ),
+        line([-10.0, 0.0], [1.0, 0.0]),
+        line([2.0, 0.0], [10.0, 0.0]),
+    ];
+    let before = inputs.clone();
+    let joined = join(&inputs, 1.0, false);
+    assert_eq!(joined.len(), 2);
+    assert_eq!(joined[0].source_indices(), &[1, 2]);
+    assert_eq!(joined[1].source_indices(), &[0]);
+    let Curve3::Polyline(curve) = joined[0].curve() else {
+        panic!("linear chain");
+    };
+    assert_eq!(
+        curve.vertices(),
+        &[p(-10.0, 0.0), p(1.5, 0.0), p(10.0, 0.0)]
+    );
+    assert_eq!(curve.parameters(), &[0.0, 11.5, 20.0]);
+    assert_eq!(inputs, before);
+}
 
 #[test]
 fn merging_linear_leaves_preserves_parent_points_and_one_sided_derivatives() {
