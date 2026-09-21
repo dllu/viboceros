@@ -5,7 +5,39 @@ mod curved_certificates;
 mod gaps;
 mod projective_correspondence;
 mod selection_distance;
+mod short_overlaps;
 mod surfaces;
+
+#[test]
+fn document_join_tolerance_does_not_rebuild_or_collapse_short_input_edges() {
+    let mut request: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/join_surfaces.json"
+    ))
+    .unwrap();
+    let source = json!({"brep":{"source":{"type":"surface_face","surface":{
+        "degree_u":1,"degree_v":1,"control_point_count_u":2,"control_point_count_v":2,
+        "control_points":[
+            {"point":[0.,0.,0.],"weight":1.},
+            {"point":[0.0001,0.,0.],"weight":1.},
+            {"point":[0.,0.,3.],"weight":1.},
+            {"point":[0.0001,0.,3.],"weight":1.}
+        ],"knots_u":[0.,0.,1.,1.],"knots_v":[0.,0.,1.,1.]
+    }}}});
+    request["operations"] = json!([{
+        "op":"join_command","id":"short-source","sources":[source],
+        "command":"Join","preselect":true,"absolute_tolerance":0.001
+    }]);
+    request["tolerance"] = json!({"absolute":1e-9,"relative":1e-12,"angular":1e-10});
+    let high = run_request(&serde_json::from_value(request.clone()).unwrap()).unwrap();
+    request["operations"][0]["absolute_tolerance"] = json!(1e-9);
+    let low = run_request(&serde_json::from_value(request).unwrap()).unwrap();
+    assert_eq!(high.results[0].value["succeeded"], false);
+    let high = &high.results[0].value["objects"][0];
+    let low = &low.results[0].value["objects"][0];
+    assert_eq!(high["source"], 0);
+    assert_eq!(high["brep"]["vertices"].as_array().unwrap().len(), 4);
+    compare(high, low, "unchanged short input");
+}
 
 fn compare(a: &Value, b: &Value, path: &str) {
     match (a, b) {

@@ -46,6 +46,12 @@ process. It does not prove that an arbitrary reference file was produced from
 the supplied inputs: use paired fixtures and the recorded shared-artifact checks
 and hashes. Harness timings are not kernel-speed comparisons.
 
+For `join_command`, the request's top-level tolerance constructs source geometry.
+An operation's `absolute_tolerance` changes the document/Join policy only; it
+must not rebuild or collapse source features. Shared 3DM sources are exported
+with the same construction tolerance. The [short-overlap audit](join-short-overlaps.md)
+records the native harness correction and preserves the distinction in its baseline.
+
 ## Native execution and failure boundaries
 
 `viboceros-oracle --audit REQUEST.json RESPONSE.json` and

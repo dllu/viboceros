@@ -26,7 +26,7 @@ pub(super) fn whole_curve_bound(
     product::bound(a, b, reversed, limit, false, &mut charge)
 }
 
-// At most thirteen products, including repeated products: 66 limbs at 2^-2148
+// At most twenty-four products, including repeated products: 66 limbs at 2^-2148
 // cover the entire finite binary64 range and all carries.
 struct Products {
     positive: [u64; 66],
@@ -128,6 +128,21 @@ pub(super) fn point_bound(a: Point3, b: Point3, limit: Real) -> Option<Real> {
     }
     // Even an inaccurate platform hypot cannot invalidate the certificate.
     Some(limit)
+}
+
+/// Compare two independent point-pair distances, not distances from a shared
+/// origin. No rounded subtraction, norm, overflow or underflow breaks ties.
+pub(super) fn compare_pair_distances(a: [Point3; 2], b: [Point3; 2]) -> Ordering {
+    let mut products = Products::default();
+    for ([a, b], subtract) in [(a, false), (b, true)] {
+        for (a, b) in a.to_array().into_iter().zip(b.to_array()) {
+            products.add(a, a, subtract);
+            products.add(b, b, subtract);
+            products.add(a, b, !subtract);
+            products.add(a, b, !subtract);
+        }
+    }
+    products.order()
 }
 
 pub(super) fn curve_bound(

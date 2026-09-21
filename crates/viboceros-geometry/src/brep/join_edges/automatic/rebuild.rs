@@ -3,6 +3,7 @@ use super::*;
 use crate::exact_scalar::{Rational, rational, scalar};
 
 mod bounds;
+mod clusters;
 #[cfg(test)]
 mod tests;
 
@@ -13,23 +14,12 @@ pub(super) fn apply(
     tolerance: Tolerance,
     budget: &mut Budget,
 ) -> Result<Option<Brep>, GeometryError> {
-    let mut roots = (0..source.vertices.len()).collect::<Vec<_>>();
-    for &(a, b) in contacts {
-        let a = root(&mut roots, a);
-        let b = root(&mut roots, b);
-        roots[a.max(b)] = a.min(b);
-    }
-    budget.charge(source.vertices.len())?;
+    let groups = clusters::groups(source, contacts, budget)?;
     let mut valence = vec![0; source.vertices.len()];
     for edge in &source.edges {
         for &v in &edge.vertices {
             valence[v] += 1;
         }
-    }
-    let mut groups = vec![Vec::new(); roots.len()];
-    for i in 0..roots.len() {
-        let r = root(&mut roots, i);
-        groups[r].push(i);
     }
     let mut vertices = source.vertices.clone();
     let mut changed = false;
@@ -166,14 +156,6 @@ pub(super) fn tighten_joined_edges(
         }
     }
     joined.validate(tolerance)
-}
-
-fn root(roots: &mut [usize], mut i: usize) -> usize {
-    while roots[i] != i {
-        roots[i] = roots[roots[i]];
-        i = roots[i];
-    }
-    i
 }
 
 fn mean(points: impl Iterator<Item = Point3>) -> Result<Point3, GeometryError> {

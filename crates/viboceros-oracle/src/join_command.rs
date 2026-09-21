@@ -68,6 +68,10 @@ impl Source {
 }
 
 pub(super) fn run(f: &JoinFixture, tolerance: Tolerance) -> Result<(Value, u64), ProbeError> {
+    // A command's model tolerance must not reconstruct its existing inputs.
+    // Shared B-rep artifacts are prepared at the request's construction
+    // tolerance; use that same source geometry in the native document.
+    let construction_tolerance = tolerance;
     let tolerance = if let Some(absolute) = f.absolute_tolerance {
         Tolerance::try_new(absolute, tolerance.relative(), tolerance.angular())?
     } else {
@@ -93,7 +97,7 @@ pub(super) fn run(f: &JoinFixture, tolerance: Tolerance) -> Result<(Value, u64),
     for (index, source) in f.sources.iter().enumerate() {
         let layer = document.add_layer(format!("Source {index}"), ColorRgb::BLACK)?;
         layers.push(layer);
-        let source = source.geometry(tolerance)?;
+        let source = source.geometry(construction_tolerance)?;
         ids.push(
             document.add_geometry_with_attributes(
                 source,

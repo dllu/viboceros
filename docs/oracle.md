@@ -64,6 +64,12 @@ The command probe includes spatial and UV geometry, component
 tolerances, oriented topology, object identity/selection, attributes, and groups.
 Copies with a repeated source retain every disconnected piece. Neither failed
 comparisons nor domain differences are normalized out of the saved observations.
+Subsequent curved, projective and [short-overlap audits](join-short-overlaps.md)
+bring the cumulative surface-command record to 804 cases: 633 full matches,
+32 native errors and 139 other differences. The short-overlap work also corrects
+native source construction to use the fixture tolerance, independently of a
+command's document-tolerance override, so both engines operate on the same
+short-feature inputs.
 
 The `align` object-layout probe compares actual bounding-box, curve and line/plane alignment commands,
 including retained IDs, source samples/domains, groups, layer assignment and

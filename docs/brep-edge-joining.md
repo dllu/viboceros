@@ -110,6 +110,10 @@ sign-coherent rational bases, for which these hulls are conservative. Exact
 straight partial overlaps are planned in a dominant coordinate. Bounded binary
 search over the finite parameter lattice finds cuts; actual trimmed curve
 representations must pass the whole-curve certificate before cuts are proposed.
+For interleaved overlaps, original tips within the exact Euclidean Join radius
+are treated as a vertex contact without cutting tiny crossing pieces. Complete
+short edges, including contained intervals, remain eligible; see the
+[short-overlap audit](join-short-overlaps.md).
 Subdivision keeps each source's new edges in its local table, but original
 vertices from all sources precede inserted vertices. Endpoint unions therefore
 retain genuine source endpoints ahead of rounded cut evaluations. A complete
@@ -134,6 +138,10 @@ Automatic assembly also [adjusts nearby spatial boundaries](join-gap-rebuilding.
 independently of this topological decision. Endpoint clusters use incident-edge
 weighted means; affected clamped curves preserve their chord profiles, weights,
 and knots. All incident edges participate, including existing mated edges.
+Contacts are processed in exact point-pair distance order. A maintained
+edge-adjacency graph forbids any cluster from containing both distinct ends of
+an existing edge. This protects tiny features; it does not resolve the remaining
+general order-dependent clustering differences.
 The explicit `try_join_edge_pairs` primitive remains geometry-preserving.
 Natural clamped surface rows/columns supply exact lifted-boundary certificates
 for updated uncertainty. Rational Bernstein subdivision can tighten curved-gap

@@ -13,7 +13,7 @@ fn projective_discovery_keeps_matches_uncertainty_integral_and_topology_limits_d
     let native = run_request_audit(&request).unwrap();
     assert_eq!(native.outcomes.len(), 60);
     assert_eq!(expected["results"].as_array().unwrap().len(), 60);
-    let (mut matched, mut areas, mut uncertainty, mut failed, mut nonprojective) = (0, 0, 0, 0, 0);
+    let (mut matched, mut areas, mut uncertainty, mut nonprojective) = (0, 0, 0, 0);
     for (outcome, reference) in native
         .outcomes
         .iter()
@@ -22,22 +22,7 @@ fn projective_discovery_keeps_matches_uncertainty_integral_and_topology_limits_d
         let id = reference["id"].as_str().unwrap();
         let expected = &reference["value"];
         let result = match outcome {
-            OperationOutcome::Failure { id: actual, error } => {
-                assert_eq!(actual, id);
-                assert!(id.starts_with("translated-gap-speed-"));
-                assert_eq!(error.kind, "command");
-                assert_eq!(
-                    error.message,
-                    "invalid B-rep topology: joined faces have an inconsistent orientation cycle"
-                );
-                // Rhino joins the long curved boundary without the native
-                // tiny side-overlap mates that make orientation contradictory.
-                let outputs = surfaces::outputs(expected);
-                assert_eq!(outputs.len(), 1);
-                assert_eq!(outputs[0]["brep"]["edges"].as_array().unwrap().len(), 7);
-                failed += 1;
-                continue;
-            }
+            OperationOutcome::Failure { id, error } => panic!("{id}: {error:?}"),
             OperationOutcome::Success { result } => result,
         };
         assert_eq!(result.id, id);
@@ -97,10 +82,7 @@ fn projective_discovery_keeps_matches_uncertainty_integral_and_topology_limits_d
             matched += 1;
         }
     }
-    assert_eq!(
-        (matched, areas, uncertainty, failed, nonprojective),
-        (40, 8, 4, 4, 4)
-    );
+    assert_eq!((matched, areas, uncertainty, nonprojective), (44, 8, 4, 4));
 }
 
 fn verify_area_only(actual: &Value, expected: &Value, id: &str) {

@@ -1,6 +1,6 @@
 use super::*;
 
-fn sheet(y: [Real; 2], z: Real) -> Brep {
+pub(super) fn sheet(y: [Real; 2], z: Real) -> Brep {
     Brep::try_surface_face(
         NurbsSurface::try_clamped_uniform(
             1,

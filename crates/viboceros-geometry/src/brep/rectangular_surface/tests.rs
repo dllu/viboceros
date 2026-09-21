@@ -1,6 +1,37 @@
 use super::*;
 
 #[test]
+fn approximate_surface_closure_cannot_pair_distinct_topological_endpoints() {
+    let origin = 1e9;
+    for transpose in [false, true] {
+        let mut points = [
+            [origin, 0., 0.],
+            [origin + 1e-6, 0., 0.],
+            [origin, 3., 0.],
+            [origin + 1e-6, 3., 0.],
+        ]
+        .map(|p| Point3::try_new(p[0], p[1], p[2]).unwrap())
+        .to_vec();
+        if transpose {
+            points.swap(1, 2);
+        }
+        let surface = NurbsSurface::try_clamped_uniform(1, 1, 2, 2, points).unwrap();
+        // Surface closure currently has a coordinate-scale rounding allowance.
+        // It must not override the independently constructed vertex topology.
+        let result = Brep::try_surface_face(surface.clone(), Tolerance::DEFAULT).unwrap();
+        assert_eq!((result.vertices.len(), result.edges.len()), (4, 4));
+        assert_eq!(result.faces[0].surface, surface);
+        assert!(result.edges.iter().all(|e| e.vertices[0] != e.vertices[1]));
+        assert!(
+            result.faces[0].loops[0]
+                .trims
+                .iter()
+                .all(|t| t.trim_type == BrepTrimType::Boundary)
+        );
+    }
+}
+
+#[test]
 fn natural_surface_construction_preserves_seams_poles_and_meshes_after_uv_translation() {
     let frame = Frame3::try_from_normal(
         Point3::try_new(0., 0., 0.).unwrap(),

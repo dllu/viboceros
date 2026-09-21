@@ -3,6 +3,11 @@
 [Kernel](brep-edge-joining.md) · [Command](commands/join.md) ·
 [Complete replay report](join-projective-correspondence-comparison.json)
 
+This page records the original projective implementation audit. The later
+[short-overlap follow-up](join-short-overlaps.md) resolves its four orientation
+failures, bringing this fixture to 44 full matches; its other 56 rows are unchanged.
+The original report below remains historical evidence.
+
 Curved boundaries can now join when a positive projective parameter change
 relates their rational representations. This extends the previous
 [affine span certificate](join-curved-certificates.md) without moving control

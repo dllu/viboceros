@@ -32,6 +32,28 @@ pub(super) fn intervals(
     if low >= high {
         return Ok(None);
     }
+    let complete_a = low == start[axis].min(end[axis]) && high == start[axis].max(end[axis]);
+    let complete_b = low == b0.min(b1) && high == b0.max(b1);
+    if !complete_a && !complete_b {
+        // Interleaved segments contribute one original tip each. When those
+        // tips are already a vertex contact, this is a corner adjustment, not
+        // a tiny pair of cut edges. A complete short edge remains eligible.
+        let inside = |p: &&Point3| {
+            let coordinate = p.to_array()[axis];
+            coordinate >= low && coordinate <= high
+        };
+        let a_tip = a_end
+            .iter()
+            .find(inside)
+            .expect("crossing interval has an original tip");
+        let b_tip = b_end
+            .iter()
+            .find(inside)
+            .expect("crossing interval has an original tip");
+        if certificate::point_bound(*a_tip, *b_tip, distance).is_some() {
+            return Ok(None);
+        }
+    }
     let mut parameters = [[0.; 2]; 2];
     let mut points = [[a_end[0]; 2]; 2];
     for (i, curve) in [a, b].into_iter().enumerate() {

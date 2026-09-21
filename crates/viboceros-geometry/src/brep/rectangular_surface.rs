@@ -104,11 +104,18 @@ impl Brep {
         }
         let surface_u = surface.domain_u();
         let surface_v = surface.domain_v();
+        // Approximate surface closure can include distinct endpoints at large
+        // world coordinates. A seam must also agree with the corner topology
+        // built at this construction tolerance; never pair incompatible tips.
         let closed_u = bounds[0][0] == *surface_u.start()
             && bounds[0][1] == *surface_u.end()
+            && corner_groups[0] == corner_groups[1]
+            && corner_groups[2] == corner_groups[3]
             && local.is_closed_u()?;
         let closed_v = bounds[1][0] == *surface_v.start()
             && bounds[1][1] == *surface_v.end()
+            && corner_groups[0] == corner_groups[3]
+            && corner_groups[1] == corner_groups[2]
             && local.is_closed_v()?;
         let seam_sides = [closed_v, closed_u, closed_v, closed_u];
 

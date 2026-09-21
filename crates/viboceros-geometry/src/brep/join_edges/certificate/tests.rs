@@ -10,6 +10,46 @@ fn r(a: Real) -> R {
 }
 
 #[test]
+fn independent_pair_distance_order_matches_exact_rationals_at_all_float_scales() {
+    let mut state = 348719_u64;
+    for _ in 0..512 {
+        let points: [Point3; 4] = std::array::from_fn(|_| {
+            p(std::array::from_fn(|_| {
+                loop {
+                    state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
+                    let value = Real::from_bits(state);
+                    if value.is_finite() {
+                        break value;
+                    }
+                }
+            }))
+        });
+        let squared = |a: Point3, b: Point3| -> R {
+            a.to_array()
+                .into_iter()
+                .zip(b.to_array())
+                .map(|(a, b)| {
+                    let d = r(a) - r(b);
+                    &d * &d
+                })
+                .sum()
+        };
+        assert_eq!(
+            compare_pair_distances([points[0], points[1]], [points[2], points[3]]),
+            squared(points[0], points[1]).cmp(&squared(points[2], points[3]))
+        );
+    }
+    let tiny = Real::from_bits(1);
+    assert_eq!(
+        compare_pair_distances(
+            [p([0.; 3]), p([1., tiny, 0.])],
+            [p([100., 0., 0.]), p([101., 0., 0.])]
+        ),
+        std::cmp::Ordering::Greater
+    );
+}
+
+#[test]
 fn distance_predicate_and_bounds_match_independent_exact_rationals() {
     let mut state = 157_u64;
     for i in 0..512 {

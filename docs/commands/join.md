@@ -106,9 +106,14 @@ uncertainty bounds. The previous 594 records retain exactly their results.
 The [projective-correspondence follow-up](../join-projective-correspondence.md)
 adds sixty records: forty full matches, eight area-only differences, four
 uncertainty differences, four short-overlap orientation failures and four
-unsupported non-projective correspondences. Across these surface-command audits,
-551 of 702 cases fully match, with 36 native execution failures and 115 other
-differences. This is not general parity.
+unsupported non-projective correspondences in its initial audit. The
+[short-overlap follow-up](../join-short-overlaps.md) resolves all four orientation
+failures and adds 102 records, of which 78 fully match. Complete short edges
+retain their distinct endpoints; tiny crossing overlaps within the tip-contact
+radius do not produce spurious cut-edge mates. Across these surface-command audits,
+633 of 804 cases fully match, with 32 native execution failures and 139 other
+differences. Partial-trim uncertainty, offset cut ownership and general ordered
+clustering remain incomplete. This is not general parity.
 
 These are scoped observations, not general threshold rules. Generic curved
 partial overlaps, non-projective curved correspondence, nested/cavity-solid classification,

@@ -1,4 +1,5 @@
 use super::*;
+mod short_edges;
 
 fn frame() -> Frame3 {
     Frame3::try_from_normal(
