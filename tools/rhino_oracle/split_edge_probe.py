@@ -2,6 +2,7 @@
 """Actual SplitEdge command, with a mouse-selected component and bounded point input."""
 import math
 import os
+from contextlib import contextmanager
 if __package__:
     from . import merge_edges_probe
 else:
@@ -19,10 +20,21 @@ def validate(operation):
             return False
     if "inputs" in operation:
         inputs = operation["inputs"]
+        def valid_step(step):
+            if not isinstance(step, dict) or len(step) != 1:
+                return False
+            if "pick" not in step:
+                return next(iter(step)) in ("point", "mouse", "distance") and finite(next(iter(step.values())))
+            pick = step["pick"]
+            if (not isinstance(pick, dict) or set(pick) - set(("point", "osnap", "offset")) or
+                    pick.get("osnap") not in ("NoSnap", "Point", "End", "Mid", "Cen", "Quad")):
+                return False
+            point, offset = pick.get("point"), pick.get("offset", [0, 0])
+            return (isinstance(point, list) and len(point) == 3 and all(finite(v) for v in point) and
+                    isinstance(offset, list) and len(offset) == 2 and
+                    all(type(v) is int and -32 <= v <= 32 for v in offset))
         if ("parameters" in operation or not isinstance(inputs, list) or len(inputs) > 64 or
-                any(not isinstance(step, dict) or len(step) != 1 or
-                    next(iter(step)) not in ("point", "mouse", "distance") or
-                    not finite(next(iter(step.values()))) for step in inputs)):
+                any(not valid_step(step) for step in inputs)):
             raise ValueError("SplitEdge requires bounded finite point/distance inputs")
     else:
         parameters = operation.get("parameters")
@@ -39,6 +51,9 @@ def mouse_command(operation, curve, host):
     validate(operation)
     points = []
     for step in inputs(operation):
+        if "pick" in step:
+            points.append("_" + step["pick"]["osnap"] + " _Pause")
+            continue
         if "distance" in step:
             points.append(format(float(step["distance"]), ".17g"))
             continue
@@ -60,12 +75,18 @@ def drive(operation, script, curve, host):
     viewport = view.ActiveViewport
     picks = []
     for step in inputs(operation):
-        if "mouse" not in step:
+        if "pick" in step:
+            point = host["_point"](step["pick"]["point"])
+            offset = step["pick"].get("offset", [0, 0])
+        elif "mouse" in step:
+            point, offset = curve.PointAt(float(step["mouse"])), [0, 0]
+        else:
             continue
-        pixel = viewport.WorldToClient(curve.PointAt(float(step["mouse"])))
-        if not 1 <= pixel.X < viewport.Size.Width - 1 or not 1 <= pixel.Y < viewport.Size.Height - 1:
+        pixel = viewport.WorldToClient(point)
+        x, y = int(pixel.X) + offset[0], int(pixel.Y) + offset[1]
+        if not 1 <= x < viewport.Size.Width - 1 or not 1 <= y < viewport.Size.Height - 1:
             raise ValueError("SplitEdge point pick lies outside the owned viewport")
-        screen = view.ClientToScreen(System.Drawing.Point(int(pixel.X), int(pixel.Y)))
+        screen = view.ClientToScreen(System.Drawing.Point(x, y))
         picks.append((screen.X, screen.Y))
     if not picks:
         return host["_run_surface_script"](script, True)
@@ -108,5 +129,33 @@ def drive(operation, script, curve, host):
 
 def run(operation, tolerance, host):
     sources, order = validate(operation)
-    return merge_edges_probe.run_owned(operation, tolerance, host, sources, order,
-                                      "SplitEdge", mouse_command, drive)
+    with snapping_environment(operation, host):
+        return merge_edges_probe.run_owned(operation, tolerance, host, sources, order,
+                                          "SplitEdge", mouse_command, drive)
+
+
+@contextmanager
+def snapping_environment(operation, host):
+    if not any("pick" in step for step in inputs(operation)):
+        yield
+        return
+    settings = host["Rhino"].ApplicationSettings
+    aid, track = settings.ModelAidSettings, settings.SmartTrackSettings
+    original_aid, original_track = aid.GetCurrentState(), track.GetCurrentState()
+    try:
+        aid.GridSnap = aid.Ortho = aid.Planar = False
+        aid.Osnap = True
+        aid.OsnapModes = getattr(settings.OsnapModes, "None")
+        aid.OnlySnapToSelected = False
+        aid.OsnapPickboxRadius = 12
+        # These probes use Perspective. The separate parallel-view projection
+        # property in current online documentation was only added in Rhino 9.
+        aid.ProjectSnapToCPlane = False
+        aid.SnapToLocked = aid.SnapToOccluded = True
+        track.UseSmartTrack = False
+        yield
+    finally:
+        try:
+            aid.UpdateFromState(original_aid)
+        finally:
+            track.UpdateFromState(original_track)

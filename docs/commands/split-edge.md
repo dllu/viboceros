@@ -8,7 +8,10 @@ a number to highlight it. Whole-object preselection is cleared. Mesh wires and
 surface isocurves are not B-rep edge components.
 
 The point cursor follows the selected original edge in screen space, including
-edges away from the construction plane. Osnap captures its endpoints. Typed
+edges away from the construction plane; clicks need not be near its outline.
+Osnap uses the shared visible-object feature capture (including other objects),
+then constrains the snapped model point to the edge. A feature label and connector
+distinguish the actual snap target from the constrained location. Typed
 coordinates use the usual world/CPlane/relative point parser and are constrained
 to the edge by closest-point search. Collected locations are marked with circles.
 The source geometry stays unchanged until finishing. Transparent CPlane edits
@@ -19,10 +22,11 @@ length along the edge**, not straight-line distance. The constraint persists and
 its reference advances with each accepted point. Type another number to change
 it, or `0` to clear it; negative numbers use their magnitude. Use `0,0,0` or
 `w0,0,0` to enter the origin as a point. Typed coordinates also honor an active
-constraint. The cursor chooses the nearest projected reachable candidate; a
+constraint. Without a snap, the cursor chooses the nearest projected reachable candidate; a
 sole candidate remains selectable even when it is away from the cursor. If no
 candidate is reachable, no point is accepted. Closed edges can cross their seam,
 but a distance longer than one circuit has no candidate.
+With a snap, its model point chooses the nearest reachable candidate in 3D.
 
 Enter, the Done button, Escape, and `Cancel` finish and apply the collected batch.
 In particular, **Escape does not discard already collected split points**.
@@ -72,11 +76,20 @@ measurable Rhino inversion residuals. These additional curved records use an
 explicit absolute comparison bound of `1e-6`; the original 21 fixtures and the
 new straight-edge records retain `1e-9`. Every numeric field is still compared.
 
-Verification checkpoint: 2,980 release-mode workspace tests, 257 Python tests,
+Another [17 snap observations](../split-edge-snaps.md) cover Point, End, Mid,
+Cen and Quad, off-edge projection, curved edges and distance-candidate choice.
+Fifteen declared model-space snap locations replay at absolute epsilon `1e-9`
+and relative epsilon `1e-10`. Two raw NoSnap screen controls remain explicitly
+unsupported in native replay because their camera calibration was not recorded.
+Nonuniform NURBS and B-rep Mid features use half arc length, not parameter midpoints;
+the shared viewport cache retains these expensive features across redraws.
+
+Verification checkpoint: 2,990 release-mode workspace tests, 263 Python tests,
 seven offscreen GPU tests, formatting, and Clippy/Rustdoc with warnings denied.
 The new UI tests exercise real pointer press/release events, all four camera
 projections, endpoint capture, typed points, nested CPlane input, stale picks,
-and cached distance-constrained pointer input.
+cached distance-constrained pointer input, off-edge feature capture and cache
+invalidation. See the snap audit for replay and performance boundaries.
 
 ## Remaining limits
 
@@ -88,7 +101,7 @@ typed closest-point search certifies a global minimum for arbitrary rational
 curves. Camera-plane crossings, general occlusion behavior and pathological
 high-zoom/multimodal curves need further coverage.
 
-Other-object snaps within this constrained point prompt are not implemented yet.
+Shared snapping does not yet implement every Rhino feature/type or one-shot mode.
 A distance currently requires an accepted point on this edge; distance entry
 before that point, use of a prior command's last point, and ambiguous equal-distance
 candidate choices have not been measured against Rhino. Numerical integration

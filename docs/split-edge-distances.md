@@ -50,8 +50,10 @@ The bounded kernel query never wraps; the command handles at most one closed
 seam crossing, stopping at the original reference.
 
 The command caches both reachable parameters when distance or anchor changes.
-The constrained viewport path only projects those candidates, with no integration
-or closest-curve search per frame. Computation errors leave the collected batch
+The constrained viewport path chooses between those candidates by projection
+or, with an object snap, distance to its model point. It does not reintegrate
+or search the edge per frame. Shared snap feature discovery is a separate query.
+Computation errors leave the collected batch
 and prior constraint unchanged. No cross-engine performance claim is made.
 
 The oracle's alternative `inputs` grammar accepts up to 64 single-key objects:
@@ -63,6 +65,7 @@ owned click only after its corresponding `_Pause` appears in the command history
 It excludes the first component-selection pause, emits no duplicate requests,
 fails closed on history discontinuity or I/O errors, and always detaches/disposes.
 
-Other-object snapping, no-anchor distance entry and equal-distance tie policy
-remain unmeasured; the native command requires a previously accepted edge point.
+Other-object snapping is covered by the later [snap audit](split-edge-snaps.md),
+including its bounded `pick` grammar. No-anchor distance entry and equal-distance
+tie policy remain unmeasured; the native command requires a previously accepted edge point.
 Extreme-domain integration failures are reported, not silently approximated away.

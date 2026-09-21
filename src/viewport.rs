@@ -22,6 +22,7 @@ use crate::viewport_gpu::{
 use viboceros_geometry::{Brep, Circle3, NurbsSurface, Polyline3};
 
 const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
+const SNAP_COLOR: Color32 = Color32::from_rgb(210, 45, 145);
 mod camera;
 mod drafting;
 #[cfg(test)]
@@ -148,6 +149,10 @@ pub struct SelectionWindow {
 pub struct Viewport {
     display_cache: std::rc::Rc<std::cell::RefCell<display_cache::DisplayCache>>,
     cached_scene: std::cell::RefCell<Option<scene::CachedScene>>,
+    edge_snap_cache: std::cell::RefCell<Option<edge_point::EdgeSnapCache>>,
+    object_snap_cache: std::cell::RefCell<viboceros_drafting::ObjectSnapCache>,
+    #[cfg(test)]
+    edge_snap_queries: std::cell::Cell<usize>,
     kind: ViewKind,
     pub(crate) plane: ConstructionPlaneState,
     pub display_mode: DisplayMode,
@@ -172,6 +177,10 @@ impl Viewport {
         Self {
             display_cache: Default::default(),
             cached_scene: Default::default(),
+            edge_snap_cache: Default::default(),
+            object_snap_cache: Default::default(),
+            #[cfg(test)]
+            edge_snap_queries: Default::default(),
             kind,
             plane: ConstructionPlaneState::new(Self::default_plane(kind)),
             display_mode: DisplayMode::Wireframe,
@@ -254,6 +263,9 @@ impl Viewport {
         }
 
         let component_input = input.edge_pick || input.edge_curve.is_some();
+        if input.edge_curve.is_none() {
+            self.edge_snap_cache.borrow_mut().take();
+        }
         let selecting = !drafting.active && !component_input && input.object_filter.is_some();
         let object_filter = input.object_filter.unwrap_or_default();
         if !selecting {
@@ -343,17 +355,16 @@ impl Viewport {
             }
             let pointer = response.hover_pos()?;
             ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
-            let parameter = if let Some(parameters) = input.edge_distance_parameters {
-                self.pick_edge_distance_parameter(curve, parameters, pointer, rect)?
-            } else {
-                self.pick_edge_parameter(curve, pointer, rect, drafting.osnap)?
-            };
-            if let Ok(point) = curve.evaluate(parameter)
-                && let Some(pixel) = self.project(point, rect)
-            {
-                painter.circle_filled(pixel, 4., SELECTED_COLOR);
-            }
-            Some(parameter)
+            let cursor = self.edge_point_cursor(
+                curve,
+                input.edge_distance_parameters,
+                pointer,
+                rect,
+                document,
+                drafting.osnap,
+            )?;
+            self.paint_edge_point_cursor(&painter, rect, curve, cursor);
+            Some(cursor.parameter)
         });
         if drafting.active {
             self.paint_draft_points(&painter, rect, preview_polyline);

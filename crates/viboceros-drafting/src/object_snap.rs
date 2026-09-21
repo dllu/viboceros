@@ -1,4 +1,6 @@
 //! Visible-feature snap enumeration, projection metrics, and priority ordering.
+mod cache;
+pub use cache::ObjectSnapCache;
 
 use super::{DraftingError, validate_capture_radius, validate_cursor_coordinates};
 use viboceros_document::{Document, Geometry, ObjectId};
@@ -101,16 +103,12 @@ pub fn nearest_object_snap_axis_aligned(
     cursor_offset: [Real; 2],
     capture_radius: Real,
 ) -> Result<Option<ObjectSnap>, DraftingError> {
-    validate_capture_radius(capture_radius)?;
-    validate_cursor_coordinates(cursor_offset)?;
-    nearest_object_snap_with_metric(
+    ObjectSnapCache::default().nearest_axis_aligned(
         document,
-        &AxisAlignedSnapMetric {
-            projection,
-            origin,
-            cursor_offset,
-            capture_radius,
-        },
+        projection,
+        origin,
+        cursor_offset,
+        capture_radius,
     )
 }
 
@@ -123,16 +121,7 @@ pub fn nearest_object_snap_projected(
     capture_radius: Real,
     project: impl Fn(Point3) -> Option<[Real; 2]>,
 ) -> Result<Option<ObjectSnap>, DraftingError> {
-    validate_capture_radius(capture_radius)?;
-    validate_cursor_coordinates(cursor)?;
-    nearest_object_snap_with_metric(
-        document,
-        &ProjectedSnapMetric {
-            cursor,
-            capture_radius,
-            project,
-        },
-    )
+    ObjectSnapCache::default().nearest_projected(document, cursor, capture_radius, project)
 }
 
 trait SnapMetric {
@@ -213,7 +202,9 @@ where
 fn nearest_object_snap_with_metric(
     document: &Document,
     metric: &impl SnapMetric,
+    cache: &mut ObjectSnapCache,
 ) -> Result<Option<ObjectSnap>, DraftingError> {
+    cache.retain_objects(document);
     let cursor = metric;
     let capture_radius = metric.capture_radius();
     let mut best = None;
@@ -388,6 +379,18 @@ fn nearest_object_snap_with_metric(
                         );
                     }
                 }
+                for &point in
+                    cache.midpoints(object.id(), std::iter::once(curve), document.tolerance())
+                {
+                    consider_candidate(
+                        &mut best,
+                        cursor,
+                        capture_radius,
+                        object.id(),
+                        ObjectSnapKind::Mid,
+                        point,
+                    );
+                }
             }
             Geometry::PolyCurve(curve) => {
                 for segment in curve.segments() {
@@ -450,19 +453,19 @@ fn nearest_object_snap_with_metric(
                         vertex.point(),
                     );
                 }
-                for edge in brep.edges() {
-                    if let Ok(parameter) = edge.curve().parameter_at(0.5)
-                        && let Ok(point) = edge.curve().evaluate(parameter)
-                    {
-                        consider_candidate(
-                            &mut best,
-                            cursor,
-                            capture_radius,
-                            object.id(),
-                            ObjectSnapKind::Mid,
-                            point,
-                        );
-                    }
+                for &point in cache.midpoints(
+                    object.id(),
+                    brep.edges().iter().map(|edge| edge.curve()),
+                    document.tolerance(),
+                ) {
+                    consider_candidate(
+                        &mut best,
+                        cursor,
+                        capture_radius,
+                        object.id(),
+                        ObjectSnapKind::Mid,
+                        point,
+                    );
                 }
             }
             // Mesh vertex snapping needs a spatial index to remain responsive

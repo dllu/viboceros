@@ -96,6 +96,7 @@ fn distance_fixture_rejects_ambiguous_and_oversized_input_grammars() {
         json!({}),
         json!({"parameters":[],"inputs":[]}),
         json!({"inputs":vec![json!({"distance":1});65]}),
+        json!({"inputs":[{"pick":{"point":[2,0,0],"osnap":"Point","offset":[33,0]}}]}),
     ] {
         let mut fixture = json!({"sources":[{"brep":{"source":{"type":"box","min":[0,0,0],"max":[10,12,14]}}}],"edge":0,"pick":"mouse"});
         fixture
@@ -114,8 +115,63 @@ fn distance_fixture_rejects_ambiguous_and_oversized_input_grammars() {
         json!({"point":1,"distance":2}),
         json!({"mouse":true}),
         json!({"command":"_Delete"}),
+        json!({"pick":{"point":[2,0,0],"osnap":"Point _Delete"}}),
+        json!({"pick":{"point":[2,0],"osnap":"Point"}}),
+        json!({"pick":{"point":[true,0,0],"osnap":"Point"}}),
+        json!({"pick":{"point":[2,0,0],"osnap":"Point","offset":[0.5,0]}}),
+        json!({"pick":{"point":[2,0,0],"osnap":"Point","unexpected":true}}),
     ] {
         let fixture = json!({"sources":[],"edge":0,"pick":"mouse","inputs":[step]});
         assert!(serde_json::from_value::<SplitEdgeFixture>(fixture).is_err());
     }
+}
+
+#[test]
+fn split_edge_snaps_replay_complete_geometry_and_history_without_faking_screen_controls() {
+    let request: ProbeRequest = serde_json::from_str(include_str!(
+        "../../../../../tools/rhino_oracle/fixtures/split_edge_snaps_command.json"
+    ))
+    .unwrap();
+    let observed: Value = serde_json::from_str(include_str!(
+        "../../../../../tools/rhino_oracle/observations/split_edge_snaps_command.json"
+    ))
+    .unwrap();
+    assert_eq!(request.operations.len(), 17);
+    assert_eq!(observed["results"].as_array().unwrap().len(), 17);
+    let (mut replayed, mut controls) = (0, 0);
+    for (operation, expected) in request
+        .operations
+        .iter()
+        .zip(observed["results"].as_array().unwrap())
+    {
+        let Operation::SplitEdgeCommand { id, fixture } = operation else {
+            panic!()
+        };
+        assert_eq!(id, expected["id"].as_str().unwrap());
+        if id.ends_with("-nosnap") {
+            assert!(matches!(
+                run_split(fixture, Tolerance::DEFAULT),
+                Err(ProbeError::FixtureInvariant(
+                    "NoSnap screen controls require recorded viewport calibration"
+                ))
+            ));
+            controls += 1;
+            continue;
+        }
+        let (actual, _) = run_split(fixture, Tolerance::DEFAULT).unwrap();
+        let mut reference = expected["value"].clone();
+        for key in [
+            "command_events",
+            "command_history",
+            "undo_events",
+            "redo_events",
+            "undo_event_snapshot",
+            "redo_event_snapshot",
+        ] {
+            reference.as_object_mut().unwrap().remove(key);
+        }
+        close(&actual, &reference, id);
+        replayed += 1;
+    }
+    assert_eq!((replayed, controls), (15, 2));
 }

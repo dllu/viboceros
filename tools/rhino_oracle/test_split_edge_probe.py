@@ -96,7 +96,7 @@ class SplitEdgeProbeTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             split_edge_probe.mouse_command(dict(base, inputs=[dict(mouse=2)]), curve, host)
 
-    def exercise_mouse_driver(self, failure=None):
+    def exercise_mouse_driver(self, failure=None, feature_picks=False):
         class Event:
             def __init__(self): self.handlers = []
             def __iadd__(self, handler): self.handlers.append(handler); return self
@@ -118,6 +118,9 @@ class SplitEdgeProbeTests(unittest.TestCase):
             Views=SimpleNamespace(ActiveView=view))))
         system = SimpleNamespace(Drawing=SimpleNamespace(Point=pixel))
         operation = dict(id="owned", inputs=[dict(point=0), dict(distance=2), dict(mouse=8), dict(mouse=6)])
+        if feature_picks:
+            operation["inputs"] = [dict(pick=dict(point=[8,0,0], osnap="Point", offset=[5,-2])),
+                                   dict(pick=dict(point=[6,0,0], osnap="End", offset=[-4,3]))]
         output = mock_open()
         if failure == "write": output.side_effect = OSError("cannot request input")
         def run(script, echo):
@@ -144,7 +147,8 @@ class SplitEdgeProbeTests(unittest.TestCase):
             timer.Tick.fire()
             self.assertEqual(output.call_count, 2)
             return True
-        host = dict(Rhino=rhino, System=system, __file__="/owned/worker.py", _run_surface_script=run)
+        host = dict(Rhino=rhino, System=system, __file__="/owned/worker.py", _run_surface_script=run,
+                    _point=lambda coordinates: coordinates[0])
         modules = {"clr": SimpleNamespace(AddReference=lambda name: None),
                    "System.Windows.Forms": SimpleNamespace(Timer=lambda: timer)}
         with patch.dict(sys.modules, modules), patch("builtins.open", output):
@@ -154,6 +158,7 @@ class SplitEdgeProbeTests(unittest.TestCase):
             else:
                 self.assertTrue(split_edge_probe.drive(operation, "bounded macro", SimpleNamespace(PointAt=lambda t: t), host))
                 self.assertEqual([call.args[0] for call in output().write.call_args_list],
+                                 ["PICK @split:owned:0 118 205\n", "PICK @split:owned:1 107 210\n"] if feature_picks else
                                  ["PICK @split:owned:0 113 207\n", "PICK @split:owned:1 111 207\n"])
         self.assertFalse(timer.active)
         self.assertTrue(timer.disposed)
@@ -161,6 +166,9 @@ class SplitEdgeProbeTests(unittest.TestCase):
 
     def test_mouse_driver_waits_for_each_prompt_and_never_repeats_clicks(self):
         self.exercise_mouse_driver()
+
+    def test_mouse_driver_applies_bounded_offsets_to_real_feature_picks(self):
+        self.exercise_mouse_driver(feature_picks=True)
 
     def test_mouse_driver_disposes_timer_on_command_io_and_history_failures(self):
         for failure in ("script", "incomplete", "write", "history"):

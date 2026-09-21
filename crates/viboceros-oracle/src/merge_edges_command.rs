@@ -68,6 +68,26 @@ enum SplitEdgeInput {
     Point(f64),
     Mouse(f64),
     Distance(f64),
+    Pick(SplitEdgePick),
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
+struct SplitEdgePick {
+    point: [f64; 3],
+    osnap: SplitEdgeSnap,
+    #[serde(default)]
+    offset: [i32; 2],
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
+enum SplitEdgeSnap {
+    NoSnap,
+    Point,
+    End,
+    Mid,
+    Cen,
+    Quad,
 }
 
 // Missing alternatives are optional; an explicitly present null is not a list.
@@ -95,6 +115,10 @@ pub(super) fn run_split(
                     SplitEdgeInput::Point(t)
                     | SplitEdgeInput::Mouse(t)
                     | SplitEdgeInput::Distance(t) => !t.is_finite(),
+                    SplitEdgeInput::Pick(p) => {
+                        p.point.iter().any(|v| !v.is_finite())
+                            || p.offset.iter().any(|v| !(-32..=32).contains(v))
+                    }
                 })
         })
         || f.pick.as_deref() != Some("mouse")
@@ -104,6 +128,15 @@ pub(super) fn run_split(
     {
         return Err(ProbeError::FixtureInvariant(
             "invalid SplitEdge command fixture",
+        ));
+    }
+    if f.inputs.as_ref().is_some_and(|inputs| {
+        inputs
+            .iter()
+            .any(|step| matches!(step, SplitEdgeInput::Pick(p) if p.osnap == SplitEdgeSnap::NoSnap))
+    }) {
+        return Err(ProbeError::FixtureInvariant(
+            "NoSnap screen controls require recorded viewport calibration",
         ));
     }
     run_impl(&f.base, construction, EdgeAction::Split(f))
@@ -279,6 +312,12 @@ fn run_impl(
         for step in inputs {
             match step {
                 SplitEdgeInput::Distance(distance) => session.set_distance(distance)?,
+                SplitEdgeInput::Pick(pick) => {
+                    // Replay the declared model-space snap target. Native feature
+                    // discovery/capture is tested through the production viewport;
+                    // this command adapter does not pretend to replay screen pixels.
+                    session.add_point(Point3::try_from(pick.point)?)?;
+                }
                 SplitEdgeInput::Point(parameter) | SplitEdgeInput::Mouse(parameter) => {
                     // Replay the requested model location, not the quantized screen
                     // coordinates. Camera/pixel equivalence needs separate UI tests.

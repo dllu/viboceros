@@ -1,7 +1,123 @@
 //! Bounded screen-space location query on the already-selected original edge.
 use super::*;
+use viboceros_drafting::ObjectSnap;
+
+#[derive(Clone, Copy)]
+pub(super) struct EdgePointCursor {
+    pub(super) parameter: Real,
+    snap: Option<ObjectSnap>,
+}
+
+pub(super) struct EdgeSnapCache {
+    curve: NurbsCurve,
+    point: Point3,
+    tolerance: Tolerance,
+    parameter: Option<Real>,
+}
 
 impl Viewport {
+    pub(super) fn edge_point_cursor(
+        &self,
+        curve: &NurbsCurve,
+        distance_parameters: Option<&[Real]>,
+        pointer: Pos2,
+        rect: Rect,
+        document: &Document,
+        osnap: bool,
+    ) -> Option<EdgePointCursor> {
+        if !pointer.is_finite() || !rect.contains(pointer) {
+            return None;
+        }
+        let snap = osnap
+            .then(|| self.object_snap(pointer, rect, document))
+            .flatten();
+        let parameter = match (snap, distance_parameters) {
+            (Some(snap), Some(parameters)) => {
+                // A feature snap chooses in model space, even when its screen
+                // projection lies closer to the other distance candidate.
+                parameters
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(index, &t)| {
+                        Some((
+                            curve.evaluate(t).ok()?.distance_to(snap.point()).ok()?,
+                            index,
+                            t,
+                        ))
+                    })
+                    .min_by(|a, b| a.0.total_cmp(&b.0).then(a.1.cmp(&b.1)))?
+                    .2
+            }
+            (Some(snap), None) => {
+                self.edge_snap_parameter(curve, snap.point(), document.tolerance())?
+            }
+            (None, Some(parameters)) => {
+                self.pick_edge_distance_parameter(curve, parameters, pointer, rect)?
+            }
+            (None, None) => self.pick_edge_parameter(curve, pointer, rect, osnap)?,
+        };
+        Some(EdgePointCursor { parameter, snap })
+    }
+
+    fn edge_snap_parameter(
+        &self,
+        curve: &NurbsCurve,
+        point: Point3,
+        tolerance: Tolerance,
+    ) -> Option<Real> {
+        let mut cache = self.edge_snap_cache.borrow_mut();
+        if let Some(old) = cache.as_ref()
+            && old.point == point
+            && old.tolerance == tolerance
+            && old.curve == *curve
+        {
+            return old.parameter;
+        }
+        #[cfg(test)]
+        self.edge_snap_queries.set(self.edge_snap_queries.get() + 1);
+        let parameter = curve.closest_parameter(point, tolerance).ok();
+        *cache = Some(EdgeSnapCache {
+            curve: curve.clone(),
+            point,
+            tolerance,
+            parameter,
+        });
+        parameter
+    }
+
+    pub(super) fn paint_edge_point_cursor(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        curve: &NurbsCurve,
+        cursor: EdgePointCursor,
+    ) {
+        let Ok(point) = curve.evaluate(cursor.parameter) else {
+            return;
+        };
+        let Some(pixel) = self.project(point, rect) else {
+            return;
+        };
+        if let Some(snap) = cursor.snap
+            && let Some(source) = self.project(snap.point(), rect)
+        {
+            // Show the actual feature separately from its edge-constrained point.
+            let color = SNAP_COLOR;
+            painter.circle_stroke(source, 4., Stroke::new(1.25, color));
+            if source.distance(pixel) > 1. {
+                painter.line_segment([source, pixel], Stroke::new(0.75, color));
+            }
+            painter.text(
+                source + Vec2::new(8., -8.),
+                Align2::LEFT_BOTTOM,
+                snap.kind().label(),
+                FontId::proportional(12.),
+                color,
+            );
+        }
+        painter.circle_filled(pixel, 4., SELECTED_COLOR);
+    }
+
     /// A distance constraint chooses the nearest projected cached candidate, even
     /// if the only reachable point lies away from the cursor. No integration or
     /// curve search runs on this per-frame path.
@@ -46,7 +162,7 @@ impl Viewport {
                 .into_iter()
                 .filter_map(|t| {
                     score(t)
-                        .filter(|&d| d <= Real::from(PICK_CAPTURE_PIXELS))
+                        .filter(|&d| d <= Real::from(OSNAP_CAPTURE_PIXELS))
                         .map(|d| (d, t))
                 })
                 .collect();
@@ -118,8 +234,9 @@ impl Viewport {
                 }
             }
         }
-        best.filter(|&(d, _)| d <= Real::from(PICK_CAPTURE_PIXELS))
-            .map(|(_, t)| t)
+        // Once selected, the edge constrains every point pick in this viewport;
+        // unlike component selection this is not an eight-pixel hit test.
+        best.map(|(_, t)| t)
     }
 }
 

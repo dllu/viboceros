@@ -1,0 +1,32 @@
+{
+  "cases": 17,
+  "native_command_replays": 15,
+  "screen_only_controls": 2,
+  "engine_version": "8.32.26160.13001",
+  "scope": "Actual SplitEdge commands in owned private Xvfb sessions with real component picks and bounded one-shot feature clicks, including offsets from the target. Complete geometry, attributes and actual Undo/Redo retained.",
+  "raw_response_sha256": {
+    "first-v2-result.json": "cf9637935bdda4332199608cab65ea071e343c2bac9328a7038427778f75b2e4",
+    "features-result.json": "d7ba69634e4112402fc6bd4926a415747d0e0d7a8583c40056222f667283face",
+    "midpoints-result.json": "8372e3ae338715c261b9887fb7bf33638227da825b9824e1d97b166abf686a6f",
+    "brep-midpoint-result.json": "6d141a5016449892f8f2586946534c78d9fcf3f5718b06997ac8e49512111988"
+  },
+  "source_artifact_sha256": {
+    "box.3dm": "9ad7f078dc15cbe542751246f45371a3e97c514d13482aee66448a8129620a65",
+    "quadratic.3dm": "88bf78e5061f056f55f78a4d121c334fb6210df5066880906e4b04ceb117c0d5",
+    "nonuniform.3dm": "ca644fd8e061364fae3ddce8fc3fcabe65a2dbd0fb9d76269de71ef72f6cc62f"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/split_edge_snaps_command.json": "5580b7767e01a0b04507dc2f5b5e0d4c4a6b9076862c37881164a298e7857e45",
+    "tools/rhino_oracle/observations/split_edge_snaps_command.json": "9283d6f85fc2aa2a852ae612440d58416b7a5a87381566c7e668e95c80db0480"
+  },
+  "notes": [
+    "Portable requests substitute exact source recipes for temporary shared 3DM paths. Recorded values are concatenated without numeric normalization.",
+    "Feature snaps off the selected edge are constrained in model space. The constrained point becomes the next distance anchor; active distance constraints select between candidates using the snapped model point.",
+    "Two NoSnap controls retain actual screen-derived parameters and prove the offset clicks are not simply typed model locations. Their camera calibration was not recorded, so native command replay explicitly reports unsupported controls rather than substituting the aim point or Rhino's output parameter.",
+    "Native command replay validates projection, geometry and history for declared snap locations, not Rhino pixel hit testing. Production viewport tests separately exercise feature capture, all four projections, real pointer events, visibility and cache invalidation.",
+    "Nonuniform NURBS curve and B-rep-edge Mid snaps are at half arc length, not half the native domain. Both discriminating original definitions and resulting split positions remain in the record.",
+    "One-shot probe settings disable grid, ortho, planar and CPlane snap projection; snap radius is 12 pixels, with locked/occluded targets enabled and SmartTrack off. Full ModelAid and SmartTrack snapshots are restored. OnlySnapToSelected is explicitly disabled in the midpoint follow-ups; the earlier successful unselected-target captures demonstrate it was not restricting those records.",
+    "An initial setup attempt used a Rhino-9-only parallel-view setting and failed before any command. The corrected Rhino 8 probes use Perspective and only supported settings. It is not counted as an observation.",
+    "The existing 21 unconstrained and 19 distance records remain unchanged. No arbitrary-camera, occlusion, tie-priority or cross-engine performance claim follows from these fixtures."
+  ]
+}
