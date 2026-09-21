@@ -34,7 +34,7 @@ fn mixed_sign_weights_do_not_cull_a_hover_outside_the_control_hull() {
         .unwrap()
         .unwrap();
     assert!(hit.point().distance_to(p(5., -10. / 3.)).unwrap() < 1e-9);
-    assert!(cache.midpoints[&id].features[0].bounds.is_none());
+    assert!(cache.curves[&id].features[0].bounds.is_none());
 }
 
 #[test]
@@ -94,9 +94,9 @@ fn failed_midpoint_keeps_its_source_slot_and_hover_cache_tracks_edits() {
             .unwrap()
             < 1e-10
     );
-    assert_eq!(cache.midpoints[&id].features.len(), 2);
-    assert!(cache.midpoints[&id].features[0].point.is_none());
-    assert!(cache.midpoints[&id].features[1].point.is_some());
+    assert_eq!(cache.curves[&id].features.len(), 2);
+    assert!(cache.curves[&id].features[0].midpoint().is_none());
+    assert!(cache.curves[&id].features[1].midpoint().is_some());
     assert_eq!(cache.builds, 1);
     for _ in 0..3 {
         assert!(hover(&mut cache, &doc).is_some());
@@ -198,7 +198,7 @@ fn polycurve_and_polyline_supply_each_segment_midpoint_not_whole_curve_midpoint(
             }
             assert!(query(&mut cache, &doc, p(7., -2.)).is_none());
         }
-        assert!(cache.midpoints.is_empty()); // Analytic leaves require no cached integrations.
+        assert!(cache.curves.is_empty()); // Analytic leaves require no cached integrations.
     }
 }
 
@@ -219,7 +219,7 @@ fn polycurve_nurbs_midpoints_are_cached_by_leaf_geometry_not_outer_parameter_map
         assert_hit(&mut cache, &doc, p(5., -2.), ObjectSnapKind::Mid);
     }
     assert_eq!(cache.builds, 1);
-    assert_eq!(cache.midpoints[&id].features.len(), 1);
+    assert_eq!(cache.curves[&id].features.len(), 1);
     assert!(query(&mut cache, &doc, p(4., -2.)).is_none());
     doc.replace_object_geometries([(
         id,
@@ -243,11 +243,11 @@ fn polycurve_nurbs_midpoints_are_cached_by_leaf_geometry_not_outer_parameter_map
     .unwrap();
     assert_hit(&mut cache, &doc, p(8., -4.), ObjectSnapKind::Mid);
     assert_eq!(cache.builds, 2);
-    assert_eq!(cache.midpoints[&id].features.len(), 2);
+    assert_eq!(cache.curves[&id].features.len(), 2);
     doc.undo().unwrap();
     assert_hit(&mut cache, &doc, p(5., -2.), ObjectSnapKind::Mid);
     assert_eq!(cache.builds, 3);
-    assert_eq!(cache.midpoints[&id].features.len(), 1);
+    assert_eq!(cache.curves[&id].features.len(), 1);
 }
 
 #[test]
@@ -383,10 +383,10 @@ fn surface_cache_invalidates_edits_undo_tolerance_and_evicts_converted_or_delete
         .unwrap();
     assert_hit(&mut cache, &doc, p(5., -2.), ObjectSnapKind::Mid);
     assert!(cache.surfaces.is_empty());
-    assert_eq!(cache.midpoints.len(), 1);
+    assert_eq!(cache.curves.len(), 1);
     doc.undo().unwrap();
     assert_hit(&mut cache, &doc, p(5., -2.), ObjectSnapKind::Mid);
-    assert!(cache.midpoints.is_empty());
+    assert!(cache.curves.is_empty());
     assert_eq!(cache.surfaces.len(), 1);
     doc.delete_object(id).unwrap();
     assert!(query(&mut cache, &doc, p(5., -2.)).is_none());

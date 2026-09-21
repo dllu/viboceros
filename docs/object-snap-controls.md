@@ -68,7 +68,9 @@ subsequent [Mid-hover implementation](mid-hover-snaps.md) adds whole-segment
 capture when Mid alone is enabled, including one-shot Mid.
 [Polygon Center](polygon-center-snaps.md) adds corner averages for closed linear
 boundaries and polygonal planar surfaces/faces without holes.
-General End/Near/Int/Tan/Perp behavior, curved NURBS/conic Center recognition,
+[Circular NURBS Center](circular-center-snaps.md) adds circles/arcs and boundary
+edges, including circular holes. General End/Near/Int/Tan/Perp behavior,
+elliptical NURBS Center recognition,
 CPlane-relative Quad, occlusion,
 Alt suspension, full `Osnap` command grammar, persistence across app restarts and
 arbitrary macros remain incomplete. New controls do not establish broad snap

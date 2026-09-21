@@ -1,7 +1,7 @@
 //! When Mid is the only enabled mode, discover the target from its whole segment.
-use super::{ObjectSnapCache, SnapMetric, cache::CurveMidpoint, proximity};
+use super::{ObjectSnapCache, SnapMetric, cache::CurveFeatures, proximity};
 use viboceros_document::{Geometry, ObjectId};
-use viboceros_geometry::{CurveRef, CurveSegment3, Point3, Real, Tolerance};
+use viboceros_geometry::{CurveRef, Point3, Real, Tolerance};
 
 pub(super) fn visit(
     geometry: &Geometry,
@@ -11,33 +11,16 @@ pub(super) fn visit(
     metric: &impl SnapMetric,
     emit: &mut impl FnMut(Point3, Real),
 ) {
-    let features = match geometry {
-        Geometry::NurbsCurve(curve) => cache.midpoints(id, std::iter::once(curve), tolerance),
-        Geometry::PolyCurve(curve) => {
+    if let Some(curve) = geometry.curve_ref() {
+        if let CurveRef::PolyCurve(curve) = curve {
             for segment in curve.segments() {
                 analytic(segment.as_ref(), metric, emit);
             }
-            cache.midpoints(
-                id,
-                curve.segments().iter().filter_map(|segment| match segment {
-                    CurveSegment3::NurbsCurve(curve) => Some(curve),
-                    _ => None,
-                }),
-                tolerance,
-            )
+        } else {
+            analytic(curve, metric, emit);
         }
-        Geometry::NurbsSurface(surface) => cache.surface_midpoints(id, surface, tolerance),
-        Geometry::Brep(brep) => {
-            cache.midpoints(id, brep.edges().iter().map(|edge| edge.curve()), tolerance)
-        }
-        _ => {
-            if let Some(curve) = geometry.curve_ref() {
-                analytic(curve, metric, emit);
-            }
-            return;
-        }
-    };
-    for feature in features {
+    }
+    for feature in cache.geometry_curves(id, geometry, tolerance) {
         nurbs(feature, metric, emit);
     }
 }
@@ -102,37 +85,17 @@ fn analytic(curve: CurveRef<'_>, metric: &impl SnapMetric, emit: &mut impl FnMut
     }
 }
 
-fn nurbs(feature: &CurveMidpoint, metric: &impl SnapMetric, emit: &mut impl FnMut(Point3, Real)) {
-    let Some(point) = feature.point else { return };
+fn nurbs(feature: &CurveFeatures, metric: &impl SnapMetric, emit: &mut impl FnMut(Point3, Real)) {
+    let Some(point) = feature.midpoint() else {
+        return;
+    };
     if feature
         .bounds
         .is_some_and(|b| proximity::outside_bounds(b.min().to_array(), b.max().to_array(), metric))
     {
         return;
     }
-    let mut distance = None::<Real>;
-    if let Ok(sampler) = feature.curve.parameter_sampler() {
-        // Fractional, sided sampling avoids both native-domain rounding loss
-        // and accidental interpolation across a full-multiplicity knot jump.
-        for span in sampler.spans() {
-            // Common-sign rational degree-one spans have a straight locus.
-            // Typical B-rep edges do not need iterative parameter refinement.
-            let linear = if feature.curve.degree() == 1 && feature.bounds.is_some() {
-                span.evaluate(0.)
-                    .ok()
-                    .and_then(|p| metric.offset(p))
-                    .zip(span.evaluate(1.).ok().and_then(|p| metric.offset(p)))
-                    .and_then(|(a, b)| proximity::segment_distance(a, b))
-            } else {
-                None
-            };
-            if let Some(d) = linear.or_else(|| {
-                proximity::projected_distance(|t| metric.distance(span.evaluate(t).ok()?))
-            }) {
-                distance = Some(distance.map_or(d, |old| old.min(d)));
-            }
-        }
-    }
+    let distance = proximity::nurbs_distance(&feature.curve, feature.bounds.is_some(), metric);
     candidate(point, distance, metric, emit);
 }
 

@@ -64,6 +64,9 @@ targets before boundary proximity tests. Cold recognition and hot source compari
 still scale with scene geometry; this is not a scene spatial index or a fixed frame
 budget. Curved/conic NURBS recognition, toleranced gap recovery, occlusion, arbitrary
 camera/priority equivalence and cross-engine performance remain incomplete.
+The subsequent [circular NURBS implementation](circular-center-snaps.md) adds
+circle/arc recognition and circular boundary edges, including hole edges;
+elliptical NURBS recognition remains unfinished.
 
 Tests cover representation variants, failed/gapped boundaries, exact mean range,
 cache reuse/edit/Undo/tolerance/conversion, visibility, planarity far from world

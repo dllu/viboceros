@@ -1,6 +1,33 @@
 //! Bounded camera-space curve proximity, shared by hover-derived snap targets.
 use super::SnapMetric;
-use viboceros_geometry::{LineSegment, Point3, Real};
+use viboceros_geometry::{LineSegment, NurbsCurve, Point3, Real};
+
+/// Proximity to the original NURBS locus, shared by Mid and circular Center.
+/// Sided fractional spans cannot bridge discontinuities or lose small offsets
+/// when the native parameter origin is large. Callers perform bounding-box
+/// rejection before this query; common-sign degree-one spans have a line locus.
+pub(super) fn nurbs_distance(
+    curve: &NurbsCurve,
+    common_sign_weights: bool,
+    metric: &impl SnapMetric,
+) -> Option<Real> {
+    let sampler = curve.parameter_sampler().ok()?;
+    sampler
+        .spans()
+        .filter_map(|span| {
+            let linear = if curve.degree() == 1 && common_sign_weights {
+                span.evaluate(0.)
+                    .ok()
+                    .and_then(|p| metric.offset(p))
+                    .zip(span.evaluate(1.).ok().and_then(|p| metric.offset(p)))
+                    .and_then(|(a, b)| segment_distance(a, b))
+            } else {
+                None
+            };
+            linear.or_else(|| projected_distance(|t| metric.distance(span.evaluate(t).ok()?)))
+        })
+        .min_by(Real::total_cmp)
+}
 
 pub(super) fn outside_sphere(center: Point3, radius: Real, metric: &impl SnapMetric) -> bool {
     let coordinates = center.to_array();

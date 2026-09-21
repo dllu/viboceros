@@ -146,6 +146,10 @@ capture/history matches and ten admission-only misses. Cases distinguish corner
 averages from area/bounds centers, retain collinear/repeated curve corners,
 exclude internal subdivisions of straight surface edges, and include nonplanar
 curve captures alongside warped-surface misses.
+The [44 circular NURBS records](circular-center-snaps.md) add 34 complete capture
+replays and four admission-only misses. Four unsupported elliptical captures and
+two negative-weight recognition differences remain explicit. Both outside-arc
+controls fail to split; the other 42 records include actual Undo/Redo.
 
 The shared `serde_json` dependency explicitly enables round-trip float parsing.
 Standalone oracle/document builds must not depend on app or test dependencies

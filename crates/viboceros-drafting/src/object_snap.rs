@@ -313,31 +313,6 @@ fn nearest_object_snap_with_metric(
                     .curve_ref()
                     .expect("matched a curve geometry");
                 features::curve(curve, &mut emit);
-                // Analytic leaf features are cheap. Cache only the expensive
-                // NURBS integrations, together under the owning object's ID.
-                let midpoints = if !modes.contains(ObjectSnapKind::Mid) {
-                    &[][..]
-                } else {
-                    match curve {
-                        viboceros_geometry::CurveRef::NurbsCurve(curve) => cache.midpoints(
-                            object.id(),
-                            std::iter::once(curve),
-                            document.tolerance(),
-                        ),
-                        viboceros_geometry::CurveRef::PolyCurve(curve) => cache.midpoints(
-                            object.id(),
-                            curve.segments().iter().filter_map(|segment| match segment {
-                                viboceros_geometry::CurveSegment3::NurbsCurve(curve) => Some(curve),
-                                _ => None,
-                            }),
-                            document.tolerance(),
-                        ),
-                        _ => &[],
-                    }
-                };
-                for point in midpoints.iter().filter_map(|feature| feature.point) {
-                    emit(ObjectSnapKind::Mid, point);
-                }
             }
             Geometry::NurbsSurface(surface) => {
                 let u = surface.domain_u();
@@ -352,38 +327,26 @@ fn nearest_object_snap_with_metric(
                         emit(ObjectSnapKind::End, point);
                     }
                 }
-                // Mid belongs to each natural boundary, never to the UV center.
-                if modes.contains(ObjectSnapKind::Mid) {
-                    for point in cache
-                        .surface_midpoints(object.id(), surface, document.tolerance())
-                        .iter()
-                        .filter_map(|feature| feature.point)
-                    {
-                        emit(ObjectSnapKind::Mid, point);
-                    }
-                }
             }
             Geometry::Brep(brep) => {
                 for vertex in brep.vertices() {
                     emit(ObjectSnapKind::End, vertex.point());
                 }
-                if modes.contains(ObjectSnapKind::Mid) {
-                    for point in cache
-                        .midpoints(
-                            object.id(),
-                            brep.edges().iter().map(|edge| edge.curve()),
-                            document.tolerance(),
-                        )
-                        .iter()
-                        .filter_map(|feature| feature.point)
-                    {
-                        emit(ObjectSnapKind::Mid, point);
-                    }
-                }
             }
             // Mesh features need a spatial index rather than an O(vertices)
             // walk per pointer frame.
             Geometry::Mesh(_) => {}
+        }
+        // Mid and Center share source discovery. Each expensive feature is
+        // independently lazy; surface Mid belongs to boundaries, not UV center.
+        if modes.contains(ObjectSnapKind::Mid) {
+            for feature in
+                cache.geometry_curves(object.id(), object.geometry(), document.tolerance())
+            {
+                if let Some(point) = feature.midpoint() {
+                    emit(ObjectSnapKind::Mid, point);
+                }
+            }
         }
         // Direct features suppress Center on the same object, not on every
         // object in the document. Across objects, compare capture distance.
@@ -400,6 +363,14 @@ fn nearest_object_snap_with_metric(
             if let Some(curve) = object.geometry().curve_ref() {
                 centers::visit(curve, metric, &mut center);
             }
+            centers::visit_nurbs(
+                object.geometry(),
+                object.id(),
+                document.tolerance(),
+                cache,
+                metric,
+                &mut center,
+            );
             cache.polygons.visit(
                 object.id(),
                 object.geometry(),

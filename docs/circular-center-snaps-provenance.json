@@ -1,0 +1,34 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "calibrated_observations": 44,
+  "complete_capture_replays": 34,
+  "admission_only_misses": 4,
+  "known_elliptical_capture_limits": 4,
+  "known_negative_gauge_differences": 2,
+  "actual_undo_redo_observations": 42,
+  "raw_response_sha256": {
+    "response-final.json": "658cf455fb4757b4b64c68af72bfe39e4dbc4b619082b71a3d72e789eefcd98e"
+  },
+  "source_artifact_sha256": {
+    "box.3dm": "9ad7f078dc15cbe542751246f45371a3e97c514d13482aee66448a8129620a65",
+    "cylinder.3dm": "6b00eef1fa8d189de06c450629d6c56b7c8a7520e8b28b7f0888c8a8e08c1f4c",
+    "arc-wall.3dm": "c18a395ce5eeb5ef37fe2e8536b7ba4ed7198247163d9c25ce8fa889c7bf312f",
+    "disk.3dm": "82e254a70dd6952f4dbba2d95471a9d18ed92e25c536b9cd466860f85e155cb0",
+    "annulus.3dm": "fc0cac2bb77bf8e6135b7deb66935eda597a09e09c292318bad651a1c8d85dd0"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/circular_center_snaps.json": "865834571718ed3457998443e147677a17f528990f1560df6e15e7ff06ca9c78",
+    "tools/rhino_oracle/observations/circular_center_snaps.json": "5d31b9ff0c76f80176e3cf4e73436806e18f7edbe0cec2648a27afdbed39df48"
+  },
+  "notes": [
+    "Owned private Xvfb Rhino session, public APIs and actual SplitEdge component/point clicks. No existing Rhino session or user desktop was targeted.",
+    "A first attempt stopped at a missing shared artifact after open-profile extrusion preparation failed. The arc source was corrected to a natural surface face, artifact preparation was verified, and a complete 30-case diagnostic preceded the final fresh 44-case run retained here.",
+    "Portable inputs omit only shared B-rep artifact paths. Raw response JSON is compacted without numerical normalization or array reordering.",
+    "Each family tests one-shot Cen over five persistent modes and persistent Cen alone. Actual point-prompt matrices, public WorldToClient coordinates and integer clicks are retained; replay uses a 12-pixel capture radius.",
+    "Thirty-four independently computed native centers drive full ordered geometry/attribute/selection/history comparison at absolute 1e-9 and relative 1e-10. No recorded Rhino result point is supplied to native capture.",
+    "Empty-center and outside-arc controls are admission-only misses. Outside-arc clicks fail to split and therefore do not perform Undo/Redo.",
+    "Rhino captures the ellipse at x=4 and the perturbed quadratic elliptic arc at x=3.75. Their original declared x=4 hypotheses remain unchanged. Native circular recognition rejects both noncircular loci; these four records are known limits, not matches.",
+    "The all-negative homogeneous gauge is the same circular locus and is recognized natively, while Rhino misses it in both modes. This difference is retained rather than reproducing the recognition failure.",
+    "SplitEdge constrains a point to the selected edge. These are not direct unconstrained GetPoint observations and do not establish depth/occlusion preference between projected coincident circular boundaries."
+  ]
+}

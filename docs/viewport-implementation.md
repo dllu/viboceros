@@ -44,6 +44,10 @@ corner averages and failed recognitions. Its source keys include curve geometry,
 planar surfaces and relevant face boundary edges/orientations; UV trims and
 attributes are excluded. Geometry/tolerance edits and Undo refresh entries.
 Production queries share these targets across ordinary and constrained prompts.
+The [circular NURBS query](circular-center-snaps.md) shares source snapshots and
+sided-span proximity with Mid; arc-length integration and whole-span circularity
+are independently lazy. Center uses original arc/boundary proximity, never a
+substituted complete supporting circle.
 The [snap-control adapter](object-snap-controls.md) passes the effective feature
 mask through ordinary and edge-constrained prompts. An empty mask exits the
 drafting query before traversing objects or refreshing caches; validation still

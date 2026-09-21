@@ -194,13 +194,17 @@ cases are analytic numerical regressions, not additional Rhino oracle captures.
 
 ## Whole-span circularity
 
-`NurbsCurve::circular_radius` recognizes a circular locus with whole-span rational
-Bezier coefficient bounds. An endpoint curvature jet supplies a candidate center,
+`NurbsCurve::circular_radius` and `circular_center` recognize a circular locus with
+shared whole-span rational Bezier coefficient bounds. A curvature jet supplies a candidate center,
 plane, and radius; positive (or common negative) weights provide a denominator
 lower bound. Plane control distances and the Bernstein coefficients of
 `Q·Q - W²` bound the entire normalized locus, with a floating-point roundoff
 allowance. Inconclusive bounds do not trigger automatic radius reporting. This
 is a conservative floating-point recognition test, not an exact algebraic predicate.
+Candidate spans use normalized scalar domains, with a regular-point fallback for
+stationary endpoints. Native knots/control geometry are unchanged. The
+[circular Center audit](circular-center-snaps.md) adds extreme-domain and signed-gauge
+tests and calibrated UI observations, including retained Rhino differences.
 
 Tests cover rational arcs, degree elevation through degree 12, ellipse rejection,
 and a degree-nine rational perturbation whose position and first two derivatives

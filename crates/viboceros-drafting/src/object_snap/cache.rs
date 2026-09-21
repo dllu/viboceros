@@ -1,20 +1,22 @@
 //! Cache expensive arc-length and polygon Center features independently of projection.
 use super::*;
+use std::cell::OnceCell;
 use std::collections::BTreeMap;
-use viboceros_geometry::{CurveRef, NurbsCurve, NurbsSurface, Tolerance};
+use viboceros_geometry::{CurveRef, CurveSegment3, NurbsCurve, NurbsSurface, Tolerance};
 
-/// Keep every source paired with its result, including failed integrations.
-/// Hover must never associate a later curve with an earlier midpoint.
+/// One source snapshot shared by independently lazy, camera-free features.
+/// Failed integrations/recognitions are cached as well as successful targets.
 #[derive(Debug)]
-pub(super) struct CurveMidpoint {
+pub(super) struct CurveFeatures {
     pub(super) curve: NurbsCurve,
-    pub(super) point: Option<Point3>,
     pub(super) bounds: Option<viboceros_geometry::BoundingBox3>,
+    tolerance: Tolerance,
+    midpoint: OnceCell<Option<Point3>>,
+    circular_center: OnceCell<Option<Point3>>,
 }
 
-impl CurveMidpoint {
+impl CurveFeatures {
     fn new(curve: NurbsCurve, tolerance: Tolerance) -> Self {
-        let point = midpoint(&curve, tolerance);
         let sign = curve.control_points()[0].weight().is_sign_positive();
         let bounds = curve
             .control_points()
@@ -23,28 +25,47 @@ impl CurveMidpoint {
             .then(|| curve.control_point_bounds());
         Self {
             curve,
-            point,
             bounds,
+            tolerance,
+            midpoint: OnceCell::new(),
+            circular_center: OnceCell::new(),
         }
+    }
+
+    pub(super) fn midpoint(&self) -> Option<Point3> {
+        *self
+            .midpoint
+            .get_or_init(|| midpoint(&self.curve, self.tolerance))
+    }
+
+    pub(super) fn circular_center(&self) -> Option<Point3> {
+        *self.circular_center.get_or_init(|| {
+            // Bound cold UI recognition for pathological high-degree inputs.
+            // The kernel itself imposes no such feature-discovery degree cap.
+            (self.curve.degree() <= 32)
+                .then(|| self.curve.circular_center(self.tolerance).ok().flatten())
+                .flatten()
+        })
     }
 }
 
 #[derive(Debug)]
-struct Midpoints {
+struct CachedCurves {
     tolerance: Tolerance,
-    features: Vec<CurveMidpoint>,
+    features: Vec<CurveFeatures>,
 }
 
 #[derive(Debug)]
-struct SurfaceMidpoints {
+struct SurfaceCurves {
     source: NurbsSurface,
     tolerance: Tolerance,
-    features: Vec<CurveMidpoint>,
+    features: Vec<CurveFeatures>,
 }
 
 /// Reusable camera-independent snap data. Analytic features and indexed point
-/// clouds keep their existing cheap queries. Cached NURBS arc-length midpoints
-/// include polycurve leaves and natural surface boundaries. Their B-rep entries
+/// clouds keep their existing cheap queries. Cached NURBS sources lazily compute
+/// arc-length Mid and circular Center, including polycurve leaves and natural
+/// surface boundaries. Their B-rep entries
 /// retain only edge curves; standalone surfaces retain extracted boundaries and
 /// their source for invalidation. Polygon Center entries additionally retain
 /// relevant planar-face sources, but not UV trims. Failed recognitions are cached.
@@ -53,8 +74,8 @@ struct SurfaceMidpoints {
 /// removal and conversion to another geometry type release old entries.
 #[derive(Debug, Default)]
 pub struct ObjectSnapCache {
-    midpoints: BTreeMap<ObjectId, Midpoints>,
-    surfaces: BTreeMap<ObjectId, SurfaceMidpoints>,
+    curves: BTreeMap<ObjectId, CachedCurves>,
+    surfaces: BTreeMap<ObjectId, SurfaceCurves>,
     pub(super) polygons: super::polygon_centers::Cache,
     #[cfg(test)]
     builds: usize,
@@ -151,7 +172,7 @@ impl ObjectSnapCache {
 
     pub(super) fn retain_objects(&mut self, document: &Document) {
         self.polygons.retain_objects(document);
-        self.midpoints.retain(|id, _| {
+        self.curves.retain(|id, _| {
             document.object(*id).is_some_and(|object| {
                 matches!(
                     object.geometry(),
@@ -166,17 +187,41 @@ impl ObjectSnapCache {
         });
     }
 
-    pub(super) fn midpoints<'a>(
+    pub(super) fn geometry_curves(
+        &mut self,
+        id: ObjectId,
+        geometry: &Geometry,
+        tolerance: Tolerance,
+    ) -> &[CurveFeatures] {
+        match geometry {
+            Geometry::NurbsCurve(curve) => self.curves(id, std::iter::once(curve), tolerance),
+            Geometry::PolyCurve(curve) => self.curves(
+                id,
+                curve.segments().iter().filter_map(|s| match s {
+                    CurveSegment3::NurbsCurve(c) => Some(c),
+                    _ => None,
+                }),
+                tolerance,
+            ),
+            Geometry::NurbsSurface(surface) => self.surface_curves(id, surface, tolerance),
+            Geometry::Brep(brep) => {
+                self.curves(id, brep.edges().iter().map(|e| e.curve()), tolerance)
+            }
+            _ => &[],
+        }
+    }
+
+    pub(super) fn curves<'a>(
         &mut self,
         id: ObjectId,
         curves: impl Iterator<Item = &'a NurbsCurve> + Clone,
         tolerance: Tolerance,
-    ) -> &[CurveMidpoint] {
+    ) -> &[CurveFeatures] {
         if curves.clone().next().is_none() {
-            self.midpoints.remove(&id);
+            self.curves.remove(&id);
             return &[];
         }
-        let fresh = self.midpoints.get(&id).is_some_and(|entry| {
+        let fresh = self.curves.get(&id).is_some_and(|entry| {
             entry.tolerance == tolerance
                 && entry.features.iter().map(|f| &f.curve).eq(curves.clone())
         });
@@ -187,25 +232,25 @@ impl ObjectSnapCache {
             }
             let features = curves
                 .cloned()
-                .map(|curve| CurveMidpoint::new(curve, tolerance))
+                .map(|curve| CurveFeatures::new(curve, tolerance))
                 .collect();
-            self.midpoints.insert(
+            self.curves.insert(
                 id,
-                Midpoints {
+                CachedCurves {
                     tolerance,
                     features,
                 },
             );
         }
-        &self.midpoints[&id].features
+        &self.curves[&id].features
     }
 
-    pub(super) fn surface_midpoints(
+    pub(super) fn surface_curves(
         &mut self,
         id: ObjectId,
         surface: &NurbsSurface,
         tolerance: Tolerance,
-    ) -> &[CurveMidpoint] {
+    ) -> &[CurveFeatures] {
         let fresh = self
             .surfaces
             .get(&id)
@@ -228,11 +273,11 @@ impl ObjectSnapCache {
             ]
             .into_iter()
             .filter_map(Result::ok)
-            .map(|curve| CurveMidpoint::new(curve, tolerance))
+            .map(|curve| CurveFeatures::new(curve, tolerance))
             .collect();
             self.surfaces.insert(
                 id,
-                SurfaceMidpoints {
+                SurfaceCurves {
                     source: surface.clone(),
                     tolerance,
                     features,
@@ -252,6 +297,8 @@ fn midpoint(curve: &NurbsCurve, tolerance: Tolerance) -> Option<Point3> {
         .next()
 }
 
+#[cfg(test)]
+mod circular_tests;
 #[cfg(test)]
 mod composite_tests;
 #[cfg(test)]

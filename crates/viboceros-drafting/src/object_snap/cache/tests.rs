@@ -75,7 +75,7 @@ fn brep_edge_midpoints_use_arc_length_and_cache_only_spatial_edge_curves() {
         assert!(hit.point().distance_to(p(5., 0., 0.)).unwrap() < 1e-11);
     }
     assert_eq!(cache.builds, 1);
-    assert_eq!(cache.midpoints[&id].features.len(), 4);
+    assert_eq!(cache.curves[&id].features.len(), 4);
 }
 
 #[test]
@@ -107,14 +107,14 @@ fn midpoint_cache_invalidates_on_edits_undo_tolerance_conversion_and_deletion() 
         query(&mut cache, &doc, 5.).unwrap().kind(),
         ObjectSnapKind::Point
     );
-    assert!(cache.midpoints.is_empty());
+    assert!(cache.curves.is_empty());
     doc.replace_object_geometries([(id, Geometry::NurbsCurve(curve(0.)))])
         .unwrap();
     assert!(query(&mut cache, &doc, 5.).is_some());
     assert_eq!(cache.builds, 5);
     doc.delete_object(id).unwrap();
     assert!(query(&mut cache, &doc, 5.).is_none());
-    assert!(cache.midpoints.is_empty());
+    assert!(cache.curves.is_empty());
 }
 
 #[test]

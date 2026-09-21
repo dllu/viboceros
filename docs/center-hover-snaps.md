@@ -78,6 +78,8 @@ target/priority rules.
 The [polygon Center follow-up](polygon-center-snaps.md) adds cached corner-average
 targets for closed linear boundaries and polygonal planar surfaces/faces without
 holes, using the same capture-distance and per-object priority rules.
+The [circular NURBS follow-up](circular-center-snaps.md) adds whole-span recognition
+for circular curves and surface/B-rep boundaries, including circular hole edges.
 
 A conservatively expanded model-space cube provides a cheap projected bounding
 box rejection. Overflowing or unprojectable corners disable this rejection.
@@ -91,8 +93,8 @@ exposed insufficient refinement at 40 steps; tests now include scales through
 
 This is a numerical UI query, **not a certified global closest-point solver**.
 Extremely narrow visible slivers at camera-plane crossings may be missed, and
-arbitrary scale/translation accuracy is not established. General rational-conic
-and curved-boundary Center recognition, B-rep conic-edge Center, occlusion,
+arbitrary scale/translation accuracy is not established. Elliptical NURBS and
+general curved-boundary Center recognition, occlusion,
 CPlane-relative Quad and broader priority/camera parity remain unfinished.
 
 Independent tests cover analytic distance witnesses, arc-sweep exclusion,

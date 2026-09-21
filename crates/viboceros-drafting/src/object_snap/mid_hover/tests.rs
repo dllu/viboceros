@@ -1,6 +1,7 @@
 use super::*;
 use crate::{ObjectSnapKind, ObjectSnapModes};
 use viboceros_document::Document;
+use viboceros_geometry::CurveSegment3;
 use viboceros_geometry::{
     Brep, Circle3, CircularArc3, Ellipse3, LineSegment, NurbsCurve, NurbsSurface,
     PointCloudProjection, PolyCurve3, Polyline3, Vector3, WeightedPoint3,
