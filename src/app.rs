@@ -27,6 +27,9 @@ use crate::viewport::{
 
 const MAX_LOG_ENTRIES: usize = 100;
 
+mod command_line;
+#[cfg(test)]
+use command_line::command_completions;
 mod align;
 mod angle;
 mod construction_plane;
@@ -1190,6 +1193,7 @@ pub struct VibocerosApp {
     commands: CommandRegistry,
     command_input: String,
     command_log: VecDeque<String>,
+    command_line: command_line::CommandLineState,
     viewports: [Viewport; 4],
     active_viewport: usize,
     osnap: bool,
@@ -1219,7 +1223,12 @@ impl VibocerosApp {
         }
         let mut command_log = VecDeque::new();
         command_log.push_back("Viboceros ready — enter Help for commands.".to_owned());
+        let (command_line, history_error) = command_line::CommandLineState::load();
+        if let Some(error) = history_error {
+            command_log.push_back(error);
+        }
         Self {
+            command_line,
             document: Document::default(),
             commands: CommandRegistry::with_builtins(),
             command_input: String::new(),
@@ -1246,6 +1255,7 @@ impl VibocerosApp {
 
     fn run_command(&mut self) {
         let input = self.command_input.trim().to_owned();
+        self.remember_command_input(&input);
         if !input.is_empty()
             && (self.try_run_plane_command(&input) || self.try_run_interface_command(&input))
         {
@@ -5129,182 +5139,6 @@ impl VibocerosApp {
             },
         }
     }
-
-    fn capture_global_command_typing(&mut self, root: &mut egui::Ui) {
-        if root.ctx().text_edit_focused()
-            || root.input(|input| input.modifiers.command || input.modifiers.alt)
-        {
-            return;
-        }
-        let typed = root.input_mut(|input| {
-            let mut typed = String::new();
-            input.events.retain(|event| {
-                if let egui::Event::Text(text) = event
-                    && text.chars().any(|character| !character.is_control())
-                {
-                    typed.push_str(text);
-                    false
-                } else {
-                    true
-                }
-            });
-            typed
-        });
-        if !typed.is_empty() {
-            self.queue_command_text(&typed);
-        }
-    }
-
-    fn queue_command_text(&mut self, typed: &str) {
-        self.command_input.push_str(typed);
-        self.command_focus_requested = true;
-    }
-
-    fn show_command_line(&mut self, root: &mut egui::Ui) {
-        egui::Panel::bottom("command_line")
-            .resizable(true)
-            .default_size(120.0)
-            .show(root, |ui| {
-                egui::ScrollArea::vertical()
-                    .stick_to_bottom(true)
-                    .max_height(82.0)
-                    .show(ui, |ui| {
-                        for line in &self.command_log {
-                            ui.label(line);
-                        }
-                    });
-                ui.separator();
-                ui.horizontal(|ui| {
-                    let label = if self.plane_prompt.is_some() {
-                        "CPlane"
-                    } else if let Some(prompt) = &self.object_prompt {
-                        prompt.label()
-                    } else if self.group_prompt.is_some() {
-                        "AddToGroup"
-                    } else {
-                        self.active_command
-                            .map_or("Command", InteractiveCommand::name)
-                    };
-                    ui.label(RichText::new(format!("{label}:")).strong());
-                    let command_input_id = ui.make_persistent_id("main_command_input");
-                    let tab = ui.memory(|memory| memory.focused() == Some(command_input_id))
-                        && ui.input_mut(|input| {
-                            input.consume_key(egui::Modifiers::NONE, egui::Key::Tab)
-                        });
-                    let response = ui.add(
-                        egui::TextEdit::singleline(&mut self.command_input)
-                            .id(command_input_id)
-                            .lock_focus(true)
-                            .desired_width(f32::INFINITY)
-                            .hint_text(if self.plane_prompt.is_some() {
-                                "Define the construction plane; Esc returns to the previous prompt"
-                            } else if let Some(prompt) = &self.object_prompt {
-                                prompt.hint()
-                            } else if let Some(prompt) = &self.group_prompt {
-                                prompt.hint()
-                            } else if self.active_command.is_some() {
-                                if self
-                                    .active_command
-                                    .is_some_and(InteractiveCommand::collects_curve_points)
-                                {
-                                    "Pick curve points; press Enter to finish or Esc to cancel"
-                                } else {
-                                    "Type coordinates or pick; Esc cancels"
-                                }
-                            } else {
-                                "Point 0,0,0 | Line 0,0,0 10,5,0"
-                            }),
-                    );
-                    if self.command_focus_requested {
-                        request_command_focus_at_end(
-                            ui.ctx(),
-                            command_input_id,
-                            &response,
-                            &self.command_input,
-                        );
-                        self.command_focus_requested = false;
-                    }
-                    if response.lost_focus()
-                        && ui.input(|input| input.key_pressed(egui::Key::Enter))
-                    {
-                        self.run_command();
-                        request_command_focus_at_end(
-                            ui.ctx(),
-                            command_input_id,
-                            &response,
-                            &self.command_input,
-                        );
-                    }
-                    if tab
-                        && let Some(completion) =
-                            command_completions(&self.commands, &self.command_input).first()
-                    {
-                        self.command_input.clear();
-                        self.command_input.push_str(completion);
-                        self.command_input.push(' ');
-                        request_command_focus_at_end(
-                            ui.ctx(),
-                            command_input_id,
-                            &response,
-                            &self.command_input,
-                        );
-                    }
-                });
-                let completions = command_completions(&self.commands, &self.command_input);
-                if !completions.is_empty() {
-                    let mut chosen = None;
-                    ui.horizontal_wrapped(|ui| {
-                        ui.label(RichText::new("Complete (Tab):").small());
-                        for completion in completions.into_iter().take(8) {
-                            if ui.small_button(completion).clicked() {
-                                chosen = Some(completion);
-                            }
-                        }
-                    });
-                    if let Some(completion) = chosen {
-                        self.command_input.clear();
-                        self.command_input.push_str(completion);
-                        self.command_input.push(' ');
-                        self.command_focus_requested = true;
-                    }
-                }
-            });
-    }
-}
-
-fn request_command_focus_at_end(
-    context: &egui::Context,
-    id: egui::Id,
-    response: &egui::Response,
-    text: &str,
-) {
-    response.request_focus();
-    let mut state = egui::TextEdit::load_state(context, id).unwrap_or_default();
-    let cursor = egui::text::CCursor::new(text.chars().count());
-    state
-        .cursor
-        .set_char_range(Some(egui::text::CCursorRange::one(cursor)));
-    egui::TextEdit::store_state(context, id, state);
-}
-
-fn command_completions(commands: &CommandRegistry, input: &str) -> Vec<&'static str> {
-    let input = input.trim_start();
-    if input.is_empty() || input.chars().any(char::is_whitespace) {
-        return Vec::new();
-    }
-    let prefix = input
-        .trim_start_matches(['\'', '_', '-'])
-        .to_ascii_lowercase();
-    let mut names = commands
-        .command_names()
-        .into_iter()
-        .chain(viboceros_command::interface::COMMAND_NAMES)
-        .chain(["CPlane"])
-        .filter(|name| name.to_ascii_lowercase().starts_with(&prefix))
-        .collect::<Vec<_>>();
-    names.sort_unstable();
-    names.dedup();
-    names
 }
 
 impl eframe::App for VibocerosApp {
@@ -5485,6 +5319,7 @@ mod tests {
     mod align;
     mod angle;
     mod bezier_selection;
+    mod command_line;
     mod construction_plane;
     mod distance;
     mod distribute;
@@ -5513,6 +5348,7 @@ mod tests {
             commands: CommandRegistry::with_builtins(),
             command_input: String::new(),
             command_log: VecDeque::new(),
+            command_line: Default::default(),
             viewports: Viewport::standard_views(),
             active_viewport: 0,
             osnap: true,
@@ -5618,14 +5454,14 @@ mod tests {
     }
 
     #[test]
-    fn command_completion_is_prefix_based_and_case_insensitive() {
+    fn command_completion_prioritizes_prefixes_and_is_case_insensitive() {
         let commands = CommandRegistry::with_builtins();
         assert_eq!(
-            command_completions(&commands, "pOlY"),
+            command_completions(&commands, "pOlY")[..2],
             ["Polygon", "Polyline"]
         );
         assert_eq!(
-            command_completions(&commands, "_eXtRuDeCrVt"),
+            command_completions(&commands, "_eXtRuDeCrVt")[..1],
             ["ExtrudeCrvToPoint"]
         );
         assert!(command_completions(&commands, "Point ").is_empty());

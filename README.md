@@ -34,6 +34,7 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 ```
 
 - [Command reference and examples](docs/commands/README.md)
+- [Command completion, history, and file paths](docs/command-line.md)
 - [Viewport controls and drafting](docs/interface.md)
 - [Viewport caching and performance checks](docs/viewport-caching.md)
 - [Opt-in offscreen GPU tests](docs/gpu-tests.md)

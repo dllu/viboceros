@@ -51,6 +51,7 @@ eframe = { version = "0.36.1", default-features = false, features = [
     "x11",
 ] }
 nalgebra.workspace = true
+serde_json.workspace = true
 viboceros-command.workspace = true
 viboceros-document.workspace = true
 viboceros-drafting.workspace = true
@@ -58,7 +59,6 @@ viboceros-geometry.workspace = true
 
 [dev-dependencies]
 pollster = "1.0.1"
-serde_json.workspace = true
 
 [profile.release]
 lto = "thin"

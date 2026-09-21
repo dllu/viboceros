@@ -166,12 +166,19 @@ impl Viewport {
         end: Option<Point3>,
         stroke: Stroke,
     ) {
-        if let (Some(start), Some(end)) = (
-            start.and_then(|p| self.project(p, rect)),
-            end.and_then(|p| self.project(p, rect)),
-        ) {
-            painter.line_segment([start, end], stroke);
+        if let (Some(start), Some(end)) = (start, end)
+            && let Some(segment) = self.grid_segment(rect, start, end)
+        {
+            painter.line_segment(segment, stroke);
         }
+    }
+
+    // Clip in model space first: a camera-crossing grid line still has a
+    // visible part. Then bound its screen coordinates before egui tessellates
+    // the stroke, avoiding enormous near-plane endpoints and lost precision.
+    fn grid_segment(&self, rect: Rect, start: Point3, end: Point3) -> Option<[Pos2; 2]> {
+        let [start, end] = self.project_segment(start, end, rect)?;
+        clip_drafting_line(start, end, rect, false)
     }
 
     pub(super) fn paint_draft_points(
@@ -323,4 +330,81 @@ pub(super) fn clip_drafting_line(
         return None;
     }
     super::screen::clip_line_to_rect(start, end, rect, extend)
+}
+
+#[cfg(test)]
+mod grid_tests {
+    use super::*;
+
+    #[test]
+    fn perspective_grid_crossing_camera_is_clipped_in_both_endpoint_orders() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        let mut view = Viewport::new(ViewKind::Perspective);
+        for yaw in [-0.6, 0., 0.6] {
+            for pitch in [-0.5, 0.0001, 0.5] {
+                view.orbit_yaw = yaw;
+                view.orbit_pitch = pitch;
+                let a = view.grid_point(-200., 0.).unwrap();
+                let b = view.grid_point(200., 0.).unwrap();
+                assert!(view.project(a, rect).is_some());
+                assert!(view.project(b, rect).is_none());
+                let clipped = view
+                    .grid_segment(rect, a, b)
+                    .expect("visible part of camera-crossing grid");
+                let reversed = view.grid_segment(rect, b, a).unwrap();
+                for point in clipped {
+                    assert!(point.is_finite() && rect.contains(point));
+                }
+                for (a, b) in clipped.into_iter().zip(reversed.into_iter().rev()) {
+                    assert!(a.distance(b) < 0.05, "{yaw} {pitch}: {a:?} != {b:?}");
+                }
+                let origin = view
+                    .project(view.grid_point(0., 0.).unwrap(), rect)
+                    .unwrap();
+                assert!(
+                    super::super::screen::point_segment_distance(origin, clipped[0], clipped[1])
+                        < 0.05
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn grid_strokes_are_bounded_and_fully_behind_camera_lines_are_omitted() {
+        let rect = Rect::from_min_size(Pos2::new(15., 25.), Vec2::new(800., 600.));
+        let mut view = Viewport::new(ViewKind::Perspective);
+        view.orbit_yaw = 0.;
+        view.orbit_pitch = 0.5;
+        assert!(
+            view.grid_segment(
+                rect,
+                view.grid_point(200., -20.).unwrap(),
+                view.grid_point(200., 20.).unwrap()
+            )
+            .is_none()
+        );
+        let context = egui::Context::default();
+        let output = context.run_ui(
+            egui::RawInput {
+                screen_rect: Some(rect),
+                ..Default::default()
+            },
+            |ui| {
+                view.paint_grid(ui.painter(), rect);
+            },
+        );
+        let mut lines = 0;
+        for shape in &output.shapes {
+            if let egui::Shape::LineSegment { points, .. } = &shape.shape {
+                lines += 1;
+                assert!(
+                    points
+                        .iter()
+                        .all(|point| point.is_finite() && rect.contains(*point))
+                );
+            }
+        }
+        assert!(lines > 10);
+        output.drop_without_applying_deltas();
+    }
 }
