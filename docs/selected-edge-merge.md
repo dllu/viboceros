@@ -53,17 +53,17 @@ Rhino parity, a performance ratio, or the interactive command's semantics.
 
 ## Command status
 
-Interactive `MergeEdge` is not yet implemented. Its Rhino-only diagnostic uses
-the separate `merge_edge_command` operation, so native requests cannot silently
-fall back to `MergeAllEdges`. The initial six preselected-component probes all
+Interactive [MergeEdge](commands/merge-edge.md) now uses real screen-space
+component picks, ambiguity/neighbor choices and one transactional replacement.
+Its separate `merge_edge_command` oracle operation runs that command natively,
+never falling back to `MergeAllEdges`. The initial six preselected-component probes all
 reached Rhino's edge-pick prompt and canceled without edits. Six typed world-point
 attempts also failed to select an edge. Both batches retain
 [requests and raw responses](../tools/rhino_oracle/diagnostics/merge_edge/),
 including command histories; they are not successful geometry-command comparisons.
 Preselection or a coordinate macro is not an accepted substitute for a command-time
-edge pick in these probes. Diagnostic requests require separately exported shared
-artifacts; native command replay is intentionally unsupported until the command
-exists.
+edge pick in these probes. Live Rhino requests require separately exported shared
+artifacts; native replay builds their documented source definitions.
 
 ### Real mouse picks and choices
 
@@ -89,9 +89,12 @@ in provenance, then compares every geometry field at `1e-9` absolute / `1e-10`
 relative epsilon. This distinguishes geometric agreement from raw ordering:
 the kernel retains surviving source entries, while the document command reorders
 some entries. No production geometry is reordered to fit these observations.
-These are not native command/UI equivalence tests. General picking, ambiguity
-handling, replacement ordering, angle limits and face-splitting behavior still
-need command-level implementation and verification.
+The native command now replays these 15 cases plus
+[21 additional observations](merge-edge-command-provenance.json). The latter
+establish endpoint choices, no-op/Enter cancellation, bounded angular candidate
+cutoffs, preselection cleanup and preservation of a kinky face. UI tests exercise
+actual pointer capture, overlap choices, cancellation and stale picks. They do
+not establish general Rhino picking/occlusion equivalence or exact table ordering.
 
 A later endpoint/no-op diagnostic timed out on Rhino's ambiguous-selection menu
 near a box corner. Its [request](../tools/rhino_oracle/diagnostics/merge_edge/ambiguous-request.json)
@@ -114,5 +117,5 @@ cargo test --release -p viboceros-oracle merge_edge
 python3 -m unittest tools.rhino_oracle.test_merge_edge_probe tools.rhino_oracle.test_merge_edges_probe
 ```
 
-Verification checkpoint: 2,945 release-mode Rust tests, seven offscreen GPU
-tests, 246 Python tests, formatting, and Clippy/Rustdoc with warnings denied.
+Verification checkpoint: 2,957 release-mode Rust tests, seven offscreen GPU
+tests, 247 Python tests, formatting, and Clippy/Rustdoc with warnings denied.

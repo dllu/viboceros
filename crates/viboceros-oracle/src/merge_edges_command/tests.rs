@@ -2,6 +2,7 @@ use super::*;
 
 mod face_history;
 mod face_splits;
+mod selected;
 
 fn close(a: &Value, b: &Value, path: &str) {
     crate::test_json::close(a, b, path, 1e-9, 1e-10);

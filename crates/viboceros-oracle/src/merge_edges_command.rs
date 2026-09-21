@@ -19,6 +19,35 @@ pub struct MergeEdgesFixture {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
+pub struct SelectedEdgeFixture {
+    #[serde(flatten)]
+    base: MergeEdgesFixture,
+    edge: usize,
+    choice: Option<String>,
+    pick: Option<String>,
+    #[serde(default)]
+    object_preselect: bool,
+}
+
+pub(super) fn run_selected(
+    f: &SelectedEdgeFixture,
+    construction: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    if f.base.preselect
+        || f.base.cancel
+        || f.pick.as_deref().is_some_and(|p| p != "mouse")
+        || f.choice.as_deref().is_some_and(|c| {
+            c != "Cancel" && c != "Auto" && viboceros_command::MergeEdgeChoice::parse(c).is_none()
+        })
+    {
+        return Err(ProbeError::FixtureInvariant(
+            "invalid selected-edge command fixture",
+        ));
+    }
+    run_impl(&f.base, construction, Some(f))
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(untagged)]
 enum Source {
     Brep {
@@ -54,6 +83,14 @@ pub(super) fn run(
     f: &MergeEdgesFixture,
     construction: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
+    run_impl(f, construction, None)
+}
+
+fn run_impl(
+    f: &MergeEdgesFixture,
+    construction: Tolerance,
+    selected_edge: Option<&SelectedEdgeFixture>,
+) -> Result<(Value, u64), ProbeError> {
     let invalid = || ProbeError::FixtureInvariant("invalid edge merge fixture");
     let order = f
         .selected
@@ -65,6 +102,7 @@ pub(super) fn run(
         || order.iter().any(|&i| i >= f.sources.len())
         || order.iter().collect::<BTreeSet<_>>().len() != order.len()
         || (f.cancel && f.preselect)
+        || (selected_edge.is_some() && order.len() != 1)
     {
         return Err(invalid());
     }
@@ -94,7 +132,7 @@ pub(super) fn run(
     }
     groups.push(document.add_group(Some("Shared".into()), ids.iter().copied())?);
     let registry = CommandRegistry::with_builtins();
-    if f.preselect {
+    if f.preselect || selected_edge.is_some_and(|f| f.object_preselect) {
         document.select_objects_direct(order.iter().map(|&i| ids[i]), SelectionMode::Replace)?;
     }
     let snapshot = |document: &Document| -> Result<Value, ProbeError> {
@@ -122,7 +160,7 @@ pub(super) fn run(
         Ok(json!(rows))
     };
     let before = snapshot(&document)?;
-    if !f.preselect {
+    if !f.preselect && selected_edge.is_none() {
         let prompt = registry
             .object_selection_prompt("MergeAllEdges")?
             .ok_or_else(invalid)?;
@@ -133,7 +171,24 @@ pub(super) fn run(
             .collect::<Vec<_>>();
         document.select_objects_direct(accepted, SelectionMode::Replace)?;
     }
-    let succeeded = if f.cancel {
+    let succeeded = if let Some(selected) = selected_edge {
+        document.clear_selection();
+        let selection = viboceros_command::MergeEdgeSelection::prepare(
+            &document,
+            ids[order[0]],
+            selected.edge,
+        )?;
+        let choice = selected.choice.as_deref().unwrap_or("All");
+        if matches!(choice, "Cancel" | "Auto") || selection.choices().is_empty() {
+            false
+        } else {
+            registry.execute(
+                &mut document,
+                &format!("MergeEdge {} {} {choice}", ids[order[0]], selected.edge),
+            )?;
+            true
+        }
+    } else if f.cancel {
         document.clear_selection();
         false
     } else {
@@ -154,7 +209,12 @@ pub(super) fn run(
     let mut result = json!({"before": before, "after": after, "succeeded": succeeded,
         "absolute_tolerance": tolerance.absolute(), "angular_tolerance": tolerance.angular()});
     if f.undo_redo {
-        let changed = document.undo_label() == Some("MergeAllEdges");
+        let changed = document.undo_label()
+            == Some(if selected_edge.is_some() {
+                "MergeEdge"
+            } else {
+                "MergeAllEdges"
+            });
         result["history_tested"] = json!(changed);
         if changed {
             for (command, key) in [("Undo", "undo"), ("Redo", "redo")] {

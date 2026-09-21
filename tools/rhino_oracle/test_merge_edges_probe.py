@@ -10,6 +10,43 @@ from .test_join_probe import Event
 
 
 class MergeEdgesProbeTests(unittest.TestCase):
+    def test_endpoint_angle_and_replacement_observations_are_retained_without_normalization(self):
+        root = Path(__file__).resolve().parents[2]
+        request = json.loads((root / "tools/rhino_oracle/fixtures/merge_edge_command.json").read_text())
+        observed = json.loads((root / "tools/rhino_oracle/observations/merge_edge_command.json").read_text())
+        provenance = json.loads((root / "docs/merge-edge-command-provenance.json").read_text())
+        for path, digest in provenance["retained_file_sha256"].items():
+            self.assertEqual(hashlib.sha256((root / path).read_bytes()).hexdigest(), digest)
+        for operation in request["operations"]:
+            operation["sources"][0]["brep"]["artifact_path"] = "/owned/source.3dm"
+        merge_edges_probe.validate_mouse_request(request)
+        self.assertEqual(len(request["operations"]), 21)
+        self.assertEqual(len(observed["results"]), 21)
+        counts = dict(success=0, angle_choices=0, preselected=0, creases=0)
+        for operation, result in zip(request["operations"], observed["results"]):
+            self.assertEqual(operation["id"], result["id"])
+            value = result["value"]
+            self.assertFalse(value["after"][0]["selected"])
+            if operation["id"].startswith("planar-kink-"):
+                counts["angle_choices"] += int("Choose option" in value["command_history"])
+            if operation.get("object_preselect"):
+                counts["preselected"] += 1
+                self.assertTrue(value["before"][0]["selected"])
+            if operation["id"].startswith("crease-"):
+                counts["creases"] += 1
+                self.assertEqual(len(value["after"][0]["geometry"]["brep"]["faces"]), 1)
+            if value["succeeded"]:
+                counts["success"] += 1
+                self.assertTrue(value["history_tested"])
+                before = copy.deepcopy(value["before"])
+                before[0]["selected"] = False
+                self.assertEqual(value["undo"], before)
+                self.assertEqual(value["redo"], value["after"])
+            else:
+                self.assertFalse(value["history_tested"])
+                self.assertEqual(value["before"][0]["geometry"], value["after"][0]["geometry"])
+        self.assertEqual(counts, dict(success=8, angle_choices=5, preselected=3, creases=2))
+
     def test_retained_mouse_choices_preserve_identity_attributes_and_complete_history(self):
         root = Path(__file__).resolve().parents[2]
         directory = root / "tools/rhino_oracle/diagnostics/merge_edge"
@@ -57,7 +94,7 @@ class MergeEdgesProbeTests(unittest.TestCase):
         operation = dict(op="merge_edge_command", id="box", edge=13, pick="mouse",
                          sources=[dict(brep=dict(artifact_path="/owned/source.3dm"))])
         self.assertEqual(merge_edges_probe.mouse_command(operation), "_-MergeEdge _Pause _All _Enter")
-        for choice in ("EdgeA", "EdgeB", "Both", "All"):
+        for choice in ("Edge", "EdgeA", "EdgeB", "Both", "All"):
             self.assertEqual(merge_edges_probe.mouse_command(dict(operation, choice=choice)),
                              "_-MergeEdge _Pause _" + choice + " _Enter")
         for choice, suffix in (("Cancel", "_Cancel"), ("Auto", "_Enter")):
@@ -93,7 +130,8 @@ class MergeEdgesProbeTests(unittest.TestCase):
         valid = {"sources": [{"brep": {"artifact_path": "/owned/source.3dm"}}]}
         updates = [{"sources": s} for s in (None, [], {}, [{}] * 33, [None], [{"brep": {}}], [{"type": "unknown"}])]
         updates += [{"selected": s} for s in ([], [True], [0.0], [-1], [1], [0,0], "0")]
-        updates += [{key: value} for key in ("preselect", "undo_redo", "cancel", "trace_commands") for value in (0, 1, "Yes", None)]
+        updates += [{key: value} for key in ("preselect", "undo_redo", "cancel", "trace_commands", "object_preselect") for value in (0, 1, "Yes", None)]
+        updates += [dict(object_preselect=True), dict(op="merge_edge_command", edge=0, pick="point", object_preselect=True)]
         updates += [{key: value} for key in ("absolute_tolerance", "angular_tolerance") for value in (True, "1", 0, -1, float("nan"), float("inf"))]
         updates += [{"preselect": True, "cancel": True}]
         updates += [{"op": "merge_edge_command", "edge": edge, "preselect": True} for edge in (None, True, -1, 0.5, "0")]
@@ -115,7 +153,7 @@ class MergeEdgesProbeTests(unittest.TestCase):
             "selected": [1], "edge": 2, "preselect": True}), (sources, [1]))
         self.assertEqual(merge_edges_probe.validate({"op": "merge_edge_command", "sources": sources,
             "selected": [1], "edge": 2, "pick": "point"}), (sources, [1]))
-        for choice in ("EdgeA", "EdgeB", "Both", "All", "Cancel", "Auto"):
+        for choice in ("Edge", "EdgeA", "EdgeB", "Both", "All", "Cancel", "Auto"):
             self.assertEqual(merge_edges_probe.validate({"op": "merge_edge_command", "sources": sources,
                 "selected": [1], "edge": 2, "pick": "mouse", "choice": choice}), (sources, [1]))
 

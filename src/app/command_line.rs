@@ -39,6 +39,7 @@ impl VibocerosApp {
         self.active_command.is_none()
             && self.object_prompt.is_none()
             && self.group_prompt.is_none()
+            && self.merge_edge_prompt.is_none()
             && self.plane_prompt.is_none()
     }
 
@@ -134,6 +135,8 @@ impl VibocerosApp {
                         prompt.label()
                     } else if self.group_prompt.is_some() {
                         "AddToGroup"
+                    } else if self.merge_edge_prompt.is_some() {
+                        "MergeEdge"
                     } else {
                         self.active_command
                             .map_or("Command", InteractiveCommand::name)
@@ -189,6 +192,8 @@ impl VibocerosApp {
                                 prompt.hint()
                             } else if let Some(prompt) = &self.group_prompt {
                                 prompt.hint()
+                            } else if let Some(prompt) = &self.merge_edge_prompt {
+                                prompt.hint()
                             } else if self.active_command.is_some() {
                                 if self
                                     .active_command
@@ -226,6 +231,7 @@ impl VibocerosApp {
                         );
                     }
                 });
+                self.show_merge_edge_choices(ui);
                 let idle = self.command_line_idle();
                 self.command_line
                     .completion

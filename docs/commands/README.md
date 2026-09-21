@@ -16,6 +16,7 @@ Rhino's complete command set is still a work in progress.
 - [Surfaces and solids](surfaces.md)
 - [Cap planar surface/B-rep holes](cap.md)
 - [Merge redundant surface/B-rep edges](merge-edges.md)
+- [Merge a selected edge or its immediate neighbors](merge-edge.md)
 - [World/CPlane bounding boxes](bounding-box.md)
 - [Polygon meshes](meshes.md)
 - [Mesh conversion to NURBS](mesh-to-nurb.md)
@@ -191,6 +192,7 @@ Join
 Join JoinDisjointMeshes=Yes
 JoinCopy
 MergeAllEdges
+MergeEdge object-id edge-index [Edge|EdgeA|EdgeB|Both|All]
 Explode
 Length
 Curvature MarkCurvature=No 2,0,0

@@ -1,0 +1,108 @@
+{
+  "cases": 21,
+  "engine_version": "8.32.26160.13001",
+  "scope": "Additional owned-Xvfb mouse probes: endpoint choices and Enter cancellation, angular candidate cutoffs, kinked-face preservation, whole-object preselection cleanup and Undo/Redo. Native command replay additionally covers the earlier 15 mouse cases.",
+  "shared_artifact_sha256": {
+    "quadratic-fixed.3dm": "5d0d1fcd6dbb965883a88b1e9441a84f1f063e00721dbaf8cc3ac5d668e918c1",
+    "planar-kink-0.1-doc-1e-10.3dm": "fe90ade328f4a49336d4614349a6543d2bce845a38a744b56abe179a62b3470b",
+    "planar-kink-0.1-doc-0.0174533.3dm": "8142107f1aa898529f7983479738200ca7ee13768228428baac814d1c784b56a",
+    "planar-kink-0.1-doc-0.0872665.3dm": "75a848cd4088658ea7cab3934ccd6cdbca545b8834d1b25a8cae78d9a869bfe1",
+    "planar-kink-0.49-doc-1e-10.3dm": "852eeb907760d343ed9b8d0543d0a4223b0997d54e3559a54420d5485449d65c",
+    "planar-kink-0.49-doc-0.0174533.3dm": "17eb8a385839007b13174ad0136f3fefa845254bf94120f68f8d42e9770e62ec",
+    "planar-kink-0.49-doc-0.0872665.3dm": "e37e293e3d96241018c683bf9b2d8eee1d2cd7aed8ad5fb659421e9691ca620b",
+    "planar-kink-1.01-doc-1e-10.3dm": "197283796ffc7513d35b1d3cd35fe00cad4e4772e78ba12712802b746410f16b",
+    "planar-kink-1.01-doc-0.0174533.3dm": "9d655435f05d5b34c4395c1a3487b02517757a77851454646306bb9a19145ca8",
+    "planar-kink-1.01-doc-0.0872665.3dm": "14fefb02398645b4e8f25ab59fc994e05c075a5365a6ff58fbfe3aad6d70415f",
+    "crease.3dm": "f2924e1dec1be6068eba4192f7905b7251b1cf7bae5e9705e0d0f6346e50e53f"
+  },
+  "raw_response_sha256": {
+    "endpoints-rhino.json": "56df3314c68b5a15d61ec694aa25d28e779be6bebd3f7921db0fcd72a6d3597e",
+    "endpoint-choices-rhino.json": "d4054ff6043a4483ace9af888595b2555e89880d2156a67f665b1af5f0b9ec15",
+    "angles-rhino.json": "fdb1d303b8eda19d99ab67fc6d94e6653c34f6711d1ec4831ce2a41bf2237635",
+    "policy-rhino.json": "ee3ecaf565b8a0ad2d6edfaedce4b4e521c0ffc0475947b09b2afb58dd65b650"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/merge_edge_command.json": "91d021b345b634ac7f15d79376167d60bcd6f853839cef54165a0fb3fdeb1e14",
+    "tools/rhino_oracle/observations/merge_edge_command.json": "ba70f999b10ef9edc78a7b50ca9d6265f8d0a0ee39c791ae33cab5b5af4f2968"
+  },
+  "kernel_edge_permutations": {
+    "quadratic-auto-0-edge": [
+      7,
+      0,
+      1,
+      2,
+      3,
+      4,
+      8,
+      5,
+      6
+    ],
+    "quadratic-auto-0-all": [
+      3,
+      0,
+      1,
+      2,
+      5,
+      6,
+      4
+    ],
+    "quadratic-auto-4-edge": [
+      0,
+      1,
+      2,
+      3,
+      7,
+      8,
+      4,
+      5,
+      6
+    ],
+    "quadratic-auto-4-all": [
+      3,
+      0,
+      1,
+      2,
+      5,
+      6,
+      4
+    ],
+    "crease-Both": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "crease-All": [
+      0,
+      3,
+      1,
+      2
+    ],
+    "preselected-Edge": [
+      7,
+      0,
+      1,
+      2,
+      3,
+      4,
+      8,
+      5,
+      6
+    ],
+    "preselected-All": [
+      3,
+      0,
+      1,
+      2,
+      5,
+      6,
+      4
+    ]
+  },
+  "limitations": [
+    "Native output retains its source-order edge tables. Replay compares every geometry and object/history field after only explicit measured edge-table permutations. This is not exact table-order parity.",
+    "Auto sends Enter after the real seed click. Endpoint choices cancel without an edit, and unmergeable picks return to edge picking before Enter cancels. Angular cutoffs are candidate-availability observations, not successful edit comparisons.",
+    "The kinked-face cases have a 2.5 degree U crease with 0.5 degree document tolerance; selected vertical boundary merging leaves that face intact, unlike MergeAllEdges. Broader surface replacement policies are not established."
+  ]
+}

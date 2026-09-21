@@ -50,6 +50,7 @@ pub(super) struct DisplayGeometry {
     wires: OnceCell<Vec<[Point3; 2]>>,
     mesh: OnceCell<Option<TriangleMesh>>,
     normals: OnceCell<Vec<[NaVector3<Real>; 3]>>,
+    edges: OnceCell<Vec<Vec<[Point3; 2]>>>,
 }
 
 impl DisplayGeometry {
@@ -61,6 +62,7 @@ impl DisplayGeometry {
             wires: OnceCell::new(),
             mesh: OnceCell::new(),
             normals: OnceCell::new(),
+            edges: OnceCell::new(),
         }
     }
 
@@ -146,6 +148,35 @@ impl DisplayGeometry {
             self.mesh()
                 .map(scene::smooth_corner_normals)
                 .unwrap_or_default()
+        })
+    }
+
+    /// Boundary components only: surface isocurves are display aids, not edges.
+    /// Sampling matches the displayed wires and is shared across viewports.
+    pub(super) fn edges(&self) -> &[Vec<[Point3; 2]>] {
+        self.edges.get_or_init(|| {
+            let converted;
+            let brep = match &self.geometry {
+                Geometry::Brep(brep) => brep,
+                Geometry::NurbsSurface(surface) => {
+                    let Ok(brep) =
+                        viboceros_geometry::Brep::try_surface_face(surface.clone(), self.tolerance)
+                    else {
+                        return Vec::new();
+                    };
+                    converted = brep;
+                    &converted
+                }
+                _ => return Vec::new(),
+            };
+            brep.edges()
+                .iter()
+                .map(|edge| {
+                    let mut segments = Vec::new();
+                    edge.curve().visit_segments(|a, b| segments.push([a, b]));
+                    segments
+                })
+                .collect()
         })
     }
 }

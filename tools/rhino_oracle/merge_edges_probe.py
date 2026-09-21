@@ -55,7 +55,7 @@ def validate(operation):
             any(type(i) is not int or not 0 <= i < len(sources) for i in order) or
             len(set(order)) != len(order)):
         raise ValueError("invalid edge merge selection")
-    for key in ("preselect", "undo_redo", "cancel", "trace_commands"):
+    for key in ("preselect", "undo_redo", "cancel", "trace_commands", "object_preselect"):
         if type(operation.get(key, False)) is not bool:
             raise ValueError("edge merge options must be boolean")
     if operation.get("cancel", False) and operation.get("preselect", False):
@@ -63,8 +63,10 @@ def validate(operation):
     selected_edge = operation.get("op") == "merge_edge_command"
     if selected_edge != ("edge" in operation):
         raise ValueError("selected edge requests require the separate merge_edge_command operation")
+    if operation.get("object_preselect", False) and (not selected_edge or operation.get("pick") != "mouse"):
+        raise ValueError("whole-object preselection requires an edge mouse probe")
     if "choice" in operation and (not selected_edge or operation.get("pick") != "mouse" or
-            operation["choice"] not in ("EdgeA", "EdgeB", "Both", "All", "Cancel", "Auto")):
+            operation["choice"] not in ("Edge", "EdgeA", "EdgeB", "Both", "All", "Cancel", "Auto")):
         raise ValueError("edge merge choice requires a mouse pick and a supported choice")
     if selected_edge:
         edge = operation["edge"]
@@ -199,6 +201,9 @@ def run(operation, tolerance, host):
             if document.ModelAngleToleranceRadians != float(operation["angular_tolerance"]): raise ValueError("edge merge angular tolerance was not accepted")
         eligible = any(isinstance(owned[i], (Rhino.Geometry.Brep, Rhino.Geometry.Surface)) for i in order)
         command = "MergeEdge" if "edge" in operation else "MergeAllEdges"
+        if operation.get("object_preselect", False):
+            for i in order:
+                if not document.Objects.Select(ids[i]): raise ValueError("edge merge whole-object preselection failed")
         mouse_pick = None
         if "edge" in operation:
             obj = document.Objects.FindId(ids[order[0]])

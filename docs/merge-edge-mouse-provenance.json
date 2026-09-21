@@ -158,6 +158,6 @@
     "A subsequent 24-case batch repeated the 15 choice cases and added endpoint/no-op Auto diagnostics. It timed out at box-0-seed13-auto-first: the click near a corner opened Rhino's ambiguous Selection Menu, not an accepted component selection. The entire batch is excluded; its request and timeout are retained as ambiguous-request.json and ambiguous-timeout.txt. No heuristic extra click resolved that menu.",
     "Initial unprefixed MergeEdge mouse probe timed out because the post-pick menu awaited another input. A second diagnostic selected All manually on three sources; all three succeeded and Undo/Redo restored complete snapshots. These are not included in the 15-case batch.",
     "Using -MergeEdge presents the choice at the command line. The retained batch uses real clicks only for selecting the seed, then EdgeA/EdgeB/Both/All/Cancel macros. The host never injects an Enter.",
-    "The retained request omits temporary artifact paths. Recreate the three shared sources using the brep_merge_edge exporter, verify their round trips, then attach those paths before running the Rhino-only command diagnostic. Native merge_edge_command remains unsupported."
+    "The retained request omits temporary artifact paths. Recreate the three shared sources using the brep_merge_edge exporter, verify their round trips, then attach those paths before live Rhino execution. Native merge_edge_command was unsupported at this recording checkpoint; the current implementation replays these observations as documented in commands/merge-edge.md."
   ]
 }
