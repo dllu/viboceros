@@ -197,6 +197,12 @@ class OracleClient:
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
         interaction = None
+        if any(op.get("op") == "merge_edge_command" and op.get("pick") == "mouse"
+               for op in request.get("operations", [])):
+            from .group_picking import IdlePicker
+            from .merge_edges_probe import validate_mouse_request
+            validate_mouse_request(request)
+            interaction = IdlePicker()
         if any(operation.get("op") in ("group_picking", "mesh_split_picking", "mesh_explode_picking") for operation in request.get("operations", [])):
             from .group_picking import IdlePicker, validate_request
             validate_request(request)

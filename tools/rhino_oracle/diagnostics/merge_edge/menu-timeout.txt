@@ -1,0 +1,14 @@
+oracle failed: Rhino probe did not respond within 240 seconds (owned_pids=[107380, 107594, 107846], owned_window='0x00a00006', ui_fallback_sent=True)
+Worker progress:
+worker: started
+worker: started
+worker: request loaded
+operation box-0-seed13: start
+edge merge command: _MergeEdge _Pause _Enter
+PICK box-0-seed13 1224 623
+Launcher output:
+Launched Rhino 8 through direct ARM64 Wine
+Wine: /home/dllu/wines/build/wine/wine-install-rhino-uxtheme/bin/wine
+WINEPREFIX: /home/dllu/wines/prefixes/rhino/prefix
+Executable: /home/dllu/wines/prefixes/rhino/prefix/drive_c/Program Files/Rhino 8/System/Rhino.exe
+Launcher log: /home/dllu/wines/prefixes/rhino/logs/rhino-arm64-wine-direct.log

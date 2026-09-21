@@ -8,6 +8,20 @@ mod selected_tests;
 #[cfg(test)]
 mod tests;
 
+/// How far to extend a selected edge through smooth valence-two vertices.
+/// Ends refer to the seed's spatial curve orientation, not a face's trim sense.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum BrepEdgeMergeScope {
+    /// Merge at most the immediate neighbor at the seed's start.
+    Start,
+    /// Merge at most the immediate neighbor at the seed's end.
+    End,
+    /// Merge at most one immediate neighbor at each end, end before start.
+    Both,
+    /// Recursively visit both ends until no certified merge remains.
+    Chain,
+}
+
 struct Edge {
     geometry: BrepEdge,
     uses: Vec<usize>,
@@ -80,13 +94,31 @@ impl Brep {
         angle_tolerance: Real,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        self.try_merge_edge_with_scope(edge, BrepEdgeMergeScope::Chain, angle_tolerance, tolerance)
+    }
+
+    /// Coalesces the selected edge with immediate neighbors or its whole chain.
+    /// This has [`Self::try_merge_edge`]'s atomicity and preservation guarantees.
+    /// Limited scopes visit only the seed's original endpoints, never the newly
+    /// exposed endpoints. Ineligible neighbors are skipped; if none can merge,
+    /// an equal B-rep is returned. No unrelated edges are simplified or coalesced.
+    ///
+    /// This is a geometry operation, not a document command: output tables keep
+    /// surviving source entries before the new edge, and faces are not split.
+    pub fn try_merge_edge_with_scope(
+        &self,
+        edge: usize,
+        scope: BrepEdgeMergeScope,
+        angle_tolerance: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
         merge_with_cleanup(
             self,
             angle_tolerance,
             tolerance,
             &mut Budget(MAX_WORK),
             false,
-            Some(edge),
+            Some((edge, scope)),
         )
     }
 
@@ -131,7 +163,7 @@ fn merge_with_cleanup(
     tolerance: Tolerance,
     budget: &mut Budget,
     simplify_lines: bool,
-    seed: Option<usize>,
+    seed: Option<(usize, BrepEdgeMergeScope)>,
 ) -> Result<Brep, GeometryError> {
     if !angle.is_finite() || !(0.0..=std::f64::consts::PI).contains(&angle) {
         return Err(invalid("edge merge angle must be in [0, pi] radians"));
@@ -139,18 +171,29 @@ fn merge_with_cleanup(
     if !source.is_manifold() {
         return Err(invalid("edge merging requires manifold input"));
     }
-    if seed.is_some_and(|e| e >= source.edges.len()) {
+    if seed.is_some_and(|(e, _)| e >= source.edges.len()) {
         return Err(invalid("edge merge references a missing edge"));
     }
     let mut state = State::new(source, budget)?;
     let mut changed = false;
-    let originals = seed.map_or(0..source.edges.len(), |e| e..e + 1);
+    let originals = seed.map_or(0..source.edges.len(), |(e, _)| e..e + 1);
+    let scope = seed.map_or(BrepEdgeMergeScope::Chain, |(_, scope)| scope);
     for original in originals {
         let mut current = original;
+        let mut available = [
+            scope != BrepEdgeMergeScope::End,
+            scope != BrepEdgeMergeScope::Start,
+        ];
         while let Some(edge) = &state.edges[current] {
             let vertices = edge.geometry.vertices;
             let mut merged = None;
             for end in [1, 0] {
+                if !available[end] {
+                    continue;
+                }
+                if scope != BrepEdgeMergeScope::Chain {
+                    available[end] = false;
+                }
                 let vertex = vertices[end];
                 let incident = &state.incidence[vertex];
                 if state.singular[vertex] || incident.len() != 2 || incident[0] == incident[1] {

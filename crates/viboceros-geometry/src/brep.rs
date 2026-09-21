@@ -21,7 +21,9 @@ mod face_split;
 mod incidence;
 mod isocurves;
 mod join_edges;
-pub use join_edges::{BrepJoinComponent, BrepJoinReport, join_breps, join_breps_with_report};
+pub use join_edges::{
+    BrepEdgeMergeScope, BrepJoinComponent, BrepJoinReport, join_breps, join_breps_with_report,
+};
 mod loft;
 mod mass_properties;
 mod morph;

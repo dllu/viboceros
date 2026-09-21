@@ -15,6 +15,13 @@ their relative order, and the merged edge follows them. Vertex/edge indices can
 change when unused entries are compacted. The common kernel's degree-16 and
 exact-UV certification limits still apply.
 
+`try_merge_edge_with_scope` additionally accepts `BrepEdgeMergeScope::Start`,
+`End`, `Both` or `Chain`. Limited scopes visit each chosen original endpoint
+once, merging at most one neighbor there; they never continue through newly
+exposed endpoints. Ends follow the seed's spatial curve, including when that
+curve is reversed. `Chain` is the existing recursive operation. All scopes
+share the same preservation certificates, work budget and atomic validation.
+
 ## Public API evidence
 
 [45 fixtures](../tools/rhino_oracle/fixtures/brep_merge_edge.json),
@@ -54,14 +61,48 @@ attempts also failed to select an edge. Both batches retain
 [requests and raw responses](../tools/rhino_oracle/diagnostics/merge_edge/),
 including command histories; they are not successful geometry-command comparisons.
 Preselection or a coordinate macro is not an accepted substitute for a command-time
-edge pick in these probes. Actual component picking, repeated edits, selection
-and history need their own observations and UI integration. Diagnostic requests
-require separately exported shared artifacts; native replay is intentionally
-unsupported until the command exists.
+edge pick in these probes. Diagnostic requests require separately exported shared
+artifacts; native command replay is intentionally unsupported until the command
+exists.
+
+### Real mouse picks and choices
+
+[15 requests](../tools/rhino_oracle/diagnostics/merge_edge/mouse-request.json),
+[complete responses](../tools/rhino_oracle/diagnostics/merge_edge/mouse-response.json)
+and [provenance](merge-edge-mouse-provenance.json) now record actual owned-window
+clicks on interior split edges of a box, a quadratic surface and a weighted seam.
+The host resolves only newly owned process windows and sends one click per unique
+worker marker. Dedicated, single-iteration requests and validated case IDs prevent
+marker injection. Projected coordinates must lie inside the owned viewport.
+
+The ordinary command opens an additional choice menu after the click. The
+scriptable `-MergeEdge` exposes `EdgeA`, `EdgeB`, `Both` and `All` at the command
+line. On these three sources they respectively remove one start neighbor, one
+end neighbor, two immediate neighbors, or all three redundant chain edges.
+Cancel at that choice leaves complete snapshots unchanged and creates no history
+entry. Each successful choice ends the command, preserves identity, attributes
+and group memberships, leaves the object unselected, and restores the complete
+before/after snapshots with one Undo/Redo pair.
+
+The scoped kernel comparison uses the **explicit edge-table permutations** listed
+in provenance, then compares every geometry field at `1e-9` absolute / `1e-10`
+relative epsilon. This distinguishes geometric agreement from raw ordering:
+the kernel retains surviving source entries, while the document command reorders
+some entries. No production geometry is reordered to fit these observations.
+These are not native command/UI equivalence tests. General picking, ambiguity
+handling, replacement ordering, angle limits and face-splitting behavior still
+need command-level implementation and verification.
+
+A later endpoint/no-op diagnostic timed out on Rhino's ambiguous-selection menu
+near a box corner. Its [request](../tools/rhino_oracle/diagnostics/merge_edge/ambiguous-request.json)
+and [timeout](../tools/rhino_oracle/diagnostics/merge_edge/ambiguous-timeout.txt)
+are retained separately; that entire batch is excluded from the 15 observations.
+The driver does not guess which item in a selection menu to accept.
 
 ## Verification
 
-Native tests exercise all seed positions, preservation of unrelated split
+Native tests exercise limited and recursive scopes, reversed spatial ends,
+all seed positions, preservation of unrelated split
 chains, open/solid topology, closed circles and seams, invalid inputs, work
 limits and no-op identity. Oracle tests replay the full retained API records.
 Python tests check validation before host access, disposal on each failure path,
@@ -70,8 +111,8 @@ and unique owned artifacts even when callers reuse the same Python dictionaries.
 ```sh
 cargo test --release -p viboceros-geometry selected_tests
 cargo test --release -p viboceros-oracle merge_edge
-python3 -m unittest tools.rhino_oracle.test_merge_edge_probe
+python3 -m unittest tools.rhino_oracle.test_merge_edge_probe tools.rhino_oracle.test_merge_edges_probe
 ```
 
-Verification checkpoint: 2,941 release-mode Rust tests, seven offscreen GPU
-tests, 243 Python tests, formatting, and Clippy/Rustdoc with warnings denied.
+Verification checkpoint: 2,945 release-mode Rust tests, seven offscreen GPU
+tests, 246 Python tests, formatting, and Clippy/Rustdoc with warnings denied.

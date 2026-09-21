@@ -1,0 +1,59 @@
+oracle failed: Rhino probe did not respond within 180 seconds (owned_pids=[112823, 113292], owned_window='0x00a00006', ui_fallback_sent=True)
+Worker progress:
+worker: started
+worker: started
+worker: request loaded
+operation box-0-seed13-edgea: start
+edge merge command: _-MergeEdge _Pause _EdgeA _Enter
+PICK box-0-seed13-edgea 1224 623
+operation box-0-seed13-edgeb: start
+edge merge command: _-MergeEdge _Pause _EdgeB _Enter
+PICK box-0-seed13-edgeb 1224 623
+operation box-0-seed13-both: start
+edge merge command: _-MergeEdge _Pause _Both _Enter
+PICK box-0-seed13-both 1224 623
+operation box-0-seed13-all: start
+edge merge command: _-MergeEdge _Pause _All _Enter
+PICK box-0-seed13-all 1224 623
+operation box-0-seed13-cancel: start
+edge merge command: _-MergeEdge _Pause _Cancel
+PICK box-0-seed13-cancel 1224 623
+operation quadratic-seed5-edgea: start
+edge merge command: _-MergeEdge _Pause _EdgeA _Enter
+PICK quadratic-seed5-edgea 1354 464
+operation quadratic-seed5-edgeb: start
+edge merge command: _-MergeEdge _Pause _EdgeB _Enter
+PICK quadratic-seed5-edgeb 1354 464
+operation quadratic-seed5-both: start
+edge merge command: _-MergeEdge _Pause _Both _Enter
+PICK quadratic-seed5-both 1354 464
+operation quadratic-seed5-all: start
+edge merge command: _-MergeEdge _Pause _All _Enter
+PICK quadratic-seed5-all 1354 464
+operation quadratic-seed5-cancel: start
+edge merge command: _-MergeEdge _Pause _Cancel
+PICK quadratic-seed5-cancel 1354 464
+operation seam-quadratic-1-seed4-edgea: start
+edge merge command: _-MergeEdge _Pause _EdgeA _Enter
+PICK seam-quadratic-1-seed4-edgea 1375 488
+operation seam-quadratic-1-seed4-edgeb: start
+edge merge command: _-MergeEdge _Pause _EdgeB _Enter
+PICK seam-quadratic-1-seed4-edgeb 1375 488
+operation seam-quadratic-1-seed4-both: start
+edge merge command: _-MergeEdge _Pause _Both _Enter
+PICK seam-quadratic-1-seed4-both 1375 488
+operation seam-quadratic-1-seed4-all: start
+edge merge command: _-MergeEdge _Pause _All _Enter
+PICK seam-quadratic-1-seed4-all 1375 488
+operation seam-quadratic-1-seed4-cancel: start
+edge merge command: _-MergeEdge _Pause _Cancel
+PICK seam-quadratic-1-seed4-cancel 1375 488
+operation box-0-seed13-auto-first: start
+edge merge command: _-MergeEdge _Pause _Enter
+PICK box-0-seed13-auto-first 1183 607
+Launcher output:
+Launched Rhino 8 through direct ARM64 Wine
+Wine: /home/dllu/wines/build/wine/wine-install-rhino-uxtheme/bin/wine
+WINEPREFIX: /home/dllu/wines/prefixes/rhino/prefix
+Executable: /home/dllu/wines/prefixes/rhino/prefix/drive_c/Program Files/Rhino 8/System/Rhino.exe
+Launcher log: /home/dllu/wines/prefixes/rhino/logs/rhino-arm64-wine-direct.log

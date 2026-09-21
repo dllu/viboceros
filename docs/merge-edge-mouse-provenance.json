@@ -1,0 +1,163 @@
+{
+  "cases": 15,
+  "engine_version": "8.32.26160.13001",
+  "scope": "Actual owned-window edge clicks followed by scriptable MergeEdge choices. These are command observations, not native command equivalence or performance measurements.",
+  "shared_artifact_sha256": {
+    "box-0-fixed.3dm": "67a051086e4b3f517121d96648fc1deb320f8a88922e9eed0f73d5758ad52fd9",
+    "quadratic-fixed.3dm": "5d0d1fcd6dbb965883a88b1e9441a84f1f063e00721dbaf8cc3ac5d668e918c1",
+    "seam-quadratic-1-fixed.3dm": "31d2450f2b8c3652811fe9f87972e64dfc6a93989195064ec3f621fc304c6805"
+  },
+  "raw_response_sha256": "fa4630df0d82d8c73fecf0e5baed7650cbfe216ad2a20f928963707dce0a80b8",
+  "retained_file_sha256": {
+    "tools/rhino_oracle/diagnostics/merge_edge/mouse-request.json": "15426b34910115c4276976ee3f67ea717651e90519ae7554244b2a96542f69c0",
+    "tools/rhino_oracle/diagnostics/merge_edge/mouse-response.json": "2478341613fc3c5b551168409bd668ab915d63e952719f009765832046f6f138"
+  },
+  "kernel_edge_permutations": {
+    "box-0-seed13-edgea": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      15,
+      16,
+      13,
+      14
+    ],
+    "box-0-seed13-edgeb": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      15,
+      16,
+      12,
+      13,
+      14
+    ],
+    "box-0-seed13-both": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      13,
+      15,
+      14,
+      12
+    ],
+    "box-0-seed13-all": [
+      12,
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      14,
+      13,
+      11
+    ],
+    "quadratic-seed5-edgea": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      7,
+      8,
+      5,
+      6
+    ],
+    "quadratic-seed5-edgeb": [
+      0,
+      1,
+      2,
+      3,
+      7,
+      8,
+      4,
+      5,
+      6
+    ],
+    "quadratic-seed5-both": [
+      0,
+      1,
+      2,
+      3,
+      5,
+      7,
+      6,
+      4
+    ],
+    "quadratic-seed5-all": [
+      3,
+      0,
+      1,
+      2,
+      5,
+      6,
+      4
+    ],
+    "seam-quadratic-1-seed4-edgea": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "seam-quadratic-1-seed4-edgeb": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "seam-quadratic-1-seed4-both": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "seam-quadratic-1-seed4-all": [
+      0,
+      2,
+      1
+    ]
+  },
+  "permutation_scope": "Explicit edge-table correspondences for testing kernel geometry separately from native document command behavior. Native kernel source-order tables are NOT claimed to match command output order. Every other geometry field is compared without normalization.",
+  "preparation_notes": [
+    "A subsequent 24-case batch repeated the 15 choice cases and added endpoint/no-op Auto diagnostics. It timed out at box-0-seed13-auto-first: the click near a corner opened Rhino's ambiguous Selection Menu, not an accepted component selection. The entire batch is excluded; its request and timeout are retained as ambiguous-request.json and ambiguous-timeout.txt. No heuristic extra click resolved that menu.",
+    "Initial unprefixed MergeEdge mouse probe timed out because the post-pick menu awaited another input. A second diagnostic selected All manually on three sources; all three succeeded and Undo/Redo restored complete snapshots. These are not included in the 15-case batch.",
+    "Using -MergeEdge presents the choice at the command line. The retained batch uses real clicks only for selecting the seed, then EdgeA/EdgeB/Both/All/Cancel macros. The host never injects an Enter.",
+    "The retained request omits temporary artifact paths. Recreate the three shared sources using the brep_merge_edge exporter, verify their round trips, then attach those paths before running the Rhino-only command diagnostic. Native merge_edge_command remains unsupported."
+  ]
+}

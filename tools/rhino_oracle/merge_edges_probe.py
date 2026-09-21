@@ -1,6 +1,38 @@
 # -*- coding: utf-8 -*-
 """Owned MergeAllEdges/MergeEdge commands on shared topology, with undo records."""
 import math
+import os
+import re
+
+
+def mouse_command(operation):
+    """Use Rhino's scriptable choice prompt after an actual component click."""
+    validate(operation)
+    if operation.get("op") != "merge_edge_command" or operation.get("pick") != "mouse":
+        raise ValueError("edge mouse macro requires a mouse operation")
+    choice = operation.get("choice", "All")
+    suffix = {"Cancel": "_Cancel", "Auto": "_Enter"}.get(choice, "_" + choice)
+    # Auto leaves the post-pick decision to Rhino; do not send a second Enter
+    # that could repeat a command after a no-op finishes.
+    return "_-MergeEdge _Pause " + suffix + ("" if choice in ("Auto", "Cancel") else " _Enter")
+
+
+def validate_mouse_request(request):
+    operations = request.get("operations")
+    if (type(request.get("protocol_version")) is not int or request["protocol_version"] != 1 or
+            type(request.get("iterations", 1)) is not int or request.get("iterations", 1) != 1 or
+            not isinstance(operations, list) or not 1 <= len(operations) <= 128):
+        raise ValueError("edge mouse picking requires protocol 1, one iteration and 1 to 128 cases")
+    names = set()
+    for operation in operations:
+        if (not isinstance(operation, dict) or operation.get("op") != "merge_edge_command" or
+                operation.get("pick") != "mouse"):
+            raise ValueError("edge mouse picking requires a dedicated request")
+        name = operation.get("id")
+        if not isinstance(name, (str, type(u""))) or re.match(r"^[A-Za-z0-9_.-]{1,100}\Z", name) is None or name in names:
+            raise ValueError("invalid edge mouse picking id")
+        names.add(name)
+        validate(operation)
 
 
 def at_idle(Rhino, callback):
@@ -31,13 +63,16 @@ def validate(operation):
     selected_edge = operation.get("op") == "merge_edge_command"
     if selected_edge != ("edge" in operation):
         raise ValueError("selected edge requests require the separate merge_edge_command operation")
+    if "choice" in operation and (not selected_edge or operation.get("pick") != "mouse" or
+            operation["choice"] not in ("EdgeA", "EdgeB", "Both", "All", "Cancel", "Auto")):
+        raise ValueError("edge merge choice requires a mouse pick and a supported choice")
     if selected_edge:
         edge = operation["edge"]
         pick = operation.get("pick", "preselect")
         if (type(edge) is not int or edge < 0 or len(order) != 1 or
-                pick not in ("preselect", "point") or
+                pick not in ("preselect", "point", "mouse") or
                 operation.get("cancel", False) or
-                (pick == "point" and operation.get("preselect", False)) or
+                (pick in ("point", "mouse") and operation.get("preselect", False)) or
                 (pick == "preselect" and not operation.get("preselect", False))):
             raise ValueError("selected edge command probe requires one edge and a valid pick mode")
     for key in ("absolute_tolerance", "angular_tolerance"):
@@ -164,6 +199,7 @@ def run(operation, tolerance, host):
             if document.ModelAngleToleranceRadians != float(operation["angular_tolerance"]): raise ValueError("edge merge angular tolerance was not accepted")
         eligible = any(isinstance(owned[i], (Rhino.Geometry.Brep, Rhino.Geometry.Surface)) for i in order)
         command = "MergeEdge" if "edge" in operation else "MergeAllEdges"
+        mouse_pick = None
         if "edge" in operation:
             obj = document.Objects.FindId(ids[order[0]])
             edge = operation["edge"]
@@ -177,7 +213,21 @@ def run(operation, tolerance, host):
             else:
                 curve = obj.Geometry.Edges[edge]
                 point = curve.PointAt(curve.Domain.ParameterAt(0.375))
-                script = "_MergeEdge " + host["_command_point"](host["_xyz"](point)) + " _Enter"
+                if operation.get("pick") == "mouse":
+                    view = document.Views.ActiveView
+                    viewport = view.ActiveViewport
+                    if not viewport.SetProjection(Rhino.Display.DefinedViewportProjection.Perspective, "Probe", False):
+                        raise ValueError("edge picking viewport setup failed")
+                    Rhino.RhinoApp.RunScript("_Zoom _Extents", False)
+                    document.Views.Redraw()
+                    pixel = viewport.WorldToClient(point)
+                    if not 1 <= pixel.X < viewport.Size.Width - 1 or not 1 <= pixel.Y < viewport.Size.Height - 1:
+                        raise ValueError("edge pick lies outside the owned viewport")
+                    screen = view.ClientToScreen(System.Drawing.Point(int(pixel.X), int(pixel.Y)))
+                    mouse_pick = "PICK %s %d %d" % (operation["id"], screen.X, screen.Y)
+                    script = mouse_command(operation)
+                else:
+                    script = "_MergeEdge " + host["_command_point"](host["_xyz"](point)) + " _Enter"
         elif operation.get("preselect", False):
             for i in order:
                 if not document.Objects.Select(ids[i]): raise ValueError("edge merge preselection failed")
@@ -189,8 +239,17 @@ def run(operation, tolerance, host):
         initial_serials = dict((o.Id, o.RuntimeSerialNumber) for o in objects() if o.Id not in before)
         host["_record_progress"]("edge merge command: " + script)
         trace = operation.get("trace_commands", False)
+        def drive():
+            if mouse_pick is not None:
+                # Unlike optional diagnostics, this write requests input and
+                # must fail the probe if the host cannot receive it.
+                path = os.path.join(os.path.dirname(os.path.abspath(host["__file__"])), "worker-progress.log")
+                with open(path, "a") as stream:
+                    stream.write(mouse_pick + "\n")
+                    stream.flush()
+            return host["_run_surface_script"](script, True)
         succeeded, after, events = join_probe.observe_command(Rhino.Commands.Command, command,
-            lambda: host["_run_surface_script"](script, True), snapshot, lambda: [], trace)
+            drive, snapshot, lambda: [], trace)
         result = dict(before=initial, after=after, succeeded=succeeded,
             absolute_tolerance=float(document.ModelAbsoluteTolerance), angular_tolerance=float(document.ModelAngleToleranceRadians))
         if trace: result["command_events"] = events

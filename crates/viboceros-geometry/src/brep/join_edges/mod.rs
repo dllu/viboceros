@@ -5,6 +5,7 @@ mod automatic;
 pub use automatic::{BrepJoinComponent, BrepJoinReport, join_breps, join_breps_with_report};
 pub(super) mod certificate;
 mod merge;
+pub use merge::BrepEdgeMergeScope;
 #[cfg(test)]
 mod tests;
 mod topology;
