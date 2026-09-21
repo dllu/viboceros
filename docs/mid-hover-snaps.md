@@ -59,8 +59,9 @@ these data; deletion and conversion evict stale entries. Mixed-sign rational
 weights disable the convex-hull broad phase. Analytic leaves need no NURBS integration;
 empty NURBS-leaf discovery in composites is cached as well.
 
-Visible lines and common-sign degree-one NURBS spans use projected segment
-distance. Curved proximity samples 64 intervals and refines eight by up to 72
+Lines and common-sign degree-one NURBS spans share the
+[clipped straight-line query](projected-line-snaps.md) with Near and polygon Center.
+Curved proximity samples 64 intervals and refines eight by up to 72
 golden-section steps, stopping at floating-point stagnation. Each NURBS knot span
 is evaluated separately in normalized, sided coordinates: neither extreme native
 domains nor a discontinuous knot jump creates a bridging capture chord. Overflowing
@@ -68,7 +69,7 @@ or unprojectable bound corners disable culling. Projection callbacks must preser
 convexity in their visible half-space (affine/projective viewport transforms).
 
 This is a numerical UI search, **not a certified global closest-point solver**.
-Highly oscillatory spans and arbitrarily narrow visible slivers may be missed;
+Highly oscillatory spans and arbitrarily narrow curved visible slivers may be missed;
 unrestricted scale/translation accuracy is not established. Mid-only queries reject
 distant control bounds before cold integration. [Shared snapshots](snap-caching.md)
 avoid source comparisons on unchanged objects. Work still scales with

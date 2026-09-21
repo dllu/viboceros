@@ -1,5 +1,5 @@
 //! Camera-space curve targets, separate from landmark/hover admission.
-use super::{ObjectSnapCache, SnapMetric, proximity};
+use super::{ObjectSnapCache, SnapMetric, projected_line, proximity};
 use viboceros_document::Object;
 use viboceros_geometry::{CurveRef, Point3, Real, Tolerance, UnitVector3, Vector3};
 
@@ -123,42 +123,17 @@ pub(super) fn unit_screen(v: [Real; 2]) -> Option<[Real; 2]> {
     Some(v.map(|x| x / length))
 }
 
-fn interpolate(a: Point3, b: Point3, t: Real) -> Option<Point3> {
-    if t == 0. {
-        return Some(a);
-    }
-    if t == 1. {
-        return Some(b);
-    }
-    let a = a.to_array();
-    let b = b.to_array();
-    Point3::try_from(std::array::from_fn(|i| {
-        let delta = b[i] - a[i];
-        if delta.is_finite() {
-            if t <= 0.5 {
-                delta.mul_add(t, a[i])
-            } else {
-                delta.mul_add(t - 1., b[i])
-            }
-        } else {
-            (1. - t) * a[i] + t * b[i]
-        }
-    }))
-    .ok()
-}
-
 fn line(a: Point3, b: Point3, metric: &impl SnapMetric, emit: &mut impl FnMut(Point3, Real)) {
-    if let (Some(pa), Some(pb)) = (metric.offset(a), metric.offset(b)) {
-        if proximity::segment_distance(pa, pb).is_some_and(|d| d > metric.capture_radius()) {
-            return;
-        }
-        if let Some(point) = visible_line(a, b, pa, pb, metric) {
+    match projected_line::capture(a, b, metric) {
+        projected_line::Capture::Miss => return,
+        projected_line::Capture::Point(point) => {
             emit_if_captured(point, metric, emit);
             return;
         }
+        projected_line::Capture::Unresolved => {}
     }
-    // Clipped endpoints and unresolved projection ratios take the same bounded
-    // visible-locus search as curves, never a screen bridging chord.
+    // Numerically unresolved projections retain a bounded visible-locus
+    // fallback, never a screen bridging chord.
     let tangent = a.vector_to(b).ok().or_else(|| {
         let a = a.to_array();
         let b = b.to_array();
@@ -166,61 +141,12 @@ fn line(a: Point3, b: Point3, metric: &impl SnapMetric, emit: &mut impl FnMut(Po
         Vector3::try_from(std::array::from_fn(|i| b[i] / scale - a[i] / scale)).ok()
     });
     if let Some(tangent) = tangent {
-        curve(|t| Some((interpolate(a, b, t)?, tangent)), metric, emit);
+        curve(
+            |t| Some((projected_line::interpolate(a, b, t)?, tangent)),
+            metric,
+            emit,
+        );
     }
-}
-
-fn visible_line(
-    mut a: Point3,
-    mut b: Point3,
-    mut pa: [Real; 2],
-    mut pb: [Real; 2],
-    metric: &impl SnapMetric,
-) -> Option<Point3> {
-    for orientation in 0..2 {
-        let scale = pa.into_iter().chain(pb).map(Real::abs).fold(0., Real::max);
-        if scale == 0. {
-            return Some(a);
-        }
-        let na = pa.map(|x| x / scale);
-        let nb = pb.map(|x| x / scale);
-        let d = [nb[0] - na[0], nb[1] - na[1]];
-        let squared = d[0] * d[0] + d[1] * d[1];
-        if squared == 0. {
-            return Some(a);
-        }
-        let s = (-(na[0] * d[0] + na[1] * d[1]) / squared).clamp(0., 1.);
-        if s == 0. || s == 1. {
-            return Some(if s == 0. { a } else { b });
-        }
-        if metric.is_affine() {
-            return interpolate(a, b, s);
-        }
-        let axis = usize::from(d[1].abs() > d[0].abs());
-        let mut lambda = 0.5;
-        // Find a well-conditioned image station. A midpoint alone loses the
-        // depth ratio when one endpoint is much farther from the camera.
-        // Reversing avoids subtracting a tiny model fraction from one.
-        for probe in 0..1075 {
-            let image = metric.offset(interpolate(a, b, lambda)?)?;
-            let mu = (image[axis] / scale - na[axis]) / d[axis];
-            if (0.25..=0.75).contains(&mu) {
-                let factor = ((1. - s) / s) * (mu / (1. - mu)) * (1. - lambda);
-                let t = lambda / (factor + lambda);
-                return interpolate(a, b, t);
-            }
-            if probe == 0 && mu < 0.25 && orientation == 0 {
-                break;
-            }
-            lambda *= 0.5;
-            if lambda == 0. {
-                return None;
-            }
-        }
-        std::mem::swap(&mut a, &mut b);
-        std::mem::swap(&mut pa, &mut pb);
-    }
-    None
 }
 
 fn emit_if_captured(point: Point3, metric: &impl SnapMetric, emit: &mut impl FnMut(Point3, Real)) {

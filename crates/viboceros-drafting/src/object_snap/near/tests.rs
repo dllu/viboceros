@@ -94,6 +94,69 @@ fn perspective_line_depth_ratios_do_not_require_resolving_one_minus_a_tiny_fract
 }
 
 #[test]
+fn near_finds_a_visible_sliver_of_a_camera_crossing_line_in_both_orders() {
+    for depth in [1e3, 1e12, 1e100] {
+        for reverse in [false, true] {
+            let a = p(0., 0., 1.);
+            let b = p(1., 0., -depth);
+            let (a, b) = if reverse { (b, a) } else { (a, b) };
+            let project =
+                |p: Point3| (p.z() >= 0.1).then_some([p.x() * depth / p.z(), p.y() / p.z()]);
+            for geometry in [
+                Geometry::Line(segment(a, b)),
+                Geometry::Polyline(Polyline3::try_new(vec![a, b], Tolerance::DEFAULT).unwrap()),
+                Geometry::NurbsCurve(
+                    NurbsCurve::try_new_rational(
+                        1,
+                        vec![
+                            WeightedPoint3::try_new(a, 0.5).unwrap(),
+                            WeightedPoint3::try_new(b, 3.).unwrap(),
+                        ],
+                        vec![0., 0., 1., 1.],
+                    )
+                    .unwrap(),
+                ),
+            ] {
+                let mut doc = Document::default();
+                doc.add_geometry(geometry).unwrap();
+                let hit = ObjectSnapCache::default()
+                    .nearest_projected_with_modes(&doc, [0.5, 0.1], 0.2, project, modes())
+                    .unwrap()
+                    .unwrap_or_else(|| {
+                        panic!("depth {depth}, reverse {reverse}: missed visible line")
+                    });
+                // Solve depth*t/(1-(depth+1)*t)=1/2 independently of native search.
+                let t = 0.5 / (depth + 0.5 * (depth + 1.));
+                close(hit.point(), p(t, 0., 1. - (depth + 1.) * t));
+                assert!((project(hit.point()).unwrap()[0] - 0.5).abs() < 1e-12);
+                assert!((hit.distance() - 0.1).abs() < 1e-12);
+            }
+        }
+    }
+}
+
+#[test]
+fn near_retains_small_offsets_from_either_end_of_a_long_visible_line() {
+    for far in [1e12, 1e100] {
+        for reverse in [false, true] {
+            let a = p(-far, 0., 7.);
+            let b = p(1., 0., 7.);
+            let mut doc = Document::default();
+            doc.add_geometry(Geometry::Line(if reverse {
+                segment(b, a)
+            } else {
+                segment(a, b)
+            }))
+            .unwrap();
+            close(
+                query(&doc, [0.25, 0.1], 0.2, modes()).unwrap().point(),
+                p(0.25, 0., 7.),
+            );
+        }
+    }
+}
+
+#[test]
 fn near_covers_analytic_curves_composites_surface_boundaries_and_brep_edges() {
     let c = NurbsCurve::try_new(
         2,

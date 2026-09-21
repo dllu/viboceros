@@ -1,35 +1,32 @@
 use super::*;
 
 #[test]
-fn projected_segment_distance_retains_tiny_and_overflowing_coordinate_scales() {
-    for scale in [1e-300, 1., 1e300] {
-        for (a, b, expected) in [
-            ([3., -4.], [3., 4.], 3.),
-            ([-3., 0.], [3., 0.], 0.),
-            ([3., 4.], [6., 8.], 5.),
-            ([3., 4.], [3., 4.], 5.),
-        ] {
-            let result = segment_distance(a.map(|v| v * scale), b.map(|v| v * scale)).unwrap();
-            assert!((result / scale - expected).abs() < 1e-12);
-            assert_eq!(
-                result,
-                segment_distance(b.map(|v| v * scale), a.map(|v| v * scale)).unwrap()
-            );
+fn analytic_and_common_sign_nurbs_hover_use_the_clipped_line_locus() {
+    use super::super::ProjectedSnapMetric;
+    use viboceros_geometry::{Tolerance, WeightedPoint3};
+    let a = Point3::try_new(0., 0., 1.).unwrap();
+    let b = Point3::try_new(1., 0., -1e12).unwrap();
+    let metric = ProjectedSnapMetric {
+        cursor: [0.5, 0.1],
+        capture_radius: 0.2,
+        project: |p: Point3| (p.z() >= 0.1).then_some([p.x() * 1e12 / p.z(), p.y() / p.z()]),
+    };
+    for (a, b) in [(a, b), (b, a)] {
+        let line = LineSegment::try_new(a, b, Tolerance::DEFAULT).unwrap();
+        assert!((line_distance(line, &metric).unwrap() - 0.1).abs() < 1e-12);
+        for weights in [[1., 1.], [0.5, 3.], [-3., -0.5]] {
+            let curve = NurbsCurve::try_new_rational(
+                1,
+                vec![
+                    WeightedPoint3::try_new(a, weights[0]).unwrap(),
+                    WeightedPoint3::try_new(b, weights[1]).unwrap(),
+                ],
+                vec![0., 0., 1., 1.],
+            )
+            .unwrap();
+            assert!((nurbs_distance(&curve, true, &metric).unwrap() - 0.1).abs() < 1e-12);
         }
     }
-    assert_eq!(
-        segment_distance([1e308, -1e308], [1e308, 1e308]),
-        Some(1e308)
-    );
-    assert_eq!(
-        segment_distance([-Real::MAX, 0.], [Real::MAX, 0.]),
-        Some(0.)
-    );
-    assert_eq!(segment_distance([0., 0.], [0., 0.]), Some(0.));
-    assert_eq!(
-        segment_distance([-1e300, 1e-300], [1e300, 1e-300]),
-        Some(1e-300)
-    );
 }
 
 #[test]

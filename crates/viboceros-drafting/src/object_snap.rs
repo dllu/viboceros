@@ -5,6 +5,7 @@ mod features;
 mod mid_hover;
 mod near;
 mod polygon_centers;
+mod projected_line;
 mod proximity;
 pub use cache::ObjectSnapCache;
 

@@ -185,6 +185,11 @@ face recognition independently of camera projection. See
 [composite feature snaps](composite-feature-snaps.md), [analytic Center](center-hover-snaps.md)
 and [polygon Center](polygon-center-snaps.md) for invalidation, independent numerical
 tests, retained Rhino evidence and remaining capture limits.
+`object_snap/projected_line` shares visible-interval clipping, screen distance and
+inverse perspective interpolation between Near and Mid/Center hover admission.
+It avoids uniform sampling for a straight locus with a projectable endpoint;
+see [straight-line snap correctness](projected-line-snaps.md) for the exact
+reference corpus, numerical regressions and remaining projection limits.
 
 `app/edge_commands` shares component ambiguity, hover highlighting and stale
 candidate checks for [MergeEdge](commands/merge-edge.md) and

@@ -9,6 +9,56 @@ fn area() -> Rect {
 }
 
 #[test]
+fn perspective_near_captures_a_thin_visible_part_of_a_camera_crossing_line() {
+    for reverse in [false, true] {
+        let view = Viewport::new(ViewKind::Perspective);
+        let (right, _, forward) = view.perspective_basis();
+        let at = |x: Real, depth: Real| {
+            let xyz =
+                view.target + right * x + forward * (depth - view.perspective_camera_distance);
+            Point3::try_new(xyz.x, xyz.y, xyz.z).unwrap()
+        };
+        let depth = 1e6;
+        let a = at(0., 1.);
+        let b = at(depth, -depth);
+        // Aim a quarter viewport-width to the right of the camera center.
+        let screen_ratio =
+            Real::from(area().width()) * 0.25 / view.perspective_focal_length_pixels(area());
+        let t = screen_ratio / (depth + screen_ratio * (depth + 1.));
+        let expected = at(depth * t, 1. - (depth + 1.) * t);
+        let pointer = view.project(expected, area()).unwrap();
+        assert!(area().contains(pointer));
+        let mut doc = Document::default();
+        let id = doc
+            .add_geometry(Geometry::Line(
+                viboceros_geometry::LineSegment::try_new(
+                    if reverse { b } else { a },
+                    if reverse { a } else { b },
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let cursor = view
+            .drafting_cursor(
+                pointer,
+                area(),
+                &doc,
+                DraftingInput {
+                    active: true,
+                    osnap: ObjectSnapModes::only(ObjectSnapKind::Near),
+                    ..Default::default()
+                },
+            )
+            .unwrap();
+        assert_eq!(cursor.object_snap.unwrap().object_id(), id);
+        // This includes the ordinary egui f32 pointer quantization.
+        assert!(cursor.point.distance_to(expected).unwrap() < 1e-5);
+        assert!(view.project_precise(cursor.point, area()).is_some());
+    }
+}
+
+#[test]
 fn near_reaches_ordinary_and_edge_constrained_prompts_in_all_four_views() {
     for kind in [
         ViewKind::Top,

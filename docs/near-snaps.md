@@ -85,12 +85,15 @@ The four retained priority witnesses are single-source-curve cases, not a proof
 of all Rhino inter-object priority rules. Adding Near to Mid also means Mid is no
 longer the only mode, so the special Mid-only whole-segment hover does not apply.
 
-Visible lines recover the model fraction from the one-dimensional projectivity.
+The shared [straight-line projection](projected-line-snaps.md) module recovers
+the model fraction from the one-dimensional projectivity.
 An adaptive interior station avoids losing a large camera-depth ratio at the
 midpoint; reversing the line avoids forming `1 - tiny_fraction`. Parallel
 axis-aligned queries directly interpolate the affine fraction and retain local
 cursor precision. Independent line tests cover both endpoint orders and depth
-ratios through `1e100`. Clipped lines use the bounded visible-locus search below.
+ratios through `1e100`. A line with one projectable endpoint resolves its clipped
+interval by model-coordinate bisection before the direct solution. Numerically
+unresolved projections retain the bounded visible-locus fallback below.
 
 Curved targets use analytic derivatives or the kernel's
 [fractional first derivatives](curve-fractional-derivatives.md). The projector
@@ -121,11 +124,12 @@ the Near one-shot override without losing partially typed command input.
 
 ## Validation and timing checkpoint
 
-The native implementation passes 3,119 ordinary release-workspace tests (29
-opt-in tests remain ignored), all 298 Python tests, and all seven opt-in offscreen
+The initial native checkpoint (`ca54e32`) passed 3,119 ordinary release-workspace
+tests (29 opt-in tests ignored), all 298 Python tests, and all seven opt-in offscreen
 GPU tests on NVIDIA GB10/Vulkan. The ordinary suite includes all 16 calibrated
 Near history replays. Formatting, whitespace, strict Clippy and strict rustdoc
-checks also pass.
+checks also passed. The subsequent [straight-line audit](projected-line-snaps.md)
+adds clipped-line and asymmetric-endpoint regressions.
 
 The opt-in `near_scene_timing` diagnostic measures 100 warm cached Near-only
 queries after 10 warm-up queries, with an identity XY projector and spatially

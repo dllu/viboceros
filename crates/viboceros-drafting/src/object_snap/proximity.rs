@@ -1,5 +1,5 @@
 //! Bounded camera-space curve proximity, shared by hover-derived snap targets.
-use super::SnapMetric;
+use super::{SnapMetric, projected_line};
 use viboceros_geometry::{LineSegment, NurbsCurve, Point3, Real};
 
 /// Proximity to the original NURBS locus, shared by Mid and circular Center.
@@ -18,9 +18,8 @@ pub(super) fn nurbs_distance(
             let linear = if curve.degree() == 1 && common_sign_weights {
                 span.evaluate(0.)
                     .ok()
-                    .and_then(|p| metric.offset(p))
-                    .zip(span.evaluate(1.).ok().and_then(|p| metric.offset(p)))
-                    .and_then(|(a, b)| segment_distance(a, b))
+                    .zip(span.evaluate(1.).ok())
+                    .and_then(|(a, b)| projected_line::distance(a, b, metric))
             } else {
                 None
             };
@@ -73,37 +72,11 @@ pub(super) fn outside_bounds(lo: [Real; 3], hi: [Real; 3], metric: &impl SnapMet
 }
 
 pub(super) fn line_distance(line: LineSegment, metric: &impl SnapMetric) -> Option<Real> {
-    if let (Some(a), Some(b)) = (metric.offset(line.start()), metric.offset(line.end())) {
-        segment_distance(a, b)
-    } else {
-        // Never bridge an invisible endpoint across the camera plane.
+    projected_line::distance(line.start(), line.end(), metric).or_else(|| {
+        // Projection overflow can hide both endpoints but leave finite interior
+        // points. Retain the bounded fallback only for unresolved intervals.
         projected_distance(|t| metric.distance(line.point_at(t).ok()?))
-    }
-}
-
-/// Visible straight segments stay straight under the projection contract.
-pub(super) fn segment_distance(a: [Real; 2], b: [Real; 2]) -> Option<Real> {
-    // Normalize before differences/dots to avoid range loss in squares.
-    let scale = a.into_iter().chain(b).map(Real::abs).fold(0., Real::max);
-    if scale == 0. {
-        return Some(0.);
-    }
-    let normalized_a = a.map(|v| v / scale);
-    let normalized_b = b.map(|v| v / scale);
-    let d = [
-        normalized_b[0] - normalized_a[0],
-        normalized_b[1] - normalized_a[1],
-    ];
-    let squared = d[0] * d[0] + d[1] * d[1];
-    let t = if squared == 0. {
-        0.
-    } else {
-        (-(normalized_a[0] * d[0] + normalized_a[1] * d[1]) / squared).clamp(0., 1.)
-    };
-    // Interpolate the original coordinates so a small perpendicular offset is
-    // not lost when another axis has a vastly larger magnitude.
-    let distance = ((1. - t) * a[0] + t * b[0]).hypot((1. - t) * a[1] + t * b[1]);
-    distance.is_finite().then_some(distance)
+    })
 }
 
 /// Samples/refines one continuous normalized parameter interval. Every score
