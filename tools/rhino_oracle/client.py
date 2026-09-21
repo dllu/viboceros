@@ -12,8 +12,12 @@ import subprocess
 import tempfile
 import time
 from dataclasses import asdict, dataclass
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Mapping, Sequence
+from typing import TYPE_CHECKING, Any, Mapping, Sequence
+
+if TYPE_CHECKING:
+    from .audit import AuditReport
 
 PROTOCOL_VERSION = 1
 DEFAULT_LAUNCHER = Path.home() / "wines/prefixes/rhino/launch.sh"
@@ -122,6 +126,37 @@ class OracleClient:
     ) -> dict[str, Any]:
         """Run the native release-mode Rust probe."""
 
+        response = self._run_native(request, timeout, audit=False)
+        _validate_response(response, "viboceros")
+        return response
+
+    def run_viboceros_audit(
+        self, request: Mapping[str, Any], timeout: float = 180.0
+    ) -> dict[str, Any]:
+        """Run once, retaining per-operation errors; request/process failures raise."""
+
+        from .audit import validate_audit_response
+        response = self._run_native(request, timeout, audit=True)
+        validate_audit_response(response)
+        return response
+
+    def replay(
+        self, request: Mapping[str, Any], observation: Mapping[str, Any],
+        absolute_epsilon: float = 1.0e-10, relative_epsilon: float = 1.0e-10,
+        timeout: float = 180.0,
+    ) -> AuditReport:
+        """Audit against saved raw Rhino observations without launching Rhino."""
+
+        from .audit import compare_audit_response, validate_replay_inputs
+        validate_replay_inputs(request, observation, absolute_epsilon, relative_epsilon)
+        with _owned_artifact_request(request) as prepared:
+            native = self.run_viboceros_audit(prepared, timeout)
+        return compare_audit_response(native, observation, absolute_epsilon, relative_epsilon)
+
+    def _run_native(
+        self, request: Mapping[str, Any], timeout: float, *, audit: bool,
+    ) -> dict[str, Any]:
+
         with tempfile.TemporaryDirectory(prefix="viboceros-oracle-") as job:
             job_path = Path(job)
             request_path = job_path / "request.json"
@@ -135,6 +170,7 @@ class OracleClient:
                 "--package",
                 "viboceros-oracle",
                 "--",
+                *(["--audit"] if audit else []),
                 str(request_path),
                 str(response_path),
             ]
@@ -144,7 +180,6 @@ class OracleClient:
             if not response_path.is_file():
                 raise OracleError("Viboceros probe completed without a response")
             response = _read_json(response_path)
-        _validate_response(response, "viboceros")
         return response
 
     def run_rhino(
@@ -292,24 +327,7 @@ class OracleClient:
 
         # Cross-reader probes must inspect the same actual file. Keep artifacts
         # alive through both engines, and never mutate the caller's fixture.
-        with tempfile.TemporaryDirectory(prefix="viboceros-interchange-") as job:
-            prepared = copy.deepcopy(dict(request))
-            for index, operation in enumerate(prepared.get("operations", [])):
-                if operation.get("op") == "three_dm_curve_interchange":
-                    operation["artifact_path"] = str(Path(job) / f"curve-{index}.3dm")
-                elif operation.get("op") == "three_dm_brep_interchange":
-                    operation["artifact_path"] = str(Path(job) / f"brep-{index}.3dm")
-                elif operation.get("op") == "border_command" and operation["source"]["type"] in ("box", "extrusion", "brep", "mesh_brep", "surface_face", "tube"):
-                    operation["artifact_path"] = str(Path(job) / f"border-{index}.3dm")
-                elif operation.get("op") == "cap_command":
-                    operation["artifact_path"] = str(Path(job) / f"cap-{index}.3dm")
-                elif operation.get("op") == "brep_join":
-                    operation["artifact_paths"] = [str(Path(job) / f"join-{index}-{part}.3dm")
-                        for part in range(len(operation["sources"]))]
-                elif operation.get("op") == "join_command":
-                    for part, source in enumerate(operation["sources"]):
-                        if "brep" in source:
-                            source["brep"]["artifact_path"] = str(Path(job) / f"join-command-{index}-{part}.3dm")
+        with _owned_artifact_request(request) as prepared:
             viboceros = self.run_viboceros(prepared, timeout)
             rhino = self.run_rhino(prepared, timeout)
         return compare_responses(
@@ -318,6 +336,43 @@ class OracleClient:
             absolute_epsilon=absolute_epsilon,
             relative_epsilon=relative_epsilon,
         )
+
+
+@contextmanager
+def _owned_artifact_request(request):
+    """Keep comparison/replay exports off caller paths, with scoped cleanup."""
+    with tempfile.TemporaryDirectory(prefix="viboceros-interchange-") as job:
+        prepared = copy.deepcopy(dict(request))
+        for index, operation in enumerate(prepared.get("operations", [])):
+            if operation.get("op") == "three_dm_curve_interchange":
+                operation["artifact_path"] = str(Path(job) / f"curve-{index}.3dm")
+            elif operation.get("op") == "three_dm_brep_interchange":
+                operation["artifact_path"] = str(Path(job) / f"brep-{index}.3dm")
+            elif operation.get("op") == "border_command":
+                source = operation.get("source")
+                if not isinstance(source, Mapping):
+                    raise OracleProtocolError("border artifact setup requires a source object")
+                if source.get("type") in ("box", "extrusion", "brep", "mesh_brep", "surface_face", "tube"):
+                    operation["artifact_path"] = str(Path(job) / f"border-{index}.3dm")
+            elif operation.get("op") == "cap_command":
+                operation["artifact_path"] = str(Path(job) / f"cap-{index}.3dm")
+            elif operation.get("op") == "brep_join":
+                operation["artifact_paths"] = [str(Path(job) / f"join-{index}-{part}.3dm")
+                    for part in range(len(_artifact_sources(operation)))]
+            elif operation.get("op") == "join_command":
+                for part, source in enumerate(_artifact_sources(operation)):
+                    if "brep" in source:
+                        if not isinstance(source["brep"], Mapping):
+                            raise OracleProtocolError("join artifact setup requires a B-rep source object")
+                        source["brep"]["artifact_path"] = str(Path(job) / f"join-command-{index}-{part}.3dm")
+        yield prepared
+
+
+def _artifact_sources(operation):
+    sources = operation.get("sources")
+    if not isinstance(sources, list) or any(not isinstance(s, Mapping) for s in sources):
+        raise OracleProtocolError("join artifact setup requires an array of source objects")
+    return sources
 
 
 def compare_responses(
@@ -626,7 +681,7 @@ def _read_optional_text(path: Path) -> str:
 def _validate_response(response: Mapping[str, Any], engine: str) -> None:
     if not isinstance(response, Mapping):
         raise OracleProtocolError(f"{engine} response must be a JSON object")
-    if response.get("protocol_version") != PROTOCOL_VERSION:
+    if type(response.get("protocol_version")) is not int or response["protocol_version"] != PROTOCOL_VERSION:
         raise OracleProtocolError(
             f"{engine} returned protocol version {response.get('protocol_version')!r}; "
             f"expected {PROTOCOL_VERSION}"

@@ -415,5 +415,8 @@ not a proof of full Rhino compatibility. The [validation checkpoint](validation-
 records a full-workspace and opt-in GPU audit with its exact revision and limits.
 The [oracle](oracle.md) checks public
 Rhino outputs and records timing independently of startup and fixture setup.
+Its separate [diagnostic replay](oracle-replay.md) retains ordered per-operation
+native successes/errors in one dispatch pass and compares all successful raw
+records. Global validation and process failures remain distinct from observations.
 The dedicated `brep_interchange` oracle module checks [morphed 3DM exports](brep-3dm-interchange.md)
 through both readers, keeping source fitting, serialization and meshing checks separate.

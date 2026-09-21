@@ -49,6 +49,10 @@ mod surface_closest;
 mod surface_wires;
 pub use parameter_bounds::ParameterCurveBoundsFixture;
 mod align;
+mod audit;
+pub use audit::{
+    OperationFailure, OperationOutcome, ProbeAuditResponse, run_audit_files, run_request_audit,
+};
 mod border;
 mod bounding_box;
 mod brep_join;

@@ -78,14 +78,19 @@ policy. Excessive adjustments continue to fail atomically.
 
 ## Aggregate evidence and reproduction
 
-The report replays every saved surface-command observation, including prior
-discrepancy archives: **427 of 510 fully match**. The 83 differences comprise
+At the time of this audit, the report replayed every saved surface-command
+observation, including prior discrepancy archives: **427 of 510 fully match**.
+The 83 differences comprise
 16 zero-volume face-sense cases, nine cutoff-endpoint cases, 50 ordered-cluster
 cases (22 native guard rejections), and eight area-integration cases supported
 by the independent witness in the spatial-rebuilding audit. Raw data are not
 normalized or filtered to improve the count. Fixture, observation, adapter, and
 release-executable hashes identify the replay. Harness timings do not establish
 kernel performance parity.
+
+The subsequent [corner-only audit](join-corner-clustering.md) adds 84 cases and
+isolates endpoint movement from mating. Its diagnostic replay includes native
+errors without discarding later operations and gives the current aggregate count.
 
 ```sh
 cargo test --release -p viboceros-command selection_mode_changes_gap_acceptance

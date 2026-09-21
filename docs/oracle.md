@@ -2,6 +2,9 @@
 
 [Project overview](../README.md)
 
+[Diagnostic replay and Python API](oracle-replay.md) retain per-operation native
+errors while comparing every successful record against saved Rhino observations.
+
 The `join_command` probe has 181 raw mesh records covering both
 `JoinDisjointMeshes` choices, precision thresholds, ordered selection, winding,
 attributes, groups, and identity replacement. It checks identical binary64
@@ -52,8 +55,10 @@ face senses. The [follow-up boundary audit](join-boundary-matching.md) adds 160
 records, now 148 fully matching and 12 explicit zero-volume orientation differences.
 The [gap-rebuilding audit](join-gap-rebuilding.md) adds 108 cases and resolves
 20 earlier differences. The [selection-distance audit](join-selection-distance.md)
-adds 150 cases and resolves two more earlier differences. Across all four audits,
-427 of 510 cases fully match; the remaining 83 explicitly cover zero-volume
+adds 150 cases and resolves two more earlier differences. The
+[corner-only follow-up](join-corner-clustering.md) adds 84 cases, separating
+endpoint movement from edge mating. Across all five audits,
+471 of 594 cases fully match; the remaining 123 explicitly cover zero-volume
 orientation, cutoff endpoints, order-dependent clusters, and area integration.
 The command probe includes spatial and UV geometry, component
 tolerances, oriented topology, object identity/selection, attributes, and groups.

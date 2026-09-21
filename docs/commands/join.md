@@ -93,8 +93,10 @@ match, two expose transitive-cluster selection differences, and eight have area
 integration differences despite matching every other field. Independent
 high-precision integration supports the native areas. The
 [selection-distance and clustering audit](../join-selection-distance.md) adds
-150 cases, including every discovery discrepancy. Across all four surface-command
-audits, 427 of 510 cases fully match; the new data expands the known limitations,
+150 cases, including every discovery discrepancy. The
+[corner-only follow-up](../join-corner-clustering.md) adds 84 cases that isolate
+endpoint movement from edge mating. Across all five surface-command
+audits, 471 of 594 cases fully match; the new data expands the known limitations,
 not the claim of general parity.
 
 These are scoped observations, not general threshold rules. Generic curved

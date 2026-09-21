@@ -10,6 +10,7 @@ from .client import (
     load_request,
     posix_to_wine_path,
 )
+from .audit import AuditReport, AuditOperationComparison, NativeFailure, compare_audit_response
 
 __all__ = [
     "ComparisonReport",
@@ -20,4 +21,8 @@ __all__ = [
     "compare_responses",
     "load_request",
     "posix_to_wine_path",
+    "AuditReport",
+    "AuditOperationComparison",
+    "NativeFailure",
+    "compare_audit_response",
 ]

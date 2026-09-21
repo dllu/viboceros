@@ -13,19 +13,31 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Compare Viboceros geometry operations with Rhino 8"
     )
-    parser.add_argument("mode", choices=("compare", "viboceros", "rhino"))
+    parser.add_argument("mode", choices=("compare", "viboceros", "rhino", "audit", "replay"))
     parser.add_argument("request", type=Path)
+    parser.add_argument("--observations", type=Path, help="saved raw Rhino response for replay")
     parser.add_argument("--timeout", type=float, default=180.0)
     parser.add_argument("--absolute-epsilon", type=float, default=1.0e-10)
     parser.add_argument("--relative-epsilon", type=float, default=1.0e-10)
     parser.add_argument("--launcher", type=Path)
     parser.add_argument("--repo-root", type=Path)
     arguments = parser.parse_args()
+    if (arguments.mode == "replay") != (arguments.observations is not None):
+        parser.error("--observations is required for replay and is not used by other modes")
 
     try:
         request = load_request(arguments.request)
         client = OracleClient(arguments.repo_root, arguments.launcher)
-        if arguments.mode == "viboceros":
+        if arguments.mode == "audit":
+            output = client.run_viboceros_audit(request, arguments.timeout)
+            passed = all(o["status"] == "success" for o in output["outcomes"])
+        elif arguments.mode == "replay":
+            observation = load_request(arguments.observations)
+            report = client.replay(request, observation, arguments.absolute_epsilon,
+                                  arguments.relative_epsilon, arguments.timeout)
+            output = report.as_dict()
+            passed = report.passed
+        elif arguments.mode == "viboceros":
             output = client.run_viboceros(request, arguments.timeout)
             passed = True
         elif arguments.mode == "rhino":
