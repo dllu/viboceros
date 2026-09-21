@@ -106,14 +106,25 @@ fn span_on_circle(
         }
         q.push((offset.scaled(w)?, w));
     }
-    let n = span.degree();
-    let binomial = |degree: usize| {
-        let mut values = vec![1.; degree + 1];
-        for i in 1..=degree {
-            values[i] = values[i - 1] * (degree + 1 - i) as Real / i as Real;
-        }
-        values
-    };
+    unit_sphere_bound(&q, minimum_weight, delta)
+}
+
+pub(super) fn binomial(degree: usize) -> Vec<Real> {
+    let mut values = vec![1.; degree + 1];
+    for i in 1..=degree {
+        values[i] = values[i - 1] * (degree + 1 - i) as Real / i as Real;
+    }
+    values
+}
+
+/// A positive rational denominator and Bernstein numerator residual bound the
+/// entire unit-sphere locus. Ellipses reuse this after an affine planar map.
+pub(super) fn unit_sphere_bound(
+    q: &[(Vector3, Real)],
+    minimum_weight: Real,
+    delta: Real,
+) -> Result<bool, GeometryError> {
+    let n = q.len() - 1;
     let b = binomial(n);
     let doubled = binomial(2 * n);
     let bound = delta * (2. - delta) * minimum_weight * minimum_weight;
@@ -221,6 +232,12 @@ mod tests {
         assert!(
             perturbed
                 .circular_center(Tolerance::DEFAULT)
+                .unwrap()
+                .is_none()
+        );
+        assert!(
+            perturbed
+                .elliptical_center(Tolerance::DEFAULT)
                 .unwrap()
                 .is_none()
         );

@@ -77,8 +77,9 @@ arc leaves), or a closed polygonal boundary. Polygon targets average corners;
 planar surfaces and hole-free planar faces use their polygonal boundaries.
 Hovering near an empty center is insufficient. Direct features on the same object
 take precedence.
-Circular NURBS, natural surface boundaries and B-rep edges also supply Center,
-including circular hole edges; general elliptic NURBS recognition remains incomplete.
+Circular and [elliptical NURBS](elliptic-center-snaps.md), natural surface
+boundaries and B-rep edges also supply Center, including eligible hole edges.
+Recognition is conservative; unrestricted conic/approximate-conic parity remains incomplete.
 The Snap modes menu selects individual persistent modes; right-click isolates a
 mode and Shift-click selects it for one point. At point prompts, `Point`, `End`,
 `Mid`, `Cen`, `Quad` and `NoSnap` also supply one-shot overrides. See

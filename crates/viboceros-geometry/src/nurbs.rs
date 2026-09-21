@@ -4,6 +4,7 @@ mod arc_length_from;
 mod circularity;
 mod closest_point;
 mod decompose;
+mod ellipticity;
 mod evaluate;
 pub(crate) mod exact;
 mod integration_frame;

@@ -172,7 +172,8 @@ for coordinate conventions, numeric safeguards, and their specific test coverage
 `object_snap/features` shares cheap curve-leaf enumeration; `object_snap/cache`
 retains expensive NURBS arc-length and natural surface-boundary midpoints.
 The [circular NURBS follow-up](circular-center-snaps.md) shares each curve source
-between independently lazy Mid integration and circular Center recognition.
+between independently lazy Mid integration and circular/elliptical Center
+recognition; see [ellipse recognition](elliptic-center-snaps.md).
 `object_snap/polygon_centers` caches closed-boundary corner averages and planar
 face recognition independently of camera projection. See
 [composite feature snaps](composite-feature-snaps.md), [analytic Center](center-hover-snaps.md)

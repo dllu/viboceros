@@ -12,7 +12,7 @@ pub(super) struct CurveFeatures {
     pub(super) bounds: Option<viboceros_geometry::BoundingBox3>,
     tolerance: Tolerance,
     midpoint: OnceCell<Option<Point3>>,
-    circular_center: OnceCell<Option<Point3>>,
+    conic_center: OnceCell<Option<Point3>>,
 }
 
 impl CurveFeatures {
@@ -28,7 +28,7 @@ impl CurveFeatures {
             bounds,
             tolerance,
             midpoint: OnceCell::new(),
-            circular_center: OnceCell::new(),
+            conic_center: OnceCell::new(),
         }
     }
 
@@ -38,12 +38,18 @@ impl CurveFeatures {
             .get_or_init(|| midpoint(&self.curve, self.tolerance))
     }
 
-    pub(super) fn circular_center(&self) -> Option<Point3> {
-        *self.circular_center.get_or_init(|| {
+    pub(super) fn conic_center(&self) -> Option<Point3> {
+        *self.conic_center.get_or_init(|| {
             // Bound cold UI recognition for pathological high-degree inputs.
             // The kernel itself imposes no such feature-discovery degree cap.
             (self.curve.degree() <= 32)
-                .then(|| self.curve.circular_center(self.tolerance).ok().flatten())
+                .then(|| {
+                    self.curve
+                        .circular_center(self.tolerance)
+                        .ok()
+                        .flatten()
+                        .or_else(|| self.curve.elliptical_center(self.tolerance).ok().flatten())
+                })
                 .flatten()
         })
     }
@@ -64,7 +70,7 @@ struct SurfaceCurves {
 
 /// Reusable camera-independent snap data. Analytic features and indexed point
 /// clouds keep their existing cheap queries. Cached NURBS sources lazily compute
-/// arc-length Mid and circular Center, including polycurve leaves and natural
+/// arc-length Mid and circular/elliptical Center, including polycurve leaves and natural
 /// surface boundaries. Their B-rep entries
 /// retain only edge curves; standalone surfaces retain extracted boundaries and
 /// their source for invalidation. Polygon Center entries additionally retain

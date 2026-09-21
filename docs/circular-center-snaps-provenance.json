@@ -6,6 +6,13 @@
   "known_elliptical_capture_limits": 4,
   "known_negative_gauge_differences": 2,
   "actual_undo_redo_observations": 42,
+  "elliptical_recognition_followup": {
+    "complete_capture_replays": 38,
+    "resolved_elliptical_capture_limits": 4,
+    "admission_only_misses": 4,
+    "known_negative_gauge_differences": 2,
+    "note": "Native replay of the unchanged retained evidence. Top-level counts and original notes describe the original circular-only checkpoint; this follow-up is not a new Rhino run."
+  },
   "raw_response_sha256": {
     "response-final.json": "658cf455fb4757b4b64c68af72bfe39e4dbc4b619082b71a3d72e789eefcd98e"
   },

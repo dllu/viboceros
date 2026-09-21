@@ -122,19 +122,49 @@ fn ordinary_and_edge_constrained_prompts_share_center_hover_in_all_views() {
         .to_nurbs()
         .unwrap();
         let disk = viboceros_geometry::Brep::try_planar_face(&circle, Tolerance::DEFAULT).unwrap();
-        for geometry in [
-            Geometry::PolyCurve(composite),
-            Geometry::PolyCurve(nurbs_composite),
-            Geometry::NurbsCurve(arc.to_nurbs().unwrap()),
-            Geometry::Brep(disk),
+        let ellipse = viboceros_geometry::Ellipse3::try_new(
+            map(0., 0.),
+            2.,
+            1.,
+            map(0., 0.)
+                .vector_to(map(1., 0.))
+                .unwrap()
+                .normalized_nonzero()
+                .unwrap(),
+            map(0., 0.)
+                .vector_to(map(0., 1.))
+                .unwrap()
+                .normalized_nonzero()
+                .unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let elliptic_disk =
+            viboceros_geometry::Brep::try_planar_face(&ellipse, Tolerance::DEFAULT).unwrap();
+        for (geometry, aim) in [
+            (Geometry::PolyCurve(composite), map(-1.6, 1.2)),
+            (Geometry::PolyCurve(nurbs_composite), map(-1.6, 1.2)),
+            (
+                Geometry::NurbsCurve(arc.to_nurbs().unwrap()),
+                map(-1.6, 1.2),
+            ),
+            (Geometry::Brep(disk), map(-1.6, 1.2)),
+            (Geometry::NurbsCurve(ellipse), map(-1.6, 0.6)),
+            (Geometry::Brep(elliptic_disk), map(-1.6, 0.6)),
         ] {
             let mut doc = Document::default();
             let id = doc.add_geometry(geometry).unwrap();
             let mut view = Viewport::new(kind);
             let center = map(0., 0.);
             view.target = NaVector3::from(center.to_array());
+            // Keep the projected minor radius outside the 12-pixel aperture,
+            // including Perspective, so the empty-center check is meaningful.
+            view.last_rect = Some(area());
+            view.zoom_factor(2.).unwrap();
             view.plane.set(Viewport::default_plane(ViewKind::Right));
-            let pointer = view.project(map(-1.6, 1.2), area()).unwrap() + Vec2::new(2., 0.);
+            let pointer = view.project(aim, area()).unwrap() + Vec2::new(2., 0.);
             let input = DraftingInput {
                 active: true,
                 osnap: viboceros_drafting::ObjectSnapModes::ALL,
@@ -205,6 +235,34 @@ fn real_nurbs_arc_center_click_keeps_the_off_plane_center() {
     assert_center_click(
         Geometry::NurbsCurve(arc.to_nurbs().unwrap()),
         p(-1.6, 1.2, 7.),
+        p(0., 0., 7.),
+    );
+}
+
+#[test]
+fn real_nurbs_ellipse_center_click_keeps_the_off_plane_center() {
+    let ellipse = viboceros_geometry::Ellipse3::try_new(
+        p(0., 0., 7.),
+        2.,
+        1.,
+        p(0., 0., 0.)
+            .vector_to(p(1., 0., 0.))
+            .unwrap()
+            .normalized_nonzero()
+            .unwrap(),
+        p(0., 0., 0.)
+            .vector_to(p(0., 1., 0.))
+            .unwrap()
+            .normalized_nonzero()
+            .unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap()
+    .to_nurbs()
+    .unwrap();
+    assert_center_click(
+        Geometry::NurbsCurve(ellipse),
+        p(-1.6, 0.6, 7.),
         p(0., 0., 7.),
     );
 }

@@ -2,6 +2,10 @@
 
 [Snap controls](object-snap-controls.md) · [Analytic Center](center-hover-snaps.md) · [Polygon Center](polygon-center-snaps.md) · [Provenance](circular-center-snaps-provenance.json)
 
+The [elliptical NURBS follow-up](elliptic-center-snaps.md) resolves the four
+previously unsupported elliptic captures in this retained audit. Original inputs
+and Rhino observations are unchanged; current replay has 38 full matches.
+
 Center now recognizes circular NURBS curves and arc leaves, natural surface
 boundaries, and spatial B-rep edges. Capture follows the original curve: hovering
 over an empty center or the missing part of a supporting circle does not capture.
@@ -55,7 +59,9 @@ actual integer click and a 12-pixel capture radius.
   extruded boundaries, disks and both annulus boundaries.
 - Four empty-center/outside-arc misses compare admission only. Both outside-arc
   clicks fail to split, so those records have no Undo/Redo. The other 42 do.
-- Four elliptical cases capture in Rhino but remain unsupported natively. The
+- Four elliptical cases originally captured only in Rhino; the subsequent
+  [elliptical recognizer](elliptic-center-snaps.md) now supplies their native
+  targets and full command/history replay, bringing the total to 38. The
   altered quadratic (`noncircle`) captures at `x=3.75`; its original declared
   hypothesis `x=4` stays in the request. The full ellipse captures at `x=4`.
 - Two negative-weight arc cases capture natively but miss in Rhino. The same
@@ -66,10 +72,10 @@ These are constrained SplitEdge observations, not direct unconstrained GetPoint
 results. Projected coincident boundaries do not prove depth/occlusion ordering.
 Native tests additionally exercise all four production viewport kinds, ordinary
 and constrained queries, shared lazy data, invalidation and an actual off-plane
-egui point click. General elliptic NURBS recognition, Rhino's approximate-conic
+egui point click. Unrestricted elliptic NURBS recognition, Rhino's approximate-conic
 option, high-degree UI completeness, occlusion and unrestricted camera/priority
 parity remain unfinished. Analytic ellipse objects retain their existing Center
-support; the gap concerns recognition from NURBS geometry.
+support; conservative NURBS ellipse recognition is now covered by the follow-up.
 
 One release timing run on the local GB10 measured about `0.65`, `0.67` and
 `1.19` ms per cached query for 1, 100 and 1,000 separated circular NURBS objects
@@ -77,13 +83,13 @@ One release timing run on the local GB10 measured about `0.65`, `0.67` and
 application FPS or a comparison with Rhino. Overlapping curves and more complex
 boundaries can cost substantially more; no global spatial index is claimed.
 
-Verification checkpoint: 3,064 release-mode workspace tests, 282 Python tests,
+Original circular-implementation checkpoint: 3,064 release-mode workspace tests, 282 Python tests,
 seven offscreen GPU tests, formatting, and Clippy/Rustdoc with warnings denied.
 
 ```sh
 cargo test --release -p viboceros-geometry nurbs::circularity
 cargo test --release -p viboceros-drafting circular
-cargo test --release -p viboceros-oracle circular_nurbs_and_edges
+cargo test --release -p viboceros-oracle conic_nurbs_and_edges
 python3 -m unittest tools.rhino_oracle.test_circular_center_snaps
 cargo test --release -p viboceros-drafting circular_nurbs_hover_scene_timing -- --ignored --nocapture
 ```

@@ -2,7 +2,7 @@ use super::*;
 use viboceros_drafting::{ObjectSnapCache, ObjectSnapKind, ObjectSnapModes};
 
 #[test]
-fn circular_nurbs_and_edges_replay_thirty_four_captures_with_explicit_misses_and_limits() {
+fn conic_nurbs_and_edges_replay_thirty_eight_captures_with_explicit_misses_and_limits() {
     let request: ProbeRequest = serde_json::from_str(include_str!(
         "../../../../../tools/rhino_oracle/fixtures/circular_center_snaps.json"
     ))
@@ -13,7 +13,7 @@ fn circular_nurbs_and_edges_replay_thirty_four_captures_with_explicit_misses_and
     .unwrap();
     assert_eq!(request.operations.len(), 44);
     assert_eq!(observed["results"].as_array().unwrap().len(), 44);
-    let (mut matches, mut misses, mut negative_gauges, mut elliptic_limits) = (0, 0, 0, 0);
+    let (mut matches, mut misses, mut negative_gauges, mut elliptic_matches) = (0, 0, 0, 0);
     for (operation, row) in request
         .operations
         .iter()
@@ -81,13 +81,9 @@ fn circular_nurbs_and_edges_replay_thirty_four_captures_with_explicit_misses_and
             continue;
         }
         if id.starts_with("ellipse-") || id.starts_with("noncircle-") {
-            assert!(snap.is_none(), "{id}: {snap:?}");
             let expected = if id.starts_with("ellipse-") { 4. } else { 3.75 };
             assert!((observed_x - expected).abs() < 1e-9);
-            // Retain the raw ellipse captures as known unsupported behavior,
-            // not as admission misses or passing command geometry comparisons.
-            elliptic_limits += 1;
-            continue;
+            elliptic_matches += 1;
         }
         let snap = snap.unwrap_or_else(|| panic!("{id}: missing Center"));
         assert_eq!(snap.kind(), ObjectSnapKind::Center);
@@ -96,6 +92,15 @@ fn circular_nurbs_and_edges_replay_thirty_four_captures_with_explicit_misses_and
         // the scalar constrained result establishes x, not an occlusion policy.
         if id.starts_with("extruded-") {
             assert!((snap.point().x() - 4.).abs() < 1e-9 && (snap.point().y() + 4.).abs() < 1e-9);
+        } else if id.starts_with("noncircle-") {
+            // Independent quadratic conic formula: C = P0 + P2 - P1 for
+            // these weights. Keep the original request hypothesis unchanged.
+            assert!(
+                snap.point()
+                    .distance_to(Point3::try_new(3.75, -4., 0.).unwrap())
+                    .unwrap()
+                    < 1e-9
+            );
         } else {
             assert!(
                 snap.point()
@@ -122,7 +127,7 @@ fn circular_nurbs_and_edges_replay_thirty_four_captures_with_explicit_misses_and
         matches += 1;
     }
     assert_eq!(
-        (matches, misses, negative_gauges, elliptic_limits),
-        (34, 4, 2, 4)
+        (matches, misses, negative_gauges, elliptic_matches),
+        (38, 4, 2, 4)
     );
 }

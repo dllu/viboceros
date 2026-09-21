@@ -18,7 +18,7 @@ pub(super) fn visit_nurbs(
         }) {
             continue;
         }
-        let Some(center) = feature.circular_center() else {
+        let Some(center) = feature.conic_center() else {
             continue;
         };
         if metric.offset(center).is_none() {

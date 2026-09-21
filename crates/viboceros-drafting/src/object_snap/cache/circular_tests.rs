@@ -52,7 +52,7 @@ fn circular_center_and_mid_are_independently_lazy_on_one_source_snapshot() {
     assert_eq!(cache.builds, 1);
     let feature = &cache.curves[&id].features[0];
     assert!(feature.midpoint.get().is_none());
-    assert!(feature.circular_center.get().unwrap().is_some());
+    assert!(feature.conic_center.get().unwrap().is_some());
     let hit = query(&mut cache, &doc, [2.4, -2.8], ObjectSnapKind::Mid).unwrap();
     assert_eq!(hit.kind(), ObjectSnapKind::Mid);
     assert_eq!(cache.builds, 1);
@@ -75,7 +75,7 @@ fn far_circular_sources_are_rejected_before_center_recognition_and_integration()
         assert!(query(&mut cache, &doc, [100., 100.], ObjectSnapKind::Center).is_none());
         let feature = &cache.curves[&id].features[0];
         assert!(feature.midpoint.get().is_none());
-        assert!(feature.circular_center.get().is_none());
+        assert!(feature.conic_center.get().is_none());
     }
     assert_eq!(cache.builds, 1);
 }
@@ -100,7 +100,7 @@ fn circular_cache_retains_failed_slots_and_refreshes_edits_undo_tolerance_and_re
     }
     assert_eq!(cache.builds, 2);
     assert_eq!(
-        cache.curves[&id].features[0].circular_center.get(),
+        cache.curves[&id].features[0].conic_center.get(),
         Some(&None)
     );
     doc.undo().unwrap();
@@ -123,7 +123,7 @@ fn circular_cache_retains_failed_slots_and_refreshes_edits_undo_tolerance_and_re
 }
 
 #[test]
-fn failed_polycurve_circle_recognition_cannot_shift_another_leafs_target() {
+fn failed_polycurve_conic_recognition_cannot_shift_another_leafs_target() {
     let ellipse = Ellipse3::try_new(
         p(4., -4., 0.),
         2.,
@@ -144,12 +144,19 @@ fn failed_polycurve_circle_recognition_cannot_shift_another_leafs_target() {
     let ellipse = ellipse
         .try_trimmed(*ellipse.domain().start()..=ellipse.parameter_at(0.5).unwrap())
         .unwrap();
+    // Alter just one of the two quarter spans: it is no longer a single conic.
+    // The unmodified second span still passes through the query location.
+    let mut controls = ellipse.control_points().to_vec();
+    controls[1] =
+        viboceros_geometry::WeightedPoint3::try_new(p(6.25, -3., 0.), controls[1].weight())
+            .unwrap();
+    let nonconic = NurbsCurve::try_new_rational(2, controls, ellipse.knots().to_vec()).unwrap();
     let circle = circle();
     let circle = circle
         .try_trimmed(circle.parameter_at(0.5).unwrap()..=*circle.domain().end())
         .unwrap();
     let polycurve = PolyCurve3::try_new(vec![
-        CurveSegment3::NurbsCurve(ellipse),
+        CurveSegment3::NurbsCurve(nonconic),
         CurveSegment3::NurbsCurve(circle),
     ])
     .unwrap();
@@ -160,12 +167,12 @@ fn failed_polycurve_circle_recognition_cannot_shift_another_leafs_target() {
     let hit = query(&mut cache, &doc, [2.4, -5.2], ObjectSnapKind::Center).unwrap();
     assert!(hit.point().distance_to(p(4., -4., 0.)).unwrap() < 1e-10);
     assert_eq!(
-        cache.curves[&id].features[0].circular_center.get(),
+        cache.curves[&id].features[0].conic_center.get(),
         Some(&None)
     );
     assert!(
         cache.curves[&id].features[1]
-            .circular_center
+            .conic_center
             .get()
             .unwrap()
             .is_some()
@@ -202,6 +209,68 @@ fn circular_edges_and_surface_boundaries_capture_only_the_original_arc() {
         assert!((hit.point().x() - 4.).abs() < 1e-10 && (hit.point().y() + 4.).abs() < 1e-10);
         assert!(query(&mut cache, &doc, [5.6, -5.2], ObjectSnapKind::Center).is_none());
         assert!(query(&mut cache, &doc, [4., -4.], ObjectSnapKind::Center).is_none());
+    }
+}
+
+#[test]
+fn elliptic_sources_share_lazy_features_and_capture_only_the_original_arc() {
+    let arc = NurbsCurve::try_new_rational(
+        2,
+        vec![
+            viboceros_geometry::WeightedPoint3::try_new(p(2., -4., 7.), 1.).unwrap(),
+            viboceros_geometry::WeightedPoint3::try_new(
+                p(2., -3., 7.),
+                std::f64::consts::FRAC_1_SQRT_2,
+            )
+            .unwrap(),
+            viboceros_geometry::WeightedPoint3::try_new(p(4., -3., 7.), 1.).unwrap(),
+        ],
+        vec![0., 0., 0., 1., 1., 1.],
+    )
+    .unwrap();
+    let surface = NurbsSurface::try_extruded_curve(
+        &arc,
+        Vector3::try_new(0., 0., 0.).unwrap(),
+        Vector3::try_new(0., 0., 3.).unwrap(),
+    )
+    .unwrap();
+    let brep = Brep::try_surface_face(surface.clone(), Tolerance::DEFAULT).unwrap();
+    let polycurve = PolyCurve3::try_new(vec![CurveSegment3::NurbsCurve(arc.clone())]).unwrap();
+    for geometry in [
+        Geometry::NurbsCurve(arc.clone()),
+        Geometry::PolyCurve(polycurve),
+        Geometry::NurbsSurface(surface),
+        Geometry::Brep(brep),
+    ] {
+        let mut doc = Document::default();
+        let id = doc.add_geometry(geometry).unwrap();
+        let mut cache = ObjectSnapCache::default();
+        assert!(query(&mut cache, &doc, [100., 100.], ObjectSnapKind::Center).is_none());
+        let features =
+            cache.geometry_curves(id, doc.object(id).unwrap().geometry(), doc.tolerance());
+        assert!(
+            features
+                .iter()
+                .all(|f| f.conic_center.get().is_none() && f.midpoint.get().is_none())
+        );
+        for _ in 0..3 {
+            let hit = query(&mut cache, &doc, [2.4, -3.4], ObjectSnapKind::Center).unwrap();
+            assert_eq!(hit.object_id(), id);
+            assert!((hit.point().x() - 4.).abs() < 1e-10 && (hit.point().y() + 4.).abs() < 1e-10);
+            assert!((hit.point().z() - 7.).abs() < 1e-10 || (hit.point().z() - 10.).abs() < 1e-10);
+        }
+        let features =
+            cache.geometry_curves(id, doc.object(id).unwrap().geometry(), doc.tolerance());
+        assert!(features.iter().all(|f| f.midpoint.get().is_none()));
+        assert!(
+            features
+                .iter()
+                .any(|f| f.conic_center.get().is_some_and(Option::is_some))
+        );
+        assert!(query(&mut cache, &doc, [4., -4.], ObjectSnapKind::Center).is_none());
+        assert!(query(&mut cache, &doc, [5.6, -4.6], ObjectSnapKind::Center).is_none());
+        doc.set_objects_visibility([id], false).unwrap();
+        assert!(query(&mut cache, &doc, [2.4, -3.4], ObjectSnapKind::Center).is_none());
     }
 }
 

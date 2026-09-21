@@ -216,6 +216,19 @@ recognizer accepted the perturbed curve, which could replace its geometry during
 natural or circular merging. The fixed natural-extension path preserves the
 original interval (checked at 33 parameters) instead of substituting a circle.
 
+## Whole-span ellipticity
+
+`NurbsCurve::elliptical_center` proposes a conic from a scaled six-column
+homogeneous Bernstein coefficient system over all spans, using faer's SVD and a
+positive-definite two-dimensional quadratic form. Row/gauge normalization and a
+center-conditioning guard reject unstable fits. Acceptance maps every original
+span to a unit circle and uses the shared radial coefficient bound plus a plane
+bound; no sampled fit alone establishes ellipticity. Plane and radial bounds each
+receive half the absolute model-distance budget. Mixed-sign spans and
+inconclusive bounds are rejected. This remains a floating-point recognizer, not
+an exact conic predicate or certified center-error bound. See the
+[elliptical Center tests and retained replay](elliptic-center-snaps.md).
+
 ## Focused checks
 
 Surface projection uses [parameter-scale-independent tangent refinement and exact

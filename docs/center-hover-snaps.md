@@ -80,6 +80,8 @@ targets for closed linear boundaries and polygonal planar surfaces/faces without
 holes, using the same capture-distance and per-object priority rules.
 The [circular NURBS follow-up](circular-center-snaps.md) adds whole-span recognition
 for circular curves and surface/B-rep boundaries, including circular hole edges.
+The [elliptical follow-up](elliptic-center-snaps.md) adds full/partial NURBS
+ellipses with the same original-curve proximity policy.
 
 A conservatively expanded model-space cube provides a cheap projected bounding
 box rejection. Overflowing or unprojectable corners disable this rejection.

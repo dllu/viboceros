@@ -69,8 +69,9 @@ capture when Mid alone is enabled, including one-shot Mid.
 [Polygon Center](polygon-center-snaps.md) adds corner averages for closed linear
 boundaries and polygonal planar surfaces/faces without holes.
 [Circular NURBS Center](circular-center-snaps.md) adds circles/arcs and boundary
-edges, including circular holes. General End/Near/Int/Tan/Perp behavior,
-elliptical NURBS Center recognition,
+edges, including circular holes. [Elliptical NURBS Center](elliptic-center-snaps.md)
+adds conservative whole-span ellipse recognition. General End/Near/Int/Tan/Perp behavior,
+unrestricted conic/approximate-conic recognition,
 CPlane-relative Quad, occlusion,
 Alt suspension, full `Osnap` command grammar, persistence across app restarts and
 arbitrary macros remain incomplete. New controls do not establish broad snap

@@ -66,7 +66,8 @@ budget. Curved/conic NURBS recognition, toleranced gap recovery, occlusion, arbi
 camera/priority equivalence and cross-engine performance remain incomplete.
 The subsequent [circular NURBS implementation](circular-center-snaps.md) adds
 circle/arc recognition and circular boundary edges, including hole edges;
-elliptical NURBS recognition remains unfinished.
+[elliptical NURBS recognition](elliptic-center-snaps.md) now adds full/partial
+ellipses with conservative whole-span checks.
 
 Tests cover representation variants, failed/gapped boundaries, exact mean range,
 cache reuse/edit/Undo/tolerance/conversion, visibility, planarity far from world
