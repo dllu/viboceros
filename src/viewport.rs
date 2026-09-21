@@ -86,7 +86,7 @@ impl ViewKind {
 #[derive(Clone, Copy, Debug, Default)]
 pub struct DraftingInput {
     pub active: bool,
-    pub osnap: bool,
+    pub osnap: viboceros_drafting::ObjectSnapModes,
     pub smart_track: bool,
     pub grid_snap: bool,
     pub anchor: Option<Point3>,
@@ -2376,7 +2376,7 @@ mod tests {
                             &document,
                             DraftingInput {
                                 active: true,
-                                osnap: true,
+                                osnap: viboceros_drafting::ObjectSnapModes::ALL,
                                 ..Default::default()
                             },
                         )
@@ -2414,7 +2414,7 @@ mod tests {
                 &document,
                 DraftingInput {
                     active: true,
-                    osnap: true,
+                    osnap: viboceros_drafting::ObjectSnapModes::ALL,
                     smart_track: true,
                     grid_snap: false,
                     anchor: Some(point(0.0, 0.0, 8.0)),
@@ -2447,7 +2447,7 @@ mod tests {
                 &document,
                 DraftingInput {
                     active: true,
-                    osnap: true,
+                    osnap: viboceros_drafting::ObjectSnapModes::ALL,
                     smart_track: false,
                     grid_snap: false,
                     anchor: None,
@@ -2473,7 +2473,7 @@ mod tests {
                 &document,
                 DraftingInput {
                     active: true,
-                    osnap: true,
+                    osnap: viboceros_drafting::ObjectSnapModes::ALL,
                     smart_track: true,
                     grid_snap: false,
                     anchor: Some(anchor),
@@ -2498,7 +2498,7 @@ mod tests {
                 &document,
                 DraftingInput {
                     active: true,
-                    osnap: true,
+                    osnap: viboceros_drafting::ObjectSnapModes::ALL,
                     smart_track: true,
                     grid_snap: true,
                     anchor: Some(point(8.0, 8.0, 6.0)),
@@ -2529,7 +2529,7 @@ mod tests {
                 &document,
                 DraftingInput {
                     active: true,
-                    osnap: false,
+                    osnap: viboceros_drafting::ObjectSnapModes::NONE,
                     smart_track: false,
                     grid_snap: false,
                     anchor: None,

@@ -1,8 +1,10 @@
 use super::*;
 
+mod calibrated_snap;
 mod center_hover;
 mod face_history;
 mod face_splits;
+mod oneshot_snaps;
 mod selected;
 mod snaps;
 mod split;

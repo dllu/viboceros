@@ -70,11 +70,12 @@ application settings and viewport modes in `finally`; failure-path unit tests
 exercise initialization, command, and recording errors. A forcibly terminated
 Rhino process cannot execute that cleanup.
 
-Current limits: snap modes are the existing fixed Point/End/Mid/Center/Quad set;
-grid spacing is one unit; SmartTrack is reference-axis tracking, not Rhino's
-complete inference system. Per-mode Osnap selection, SnapSize, custom display
-modes, UI-setting persistence, and full command macro interpretation remain
-unimplemented. The supported controls follow McNeel's documentation for
+[Per-mode and one-shot snap controls](../object-snap-controls.md) expose the
+implemented Point/End/Mid/Center/Quad features; other feature kinds and Mid-only
+whole-segment hover remain incomplete. Grid spacing is one unit; SmartTrack is
+reference-axis tracking, not Rhino's complete inference system. SnapSize, custom
+display modes, UI-setting persistence, and full command macro interpretation
+remain unimplemented. The supported controls follow McNeel's documentation for
 [Snap/SetSnap](https://docs.mcneel.com/rhino/8mac/help/en-us/commands/snap.htm),
 [object snaps](https://docs.mcneel.com/rhino/8/help/en-us/user_interface/object_snaps.htm),
 [SmartTrack](https://docs.mcneel.com/rhino/8/help/en-us/commands/smarttrack.htm), and

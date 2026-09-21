@@ -1,6 +1,6 @@
 //! Bounded screen-space location query on the already-selected original edge.
 use super::*;
-use viboceros_drafting::ObjectSnap;
+use viboceros_drafting::{ObjectSnap, ObjectSnapKind, ObjectSnapModes};
 
 #[derive(Clone, Copy)]
 pub(super) struct EdgePointCursor {
@@ -23,14 +23,12 @@ impl Viewport {
         pointer: Pos2,
         rect: Rect,
         document: &Document,
-        osnap: bool,
+        osnap: ObjectSnapModes,
     ) -> Option<EdgePointCursor> {
         if !pointer.is_finite() || !rect.contains(pointer) {
             return None;
         }
-        let snap = osnap
-            .then(|| self.object_snap(pointer, rect, document))
-            .flatten();
+        let snap = self.object_snap(pointer, rect, document, osnap);
         let parameter = match (snap, distance_parameters) {
             (Some(snap), Some(parameters)) => {
                 // A feature snap chooses in model space, even when its screen
@@ -54,7 +52,9 @@ impl Viewport {
             (None, Some(parameters)) => {
                 self.pick_edge_distance_parameter(curve, parameters, pointer, rect)?
             }
-            (None, None) => self.pick_edge_parameter(curve, pointer, rect, osnap)?,
+            (None, None) => {
+                self.pick_edge_parameter(curve, pointer, rect, osnap.contains(ObjectSnapKind::End))?
+            }
         };
         Some(EdgePointCursor { parameter, snap })
     }

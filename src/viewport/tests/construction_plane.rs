@@ -152,7 +152,7 @@ fn edge_on_cplane_has_no_free_pick_but_camera_space_object_snaps_remain_availabl
             &document,
             DraftingInput {
                 active: true,
-                osnap: true,
+                osnap: viboceros_drafting::ObjectSnapModes::ALL,
                 ..Default::default()
             },
         )

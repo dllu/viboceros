@@ -77,7 +77,8 @@ seven offscreen GPU tests, formatting, and Clippy/Rustdoc with warnings denied.
 The subsequent [calibrated Center-hover audit](center-hover-snaps.md) replaces
 point-based standalone Cen capture and adds polycurve arc Center capture. Its
 new camera-calibrated records do not relabel the historical discrepancies above.
-UI one-shot mode semantics, general conic/closed-boundary recognition, occlusion,
+The later [snap controls](object-snap-controls.md) add scoped UI one-shot overrides.
+Mid-only whole-segment hover, general conic/closed-boundary recognition, occlusion,
 CPlane-relative Quad, mesh features and arbitrary camera equivalence remain
 incomplete. No broad Rhino snapping parity follows from these fixtures.
 See [Rhino's object-snap reference](https://docs.mcneel.com/rhino/8/help/en-us/user_interface/object_snaps.htm)

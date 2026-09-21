@@ -69,9 +69,9 @@ unchanged, including their explicit discrepancies.
 edge-constrained point prompts. `ObjectSnap::distance()` now means capture distance:
 distance to a direct feature or to Center's source curve, not always to its target.
 `ObjectSnapModes` enables explicit feature sets in cached axis-aligned/projected
-queries, skipping expensive disabled midpoint queries. The UI currently still
-enables all five kinds together; one-shot command lifetime and per-mode controls
-are not implemented by this change.
+queries, skipping expensive disabled midpoint queries. The later
+[snap controls](object-snap-controls.md) expose per-mode selection and scoped
+one-shot overrides in ordinary and edge-constrained prompts.
 
 A conservatively expanded model-space cube provides a cheap projected bounding
 box rejection. Overflowing or unprojectable corners disable this rejection.

@@ -48,6 +48,7 @@ mod point_grid;
 mod point_input;
 mod points;
 mod radius;
+mod snapping;
 mod toolbar;
 use point_input::{plane_radius_exceeds_tolerance, plane_rectangle_exceeds_tolerance};
 
@@ -1198,6 +1199,7 @@ pub struct VibocerosApp {
     viewports: [Viewport; 4],
     active_viewport: usize,
     osnap: bool,
+    snaps: snapping::SnapControls,
     smart_track: bool,
     grid_snap: bool,
     command_focus_requested: bool,
@@ -1238,6 +1240,7 @@ impl VibocerosApp {
             viewports: Viewport::standard_views(),
             active_viewport: 0,
             osnap: true,
+            snaps: snapping::SnapControls::default(),
             smart_track: true,
             grid_snap: true,
             command_focus_requested: false,
@@ -1257,8 +1260,16 @@ impl VibocerosApp {
     }
 
     fn run_command(&mut self) {
+        self.run_command_input();
+        self.discard_inactive_snap_overrides();
+    }
+
+    fn run_command_input(&mut self) {
         let input = self.command_input.trim().to_owned();
         self.remember_command_input(&input);
+        if self.try_one_shot_snap(&input) {
+            return;
+        }
         if !input.is_empty()
             && (self.try_run_plane_command(&input) || self.try_run_interface_command(&input))
         {
@@ -3066,6 +3077,7 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
+        self.snaps.model_override = None;
         self.finish_points_session();
         self.finish_evaluate_uv_session();
         self.cancel_object_prompt(announce);
@@ -5198,7 +5210,7 @@ impl eframe::App for VibocerosApp {
         let drafting = DraftingInput {
             active: (self.active_command.is_some() && !self.picking_alignment_curve())
                 || self.plane_prompt.is_some(),
-            osnap: self.osnap,
+            osnap: self.effective_snap_modes(),
             smart_track: self.smart_track,
             grid_snap: self.grid_snap,
             anchor: if let Some(prompt) = &self.plane_prompt {
@@ -5392,7 +5404,7 @@ mod tests {
     use viboceros_document::{ColorRgb, Geometry};
     use viboceros_geometry::{MeshFace, NurbsCurve, SurfaceExtensionEdge, TriangleMesh};
 
-    fn test_app() -> VibocerosApp {
+    pub(super) fn test_app() -> VibocerosApp {
         VibocerosApp {
             document: Document::default(),
             commands: CommandRegistry::with_builtins(),
@@ -5402,6 +5414,7 @@ mod tests {
             viewports: Viewport::standard_views(),
             active_viewport: 0,
             osnap: true,
+            snaps: snapping::SnapControls::default(),
             smart_track: true,
             grid_snap: true,
             command_focus_requested: false,
@@ -5420,7 +5433,7 @@ mod tests {
         }
     }
 
-    fn point(x: f64, y: f64, z: f64) -> Point3 {
+    pub(super) fn point(x: f64, y: f64, z: f64) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
     }
 

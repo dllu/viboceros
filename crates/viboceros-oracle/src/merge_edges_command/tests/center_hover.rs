@@ -30,30 +30,8 @@ fn calibrated_center_hover_matches_fourteen_captures_and_eight_empty_center_miss
         let [frame] = value["pick_frames"].as_array().unwrap().as_slice() else {
             panic!()
         };
-        let matrix: [[f64; 4]; 4] =
-            serde_json::from_value(frame["world_to_screen"].clone()).unwrap();
         let cursor: [f64; 2] = serde_json::from_value(frame["click_client"].clone()).unwrap();
-        let camera: [f64; 3] = serde_json::from_value(frame["camera_location"].clone()).unwrap();
-        let direction: [f64; 3] =
-            serde_json::from_value(frame["camera_direction"].clone()).unwrap();
-        let project = |point: Point3| {
-            let p = point.to_array();
-            if (0..3)
-                .map(|i| (p[i] - camera[i]) * direction[i])
-                .sum::<f64>()
-                <= 0.
-            {
-                return None;
-            }
-            let h: [f64; 4] = std::array::from_fn(|i| {
-                matrix[i][3] + (0..3).map(|j| matrix[i][j] * p[j]).sum::<f64>()
-            });
-            if h[3] == 0. {
-                None
-            } else {
-                Some([h[0] / h[3], h[1] / h[3]])
-            }
-        };
+        let project = calibrated_snap::projection(frame);
         let aim = Point3::try_from(pick.aim.unwrap()).unwrap();
         let expected_pixel: [f64; 2] = serde_json::from_value(frame["aim_client"].clone()).unwrap();
         let actual_pixel = project(aim).unwrap();
@@ -128,19 +106,7 @@ fn calibrated_center_hover_matches_fourteen_captures_and_eight_empty_center_miss
         };
         input.point = snap.point().to_array();
         let (actual, _) = run_split(&captured, Tolerance::DEFAULT).unwrap();
-        let mut expected = value.clone();
-        for key in [
-            "pick_frames",
-            "command_events",
-            "command_history",
-            "undo_events",
-            "redo_events",
-            "undo_event_snapshot",
-            "redo_event_snapshot",
-        ] {
-            expected.as_object_mut().unwrap().remove(key);
-        }
-        close(&actual, &expected, id);
+        close(&actual, &calibrated_snap::model_history(value), id);
         captures += 1;
     }
     assert_eq!((captures, misses), (14, 8));

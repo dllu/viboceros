@@ -33,6 +33,11 @@ edge-constrained point prompts. The separate [Center-hover query](center-hover-s
 scores proximity to analytic curves and returns their off-cursor center. Direct
 features suppress Center only on the same object; cross-object ranking uses
 capture distance. Conservative projected bounds avoid refining distant conics.
+The [snap-control adapter](object-snap-controls.md) passes the effective feature
+mask through ordinary and edge-constrained prompts. An empty mask exits the
+drafting query before traversing objects or refreshing caches; validation still
+runs. Pending one-shot overrides belong to the active point-input scope, not to
+the viewport or document undo history.
 Basic XY tracking treats an overflowing distance as out of range only on that
 axis, preserving valid perpendicular capture. Projected tracking accepts an
 in-range anchor before computing plane-local axis candidates; an unusable cursor

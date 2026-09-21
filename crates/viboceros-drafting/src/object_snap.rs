@@ -18,7 +18,8 @@ pub enum ObjectSnapKind {
 }
 
 /// Enabled feature kinds, independent of the UI's persistent/one-shot lifetime.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+/// Defaults to no enabled features.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct ObjectSnapModes(u8);
 
 impl ObjectSnapModes {
@@ -240,6 +241,11 @@ fn nearest_object_snap_with_metric(
     cache: &mut ObjectSnapCache,
     modes: ObjectSnapModes,
 ) -> Result<Option<ObjectSnap>, DraftingError> {
+    // Suspension is O(1), including with large surface/B-rep documents. Cache
+    // cleanup resumes on the next enabled query; public input validation still runs.
+    if modes == ObjectSnapModes::NONE {
+        return Ok(None);
+    }
     cache.retain_objects(document);
     let mut best = None;
     for object in document.objects() {

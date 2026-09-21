@@ -9,7 +9,9 @@ impl VibocerosApp {
             ui.horizontal_wrapped(|ui| {
                 let idle = self.active_command.is_none()
                     && self.plane_prompt.is_none()
-                    && self.object_prompt.is_none();
+                    && self.object_prompt.is_none()
+                    && self.group_prompt.is_none()
+                    && self.edge_prompt.is_none();
                 if ui
                     .add_enabled(idle && self.document.can_undo(), egui::Button::new("Undo"))
                     .clicked()
@@ -92,6 +94,15 @@ impl VibocerosApp {
                         self.apply_interface_command(command);
                     }
                 }
+                egui::containers::menu::MenuButton::new("Snap modes")
+                    .config(
+                        egui::containers::menu::MenuConfig::default()
+                            .close_behavior(egui::PopupCloseBehavior::CloseOnClickOutside),
+                    )
+                    .ui(ui, |ui| self.show_snap_modes(ui));
+                if let Some(label) = self.one_shot_snap_label() {
+                    ui.strong(format!("Next pick: {label}"));
+                }
                 ui.separator();
                 ui.weak(format!(
                     "{} selected",
@@ -105,6 +116,7 @@ impl VibocerosApp {
                     .clicked()
                 {
                     self.push_log(viboceros_command::interface::HELP.into());
+                    self.push_log(snapping::HELP.into());
                 }
             });
         });

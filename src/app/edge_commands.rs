@@ -308,6 +308,7 @@ impl VibocerosApp {
 
     pub(super) fn finish_edge_command(&mut self, announce: bool) {
         if let Some(prompt) = self.edge_prompt.take() {
+            self.snaps.model_override = None;
             self.command_input.clear();
             if let EdgePrompt::SplitPoints(selection) = prompt {
                 match selection.commit(&mut self.document) {
@@ -346,6 +347,7 @@ impl VibocerosApp {
         };
         match result {
             Ok(()) => {
+                self.snaps.model_override = None;
                 self.last_point = selection
                     .parameters()
                     .last()

@@ -44,6 +44,7 @@ impl VibocerosApp {
     pub(super) fn accept_drafting_point(&mut self, point: Point3) -> bool {
         let plane = self.viewports[self.active_viewport].construction_plane();
         if self.apply_drafting_point(point) {
+            self.snaps.model_override = None;
             if self.active_command.is_some() {
                 self.drafting_plane.get_or_insert(plane);
             }

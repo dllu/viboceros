@@ -126,6 +126,10 @@ native captures drive complete geometry/history replay; eight empty-center misse
 compare admission only. Strict optional `record_viewport`, `persistent_snaps` and
 separate `pick.aim` fields keep camera input and declared model targets distinct.
 Two rejected point-target hypotheses remain unchanged in the requests.
+The [four two-pick one-shot records](object-snap-controls.md) add eight calibrated
+captures and complete history comparisons, including restoration of persistent
+modes after the first pick. Native menu/prompt lifecycle tests are separate from
+these camera-calibrated core capture replays.
 
 The shared `serde_json` dependency explicitly enables round-trip float parsing.
 Standalone oracle/document builds must not depend on app or test dependencies

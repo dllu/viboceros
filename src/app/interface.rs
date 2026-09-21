@@ -104,6 +104,7 @@ impl VibocerosApp {
                 }
                 [topic] if topic.trim_start_matches('_').eq_ignore_ascii_case("UI") => {
                     self.push_log(interface::HELP.into());
+                    self.push_log(snapping::HELP.into());
                     self.push_log(viboceros_command::construction_plane::USAGE.into());
                     self.command_input.clear();
                 }

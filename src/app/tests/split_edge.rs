@@ -20,6 +20,32 @@ fn submit(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn split_one_shot_survives_distance_options_then_clears_after_accepted_point_or_finish() {
+    use viboceros_drafting::{ObjectSnapKind, ObjectSnapModes};
+    let mut app = test_app();
+    let pick = fixture(&mut app);
+    submit(&mut app, "SplitEdge");
+    assert!(!app.try_one_shot_snap("Cen")); // Edge selection is not point input.
+    app.accept_edge_click(vec![pick]);
+    submit(&mut app, "Cen");
+    assert_eq!(
+        app.effective_snap_modes(),
+        ObjectSnapModes::only(ObjectSnapKind::Center)
+    );
+    submit(&mut app, "2");
+    assert_eq!(app.one_shot_snap_label(), Some("Cen"));
+    app.accept_split_parameter(f64::NAN);
+    assert_eq!(app.one_shot_snap_label(), Some("Cen"));
+    app.accept_split_parameter(2.);
+    assert_eq!(app.one_shot_snap_label(), None);
+    submit(&mut app, "NoSnap");
+    submit(&mut app, "");
+    assert!(app.edge_prompt.is_none());
+    assert_eq!(app.one_shot_snap_label(), None);
+    assert_eq!(app.effective_snap_modes(), ObjectSnapModes::ALL);
+}
+
+#[test]
 fn split_collects_typed_and_picked_points_then_finishes_as_one_undo_even_on_escape() {
     for escape in [false, true] {
         let mut app = test_app();

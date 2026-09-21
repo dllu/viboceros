@@ -5,6 +5,70 @@ use viboceros_geometry::{CircularArc3, CurveSegment3, LineSegment, PolyCurve3};
 fn p(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }
+
+#[test]
+fn enabled_modes_reach_both_parallel_and_perspective_capture_queries() {
+    for kind in [
+        ViewKind::Top,
+        ViewKind::Front,
+        ViewKind::Right,
+        ViewKind::Perspective,
+    ] {
+        let map = |x, y| match kind {
+            ViewKind::Front => p(x, 7., y),
+            ViewKind::Right => p(7., x, y),
+            _ => p(x, y, 7.),
+        };
+        let mut document = Document::default();
+        let arc = CircularArc3::try_from_three_points(
+            map(-2., 0.),
+            map(0., 2.),
+            map(2., 0.),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        document.add_geometry(Geometry::Arc(arc)).unwrap();
+        let mut view = Viewport::new(kind);
+        view.target = NaVector3::from(map(0., 0.).to_array());
+        let pointer = view.project(map(2., 0.), area()).unwrap() + Vec2::new(2., 0.);
+        for feature in [ObjectSnapKind::End, ObjectSnapKind::Center] {
+            let cursor = view
+                .drafting_cursor(
+                    pointer,
+                    area(),
+                    &document,
+                    DraftingInput {
+                        active: true,
+                        osnap: ObjectSnapModes::only(feature),
+                        ..Default::default()
+                    },
+                )
+                .unwrap();
+            assert_eq!(cursor.object_snap.unwrap().kind(), feature, "{kind:?}");
+            assert!(
+                cursor
+                    .point
+                    .distance_to(if feature == ObjectSnapKind::End {
+                        map(2., 0.)
+                    } else {
+                        map(0., 0.)
+                    })
+                    .unwrap()
+                    < 1e-10
+            );
+        }
+        for modes in [
+            ObjectSnapModes::NONE,
+            ObjectSnapModes::only(ObjectSnapKind::Point),
+        ] {
+            assert!(
+                view.object_snap(pointer, area(), &document, modes)
+                    .is_none(),
+                "{kind:?}"
+            );
+        }
+    }
+}
 fn area() -> Rect {
     Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.))
 }
@@ -46,7 +110,7 @@ fn ordinary_and_edge_constrained_prompts_share_center_hover_in_all_views() {
         let pointer = view.project(map(-1.6, 1.2), area()).unwrap() + Vec2::new(2., 0.);
         let input = DraftingInput {
             active: true,
-            osnap: true,
+            osnap: viboceros_drafting::ObjectSnapModes::ALL,
             ..Default::default()
         };
         let cursor = view.drafting_cursor(pointer, area(), &doc, input).unwrap();
@@ -60,16 +124,31 @@ fn ordinary_and_edge_constrained_prompts_share_center_hover_in_all_views() {
         let curve = NurbsCurve::try_new(1, vec![map(-3., -2.), map(3., -2.)], vec![0., 0., 6., 6.])
             .unwrap();
         let edge = view
-            .edge_point_cursor(&curve, None, pointer, area(), &doc, true)
+            .edge_point_cursor(
+                &curve,
+                None,
+                pointer,
+                area(),
+                &doc,
+                viboceros_drafting::ObjectSnapModes::ALL,
+            )
             .unwrap();
         assert!((edge.parameter - 3.).abs() < 1e-10, "{kind:?}");
         assert!(
-            view.object_snap(view.project(center, area()).unwrap(), area(), &doc)
-                .is_none(),
+            view.object_snap(
+                view.project(center, area()).unwrap(),
+                area(),
+                &doc,
+                ObjectSnapModes::ALL
+            )
+            .is_none(),
             "{kind:?}"
         );
         doc.set_objects_visibility([id], false).unwrap();
-        assert!(view.object_snap(pointer, area(), &doc).is_none());
+        assert!(
+            view.object_snap(pointer, area(), &doc, ObjectSnapModes::ALL)
+                .is_none()
+        );
     }
 }
 
@@ -102,7 +181,7 @@ fn real_drafting_click_returns_off_cursor_center_not_construction_plane_intersec
                         ViewportInput {
                             drafting: DraftingInput {
                                 active: true,
-                                osnap: true,
+                                osnap: viboceros_drafting::ObjectSnapModes::ALL,
                                 ..Default::default()
                             },
                             ..Default::default()

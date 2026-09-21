@@ -1,0 +1,21 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "two_pick_commands": 4,
+  "calibrated_native_captures": 8,
+  "raw_response_sha256": "7b27a49c0714eaeb82febceb50ae586ca7dcf64c269136fd98e7321a0d7bda9d",
+  "source_artifact_sha256": {
+    "box.3dm": "9ad7f078dc15cbe542751246f45371a3e97c514d13482aee66448a8129620a65"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/oneshot_snap_modes.json": "d2812573cf983a4b8647793dbf789fe8d1c99437fa6ce80992c81c9d12606fb8",
+    "tools/rhino_oracle/observations/oneshot_snap_modes.json": "f89627322ded20e9990330683d9c2e565d950919d8e46bec23cc27268ebfc876"
+  },
+  "notes": [
+    "Real SplitEdge component and point clicks in one newly owned private Xvfb Rhino session, using public APIs/commands only. Each operation has two calibrated point prompts and actual Undo/Redo.",
+    "One-shot Cen is followed by persistent Point/End/Mid/Cen/Quad; one-shot End, Point or Mid is followed by persistent Cen only. The second point has no one-shot prefix in the actual macro.",
+    "Portable requests substitute the exact box source recipe for the shared 3DM artifact. Responses are compacted JSON without numerical normalization or array reordering.",
+    "The native kernel queries each actual click with recorded prompt-time camera/matrix and a 12-pixel capture radius. Its captured points, not Rhino output coordinates, drive complete ordered geometry/attribute/history replay at absolute 1e-9 and relative 1e-10.",
+    "These observations verify the tested feature targets and one-shot-to-persistent transitions. Native application tests independently exercise lifecycle, invalid input, cancellation, transparent CPlane scopes and real menu pointer events; those additional interactions are not claimed as camera-calibrated Rhino replays.",
+    "Mid-only segment-hover capture, generalized conic/closed-boundary recognition, occlusion, arbitrary mode combinations and complete one-shot/macro behavior remain unfinished. Earlier snap archives are unchanged."
+  ]
+}

@@ -81,6 +81,49 @@ fn endpoint_osnap_capture_is_separate_from_continuous_edge_location() {
 }
 
 #[test]
+fn constrained_endpoint_shortcut_requires_end_mode_not_just_any_osnap() {
+    let curve = NurbsCurve::try_new(
+        1,
+        vec![p(0., 0., 7.), p(10., 0., 7.)],
+        vec![0., 0., 10., 10.],
+    )
+    .unwrap();
+    let document = Document::default();
+    let view = Viewport::new(ViewKind::Top);
+    let pointer = view.project(p(0., 0., 7.), rect()).unwrap() + Vec2::new(3., 0.);
+    let unsnapped = view
+        .pick_edge_parameter(&curve, pointer, rect(), false)
+        .unwrap();
+    assert!(unsnapped > 0.);
+    for mode in [
+        ObjectSnapModes::NONE,
+        ObjectSnapModes::only(ObjectSnapKind::Point),
+        ObjectSnapModes::only(ObjectSnapKind::Center),
+        ObjectSnapModes::only(ObjectSnapKind::Mid),
+        ObjectSnapModes::only(ObjectSnapKind::Quad),
+    ] {
+        let hit = view
+            .edge_point_cursor(&curve, None, pointer, rect(), &document, mode)
+            .unwrap();
+        assert!((hit.parameter - unsnapped).abs() < 1e-10);
+        assert!(hit.snap.is_none());
+    }
+    assert_eq!(
+        view.edge_point_cursor(
+            &curve,
+            None,
+            pointer,
+            rect(),
+            &document,
+            ObjectSnapModes::only(ObjectSnapKind::End)
+        )
+        .unwrap()
+        .parameter,
+        0.
+    );
+}
+
+#[test]
 fn real_pointer_events_emit_the_edge_parameter_without_a_cplane_point() {
     let document = Document::default();
     let curve =
@@ -243,7 +286,14 @@ fn off_edge_point_snaps_constrain_in_model_space_in_all_four_views() {
         assert!(rect().contains(pointer));
         for _ in 0..10 {
             let cursor = view
-                .edge_point_cursor(&curve, None, pointer, rect(), &document, true)
+                .edge_point_cursor(
+                    &curve,
+                    None,
+                    pointer,
+                    rect(),
+                    &document,
+                    viboceros_drafting::ObjectSnapModes::ALL,
+                )
                 .unwrap();
             assert!((cursor.parameter - 3.).abs() < 1e-12, "{kind:?}");
             let snap = cursor.snap.unwrap();
@@ -254,10 +304,17 @@ fn off_edge_point_snaps_constrain_in_model_space_in_all_four_views() {
         }
         assert_eq!(view.edge_snap_queries.get(), 1); // Stationary redraws do not solve again.
         assert!(
-            view.edge_point_cursor(&curve, None, pointer, rect(), &document, false)
-                .unwrap()
-                .snap
-                .is_none()
+            view.edge_point_cursor(
+                &curve,
+                None,
+                pointer,
+                rect(),
+                &document,
+                viboceros_drafting::ObjectSnapModes::NONE
+            )
+            .unwrap()
+            .snap
+            .is_none()
         );
     }
 }
@@ -365,23 +422,44 @@ fn feature_kinds_share_capture_and_hidden_objects_cannot_supply_stale_snap_point
         };
         let pointer = view.project(aim, rect()).unwrap() + Vec2::new(5., 0.);
         let cursor = view
-            .edge_point_cursor(&curve, None, pointer, rect(), &document, true)
+            .edge_point_cursor(
+                &curve,
+                None,
+                pointer,
+                rect(),
+                &document,
+                viboceros_drafting::ObjectSnapModes::ALL,
+            )
             .unwrap();
         assert_eq!(cursor.snap.unwrap().kind(), kind);
         assert!((cursor.parameter - point.x()).abs() < 1e-12);
         document.set_objects_locked([id], true).unwrap();
         assert!(
-            view.edge_point_cursor(&curve, None, pointer, rect(), &document, true)
-                .unwrap()
-                .snap
-                .is_some()
+            view.edge_point_cursor(
+                &curve,
+                None,
+                pointer,
+                rect(),
+                &document,
+                viboceros_drafting::ObjectSnapModes::ALL
+            )
+            .unwrap()
+            .snap
+            .is_some()
         );
         document.set_objects_visibility([id], false).unwrap();
         assert!(
-            view.edge_point_cursor(&curve, None, pointer, rect(), &document, true)
-                .unwrap()
-                .snap
-                .is_none()
+            view.edge_point_cursor(
+                &curve,
+                None,
+                pointer,
+                rect(),
+                &document,
+                viboceros_drafting::ObjectSnapModes::ALL
+            )
+            .unwrap()
+            .snap
+            .is_none()
         );
     }
 }
@@ -439,7 +517,14 @@ fn distance_snap_uses_model_space_even_when_screen_space_prefers_other_candidate
         document.add_geometry(Geometry::Point(target)).unwrap();
         let pointer = view.project(target, rect()).unwrap();
         let cursor = view
-            .edge_point_cursor(&curve, Some(&[3., 7.]), pointer, rect(), &document, true)
+            .edge_point_cursor(
+                &curve,
+                Some(&[3., 7.]),
+                pointer,
+                rect(),
+                &document,
+                viboceros_drafting::ObjectSnapModes::ALL,
+            )
             .unwrap();
         assert_eq!(cursor.parameter, expected);
         assert!(cursor.snap.is_some());
@@ -449,8 +534,15 @@ fn distance_snap_uses_model_space_even_when_screen_space_prefers_other_candidate
         );
         assert_eq!(view.edge_snap_queries.get(), 0); // Distance candidates need no closest-curve solve.
         assert!(
-            view.edge_point_cursor(&curve, Some(&[]), pointer, rect(), &document, true)
-                .is_none()
+            view.edge_point_cursor(
+                &curve,
+                Some(&[]),
+                pointer,
+                rect(),
+                &document,
+                viboceros_drafting::ObjectSnapModes::ALL
+            )
+            .is_none()
         );
     }
 }
@@ -493,7 +585,7 @@ fn real_off_edge_snap_click_subdivides_original_edge_without_selecting_or_moving
                                 edge_curve: active.then(|| selection.curve()),
                                 drafting: DraftingInput {
                                     active,
-                                    osnap: true,
+                                    osnap: viboceros_drafting::ObjectSnapModes::ALL,
                                     ..Default::default()
                                 },
                                 ..Default::default()

@@ -16,6 +16,9 @@ pub(super) struct PlanePrompt {
 }
 
 impl PlanePrompt {
+    pub(super) fn requests_point(&self) -> bool {
+        self.kind != PlanePromptKind::Rotate || self.points.len() < 2
+    }
     pub(super) fn anchor(&self) -> Option<Point3> {
         self.points.first().copied()
     }
@@ -105,6 +108,7 @@ impl VibocerosApp {
 
     pub(super) fn apply_plane_action(&mut self, action: PlaneAction, viewport: usize) {
         if let PlaneAction::Prompt(kind) = action {
+            self.snaps.plane_override = None;
             let prompt = PlanePrompt {
                 kind,
                 viewport,
@@ -134,6 +138,7 @@ impl VibocerosApp {
     }
 
     pub(super) fn cancel_plane_prompt(&mut self) {
+        self.snaps.plane_override = None;
         if self.plane_prompt.take().is_some() {
             self.command_input.clear();
             self.push_log("CPlane cancelled; previous modeling prompt retained".into());
@@ -181,6 +186,7 @@ impl VibocerosApp {
             };
             match frame {
                 Ok(frame) => {
+                    self.snaps.plane_override = None;
                     let viewport = prompt.viewport;
                     self.plane_prompt = None;
                     self.apply_plane_action(PlaneAction::Set(frame), viewport);
@@ -249,11 +255,13 @@ impl VibocerosApp {
         })();
         match result {
             Ok(Some(frame)) => {
+                self.snaps.plane_override = None;
                 self.apply_plane_action(PlaneAction::Set(frame), prompt.viewport);
                 self.command_input.clear();
                 true
             }
             Ok(None) => {
+                self.snaps.plane_override = None;
                 prompt.previous = Some(point);
                 self.push_log(prompt.message().into());
                 self.plane_prompt = Some(prompt);
