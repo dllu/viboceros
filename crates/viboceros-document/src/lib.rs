@@ -7,6 +7,7 @@ mod history;
 mod object_copy;
 mod object_deletion;
 mod object_geometry;
+pub use object_geometry::ReplacementHistory;
 mod object_layer;
 mod object_lookup;
 mod object_order;
@@ -1228,7 +1229,12 @@ impl Document {
         let staged = self.stage_object_geometries(ids, |geometry| {
             geometry.transformed(transform, self.tolerance)
         })?;
-        self.commit_object_geometries(staged, "Transform objects", "Transform object")
+        self.commit_object_geometries(
+            staged,
+            "Transform objects",
+            "Transform object",
+            ReplacementHistory::ChangesOnly,
+        )
     }
 
     /// Atomically replaces geometry while retaining object identity,
@@ -1236,6 +1242,18 @@ impl Document {
     pub fn replace_object_geometries(
         &mut self,
         replacements: impl IntoIterator<Item = (ObjectId, Geometry)>,
+    ) -> Result<usize, DocumentError> {
+        self.replace_object_geometries_with_history(replacements, ReplacementHistory::ChangesOnly)
+    }
+
+    /// Atomically replaces geometry with an explicit undo policy for equal
+    /// geometry. The return value counts recorded replacements. Duplicate IDs
+    /// use the last supplied geometry, and all sources must be editable before
+    /// any replacement or history mutation takes place.
+    pub fn replace_object_geometries_with_history(
+        &mut self,
+        replacements: impl IntoIterator<Item = (ObjectId, Geometry)>,
+        history: ReplacementHistory,
     ) -> Result<usize, DocumentError> {
         let replacements = replacements.into_iter().collect::<BTreeMap<_, _>>();
         let indices = self.resolve_object_indices(replacements.keys().copied())?;
@@ -1250,7 +1268,12 @@ impl Document {
             let geometry = replacements.remove(&self.objects[index].id).unwrap();
             staged.push((index, geometry));
         }
-        self.commit_object_geometries(staged, "Replace object geometry", "Replace object geometry")
+        self.commit_object_geometries(
+            staged,
+            "Replace object geometry",
+            "Replace object geometry",
+            history,
+        )
     }
 
     /// Atomically morphs objects in place while retaining identities,
@@ -1262,7 +1285,12 @@ impl Document {
     ) -> Result<usize, DocumentError> {
         let staged =
             self.stage_object_geometries(ids, |geometry| geometry.morphed(morph, self.tolerance))?;
-        self.commit_object_geometries(staged, "Replace object geometry", "Replace object geometry")
+        self.commit_object_geometries(
+            staged,
+            "Replace object geometry",
+            "Replace object geometry",
+            ReplacementHistory::ChangesOnly,
+        )
     }
 
     pub fn add_geometry(&mut self, geometry: Geometry) -> Result<ObjectId, DocumentError> {

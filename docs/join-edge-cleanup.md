@@ -10,6 +10,17 @@ geometry-preserving assembly primitive; untouched Join components are not cleane
 The [MergeAllEdges command](commands/merge-edges.md) exposes the kernel with its
 own measured angular and selection policy.
 
+`Brep::try_cleanup_edges(angle, tolerance)` additionally simplifies certified
+straight spatial edges and exactly straight UV trims, including unmerged edges.
+The command uses this entry point; automatic Join keeps its existing merge-only
+policy. Line proposals share accumulated displacement and work accounting with
+coalescing. Constant-sign monotone collinear controls have an exact locus
+certificate, including nonuniform knots and weights; other proposals need the
+whole-curve rational bound. Exact collinearity also supports degrees above the
+general rational certificate's degree-16 limit. A UV trim is never approximated
+merely because its spatial edge is nearly straight. See the command's retained evidence
+and parameterization limits.
+
 ## Geometry and topology guarantees
 
 A removable vertex must have exactly two incident edge ends, with distinct,

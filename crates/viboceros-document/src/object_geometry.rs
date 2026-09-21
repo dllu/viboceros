@@ -2,6 +2,19 @@
 
 use super::*;
 
+#[cfg(test)]
+mod replacement_tests;
+
+/// Whether assigning equal geometry represents an undoable object replacement.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ReplacementHistory {
+    /// Geometric edits do not consume undo history for unchanged objects.
+    ChangesOnly,
+    /// Record every requested replacement, including equal geometry. This also
+    /// updates selection recall and clears the redo branch on commit.
+    EveryReplacement,
+}
+
 impl Document {
     pub(super) fn stage_object_geometries(
         &self,
@@ -26,8 +39,11 @@ impl Document {
         mut staged: Vec<(usize, Geometry)>,
         transaction_label: &'static str,
         edit_label: &'static str,
+        history: ReplacementHistory,
     ) -> Result<usize, DocumentError> {
-        staged.retain(|(index, geometry)| self.objects[*index].geometry != *geometry);
+        if history == ReplacementHistory::ChangesOnly {
+            staged.retain(|(index, geometry)| self.objects[*index].geometry != *geometry);
+        }
         if staged.is_empty() {
             return Ok(0);
         }

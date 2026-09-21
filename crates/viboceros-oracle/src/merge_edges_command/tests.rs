@@ -29,69 +29,39 @@ fn close(a: &Value, b: &Value, path: &str) {
     }
 }
 
-// A deliberately narrower comparison than the full raw replay report: Rhino
-// reparameterizes line edges/trims and normalizes constant line weights. Keep
-// the sampled loci, topology, integrals, surface controls, and document state.
-fn witnesses(mut value: Value) -> Value {
+// Only the recorded representation differences are excluded. Every spatial
+// curve definition, UV control, history state, and other raw field is retained.
+fn representation_limits(mut value: Value, id: &str) -> Value {
     for key in ["before", "after", "undo", "redo"] {
         let Some(objects) = value.get_mut(key).and_then(Value::as_array_mut) else {
             continue;
         };
         for object in objects {
-            let Some(brep) = object["geometry"]
-                .get_mut("brep")
-                .and_then(Value::as_object_mut)
-            else {
+            let Some(brep) = object["geometry"].get_mut("brep") else {
                 continue;
             };
-            for edge in brep["edges"].as_array_mut().unwrap() {
-                let curve = edge["curve"].as_object_mut().unwrap();
-                curve.remove("definition");
-                curve.remove("domain");
+            if id.starts_with("unclamped-") {
+                // 3DM omits these two phantom knots, already before cleanup.
+                let knots = brep["surfaces"][0]["knots_u"].as_array_mut().unwrap();
+                knots.pop();
+                knots.remove(0);
             }
-            for face in brep["trim_curves"].as_array_mut().unwrap() {
-                for ring in face.as_array_mut().unwrap() {
-                    for trim in ring.as_array_mut().unwrap() {
-                        let trim = trim.as_object_mut().unwrap();
-                        // Rhino also removes collinear interior UV controls.
-                        // Only collapse unit-weight, degree-one, axis-aligned
-                        // monotone polygons: this proves the same entire line
-                        // locus, not merely matching endpoints or samples.
-                        if trim["degree"] == 1 {
+            if (id.starts_with("box-") && matches!(key, "after" | "redo"))
+                || (id.starts_with("surface-") && matches!(key, "before" | "undo"))
+            {
+                for face in brep["trim_curves"].as_array_mut().unwrap() {
+                    for ring in face.as_array_mut().unwrap() {
+                        for trim in ring.as_array_mut().unwrap() {
+                            // Exactly two unit-weight controls prove a segment;
+                            // only its affine parameter interval is excluded.
+                            assert_eq!(trim["degree"], 1);
                             let controls = trim["control_points"].as_array().unwrap();
-                            let first = controls.first().unwrap();
-                            let last = controls.last().unwrap();
-                            let line = (0..2).any(|axis| {
-                                let varying = 1 - axis;
-                                let a = first["point"][varying].as_f64().unwrap();
-                                let b = last["point"][varying].as_f64().unwrap();
-                                a != b
-                                    && controls.iter().all(|cp| {
-                                        cp["weight"] == 1.0
-                                            && cp["point"][axis] == first["point"][axis]
-                                    })
-                                    && controls.windows(2).all(|p| {
-                                        let x = p[0]["point"][varying].as_f64().unwrap();
-                                        let y = p[1]["point"][varying].as_f64().unwrap();
-                                        if b > a { x <= y } else { x >= y }
-                                    })
-                            });
-                            if line {
-                                trim.insert("control_points".into(), json!([first, last]));
-                            }
+                            assert_eq!(controls.len(), 2);
+                            assert!(controls.iter().all(|cp| cp["weight"] == 1.0));
+                            trim.as_object_mut().unwrap().remove("domain");
+                            trim.as_object_mut().unwrap().remove("knots");
                         }
-                        trim.remove("domain");
-                        trim.remove("knots");
                     }
-                }
-            }
-            // 3DM omits the two phantom knots outside the usable surface
-            // domain. Preserve every other surface field and knot.
-            for surface in brep["surfaces"].as_array_mut().unwrap() {
-                for key in ["knots_u", "knots_v"] {
-                    let knots = surface[key].as_array_mut().unwrap();
-                    knots.pop();
-                    knots.remove(0);
                 }
             }
         }
@@ -100,7 +70,7 @@ fn witnesses(mut value: Value) -> Value {
 }
 
 #[test]
-fn command_replays_document_history_topology_and_geometric_witnesses() {
+fn command_replays_full_geometry_and_history_with_only_known_representation_limits() {
     let request: ProbeRequest = serde_json::from_str(include_str!(
         "../../../../tools/rhino_oracle/fixtures/merge_edges_command.json"
     ))
@@ -112,37 +82,18 @@ fn command_replays_document_history_topology_and_geometric_witnesses() {
     let actual = run_request(&request).unwrap();
     assert_eq!(actual.results.len(), 39);
     assert_eq!(expected["results"].as_array().unwrap().len(), 39);
-    let mut noops = 0;
     for (a, b) in actual
         .results
         .iter()
         .zip(expected["results"].as_array().unwrap())
     {
         assert_eq!(a.id, b["id"]);
-        let id = &a.id;
-        let a = witnesses(a.value.clone());
-        let mut b = witnesses(b["value"].clone());
-        if a["history_tested"] == false && b["history_tested"] == true {
-            // Native no-ops preserve the redo branch. Rhino replaces these
-            // unchanged objects anyway. This difference is retained in raw data.
-            noops += 1;
-            close(
-                &a["before"][0]["geometry"],
-                &a["after"][0]["geometry"],
-                "native-noop",
-            );
-            close(
-                &b["before"][0]["geometry"],
-                &b["after"][0]["geometry"],
-                "rhino-noop",
-            );
-            b["history_tested"] = json!(false);
-            b.as_object_mut().unwrap().remove("undo");
-            b.as_object_mut().unwrap().remove("redo");
-        }
-        close(&a, &b, id);
+        close(
+            &representation_limits(a.value.clone(), &a.id),
+            &representation_limits(b["value"].clone(), &a.id),
+            &a.id,
+        );
     }
-    assert_eq!(noops, 4);
 }
 
 #[test]
@@ -202,7 +153,32 @@ fn planar_angle_matrix_matches_raw_records_except_four_exact_cutoff_roundoffs() 
             continue;
         }
         cutoffs += 1;
-        assert_eq!(a.value["before"], a.value["after"]);
+        // No edge merges, but the first straight edge is reparameterized.
+        // Check every other field, retaining its complete control definition.
+        let mut before = a.value["before"].clone();
+        let mut after = a.value["after"].clone();
+        for state in [&mut before, &mut after] {
+            let brep = &mut state[0]["geometry"]["brep"];
+            let curve = &mut brep["edges"][0]["curve"];
+            assert_eq!(curve["definition"]["degree"], 1);
+            assert_eq!(
+                curve["definition"]["control_points"]
+                    .as_array()
+                    .unwrap()
+                    .len(),
+                2
+            );
+            curve.as_object_mut().unwrap().remove("domain");
+            let definition = curve["definition"].as_object_mut().unwrap();
+            definition.remove("domain");
+            definition.remove("knots");
+            let trim = &mut brep["trim_curves"][0][0][0];
+            assert_eq!(trim["degree"], 1);
+            assert_eq!(trim["control_points"].as_array().unwrap().len(), 2);
+            trim.as_object_mut().unwrap().remove("domain");
+            trim.as_object_mut().unwrap().remove("knots");
+        }
+        close(&before, &after, &a.id);
         close(&a.value["before"], &b["value"]["before"], &a.id);
         assert_eq!(
             a.value["after"][0]["geometry"]["brep"]["edges"]
@@ -278,12 +254,72 @@ fn kinky_surface_replacement_remains_an_explicit_topology_difference() {
             assert_eq!(x["edges"].as_array().unwrap().len(), 5);
             assert_eq!(y["edges"].as_array().unwrap().len(), 7);
         } else {
-            close(
-                &witnesses(a.value.clone()),
-                &witnesses(b["value"].clone()),
-                &a.id,
-            );
+            close(&a.value, &b["value"], &a.id);
         }
     }
     assert_eq!(split_surfaces, 33);
+}
+
+#[test]
+fn straight_edge_representations_and_undo_match_with_conservative_uncertainty() {
+    let request: ProbeRequest = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/merge_edges_linear.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/merge_edges_linear.json"
+    ))
+    .unwrap();
+    let actual = run_request(&request).unwrap();
+    assert_eq!(actual.results.len(), 18);
+    assert_eq!(expected["results"].as_array().unwrap().len(), 18);
+    let mut approximate = 0;
+    for (a, b) in actual
+        .results
+        .iter()
+        .zip(expected["results"].as_array().unwrap())
+    {
+        assert_eq!(a.id, b["id"]);
+        close(&a.value, &b["value"], &a.id);
+        assert_eq!(a.value["history_tested"], true);
+        assert_eq!(a.value["before"], a.value["undo"]);
+        assert_eq!(a.value["after"], a.value["redo"]);
+        let before = &a.value["before"][0]["geometry"]["brep"];
+        let after = &a.value["after"][0]["geometry"]["brep"];
+        assert_eq!(before["surfaces"], after["surfaces"]);
+        assert_eq!(after["edges"].as_array().unwrap().len(), 4);
+        let near = ["near-1e-12-", "near-1e-10-", "near-1e-09-"]
+            .iter()
+            .any(|p| a.id.starts_with(p));
+        if near {
+            approximate += 1;
+        }
+        // The raw epsilon comparison alone would hide this meaningful
+        // metadata difference: native never reports zero approximation error.
+        assert_eq!(
+            after["edge_tolerances"],
+            if near {
+                json!([1e-9, 0., 1e-9, 0.])
+            } else {
+                json!([0., 0., 0., 0.])
+            }
+        );
+        assert_eq!(
+            b["value"]["after"][0]["geometry"]["brep"]["edge_tolerances"],
+            json!([0., 0., 0., 0.])
+        );
+        let curved = a.id.starts_with("near-1e-08-") || a.id.starts_with("near-1e-06-");
+        for (index, edge) in after["edges"].as_array().unwrap().iter().enumerate() {
+            let degree = if curved && index % 2 == 0 { 2 } else { 1 };
+            assert_eq!(edge["curve"]["definition"]["degree"], degree);
+            assert_eq!(
+                edge["curve"]["definition"]["control_points"]
+                    .as_array()
+                    .unwrap()
+                    .len(),
+                degree + 1
+            );
+        }
+    }
+    assert_eq!(approximate, 6);
 }

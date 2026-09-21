@@ -80,12 +80,10 @@ fn merge(
         let angle = tolerance
             .angular()
             .clamp(0.1_f64.to_radians(), 1_f64.to_radians());
-        let merged = brep.try_merge_all_edges(angle, tolerance)?;
+        let merged = brep.try_cleanup_edges(angle, tolerance)?;
         let count = brep.edges().len() - merged.edges().len();
-        if count > 0 {
-            removed += count;
-            replacements.push((object.id(), Geometry::Brep(merged)));
-        }
+        removed += count;
+        replacements.push((object.id(), Geometry::Brep(merged)));
     }
     if eligible == 0 {
         return Err(CommandError::UnsupportedMergeAllEdgesGeometry);
@@ -96,7 +94,10 @@ fn merge(
     if postselected {
         document.clear_selection();
     }
-    let objects = document.replace_object_geometries(replacements)?;
+    let objects = document.replace_object_geometries_with_history(
+        replacements,
+        viboceros_document::ReplacementHistory::EveryReplacement,
+    )?;
     Ok(format!(
         "Merged {removed} redundant edge(s) in {objects} object(s)"
     ))

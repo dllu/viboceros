@@ -2,6 +2,7 @@
 use super::*;
 use crate::ParameterSide;
 mod curves;
+mod linear;
 #[cfg(test)]
 mod tests;
 
@@ -62,6 +63,30 @@ impl Brep {
     ) -> Result<Self, GeometryError> {
         merge(self, angle_tolerance, tolerance, &mut Budget(MAX_WORK))
     }
+
+    /// Merges redundant edges and simplifies certified straight spatial edges
+    /// and their exactly straight UV trims. Simplified curves have unit weights
+    /// and domain `0..chord_length` in model units. Surfaces are not changed.
+    ///
+    /// Unlike [`Self::try_merge_all_edges`], this also visits untouched edges.
+    /// Linearity tests only propose replacements; every spatial replacement
+    /// must have a whole-curve certificate. Displacement accumulates with the
+    /// preceding merges under one absolute-tolerance and work budget. Stored
+    /// uncertainty grows conservatively for nonzero changes. Nonlinear UV trims
+    /// retain their original representation and exact locus.
+    pub fn try_cleanup_edges(
+        &self,
+        angle_tolerance: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        merge_with_cleanup(
+            self,
+            angle_tolerance,
+            tolerance,
+            &mut Budget(MAX_WORK),
+            true,
+        )
+    }
 }
 
 pub(super) fn merge(
@@ -69,6 +94,16 @@ pub(super) fn merge(
     angle: Real,
     tolerance: Tolerance,
     budget: &mut Budget,
+) -> Result<Brep, GeometryError> {
+    merge_with_cleanup(source, angle, tolerance, budget, false)
+}
+
+fn merge_with_cleanup(
+    source: &Brep,
+    angle: Real,
+    tolerance: Tolerance,
+    budget: &mut Budget,
+    simplify_lines: bool,
 ) -> Result<Brep, GeometryError> {
     if !angle.is_finite() || !(0.0..=std::f64::consts::PI).contains(&angle) {
         return Err(invalid("edge merge angle must be in [0, pi] radians"));
@@ -101,6 +136,9 @@ pub(super) fn merge(
             current = next;
             changed = true;
         }
+    }
+    if simplify_lines {
+        changed |= state.simplify_linear_edges(tolerance, budget)?;
     }
     if !changed {
         source.validate(tolerance)?;

@@ -70,5 +70,50 @@
     "raw_response_sha256": {
       "rhino-kinks.json": "72651bcd9188760679f4d70ace0f515546c98348241a0b2940232a256d57e4dc"
     }
+  },
+  "merge_edges_linear": {
+    "cases": 18,
+    "engine_version": "8.32.26160.13001",
+    "shared_artifact_sha256": {
+      "linear-nonuniform-reverse0-audit.3dm": "459a60a0631cb6bae3c5a4fec3f2a3793fa2356f90152981090c24e4ec2bc4ce",
+      "linear-nonuniform-reverse1-audit.3dm": "de1f82d87528416bb353d8ab73cd267da3aa958aa03778e6264e17d7c336b921",
+      "quadratic-weighted-reverse0-audit.3dm": "62148972a608c39bc15e8b798c219270033f88d94646d6942b899c384847d142",
+      "quadratic-weighted-reverse1-audit.3dm": "6ce3f653382b034c4430a66a9142a9dd1e0eed8a47e0d0d4a9552047b324ed44",
+      "quadratic-negative-reverse0-audit.3dm": "df37e363d18c55a2f9fe4f39a20c71eb8e50d5d1a267bc9ae86f6d81acd26d62",
+      "quadratic-negative-reverse1-audit.3dm": "4ef19822c230e044508a58f8811b0072a5db90a7b500d7a1ade81c0b77a8577a",
+      "cubic-reverse0-audit.3dm": "8a04bec2d3bae61d64fc03f6535e47e83ab5b756b86fbca9bee4136bfc82f11d",
+      "cubic-reverse1-audit.3dm": "8d307c1c5f75b0f79a981038df0050fee168446bb2d910a2023df8a1de8d0a56",
+      "near-1e-12-reverse0-audit.3dm": "18910abdc9fe6496f84fd4e594e1bf08eb050a147b9a39b15ce254f521c2856e",
+      "near-1e-12-reverse1-audit.3dm": "4d7974586b737cc7519345b0e9763b4b2f808d9f91824c411ab6baae5030c8b7",
+      "near-1e-10-reverse0-audit.3dm": "66bf59a53b40d79df6aa8eb40560b1a1511ce03449a4cc52636080af8d548614",
+      "near-1e-10-reverse1-audit.3dm": "8d2558f6210ae6fc403f42e8e2f24ff54bc93fce6455229efa2f013027602ac1",
+      "near-1e-09-reverse0-audit.3dm": "87c6be2568d87092ccf7be5cfd8ee85b8799bb437b4fbc0e0bc775b513bd6992",
+      "near-1e-09-reverse1-audit.3dm": "e04703b45237a8eb07c2d6f3aed2ea188b72e8048dfffdfa60ac3d3191d194fc",
+      "near-1e-08-reverse0-audit.3dm": "8a3cd7bd2c29f9f71d450f2f8aff15c008d33f1e18386ae4914df4f5dbc59873",
+      "near-1e-08-reverse1-audit.3dm": "032f5b28f2a9031a0bec1cbd75ab347baa2f5eb606bc51c51bbd951d4e5e3aa2",
+      "near-1e-06-reverse0-audit.3dm": "16993632c14a562bae6a87030a0baa2d30371ebdcad3001b710baf6186e3bcce",
+      "near-1e-06-reverse1-audit.3dm": "987f73bbc674f1435c63d9fc21a9c319deedb325fee167e5b55002d47010574c"
+    },
+    "raw_response_sha256": {
+      "rhino-probe.json": "518923e9dfc1e9b2fb2d60f93b79ab3a4d8085c0c2a87c8284c7d540a6d997dc"
+    },
+    "source_export_failures": [
+      {
+        "status": "failure",
+        "id": "cubic-folded-reverse0",
+        "error": {
+          "kind": "geometry",
+          "message": "adaptive numerical integration did not converge at the requested tolerance"
+        }
+      },
+      {
+        "status": "failure",
+        "id": "cubic-folded-reverse1",
+        "error": {
+          "kind": "geometry",
+          "message": "adaptive numerical integration did not converge at the requested tolerance"
+        }
+      }
+    ]
   }
 }

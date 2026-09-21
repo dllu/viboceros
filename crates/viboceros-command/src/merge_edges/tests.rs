@@ -106,7 +106,7 @@ fn mixed_preselection_is_ignored_but_unsupported_only_selection_is_released() {
 }
 
 #[test]
-fn noop_preserves_bare_surface_representation_and_redo_history() {
+fn replacement_without_merges_materializes_surfaces_and_records_history() {
     let registry = CommandRegistry::with_builtins();
     let mut doc = Document::default();
     let surface = cube().faces()[0].surface().clone();
@@ -117,20 +117,43 @@ fn noop_preserves_bare_surface_representation_and_redo_history() {
     registry.execute(&mut doc, "Undo").unwrap();
     doc.select_objects_direct([id], SelectionMode::Replace)
         .unwrap();
-    let undo = doc.undo_label().map(str::to_owned);
-    let redo = doc.redo_label().map(str::to_owned);
+    assert!(doc.redo_label().is_some());
     registry
         .execute_postselected(&mut doc, "MergeAllEdges", Default::default())
         .unwrap();
+    let after = doc.object(id).unwrap().geometry().clone();
+    let Geometry::Brep(brep) = &after else {
+        panic!("surface was not materialized")
+    };
+    assert_eq!(brep.faces()[0].surface(), &surface);
+    assert_eq!(brep.edges().len(), 4);
+    assert_eq!(doc.selected_object_count(), 0);
+    assert_eq!(doc.undo_label(), Some("MergeAllEdges"));
+    assert_eq!(doc.redo_label(), None);
+    registry.execute(&mut doc, "Undo").unwrap();
     assert_eq!(
         doc.object(id).unwrap().geometry(),
         &Geometry::NurbsSurface(surface)
     );
     assert_eq!(doc.selected_object_count(), 0);
-    assert_eq!(doc.undo_label(), undo.as_deref());
-    assert_eq!(doc.redo_label(), redo.as_deref());
     registry.execute(&mut doc, "Redo").unwrap();
-    assert_eq!(doc.objects().len(), 2);
+    assert_eq!(doc.object(id).unwrap().geometry(), &after);
+    assert_eq!(doc.objects().len(), 1);
+    assert_eq!(doc.selected_object_count(), 0);
+
+    // Already-clean geometry still represents an object replacement, not an
+    // empty transaction that leaves a previous redo branch alive.
+    registry.execute(&mut doc, "Point 9,9,9").unwrap();
+    registry.execute(&mut doc, "Undo").unwrap();
+    doc.select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    registry.execute(&mut doc, "MergeAllEdges").unwrap();
+    assert_eq!(doc.object(id).unwrap().geometry(), &after);
+    assert_eq!(doc.redo_label(), None);
+    assert_eq!(doc.undo_label(), Some("MergeAllEdges"));
+    registry.execute(&mut doc, "Undo").unwrap();
+    assert_eq!(doc.object(id).unwrap().geometry(), &after);
+    assert!(doc.is_selected(id));
 }
 
 #[test]

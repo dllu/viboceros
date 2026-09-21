@@ -1,6 +1,6 @@
 use super::*;
 
-fn frame() -> Frame3 {
+pub(super) fn frame() -> Frame3 {
     Frame3::try_from_normal(
         Point3::try_new(0., 0., 0.).unwrap(),
         Vector3::try_new(0., 0., 1.).unwrap(),
@@ -8,7 +8,7 @@ fn frame() -> Frame3 {
     )
     .unwrap()
 }
-fn cube() -> Brep {
+pub(super) fn cube() -> Brep {
     Brep::try_box(frame(), [[0., 2.], [0., 3.], [0., 5.]], Tolerance::DEFAULT).unwrap()
 }
 fn split(source: &Brep, edge: usize) -> Brep {
