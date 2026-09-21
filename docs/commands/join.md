@@ -110,10 +110,13 @@ unsupported non-projective correspondences in its initial audit. The
 [short-overlap follow-up](../join-short-overlaps.md) resolves all four orientation
 failures and adds 102 records, of which 78 fully match. Complete short edges
 retain their distinct endpoints; tiny crossing overlaps within the tip-contact
-radius do not produce spurious cut-edge mates. Across these surface-command audits,
-633 of 804 cases fully match, with 32 native execution failures and 139 other
-differences. Partial-trim uncertainty, offset cut ownership and general ordered
-clustering remain incomplete. This is not general parity.
+radius do not produce spurious cut-edge mates. The
+[partial-boundary certificate audit](../join-trim-certificates.md) resolves
+eighteen more uncertainty-only differences and adds eighty pre-split curved
+records, all retaining raw edge-cleanup or representation differences.
+In total, 651 of 884 cases fully match, with 32 native execution failures and 201
+other differences. Redundant seam coalescing, general surface-image uncertainty,
+offset cut ownership and ordered clustering remain incomplete. This is not general parity.
 
 These are scoped observations, not general threshold rules. Generic curved
 partial overlaps, non-projective curved correspondence, nested/cavity-solid classification,

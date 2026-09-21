@@ -5,6 +5,7 @@ use super::*;
 use crate::exact_scalar::{Rational, rational};
 mod extract;
 mod parameter_map;
+pub(super) mod restriction;
 #[cfg(test)]
 mod tests;
 
@@ -38,9 +39,19 @@ pub(super) fn bound(
     let Some(b) = extract::Spline::new(b, reversed, charge)? else {
         return Ok(None);
     };
+    splines_bound(&a, &b, limit, tighten, charge)
+}
+
+fn splines_bound(
+    a: &extract::Spline<'_>,
+    b: &extract::Spline<'_>,
+    limit: Real,
+    tighten: bool,
+    charge: &mut impl FnMut(usize) -> Result<(), GeometryError>,
+) -> Result<Option<Real>, GeometryError> {
     let mut best = mapped_bound(
-        &a,
-        &b,
+        a,
+        b,
         &parameter_map::Map::identity(),
         limit,
         tighten,
@@ -52,8 +63,8 @@ pub(super) fn bound(
     // Endpoint derivatives propose correspondences; they never certify one.
     // Every positive projective map is a bijection of the complete domains,
     // and every accepted map must pass the same exact whole-span proof.
-    for map in parameter_map::candidates(&a, &b, charge)? {
-        if let Some(bound) = mapped_bound(&a, &b, &map, best.unwrap_or(limit), tighten, charge)? {
+    for map in parameter_map::candidates(a, b, charge)? {
+        if let Some(bound) = mapped_bound(a, b, &map, best.unwrap_or(limit), tighten, charge)? {
             best = Some(bound);
             if bound == 0. || !tighten {
                 break;
@@ -84,7 +95,12 @@ fn mapped_bound(
         while b.knots[bi + 1] <= b_left {
             bi += 1;
         }
-        let right = std::cmp::min(a.knots[ai + 1].clone(), map.inverse(&b.knots[bi + 1]));
+        // Restrictions leave outer knots beyond 1. Clamp before inverse
+        // projective mapping, which need not be defined outside [0,1].
+        let right = std::cmp::min(
+            std::cmp::min(&a.knots[ai + 1], &one).clone(),
+            map.inverse(std::cmp::min(&b.knots[bi + 1], &one)),
+        );
         let ac = a.extract(ai, &left, &right, charge)?;
         let mut bc = b.extract(bi, &b_left, &map.apply(&right), charge)?;
         charge(4 * bc.len())?;

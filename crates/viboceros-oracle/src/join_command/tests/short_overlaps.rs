@@ -13,7 +13,7 @@ fn short_overlap_discovery_preserves_complete_edges_and_exposes_partial_trim_lim
     let native = run_request_audit(&request).unwrap();
     assert_eq!(native.outcomes.len(), 102);
     assert_eq!(expected["results"].as_array().unwrap().len(), 102);
-    let (mut matched, mut uncertainty, mut offsets, mut subdivision, mut order) = (0, 0, 0, 0, 0);
+    let (mut matched, mut offsets, mut subdivision, mut order) = (0, 0, 0, 0);
     for (outcome, reference) in native
         .outcomes
         .iter()
@@ -27,17 +27,7 @@ fn short_overlap_discovery_preserves_complete_edges_and_exposes_partial_trim_lim
         };
         assert_eq!(result.id, id);
         let actual = &result.value;
-        let partial_uncertainty = id.starts_with("rotated-crossing-0.0022-")
-            || (id.starts_with("opposed-")
-                && surfaces::outputs(expected)[0]["brep"]["edges"]
-                    .as_array()
-                    .unwrap()
-                    .len()
-                    == 10);
-        if partial_uncertainty {
-            verify_uncertainty_only(actual, expected, id);
-            uncertainty += 1;
-        } else if matches!(
+        if matches!(
             id,
             "offset-crossing-0.0015-0.001-pre"
                 | "offset-crossing-0.0015-0.0015-pre"
@@ -110,36 +100,5 @@ fn short_overlap_discovery_preserves_complete_edges_and_exposes_partial_trim_lim
             matched += 1;
         }
     }
-    assert_eq!(
-        (matched, uncertainty, offsets, subdivision, order),
-        (78, 18, 4, 1, 1)
-    );
-}
-
-fn verify_uncertainty_only(actual: &Value, expected: &Value, id: &str) {
-    let mut compared = actual.clone();
-    let mut differing = 0;
-    for (object, reference) in compared["objects"]
-        .as_array_mut()
-        .unwrap()
-        .iter_mut()
-        .zip(expected["objects"].as_array().unwrap())
-    {
-        for key in ["edge_tolerances", "vertex_tolerances"] {
-            let a = object["brep"][key].as_array_mut().unwrap();
-            let b = reference["brep"][key].as_array().unwrap();
-            assert_eq!(a.len(), b.len());
-            for (a, b) in a.iter_mut().zip(b) {
-                let (n, r) = (a.as_f64().unwrap(), b.as_f64().unwrap());
-                assert_eq!(r, 0.);
-                assert!((0. ..0.001002).contains(&n));
-                differing += usize::from(n > 1e-10);
-                *a = b.clone();
-            }
-        }
-    }
-    assert!(differing > 0);
-    // ULP-size split rounding lacks a complete partial-trim image certificate;
-    // native keeps the conservative modelling floor. All other fields agree.
-    compare(&compared, expected, id);
+    assert_eq!((matched, offsets, subdivision, order), (96, 4, 1, 1));
 }

@@ -7,6 +7,7 @@ mod projective_correspondence;
 mod selection_distance;
 mod short_overlaps;
 mod surfaces;
+mod trim_certificates;
 
 #[test]
 fn document_join_tolerance_does_not_rebuild_or_collapse_short_input_edges() {

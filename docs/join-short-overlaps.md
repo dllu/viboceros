@@ -3,6 +3,11 @@
 [Kernel](brep-edge-joining.md) · [Command](commands/join.md) ·
 [Complete replay report](join-short-overlaps-comparison.json)
 
+This page records the original short-overlap audit. The later
+[partial-boundary certificate](join-trim-certificates.md) resolves its eighteen
+uncertainty-only differences, bringing this fixture to 96 full matches. The
+original report remains historical evidence.
+
 Automatic Join now distinguishes a short crossing overlap from a complete short
 edge. It also prevents boundary adjustment from clustering the distinct ends of
 an existing edge. The four orientation failures from the

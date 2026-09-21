@@ -70,6 +70,10 @@ bring the cumulative surface-command record to 804 cases: 633 full matches,
 native source construction to use the fixture tolerance, independently of a
 command's document-tolerance override, so both engines operate on the same
 short-feature inputs.
+The [partial-boundary certificate audit](join-trim-certificates.md) resolves
+eighteen of those differences and adds eighty pre-split curved records, retaining
+all newly exposed seam-cleanup, outer-knot and area differences. The latest total
+is 651 full matches, 32 native errors and 201 other differences in 884 cases.
 
 The `align` object-layout probe compares actual bounding-box, curve and line/plane alignment commands,
 including retained IDs, source samples/domains, groups, layer assignment and

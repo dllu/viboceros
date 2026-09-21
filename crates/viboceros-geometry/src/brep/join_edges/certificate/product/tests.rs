@@ -1,5 +1,6 @@
 use super::*;
 mod projective;
+mod restrictions;
 
 fn curve(points: &[[Real; 3]], weights: &[Real], degree: usize, knots: &[Real]) -> NurbsCurve {
     NurbsCurve::try_new_rational(

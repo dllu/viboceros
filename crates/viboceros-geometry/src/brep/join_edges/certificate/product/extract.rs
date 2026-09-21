@@ -13,6 +13,29 @@ impl<'a> Spline<'a> {
         reversed: bool,
         charge: &mut impl FnMut(usize) -> Result<(), GeometryError>,
     ) -> Result<Option<Self>, GeometryError> {
+        let domain = curve.domain();
+        let mut interval = [*domain.start(), *domain.end()];
+        if reversed {
+            interval.reverse();
+        }
+        Self::restricted(curve, interval, charge)
+    }
+
+    /// Normalize an oriented subinterval exactly, retaining the original
+    /// controls. Knots outside the restriction can lie outside [0,1].
+    pub fn restricted(
+        curve: &'a NurbsCurve,
+        interval: [Real; 2],
+        charge: &mut impl FnMut(usize) -> Result<(), GeometryError>,
+    ) -> Result<Option<Self>, GeometryError> {
+        let domain = curve.domain();
+        if interval
+            .iter()
+            .any(|t| !t.is_finite() || !domain.contains(t))
+            || interval[0] == interval[1]
+        {
+            return Ok(None);
+        }
         charge(
             curve
                 .knots()
@@ -27,12 +50,8 @@ impl<'a> Spline<'a> {
         {
             return Ok(None);
         }
-        let domain = curve.domain();
-        let (start, end) = if reversed {
-            (*domain.end(), *domain.start())
-        } else {
-            (*domain.start(), *domain.end())
-        };
+        let [start, end] = interval;
+        let reversed = start > end;
         let start = rational(start);
         let length = rational(end) - &start;
         let knots = (0..curve.knots().len())
@@ -62,14 +81,20 @@ impl<'a> Spline<'a> {
         charge: &mut impl FnMut(usize) -> Result<(), GeometryError>,
     ) -> Result<(Vec<H>, Rational), GeometryError> {
         let mut spans = self.degree()..self.curve.control_points().len();
-        let nonempty = |&i: &usize| self.knots[i] < self.knots[i + 1];
+        let (zero, one) = (rational(0.), rational(1.));
+        let nonempty = |&i: &usize| {
+            self.knots[i] < self.knots[i + 1] && self.knots[i] < one && self.knots[i + 1] > zero
+        };
         let span = if end {
             spans.rev().find(nonempty)
         } else {
             spans.find(nonempty)
         }
         .expect("validated nonempty active domain");
-        let (left, right) = (&self.knots[span], &self.knots[span + 1]);
+        let (left, right) = (
+            std::cmp::max(&self.knots[span], &zero),
+            std::cmp::min(&self.knots[span + 1], &one),
+        );
         Ok((self.extract(span, left, right, charge)?, right - left))
     }
 

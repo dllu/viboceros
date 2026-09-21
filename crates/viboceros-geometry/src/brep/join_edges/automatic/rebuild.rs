@@ -4,6 +4,7 @@ use crate::exact_scalar::{Rational, rational, scalar};
 
 mod bounds;
 mod clusters;
+mod image;
 #[cfg(test)]
 mod tests;
 
@@ -133,16 +134,10 @@ pub(super) fn tighten_joined_edges(
         let Some(e) = usage.trim.edge.filter(|&e| requested[e]) else {
             continue;
         };
-        let bound = if let Some((image, backwards)) =
-            bounds::natural_image(&joined.faces[usage.face].surface, usage.trim, budget)?
+        let bound = if let Some(image) =
+            image::BoundaryImage::new(&joined.faces[usage.face].surface, usage.trim, budget)?
         {
-            certificate::refined_curve_bound(
-                &joined.edges[e].curve,
-                &image,
-                backwards ^ usage.trim.reversed_3d,
-                Real::MAX,
-                |n| budget.charge(n),
-            )?
+            image.bound(&joined.edges[e].curve, usage.trim.reversed_3d, true, budget)?
         } else {
             None
         };

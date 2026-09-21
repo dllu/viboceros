@@ -4,6 +4,9 @@ use crate::binary_accumulator::{add_product, decompose};
 use std::cmp::Ordering;
 mod product;
 mod refine;
+pub(super) use product::restriction::{
+    curve_endpoint_bound, restricted_curve_bound, restricted_endpoint_bound,
+};
 pub(super) use refine::refined_curve_bound;
 
 /// Fast basis/locus certificates first; otherwise align exact knot spans and
