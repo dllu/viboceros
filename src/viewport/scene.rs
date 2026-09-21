@@ -1,7 +1,10 @@
 //! Per-frame GPU scene staging, object display dispatch, and depth encoding.
 
+use super::display_cache::DisplayGeometry;
 use super::*;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
+use std::rc::Rc;
+use std::sync::Arc;
 use viboceros_document::ColorRgb;
 
 const SMOOTH_SHADING_COSINE: Real = std::f64::consts::FRAC_1_SQRT_2;
@@ -26,7 +29,7 @@ fn resolved_display_color(attributes: &ObjectAttributes, layer_color: ColorRgb) 
     Color32::from_rgb(color.red, color.green, color.blue)
 }
 
-fn smooth_corner_normals(mesh: &TriangleMesh) -> Vec<[NaVector3<Real>; 3]> {
+pub(super) fn smooth_corner_normals(mesh: &TriangleMesh) -> Vec<[NaVector3<Real>; 3]> {
     let fallback = NaVector3::new(0.0, 0.0, 1.0);
     let face_normals = (0..mesh.triangles().len())
         .map(|index| {
@@ -81,11 +84,40 @@ fn point_position_key(point: Point3) -> [u64; 3] {
     })
 }
 
-#[derive(Clone, Copy, Debug)]
-struct SurfaceDisplayStyle {
+// Source snapshots are shared with the geometry cache; pointer equality here is
+// safe because DisplayCache validates their complete values before reuse.
+struct DisplayObject {
+    geometry: Rc<DisplayGeometry>,
     color: Color32,
     width: f32,
-    wire_density: i32,
+    point_radius: f32,
+}
+
+impl PartialEq for DisplayObject {
+    fn eq(&self, other: &Self) -> bool {
+        Rc::ptr_eq(&self.geometry, &other.geometry)
+            && self.color == other.color
+            && self.width == other.width
+            && self.point_radius == other.point_radius
+    }
+}
+
+#[derive(PartialEq)]
+struct SceneKey {
+    kind: ViewKind,
+    mode: DisplayMode,
+    rect: Rect,
+    pixels_per_unit: f32,
+    pan: Vec2,
+    orbit: [Real; 2],
+    distance: Real,
+    target: NaVector3<Real>,
+    objects: Vec<DisplayObject>,
+}
+
+pub(super) struct CachedScene {
+    key: SceneKey,
+    scene: Arc<GpuViewportScene>,
 }
 
 #[derive(Clone, Copy)]
@@ -198,7 +230,18 @@ impl Viewport {
         document: &Document,
         viewport_index: usize,
     ) {
-        let mut scene = GpuSceneBuilder::new();
+        crate::viewport_gpu::paint(
+            painter,
+            rect,
+            viewport_index,
+            self.object_scene(rect, document),
+        );
+    }
+
+    pub(super) fn object_scene(&self, rect: Rect, document: &Document) -> Arc<GpuViewportScene> {
+        let mut objects = Vec::new();
+        let mut visible = HashSet::new();
+        let mut cache = self.display_cache.borrow_mut();
         for object in document.objects() {
             let attributes = object.attributes();
             let Some(layer) = document.layer(attributes.layer_id()) else {
@@ -207,131 +250,91 @@ impl Viewport {
             if !attributes.is_visible() || !layer.is_visible() {
                 continue;
             }
-
-            let display_color = resolved_display_color(attributes, layer.color());
+            visible.insert(object.id());
             let mut color = if attributes.is_locked() || layer.is_locked() {
                 LOCKED_COLOR
             } else {
-                display_color
+                resolved_display_color(attributes, layer.color())
             };
             if self.display_mode == DisplayMode::Ghosted {
-                color = Color32::from_rgba_unmultiplied(color.r(), color.g(), color.b(), 110);
+                color = color_with_alpha(color, 110);
             }
             let selected = document.is_selected(object.id());
             if selected {
                 color = SELECTED_COLOR;
             }
-            let mut width = match self.display_mode {
+            let width = match self.display_mode {
                 DisplayMode::Wireframe => 1.5,
                 DisplayMode::Shaded => 2.25,
                 DisplayMode::Ghosted => 1.25,
-            };
-            if selected {
-                width += 1.5;
-            }
-
-            match object.geometry() {
+            } + if selected { 1.5 } else { 0.0 };
+            objects.push(DisplayObject {
+                geometry: cache.get(object, document.tolerance()),
+                color,
+                width,
+                point_radius: if selected { 3.5 } else { 2.5 },
+            });
+        }
+        cache.retain_visible(&visible);
+        drop(cache);
+        let key = SceneKey {
+            kind: self.kind,
+            mode: self.display_mode,
+            rect,
+            pixels_per_unit: self.pixels_per_unit,
+            pan: self.pan,
+            orbit: [self.orbit_yaw, self.orbit_pitch],
+            distance: self.perspective_camera_distance,
+            target: self.target,
+            objects,
+        };
+        let mut cached = self.cached_scene.borrow_mut();
+        if let Some(previous) = cached.as_ref()
+            && previous.key == key
+        {
+            return Arc::clone(&previous.scene);
+        }
+        let mut scene = GpuSceneBuilder::new();
+        for object in &key.objects {
+            let display = &object.geometry;
+            match &display.geometry {
                 Geometry::Point(point) => {
-                    self.add_gpu_point(&mut scene, rect, *point, 4.5, color);
+                    self.add_gpu_point(&mut scene, rect, *point, 4.5, object.color)
                 }
                 Geometry::PointCloud(cloud) => {
-                    let radius = if selected { 3.5 } else { 2.5 };
                     for point in cloud.points() {
-                        self.add_gpu_point(&mut scene, rect, *point, radius, color);
-                    }
-                }
-                Geometry::Line(line) => {
-                    self.add_gpu_line(&mut scene, rect, line.start(), line.end(), width, color);
-                }
-                Geometry::Circle(circle) => {
-                    self.add_gpu_parametric_curve(
-                        &mut scene,
-                        rect,
-                        CIRCLE_SAMPLES,
-                        width,
-                        color,
-                        |parameter| circle.point_at_angle(std::f64::consts::TAU * parameter),
-                    );
-                }
-                Geometry::Arc(arc) => {
-                    self.add_gpu_parametric_curve(
-                        &mut scene,
-                        rect,
-                        circular_arc_samples(*arc),
-                        width,
-                        color,
-                        |parameter| arc.point_at(parameter),
-                    );
-                }
-                Geometry::Ellipse(ellipse) => {
-                    self.add_gpu_parametric_curve(
-                        &mut scene,
-                        rect,
-                        CIRCLE_SAMPLES,
-                        width,
-                        color,
-                        |parameter| ellipse.point_at_angle(std::f64::consts::TAU * parameter),
-                    );
-                }
-                Geometry::Polyline(polyline) => {
-                    for segment in polyline.segments() {
-                        self.add_gpu_line(
+                        self.add_gpu_point(
                             &mut scene,
                             rect,
-                            segment.start(),
-                            segment.end(),
-                            width,
-                            color,
+                            *point,
+                            object.point_radius,
+                            object.color,
                         );
                     }
                 }
-                Geometry::NurbsCurve(curve) => {
-                    self.add_gpu_nurbs_curve(&mut scene, rect, curve, width, color);
-                }
-                Geometry::PolyCurve(curve) => {
-                    for segment in curve.segments() {
-                        self.add_gpu_nurbs_curve(&mut scene, rect, segment, width, color);
+                _ => {
+                    if self.display_mode != DisplayMode::Wireframe
+                        && let Some(mesh) = display.mesh()
+                    {
+                        self.add_gpu_mesh_faces_with_normals(
+                            &mut scene,
+                            mesh,
+                            display.normals(),
+                            object.color,
+                        );
                     }
-                }
-                Geometry::NurbsSurface(surface) => {
-                    self.add_gpu_nurbs_surface(
-                        &mut scene,
-                        rect,
-                        surface,
-                        SurfaceDisplayStyle {
-                            color,
-                            width,
-                            wire_density: attributes.wire_density(),
-                        },
-                        document.tolerance(),
-                    );
-                }
-                Geometry::Brep(brep) => {
-                    self.add_gpu_brep(
-                        &mut scene,
-                        rect,
-                        brep,
-                        SurfaceDisplayStyle {
-                            color,
-                            width,
-                            wire_density: attributes.wire_density(),
-                        },
-                        document.tolerance(),
-                    );
-                }
-                Geometry::Mesh(mesh) => {
-                    self.add_gpu_mesh(&mut scene, rect, mesh, color, width, document.tolerance());
+                    for &[a, b] in display.wires() {
+                        self.add_gpu_line(&mut scene, rect, a, b, object.width, object.color);
+                    }
                 }
             }
         }
-
-        let transparent = self.display_mode == DisplayMode::Ghosted;
-        crate::viewport_gpu::paint(
-            painter,
-            rect,
-            viewport_index,
-            scene.finish(self, rect, transparent),
-        );
+        let scene = Arc::new(scene.finish(self, rect, self.display_mode == DisplayMode::Ghosted));
+        *cached = Some(CachedScene {
+            key,
+            scene: Arc::clone(&scene),
+        });
+        scene
     }
 
     pub(super) fn add_gpu_point(
@@ -401,6 +404,7 @@ impl Viewport {
         });
     }
 
+    #[cfg(test)]
     fn add_gpu_nurbs_curve(
         &self,
         scene: &mut GpuSceneBuilder,
@@ -414,83 +418,7 @@ impl Viewport {
         });
     }
 
-    fn add_gpu_parametric_curve(
-        &self,
-        scene: &mut GpuSceneBuilder,
-        rect: Rect,
-        samples: usize,
-        width: f32,
-        color: Color32,
-        mut evaluate: impl FnMut(Real) -> Result<Point3, viboceros_geometry::GeometryError>,
-    ) {
-        let mut previous = None;
-        for sample in 0..=samples {
-            let evaluated = evaluate(sample as Real / samples as Real).ok();
-            if let (Some(start), Some(end)) = (previous, evaluated) {
-                self.add_gpu_line(scene, rect, start, end, width, color);
-            }
-            previous = evaluated;
-        }
-    }
-
-    fn add_gpu_nurbs_surface(
-        &self,
-        scene: &mut GpuSceneBuilder,
-        rect: Rect,
-        surface: &NurbsSurface,
-        style: SurfaceDisplayStyle,
-        tolerance: Tolerance,
-    ) {
-        if self.display_mode != DisplayMode::Wireframe
-            && let Ok(mesh) = surface.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)
-        {
-            self.add_gpu_mesh_faces(scene, &mesh, style.color);
-        }
-
-        if let Ok(curves) = surface.wireframe_curves(style.wire_density) {
-            for curve in &curves {
-                self.add_gpu_nurbs_curve(scene, rect, curve, style.width, style.color);
-            }
-        }
-    }
-
-    fn add_gpu_brep(
-        &self,
-        scene: &mut GpuSceneBuilder,
-        rect: Rect,
-        brep: &Brep,
-        style: SurfaceDisplayStyle,
-        tolerance: Tolerance,
-    ) {
-        if self.display_mode != DisplayMode::Wireframe
-            && let Ok(mesh) = brep.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)
-        {
-            self.add_gpu_mesh_faces(scene, &mesh, style.color);
-        }
-        if let Ok(curves) = brep.wireframe_curves(style.wire_density, tolerance) {
-            for curve in &curves {
-                self.add_gpu_nurbs_curve(scene, rect, curve, style.width, style.color);
-            }
-        }
-    }
-
-    fn add_gpu_mesh(
-        &self,
-        scene: &mut GpuSceneBuilder,
-        rect: Rect,
-        mesh: &TriangleMesh,
-        color: Color32,
-        width: f32,
-        tolerance: Tolerance,
-    ) {
-        self.add_gpu_mesh_faces(scene, mesh, color);
-        if let Ok(lines) = mesh.wireframe_lines(tolerance) {
-            for line in lines {
-                self.add_gpu_line(scene, rect, line.start(), line.end(), width, color);
-            }
-        }
-    }
-
+    #[cfg(test)]
     pub(super) fn add_gpu_mesh_faces(
         &self,
         scene: &mut GpuSceneBuilder,
@@ -501,14 +429,23 @@ impl Viewport {
             return;
         }
 
-        let corner_normals = smooth_corner_normals(mesh);
+        self.add_gpu_mesh_faces_with_normals(scene, mesh, &smooth_corner_normals(mesh), color);
+    }
+
+    fn add_gpu_mesh_faces_with_normals(
+        &self,
+        scene: &mut GpuSceneBuilder,
+        mesh: &TriangleMesh,
+        corner_normals: &[[NaVector3<Real>; 3]],
+        color: Color32,
+    ) {
         let face_color = if self.display_mode == DisplayMode::Ghosted {
             color_with_alpha(color, 35)
         } else {
             color
         };
         let gpu_color = color_to_gpu(face_color);
-        for (triangle_index, normals) in corner_normals.into_iter().enumerate() {
+        for (triangle_index, normals) in corner_normals.iter().enumerate() {
             let Some(points) = mesh.triangle_points(triangle_index) else {
                 continue;
             };

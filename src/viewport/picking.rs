@@ -171,59 +171,6 @@ impl Viewport {
         }
         nearest
     }
-
-    pub(super) fn nurbs_surface_pick(
-        &self,
-        pointer: Pos2,
-        rect: Rect,
-        surface: &NurbsSurface,
-        wire_density: i32,
-        tolerance: Tolerance,
-    ) -> PickHit {
-        if self.display_mode != DisplayMode::Wireframe
-            && let Ok(mesh) = surface.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)
-        {
-            return self.mesh_pick(pointer, rect, &mesh, tolerance);
-        }
-        PickHit::screen(
-            2,
-            surface
-                .wireframe_curves(wire_density)
-                .map(|curves| {
-                    curves
-                        .iter()
-                        .map(|curve| self.nurbs_pick_distance(pointer, rect, curve))
-                        .fold(f32::INFINITY, f32::min)
-                })
-                .unwrap_or(f32::INFINITY),
-        )
-    }
-
-    pub(super) fn brep_pick(
-        &self,
-        pointer: Pos2,
-        rect: Rect,
-        brep: &Brep,
-        wire_density: i32,
-        tolerance: Tolerance,
-    ) -> PickHit {
-        if self.display_mode != DisplayMode::Wireframe
-            && let Ok(mesh) = brep.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)
-        {
-            return self.mesh_pick(pointer, rect, &mesh, tolerance);
-        }
-        PickHit::screen(
-            2,
-            brep.wireframe_curves(wire_density, tolerance)
-                .map(|curves| {
-                    curves
-                        .iter()
-                        .map(|curve| self.nurbs_pick_distance(pointer, rect, curve))
-                        .fold(f32::INFINITY, f32::min)
-                })
-                .unwrap_or(f32::INFINITY),
-        )
-    }
 }
 
 #[cfg(test)]

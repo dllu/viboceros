@@ -62,13 +62,13 @@ pub(crate) fn paint(
     painter: &egui::Painter,
     rect: egui::Rect,
     viewport_index: usize,
-    scene: ViewportScene,
+    scene: Arc<ViewportScene>,
 ) {
     let callback = egui_wgpu::Callback::new_paint_callback(
         rect,
         ViewportCallback {
             viewport_index,
-            scene: Arc::new(scene),
+            scene,
         },
     );
     painter.add(callback);
@@ -89,7 +89,7 @@ impl egui_wgpu::CallbackTrait for ViewportCallback {
         callback_resources: &mut egui_wgpu::CallbackResources,
     ) -> Vec<wgpu::CommandBuffer> {
         if let Some(renderer) = callback_resources.get_mut::<ViewportRenderer>() {
-            renderer.prepare(self.viewport_index, &self.scene, device, queue);
+            renderer.prepare_cached(self.viewport_index, &self.scene, device, queue);
         }
         Vec::new()
     }
@@ -254,6 +254,27 @@ impl ViewportRenderer {
         }
     }
 
+    fn prepare_cached(
+        &mut self,
+        viewport_index: usize,
+        scene: &Arc<ViewportScene>,
+        device: &wgpu::Device,
+        queue: &wgpu::Queue,
+    ) {
+        let Some(viewport) = self.viewports.get(viewport_index) else {
+            return;
+        };
+        if viewport
+            .scene
+            .as_ref()
+            .is_some_and(|previous| Arc::ptr_eq(previous, scene))
+        {
+            return;
+        }
+        self.prepare(viewport_index, scene, device, queue);
+        self.viewports[viewport_index].scene = Some(Arc::clone(scene));
+    }
+
     fn prepare(
         &mut self,
         viewport_index: usize,
@@ -264,6 +285,11 @@ impl ViewportRenderer {
         let Some(viewport) = self.viewports.get_mut(viewport_index) else {
             return;
         };
+        #[cfg(test)]
+        {
+            viewport.preparations += 1;
+        }
+        viewport.scene = None;
         queue.write_buffer(
             &viewport.uniform_buffer,
             0,
@@ -312,6 +338,9 @@ impl ViewportRenderer {
 }
 
 struct PreparedViewport {
+    #[cfg(test)]
+    preparations: usize,
+    scene: Option<Arc<ViewportScene>>,
     uniform_buffer: wgpu::Buffer,
     uniform_bind_group: wgpu::BindGroup,
     triangle_buffer: GrowingBuffer,
@@ -340,6 +369,9 @@ impl PreparedViewport {
             }],
         });
         Self {
+            #[cfg(test)]
+            preparations: 0,
+            scene: None,
             uniform_buffer,
             uniform_bind_group,
             triangle_buffer: GrowingBuffer::new(device, "viboceros triangle vertex buffer"),

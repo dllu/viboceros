@@ -43,6 +43,21 @@ impl OffscreenRenderer {
     pub(crate) fn render(&mut self, scene: &ViewportScene) -> Vec<[u8; 4]> {
         assert_eq!(scene.uniform.viewport_size, [SIZE as f32; 2]);
         self.renderer.prepare(0, scene, &self.device, &self.queue);
+        self.read_pixels()
+    }
+
+    pub(crate) fn render_cached(&mut self, scene: &Arc<ViewportScene>) -> Vec<[u8; 4]> {
+        assert_eq!(scene.uniform.viewport_size, [SIZE as f32; 2]);
+        self.renderer
+            .prepare_cached(0, scene, &self.device, &self.queue);
+        self.read_pixels()
+    }
+
+    pub(crate) fn preparations(&self) -> usize {
+        self.renderer.viewports[0].preparations
+    }
+
+    fn read_pixels(&mut self) -> Vec<[u8; 4]> {
         let extent = wgpu::Extent3d {
             width: SIZE,
             height: SIZE,
