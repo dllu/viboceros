@@ -3,6 +3,8 @@ use super::*;
 mod components;
 mod overlap;
 mod search;
+mod selection;
+mod subdivision;
 #[cfg(test)]
 mod tests;
 
@@ -31,6 +33,15 @@ pub struct BrepJoinComponent {
     pub joined_edge_count: usize,
 }
 
+/// Assembly outputs and certified cross-source boundary contacts before
+/// ambiguity resolution. Contact alone does not establish a topological join.
+#[derive(Clone, Debug, PartialEq)]
+pub struct BrepJoinReport {
+    pub components: Vec<BrepJoinComponent>,
+    /// Sorted unique pairs of original source indices, each in ascending order.
+    pub candidate_source_pairs: Vec<[usize; 2]>,
+}
+
 /// Discovers matching naked boundaries between inputs and produces connected,
 /// oriented B-reps. Existing unmatched edges within a single input are not sewn.
 ///
@@ -42,8 +53,13 @@ pub struct BrepJoinComponent {
 ///
 /// Surfaces and UV geometry are never refitted. Spatial edges/vertices retain
 /// the assembly primitive's geometry-preserving policy, not Rhino's gap-edge
-/// rebuilding policy. Matches are ordered by certified distance then source
-/// edge indices; each boundary piece can be paired only once. Nonorientable
+/// rebuilding policy. Mutual unique candidates join first. Remaining ambiguous
+/// boundaries join only when they become mutually unique within a component
+/// established by other edges. Every certified candidate participates, even
+/// when another candidate has a smaller distance. Each piece is paired once.
+/// Original vertices precede subdivision vertices. Complete spatial boundaries
+/// precede cut ones; two cut boundaries and deferred closures retain the later
+/// source's edge. Nonorientable
 /// candidate sets fail atomically. Newly closed positive-volume shells are
 /// oriented outward; zero-volume double sheets retain the first face's sense.
 /// This does not classify nested/cavity solids or compute a Boolean union.
@@ -56,12 +72,26 @@ pub fn join_breps(
     join_distance: Real,
     tolerance: Tolerance,
 ) -> Result<Vec<BrepJoinComponent>, GeometryError> {
+    Ok(join_breps_with_report(sources, join_distance, tolerance)?.components)
+}
+
+/// Like [`join_breps`], with original-source candidate provenance for callers
+/// implementing incremental selection. Input-internal mated edges are not
+/// candidates; only certified contacts between naked boundary pieces are listed.
+pub fn join_breps_with_report(
+    sources: &[&Brep],
+    join_distance: Real,
+    tolerance: Tolerance,
+) -> Result<BrepJoinReport, GeometryError> {
     require_nonnegative_finite(join_distance, "B-rep join distance")?;
     if sources.len() > MAX_SOURCES {
         return Err(invalid("too many B-rep join sources"));
     }
     if sources.is_empty() {
-        return Ok(Vec::new());
+        return Ok(BrepJoinReport {
+            components: Vec::new(),
+            candidate_source_pairs: Vec::new(),
+        });
     }
     let mut budget = Budget(MAX_WORK);
     let mut face_sources = Vec::new();
@@ -103,6 +133,7 @@ pub fn join_breps(
             }
         }
     }
+    let mut split_edges = vec![false; combined.edges.len()];
     let candidates = if cuts.is_empty() {
         candidates
     } else {
@@ -114,28 +145,7 @@ pub fn join_breps(
                 (edge, p)
             })
             .collect::<Vec<_>>();
-        // Keep each source's new table entries next to that source. Besides
-        // deterministic provenance, this ensures a shared partial boundary
-        // retains the earlier source's curve and native parameter domain.
-        let mut edge_offset = 0;
-        let mut cut_offset = 0;
-        let mut pieces = Vec::with_capacity(sources.len());
-        for source in sources {
-            let next_offset = edge_offset + source.edges.len();
-            let count = cuts[cut_offset..].partition_point(|(edge, _)| *edge < next_offset);
-            let local = cuts[cut_offset..cut_offset + count]
-                .iter()
-                .map(|(edge, parameters)| (edge - edge_offset, parameters.clone()))
-                .collect::<Vec<_>>();
-            pieces.push(if local.is_empty() {
-                (*source).clone()
-            } else {
-                source.try_split_edges_at_parameters(&local, tolerance)?
-            });
-            edge_offset = next_offset;
-            cut_offset += count;
-        }
-        combined = Brep::try_combine(pieces, tolerance)?;
+        (combined, split_edges) = subdivision::apply(sources, &cuts, tolerance)?;
         search::find(&combined, join_distance, &mut budget)?
     };
     let mut matches = Vec::new();
@@ -155,21 +165,22 @@ pub fn join_breps(
             matches.push((bound, a, b, reversed));
         }
     }
-    matches.sort_by(|a, b| {
-        a.0.total_cmp(&b.0)
-            .then_with(|| (a.1, a.2, a.3).cmp(&(b.1, b.2, b.3)))
-    });
-    let mut used = vec![false; combined.edges.len()];
-    let mut pairs = Vec::new();
-    for (_, a, b, reversed) in matches {
-        if !used[a] && !used[b] {
-            used[a] = true;
-            used[b] = true;
-            pairs.push((a, b, reversed));
-        }
-    }
+    let pairs = selection::pairs(&combined, &matches, &split_edges);
+    let mut candidate_source_pairs = matches
+        .iter()
+        .map(|&(_, a, b, _)| {
+            let mut pair = [source_of_edge[a], source_of_edge[b]];
+            pair.sort_unstable();
+            pair
+        })
+        .collect::<Vec<_>>();
+    candidate_source_pairs.sort_unstable();
+    candidate_source_pairs.dedup();
     let joined = combined.try_join_edge_pairs(&pairs, join_distance, tolerance)?;
-    components::collect(joined, &combined, &pairs, &face_sources, tolerance)
+    Ok(BrepJoinReport {
+        components: components::collect(joined, &combined, &pairs, &face_sources, tolerance)?,
+        candidate_source_pairs,
+    })
 }
 
 fn edge_sources(brep: &Brep, face_sources: &[usize]) -> Vec<usize> {

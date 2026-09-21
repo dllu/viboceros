@@ -247,3 +247,40 @@ fn closed_inputs_are_released_and_mixed_families_fail_atomically() {
         assert_eq!(document.selected_object_count(), 2);
     }
 }
+
+#[test]
+fn later_picks_reconsider_accepted_original_boundaries_without_losing_output_pieces() {
+    for copy in [false, true] {
+        let mut document = Document::default();
+        let ids = [0, 2, 2].map(|i| document.add_geometry(faces(&[i], 5.)).unwrap());
+        let peer = document.add_geometry(faces(&[1], 5.)).unwrap();
+        let group = document.add_group(None, [ids[0], peer]).unwrap();
+        for id in ids {
+            document
+                .select_objects_direct([id], SelectionMode::Add)
+                .unwrap();
+        }
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let registry = CommandRegistry::with_builtins();
+        execute(&registry, &mut document, copy, true).unwrap();
+        let outputs = document
+            .objects()
+            .filter(|o| !ids.contains(&o.id()) && o.id() != peer)
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        for (output, faces) in outputs.iter().zip([1, 2]) {
+            assert!(matches!(output.geometry(), Geometry::Brep(b) if b.faces().len() == faces));
+            assert_eq!(output.group_ids(), [group]);
+            assert!(!document.is_selected(output.id()));
+        }
+        assert_eq!(document.selected_object_count(), if copy { 3 } else { 0 });
+        assert!(!document.is_selected(peer));
+        let after = document.objects().cloned().collect::<Vec<_>>();
+        for _ in 0..2 {
+            registry.execute(&mut document, "Undo").unwrap();
+            assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+            registry.execute(&mut document, "Redo").unwrap();
+            assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
+        }
+    }
+}

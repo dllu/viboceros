@@ -68,7 +68,7 @@ fn partial_edges_split_automatically_and_retain_underlying_surfaces() {
         .iter()
         .position(|&n| n == 2)
         .unwrap();
-    assert_eq!(part.brep.edges[shared].curve.domain(), 0.5..=1.5);
+    assert_eq!(part.brep.edges[shared].curve, b.edges[0].curve);
     assert!((part.brep.area(Tolerance::DEFAULT).unwrap() - 11.).abs() < 1e-12);
 }
 
@@ -222,4 +222,78 @@ fn partial_overlap_inverts_rational_edge_speed_across_negative_and_shifted_domai
         assert_eq!(result.faces[1].surface, b.faces[0].surface);
         assert!((result.area(Tolerance::DEFAULT).unwrap() - 11.).abs() < 1e-9);
     }
+}
+
+fn sheet(vector: [Real; 2]) -> Brep {
+    sheet_at(vector, 0.)
+}
+
+fn sheet_at(vector: [Real; 2], z: Real) -> Brep {
+    let surface = NurbsSurface::try_clamped_uniform(
+        1,
+        1,
+        2,
+        2,
+        [0., 1.]
+            .into_iter()
+            .flat_map(|v| {
+                [0., 2.]
+                    .into_iter()
+                    .map(move |x| Point3::try_new(x, v * vector[0], z + v * vector[1]).unwrap())
+            })
+            .collect(),
+    )
+    .unwrap();
+    Brep::try_surface_face(surface, Tolerance::DEFAULT).unwrap()
+}
+
+#[test]
+fn competing_boundaries_are_not_arbitrarily_paired_by_input_order() {
+    for planes in [
+        [sheet([3., 0.]), sheet([0., 5.]), sheet([1., 1.])],
+        [sheet([3., 0.]), sheet([-3., 0.]), sheet([0., 5.])],
+    ] {
+        for order in [
+            [0, 1, 2],
+            [0, 2, 1],
+            [1, 0, 2],
+            [1, 2, 0],
+            [2, 0, 1],
+            [2, 1, 0],
+        ] {
+            let sources = order.map(|i| &planes[i]);
+            let pieces = join_breps(&sources, 1e-9, Tolerance::DEFAULT).unwrap();
+            assert_eq!(pieces.len(), 3);
+            for (i, (piece, original)) in pieces.iter().zip(sources).enumerate() {
+                assert_eq!(piece.brep, *original);
+                assert_eq!(piece.source_indices, vec![i]);
+                assert_eq!(piece.joined_edge_count, 0);
+            }
+        }
+    }
+}
+
+#[test]
+fn all_certified_candidates_participate_in_ambiguity_even_when_one_is_closer() {
+    let a = sheet([3., 0.]);
+    let b = sheet([0., 5.]);
+    let c = sheet_at([1., 1.], 0.0005);
+    let report = join_breps_with_report(&[&a, &b, &c], 0.002, Tolerance::DEFAULT).unwrap();
+    assert_eq!(report.candidate_source_pairs, vec![[0, 1], [0, 2], [1, 2]]);
+    assert_eq!(report.components.len(), 3);
+    assert!(report.components.iter().all(|c| c.joined_edge_count == 0));
+}
+
+#[test]
+fn other_unambiguous_edges_can_resolve_a_competing_boundary_within_one_component() {
+    let a = cube().sub_brep(&[0], Tolerance::DEFAULT).unwrap();
+    let b = cube().sub_brep(&[2], Tolerance::DEFAULT).unwrap();
+    let parts = join_breps(&[&a, &b, &b], 1e-9, Tolerance::DEFAULT).unwrap();
+    assert_eq!(parts.len(), 2);
+    assert_eq!(parts[0].brep, a);
+    assert_eq!(parts[0].source_indices, vec![0]);
+    assert_eq!(parts[1].source_indices, vec![1, 2]);
+    assert_eq!(parts[1].joined_edge_count, 4);
+    assert!(parts[1].brep.is_solid());
+    assert_eq!(parts[1].brep.signed_volume(Tolerance::DEFAULT).unwrap(), 0.);
 }

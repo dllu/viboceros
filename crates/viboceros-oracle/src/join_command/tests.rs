@@ -1,4 +1,5 @@
 use super::*;
+mod boundaries;
 mod surfaces;
 
 fn compare(a: &Value, b: &Value, path: &str) {

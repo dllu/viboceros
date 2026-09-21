@@ -1,0 +1,752 @@
+{
+  "protocol_version": 1,
+  "passed": true,
+  "reference_engine": "rhino",
+  "reference_engine_version": "8.32.26160.13001",
+  "fixture": "tools/rhino_oracle/fixtures/join_boundary_matching.json",
+  "fixture_sha256": "ce20d37b4ef89a3c2aad3ccf1ee69c72f62ec5ab823b6c0776f858063de296cc",
+  "observations": "tools/rhino_oracle/observations/join_boundary_matching.json",
+  "observations_sha256": "f8915c26daaa46ffd140313707d73012fc539923c4f5852a0a1c9f9b6a7b5c95",
+  "native_executable_sha256": "f3e17d80cebfacd92c508192727a730382c52db9d03adaa9a1a652555f980092",
+  "absolute_epsilon": 1e-10,
+  "relative_epsilon": 1e-12,
+  "passing_operations": 142,
+  "maximum_absolute_error": 2.842170943040401e-14,
+  "measurement_boundary": "Named public EndCommand result and document snapshot on identical per-source 3DM artifacts, in an owned private Xvfb session.",
+  "note": "Fresh live comparison of all 142 matching follow-up cases. Archived raw observations come from the 160-case discovery audit and are also replayed offline without geometry, order, or parameter normalization. These command probes do not establish kernel performance.",
+  "known_differences": {
+    "count": 18,
+    "fixture": "tools/rhino_oracle/fixtures/join_boundary_differences.json",
+    "fixture_sha256": "8d67d084a85cfeec19b358ccb52453dbf3c3fb1885942176b8d971403be03932",
+    "observations": "tools/rhino_oracle/observations/join_boundary_differences.json",
+    "observations_sha256": "d31d9d473790c64e88c1ebf3b1af476cb5ae4bf648449fdc83581e5d3577d736",
+    "zero_volume_face_sense_cases": 12,
+    "nearby_boundary_rebuilding_cases": 6
+  },
+  "combined_surface_command_audits": {
+    "recorded_cases": 252,
+    "fully_matching_cases": 212,
+    "zero_volume_face_sense_differences": 16,
+    "gap_rebuilding_and_threshold_differences": 24,
+    "note": "Includes the prior 92-case audit; its four partial-overlap discrepancies now fully match."
+  },
+  "verification": {
+    "rust_passed": 2798,
+    "rust_ignored": 20,
+    "python_passed": 222,
+    "clippy_warnings_denied": true,
+    "rustdoc_warnings_denied": true
+  },
+  "operations": [
+    {
+      "id": "middle-0-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "middle-0-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "middle-0-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "middle-0-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "middle-1-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "middle-1-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "middle-1-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "middle-1-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prefix-0-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prefix-0-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prefix-0-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prefix-0-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prefix-1-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prefix-1-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prefix-1-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prefix-1-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "suffix-0-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "suffix-0-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "suffix-0-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "suffix-0-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "suffix-1-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "suffix-1-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "suffix-1-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "suffix-1-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "left-cross-0-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "left-cross-0-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "left-cross-0-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "left-cross-0-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "left-cross-1-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "left-cross-1-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "left-cross-1-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "left-cross-1-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "right-cross-0-Join-post",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "id": "right-cross-0-Join-pre",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "id": "right-cross-0-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "id": "right-cross-0-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "id": "right-cross-1-Join-post",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "id": "right-cross-1-Join-pre",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "id": "right-cross-1-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "id": "right-cross-1-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "id": "shifted-Join-post",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15
+    },
+    {
+      "id": "shifted-Join-pre",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15
+    },
+    {
+      "id": "shifted-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15
+    },
+    {
+      "id": "shifted-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15
+    },
+    {
+      "id": "negative-Join-post",
+      "passed": true,
+      "max_absolute_error": 2.842170943040401e-14
+    },
+    {
+      "id": "negative-Join-pre",
+      "passed": true,
+      "max_absolute_error": 2.842170943040401e-14
+    },
+    {
+      "id": "negative-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 2.842170943040401e-14
+    },
+    {
+      "id": "negative-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 2.842170943040401e-14
+    },
+    {
+      "id": "short-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "short-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "short-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "short-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "edge-order-0-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "edge-order-0-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "edge-order-0-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "edge-order-0-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "edge-order-1-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "edge-order-1-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "edge-order-1-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "edge-order-1-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "two-short-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "two-short-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "two-short-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "two-short-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "three-angles-012-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "three-angles-012-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "three-angles-021-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "three-angles-021-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "three-angles-102-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "three-angles-102-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "three-angles-120-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "three-angles-120-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "three-angles-201-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "three-angles-201-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "three-angles-210-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "three-angles-210-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "coplanar-012-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "coplanar-012-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "coplanar-021-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "coplanar-021-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "coplanar-102-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "coplanar-102-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "coplanar-120-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "coplanar-120-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "coplanar-201-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "coplanar-201-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "coplanar-210-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "coplanar-210-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "overlaid-012-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "overlaid-012-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "overlaid-021-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "overlaid-021-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "overlaid-102-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "overlaid-102-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "overlaid-120-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "overlaid-120-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "overlaid-201-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "overlaid-201-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "overlaid-210-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "overlaid-210-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "reverse-first-Join-post",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-16
+    },
+    {
+      "id": "reverse-first-Join-pre",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-16
+    },
+    {
+      "id": "reverse-first-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-16
+    },
+    {
+      "id": "reverse-first-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-16
+    },
+    {
+      "id": "reverse-second-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "reverse-second-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "reverse-second-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "reverse-second-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "reverse-both-Join-post",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-16
+    },
+    {
+      "id": "reverse-both-Join-pre",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-16
+    },
+    {
+      "id": "reverse-both-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-16
+    },
+    {
+      "id": "reverse-both-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-16
+    },
+    {
+      "id": "reverse-prefix-Join-post",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "id": "reverse-prefix-Join-pre",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "id": "reverse-prefix-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "id": "reverse-prefix-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "id": "reverse-suffix-Join-post",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "id": "reverse-suffix-Join-pre",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "id": "reverse-suffix-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "id": "reverse-suffix-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "id": "reverse-cross-Join-post",
+      "passed": true,
+      "max_absolute_error": 1.5543122344752192e-15
+    },
+    {
+      "id": "reverse-cross-Join-pre",
+      "passed": true,
+      "max_absolute_error": 1.5543122344752192e-15
+    },
+    {
+      "id": "reverse-cross-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 1.5543122344752192e-15
+    },
+    {
+      "id": "reverse-cross-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 1.5543122344752192e-15
+    },
+    {
+      "id": "prejoined-third-angle-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prejoined-third-angle-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prejoined-third-angle-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prejoined-third-angle-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prejoined-duplicate-wall-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prejoined-duplicate-wall-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prejoined-duplicate-wall-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prejoined-duplicate-wall-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prejoined-duplicate-floor-Join-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prejoined-duplicate-floor-Join-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prejoined-duplicate-floor-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "prejoined-duplicate-floor-JoinCopy-pre",
+      "passed": true,
+      "max_absolute_error": 0.0
+    },
+    {
+      "id": "near-competition-0.0001-Join-post",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-16
+    },
+    {
+      "id": "near-competition-0.0001-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-16
+    },
+    {
+      "id": "near-competition-0.0005-Join-post",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-16
+    },
+    {
+      "id": "near-competition-0.0005-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-16
+    },
+    {
+      "id": "near-competition-0.0015-Join-post",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-16
+    },
+    {
+      "id": "near-competition-0.0015-JoinCopy-post",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-16
+    }
+  ]
+}

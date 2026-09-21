@@ -2,7 +2,7 @@
 use super::*;
 
 mod automatic;
-pub use automatic::{BrepJoinComponent, join_breps};
+pub use automatic::{BrepJoinComponent, BrepJoinReport, join_breps, join_breps_with_report};
 mod certificate;
 #[cfg(test)]
 mod tests;

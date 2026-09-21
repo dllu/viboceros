@@ -38,9 +38,11 @@ closed nonzero-volume outputs are oriented outward. This is not a Boolean union.
 Preselection processes document order and emits every connected output, including
 fresh copies of unjoined open inputs. A disconnected source can contribute to
 multiple outputs, each inheriting its earliest contributing source's attributes
-and groups. Command-first picks grow the initial open assembly in pick order;
-nonconnecting picks are skipped and not retried. All resulting pieces use that
-initial seed's attributes. Enter completes selection, even after closure.
+and groups. Command-first picks reconsider the original accepted boundaries in
+pick order. Unrelated picks, picks that eliminate every cross-source join, and
+picks after complete closure are skipped without retry. A contacting pick can
+remain a separate output after boundary competition is resolved; all output
+pieces use the initial seed's attributes. Enter completes selection, even after closure.
 JoinCopy retains participating originals selected and leaves these outputs
 unselected; ordinary command-first Join deselects its outputs and skipped picks.
 Closed inputs are ignored and deselected. An all-closed selection, one open
@@ -55,30 +57,36 @@ multi-component sources, source retention, layers/colors/groups, and unselected
 peers. Every recorded field is compared at `1e-10` absolute / `1e-12` relative
 epsilon, without geometry, domain, or ordering normalization. Inputs are shared
 3DM artifacts, checked after native roundtrip and Rhino document insertion.
-The [fresh live comparison](../join-surfaces-comparison.json) records fixture,
+The [initial live comparison](../join-surfaces-comparison.json) records fixture,
 observation, and release-binary hashes; maximum numeric residual is below `2.04e-12`.
 
-The separate [26-case difference fixture](../../tools/rhino_oracle/fixtures/join_surface_differences.json)
+The original [26-case discrepancy archive](../../tools/rhino_oracle/fixtures/join_surface_differences.json)
 and [raw records](../../tools/rhino_oracle/observations/join_surface_differences.json)
-retain three incomplete policies:
+now has four fully resolved partial-overlap cases. Its duplicate-wall cases now
+have the correct two outputs, raw edge order, retained domains, and document
+state; only the zero-volume shell's face senses differ. Remaining policies are:
 
-- Partial straight overlaps join, but split-vertex ordering and retained spatial
-  and UV parameter domains differ. Native keeps the first source's subdivided
-  edge domain; Rhino keeps the recorded shorter edge's domain.
-- Three competing boundaries use deterministic distance/source-order pairing
-  natively. In the recorded duplicate-wall case, Rhino instead separates the
-  other sheet and joins the two duplicates, including during command-first picks.
+- Native retains the first face sense for a zero-volume double sheet. Rhino's
+  chosen sense differs for the recorded duplicated vertical walls.
 - Gap joins retain native spatial curves/vertices with conservative uncertainty;
   Rhino can rebuild them toward midpoints. Threshold behavior also differs: with
   document tolerance `0.001`, the recorded `0.002` gap joins command-first but
   not preselected in Rhino; at `0.0021`, command-first Rhino creates two unjoined
   copies and moves endpoints, while native fails unchanged.
 
+The [boundary-matching audit](../join-boundary-matching.md) adds 160 cases:
+142 match every recorded field; 18 retain zero-volume orientation and unjoined
+gap-rebuilding differences. It covers partial/crossing overlaps, opposite edge
+directions, source-order permutations, three-way competition, near competitors,
+overlaid walls, and already-joined input polysurfaces. UV trims in the original
+partial-overlap records differed only by roundoff within the ordinary epsilon;
+the earlier description of a separate UV-domain policy gap was incorrect.
+
 These are scoped observations, not general threshold rules. Generic curved
 partial overlaps, incompatible curved bases, nested/cavity-solid classification,
 and arbitrary ambiguous matching remain unsupported or unproven. Boundary search
 is bounded; command-first joining currently rebuilds the growing assembly at
-each accepted pick. No kernel speedup is claimed from command probe timings.
+each attempted pick. No kernel speedup is claimed from command probe timings.
 
 ## Curves
 

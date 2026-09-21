@@ -1,7 +1,7 @@
 //! Surface joining policy, separated from edge matching and document mutation.
 use super::*;
 use std::borrow::Cow;
-use viboceros_geometry::join_breps;
+use viboceros_geometry::{join_breps, join_breps_with_report};
 
 pub(super) fn accepts(geometry: &Geometry) -> bool {
     matches!(geometry, Geometry::NurbsSurface(_) | Geometry::Brep(_))
@@ -45,18 +45,32 @@ pub(super) fn stage(
     }
     let distance = tolerance.absolute() * 2.;
     let (parts, consumed) = if postselected {
-        let mut current = geometry[open[0]].as_ref().clone();
+        let mut closed = false;
+        let mut accepted = vec![geometry[open[0]].as_ref()];
         let mut consumed = vec![sources[open[0]].id()];
         let mut final_parts = Vec::new();
         for &i in &open[1..] {
-            let parts = join_breps(&[&current, geometry[i].as_ref()], distance, tolerance)?;
-            if !parts
-                .iter()
-                .any(|p| p.source_indices.len() == 2 && p.joined_edge_count > 0)
-            {
+            if closed {
                 continue;
             }
-            current = Brep::try_combine(parts.iter().map(|p| p.brep.clone()).collect(), tolerance)?;
+            // Reconsider the original accepted boundaries, not an already
+            // sewn temporary representation. A contacting pick can remain a
+            // separate output after ambiguity resolution; unrelated picks
+            // and picks that would remove every cross-source join are skipped.
+            accepted.push(geometry[i].as_ref());
+            let report = join_breps_with_report(&accepted, distance, tolerance)?;
+            let latest = accepted.len() - 1;
+            if !report
+                .candidate_source_pairs
+                .iter()
+                .any(|p| p.contains(&latest))
+                || !report.components.iter().any(|p| p.joined_edge_count > 0)
+            {
+                accepted.pop();
+                continue;
+            }
+            let parts = report.components;
+            closed = parts.iter().all(|part| part.brep.is_closed());
             consumed.push(sources[i].id());
             final_parts = parts
                 .into_iter()

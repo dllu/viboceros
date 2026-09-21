@@ -94,6 +94,20 @@ fn parameter_at_coordinate(
         return Ok((end, ends[1]));
     }
     let increasing = ends[0].to_array()[axis] < ends[1].to_array()[axis];
+    let controls = curve.control_points();
+    if curve.degree() == 1 && controls.len() == 2 && controls[0].weight() == controls[1].weight() {
+        let sign = if increasing { 1. } else { -1. };
+        if let Ok(parameter) = crate::parameter::map_parameter(
+            sign * target,
+            sign * ends[0].to_array()[axis]..=sign * ends[1].to_array()[axis],
+            start..=end,
+        ) {
+            budget.charge(4)?;
+            if parameter > start && parameter < end {
+                return Ok((parameter, curve.evaluate(parameter)?));
+            }
+        }
+    }
     let mut lo = ordered(start);
     let mut hi = ordered(end);
     // Binary search the finite floating-point parameter lattice: at most 64

@@ -87,11 +87,25 @@ sign-coherent rational bases, for which these hulls are conservative. Exact
 straight partial overlaps are planned in a dominant coordinate. Bounded binary
 search over the finite parameter lattice finds cuts; actual trimmed curve
 representations must pass the whole-curve certificate before cuts are proposed.
-Subdivision occurs within each source before combination, updating incident UV
-trims while preserving surface geometry and source table order. Matches are
-ranked by certified distance and edge index; each boundary piece is paired once.
-Overlapping proposals can introduce additional subdivisions even if some later
-candidates lose the greedy pairing. Conflicting orientation sets fail atomically.
+Subdivision keeps each source's new edges in its local table, but original
+vertices from all sources precede inserted vertices. Endpoint unions therefore
+retain genuine source endpoints ahead of rounded cut evaluations. A complete
+boundary's spatial curve precedes a cut one; if both were cut, the later source's
+piece survives. Surfaces and UV loci are unchanged.
+
+Mutual unique candidates join first. Three or more competing boundaries remain
+unjoined unless other edges establish a component in which a pair is uniquely
+resolvable. That deferred closure retains the later edge. Every certified
+candidate participates, including farther candidates within the join distance;
+nearest-first greedy pairing is not used. Existing input-internal mated edges
+remain intact. Each piece is paired once, and orientation conflicts fail
+atomically. Overlapping proposals can still introduce subdivisions whose
+candidates remain unjoined. See the [boundary-matching audit](join-boundary-matching.md).
+
+`join_breps_with_report` also returns sorted original-source candidate pairs.
+The command uses these contacts to admit incremental picks while reconsidering
+the original accepted boundaries, without repeatedly sewing a temporary result.
+Contact does not itself imply a final topological join.
 
 Connected extraction visits face/edge references and compacts each component's
 tables without rescanning the entire assembly per output. Newly joined closed

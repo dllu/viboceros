@@ -6,6 +6,7 @@ mod decompose;
 mod evaluate;
 pub(crate) mod exact;
 mod integration_frame;
+mod linear_trim;
 mod parameter_frame;
 mod sampling;
 pub use sampling::{NurbsCurveParameterSampler, NurbsCurveSamplingSpan};
@@ -2479,6 +2480,9 @@ impl NurbsCurve {
         crate::parameter::check_trim_interval(&interval, domain.clone())?;
         if start == *domain.start() && end == *domain.end() {
             return Ok(self.clone());
+        }
+        if let Some(line) = self.try_trim_polynomial_line(&interval)? {
+            return Ok(line);
         }
 
         let after_start = if start == *domain.start() {
