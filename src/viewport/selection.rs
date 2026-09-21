@@ -6,7 +6,7 @@ use super::screen::{
 };
 use super::*;
 
-#[derive(Default)]
+#[derive(Default, Debug, PartialEq)]
 pub(super) struct ProjectedPrimitives {
     points: Vec<Pos2>,
     pub(super) segments: Vec<[Pos2; 2]>,
@@ -120,53 +120,30 @@ impl Viewport {
                     };
                     PickHit::screen(0, distance)
                 }
-                Geometry::Line(line) => {
-                    let distance = self
-                        .project_segment(line.start(), line.end(), rect)
-                        .map_or(f32::INFINITY, |[start, end]| {
-                            point_segment_distance(pointer, start, end)
-                        });
-                    PickHit::screen(1, distance)
+                _ => {
+                    let display = self
+                        .display_cache
+                        .borrow_mut()
+                        .get(object, document.tolerance());
+                    let surface = matches!(
+                        object.geometry(),
+                        Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)
+                    );
+                    if surface
+                        && self.display_mode != DisplayMode::Wireframe
+                        && let Some(mesh) = display.mesh()
+                    {
+                        self.mesh_pick(pointer, rect, mesh, document.tolerance())
+                    } else {
+                        let distance = display
+                            .wires()
+                            .iter()
+                            .filter_map(|&[a, b]| self.project_segment(a, b, rect))
+                            .map(|[a, b]| point_segment_distance(pointer, a, b))
+                            .fold(f32::INFINITY, f32::min);
+                        PickHit::screen(if surface { 2 } else { 1 }, distance)
+                    }
                 }
-                Geometry::Circle(circle) => {
-                    PickHit::screen(1, self.circle_pick_distance(pointer, rect, circle))
-                }
-                Geometry::Arc(arc) => {
-                    PickHit::screen(1, self.arc_pick_distance(pointer, rect, arc))
-                }
-                Geometry::Ellipse(ellipse) => {
-                    PickHit::screen(1, self.ellipse_pick_distance(pointer, rect, ellipse))
-                }
-                Geometry::Polyline(polyline) => {
-                    PickHit::screen(1, self.polyline_pick_distance(pointer, rect, polyline))
-                }
-                Geometry::NurbsCurve(curve) => {
-                    PickHit::screen(1, self.nurbs_pick_distance(pointer, rect, curve))
-                }
-                Geometry::PolyCurve(curve) => PickHit::screen(
-                    1,
-                    curve
-                        .segments()
-                        .iter()
-                        .fold(f32::INFINITY, |distance, segment| {
-                            distance.min(self.nurbs_pick_distance(pointer, rect, segment))
-                        }),
-                ),
-                Geometry::NurbsSurface(surface) => self.nurbs_surface_pick(
-                    pointer,
-                    rect,
-                    surface,
-                    object.attributes().wire_density(),
-                    document.tolerance(),
-                ),
-                Geometry::Brep(brep) => self.brep_pick(
-                    pointer,
-                    rect,
-                    brep,
-                    object.attributes().wire_density(),
-                    document.tolerance(),
-                ),
-                Geometry::Mesh(mesh) => self.mesh_pick(pointer, rect, mesh, document.tolerance()),
             };
             if !hit.distance.is_finite() || hit.distance > PICK_CAPTURE_PIXELS {
                 continue;
@@ -207,12 +184,12 @@ impl Viewport {
             .selectable_objects()
             .filter(|object| filter.accepts_object(object))
             .filter_map(|object| {
-                let primitives = self.projected_primitives(
-                    object.geometry(),
-                    object.attributes(),
-                    viewport_rect,
-                    document.tolerance(),
-                );
+                let display = self
+                    .display_cache
+                    .borrow_mut()
+                    .get(object, document.tolerance());
+                let primitives =
+                    self.projected_display(&display, viewport_rect, document.tolerance());
                 let selected = if crossing {
                     primitives.is_crossed_by(selection)
                 } else {
@@ -223,6 +200,48 @@ impl Viewport {
             .collect()
     }
 
+    pub(super) fn projected_display(
+        &self,
+        display: &display_cache::DisplayGeometry,
+        rect: Rect,
+        tolerance: Tolerance,
+    ) -> ProjectedPrimitives {
+        let mut projected = ProjectedPrimitives::default();
+        match &display.geometry {
+            Geometry::Point(point) => projected.add_point(self.project(*point, rect)),
+            Geometry::PointCloud(cloud) => {
+                for point in cloud.points() {
+                    projected.add_point(self.project(*point, rect));
+                }
+            }
+            Geometry::Mesh(mesh) => {
+                // Include isolated vertices, just as the original mesh picker did.
+                self.add_projected_mesh(
+                    &mut projected,
+                    rect,
+                    mesh,
+                    self.display_mode != DisplayMode::Wireframe,
+                    tolerance,
+                );
+                return projected;
+            }
+            _ => {
+                if self.display_mode != DisplayMode::Wireframe
+                    && let Some(mesh) = display.mesh()
+                {
+                    self.add_projected_mesh(&mut projected, rect, mesh, true, tolerance);
+                }
+                for &[a, b] in display.wires() {
+                    if let Some([a, b]) = self.project_segment(a, b, rect) {
+                        projected.add_segment(Some(a), Some(b));
+                    }
+                }
+            }
+        }
+        projected
+    }
+
+    #[cfg(test)]
     pub(super) fn projected_primitives(
         &self,
         geometry: &Geometry,
@@ -315,6 +334,7 @@ impl Viewport {
         projected
     }
 
+    #[cfg(test)]
     fn add_projected_parametric_curve(
         &self,
         projected: &mut ProjectedPrimitives,
@@ -376,6 +396,22 @@ impl Viewport {
         }
     }
 
+    #[cfg(test)]
+    pub(super) fn nurbs_pick_distance(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        curve: &impl ViewportCurve,
+    ) -> f32 {
+        let mut nearest = f32::INFINITY;
+        curve.visit_segments(|start, end| {
+            if let Some([start, end]) = self.project_segment(start, end, rect) {
+                nearest = nearest.min(point_segment_distance(pointer, start, end));
+            }
+        });
+        nearest
+    }
+
     pub(super) fn paint_selection_window(&self, painter: &egui::Painter, start: Pos2, end: Pos2) {
         let selection = Rect::from_two_pos(start, end);
         let crossing = is_crossing_selection(start, end);
@@ -405,67 +441,6 @@ impl Viewport {
                 egui::StrokeKind::Inside,
             );
         }
-    }
-
-    pub(super) fn nurbs_pick_distance(
-        &self,
-        pointer: Pos2,
-        rect: Rect,
-        curve: &impl ViewportCurve,
-    ) -> f32 {
-        let mut nearest = f32::INFINITY;
-        curve.visit_segments(|start, end| {
-            if let Some([start, end]) = self.project_segment(start, end, rect) {
-                nearest = nearest.min(point_segment_distance(pointer, start, end));
-            }
-        });
-        nearest
-    }
-
-    fn circle_pick_distance(&self, pointer: Pos2, rect: Rect, circle: &Circle3) -> f32 {
-        self.parametric_pick_distance(pointer, rect, CIRCLE_SAMPLES, |parameter| {
-            circle.point_at_angle(std::f64::consts::TAU * parameter)
-        })
-    }
-
-    fn arc_pick_distance(&self, pointer: Pos2, rect: Rect, arc: &CircularArc3) -> f32 {
-        let samples = circular_arc_samples(*arc);
-        self.parametric_pick_distance(pointer, rect, samples, |parameter| arc.point_at(parameter))
-    }
-
-    fn ellipse_pick_distance(&self, pointer: Pos2, rect: Rect, ellipse: &Ellipse3) -> f32 {
-        self.parametric_pick_distance(pointer, rect, CIRCLE_SAMPLES, |parameter| {
-            ellipse.point_at_angle(std::f64::consts::TAU * parameter)
-        })
-    }
-
-    fn parametric_pick_distance(
-        &self,
-        pointer: Pos2,
-        rect: Rect,
-        samples: usize,
-        mut evaluate: impl FnMut(Real) -> Result<Point3, viboceros_geometry::GeometryError>,
-    ) -> f32 {
-        let mut nearest = f32::INFINITY;
-        let mut previous = None;
-        for sample in 0..=samples {
-            let projected = evaluate(sample as Real / samples as Real).ok();
-            if let (Some(start), Some(end)) = (previous, projected)
-                && let Some([start, end]) = self.project_segment(start, end, rect)
-            {
-                nearest = nearest.min(point_segment_distance(pointer, start, end));
-            }
-            previous = projected;
-        }
-        nearest
-    }
-
-    fn polyline_pick_distance(&self, pointer: Pos2, rect: Rect, polyline: &Polyline3) -> f32 {
-        polyline
-            .segments()
-            .filter_map(|segment| self.project_segment(segment.start(), segment.end(), rect))
-            .map(|[start, end]| point_segment_distance(pointer, start, end))
-            .fold(f32::INFINITY, f32::min)
     }
 }
 

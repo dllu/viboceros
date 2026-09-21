@@ -60,8 +60,12 @@ with separation `2^40`, below absolute f32 resolution there (12 renders).
 These cover all three parallel views and both target formats. Unit tests cover
 singleton, subnormal, and overflowing depth spans, unchanged perspective encoding,
 and finite face-sort depth at the f64 model-coordinate limit.
-The full GPU suite now performs 182 renders.
-All six tests use the application's camera, scene submission, shaders, pipelines,
+The cache test renders an actual document before/after an edit, undo, and
+deletion. It checks pixel changes/restoration and counts upload preparations:
+stationary redraws, including an empty scene, must issue no buffer uploads.
+See [display caching](viewport-caching.md) for invalidation and CPU timing checks.
+The full GPU suite now performs 188 renders.
+All seven tests use the application's camera, scene submission, shaders, pipelines,
 depth attachment, and buffer-upload code.
 An ordinary non-GPU test checks the independent ray reference against analytic
 hits, reversed winding, behind-origin intersections, outside barycentric weights,

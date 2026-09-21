@@ -686,3 +686,61 @@ fn gpu_camera_crossing_wires_rasterize_in_both_endpoint_orders() {
         assert!(pixels.iter().all(|pixel| pixel[3] == 0));
     }
 }
+
+#[test]
+#[ignore = "requires a graphics adapter; run explicitly with --ignored --nocapture"]
+fn gpu_cached_scene_reuses_uploads_and_updates_after_edit_and_undo() {
+    use viboceros_command::CommandRegistry;
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(SIZE as f32));
+    let commands = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    commands
+        .execute(&mut document, "Box -1,-1,0 1,1,0 2")
+        .unwrap();
+    commands.execute(&mut document, "SelNone").unwrap();
+    let mut view = Viewport::new(ViewKind::Top);
+    view.display_mode = DisplayMode::Shaded;
+    let mut renderer = OffscreenRenderer::new(wgpu::TextureFormat::Rgba8Unorm);
+    let first = view.object_scene(rect, &document);
+    let pixels = renderer.render_cached(&first);
+    assert!(pixels.iter().any(|p| p[3] != 0));
+    assert_eq!(renderer.preparations(), 1);
+    assert_eq!(
+        renderer.render_cached(&view.object_scene(rect, &document)),
+        pixels
+    );
+    assert_eq!(
+        renderer.preparations(),
+        1,
+        "stationary redraw must skip all uploads"
+    );
+    commands.execute(&mut document, "SelAll").unwrap();
+    commands.execute(&mut document, "Move 0,0,0 1,0,0").unwrap();
+    document.clear_selection();
+    let moved = renderer.render_cached(&view.object_scene(rect, &document));
+    assert_ne!(pixels, moved);
+    assert_eq!(renderer.preparations(), 2);
+    commands.execute(&mut document, "Undo").unwrap();
+    document.clear_selection();
+    assert_eq!(
+        renderer.render_cached(&view.object_scene(rect, &document)),
+        pixels
+    );
+    assert_eq!(renderer.preparations(), 3);
+    commands.execute(&mut document, "SelAll").unwrap();
+    commands.execute(&mut document, "Delete").unwrap();
+    assert!(
+        renderer
+            .render_cached(&view.object_scene(rect, &document))
+            .iter()
+            .all(|p| p[3] == 0)
+    );
+    assert_eq!(renderer.preparations(), 4);
+    assert!(
+        renderer
+            .render_cached(&view.object_scene(rect, &document))
+            .iter()
+            .all(|p| p[3] == 0)
+    );
+    assert_eq!(renderer.preparations(), 4);
+}

@@ -3,6 +3,12 @@
 [Project overview](../README.md) · [Command reference](commands/README.md)
 
 The application opens with Top, Perspective, Front, and Right viewports.
+Construction-plane grid lines clip against the perspective camera plane and then
+against the viewport rectangle before stroke tessellation. A line with one endpoint
+behind the camera retains its visible part, and near-plane projections never send
+huge screen coordinates to egui. The grid remains a background drafting overlay;
+it does not write model depth. Regression tests cover both endpoint orders,
+multiple camera orientations, fully hidden lines, and bounded generated strokes.
 Each supports wireframe, shaded, and ghosted display, with independent navigation.
 Perspective wire segments crossing the camera plane are clipped before GPU
 submission and click/crossing-selection projection, rather than disappearing
@@ -98,7 +104,9 @@ the staged choices. Picks are fixed while confirming options.
 
 Commands are case-insensitive. Typing while another non-text UI element or a
 viewport is active moves the text to the command line automatically. Matching
-command names appear below the input; press Tab or click a match to complete it.
+command names appear below the input; Tab/Shift+Tab cycle fuzzy matches, and
+Up/Down recall commands saved across sessions. File commands also complete paths.
+See [command-line editing](command-line.md) for shortcuts and history storage.
 Enter `Help UI` for [interface commands and shortcuts](commands/interface.md).
 Display and snapping commands can run during a point or object prompt without losing its
 accepted points, construction plane, selection, or undo history. Toolbar toggles

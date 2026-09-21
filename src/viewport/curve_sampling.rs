@@ -35,7 +35,7 @@ impl ViewportCurve for CurveSegment3 {
     }
 }
 
-fn visit_parametric_segments(
+pub(super) fn visit_parametric_segments(
     count: usize,
     evaluate: impl Fn(Real) -> Result<Point3, GeometryError>,
     visit: &mut impl FnMut(Point3, Point3),

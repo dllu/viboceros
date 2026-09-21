@@ -8,8 +8,8 @@ use viboceros_command::ObjectSelectionFilter;
 use viboceros_command::construction_plane::{ConstructionPlaneState, WorldPlane};
 use viboceros_document::{Document, Geometry, ObjectAttributes, ObjectId, SelectionMode};
 use viboceros_geometry::{
-    Brep, Circle3, CircularArc3, CurveSegment3, Ellipse3, GeometryError, NurbsCurve, NurbsSurface,
-    Point3, Polyline3, Real, Tolerance, TriangleMesh, Vector3,
+    CircularArc3, CurveSegment3, GeometryError, NurbsCurve, Point3, Real, Tolerance, TriangleMesh,
+    Vector3,
 };
 
 use crate::viewport_gpu::{
@@ -18,6 +18,9 @@ use crate::viewport_gpu::{
     ViewportScene as GpuViewportScene,
 };
 
+#[cfg(test)]
+use viboceros_geometry::{Brep, Circle3, NurbsSurface, Polyline3};
+
 const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
 mod camera;
 mod drafting;
@@ -25,6 +28,7 @@ mod drafting;
 use drafting::clip_drafting_line;
 #[cfg(test)]
 use viboceros_drafting::TrackAxis;
+mod display_cache;
 mod extents;
 mod scene;
 #[cfg(test)]
@@ -125,6 +129,8 @@ pub struct SelectionWindow {
 }
 
 pub struct Viewport {
+    display_cache: std::rc::Rc<std::cell::RefCell<display_cache::DisplayCache>>,
+    cached_scene: std::cell::RefCell<Option<scene::CachedScene>>,
     kind: ViewKind,
     pub(crate) plane: ConstructionPlaneState,
     pub display_mode: DisplayMode,
@@ -147,6 +153,8 @@ impl Default for Viewport {
 impl Viewport {
     pub fn new(kind: ViewKind) -> Self {
         Self {
+            display_cache: Default::default(),
+            cached_scene: Default::default(),
             kind,
             plane: ConstructionPlaneState::new(Self::default_plane(kind)),
             display_mode: DisplayMode::Wireframe,

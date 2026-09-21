@@ -284,7 +284,7 @@ fn interface_names_are_discoverable_without_hiding_modeling_commands() {
             _ => vec![name],
         };
         assert_eq!(
-            command_completions(&app.commands, &format!("'_-{name}")),
+            command_completions(&app.commands, &format!("'_-{name}"))[..expected.len()],
             expected
         );
     }
