@@ -169,6 +169,10 @@ The `viboceros-drafting` crate separates feature snaps (`object_snap`), plane-lo
 drafting (`plane`), and typed coordinates (`point_input`), with API regression
 tests outside the crate root. See [viewport implementation and precision](viewport-implementation.md)
 for coordinate conventions, numeric safeguards, and their specific test coverage.
+`object_snap/features` shares cheap curve-leaf enumeration; `object_snap/cache`
+retains expensive NURBS arc-length and natural surface-boundary midpoints.
+See [composite feature snaps](composite-feature-snaps.md) for invalidation,
+independent numerical tests, retained Rhino evidence and known Center-capture gaps.
 
 `app/edge_commands` shares component ambiguity, hover highlighting and stale
 candidate checks for [MergeEdge](commands/merge-edge.md) and

@@ -116,6 +116,10 @@ The later [17 snap observations](split-edge-snaps.md) retain offset feature
 clicks and unsnapped controls. Fifteen model-space snap locations replay complete
 geometry/history; two uncalibrated screen-only controls are explicitly unsupported.
 Nonuniform curve and edge witnesses distinguish arc-length Mid from parameter Mid.
+The [composite/surface snap audit](composite-feature-snaps.md) adds eleven matching
+End/Mid captures, one retained uncaptured-center discrepancy and five Center
+hover diagnostics. The latter explicitly expose missing native capture behavior;
+they are not relabeled as passing model-target or pixel replays.
 
 The shared `serde_json` dependency explicitly enables round-trip float parsing.
 Standalone oracle/document builds must not depend on app or test dependencies

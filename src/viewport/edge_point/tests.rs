@@ -312,6 +312,14 @@ fn feature_kinds_share_capture_and_hidden_objects_cannot_supply_stale_snap_point
         tolerance,
     )
     .unwrap();
+    let nonuniform_surface = nonuniform_face.faces()[0].surface().clone();
+    let nonuniform_composite = viboceros_geometry::PolyCurve3::try_new(vec![
+        viboceros_geometry::CurveSegment3::NurbsCurve(nonuniform.clone()),
+        LineSegment::try_new(p(8., -2., 9.), p(8., -6., 9.), tolerance)
+            .unwrap()
+            .into(),
+    ])
+    .unwrap();
     for (source, point, kind) in [
         (Geometry::Line(line), p(3., -2., 9.), ObjectSnapKind::End),
         (Geometry::Line(line), p(3., -4., 9.), ObjectSnapKind::Mid),
@@ -322,6 +330,16 @@ fn feature_kinds_share_capture_and_hidden_objects_cannot_supply_stale_snap_point
         ),
         (
             Geometry::Brep(nonuniform_face),
+            p(5., -2., 9.),
+            ObjectSnapKind::Mid,
+        ),
+        (
+            Geometry::NurbsSurface(nonuniform_surface),
+            p(5., -2., 9.),
+            ObjectSnapKind::Mid,
+        ),
+        (
+            Geometry::PolyCurve(nonuniform_composite),
             p(5., -2., 9.),
             ObjectSnapKind::Mid,
         ),

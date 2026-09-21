@@ -1,0 +1,77 @@
+//! Cheap native curve features, shared by standalone curves and polycurve leaves.
+//! NURBS arc-length features are supplied separately by the owning object's cache.
+use super::ObjectSnapKind::{self, Center, End, Mid, Quad};
+use viboceros_geometry::{CurveRef, Point3};
+
+pub(super) fn curve(source: CurveRef<'_>, emit: &mut impl FnMut(ObjectSnapKind, Point3)) {
+    if let CurveRef::PolyCurve(polycurve) = source {
+        // Flat native leaves share End/Mid enumeration. Rhino's Center capture
+        // also depends on proximity to the curve, not merely its center point;
+        // that separate hover-aware query is not implemented for composites yet.
+        for segment in polycurve.segments() {
+            leaf(segment.as_ref(), &mut |kind, point| {
+                if matches!(kind, End | Mid) {
+                    emit(kind, point);
+                }
+            });
+        }
+    } else {
+        leaf(source, emit);
+    }
+}
+
+fn leaf(source: CurveRef<'_>, emit: &mut impl FnMut(ObjectSnapKind, Point3)) {
+    match source {
+        CurveRef::Line(line) => {
+            emit(End, line.start());
+            emit(End, line.end());
+            if let Ok(point) = line.point_at(0.5) {
+                emit(Mid, point);
+            }
+        }
+        CurveRef::Circle(circle) => {
+            emit(Center, circle.center());
+            if let Ok(points) = circle.quadrants() {
+                for point in points {
+                    emit(Quad, point);
+                }
+            }
+        }
+        CurveRef::Arc(arc) => {
+            for point in [arc.start(), arc.end()].into_iter().flatten() {
+                emit(End, point);
+            }
+            if let Ok(point) = arc.point_at(0.5) {
+                emit(Mid, point);
+            }
+            emit(Center, arc.center());
+        }
+        CurveRef::Ellipse(ellipse) => {
+            emit(Center, ellipse.center());
+            if let Ok(points) = ellipse.quadrants() {
+                for point in points {
+                    emit(Quad, point);
+                }
+            }
+        }
+        CurveRef::Polyline(polyline) => {
+            for &point in polyline.vertices() {
+                emit(End, point);
+            }
+            for line in polyline.segments() {
+                if let Ok(point) = line.point_at(0.5) {
+                    emit(Mid, point);
+                }
+            }
+        }
+        CurveRef::NurbsCurve(curve) => {
+            let domain = curve.domain();
+            for t in [*domain.start(), *domain.end()] {
+                if let Ok(point) = curve.evaluate(t) {
+                    emit(End, point);
+                }
+            }
+        }
+        CurveRef::PolyCurve(_) => unreachable!("PolyCurve3 leaves cannot contain composites"),
+    }
+}

@@ -67,7 +67,10 @@ local drafts. Conflicting name/color edits block Apply with a warning; reopen
 Edit to review current values. Deleting a layer closes its editor.
 
 Osnap captures visible Point, End, Mid, Center, and Quad features, including
-indexed members of point clouds and features on locked objects and layers;
+indexed members of point clouds and features on locked objects and layers.
+Mid uses half arc length on NURBS, individual polycurve segments and surface
+boundaries, not the surface's UV center. Feature/type coverage is incomplete;
+see [snap behavior and known Center-capture gaps](composite-feature-snaps.md).
 SmartTrack captures local plane-axis alignment from the first picked
 point in every viewport. Grid Snap rounds construction-plane picks to the unit grid. Right-drag
 pans parallel views and rotates the Perspective view; Shift-right-drag pans the

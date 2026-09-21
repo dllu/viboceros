@@ -1,5 +1,6 @@
 //! Visible-feature snap enumeration, projection metrics, and priority ordering.
 mod cache;
+mod features;
 pub use cache::ObjectSnapCache;
 
 use super::{DraftingError, validate_capture_radius, validate_cursor_coordinates};
@@ -205,10 +206,7 @@ fn nearest_object_snap_with_metric(
     cache: &mut ObjectSnapCache,
 ) -> Result<Option<ObjectSnap>, DraftingError> {
     cache.retain_objects(document);
-    let cursor = metric;
-    let capture_radius = metric.capture_radius();
     let mut best = None;
-
     for object in document.objects() {
         let attributes = object.attributes();
         let Some(layer) = document.layer(attributes.layer_id()) else {
@@ -217,264 +215,90 @@ fn nearest_object_snap_with_metric(
         if !attributes.is_visible() || !layer.is_visible() {
             continue;
         }
-
-        match object.geometry() {
-            Geometry::Point(point) => consider_candidate(
+        let mut emit = |kind, point| {
+            consider_candidate(
                 &mut best,
-                cursor,
-                capture_radius,
+                metric,
+                metric.capture_radius(),
                 object.id(),
-                ObjectSnapKind::Point,
-                *point,
-            ),
+                kind,
+                point,
+            );
+        };
+        match object.geometry() {
+            Geometry::Point(point) => emit(ObjectSnapKind::Point, *point),
             Geometry::PointCloud(cloud) => {
                 if let Some(point) = metric.nearest_point_cloud(cloud)? {
-                    consider_candidate(
-                        &mut best,
-                        cursor,
-                        capture_radius,
-                        object.id(),
-                        ObjectSnapKind::Point,
-                        point,
-                    );
+                    emit(ObjectSnapKind::Point, point);
                 }
             }
-            Geometry::Line(line) => {
-                consider_candidate(
-                    &mut best,
-                    cursor,
-                    capture_radius,
-                    object.id(),
-                    ObjectSnapKind::End,
-                    line.start(),
-                );
-                consider_candidate(
-                    &mut best,
-                    cursor,
-                    capture_radius,
-                    object.id(),
-                    ObjectSnapKind::End,
-                    line.end(),
-                );
-                if let Ok(midpoint) = line.point_at(0.5) {
-                    consider_candidate(
-                        &mut best,
-                        cursor,
-                        capture_radius,
-                        object.id(),
-                        ObjectSnapKind::Mid,
-                        midpoint,
-                    );
-                }
-            }
-            Geometry::Circle(circle) => {
-                consider_candidate(
-                    &mut best,
-                    cursor,
-                    capture_radius,
-                    object.id(),
-                    ObjectSnapKind::Center,
-                    circle.center(),
-                );
-                if let Ok(quadrants) = circle.quadrants() {
-                    for quadrant in quadrants {
-                        consider_candidate(
-                            &mut best,
-                            cursor,
-                            capture_radius,
-                            object.id(),
-                            ObjectSnapKind::Quad,
-                            quadrant,
-                        );
+            Geometry::Line(_)
+            | Geometry::Circle(_)
+            | Geometry::Arc(_)
+            | Geometry::Ellipse(_)
+            | Geometry::Polyline(_)
+            | Geometry::NurbsCurve(_)
+            | Geometry::PolyCurve(_) => {
+                let curve = object
+                    .geometry()
+                    .curve_ref()
+                    .expect("matched a curve geometry");
+                features::curve(curve, &mut emit);
+                // Analytic leaf features are cheap. Cache only the expensive
+                // NURBS integrations, together under the owning object's ID.
+                let midpoints = match curve {
+                    viboceros_geometry::CurveRef::NurbsCurve(curve) => {
+                        cache.midpoints(object.id(), std::iter::once(curve), document.tolerance())
                     }
-                }
-            }
-            Geometry::Arc(arc) => {
-                for point in [arc.start(), arc.end()].into_iter().flatten() {
-                    consider_candidate(
-                        &mut best,
-                        cursor,
-                        capture_radius,
+                    viboceros_geometry::CurveRef::PolyCurve(curve) => cache.midpoints(
                         object.id(),
-                        ObjectSnapKind::End,
-                        point,
-                    );
-                }
-                if let Ok(midpoint) = arc.point_at(0.5) {
-                    consider_candidate(
-                        &mut best,
-                        cursor,
-                        capture_radius,
-                        object.id(),
-                        ObjectSnapKind::Mid,
-                        midpoint,
-                    );
-                }
-                consider_candidate(
-                    &mut best,
-                    cursor,
-                    capture_radius,
-                    object.id(),
-                    ObjectSnapKind::Center,
-                    arc.center(),
-                );
-            }
-            Geometry::Ellipse(ellipse) => {
-                consider_candidate(
-                    &mut best,
-                    cursor,
-                    capture_radius,
-                    object.id(),
-                    ObjectSnapKind::Center,
-                    ellipse.center(),
-                );
-                if let Ok(quadrants) = ellipse.quadrants() {
-                    for quadrant in quadrants {
-                        consider_candidate(
-                            &mut best,
-                            cursor,
-                            capture_radius,
-                            object.id(),
-                            ObjectSnapKind::Quad,
-                            quadrant,
-                        );
-                    }
-                }
-            }
-            Geometry::Polyline(polyline) => {
-                for vertex in polyline.vertices() {
-                    consider_candidate(
-                        &mut best,
-                        cursor,
-                        capture_radius,
-                        object.id(),
-                        ObjectSnapKind::End,
-                        *vertex,
-                    );
-                }
-                for segment in polyline.segments() {
-                    if let Ok(midpoint) = segment.point_at(0.5) {
-                        consider_candidate(
-                            &mut best,
-                            cursor,
-                            capture_radius,
-                            object.id(),
-                            ObjectSnapKind::Mid,
-                            midpoint,
-                        );
-                    }
-                }
-            }
-            Geometry::NurbsCurve(curve) => {
-                let domain = curve.domain();
-                for parameter in [*domain.start(), *domain.end()] {
-                    if let Ok(point) = curve.evaluate(parameter) {
-                        consider_candidate(
-                            &mut best,
-                            cursor,
-                            capture_radius,
-                            object.id(),
-                            ObjectSnapKind::End,
-                            point,
-                        );
-                    }
-                }
-                for &point in
-                    cache.midpoints(object.id(), std::iter::once(curve), document.tolerance())
-                {
-                    consider_candidate(
-                        &mut best,
-                        cursor,
-                        capture_radius,
-                        object.id(),
-                        ObjectSnapKind::Mid,
-                        point,
-                    );
-                }
-            }
-            Geometry::PolyCurve(curve) => {
-                for segment in curve.segments() {
-                    let domain = segment.domain();
-                    for parameter in [*domain.start(), *domain.end()] {
-                        if let Ok(point) = segment.evaluate(parameter) {
-                            consider_candidate(
-                                &mut best,
-                                cursor,
-                                capture_radius,
-                                object.id(),
-                                ObjectSnapKind::End,
-                                point,
-                            );
-                        }
-                    }
+                        curve.segments().iter().filter_map(|segment| match segment {
+                            viboceros_geometry::CurveSegment3::NurbsCurve(curve) => Some(curve),
+                            _ => None,
+                        }),
+                        document.tolerance(),
+                    ),
+                    _ => &[],
+                };
+                for &point in midpoints {
+                    emit(ObjectSnapKind::Mid, point);
                 }
             }
             Geometry::NurbsSurface(surface) => {
-                let domain_u = surface.domain_u();
-                let domain_v = surface.domain_v();
+                let u = surface.domain_u();
+                let v = surface.domain_v();
                 for (u, v) in [
-                    (*domain_u.start(), *domain_v.start()),
-                    (*domain_u.end(), *domain_v.start()),
-                    (*domain_u.end(), *domain_v.end()),
-                    (*domain_u.start(), *domain_v.end()),
+                    (*u.start(), *v.start()),
+                    (*u.end(), *v.start()),
+                    (*u.end(), *v.end()),
+                    (*u.start(), *v.end()),
                 ] {
                     if let Ok(point) = surface.evaluate(u, v) {
-                        consider_candidate(
-                            &mut best,
-                            cursor,
-                            capture_radius,
-                            object.id(),
-                            ObjectSnapKind::End,
-                            point,
-                        );
+                        emit(ObjectSnapKind::End, point);
                     }
                 }
-                if let Ok(point) =
-                    surface.evaluate(surface.parameter_at_u(0.5)?, surface.parameter_at_v(0.5)?)
-                {
-                    consider_candidate(
-                        &mut best,
-                        cursor,
-                        capture_radius,
-                        object.id(),
-                        ObjectSnapKind::Mid,
-                        point,
-                    );
+                // Mid belongs to each natural boundary, never to the UV center.
+                for &point in cache.surface_midpoints(object.id(), surface, document.tolerance()) {
+                    emit(ObjectSnapKind::Mid, point);
                 }
             }
             Geometry::Brep(brep) => {
                 for vertex in brep.vertices() {
-                    consider_candidate(
-                        &mut best,
-                        cursor,
-                        capture_radius,
-                        object.id(),
-                        ObjectSnapKind::End,
-                        vertex.point(),
-                    );
+                    emit(ObjectSnapKind::End, vertex.point());
                 }
                 for &point in cache.midpoints(
                     object.id(),
                     brep.edges().iter().map(|edge| edge.curve()),
                     document.tolerance(),
                 ) {
-                    consider_candidate(
-                        &mut best,
-                        cursor,
-                        capture_radius,
-                        object.id(),
-                        ObjectSnapKind::Mid,
-                        point,
-                    );
+                    emit(ObjectSnapKind::Mid, point);
                 }
             }
-            // Mesh vertex snapping needs a spatial index to remain responsive
-            // on production STL meshes; do not introduce an O(vertices) query
-            // into every pointer frame.
+            // Mesh features need a spatial index rather than an O(vertices)
+            // walk per pointer frame.
             Geometry::Mesh(_) => {}
         }
     }
-
     Ok(best)
 }
 

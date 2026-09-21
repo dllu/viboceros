@@ -26,6 +26,10 @@ metrics, indexed point-cloud queries, and snap priority. The crate root re-expor
 the public snap API and retains shared errors and basic tracking; `plane` owns
 plane-local drafting, and `point_input` owns typed point interpretation. API
 regression tests live in a separate `tests.rs` module.
+The shared [leaf-feature/cache modules](composite-feature-snaps.md) keep polycurve
+segment enumeration and expensive arc-length/surface-boundary queries independent
+of camera projection. The viewport retains the cache across ordinary and
+edge-constrained point prompts.
 Basic XY tracking treats an overflowing distance as out of range only on that
 axis, preserving valid perpendicular capture. Projected tracking accepts an
 in-range anchor before computing plane-local axis candidates; an unusable cursor

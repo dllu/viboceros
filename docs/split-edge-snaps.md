@@ -2,6 +2,9 @@
 
 [Command](commands/split-edge.md) · [Provenance and hashes](split-edge-snaps-provenance.json)
 
+See the later [polycurve/surface audit](composite-feature-snaps.md) for per-segment
+Mid, corrected surface boundary features and retained Center-capture discrepancies.
+
 The [17 requests](../tools/rhino_oracle/fixtures/split_edge_snaps_command.json)
 and [raw result values](../tools/rhino_oracle/observations/split_edge_snaps_command.json)
 were measured with public Rhino 8.32 commands in owned private Xvfb sessions.

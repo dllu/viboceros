@@ -1,0 +1,30 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "feature_observations": 12,
+  "matching_model_target_replays": 11,
+  "uncaptured_center_observations": 1,
+  "center_followup_diagnostics": 5,
+  "raw_response_sha256": {
+    "response.json": "6ed1e52bbca982e1893ff0bdc45a221cba3ec9f9b47b3977e14fca74a5298ed9",
+    "centers-response.json": "7dcf99d8f0bd89981b27ac838076bebcefb703de6c60e655e5067931ba32fa01"
+  },
+  "source_artifact_sha256": {
+    "box.3dm": "9ad7f078dc15cbe542751246f45371a3e97c514d13482aee66448a8129620a65"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/composite_feature_snaps.json": "c0c84be821de8078bcbf12f4c814ff22fcc692ff7f1ca64682bb6ffe0de63d1e",
+    "tools/rhino_oracle/observations/composite_feature_snaps.json": "4be4a558a7cb583da531cc044d65cffa5504e8030280496bbaed0c4a5a47b4b7",
+    "tools/rhino_oracle/fixtures/center_capture_diagnostics.json": "f9925b5fbb8fedde2d1247f023ce33b50f15f29dbddc87666cd545fac0ace1da",
+    "tools/rhino_oracle/observations/center_capture_diagnostics.json": "990ccb8b10eb6c8873f2d13a3035e5c451f437ba93cbd0a7a5478fc34ef25eb7"
+  },
+  "notes": [
+    "All observations use real SplitEdge component picks, one-shot feature clicks and actual Undo/Redo in owned private Xvfb sessions. Only public Rhino commands/APIs were used.",
+    "Portable requests substitute the exact source recipe for the existing shared box artifact. Response values are compacted as JSON but not numerically normalized or reordered within arrays.",
+    "Eleven declared Mid/End targets match complete native geometry/attribute/history replay at absolute 1e-9 and relative 1e-10. Native feature enumeration is independently checked against those targets. Neither check proves screen hit-test equivalence.",
+    "The first mixed-polycurve Cen click did not capture the intended center. The model-target adapter predicts x=4, while Rhino's recorded unsnapped position is x=2.776693248934896. This is an explicit retained discrepancy, not a twelfth passing replay.",
+    "Five additional Center diagnostics compare standalone and composite arcs. Clicks at the empty center miss; clicks near the arc capture its center in both representations. This establishes hover dependence for these cases, not a general rejection of polycurve arc centers.",
+    "Center diagnostics lack recorded camera calibration. They are not counted as native pixel replays or used to substitute Rhino output positions into the input fixtures.",
+    "Native standalone Center capture remains point-based; composite Center capture is not implemented. Hover-aware curve discovery, one-shot mode semantics, occlusion and arbitrary rational-curve recognition remain incomplete.",
+    "The retained raw outputs contain complete source/target geometry and unchanged external targets through command and history replay. Earlier snap, distance and unconstrained SplitEdge archives remain unchanged."
+  ]
+}

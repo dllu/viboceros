@@ -378,7 +378,7 @@ fn curve_endpoints_are_available_to_osnap() {
 }
 
 #[test]
-fn surface_corners_and_center_are_available_to_osnap() {
+fn surface_corners_and_boundary_midpoints_are_available_but_uv_center_is_not_mid() {
     let mut document = Document::default();
     let id = document
         .add_geometry(Geometry::NurbsSurface(
@@ -399,11 +399,23 @@ fn surface_corners_and_center_are_available_to_osnap() {
     assert_eq!(corner.kind(), ObjectSnapKind::End);
     assert_eq!(corner.point(), point(7.0, 6.0, 2.0));
 
-    let center = nearest_object_snap(&document, point(4.01, 4.02, 0.0), 0.1)
-        .unwrap()
-        .unwrap();
-    assert_eq!(center.kind(), ObjectSnapKind::Mid);
-    assert_eq!(center.point(), point(4.0, 4.0, 1.0));
+    assert!(
+        nearest_object_snap(&document, point(4.01, 4.02, 0.0), 0.1)
+            .unwrap()
+            .is_none()
+    );
+    for expected in [
+        point(4., 2., 0.),
+        point(7., 4., 1.),
+        point(4., 6., 2.),
+        point(1., 4., 1.),
+    ] {
+        let snap = nearest_object_snap(&document, expected, 0.1)
+            .unwrap()
+            .unwrap();
+        assert_eq!(snap.kind(), ObjectSnapKind::Mid);
+        assert_eq!(snap.point(), expected);
+    }
 }
 
 #[test]

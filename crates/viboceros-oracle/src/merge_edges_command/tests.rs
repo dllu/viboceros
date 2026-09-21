@@ -3,6 +3,7 @@ use super::*;
 mod face_history;
 mod face_splits;
 mod selected;
+mod snaps;
 mod split;
 
 fn close(a: &Value, b: &Value, path: &str) {
