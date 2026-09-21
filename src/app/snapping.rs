@@ -2,14 +2,15 @@
 use super::*;
 use viboceros_drafting::{ObjectSnapKind, ObjectSnapModes};
 
-pub(super) const HELP: &str = "Snap modes: choose Point/End/Mid/Cen/Quad in the toolbar menu. Right-click a mode to isolate/restore it; Shift-click for one pick. At a point prompt type Point, End, Mid, Cen, Quad or NoSnap for one pick. Persistent modes are restored after an accepted point. DisableOsnap/F4 suspends persistent modes without changing the selection.";
+pub(super) const HELP: &str = "Snap modes: choose Point/End/Mid/Cen/Quad/Near in the toolbar menu. Right-click a mode to isolate/restore it; Shift-click for one pick. At a point prompt type Point, End, Mid, Cen, Quad, Near or NoSnap for one pick. Near is off by default. Persistent modes are restored after an accepted point. DisableOsnap/F4 suspends persistent modes without changing the selection.";
 
-const FEATURES: [(ObjectSnapKind, &str); 5] = [
+const FEATURES: [(ObjectSnapKind, &str); 6] = [
     (ObjectSnapKind::Point, "Point"),
     (ObjectSnapKind::End, "End"),
     (ObjectSnapKind::Mid, "Mid"),
     (ObjectSnapKind::Center, "Cen"),
     (ObjectSnapKind::Quad, "Quad"),
+    (ObjectSnapKind::Near, "Near"),
 ];
 
 pub(super) struct SnapControls {
@@ -23,7 +24,7 @@ pub(super) struct SnapControls {
 impl Default for SnapControls {
     fn default() -> Self {
         Self {
-            persistent: ObjectSnapModes::ALL,
+            persistent: ObjectSnapModes::LANDMARKS,
             model_override: None,
             plane_override: None,
             isolated: None,
@@ -61,6 +62,7 @@ fn parse_one_shot(input: &str) -> Option<ObjectSnapModes> {
         "mid" | "midpoint" => ObjectSnapKind::Mid,
         "cen" | "center" => ObjectSnapKind::Center,
         "quad" | "quadrant" => ObjectSnapKind::Quad,
+        "near" | "nearest" => ObjectSnapKind::Near,
         "nosnap" => return Some(ObjectSnapModes::NONE),
         _ => return None,
     };

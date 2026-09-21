@@ -292,7 +292,7 @@ fn off_edge_point_snaps_constrain_in_model_space_in_all_four_views() {
                     pointer,
                     rect(),
                     &document,
-                    viboceros_drafting::ObjectSnapModes::ALL,
+                    viboceros_drafting::ObjectSnapModes::LANDMARKS,
                 )
                 .unwrap();
             assert!((cursor.parameter - 3.).abs() < 1e-12, "{kind:?}");
@@ -428,7 +428,7 @@ fn feature_kinds_share_capture_and_hidden_objects_cannot_supply_stale_snap_point
                 pointer,
                 rect(),
                 &document,
-                viboceros_drafting::ObjectSnapModes::ALL,
+                viboceros_drafting::ObjectSnapModes::LANDMARKS,
             )
             .unwrap();
         assert_eq!(cursor.snap.unwrap().kind(), kind);
@@ -441,7 +441,7 @@ fn feature_kinds_share_capture_and_hidden_objects_cannot_supply_stale_snap_point
                 pointer,
                 rect(),
                 &document,
-                viboceros_drafting::ObjectSnapModes::ALL
+                viboceros_drafting::ObjectSnapModes::LANDMARKS
             )
             .unwrap()
             .snap
@@ -455,7 +455,7 @@ fn feature_kinds_share_capture_and_hidden_objects_cannot_supply_stale_snap_point
                 pointer,
                 rect(),
                 &document,
-                viboceros_drafting::ObjectSnapModes::ALL
+                viboceros_drafting::ObjectSnapModes::LANDMARKS
             )
             .unwrap()
             .snap
@@ -523,7 +523,7 @@ fn distance_snap_uses_model_space_even_when_screen_space_prefers_other_candidate
                 pointer,
                 rect(),
                 &document,
-                viboceros_drafting::ObjectSnapModes::ALL,
+                viboceros_drafting::ObjectSnapModes::LANDMARKS,
             )
             .unwrap();
         assert_eq!(cursor.parameter, expected);
@@ -540,7 +540,7 @@ fn distance_snap_uses_model_space_even_when_screen_space_prefers_other_candidate
                 pointer,
                 rect(),
                 &document,
-                viboceros_drafting::ObjectSnapModes::ALL
+                viboceros_drafting::ObjectSnapModes::LANDMARKS
             )
             .is_none()
         );
@@ -585,7 +585,7 @@ fn real_off_edge_snap_click_subdivides_original_edge_without_selecting_or_moving
                                 edge_curve: active.then(|| selection.curve()),
                                 drafting: DraftingInput {
                                     active,
-                                    osnap: viboceros_drafting::ObjectSnapModes::ALL,
+                                    osnap: viboceros_drafting::ObjectSnapModes::LANDMARKS,
                                     ..Default::default()
                                 },
                                 ..Default::default()

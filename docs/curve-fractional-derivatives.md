@@ -6,8 +6,8 @@ Whole-curve and individual-span samplers now expose
 `evaluate_with_derivative(fraction) -> (Point3, Vector3)`. The vector is the first
 derivative with respect to that sampler's `[0,1]` fraction, **not** native knot
 parameter speed or an arc-length tangent. Source knots, controls and weights stay
-unchanged. This supplies first derivatives for the upcoming projected Near query;
-native Near capture and UI integration remain pending.
+unchanged. This supplies first derivatives for the shared
+[projected Near query](near-snaps.md).
 
 ```rust
 let sampler = curve.parameter_sampler()?;

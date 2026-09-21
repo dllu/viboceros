@@ -73,8 +73,9 @@ unrestricted scale/translation accuracy is not established. Mid-only queries rej
 distant control bounds before cold integration. [Shared snapshots](snap-caching.md)
 avoid source comparisons on unchanged objects. Work still scales with
 scene/span complexity, not a fixed frame budget. Occlusion, broader priority rules,
-Near/Int/Tan/Perp, general conic recognition and universal Rhino camera parity remain
+Int/Tan/Perp, general conic recognition and universal Rhino camera parity remain
 unfinished. No cross-engine performance claim follows from these observations.
+[Near](near-snaps.md) now provides curve-locus capture with its own bounded search.
 
 Independent tests cover extreme parameter domains, large-origin relative queries,
 failed cache slots, edits/Undo, competing segments, discontinuities and invisible

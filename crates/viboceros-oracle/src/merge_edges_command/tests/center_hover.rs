@@ -43,7 +43,7 @@ fn calibrated_center_hover_matches_fourteen_captures_and_eight_empty_center_miss
         } else {
             assert_eq!(pick.osnap, SplitEdgeSnap::Persistent);
             assert_eq!(fixture.persistent_snaps.len(), 5);
-            ObjectSnapModes::ALL
+            ObjectSnapModes::LANDMARKS
         };
         let mut doc = Document::default();
         let objects: Vec<_> = fixture

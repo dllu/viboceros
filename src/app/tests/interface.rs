@@ -633,11 +633,7 @@ fn snap_menu_real_clicks_toggle_isolate_and_apply_a_one_shot_without_losing_inpu
         ("Mid", egui::PointerButton::Primary, egui::Modifiers::NONE),
         ("Cen", egui::PointerButton::Secondary, egui::Modifiers::NONE),
         ("Cen", egui::PointerButton::Secondary, egui::Modifiers::NONE),
-        (
-            "Point",
-            egui::PointerButton::Primary,
-            egui::Modifiers::SHIFT,
-        ),
+        ("Near", egui::PointerButton::Primary, egui::Modifiers::SHIFT),
     ] {
         frame(&context, &mut app, 1000., vec![])
             .1
@@ -668,14 +664,14 @@ fn snap_menu_real_clicks_toggle_isolate_and_apply_a_one_shot_without_losing_inpu
         assert_eq!(app.active_command, pending);
         assert!(app.document.objects().next().is_none());
     }
-    assert_eq!(app.one_shot_snap_label(), Some("Point"));
+    assert_eq!(app.one_shot_snap_label(), Some("Near"));
     assert_eq!(
         app.effective_snap_modes(),
-        ObjectSnapModes::only(ObjectSnapKind::Point)
+        ObjectSnapModes::only(ObjectSnapKind::Near)
     );
     assert_eq!(
         app.snaps.persistent,
-        ObjectSnapModes::ALL.with(ObjectSnapKind::Mid, false)
+        ObjectSnapModes::LANDMARKS.with(ObjectSnapKind::Mid, false)
     );
     app.accept_drafting_point(point(1., 2., 3.));
     assert_eq!(app.one_shot_snap_label(), None);

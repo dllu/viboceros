@@ -75,7 +75,7 @@ fn center_is_captured_by_arc_circle_ellipse_and_polycurve_hover_not_empty_center
         let mut doc = Document::default();
         let id = doc.add_geometry(geometry).unwrap();
         for modes in [
-            ObjectSnapModes::ALL,
+            ObjectSnapModes::LANDMARKS,
             ObjectSnapModes::only(ObjectSnapKind::Center),
         ] {
             let snap = query(&doc, aim, modes).unwrap();
@@ -86,9 +86,9 @@ fn center_is_captured_by_arc_circle_ellipse_and_polycurve_hover_not_empty_center
             assert!(query(&doc, p(4., -4., 0.), modes).is_none());
         }
         doc.set_objects_locked([id], true).unwrap();
-        assert!(query(&doc, aim, ObjectSnapModes::ALL).is_some());
+        assert!(query(&doc, aim, ObjectSnapModes::LANDMARKS).is_some());
         doc.set_objects_visibility([id], false).unwrap();
-        assert!(query(&doc, aim, ObjectSnapModes::ALL).is_none());
+        assert!(query(&doc, aim, ObjectSnapModes::LANDMARKS).is_none());
     }
 }
 
@@ -113,7 +113,10 @@ fn direct_features_win_over_center_hover_and_modes_exclude_them() {
     ] {
         let mut doc = Document::default();
         doc.add_geometry(geometry).unwrap();
-        assert_eq!(query(&doc, aim, ObjectSnapModes::ALL).unwrap().kind(), kind);
+        assert_eq!(
+            query(&doc, aim, ObjectSnapModes::LANDMARKS).unwrap().kind(),
+            kind
+        );
         assert_eq!(
             query(&doc, aim, ObjectSnapModes::only(ObjectSnapKind::Center))
                 .unwrap()
@@ -125,7 +128,7 @@ fn direct_features_win_over_center_hover_and_modes_exclude_them() {
             query(
                 &doc,
                 aim,
-                ObjectSnapModes::ALL.with(ObjectSnapKind::Center, false)
+                ObjectSnapModes::LANDMARKS.with(ObjectSnapKind::Center, false)
             )
             .unwrap()
             .kind(),
@@ -201,7 +204,9 @@ fn center_modes_are_valid_bit_sets_and_disabled_queries_do_not_project() {
         modes = modes.with(kind, true);
         assert!(modes.contains(kind));
     }
-    assert_eq!(modes, ObjectSnapModes::ALL);
+    assert_eq!(modes, ObjectSnapModes::LANDMARKS);
+    assert!(!modes.contains(ObjectSnapKind::Near));
+    assert_eq!(modes.with(ObjectSnapKind::Near, true), ObjectSnapModes::ALL);
     let mut doc = Document::default();
     doc.add_geometry(Geometry::Circle(circle())).unwrap();
     assert!(

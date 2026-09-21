@@ -42,7 +42,7 @@ fn split_one_shot_survives_distance_options_then_clears_after_accepted_point_or_
     submit(&mut app, "");
     assert!(app.edge_prompt.is_none());
     assert_eq!(app.one_shot_snap_label(), None);
-    assert_eq!(app.effective_snap_modes(), ObjectSnapModes::ALL);
+    assert_eq!(app.effective_snap_modes(), ObjectSnapModes::LANDMARKS);
 }
 
 #[test]

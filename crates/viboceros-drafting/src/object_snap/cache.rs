@@ -107,7 +107,7 @@ impl ObjectSnapCache {
             origin,
             cursor_offset,
             capture_radius,
-            ObjectSnapModes::ALL,
+            ObjectSnapModes::LANDMARKS,
         )
     }
 
@@ -150,7 +150,7 @@ impl ObjectSnapCache {
             cursor,
             capture_radius,
             project,
-            ObjectSnapModes::ALL,
+            ObjectSnapModes::LANDMARKS,
         )
     }
 

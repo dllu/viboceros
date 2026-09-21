@@ -341,6 +341,8 @@ mod center_tests;
 #[cfg(test)]
 mod mid_tests;
 #[cfg(test)]
+mod near_tests;
+#[cfg(test)]
 mod grid_tests {
     use super::*;
 

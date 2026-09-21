@@ -7,6 +7,7 @@ mod elliptic_centers;
 mod face_history;
 mod face_splits;
 mod mid_hover;
+mod near;
 mod oneshot_snaps;
 mod polygon_centers;
 mod selected;

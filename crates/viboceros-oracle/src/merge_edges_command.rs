@@ -94,6 +94,7 @@ enum SplitEdgeSnap {
     Mid,
     Cen,
     Quad,
+    Near,
     Persistent,
 }
 
@@ -119,7 +120,7 @@ pub(super) fn run_split(
                     .iter()
                     .any(|step| matches!(step, SplitEdgeInput::Pick(_) | SplitEdgeInput::Mouse(_)))
             }))
-        || f.persistent_snaps.len() > 5
+        || f.persistent_snaps.len() > 6
         || f.persistent_snaps.iter().enumerate().any(|(i, mode)| {
             matches!(mode, SplitEdgeSnap::NoSnap | SplitEdgeSnap::Persistent)
                 || f.persistent_snaps[..i].contains(mode)
@@ -159,6 +160,12 @@ pub(super) fn run_split(
         return Err(ProbeError::FixtureInvariant(
             "NoSnap screen controls require recorded viewport calibration",
         ));
+    }
+    if f.inputs.as_ref().is_some_and(|inputs| inputs.iter().any(|step| {
+        matches!(step, SplitEdgeInput::Pick(p) if p.osnap == SplitEdgeSnap::Near
+            || (p.osnap == SplitEdgeSnap::Persistent && f.persistent_snaps.contains(&SplitEdgeSnap::Near)))
+    })) {
+        return Err(ProbeError::FixtureInvariant("Near picks require calibrated camera-derived targets"));
     }
     run_impl(&f.base, construction, EdgeAction::Split(f))
 }

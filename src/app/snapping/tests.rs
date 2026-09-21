@@ -7,6 +7,38 @@ fn enter(app: &mut VibocerosApp, input: &str) {
 }
 
 #[test]
+fn near_is_opt_in_and_one_shot_restores_persistent_modes_after_accept_or_cancel() {
+    let mut app = test_app();
+    assert!(!app.snaps.persistent.contains(ObjectSnapKind::Near));
+    assert!(ObjectSnapModes::ALL.contains(ObjectSnapKind::Near));
+    for token in ["Near", "_Near", "'Nearest"] {
+        enter(&mut app, "Points");
+        enter(&mut app, token);
+        assert_eq!(app.one_shot_snap_label(), Some("Near"));
+        assert_eq!(
+            app.effective_snap_modes(),
+            ObjectSnapModes::only(ObjectSnapKind::Near)
+        );
+        enter(&mut app, "1,NaN,0");
+        assert_eq!(app.one_shot_snap_label(), Some("Near"));
+        assert!(app.accept_drafting_point(point(1., 2., 7.)));
+        assert_eq!(app.effective_snap_modes(), ObjectSnapModes::LANDMARKS);
+        enter(&mut app, "Near");
+        app.cancel_interactive_command(false);
+        assert_eq!(app.one_shot_snap_label(), None);
+    }
+    app.snaps.set(ObjectSnapKind::Near, true);
+    let persistent = app.snaps.persistent;
+    app.snaps.isolate(ObjectSnapKind::Near);
+    assert_eq!(
+        app.snaps.persistent,
+        ObjectSnapModes::only(ObjectSnapKind::Near)
+    );
+    app.snaps.isolate(ObjectSnapKind::Near);
+    assert_eq!(app.snaps.persistent, persistent);
+}
+
+#[test]
 fn modes_are_persistent_but_one_shot_lasts_for_one_accepted_point() {
     let mut app = test_app();
     app.snaps.persistent = ObjectSnapModes::only(ObjectSnapKind::End);
@@ -51,7 +83,7 @@ fn one_shot_overrides_disabled_persistent_snaps_without_reenabling_them() {
     enter(&mut app, "Point");
     assert_eq!(app.active_command, Some(InteractiveCommand::Point));
     assert_eq!(app.one_shot_snap_label(), None);
-    assert_eq!(app.snaps.persistent, ObjectSnapModes::ALL);
+    assert_eq!(app.snaps.persistent, ObjectSnapModes::LANDMARKS);
 }
 
 #[test]
@@ -118,11 +150,11 @@ fn isolation_restores_previous_modes_and_explicit_edits_reset_restore_state() {
 #[test]
 fn snap_words_are_strict_and_never_replace_idle_point_commands() {
     for word in [
-        "Point", "_End", "'Mid", "Cen", "Center", "Quadrant", "NoSnap",
+        "Point", "_End", "'Mid", "Cen", "Center", "Quadrant", "Near", "Nearest", "NoSnap",
     ] {
         assert!(parse_one_shot(word).is_some());
     }
-    for word in ["", "Point 1,2,3", "Mid Delete", "NoSnap On", "Near"] {
+    for word in ["", "Point 1,2,3", "Mid Delete", "NoSnap On", "Near _Delete"] {
         assert!(parse_one_shot(word).is_none());
     }
     let mut app = test_app();

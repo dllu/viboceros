@@ -66,7 +66,7 @@ Open layer editors adopt external changes to untouched fields while preserving
 local drafts. Conflicting name/color edits block Apply with a warning; reopen
 Edit to review current values. Deleting a layer closes its editor.
 
-Osnap captures visible Point, End, Mid, Center, and Quad features, including
+Osnap captures visible Point, End, Mid, Center, Quad, and opt-in Near features, including
 indexed members of point clouds and features on locked objects and layers.
 Mid uses half arc length on NURBS, individual polycurve segments and surface
 boundaries, not the surface's UV center. With Mid alone enabled (including one-shot
@@ -82,11 +82,12 @@ boundaries and B-rep edges also supply Center, including eligible hole edges.
 Recognition is conservative; unrestricted conic/approximate-conic parity remains incomplete.
 The Snap modes menu selects individual persistent modes; right-click isolates a
 mode and Shift-click selects it for one point. At point prompts, `Point`, `End`,
-`Mid`, `Cen`, `Quad` and `NoSnap` also supply one-shot overrides. See
+`Mid`, `Cen`, `Quad`, `Near` and `NoSnap` also supply one-shot overrides. See
 [controls and lifecycle](object-snap-controls.md), [Mid/End behavior](composite-feature-snaps.md),
 [Mid hover](mid-hover-snaps.md), [analytic Center](center-hover-snaps.md) and
 [polygon Center](polygon-center-snaps.md) and [circular NURBS Center](circular-center-snaps.md)
-for coverage limits, and [snap caching](snap-caching.md) for invalidation and performance.
+for coverage limits, [Near](near-snaps.md) for screen-space curve targets, and
+[snap caching](snap-caching.md) for invalidation and performance.
 SmartTrack captures local plane-axis alignment from the first picked
 point in every viewport. Grid Snap rounds construction-plane picks to the unit grid. Right-drag
 pans parallel views and rotates the Perspective view; Shift-right-drag pans the

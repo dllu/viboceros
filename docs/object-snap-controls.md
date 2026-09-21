@@ -2,17 +2,18 @@
 
 [Viewport controls](interface.md) · [Center capture](center-hover-snaps.md) · [Oracle provenance](oneshot-snap-provenance.json)
 
-The **Snap modes** toolbar menu independently enables Point, End, Mid, Cen and
-Quad. The Osnap button/F4 suspends persistent snaps without losing that selection.
+The **Snap modes** toolbar menu independently enables Point, End, Mid, Cen, Quad
+and Near. Near is opt-in; the other five are initially enabled. The Osnap button/F4
+suspends persistent snaps without losing that selection.
 Persistent checkbox edits keep the menu open; right-click a mode to isolate it,
 then right-click it again to restore the previous set. An ordinary checkbox edit
 starts a new set and discards the old isolation snapshot. These are session UI
 settings, not document edits or model undo steps.
 
 While a command requests a point, Shift-click a mode for the next point only.
-Alternatively submit `Point`, `End`, `Mid`, `Cen`, `Quad` or `NoSnap` at the command
+Alternatively submit `Point`, `End`, `Mid`, `Cen`, `Quad`, `Near` or `NoSnap` at the command
 line, then pick or type the point. `Endpoint`, `Midpoint`, `Center`, `Quadrant`
-and optional `_`/apostrophe prefixes are accepted. Submit the modifier separately
+and `Nearest`, plus optional `_`/apostrophe prefixes, are accepted. Submit the modifier separately
 from coordinates; arbitrary multi-command macros are not parsed. Outside a point
 prompt, `Point` still starts the modeling command.
 
@@ -63,19 +64,19 @@ Toolbar regression tests also prevent model Undo/Redo during edge/group prompts.
 
 ## Remaining work
 
-Coverage remains limited to the five currently implemented feature kinds. The
+Coverage includes the five landmark kinds and [curve Near](near-snaps.md). The
 subsequent [Mid-hover implementation](mid-hover-snaps.md) adds whole-segment
 capture when Mid alone is enabled, including one-shot Mid.
 [Polygon Center](polygon-center-snaps.md) adds corner averages for closed linear
 boundaries and polygonal planar surfaces/faces without holes.
 [Circular NURBS Center](circular-center-snaps.md) adds circles/arcs and boundary
 edges, including circular holes. [Elliptical NURBS Center](elliptic-center-snaps.md)
-adds conservative whole-span ellipse recognition. General End/Near/Int/Tan/Perp behavior,
+adds conservative whole-span ellipse recognition. General End/Int/Tan/Perp behavior,
 unrestricted conic/approximate-conic recognition,
 CPlane-relative Quad, occlusion,
 Alt suspension, full `Osnap` command grammar, persistence across app restarts and
 arbitrary macros remain incomplete. New controls do not establish broad snap
 parity or change the limits of the underlying geometry queries.
 
-[Near calibration](near-snaps.md) now retains perspective picks and independent
-reference checks; native Near capture and controls remain pending.
+[Near](near-snaps.md) includes calibrated perspective captures and complete
+command/history replay. Mesh Near and certified global curved proximity remain pending.

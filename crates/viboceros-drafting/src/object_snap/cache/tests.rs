@@ -141,3 +141,28 @@ fn cached_axis_aligned_and_projected_queries_agree_with_stateless_queries() {
     }
     assert_eq!(cache.builds, 1);
 }
+
+#[test]
+fn near_reuses_source_snapshots_without_initializing_mid_or_center_slots() {
+    let mut doc = Document::default();
+    let id = doc.add_geometry(Geometry::NurbsCurve(curve(0.))).unwrap();
+    let mut cache = ObjectSnapCache::default();
+    for _ in 0..5 {
+        let hit = cache
+            .nearest_projected_with_modes(
+                &doc,
+                [3., -2.1],
+                0.2,
+                |p| Some([p.x(), p.y()]),
+                ObjectSnapModes::only(ObjectSnapKind::Near),
+            )
+            .unwrap()
+            .unwrap();
+        assert!((hit.point().x() - 3.).abs() < 1e-10);
+        let feature = &cache.curves[&id].features[0];
+        assert!(feature.midpoint.get().is_none());
+        assert!(feature.conic_center.get().is_none());
+    }
+    assert_eq!(cache.builds, 1);
+    assert_eq!(cache.source_comparisons, 0);
+}

@@ -167,7 +167,7 @@ fn ordinary_and_edge_constrained_prompts_share_center_hover_in_all_views() {
             let pointer = view.project(aim, area()).unwrap() + Vec2::new(2., 0.);
             let input = DraftingInput {
                 active: true,
-                osnap: viboceros_drafting::ObjectSnapModes::ALL,
+                osnap: viboceros_drafting::ObjectSnapModes::LANDMARKS,
                 ..Default::default()
             };
             let cursor = view.drafting_cursor(pointer, area(), &doc, input).unwrap();
@@ -188,7 +188,7 @@ fn ordinary_and_edge_constrained_prompts_share_center_hover_in_all_views() {
                     pointer,
                     area(),
                     &doc,
-                    viboceros_drafting::ObjectSnapModes::ALL,
+                    viboceros_drafting::ObjectSnapModes::LANDMARKS,
                 )
                 .unwrap();
             assert!((edge.parameter - 3.).abs() < 1e-10, "{kind:?}");
@@ -197,14 +197,14 @@ fn ordinary_and_edge_constrained_prompts_share_center_hover_in_all_views() {
                     view.project(center, area()).unwrap(),
                     area(),
                     &doc,
-                    ObjectSnapModes::ALL
+                    ObjectSnapModes::LANDMARKS
                 )
                 .is_none(),
                 "{kind:?}"
             );
             doc.set_objects_visibility([id], false).unwrap();
             assert!(
-                view.object_snap(pointer, area(), &doc, ObjectSnapModes::ALL)
+                view.object_snap(pointer, area(), &doc, ObjectSnapModes::LANDMARKS)
                     .is_none()
             );
         }
@@ -288,7 +288,7 @@ fn assert_center_click(geometry: Geometry, aim: Point3, center: Point3) {
                         ViewportInput {
                             drafting: DraftingInput {
                                 active: true,
-                                osnap: viboceros_drafting::ObjectSnapModes::ALL,
+                                osnap: viboceros_drafting::ObjectSnapModes::LANDMARKS,
                                 ..Default::default()
                             },
                             ..Default::default()
@@ -354,7 +354,7 @@ fn polygon_centers_reach_ordinary_and_constrained_queries_in_every_view() {
             let pointer = view.project(map(-2.8, 3.), area()).unwrap();
             let input = DraftingInput {
                 active: true,
-                osnap: ObjectSnapModes::ALL,
+                osnap: ObjectSnapModes::LANDMARKS,
                 ..Default::default()
             };
             let cursor = view.drafting_cursor(pointer, area(), &doc, input).unwrap();
@@ -368,7 +368,14 @@ fn polygon_centers_reach_ordinary_and_constrained_queries_in_every_view() {
                 NurbsCurve::try_new(1, vec![map(-6., -6.), map(6., -6.)], vec![0., 0., 12., 12.])
                     .unwrap();
             let location = view
-                .edge_point_cursor(&edge, None, pointer, area(), &doc, ObjectSnapModes::ALL)
+                .edge_point_cursor(
+                    &edge,
+                    None,
+                    pointer,
+                    area(),
+                    &doc,
+                    ObjectSnapModes::LANDMARKS,
+                )
                 .unwrap();
             assert!((location.parameter - 6.).abs() < 1e-9, "{kind:?}");
         }

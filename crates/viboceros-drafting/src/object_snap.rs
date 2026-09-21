@@ -3,13 +3,14 @@ mod cache;
 mod centers;
 mod features;
 mod mid_hover;
+mod near;
 mod polygon_centers;
 mod proximity;
 pub use cache::ObjectSnapCache;
 
 use super::{DraftingError, validate_capture_radius, validate_cursor_coordinates};
 use viboceros_document::{Document, Geometry, ObjectId};
-use viboceros_geometry::{GeometryError, Point3, PointCloud3, PointCloudProjection, Real};
+use viboceros_geometry::{GeometryError, Point3, PointCloud3, PointCloudProjection, Real, Vector3};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ObjectSnapKind {
@@ -18,6 +19,7 @@ pub enum ObjectSnapKind {
     Mid,
     Center,
     Quad,
+    Near,
 }
 
 /// Enabled feature kinds, independent of the UI's persistent/one-shot lifetime.
@@ -27,7 +29,9 @@ pub struct ObjectSnapModes(u8);
 
 impl ObjectSnapModes {
     pub const NONE: Self = Self(0);
-    pub const ALL: Self = Self(0b1_1111);
+    /// Discrete landmarks enabled by the standard query/UI defaults. Near is opt-in.
+    pub const LANDMARKS: Self = Self(0b1_1111);
+    pub const ALL: Self = Self(0b11_1111);
 
     pub const fn only(kind: ObjectSnapKind) -> Self {
         Self(1 << kind.priority())
@@ -52,6 +56,7 @@ impl ObjectSnapKind {
             Self::Mid => "Mid",
             Self::Center => "Center",
             Self::Quad => "Quad",
+            Self::Near => "Near",
         }
     }
 
@@ -62,6 +67,7 @@ impl ObjectSnapKind {
             Self::Mid => 2,
             Self::Center => 3,
             Self::Quad => 4,
+            Self::Near => 5,
         }
     }
 }
@@ -94,7 +100,9 @@ impl ObjectSnap {
     }
 }
 
-/// Finds the closest visible feature snap in the top-view XY projection.
+/// Finds the closest visible landmark snap in the top-view XY projection.
+/// These convenience queries use [`ObjectSnapModes::LANDMARKS`]; use a cache's
+/// explicit-mode query to enable Near.
 /// Locked objects remain snap targets, matching Rhino. Exact-distance ties use
 /// the stable priority encoded by [`ObjectSnapKind`].
 pub fn nearest_object_snap(
@@ -157,6 +165,9 @@ pub fn nearest_object_snap_projected(
 }
 
 trait SnapMetric {
+    fn is_affine(&self) -> bool {
+        false
+    }
     fn capture_radius(&self) -> Real;
     fn offset(&self, point: Point3) -> Option<[Real; 2]>;
     fn distance(&self, point: Point3) -> Option<Real> {
@@ -165,6 +176,27 @@ trait SnapMetric {
         d.is_finite().then_some(d)
     }
     fn nearest_point_cloud(&self, cloud: &PointCloud3) -> Result<Option<Point3>, GeometryError>;
+
+    /// Oriented screen tangent; only its direction, not its speed, is needed.
+    /// A projective map sends the model tangent line to the exact screen tangent
+    /// line. This is a finite line projection, not a finite difference of a curve.
+    fn tangent_direction(&self, point: Point3, tangent: Vector3) -> Option<[Real; 2]> {
+        let origin = self.offset(point)?;
+        let unit = tangent.normalized_nonzero().ok()?.as_vector().to_array();
+        let p = point.to_array();
+        let scale = p.into_iter().map(Real::abs).fold(1., Real::max);
+        for step in [scale, -scale, scale * 0.25, -scale * 0.25] {
+            let other = Point3::try_from(std::array::from_fn(|i| step.mul_add(unit[i], p[i]))).ok();
+            let Some(other) = other.and_then(|p| self.offset(p)) else {
+                continue;
+            };
+            let delta = std::array::from_fn(|i| (other[i] - origin[i]) * step.signum());
+            if let Some(direction) = near::unit_screen(delta) {
+                return Some(direction);
+            }
+        }
+        None
+    }
 }
 
 struct AxisAlignedSnapMetric {
@@ -175,6 +207,16 @@ struct AxisAlignedSnapMetric {
 }
 
 impl SnapMetric for AxisAlignedSnapMetric {
+    fn is_affine(&self) -> bool {
+        true
+    }
+    fn tangent_direction(&self, _point: Point3, tangent: Vector3) -> Option<[Real; 2]> {
+        near::unit_screen(match self.projection {
+            PointCloudProjection::Xy => [tangent.x(), tangent.y()],
+            PointCloudProjection::Xz => [tangent.x(), tangent.z()],
+            PointCloudProjection::Yz => [tangent.y(), tangent.z()],
+        })
+    }
     fn capture_radius(&self) -> Real {
         self.capture_radius
     }
@@ -348,6 +390,25 @@ fn nearest_object_snap_with_metric(
                     emit(ObjectSnapKind::Mid, point);
                 }
             }
+        }
+        // Direct landmarks suppress Near on the same source, even if Near is
+        // visually closer. Near in turn suppresses curve-hover Center.
+        if object_best.is_none() && modes.contains(ObjectSnapKind::Near) {
+            near::visit(
+                object,
+                document.tolerance(),
+                cache,
+                metric,
+                &mut |point, distance| {
+                    consider_scored_candidate(
+                        &mut object_best,
+                        object.id(),
+                        ObjectSnapKind::Near,
+                        point,
+                        distance,
+                    )
+                },
+            );
         }
         // Direct features suppress Center on the same object, not on every
         // object in the document. Across objects, compare capture distance.

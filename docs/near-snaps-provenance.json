@@ -3,7 +3,7 @@
   "calibrated_observations": 16,
   "actual_undo_redo_observations": 16,
   "independent_reference_coordinate_checks": 16,
-  "native_snap_replays": 0,
+  "native_snap_replays": 16,
   "raw_response_sha256": {
     "response-final.json": "e8e350049ee0e3ca38788e1810a3ffa8da3b928639cc8e0bc4fe098308149d21"
   },
@@ -28,7 +28,7 @@
     "Six families compare one-shot Near with persistent Near-only. Four mixed-mode cases cover End, Mid, Center and Quad competition on a single source curve.",
     "Analytic reference math reads only input source geometry and recorded camera/click, never declared target hypotheses or output geometry. Perspective line fraction conversion is closed-form; circle/quadratic references bracket analytic squared-distance stationary points.",
     "All 16 observed constrained x coordinates agree with their independently computed reference targets within absolute 1e-9. The quadratic ellipse cases have approximately 9.491e-10 residual. This is not zero error or a universal accuracy guarantee.",
-    "SplitEdge constrains the target onto the box's x-axis edge, so these observations establish only its x coordinate, not unconstrained 3D snapping parity. Full histories are retained and checked for integrity, not replayed by the native engine.",
-    "Near is not yet implemented in the native UI or Rust snap adapter. The fixture is a Rhino-only calibration corpus; generic native replay is not supported yet. Priority beyond the four measured single-object cases and unrestricted curved closest-point solving remain open."
+    "SplitEdge constrains the target onto the box's x-axis edge, so these observations establish only its x coordinate, not unconstrained 3D snapping parity. Native snaps derived from source geometry and recorded camera/click drive complete ordered geometry, attributes, selection and history replay at absolute 1e-9 and relative 1e-10. Observed result positions are never supplied as snap input.",
+    "Near is implemented in the native shared query and UI. Raw requests with Near still require calibration: the Rust command adapter rejects uncalibrated aim hypotheses, while the calibrated test supplies independently resolved model points. Priority beyond the four measured single-source cases and unrestricted curved closest-point solving remain open."
   ]
 }
