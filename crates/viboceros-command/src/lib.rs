@@ -17030,6 +17030,8 @@ pub enum CommandError {
     SplitEdgeUnavailable,
     #[error("SplitEdge source or tolerance changed; pick the edge again")]
     SplitEdgeStale,
+    #[error("pick a point on the edge before entering a distance constraint")]
+    SplitEdgeDistanceAnchor,
 
     #[error("none of the selected objects can be exploded")]
     NoExplodableObjects,

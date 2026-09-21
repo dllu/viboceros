@@ -108,6 +108,10 @@ SplitEdge commands, including full-batch duplicate failure and unchanged
 endpoint-only replacements with real Undo/Redo. Native replay compares all
 ordered geometry/attribute/history fields without component renumbering; see
 [SplitEdge](commands/split-edge.md) for interaction and search limitations.
+An additional [19 distance-constraint records](split-edge-distances.md) use
+bounded interleaved typed distance/point inputs and real mouse clicks. They retain
+curved Rhino inversion residuals and compare those cases at an explicitly separate
+bound, without weakening the original observations or omitting numeric fields.
 
 The shared `serde_json` dependency explicitly enables round-trip float parsing.
 Standalone oracle/document builds must not depend on app or test dependencies

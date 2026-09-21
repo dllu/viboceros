@@ -102,6 +102,7 @@ pub struct ViewportInput<'a> {
     pub edge_endpoints: Option<[Point3; 2]>,
     pub edge_curve: Option<&'a NurbsCurve>,
     pub edge_parameters: &'a [Real],
+    pub edge_distance_parameters: Option<&'a [Real]>,
 }
 
 impl Default for ViewportInput<'_> {
@@ -115,6 +116,7 @@ impl Default for ViewportInput<'_> {
             edge_endpoints: None,
             edge_curve: None,
             edge_parameters: &[],
+            edge_distance_parameters: None,
         }
     }
 }
@@ -341,7 +343,11 @@ impl Viewport {
             }
             let pointer = response.hover_pos()?;
             ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
-            let parameter = self.pick_edge_parameter(curve, pointer, rect, drafting.osnap)?;
+            let parameter = if let Some(parameters) = input.edge_distance_parameters {
+                self.pick_edge_distance_parameter(curve, parameters, pointer, rect)?
+            } else {
+                self.pick_edge_parameter(curve, pointer, rect, drafting.osnap)?
+            };
             if let Ok(point) = curve.evaluate(parameter)
                 && let Some(pixel) = self.project(point, rect)
             {

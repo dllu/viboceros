@@ -14,6 +14,16 @@ to the edge by closest-point search. Collected locations are marked with circles
 The source geometry stays unchanged until finishing. Transparent CPlane edits
 and camera/display controls preserve the collected points.
 
+After accepting a point, type a number to constrain the next location by **arc
+length along the edge**, not straight-line distance. The constraint persists and
+its reference advances with each accepted point. Type another number to change
+it, or `0` to clear it; negative numbers use their magnitude. Use `0,0,0` or
+`w0,0,0` to enter the origin as a point. Typed coordinates also honor an active
+constraint. The cursor chooses the nearest projected reachable candidate; a
+sole candidate remains selectable even when it is away from the cursor. If no
+candidate is reachable, no point is accepted. Closed edges can cross their seam,
+but a distance longer than one circuit has no candidate.
+
 Enter, the Done button, Escape, and `Cancel` finish and apply the collected batch.
 In particular, **Escape does not discard already collected split points**.
 An empty batch changes no geometry and creates no history. Repeated interior
@@ -55,10 +65,18 @@ Native replay matches all 21 cases at absolute epsilon `1e-9` and relative
 epsilon `1e-10`, without component permutations, fitted geometry or discarded
 numeric fields. This is fixture agreement, not arbitrary-input parity.
 
-Verification checkpoint: 2,967 release-mode workspace tests, 251 Python tests,
+Another [19 distance-constraint observations](../split-edge-distances.md) cover
+typed and real mouse points, persistent/reset/negative/oversized distances,
+curved arc length and closed-edge wrapping. Their raw curved positions have
+measurable Rhino inversion residuals. These additional curved records use an
+explicit absolute comparison bound of `1e-6`; the original 21 fixtures and the
+new straight-edge records retain `1e-9`. Every numeric field is still compared.
+
+Verification checkpoint: 2,980 release-mode workspace tests, 257 Python tests,
 seven offscreen GPU tests, formatting, and Clippy/Rustdoc with warnings denied.
 The new UI tests exercise real pointer press/release events, all four camera
-projections, endpoint capture, typed points, nested CPlane input, and stale picks.
+projections, endpoint capture, typed points, nested CPlane input, stale picks,
+and cached distance-constrained pointer input.
 
 ## Remaining limits
 
@@ -70,6 +88,8 @@ typed closest-point search certifies a global minimum for arbitrary rational
 curves. Camera-plane crossings, general occlusion behavior and pathological
 high-zoom/multimodal curves need further coverage.
 
-Rhino's distance constraint from a prior object-snap location and other-object
-snaps within this constrained point prompt are not implemented yet. These are
-explicit remaining command features, not established by the retained fixtures.
+Other-object snaps within this constrained point prompt are not implemented yet.
+A distance currently requires an accepted point on this edge; distance entry
+before that point, use of a prior command's last point, and ambiguous equal-distance
+candidate choices have not been measured against Rhino. Numerical integration
+and native parameter resolution limit very short or extremely scaled offsets.

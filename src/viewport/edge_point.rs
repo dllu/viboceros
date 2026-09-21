@@ -2,6 +2,30 @@
 use super::*;
 
 impl Viewport {
+    /// A distance constraint chooses the nearest projected cached candidate, even
+    /// if the only reachable point lies away from the cursor. No integration or
+    /// curve search runs on this per-frame path.
+    pub(super) fn pick_edge_distance_parameter(
+        &self,
+        curve: &NurbsCurve,
+        parameters: &[Real],
+        pointer: Pos2,
+        rect: Rect,
+    ) -> Option<Real> {
+        if !pointer.is_finite() || !rect.contains(pointer) {
+            return None;
+        }
+        parameters
+            .iter()
+            .filter_map(|&t| {
+                let [x, y] = self.project_precise(curve.evaluate(t).ok()?, rect)?;
+                let d = (x - Real::from(pointer.x)).hypot(y - Real::from(pointer.y));
+                d.is_finite().then_some((d, t))
+            })
+            .min_by(|a, b| a.0.total_cmp(&b.0).then(a.1.total_cmp(&b.1)))
+            .map(|(_, t)| t)
+    }
+
     pub(super) fn pick_edge_parameter(
         &self,
         curve: &NurbsCurve,

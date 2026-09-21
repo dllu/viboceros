@@ -104,3 +104,99 @@ fn edits_tolerance_and_access_changes_invalidate_collected_points() {
         assert_eq!(format!("{doc:?}"), before);
     }
 }
+
+#[test]
+fn distance_constraints_are_local_persistent_replaceable_and_read_only() {
+    let mut doc = Document::default();
+    let id = source(&mut doc);
+    let before = format!("{doc:?}");
+    let mut selection = SplitEdgeSelection::prepare(&doc, id, 0).unwrap();
+    assert!(matches!(
+        selection.set_distance(2.),
+        Err(CommandError::SplitEdgeDistanceAnchor)
+    ));
+    selection.add_parameter(0.).unwrap();
+    selection.set_distance(-2.).unwrap();
+    assert_eq!(selection.distance(), Some(2.));
+    for expected in [2., 4.] {
+        selection
+            .add_point(Point3::try_new(8., 0., 0.).unwrap())
+            .unwrap();
+        assert!((selection.parameters().last().unwrap() - expected).abs() < 1e-13);
+    }
+    selection.set_distance(3.).unwrap();
+    assert_eq!(selection.distance(), Some(3.));
+    let state = format!("{selection:?}");
+    assert!(selection.set_distance(Real::NAN).is_err());
+    assert!(selection.add_parameter(9.).is_err()); // Cannot bypass the cached constraint.
+    assert_eq!(format!("{selection:?}"), state);
+    selection.set_distance(0.).unwrap();
+    assert_eq!(selection.distance_parameters(), None);
+    selection
+        .add_point(Point3::try_new(9., 0., 0.).unwrap())
+        .unwrap();
+    assert_eq!(selection.parameters().last(), Some(&9.));
+    assert_eq!(format!("{doc:?}"), before);
+    selection.commit(&mut doc).unwrap();
+    assert_eq!(doc.undo_label(), Some("SplitEdge"));
+}
+
+#[test]
+fn unreachable_distance_ignores_the_point_and_single_candidate_ignores_cursor_direction() {
+    let mut doc = Document::default();
+    let id = source(&mut doc);
+    let mut selection = SplitEdgeSelection::prepare(&doc, id, 0).unwrap();
+    selection.add_parameter(8.).unwrap();
+    selection.set_distance(20.).unwrap();
+    assert_eq!(selection.distance_parameters(), Some(&[][..]));
+    selection
+        .add_point(Point3::try_new(9., 0., 0.).unwrap())
+        .unwrap();
+    assert_eq!(selection.parameters(), &[8.]);
+    selection.set_distance(4.).unwrap();
+    selection
+        .add_point(Point3::try_new(9., 0., 0.).unwrap())
+        .unwrap();
+    assert!((selection.parameters()[1] - 4.).abs() < 1e-13);
+}
+
+#[test]
+fn closed_distance_candidates_cross_the_seam_but_not_more_than_one_circuit() {
+    let curve = Circle3::try_new(
+        Point3::try_new(0., 0., 0.).unwrap(),
+        10.,
+        Vector3::try_new(0., 0., 1.)
+            .unwrap()
+            .normalized_nonzero()
+            .unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap()
+    .to_nurbs()
+    .unwrap();
+    let domain = curve.domain();
+    let length = std::f64::consts::TAU * 10.;
+    for (fraction, distance) in [(0., 10.), (0.25, 20.), (0.75, 20.), (1., 10.)] {
+        let anchor = curve.parameter_at(fraction).unwrap();
+        let candidates = distance_parameters(&curve, anchor, distance, Tolerance::DEFAULT).unwrap();
+        assert_eq!(candidates.len(), 2);
+        for (parameter, direction) in candidates.into_iter().zip([-1., 1.]) {
+            let angle = fraction * std::f64::consts::TAU + direction * distance / 10.;
+            let expected = Point3::try_new(10. * angle.cos(), 10. * angle.sin(), 0.).unwrap();
+            assert!(domain.contains(&parameter));
+            assert!(
+                curve
+                    .evaluate(parameter)
+                    .unwrap()
+                    .distance_to(expected)
+                    .unwrap()
+                    < 1e-10
+            );
+        }
+        assert!(
+            distance_parameters(&curve, anchor, length + 1., Tolerance::DEFAULT)
+                .unwrap()
+                .is_empty()
+        );
+    }
+}

@@ -1,0 +1,28 @@
+{
+  "cases": 19,
+  "engine_version": "8.32.26160.13001",
+  "scope": "Actual SplitEdge commands in owned private Xvfb sessions. Real component selection, typed distance inputs, evaluated edge points and additional real point clicks; complete geometry, attributes, events and Undo/Redo retained.",
+  "raw_response_sha256": {
+    "first-result.json": "5d2df0cfa5a706d859e9a79fd992b82e471da146821ec83e66479046704a0eca",
+    "policy-result.json": "0d3ea90c1b146e05c483fcaeaedaea97fd863e7d3c68a542c1320f6cc160dfab",
+    "closed-result.json": "ebd68ff0efb6441c4960070be9ba2d4cc37ff8909f3c52016d6492d4fc103a3c"
+  },
+  "source_artifact_sha256": {
+    "box.3dm": "9ad7f078dc15cbe542751246f45371a3e97c514d13482aee66448a8129620a65",
+    "quadratic.3dm": "88bf78e5061f056f55f78a4d121c334fb6210df5066880906e4b04ceb117c0d5",
+    "circle.3dm": "dea5bbc31327320d3461d1e7029867630e6283bd7712f8b1a57f54f39e448ab4"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/split_edge_distance_command.json": "cb93f7e779a0da72d7c21dd4c43f930d370b43f1dbc356f53b486fd09b613c8b",
+    "tools/rhino_oracle/observations/split_edge_distance_command.json": "545f45600d9c700846e430eab871e035d24561001c2c41dad1f2869b862b8ea8"
+  },
+  "notes": [
+    "Portable requests substitute exact source recipes for temporary shared 3DM paths. Raw result values are concatenated without numeric normalization.",
+    "The original 21 unconstrained SplitEdge observations remain unchanged. These 19 additional cases all recorded real successful Undo and Redo.",
+    "Distance is measured along the curve, persists, and advances its anchor to each accepted point. Negative values use magnitude; zero clears; a new distance replaces the old value.",
+    "A sole reachable candidate is used even when the cursor points the other way. No reachable candidate leaves the accepted batch unchanged. Closed curves wrap across the seam but not beyond one circuit.",
+    "The public point-click driver sends each owned click only after its corresponding echoed Pause, excluding the component-selection Pause. It stops on history discontinuity or I/O failure and disposes its timer on every exit.",
+    "Curved Rhino positions have measurable analytic arc-length residuals; they are retained. Separate curved-fixture comparison bounds must not be presented as exact parameter parity.",
+    "Native replay uses model locations rather than quantized Rhino screen pixels. Neither these fixtures nor the native pointer tests establish arbitrary-camera picking equivalence, other-object snapping, no-anchor distance policy, or performance parity."
+  ]
+}

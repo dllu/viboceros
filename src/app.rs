@@ -5235,6 +5235,8 @@ impl eframe::App for VibocerosApp {
         let edge_curve = split_selection.map(viboceros_command::SplitEdgeSelection::curve);
         let edge_parameters =
             split_selection.map_or(&[][..], viboceros_command::SplitEdgeSelection::parameters);
+        let edge_distance_parameters =
+            split_selection.and_then(viboceros_command::SplitEdgeSelection::distance_parameters);
         let edge_endpoints = match &self.edge_prompt {
             Some(edge_commands::EdgePrompt::Choice(selection)) if edge_pick => {
                 Some(selection.endpoints())
@@ -5280,6 +5282,7 @@ impl eframe::App for VibocerosApp {
                                         edge_endpoints,
                                         edge_curve,
                                         edge_parameters,
+                                        edge_distance_parameters,
                                     },
                                     curve_points,
                                     index,

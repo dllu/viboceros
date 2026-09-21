@@ -60,7 +60,7 @@ impl EdgePrompt {
             Self::Ambiguous(..) => "Choose an edge by number, or pick again; Esc cancels",
             Self::Choice(_) => "Choose a neighboring edge or All; Enter or Esc cancels",
             Self::SplitPoints(_) => {
-                "Pick points on the edge; Enter or Esc applies all collected points"
+                "Pick edge points or type a distance; Enter or Esc applies the batch"
             }
         }
     }
@@ -165,7 +165,25 @@ impl VibocerosApp {
                 self.push_log("Pick an edge in a viewport (not a construction-plane point)".into())
             }
             EdgePrompt::SplitPoints(_) => {
-                if let Some(point) = viboceros_drafting::PointInput::parse(input) {
+                if let Ok(distance) = input.parse::<f64>() {
+                    let Some(EdgePrompt::SplitPoints(selection)) = &mut self.edge_prompt else {
+                        unreachable!()
+                    };
+                    match selection
+                        .validate_source(&self.document)
+                        .and_then(|()| selection.set_distance(distance))
+                    {
+                        Ok(()) => self.push_log(if distance == 0. {
+                            "SplitEdge: distance constraint cleared".into()
+                        } else {
+                            format!(
+                                "SplitEdge: arc distance {}; pick the next point",
+                                distance.abs()
+                            )
+                        }),
+                        Err(error) => self.push_log(format!("Error: {error}")),
+                    }
+                } else if let Some(point) = viboceros_drafting::PointInput::parse(input) {
                     match point.and_then(|p| {
                         p.resolve(
                             self.viewports[self.active_viewport].construction_plane(),
@@ -303,16 +321,13 @@ impl VibocerosApp {
     }
 
     fn accept_split_point(&mut self, point: Point3) {
-        let Some(EdgePrompt::SplitPoints(selection)) = &self.edge_prompt else {
+        let Some(EdgePrompt::SplitPoints(selection)) = &mut self.edge_prompt else {
             return;
         };
-        match selection
-            .curve()
-            .closest_parameter(point, self.document.tolerance())
-        {
-            Ok(parameter) => self.accept_split_parameter(parameter),
-            Err(error) => self.push_log(format!("Error: {error}")),
-        }
+        let result = selection
+            .validate_source(&self.document)
+            .and_then(|()| selection.add_point(point));
+        self.report_split_point(result);
     }
 
     pub(super) fn accept_split_parameter(&mut self, parameter: f64) {
@@ -322,9 +337,19 @@ impl VibocerosApp {
         let result = selection
             .validate_source(&self.document)
             .and_then(|()| selection.add_parameter(parameter));
+        self.report_split_point(result);
+    }
+
+    fn report_split_point(&mut self, result: Result<(), viboceros_command::CommandError>) {
+        let Some(EdgePrompt::SplitPoints(selection)) = &self.edge_prompt else {
+            return;
+        };
         match result {
             Ok(()) => {
-                self.last_point = selection.curve().evaluate(parameter).ok();
+                self.last_point = selection
+                    .parameters()
+                    .last()
+                    .and_then(|&t| selection.curve().evaluate(t).ok());
                 let count = selection.parameters().len();
                 self.push_log(format!(
                     "SplitEdge: {count} point(s); Enter or Esc applies the batch"

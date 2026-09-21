@@ -109,7 +109,7 @@ def run(operation, tolerance, host):
     return run_owned(operation, tolerance, host, sources, order)
 
 
-def run_owned(operation, tolerance, host, sources, order, command_name=None, mouse_macro=None):
+def run_owned(operation, tolerance, host, sources, order, command_name=None, mouse_macro=None, script_driver=None):
     """Shared owned fixture/history recording; callers validate their own command grammar."""
     import brep_join_probe
     import join_probe
@@ -264,7 +264,7 @@ def run_owned(operation, tolerance, host, sources, order, command_name=None, mou
                 with open(path, "a") as stream:
                     stream.write(mouse_pick + "\n")
                     stream.flush()
-            return host["_run_surface_script"](script, True)
+            return script_driver(operation, script, curve, host) if script_driver else host["_run_surface_script"](script, True)
         succeeded, after, events = join_probe.observe_command(Rhino.Commands.Command, command,
             drive, snapshot, lambda: [], trace)
         result = dict(before=initial, after=after, succeeded=succeeded,

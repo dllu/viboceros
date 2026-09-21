@@ -99,3 +99,61 @@ fn duplicate_batch_and_stale_source_never_partially_commit() {
         assert!(app.edge_prompt.is_none());
     }
 }
+
+#[test]
+fn typed_distance_persists_through_points_and_cplane_edits_and_resets_explicitly() {
+    let mut app = test_app();
+    let pick = fixture(&mut app);
+    submit(&mut app, "SplitEdge");
+    app.accept_edge_click(vec![pick]);
+    submit(&mut app, "2"); // No edge anchor yet: do not reinterpret as a point.
+    submit(&mut app, "w0,0,0");
+    submit(&mut app, "-2");
+    submit(&mut app, "w8,0,0");
+    submit(&mut app, "CPlane");
+    submit(&mut app, "w0,0,7");
+    let Some(EdgePrompt::SplitPoints(selection)) = &app.edge_prompt else {
+        panic!()
+    };
+    assert_eq!(selection.parameters(), &[0., 2.]);
+    assert_eq!(selection.distance(), Some(2.));
+    let parameter = selection.distance_parameters().unwrap()[1];
+    app.handle_viewport_action(ViewportOutput {
+        edge_parameter: Some(parameter),
+        ..Default::default()
+    });
+    assert!((app.last_point.unwrap().to_array()[0] - 4.).abs() < 1e-12);
+    submit(&mut app, "0");
+    submit(&mut app, "w9,0,0");
+    let Some(EdgePrompt::SplitPoints(selection)) = &app.edge_prompt else {
+        panic!()
+    };
+    assert_eq!(selection.parameters(), &[0., 2., 4., 9.]);
+    assert_eq!(selection.distance(), None);
+    submit(&mut app, "Cancel");
+    assert_eq!(app.document.undo_label(), Some("SplitEdge"));
+    submit(&mut app, "SplitEdge");
+    app.accept_edge_click(vec![pick]);
+    let Some(EdgePrompt::SplitPoints(selection)) = &app.edge_prompt else {
+        panic!()
+    };
+    assert_eq!(selection.distance(), None);
+}
+
+#[test]
+fn unreachable_distance_and_invalid_numbers_preserve_the_batch() {
+    let mut app = test_app();
+    let pick = fixture(&mut app);
+    submit(&mut app, "SplitEdge");
+    app.accept_edge_click(vec![pick]);
+    submit(&mut app, "w4,0,0");
+    submit(&mut app, "20");
+    submit(&mut app, "w9,0,0");
+    submit(&mut app, "NaN");
+    let Some(EdgePrompt::SplitPoints(selection)) = &app.edge_prompt else {
+        panic!()
+    };
+    assert_eq!(selection.parameters(), &[4.]);
+    assert_eq!(selection.distance(), Some(20.));
+    assert_eq!(selection.distance_parameters(), Some(&[][..]));
+}

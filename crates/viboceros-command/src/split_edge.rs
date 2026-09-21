@@ -3,6 +3,12 @@ use super::*;
 
 const USAGE: &str = "SplitEdge object-id edge-index parameter [parameter ...]";
 
+#[derive(Clone, Debug)]
+struct DistanceConstraint {
+    length: Real,
+    parameters: Vec<Real>,
+}
+
 /// A read-only source snapshot and collected split parameters. No document
 /// transaction is held while the user picks points or edits a construction plane.
 #[derive(Clone, Debug)]
@@ -13,6 +19,7 @@ pub struct SplitEdgeSelection {
     brep: Brep,
     tolerance: Tolerance,
     parameters: Vec<Real>,
+    distance: Option<DistanceConstraint>,
 }
 
 impl SplitEdgeSelection {
@@ -45,6 +52,7 @@ impl SplitEdgeSelection {
             brep,
             tolerance,
             parameters: Vec::new(),
+            distance: None,
         })
     }
 
@@ -59,6 +67,38 @@ impl SplitEdgeSelection {
     }
     pub fn parameters(&self) -> &[Real] {
         &self.parameters
+    }
+
+    /// Cached candidates for the next point. `None` means unconstrained; an
+    /// empty slice means the active length cannot be reached in either direction.
+    pub fn distance_parameters(&self) -> Option<&[Real]> {
+        self.distance.as_ref().map(|d| d.parameters.as_slice())
+    }
+
+    pub fn distance(&self) -> Option<Real> {
+        self.distance.as_ref().map(|d| d.length)
+    }
+
+    /// Zero clears the constraint; signed input uses its magnitude. Integration
+    /// happens here and after accepted points, never during viewport hover.
+    pub fn set_distance(&mut self, distance: Real) -> Result<(), CommandError> {
+        if !distance.is_finite() {
+            return Err(CommandError::InvalidNumber(distance.to_string()));
+        }
+        if distance == 0.0 {
+            self.distance = None;
+            return Ok(());
+        }
+        let anchor = *self
+            .parameters
+            .last()
+            .ok_or(CommandError::SplitEdgeDistanceAnchor)?;
+        let parameters = distance_parameters(self.curve(), anchor, distance.abs(), self.tolerance)?;
+        self.distance = Some(DistanceConstraint {
+            length: distance.abs(),
+            parameters,
+        });
+        Ok(())
     }
 
     pub fn validate_source(&self, document: &Document) -> Result<(), CommandError> {
@@ -77,6 +117,17 @@ impl SplitEdgeSelection {
     /// polygon or an arbitrary construction plane. This uses the kernel's bounded
     /// closest-parameter search, not a certified global rational minimum.
     pub fn add_point(&mut self, point: Point3) -> Result<(), CommandError> {
+        if let Some(distance) = &self.distance {
+            let mut best: Option<(Real, Real)> = None;
+            for &parameter in &distance.parameters {
+                let score = self.curve().evaluate(parameter)?.distance_to(point)?;
+                if best.is_none_or(|(old, _)| score < old) {
+                    best = Some((score, parameter));
+                }
+            }
+            // An unreachable constraint leaves both the batch and its anchor intact.
+            return best.map_or(Ok(()), |(_, parameter)| self.add_parameter(parameter));
+        }
         self.add_parameter(self.curve().closest_parameter(point, self.tolerance)?)
     }
 
@@ -93,7 +144,24 @@ impl SplitEdgeSelection {
         if !parameter.is_finite() || !domain.contains(&parameter) {
             return Err(GeometryError::InvalidCurveSplitParameter.into());
         }
+        let next_distance = if let Some(distance) = &self.distance {
+            if !distance.parameters.contains(&parameter) {
+                return Err(GeometryError::InvalidCurveSplitParameter.into());
+            }
+            Some(DistanceConstraint {
+                length: distance.length,
+                parameters: distance_parameters(
+                    self.curve(),
+                    parameter,
+                    distance.length,
+                    self.tolerance,
+                )?,
+            })
+        } else {
+            None
+        };
         self.parameters.push(parameter);
+        self.distance = next_distance;
         Ok(())
     }
 
@@ -129,6 +197,49 @@ impl SplitEdgeSelection {
         )?;
         Ok(format!("Split edge at {count} point(s)"))
     }
+}
+
+fn distance_parameters(
+    curve: &NurbsCurve,
+    anchor: Real,
+    length: Real,
+    tolerance: Tolerance,
+) -> Result<Vec<Real>, GeometryError> {
+    let mut parameters = Vec::with_capacity(2);
+    let closed = curve.is_closed()?;
+    let domain = curve.domain();
+    for direction in [-1., 1.] {
+        let mut candidate =
+            curve.parameter_at_arc_length_from(anchor, direction * length, tolerance)?;
+        if candidate.is_none() && closed {
+            // Cross the seam at most once, then stop at the original anchor.
+            // Measure the first leg locally rather than subtracting two prefixes.
+            let (start, end) = (*domain.start(), *domain.end());
+            let (first, second, next) = if direction > 0. {
+                (anchor..=end, start..=anchor, start)
+            } else {
+                (start..=anchor, anchor..=end, end)
+            };
+            let consumed = if first.start() == first.end() {
+                0.
+            } else {
+                curve.try_trimmed(first)?.length(tolerance)?
+            };
+            if second.start() < second.end() && length >= consumed {
+                candidate = curve.try_trimmed(second)?.parameter_at_arc_length_from(
+                    next,
+                    direction * (length - consumed),
+                    tolerance,
+                )?;
+            }
+        }
+        if let Some(parameter) = candidate
+            && !parameters.contains(&parameter)
+        {
+            parameters.push(parameter);
+        }
+    }
+    Ok(parameters)
 }
 
 pub(super) struct SplitEdgeCommand;

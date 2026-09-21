@@ -52,11 +52,31 @@ pub struct SplitEdgeFixture {
     #[serde(flatten)]
     base: MergeEdgesFixture,
     edge: usize,
-    parameters: Vec<f64>,
+    #[serde(default, deserialize_with = "present_split_input")]
+    parameters: Option<Vec<f64>>,
+    #[serde(default, deserialize_with = "present_split_input")]
+    inputs: Option<Vec<SplitEdgeInput>>,
     pick: Option<String>,
     finish: Option<String>,
     #[serde(default)]
     object_preselect: bool,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "snake_case")]
+enum SplitEdgeInput {
+    Point(f64),
+    Mouse(f64),
+    Distance(f64),
+}
+
+// Missing alternatives are optional; an explicitly present null is not a list.
+fn present_split_input<'de, D, T>(deserializer: D) -> Result<Option<T>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    T::deserialize(deserializer).map(Some)
 }
 
 pub(super) fn run_split(
@@ -65,8 +85,18 @@ pub(super) fn run_split(
 ) -> Result<(Value, u64), ProbeError> {
     if f.base.preselect
         || f.base.cancel
-        || f.parameters.len() > 64
-        || f.parameters.iter().any(|t| !t.is_finite())
+        || f.parameters.is_some() == f.inputs.is_some()
+        || f.parameters
+            .as_ref()
+            .is_some_and(|v| v.len() > 64 || v.iter().any(|t| !t.is_finite()))
+        || f.inputs.as_ref().is_some_and(|v| {
+            v.len() > 64
+                || v.iter().any(|step| match step {
+                    SplitEdgeInput::Point(t)
+                    | SplitEdgeInput::Mouse(t)
+                    | SplitEdgeInput::Distance(t) => !t.is_finite(),
+                })
+        })
         || f.pick.as_deref() != Some("mouse")
         || f.finish
             .as_deref()
@@ -236,12 +266,28 @@ fn run_impl(
             ids[order[0]],
             selected.edge,
         )?;
-        for &parameter in &selected.parameters {
-            // The public command receives evaluated model points, not native parameters.
-            let point = session.curve().evaluate(parameter)?;
-            session.add_point(point)?;
+        let inputs = selected.inputs.clone().unwrap_or_else(|| {
+            selected
+                .parameters
+                .as_ref()
+                .unwrap()
+                .iter()
+                .copied()
+                .map(SplitEdgeInput::Point)
+                .collect()
+        });
+        for step in inputs {
+            match step {
+                SplitEdgeInput::Distance(distance) => session.set_distance(distance)?,
+                SplitEdgeInput::Point(parameter) | SplitEdgeInput::Mouse(parameter) => {
+                    // Replay the requested model location, not the quantized screen
+                    // coordinates. Camera/pixel equivalence needs separate UI tests.
+                    let point = session.curve().evaluate(parameter)?;
+                    session.add_point(point)?;
+                }
+            }
         }
-        if selected.parameters.is_empty() {
+        if session.parameters().is_empty() {
             false
         } else {
             match session.commit(&mut document) {
