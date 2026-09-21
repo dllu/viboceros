@@ -76,3 +76,6 @@ CPlane-relative Quad, occlusion,
 Alt suspension, full `Osnap` command grammar, persistence across app restarts and
 arbitrary macros remain incomplete. New controls do not establish broad snap
 parity or change the limits of the underlying geometry queries.
+
+[Near calibration](near-snaps.md) now retains perspective picks and independent
+reference checks; native Near capture and controls remain pending.

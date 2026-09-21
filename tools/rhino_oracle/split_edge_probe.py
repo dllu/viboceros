@@ -21,8 +21,8 @@ def validate(operation):
     if type(operation.get("record_viewport", False)) is not bool:
         raise ValueError("record_viewport must be boolean")
     persistent = operation.get("persistent_snaps", [])
-    if (not isinstance(persistent, list) or len(persistent) > 5 or
-            any(mode not in ("Point", "End", "Mid", "Cen", "Quad") for mode in persistent) or
+    if (not isinstance(persistent, list) or len(persistent) > 6 or
+            any(mode not in ("Point", "End", "Mid", "Cen", "Quad", "Near") for mode in persistent) or
             len(set(persistent)) != len(persistent)):
         raise ValueError("invalid persistent snap modes")
     if "inputs" in operation:
@@ -34,7 +34,7 @@ def validate(operation):
                 return next(iter(step)) in ("point", "mouse", "distance") and finite(next(iter(step.values())))
             pick = step["pick"]
             if (not isinstance(pick, dict) or set(pick) - set(("point", "aim", "osnap", "offset")) or
-                    pick.get("osnap") not in ("NoSnap", "Point", "End", "Mid", "Cen", "Quad", "Persistent")):
+                    pick.get("osnap") not in ("NoSnap", "Point", "End", "Mid", "Cen", "Quad", "Near", "Persistent")):
                 return False
             point, offset = pick.get("point"), pick.get("offset", [0, 0])
             aim = pick.get("aim", point)
@@ -192,7 +192,7 @@ def snapping_environment(operation, host):
         aid.GridSnap = aid.Ortho = aid.Planar = False
         aid.Osnap = True
         modes = getattr(settings.OsnapModes, "None")
-        names = dict(Point="Point", End="End", Mid="Midpoint", Cen="Center", Quad="Quadrant")
+        names = dict(Point="Point", End="End", Mid="Midpoint", Cen="Center", Quad="Quadrant", Near="Near")
         for name in operation.get("persistent_snaps", []): modes |= getattr(settings.OsnapModes, names[name])
         aid.OsnapModes = modes
         aid.OnlySnapToSelected = False

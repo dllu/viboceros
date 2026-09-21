@@ -1,0 +1,34 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "calibrated_observations": 16,
+  "actual_undo_redo_observations": 16,
+  "independent_reference_coordinate_checks": 16,
+  "native_snap_replays": 0,
+  "raw_response_sha256": {
+    "response-final.json": "e8e350049ee0e3ca38788e1810a3ffa8da3b928639cc8e0bc4fe098308149d21"
+  },
+  "preliminary_diagnostic_response_sha256": {
+    "response-corrected.json": "f5f06afdecd6d4e0c1c6d0cd474f415f4c998c1acced8da4aae7c4a13c3f639e"
+  },
+  "preliminary_failed_stdout_sha256": {
+    "response.json": "c2b5fc9f189126aebac2413992bb68866d799be00c09da64d9751079d169edb8"
+  },
+  "source_artifact_sha256": {
+    "box.3dm": "9ad7f078dc15cbe542751246f45371a3e97c514d13482aee66448a8129620a65"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/near_snaps.json": "511c2d73bff36e18adfd92ce3dc7893f9df2f061298087287713351c1aec33d6",
+    "tools/rhino_oracle/observations/near_snaps.json": "5724319d4b3b0381136cfa2e4862266c04c06939a3a299f955eb6752663bd18e"
+  },
+  "notes": [
+    "Public APIs and real SplitEdge component/point clicks in a newly owned private Xvfb Rhino session. No user desktop or existing Rhino session was used.",
+    "Portable requests substitute the source box recipe for the verified shared artifact. The complete response is JSON-compacted without numerical normalization or array reordering.",
+    "The preliminary run exited 2 at polyline-one-shot: the generator supplied points instead of vertices. It produced an error message, not a valid response. The circle was also missing x_axis. Both fixture fields were corrected before the fresh successful 16-case run; no preliminary partial observations are treated as evidence.",
+    "An intermediate successful run exposed an ambiguous End test: integer rounding made its Near target the endpoint too. The End aim was moved along the line; the Quad aim was also moved farther along the circle to distinguish coordinates clearly. Only the subsequent fresh complete 16-case run is retained. The independent reference tests require each of these discrete targets to be distinct from and farther from the cursor than Near.",
+    "Six families compare one-shot Near with persistent Near-only. Four mixed-mode cases cover End, Mid, Center and Quad competition on a single source curve.",
+    "Analytic reference math reads only input source geometry and recorded camera/click, never declared target hypotheses or output geometry. Perspective line fraction conversion is closed-form; circle/quadratic references bracket analytic squared-distance stationary points.",
+    "All 16 observed constrained x coordinates agree with their independently computed reference targets within absolute 1e-9. The quadratic ellipse cases have approximately 9.491e-10 residual. This is not zero error or a universal accuracy guarantee.",
+    "SplitEdge constrains the target onto the box's x-axis edge, so these observations establish only its x coordinate, not unconstrained 3D snapping parity. Full histories are retained and checked for integrity, not replayed by the native engine.",
+    "Near is not yet implemented in the native UI or Rust snap adapter. The fixture is a Rhino-only calibration corpus; generic native replay is not supported yet. Priority beyond the four measured single-object cases and unrestricted curved closest-point solving remain open."
+  ]
+}

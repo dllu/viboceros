@@ -1,0 +1,1210 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "split_edge_command",
+      "id": "line-one-shot",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "line",
+          "start": [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          "end": [
+            8.0,
+            -2.0,
+            0.0
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              3.5,
+              -2.0,
+              0.0
+            ],
+            "aim": [
+              3.5,
+              -2.0,
+              0.0
+            ],
+            "offset": [
+              4,
+              3
+            ],
+            "osnap": "Near"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Point",
+        "End",
+        "Mid",
+        "Cen",
+        "Quad"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "line-persistent",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "line",
+          "start": [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          "end": [
+            8.0,
+            -2.0,
+            0.0
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              3.5,
+              -2.0,
+              0.0
+            ],
+            "aim": [
+              3.5,
+              -2.0,
+              0.0
+            ],
+            "offset": [
+              4,
+              3
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "line-off-plane-one-shot",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "line",
+          "start": [
+            2.0,
+            -2.0,
+            7.0
+          ],
+          "end": [
+            8.0,
+            -2.0,
+            7.0
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              3.5,
+              -2.0,
+              7.0
+            ],
+            "aim": [
+              3.5,
+              -2.0,
+              7.0
+            ],
+            "offset": [
+              4,
+              3
+            ],
+            "osnap": "Near"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Point",
+        "End",
+        "Mid",
+        "Cen",
+        "Quad"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "line-off-plane-persistent",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "line",
+          "start": [
+            2.0,
+            -2.0,
+            7.0
+          ],
+          "end": [
+            8.0,
+            -2.0,
+            7.0
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              3.5,
+              -2.0,
+              7.0
+            ],
+            "aim": [
+              3.5,
+              -2.0,
+              7.0
+            ],
+            "offset": [
+              4,
+              3
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "line-tilted-one-shot",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "line",
+          "start": [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          "end": [
+            8.0,
+            -4.0,
+            7.0
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              3.5,
+              -2.5,
+              1.75
+            ],
+            "aim": [
+              3.5,
+              -2.5,
+              1.75
+            ],
+            "offset": [
+              4,
+              3
+            ],
+            "osnap": "Near"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Point",
+        "End",
+        "Mid",
+        "Cen",
+        "Quad"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "line-tilted-persistent",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "line",
+          "start": [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          "end": [
+            8.0,
+            -4.0,
+            7.0
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              3.5,
+              -2.5,
+              1.75
+            ],
+            "aim": [
+              3.5,
+              -2.5,
+              1.75
+            ],
+            "offset": [
+              4,
+              3
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "polyline-one-shot",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              8.0,
+              -2.0,
+              0.0
+            ],
+            [
+              8.0,
+              -6.0,
+              0.0
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              3.5,
+              -2.0,
+              0.0
+            ],
+            "aim": [
+              3.5,
+              -2.0,
+              0.0
+            ],
+            "offset": [
+              4,
+              3
+            ],
+            "osnap": "Near"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Point",
+        "End",
+        "Mid",
+        "Cen",
+        "Quad"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "polyline-persistent",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              8.0,
+              -2.0,
+              0.0
+            ],
+            [
+              8.0,
+              -6.0,
+              0.0
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              3.5,
+              -2.0,
+              0.0
+            ],
+            "aim": [
+              3.5,
+              -2.0,
+              0.0
+            ],
+            "offset": [
+              4,
+              3
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "circle-one-shot",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "circle",
+          "center": [
+            4.0,
+            -4.0,
+            0.0
+          ],
+          "radius": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              2.4,
+              -2.8,
+              0.0
+            ],
+            "aim": [
+              2.4,
+              -2.8,
+              0.0
+            ],
+            "offset": [
+              3,
+              2
+            ],
+            "osnap": "Near"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Point",
+        "End",
+        "Mid",
+        "Cen",
+        "Quad"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "circle-persistent",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "circle",
+          "center": [
+            4.0,
+            -4.0,
+            0.0
+          ],
+          "radius": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              2.4,
+              -2.8,
+              0.0
+            ],
+            "aim": [
+              2.4,
+              -2.8,
+              0.0
+            ],
+            "offset": [
+              3,
+              2
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "ellipse-quarter-one-shot",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -4.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -3.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                4.0,
+                -3.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "type": "nurbs"
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              2.4,
+              -3.4,
+              0.0
+            ],
+            "aim": [
+              2.4,
+              -3.4,
+              0.0
+            ],
+            "offset": [
+              3,
+              2
+            ],
+            "osnap": "Near"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Point",
+        "End",
+        "Mid",
+        "Cen",
+        "Quad"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "ellipse-quarter-persistent",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -4.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -3.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                4.0,
+                -3.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "type": "nurbs"
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              2.4,
+              -3.4,
+              0.0
+            ],
+            "aim": [
+              2.4,
+              -3.4,
+              0.0
+            ],
+            "offset": [
+              3,
+              2
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "line-end",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "line",
+          "start": [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          "end": [
+            8.0,
+            -2.0,
+            0.0
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              2.3,
+              -2.0,
+              0.0
+            ],
+            "aim": [
+              2.3,
+              -2.0,
+              0.0
+            ],
+            "offset": [
+              0,
+              0
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Near",
+        "End"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "line-mid",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "line",
+          "start": [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          "end": [
+            8.0,
+            -2.0,
+            0.0
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              4.95,
+              -2.0,
+              0.0
+            ],
+            "aim": [
+              4.95,
+              -2.0,
+              0.0
+            ],
+            "offset": [
+              0,
+              0
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Near",
+        "Mid"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "circle-center",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "circle",
+          "center": [
+            4.0,
+            -4.0,
+            0.0
+          ],
+          "radius": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              2.4,
+              -2.8,
+              0.0
+            ],
+            "aim": [
+              2.4,
+              -2.8,
+              0.0
+            ],
+            "offset": [
+              0,
+              0
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Near",
+        "Cen"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true
+    },
+    {
+      "op": "split_edge_command",
+      "id": "circle-quad",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                10.0,
+                12.0,
+                14.0
+              ]
+            }
+          }
+        },
+        {
+          "type": "circle",
+          "center": [
+            4.0,
+            -4.0,
+            0.0
+          ],
+          "radius": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "edge": 0,
+      "pick": "mouse",
+      "inputs": [
+        {
+          "pick": {
+            "point": [
+              2.05,
+              -3.56,
+              0.0
+            ],
+            "aim": [
+              2.05,
+              -3.56,
+              0.0
+            ],
+            "offset": [
+              0,
+              0
+            ],
+            "osnap": "Persistent"
+          }
+        }
+      ],
+      "persistent_snaps": [
+        "Near",
+        "Quad"
+      ],
+      "record_viewport": true,
+      "undo_redo": true,
+      "trace_commands": true
+    }
+  ]
+}

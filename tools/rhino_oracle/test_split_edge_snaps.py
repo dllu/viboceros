@@ -23,7 +23,7 @@ class SplitEdgeSnapProbeTests(unittest.TestCase):
         for pick in invalid:
             with self.subTest(pick=pick), self.assertRaises(ValueError):
                 split_edge_probe.run(self.operation(pick), None, {})
-        for mode in ("NoSnap", "Point", "End", "Mid", "Cen", "Quad"):
+        for mode in ("NoSnap", "Point", "End", "Mid", "Cen", "Quad", "Near"):
             operation = self.operation(dict(valid, osnap=mode))
             self.assertEqual(split_edge_probe.mouse_command(operation, None, {}),
                              "_SplitEdge _Pause _%s _Pause _Enter" % mode)
@@ -48,18 +48,19 @@ class SplitEdgeSnapProbeTests(unittest.TestCase):
                            OsnapPickboxRadius=9, ProjectSnapToCPlane=True, SnapToLocked=False,
                            SnapToOccluded=False, OnlySnapToSelected=True, Untouched="keep")
         initial_track = dict(UseSmartTrack=True, Untouched="keep")
-        for failure in (None, "Ortho", "command", "restore"):
+        for failure in (None, "Ortho", "OsnapModes", "command", "restore"):
             aid = Settings(copy.deepcopy(initial_aid), failure)
             track = Settings(copy.deepcopy(initial_track))
             settings = SimpleNamespace(ModelAidSettings=aid, SmartTrackSettings=track,
-                                       OsnapModes=SimpleNamespace(**{"None": 0}))
+                                       OsnapModes=SimpleNamespace(**{"None": 0, "Near": 2, "End": 131072}))
             host = dict(Rhino=SimpleNamespace(ApplicationSettings=settings))
+            operation = self.operation(dict(point=[2,0,0], osnap="Near"))
+            operation["persistent_snaps"] = ["Near", "End"]
             def exercise():
-                with split_edge_probe.snapping_environment(
-                        self.operation(dict(point=[2,0,0], osnap="Point")), host):
+                with split_edge_probe.snapping_environment(operation, host):
                     self.assertFalse(aid.GridSnap or aid.Ortho or aid.Planar or aid.ProjectSnapToCPlane)
                     self.assertTrue(aid.Osnap and aid.SnapToLocked and aid.SnapToOccluded)
-                    self.assertEqual(aid.OsnapModes, 0)
+                    self.assertEqual(aid.OsnapModes, 2 | 131072)
                     self.assertFalse(aid.OnlySnapToSelected)
                     self.assertEqual(aid.OsnapPickboxRadius, 12)
                     self.assertFalse(track.UseSmartTrack)
@@ -69,6 +70,19 @@ class SplitEdgeSnapProbeTests(unittest.TestCase):
             else: exercise()
             self.assertEqual(aid.values, initial_aid)
             self.assertEqual(track.values, initial_track)
+
+    def test_near_persistent_grammar_is_bounded_and_rejects_injected_modes(self):
+        operation = self.operation(dict(point=[2,0,0], osnap="Persistent"))
+        for modes in (["Near"], ["Point", "End", "Mid", "Cen", "Quad", "Near"]):
+            operation["persistent_snaps"] = modes
+            split_edge_probe.validate(operation)
+            self.assertEqual(split_edge_probe.mouse_command(operation, None, {}),
+                             "_SplitEdge _Pause _Pause _Enter")
+        for modes in (["Near", "Near"], ["Near _Delete"], ["Persistent"], ["NoSnap"], None,
+                      ["Point", "End", "Mid", "Cen", "Quad", "Near", "Point"]):
+            operation["persistent_snaps"] = modes
+            with self.subTest(modes=modes), self.assertRaises(ValueError):
+                split_edge_probe.run(operation, None, {})
 
     def test_old_parameter_and_mouse_probes_do_not_touch_settings(self):
         for operation in (dict(parameters=[0.25]), dict(inputs=[dict(mouse=0.5)])):
