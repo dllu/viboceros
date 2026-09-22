@@ -117,16 +117,12 @@ keeps the document and Cap `Unknown` preservation regressions meaningful.
 These are native tests, not additional cases in the retained Rhino capture;
 no new Rhino parity or performance claim is made for higher-degree trims.
 
-There is a separate, reproducible construction limitation with stationary trim
-spans: replace each box UV edge `a→b` by a quadratic with controls
-`[a,a,b,b,b]`, weights `[1,2,1,2,1]`, and knots
-`[-3,-3,-3,2,2,7,7,7]`. Its image is exactly the segment, but the existing sampled
-edge/trim correspondence validator rejects it with
-`a model-space edge interior leaves its lifted p-curve`. Its nearest-sample
-search can concentrate its bounded seeds on the constant span. The orientation
-certificate supports such segment images; this change does not bypass or change
-the separate construction validator. Resolving that validation limitation and
-fresh same-source Rhino observations remain follow-up work.
+The subsequent [trim-correspondence audit](trim-correspondence.md) resolves the
+constructor's stationary-span rejection and retains 18 fresh shared-source Rhino
+records. Those include both senses of boxes, tetrahedra, and spheres with regular
+quadratic trims and either leading or trailing stationary spans. Their full
+geometry and orientation records agree; construction and orientation remain
+separate checks, without a validation bypass.
 
 Definition-only records retain every coefficient, knot, topology field, face
 sense, and tolerance without evaluating samples that would be discarded. Shared

@@ -31,12 +31,12 @@ pub(super) fn validate(
     let stations = samples(parameters)?;
     let mut lifted = Vec::with_capacity(stations.len());
     for (parameter, side) in stations {
-        lifted.push((parameter, image.point(parameter, side)?));
+        lifted.push((parameter, side, image.point(parameter, side)?));
     }
     let Some(edge_index) = trim.edge else {
         let vertex = brep.vertices[trim.vertices[0]];
         let allowed = tolerance.absolute().max(vertex.tolerance);
-        for &(_, point) in &lifted {
+        for &(_, _, point) in &lifted {
             if point.distance_to(vertex.point)? > allowed {
                 return invalid("a singular trim interior leaves its model-space vertex");
             }
@@ -52,7 +52,7 @@ pub(super) fn validate(
         tolerance.relative(),
         tolerance.angular(),
     )?;
-    for &(parameter, point) in &lifted {
+    for &(parameter, _, point) in &lifted {
         let mut fraction = normalized(parameter, parameters.domain())?;
         if trim.reversed_3d {
             fraction = 1.0 - fraction;
@@ -79,7 +79,7 @@ pub(super) fn validate(
             continue;
         }
         if image
-            .closest_point(point, &lifted, search_tolerance.absolute())?
+            .distance_witness(point, &lifted, search_tolerance.absolute())?
             .0
             > allowed
         {

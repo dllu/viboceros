@@ -200,8 +200,9 @@ fn reencode(mut brep: Brep, degree: usize, multispan: bool, gauge: Real) -> Brep
                 let (a, b) = (controls[0].point(), controls[1].point());
                 // These tetrahedral UV endpoints are not a unit triangle:
                 // interpolating even at dyadic fractions can round off-line.
-                // Endpoint copies are exactly collinear. Alternate them so no
-                // whole span is constant (a separate validator limitation).
+                // Endpoint copies are exactly collinear. Alternating them also
+                // exercises non-monotone control polygons; stationary spans
+                // have separate constructor and correspondence regressions.
                 let controls = (0..count)
                     .map(|i| {
                         WeightedPoint2::try_new(

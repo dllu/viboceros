@@ -8342,6 +8342,13 @@ fn sample_trim_loop(
     if points.len() > 1 {
         points.pop();
     }
+    // Stationary spans repeat a UV point without adding a polygon edge. Keep
+    // distinct nearby coordinates and nonconsecutive contacts; this is exact
+    // sampled-polygon cleanup, not tolerance welding or curve simplification.
+    points.dedup();
+    if points.len() > 1 && points.first() == points.last() {
+        points.pop();
+    }
     Ok(points)
 }
 

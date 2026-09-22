@@ -429,7 +429,7 @@ def _owned_artifact_request(request):
                 source = operation.get("source")
                 if not isinstance(source, Mapping):
                     raise OracleProtocolError("border artifact setup requires a source object")
-                if source.get("type") in ("box", "extrusion", "brep", "mesh_brep", "surface_face", "tube"):
+                if source.get("type") in ("box", "sphere", "extrusion", "brep", "mesh_brep", "surface_face", "tube"):
                     operation["artifact_path"] = str(Path(job) / f"border-{index}.3dm")
             elif operation.get("op") == "cap_command":
                 operation["artifact_path"] = str(Path(job) / f"cap-{index}.3dm")

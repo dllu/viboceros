@@ -95,12 +95,13 @@ class OracleClientTests(unittest.TestCase):
             {"id": "../../untrusted-cap", "op": "cap_command", "artifact_path": "/unowned/model.3dm"},
             {"id": "../../untrusted-orientation", "op": "brep_solid_orientation", "artifact_path": "/unowned/model.3dm"},
             {"id": "../../untrusted-document-brep", "op": "document_brep", "artifact_path": "/unowned/model.3dm"},
+            {"id": "../../untrusted-sphere-border", "op": "border_command", "source": {"type": "sphere"}, "artifact_path": "/unowned/model.3dm"},
         ]}
         original = copy.deepcopy(request)
         paths = []
 
         def native(prepared, timeout):
-            for operation, name in zip(prepared["operations"], ["curve-0.3dm", "brep-1.3dm", "border-2.3dm", "cap-3.3dm", "orientation-4.3dm", "document-brep-5.3dm"]):
+            for operation, name in zip(prepared["operations"], ["curve-0.3dm", "brep-1.3dm", "border-2.3dm", "cap-3.3dm", "orientation-4.3dm", "document-brep-5.3dm", "border-6.3dm"]):
                 path = Path(operation["artifact_path"])
                 self.assertEqual(path.name, name)
                 self.assertFalse(path.exists())

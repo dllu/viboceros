@@ -143,7 +143,13 @@ impl Brep {
                     let image = LiftedTrim::new(trim, &face.surface)?;
                     let seeds = sample_spans(trim.curve.spans(), 8)?
                         .into_iter()
-                        .map(|t| Ok((t, image.point(t, ParameterSide::Right)?)))
+                        .map(|t| {
+                            Ok((
+                                t,
+                                ParameterSide::Right,
+                                image.point(t, ParameterSide::Right)?,
+                            ))
+                        })
                         .collect::<Result<Vec<_>, GeometryError>>()?;
                     let samples = &edge_samples[edge_index];
                     let mut previous = *domain.start();
@@ -170,7 +176,7 @@ impl Brep {
                             {
                                 direct
                             } else {
-                                image.closest_point(point, &seeds, search.absolute())?.1
+                                image.distance_witness(point, &seeds, search.absolute())?.1
                             }
                         };
                         if i != 0 && (t <= previous || t >= *domain.end()) {

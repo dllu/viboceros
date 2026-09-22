@@ -1,0 +1,265 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 0.0,
+  "relative_epsilon": 1e-12,
+  "operations": [
+    {
+      "id": "box-regular-outward",
+      "comparison": {
+        "id": "box-regular-outward",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "box-regular-inward",
+      "comparison": {
+        "id": "box-regular-inward",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "box-stationary-start-outward",
+      "comparison": {
+        "id": "box-stationary-start-outward",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "box-stationary-start-inward",
+      "comparison": {
+        "id": "box-stationary-start-inward",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "box-stationary-end-outward",
+      "comparison": {
+        "id": "box-stationary-end-outward",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "box-stationary-end-inward",
+      "comparison": {
+        "id": "box-stationary-end-inward",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "tetrahedron-regular-outward",
+      "comparison": {
+        "id": "tetrahedron-regular-outward",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "tetrahedron-regular-inward",
+      "comparison": {
+        "id": "tetrahedron-regular-inward",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "tetrahedron-stationary-start-outward",
+      "comparison": {
+        "id": "tetrahedron-stationary-start-outward",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "tetrahedron-stationary-start-inward",
+      "comparison": {
+        "id": "tetrahedron-stationary-start-inward",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "tetrahedron-stationary-end-outward",
+      "comparison": {
+        "id": "tetrahedron-stationary-end-outward",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "tetrahedron-stationary-end-inward",
+      "comparison": {
+        "id": "tetrahedron-stationary-end-inward",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "sphere-regular-outward",
+      "comparison": {
+        "id": "sphere-regular-outward",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "sphere-regular-inward",
+      "comparison": {
+        "id": "sphere-regular-inward",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "sphere-stationary-start-outward",
+      "comparison": {
+        "id": "sphere-stationary-start-outward",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "sphere-stationary-start-inward",
+      "comparison": {
+        "id": "sphere-stationary-start-inward",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "sphere-stationary-end-outward",
+      "comparison": {
+        "id": "sphere-stationary-end-outward",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "sphere-stationary-end-inward",
+      "comparison": {
+        "id": "sphere-stationary-end-inward",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "cases": 18,
+  "matched": 18,
+  "native_failed": 0,
+  "mismatched": 0,
+  "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison."
+}

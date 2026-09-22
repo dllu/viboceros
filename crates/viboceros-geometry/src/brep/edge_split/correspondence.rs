@@ -56,16 +56,27 @@ pub(super) fn parameters(
                     budget.charge(9usize.saturating_mul(image.curve.degree().saturating_add(1)))?;
                     for i in 0..=8 {
                         let t = normalized_span_parameter([start, end], i as Real / 8.)?;
-                        stations.push((t, image.point(t, ParameterSide::Right)?));
+                        let side = if t == end {
+                            ParameterSide::Left
+                        } else {
+                            ParameterSide::Right
+                        };
+                        stations.push((t, side, image.point(t, side)?));
                     }
                 }
                 samples = Some(stations);
             }
             let samples = samples.as_ref().expect("initialized trim samples");
-            budget.charge(samples.len().saturating_add(
-                1024usize.saturating_mul(image.curve.degree().saturating_add(1)),
-            ))?;
-            let (distance, parameter) = image.closest_point(point, samples, epsilon)?;
+            // Every supplied seed can now be refined; do not retain the old
+            // fixed sixteen-start allowance when charging correspondence work.
+            budget.charge(
+                samples.len().saturating_mul(
+                    trim_image::MAX_REFINEMENT_STEPS
+                        .saturating_mul(image.curve.degree().saturating_add(1))
+                        .saturating_add(1),
+                ),
+            )?;
+            let (distance, parameter) = image.distance_witness(point, samples, epsilon)?;
             if distance > allowed {
                 return invalid("edge split could not resolve its trim parameter");
             }

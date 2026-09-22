@@ -1,6 +1,30 @@
 use super::*;
 
 #[test]
+fn stationary_trim_sources_replay_complete_shared_rhino_geometry() {
+    let request: ProbeRequest = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/stationary_trims.json"
+    ))
+    .unwrap();
+    let observed: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/stationary_trims.json"
+    ))
+    .unwrap();
+    let actual = run_request(&request).unwrap();
+    let expected = observed["results"].as_array().unwrap();
+    assert_eq!(actual.results.len(), 18);
+    assert_eq!(expected.len(), 18);
+    for (actual, expected) in actual.results.iter().zip(expected) {
+        assert_eq!(expected["id"], actual.id);
+        assert!(
+            crate::brep_interchange::roundtrip_equal(&actual.value, &expected["value"]),
+            "{}",
+            actual.id
+        );
+    }
+}
+
+#[test]
 fn solid_orientation_shared_sources_resolve_corner_cases_but_retain_coincident_gaps() {
     let request: ProbeRequest = serde_json::from_str(include_str!(
         "../../../../tools/rhino_oracle/fixtures/solid_orientation.json"

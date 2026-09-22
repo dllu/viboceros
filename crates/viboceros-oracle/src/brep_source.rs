@@ -3,6 +3,7 @@ use super::*;
 use crate::{curve_join_close::CurveInput, object_source::ObjectSource};
 
 mod surface_face;
+mod trim_encoding;
 
 /// Shared topology-preserving source preparation for geometry and command probes.
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -13,6 +14,7 @@ pub(super) struct BrepSourceFixture {
     edge_order: Option<Vec<usize>>,
     #[serde(default)]
     splits: Vec<(usize, Vec<f64>)>,
+    trim_endpoint_encoding: Option<trim_encoding::EndpointEncoding>,
     pub(super) artifact_path: Option<String>,
 }
 
@@ -27,6 +29,9 @@ impl BrepSourceFixture {
                 ));
             }
         };
+        if let Some(encoding) = &self.trim_endpoint_encoding {
+            brep = encoding.apply(brep, tolerance)?;
+        }
         if let Some(order) = &self.edge_order {
             brep = brep.reordered_edges(order, tolerance)?;
         }
@@ -50,6 +55,9 @@ pub(super) enum BrepCommandSource {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub(super) enum Primitive {
+    Sphere {
+        radius: f64,
+    },
     Compound {
         parts: Vec<BrepSourceFixture>,
     },
@@ -85,6 +93,15 @@ impl BrepCommandSource {
     pub(super) fn geometry(&self, tolerance: Tolerance) -> Result<Geometry, ProbeError> {
         Ok(match self {
             Self::Object(source) => source.geometry(tolerance)?,
+            Self::Primitive(Primitive::Sphere { radius }) => {
+                Geometry::Brep(Brep::try_surface_face(
+                    NurbsSurface::try_sphere(
+                        viboceros_command::CommandContext::default().construction_plane,
+                        *radius,
+                    )?,
+                    tolerance,
+                )?)
+            }
             Self::Primitive(Primitive::Compound { parts }) => {
                 if parts.is_empty()
                     || parts.len() > 8

@@ -1,0 +1,95 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "baseline_commit": "92b8eda032363c3e5fa6640fb83284320f4ee0cf",
+  "capture": {
+    "display": "owned private Xvfb/i3",
+    "session": "completed; owned Rhino process and display cleaned up",
+    "cases": 18,
+    "source": "identical native 3dm artifacts, native roundtrip checked before Rhino reads",
+    "document_insertion": false,
+    "negative_weights": false,
+    "trim_degree": 2
+  },
+  "baseline": {
+    "matched": 12,
+    "native_failed": 6,
+    "mismatched": 0,
+    "kernel": "committed baseline, with input-only source recipes added; both red regressions failed before the search change"
+  },
+  "after": {
+    "matched": 18,
+    "native_failed": 0,
+    "mismatched": 0,
+    "max_absolute_error": 0,
+    "scope": "complete geometry, topology, orientation, and tolerances; no numeric fields removed"
+  },
+  "limits": [
+    "Numerical correspondence, not a certified global minimum or proof of global B-rep validity.",
+    "Native degree 3/7, common-negative gauges, long stationary sections, split and mesh tests are outside the Rhino capture.",
+    "Timing fields are zero; no performance or Rhino-speed claim."
+  ],
+  "retention": "Raw records recursively compared by type and IEEE-754 binary64 bits, including signed zero; no output normalization.",
+  "artifact_sha256": {
+    "box-regular-outward": "2d5e5041bc0ac41417e394384a476fac7d04cd9fde4dc874b4dc59b893352e07",
+    "box-regular-inward": "1ed9e536146a4e4115332587227b0e3957a1d66535790abb9081eb1347c2a671",
+    "box-stationary-start-outward": "04f7dcb669faafc5e8451fdb919d671a58955be8d9378a1416163153f06936f9",
+    "box-stationary-start-inward": "b1a14a2ee3e7ec8554f3a56d41869e632eee47f991dc6635e721f5632189699c",
+    "box-stationary-end-outward": "509caf3200e41ed63bf4fe8c918c8919d4c00ff19fb34b5a7f8637d8ee29d777",
+    "box-stationary-end-inward": "2a64ac87ddaaac10fe81705291fe05fbcb380cc65bd4df0c16ef1f0c7e5947ef",
+    "tetrahedron-regular-outward": "fda82f03b8416b928c8173e993749da4c0af86224a636105f687c2b0f539c93b",
+    "tetrahedron-regular-inward": "21a12f7a6b41832f95eba7fa7c756ee007f381b5c98a08bbebcbe118252f22bb",
+    "tetrahedron-stationary-start-outward": "5358e32b2864f2b3cc3d041061f0749b9e16038433354efbb8e2b2274ebcebd1",
+    "tetrahedron-stationary-start-inward": "bfd7b637c094d452176ac09984828ce3a71809cc94a1d540dd06a0412e4fbbb0",
+    "tetrahedron-stationary-end-outward": "a36d930a2e5319ea0d28ffd55984d3681a7df88a34366411fd8acf8963477abb",
+    "tetrahedron-stationary-end-inward": "e9e0299a713e51049f2d5529363fe0e4943140184af37fcee373e3bdc1e746d0",
+    "sphere-regular-outward": "88bf522dded3af3f9e55a4be86768efa08670abd7639b3a979df74d286e804d4",
+    "sphere-regular-inward": "eca65c64216811deccf31b5298b8892fe32d3ee152fa8e4f942625908c4e923c",
+    "sphere-stationary-start-outward": "8284358655aef09677f9326e31ea6b1dcd07ec40ed5ac792188d0dae5013c28d",
+    "sphere-stationary-start-inward": "22b06e212aad3b651382bf45422b37b958c8202c9d276b2c20df1b9b2cdbd028",
+    "sphere-stationary-end-outward": "6456798654459dd33ed03b8b84bf286d0b0b52a12330d1d28db2c1e42aa703a6",
+    "sphere-stationary-end-inward": "db54e49db658aabb4f13d6ee6791a6f0a529df80cdecf9c8ca2d7e2852582ee4"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/stationary_trims.json": "3ee8a4aee0fc41fc083829d1ff486d804fd02997997884119025f0752e0d4de8",
+    "tools/rhino_oracle/references/stationary_trims.py": "f19f51cf80bca6eb497c4cf28eaaee060c09a94432cfc94f4be88ec042d32f4c",
+    "tools/rhino_oracle/observations/stationary_trims.json": "1abde52aea2607f703565bfc4c3f2d1eab4c8c3de694a6c94f21800439cd39cf",
+    "tools/rhino_oracle/observations/stationary_trims_native_before.json": "c565e916f77ccd217cc7cc125588cb3511987c12267f5b5d4ac65456cac788cb",
+    "tools/rhino_oracle/observations/stationary_trims_before_report.json": "d73416a149860ae6bf47a3ea1fae522ae560a801f7bb8e63eda865732ba02a31",
+    "tools/rhino_oracle/observations/stationary_trims_after_report.json": "ff9de4a94ab4f734cacc58a7a16290ccc1ec214f6835d58a7320f5bfbdf6d093"
+  },
+  "implementation_source_sha256": {
+    "crates/viboceros-geometry/src/brep/trim_image.rs": "585839ac26eea27c8461faf1365ddf003b7eee9e600b3883bd6b05248847ab68",
+    "crates/viboceros-geometry/src/brep/validate/boundary.rs": "07c40c79c9e5a43cc405064959c9cf24509dfd60646b9289d327b40f0cd4695a",
+    "crates/viboceros-geometry/src/brep/edge_split/correspondence.rs": "9f0345a75338b3c0df78bb54534a57fefc853e92dc012983c21089e03cdbbcc8",
+    "crates/viboceros-geometry/src/brep/tessellation/conforming.rs": "b31d2d604e223a53e35cf29021ba5b85d700591c84c25a275142495afbbacbae",
+    "crates/viboceros-oracle/src/brep_source.rs": "21813268bcf42bf6996a59ab7324b9d9124dd1698b536747669a73d808dabf01",
+    "crates/viboceros-oracle/src/brep_source/trim_encoding.rs": "4a62302ae0aea4d3d9243bc871fd3f2807989a38ea0659da1387bdb18a5376bb",
+    "tools/rhino_oracle/rhino_worker.py": "5cf94ce55677e6e888e8c5f5075ab4fa35e566ccac50492ac14a749175d06917",
+    "crates/viboceros-geometry/src/brep.rs": "8e8a7dbbeecd97d09216bcb07c9df5f8d5dd23e0fdd62d15809b373fd90bbe34",
+    "tools/rhino_oracle/client.py": "755dff5d85edb4d562100794e7238ac03f116ffc64acc5f2a22c7e9751f0b0f7"
+  },
+  "verification": {
+    "rust_workspace_release": {
+      "passed": 3295,
+      "failed": 0,
+      "ignored": 31
+    },
+    "python_unittest": {
+      "passed": 439
+    },
+    "clippy_workspace_all_targets_deny_warnings": "passed",
+    "cargo_fmt_check": "passed",
+    "final_owned_artifact_replay": "18 complete matches; serialized report identical to retained after report; zero numeric error",
+    "capture_stage": "Rhino records captured after retaining all starts; final span-local refinement and sampled-duplicate cleanup replay identically."
+  },
+  "verification_log_sha256": {
+    "before.log": "6f2a9c7df512647db5eb1de2fc09429098e9ae3f092e9e41c56617ea188aa408",
+    "after.log": "ea4eb945e0c0f240f51cbfa8fe549533ac954fdfb52d9e54c8169ce5d575f866",
+    "after-span.log": "fbd7486a1790b9c353dc19d19e2877248728b1fcfd6366965a2d8158f727c711",
+    "workspace.log": "ec9fadc6778a9f5907ae58e3a9df62c7243f044d74683ef3b3061a8084f039b2",
+    "workspace-final.log": "4725bbfa6acf935ae151a27a7f9b0512dfea11062d9e2ecb16f4e1361c9ac954",
+    "python-final.log": "47655a2e31394ff8b4627dd872667867d24df6a64fbbdeb885aa3159cf4ca047",
+    "clippy-complete.log": "ad8fada447aedb4e8a0a4d8695e12fd20030e713c96348e6bf186cd8597d3592",
+    "replay-complete.log": "c48d336b37e4b4a9530113337882839fc15393b9c596870cd50412f6498749c7"
+  }
+}

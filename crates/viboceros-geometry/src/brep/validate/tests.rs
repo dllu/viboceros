@@ -1,4 +1,5 @@
 use super::*;
+mod stationary_trims;
 
 #[test]
 fn uv_normalization_handles_all_origin_corners_and_floating_point_scales() {
