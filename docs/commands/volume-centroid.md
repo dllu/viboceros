@@ -12,10 +12,14 @@ The command supports closed, consistently oriented manifold meshes, solid
 B-reps, and closed NURBS surfaces with validated seam/singular topology. It skips
 curves and points in mixed preselection. Open objects and inconsistent mesh
 winding currently fail atomically; Rhino's open-object confirmation workflow is
-not implemented or claimed compatible. An isolated open-mesh probe timed out
+not implemented or claimed compatible. The original isolated open-mesh probe timed out
 before a command result; its [request](../../tools/rhino_oracle/fixtures/volume_centroid_open.json)
 and [failure report](../../tools/rhino_oracle/observations/volume_centroid_open_timeout.txt)
-are retained, not counted as successful or rejected cases.
+are retained, not counted as successful or rejected cases. A follow-up isolated
+session identified the waiting non-closed-volume warning. The separate
+[42-case confirmation audit](../volume-centroid-open.md) records Yes, No and
+Escape, including unjoined box faces. These are Rhino observations, not native
+compatibility passes; native replay rejects the new confirmation cases explicitly.
 
 Reversing a complete shell changes its signed volume and first moments, but not
 its individual centroid. Oppositely wound objects subtract when combined, so the

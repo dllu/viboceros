@@ -1,0 +1,28 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "scope": "actual Rhino VolumeCentroid warning and command observations; native confirmation replay is explicitly unsupported",
+  "retained_completed_cases": 42,
+  "warning_dialog_cases": 30,
+  "no_warning_control_cases": 12,
+  "rhino_command_successes": 32,
+  "rhino_command_unsuccessful_completions": 10,
+  "native_compatibility_passes_claimed": 0,
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/volume_centroid_confirmation.json": "7bdec57667d6ffb345fb7b6d147b748c336e2ad25230b2a9b15d454288272633",
+    "tools/rhino_oracle/observations/volume_centroid_confirmation.json": "43b95bf5d2e0c203614d01a0ad1628a32345a8aba704e715d46211c824fb8049",
+    "tools/rhino_oracle/observations/volume_centroid_confirmation_attempt.txt": "9023d51766eb79434a87c5321677ab3911011b9b9045fcff6b12b0ad94fdab9e"
+  },
+  "raw_request_sha256": "21ce3bd48bc38808c6b7bd7a06fa027c24d467b31927fa7f3ee0b6312c01d2c9",
+  "raw_response_sha256": "c6da4cf8d96e4122d0bc28ae7a27254102c13f9065ca4737cf3c6af9feee7c57",
+  "earlier_completed_response_sha256": "6d8aa92b2e786e6da99c7ae8cfdd5594a6aff1de982d005b61fe4f8171278d15",
+  "notes": [
+    "Public API and normal UI input only, in owned isolated Xvfb/Rhino sessions. No pre-existing user session was targeted; owned processes exited or were cleaned up before subsequent runs.",
+    "The original four-case open-object timeout remains retained separately. A manual owned-dialog inspection identified the warning and allowed the first mesh case to complete; it was not counted among these 42 automated observations.",
+    "A preliminary automated XSendEvent attempt required manual recovery of one waiting dialog, then failed with BadWindow during Escape key-up. Its terminal failure is retained, not converted into a successful response or a rejection observation.",
+    "Focused XTest input after a nonblocking settling interval completed the full 42 cases. The final capture renamed the literal Escape input from cancel to escape to avoid assuming its effect. Geometry, API values, output points/attributes and selection exactly reproduced the earlier completed capture; changing labels, transient window IDs and history were excluded from that repeat comparison.",
+    "Yes and Escape continued all warned cases; No produced the ten unsuccessful completions. The twelve closed/unoriented-closed controls displayed no warning and received no answer, irrespective of the requested choice.",
+    "Full numeric observations are retained with only JSON whitespace/key formatting changed. Near-zero API volumes, enormous surface API centroids and negative-volume getter discrepancies are not normalized or replaced with command targets.",
+    "The generator reads no observed targets. Python replay and direct Rust execution reject confirmation inputs until native support exists; these cases do not increase the existing 26 closed-command compatibility matches.",
+    "No Rhino Undo/Redo, general open-surface integration policy, timing parity or native open-volume compatibility is claimed."
+  ]
+}

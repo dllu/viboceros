@@ -1,6 +1,28 @@
 use super::*;
 
 #[test]
+fn native_runner_does_not_silently_ignore_open_volume_confirmation_even_for_closed_controls() {
+    let mut fixture: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/volume_centroid.json"
+    ))
+    .unwrap();
+    fixture["operations"].as_array_mut().unwrap().truncate(1);
+    for command in ["volume_centroid_command", "area_centroid_command"] {
+        for choice in ["yes", "no", "escape"] {
+            fixture["operations"][0]["op"] = json!(command);
+            fixture["operations"][0]["open_confirmation"] = json!(choice);
+            let request: ProbeRequest = serde_json::from_value(fixture.clone()).unwrap();
+            assert!(matches!(
+                run_request(&request),
+                Err(ProbeError::FixtureInvariant(
+                    "open-volume confirmation captures are not yet supported by native replay"
+                ))
+            ));
+        }
+    }
+}
+
+#[test]
 fn volume_centroid_commands_match_while_raw_negative_mesh_api_centroids_remain_different() {
     let request: ProbeRequest = serde_json::from_str(include_str!(
         "../../../../tools/rhino_oracle/fixtures/volume_centroid.json"

@@ -15,6 +15,8 @@ def prepare(request, observed, tight_api=False, measure="area", source_api=False
             or not isinstance(request.get("operations"),list) or not request["operations"]):
         raise OracleProtocolError("centroid replay requires one iteration")
     for operation in request["operations"]: validate(operation, measure)
+    if any("open_confirmation" in operation for operation in request["operations"]):
+        raise OracleProtocolError("open-volume confirmation captures are not yet supported by native replay")
     ids=[op["id"] for op in request["operations"]]
     _validate_response(observed,"rhino")
     if len(set(ids))!=len(ids) or observed["iterations"]!=1 or ids!=[r["id"] for r in observed["results"]]:

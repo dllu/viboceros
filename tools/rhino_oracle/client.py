@@ -204,6 +204,9 @@ class OracleClient:
             for operation in request["operations"]:
                 if operation.get("op") in ("area_centroid_command", "volume_centroid_command"):
                     validate(operation, operation["op"].split("_")[0])
+        if any("open_confirmation" in op for op in request.get("operations", [])):
+            from .volume_confirmation import VolumeConfirmation
+            interaction = VolumeConfirmation(request)
         if any(op.get("op") == "point_snap" for op in request.get("operations", [])):
             from .point_snap_input import PointSnapPicker
             interaction = PointSnapPicker(request)
@@ -354,6 +357,8 @@ class OracleClient:
                 _terminate_owned_rhino_processes(owned_pids, windows_worker)
         _validate_response(response, "rhino")
         if any(op.get("op") == "point_snap" for op in request.get("operations", [])):
+            interaction.record_diagnostics(response)
+        if any("open_confirmation" in op for op in request.get("operations", [])):
             interaction.record_diagnostics(response)
         return response
 

@@ -1,0 +1,12 @@
+XGetInputFocus returned the focused window of 1. This is likely a bug in the X server.
+XGetInputFocus returned the focused window of 1. This is likely a bug in the X server.
+XGetInputFocus returned the focused window of 1. This is likely a bug in the X server.
+XGetInputFocus returned the focused window of 1. This is likely a bug in the X server.
+XGetInputFocus returned the focused window of 1. This is likely a bug in the X server.
+XGetInputFocus returned the focused window of 1. This is likely a bug in the X server.
+X Error of failed request:  BadWindow (invalid Window parameter)
+  Major opcode of failed request:  25 (X_SendEvent)
+  Resource id in failed request:  0xa0001b
+  Serial number of failed request:  41
+  Current serial number in output stream:  41
+oracle failed: cannot answer owned open-volume dialog: Command '['xdotool', 'windowactivate', '--sync', '0x00a0001b', 'key', '--window', '0x00a0001b', '--clearmodifiers', 'Escape']' returned non-zero exit status 1.

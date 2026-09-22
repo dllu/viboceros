@@ -14,6 +14,8 @@ pub struct CentroidFixture {
     pub selected: Option<Vec<usize>>,
     #[serde(default = "preselect_default")]
     pub preselect: bool,
+    /// Captured Rhino modal input is not yet implemented by the native runner.
+    pub open_confirmation: Option<String>,
 }
 fn preselect_default() -> bool {
     true
@@ -30,6 +32,11 @@ pub(super) fn run(
     tolerance: Tolerance,
     measure: Measure,
 ) -> Result<(Value, u64), ProbeError> {
+    if f.open_confirmation.is_some() {
+        return Err(ProbeError::FixtureInvariant(
+            "open-volume confirmation captures are not yet supported by native replay",
+        ));
+    }
     let invalid = || ProbeError::FixtureInvariant("invalid area centroid fixture");
     if f.sources.is_empty() || f.sources.len() > 32 || f.groups.len() > 16 {
         return Err(invalid());

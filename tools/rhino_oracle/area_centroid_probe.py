@@ -4,9 +4,13 @@ import re
 
 def validate(operation, measure="area"):
     if measure not in ("area", "volume"): raise ValueError("invalid centroid measure")
+    optional = {"groups", "selected", "preselect"}
+    if measure == "volume": optional.add("open_confirmation")
     if (not isinstance(operation,dict) or operation.get("op") != measure + "_centroid_command"
-            or set(operation) - set(("groups", "selected", "preselect")) != set(("op", "id", "sources"))):
+            or set(operation) - optional != set(("op", "id", "sources"))):
         raise ValueError("invalid area centroid fields")
+    if "open_confirmation" in operation and operation["open_confirmation"] not in ("yes", "no", "escape"):
+        raise ValueError("invalid open-volume confirmation")
     if not isinstance(operation["id"],str) or re.match(r"^[A-Za-z0-9_.-]{1,100}\Z",operation["id"]) is None:
         raise ValueError("invalid area centroid id")
     if type(operation.get("preselect", True)) is not bool: raise ValueError("invalid preselection")
@@ -55,6 +59,7 @@ def run(operation, tolerance, helper, measure="area"):
     try:
         document.Objects.UnselectAll()
         for source in operation["sources"]:
+            helper["_record_progress"]("centroid %s: construct source" % operation["id"])
             geometry = helper["_object_source"](source, tolerance)
             geometries.append(geometry)
             if measure == "volume":
@@ -107,6 +112,7 @@ def run(operation, tolerance, helper, measure="area"):
                     if mass is not None: mass.Dispose()
                     if promoted is not None: promoted.Dispose()
             else: tight.append(properties[-1])
+        helper["_record_progress"]("centroid %s: source APIs complete" % operation["id"])
         for group in operation.get("groups", []):
             if document.Groups.Add("Viboceros centroid " + str(System.Guid.NewGuid()), [ids[i] for i in group]) < 0:
                 raise ValueError("centroid group insertion failed")
@@ -118,8 +124,14 @@ def run(operation, tolerance, helper, measure="area"):
             macro = "_" + command + " " + " ".join("_SelID %s" % ids[i] for i in selected_indices) + " _Enter"
         marker = "Viboceros centroid " + str(System.Guid.NewGuid())
         Rhino.RhinoApp.WriteLine(marker)
+        helper["_record_progress"]("centroid %s: command %s" % (operation["id"], macro))
+        if "open_confirmation" in operation:
+            helper["_record_progress"]("VOLUME_CONFIRM %s %s" % (operation["id"], operation["open_confirmation"]))
         succeeded, _, _ = observe_command(Rhino.Commands.Command, command,
             lambda: Rhino.RhinoApp.RunScript(macro, True), lambda: None, lambda: [])
+        if "open_confirmation" in operation:
+            helper["_record_progress"]("VOLUME_CONFIRM_DONE %s" % operation["id"])
+        helper["_record_progress"]("centroid %s: command complete" % operation["id"])
         history = Rhino.RhinoApp.CommandHistoryWindowText.split(marker, 1)
         if len(history) != 2: raise ValueError("centroid history marker missing")
         points = []
