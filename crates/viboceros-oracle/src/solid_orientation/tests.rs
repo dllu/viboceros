@@ -1,7 +1,7 @@
 use super::*;
 
 #[test]
-fn solid_orientation_shared_sources_retain_four_explicit_compatibility_gaps() {
+fn solid_orientation_shared_sources_resolve_corner_cases_but_retain_coincident_gaps() {
     let request: ProbeRequest = serde_json::from_str(include_str!(
         "../../../../tools/rhino_oracle/fixtures/solid_orientation.json"
     ))
@@ -39,15 +39,10 @@ fn solid_orientation_shared_sources_retain_four_explicit_compatibility_gaps() {
             unresolved.push(actual.id.as_str());
         }
     }
-    assert_eq!(complete_matches, 45);
+    assert_eq!(complete_matches, 47);
     assert_eq!(
         unresolved,
-        [
-            "coincident-opposed",
-            "coincident-opposed-reverse-order",
-            "corner-False",
-            "corner-True"
-        ]
+        ["coincident-opposed", "coincident-opposed-reverse-order"]
     );
 }
 
@@ -69,4 +64,68 @@ fn solid_orientation_rejects_invalid_source_counts_iterations_and_face_indices()
             Err(ProbeError::FixtureInvariant(_))
         ));
     }
+}
+
+#[test]
+fn solid_orientation_polyhedra_keep_exact_geometry_and_expose_rhino_translation_differences() {
+    let input: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/solid_orientation_polyhedra.json"
+    ))
+    .unwrap();
+    let request: ProbeRequest = serde_json::from_value(input.clone()).unwrap();
+    let observed: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/solid_orientation_polyhedra.json"
+    ))
+    .unwrap();
+    let actual = run_request(&request).unwrap();
+    let expected = observed["results"].as_array().unwrap();
+    assert_eq!(actual.results.len(), 68);
+    assert_eq!(expected.len(), 68);
+    let mut matches = 0;
+    for ((actual, expected), source) in actual
+        .results
+        .iter()
+        .zip(expected)
+        .zip(input["operations"].as_array().unwrap())
+    {
+        assert_eq!(expected["id"], actual.id);
+        assert_eq!(source["id"], actual.id);
+        for key in ["geometry", "solid", "closed"] {
+            assert!(
+                crate::brep_interchange::roundtrip_equal(
+                    &actual.value[key],
+                    &expected["value"][key]
+                ),
+                "{}: {key}",
+                actual.id
+            );
+        }
+        let sources = source["sources"].as_array().unwrap();
+        // Input-only analytic witnesses: determinant +42 (or -42 for the
+        // reflection); the small box is the unique leftmost compound shell.
+        let inward = if sources.len() == 1 {
+            sources[0]["reversed"].as_bool().unwrap() ^ actual.id.contains("-reflection-")
+        } else {
+            sources
+                .iter()
+                .find(|s| s["source"]["type"] == "box")
+                .unwrap()["reversed"]
+                .as_bool()
+                .unwrap()
+        };
+        assert_eq!(
+            actual.value["orientation"],
+            if inward { "Inward" } else { "Outward" },
+            "{}",
+            actual.id
+        );
+        let equal = actual.value["orientation"] == expected["value"]["orientation"];
+        let recorded_translation_difference = actual.id.contains("-translated-")
+            && (actual.id.starts_with("tetrahedron-")
+                || actual.id.starts_with("square_tube-")
+                || actual.id.starts_with("box-") && actual.id.ends_with("order-True"));
+        assert_eq!(equal, !recorded_translation_difference, "{}", actual.id);
+        matches += usize::from(equal);
+    }
+    assert_eq!(matches, 58);
 }

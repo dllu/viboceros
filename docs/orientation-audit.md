@@ -146,8 +146,11 @@ python3 -m unittest tools.rhino_oracle.test_orientation_spatial
 
 The subsequent [49-case comparison](solid-orientation.md) asks both engines about
 the same native-exported 3dm B-reps, without document insertion. A conservative
-exact-support classifier matches 45 complete records and all 49 geometry records;
-coincident opposed shells and a corner-only tetrahedron remain `Unknown` natively.
+classifier now matches 47 complete records and all 49 geometry records;
+coincident opposed shells remain `Unknown` natively. The
+[exact planar path](planar-solid-orientation.md) resolves the corner-only
+tetrahedron and retains a further 68-case audit, including translation-sensitive
+Rhino classifications repeated in a fresh session.
 The coincident-shell Rhino classifications differ from the independently
 constructed boxes above. Their representations differ, so the original table
 must not be read as a representation-independent source-order tie rule.

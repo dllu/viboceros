@@ -1,0 +1,60 @@
+{
+  "capture_date_utc": "2026-09-22",
+  "engine_version": "8.32.26160.13001",
+  "base_commit": "27f6887",
+  "primary_operations": 68,
+  "repeat_operations": 8,
+  "primary_full_matches": 58,
+  "repeat_full_matches": 5,
+  "primary_geometry_matches": 68,
+  "repeat_geometry_matches": 8,
+  "primary_native_analytic_orientation_matches": 68,
+  "previous_49_case_replay_matches": 47,
+  "primary_orientation_difference_ids": [
+    "tetrahedron-translated-reversed-False-order-False",
+    "tetrahedron-translated-reversed-False-order-True",
+    "tetrahedron-translated-reversed-True-order-False",
+    "tetrahedron-translated-reversed-True-order-True",
+    "box-translated-reversed-False-order-True",
+    "box-translated-reversed-True-order-True",
+    "square_tube-translated-reversed-False-order-False",
+    "square_tube-translated-reversed-False-order-True",
+    "square_tube-translated-reversed-True-order-False",
+    "square_tube-translated-reversed-True-order-True"
+  ],
+  "repeat_orientation_difference_ids": [
+    "tetrahedron-translated-reversed-False-order-False",
+    "box-translated-reversed-False-order-True",
+    "square_tube-translated-reversed-False-order-False"
+  ],
+  "absolute_epsilon": 2e-12,
+  "relative_epsilon": 1e-14,
+  "maximum_numeric_error": 0.0,
+  "raw_response_sha256_before_compaction": {
+    "solid_orientation_polyhedra": "4134d248f12687d8ebfa4ac06d42ec9c6ff63d631782393b64e98ba88729e1f2",
+    "solid_orientation_translation_repeat": "82df0926a9211d6f1eab3cea7bc779ef64d790e4867421c2d844848d02dacfe0"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/solid_orientation_polyhedra.json": "35fc6809ba6a3f78553a3c9c319d39a61b3ff04b1eed1680e4fcdbf70d93cfe9",
+    "tools/rhino_oracle/observations/solid_orientation_polyhedra.json": "b4d6eb0090ec9296d0292c248e52bb4f1e39f86305a9ad32f05a30761c3c75e1",
+    "tools/rhino_oracle/fixtures/solid_orientation_translation_repeat.json": "ab5fef970a3bd63b7f11fbd83d853697c13851cc412db0f80e526d5ecaac569f",
+    "tools/rhino_oracle/observations/solid_orientation_translation_repeat.json": "7078debdfa2a54fe37bb4b51f8f1f306dce35c9f957d34f6eb0b354c71b47054"
+  },
+  "capture_source_sha256": {
+    "tools/rhino_oracle/rhino_worker.py": "181a35a143f422762ec9aa0cb247e5791f893149e9c164379211c7814a263850",
+    "tools/rhino_oracle/client.py": "5d7ba19054855fb4e95414de0b77e7a43807f98b043b2117b809fd47356ba21f"
+  },
+  "reproduction_recipe_sha256": {
+    "tools/rhino_oracle/references/solid_orientation_polyhedra.py": "4a490623c5dd020ffc3ac239157553e339d13f86a5e409fb6ee460481b8f7606"
+  },
+  "notes": [
+    "Two completed owned private-Xvfb sessions, each with a 1200-second deadline; no manual startup recovery or interaction with user-owned sessions.",
+    "Both engines read the same native-exported 3dm geometry. Native artifacts are checked by complete definition/sample round trips; raw queries do not insert objects into a document.",
+    "The primary source-only batch covers tetrahedra, boxes, concave prisms, and hollow square tubes under exact integer shear, reflection, translation by [2^40,-2^40,2^40], reversal, and face-table permutation; four compound cases distinguish actual trim extrema from untrimmed surface bounds.",
+    "All retained geometry records match numerically with maximum error zero. Every translated record differs from its corresponding centered record only by exact translation of all spatial coordinates; topology, trims, domains, weights, face senses, and tolerances agree.",
+    "Ten primary Rhino orientations differ from translation-invariant exact geometric witnesses. Eight repeated sources reproduce the entire original records, including three translated discrepancies and a concave-prism control.",
+    "Independent Fraction-based polyhedral integrals verify the input shells and determinant signs without native or Rhino outputs. The native classifier uses exact ray intersections and trim winding, not volume integration.",
+    "Raw observations and known compatibility differences are retained unchanged. Compaction was recursively checked including IEEE-754 numeric bit patterns and negative zero.",
+    "This work does not normalize document objects, change Cap, validate non-self-intersection, or establish a general curved-surface classifier or coincident-shell tie rule. Timing fields are zero and are not performance evidence."
+  ]
+}

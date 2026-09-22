@@ -1,5 +1,6 @@
 //! Conservative spatial orientation witnesses; never a signed-volume heuristic.
 use super::*;
+mod planar;
 mod rectangle;
 
 #[cfg(test)]
@@ -10,9 +11,9 @@ mod tests;
 pub enum BrepSolidOrientation {
     /// Oriented edge incidence does not define a topological solid.
     NotSolid,
-    /// A certified minimum-X regular contact points away from the control hull.
+    /// An exact outside-boundary witness points away from its component.
     Outward,
-    /// A certified minimum-X regular contact points into the control hull.
+    /// An exact outside-boundary witness points into its component.
     Inward,
     /// No sufficient spatial witness, conflicting tied shells, or exhausted work budget.
     Unknown,
@@ -21,11 +22,17 @@ pub enum BrepSolidOrientation {
 const EXACT_WORK_LIMIT: usize = 262_144;
 
 impl Brep {
-    /// Classifies spatial sense when an exact minimum-X contact can establish it.
+    /// Classifies spatial sense using exact outside-boundary witnesses.
     ///
     /// Unlike `is_solid`, this query considers embedding; unlike signed volume,
-    /// it does not sum or cancel oppositely oriented disconnected shells. Same-
-    /// sign surface weights give a whole-image control-hull bound. The witness
+    /// it does not sum or cancel oppositely oriented disconnected shells.
+    /// Exactly supported planar polygons use actual trim bounds to select the
+    /// minimum-X components, then exact first crossings of +X rays to classify
+    /// each component. Affine patches with piecewise-linear trims (including
+    /// holes) and convex planar bilinear rectangles are supported. Ambiguous
+    /// edge, coplanar, and tied ray hits are not classification evidence.
+    ///
+    /// Otherwise same-sign surface weights give a control-hull bound. A witness
     /// must attain that bound exactly, lie on an exactly verified rectangular
     /// trim, and have a nonzero natural normal parallel to X. Face sense is then
     /// applied independently. Every shell tied at the bound must yield the same
@@ -33,7 +40,7 @@ impl Brep {
     ///
     /// This is a conservative, incomplete classifier, not validation of a
     /// non-self-intersecting solid. Unsupported trims, unattained hull bounds,
-    /// mixed weights, corner-only extrema, and work exhaustion can return
+    /// mixed weights, unsupported corner extrema, and work exhaustion can return
     /// `Unknown`. Knot endpoints and mid-span stations propose contacts; exact
     /// rational predicates, not sampling accuracy, authorize accepted results.
     /// No tolerance or volume integration is used, and geometry is unchanged.
@@ -48,6 +55,9 @@ impl Brep {
         use BrepSolidOrientation::*;
         if !self.is_solid() {
             return Ok(NotSolid);
+        }
+        if let Some(sense) = planar::classify(self, &mut remaining) {
+            return Ok(sense);
         }
         let mut bounds = Vec::with_capacity(self.faces.len());
         for face in &self.faces {

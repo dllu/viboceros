@@ -299,11 +299,13 @@ connect otherwise independent components; this is not a spatial containment or
 solid-orientation classifier. Those policies are tracked in the
 [orientation audit](orientation-audit.md).
 `brep/solid_orientation` adds a separate, conservative
-[spatial query](solid-orientation.md): exact minimum-X regular contacts on
-certified rectangular trims, with explicit `Unknown` results for unsupported
-geometry or conflicting shells. It shares exact homogeneous normal numerators
-with surface evaluation; it does not normalize document objects or use volume
-sign as an orientation predicate.
+[spatial query](solid-orientation.md): exact planar-polygon first crossings and
+minimum-X regular surface contacts on certified rectangular trims, with explicit
+`Unknown` results for unsupported geometry or conflicting shells. Its `planar`
+submodule separates exact face extraction, trim winding, and outside-ray tests.
+The curved path shares exact homogeneous normal numerators with surface
+evaluation; neither path normalizes document objects or uses volume sign as an
+orientation predicate.
 The [morph assembler](brep-morphing.md) in `brep/morph` retains shared topology
 and exact UV trims. `brep/trim_image` supplies composed-curve correspondence to
 validation and [B-rep meshing](brep-meshing.md). `brep/tessellation` separates

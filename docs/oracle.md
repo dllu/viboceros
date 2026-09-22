@@ -9,8 +9,11 @@ The [orientation audit](orientation-audit.md) separates public document insertio
 and replacement from actual `Flip` command behavior, retaining full definitions
 and selection states. This diagnostic is not an identical-source native replay.
 The separate [solid-orientation query](solid-orientation.md) compares 49 shared
-3dm inputs without document insertion: all geometry records and 45 orientations
-match, with four explicit unresolved orientations retained.
+3dm inputs without document insertion: all geometry records and 47 orientations
+now match, with two coincident-shell orientations unresolved. Its
+[planar follow-up](planar-solid-orientation.md) retains 68 further cases and eight
+fresh-session repeats, exposing ten translation-sensitive Rhino classifications
+despite identical geometric definitions after exact inverse translation.
 
 The [conic-center audit](conic-center-audit.md) compares 32 full-coordinate public
 API records and 62 calibrated point-prompt records. It keeps API recognition,

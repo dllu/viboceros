@@ -150,7 +150,7 @@ fn natural_spheres_and_capped_cylinders_have_regular_exact_support_witnesses() {
 }
 
 #[test]
-fn a_corner_normal_component_is_not_an_orientation_certificate() {
+fn corner_sense_uses_a_certified_first_crossing_not_a_corner_normal_component() {
     // All non-origin vertices have positive X. An outward face through the
     // minimum-X vertex nevertheless has normal C×B=(15,-2,7), pointing +X.
     let vertices = [[0., 0., 0.], [1., 10., 0.], [1., 11., 1.], [2., 15., 0.]]
@@ -166,8 +166,8 @@ fn a_corner_normal_component_is_not_an_orientation_certificate() {
         let brep = Brep::try_from_mesh(&mesh, trimmed, Tolerance::DEFAULT).unwrap();
         assert!(brep.is_solid());
         assert!(brep.signed_volume(Tolerance::DEFAULT).unwrap() > 0.8);
-        assert_eq!(brep.solid_orientation().unwrap(), Unknown);
-        assert_eq!(brep.reversed().solid_orientation().unwrap(), Unknown);
+        assert_eq!(brep.solid_orientation().unwrap(), Outward);
+        assert_eq!(brep.reversed().solid_orientation().unwrap(), Inward);
     }
 }
 

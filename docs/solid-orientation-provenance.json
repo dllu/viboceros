@@ -30,7 +30,7 @@
     "The host assigns owned paths. Native source geometry is written to 3dm and reread with complete definition and sample checks; Rhino reads that same artifact without document insertion.",
     "All geometry definitions, face senses, topology, and tolerances are retained. Definition-only recording performs no discarded edge/face/trim sampling; shared artifact validation still samples.",
     "The retained capture is recursively identical to the raw response including every floating-point IEEE-754 bit pattern and negative zero.",
-    "The native classifier is incomplete: four orientation values remain Unknown, not matches. No observed value has been rewritten to agree with native output.",
+    "At capture time the native classifier returned Unknown for four cases. The full_matches and unresolved_ids above are historical counts; the planar follow-up resolves the two corner cases. No observed value has been rewritten to agree with native output.",
     "Coincident opposed shells have opposite Rhino classifications from the earlier independently constructed compound batch. The representations differ; neither batch establishes a general tie policy.",
     "This is a raw public geometry-query comparison, not a document insertion, Flip command, mass integral, or kernel benchmark. Elapsed times are intentionally zero."
   ]
