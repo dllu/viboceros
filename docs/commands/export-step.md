@@ -17,11 +17,15 @@ coordinates and the declared distance accuracy are converted from document
 units to millimetres. Export reads the document without changing objects or
 undo history. A failed export leaves an existing destination file unchanged.
 
-Each edge-disconnected shell becomes a separate STEP shell model. Compound
-B-rep object identity, names, layers, groups, and materials are not yet
-serialized by this mode. The supported planar geometry can be read back with
-`ImportStep Native=Yes`; box and polygon-hole round trips check editable face
-topology, orientation, area or volume, and physical units. Curved-input and
-mixed-object tests check explicit failure and atomic destination replacement.
+Closed axis-aligned boxes export as STEP solids. A strictly contained,
+inward-oriented box cavity remains in the same `BREP_WITH_VOIDS` shape even if
+its source shell comes first. Touching, overlapping, or disjoint shells do not
+receive void semantics. Other edge-disconnected shells become separate STEP
+surface models. General compound B-rep identity, names, layers, groups, and
+materials are not yet serialized by this mode. The supported planar geometry
+can be read back with `ImportStep Native=Yes`; box, box-cavity, and polygon-hole
+round trips check editable topology, orientation, area or volume, and units.
+Curved-input and mixed-object tests check explicit failure and atomic
+destination replacement.
 
 See [file-format limits](../file-formats.md) and [native STEP import](import-step.md).

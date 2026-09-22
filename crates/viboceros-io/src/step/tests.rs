@@ -1124,6 +1124,7 @@ fn planar_brep_step_export_keeps_cube_faces_edges_and_volume_editable() {
     let text = String::from_utf8(output).unwrap();
     assert_eq!(text.matches("ADVANCED_FACE(").count(), brep.faces().len());
     assert_eq!(text.matches("EDGE_CURVE(").count(), brep.edges().len());
+    assert_eq!(text.matches("MANIFOLD_SOLID_BREP(").count(), 1);
     assert!(!text.contains("TRIANGULATED_FACE_SET"));
     let table = Table::from_step(&text).unwrap();
     assert_eq!(table.entity_report.total(), 0);
@@ -1139,6 +1140,111 @@ fn planar_brep_step_export_keeps_cube_faces_edges_and_volume_editable() {
         .abs()
             < 1e-9
     );
+}
+
+#[test]
+fn planar_brep_step_export_retains_certified_box_cavity_as_one_solid() {
+    use viboceros_geometry::{Brep, Frame3, Vector3};
+    let frame = Frame3::try_from_directions(
+        Point3::try_new(0., 0., 0.).unwrap(),
+        Vector3::try_new(1., 0., 0.).unwrap(),
+        Vector3::try_new(0., 1., 0.).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let outer = Brep::try_box(frame, [[-5., 5.]; 3], Tolerance::DEFAULT).unwrap();
+    let cavity = Brep::try_box(frame, [[-1., 1.]; 3], Tolerance::DEFAULT)
+        .unwrap()
+        .reversed();
+    // Deliberately put the void first. STEP still requires the outer shell first.
+    let source = Brep::try_combine(vec![cavity, outer], Tolerance::DEFAULT).unwrap();
+    assert!((source.signed_volume(Tolerance::DEFAULT).unwrap() - 992.).abs() < 1e-9);
+    let mut output = Vec::new();
+    write_step_planar_breps(&mut output, [&source]).unwrap();
+    let text = String::from_utf8(output).unwrap();
+    assert_eq!(text.matches("BREP_WITH_VOIDS(").count(), 1);
+    assert_eq!(text.matches("ORIENTED_CLOSED_SHELL(").count(), 1);
+    let restored = read_step_planar_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    assert_eq!(restored.instances.len(), 2);
+    assert_eq!(
+        restored.instances[0].placement_index,
+        restored.instances[1].placement_index
+    );
+    assert_eq!(
+        restored.instances[0].source_shape_id,
+        restored.instances[1].source_shape_id
+    );
+    let combined = Brep::try_combine(
+        restored
+            .instances
+            .into_iter()
+            .map(|instance| instance.brep)
+            .collect(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    assert_eq!((combined.faces().len(), combined.edges().len()), (12, 24));
+    assert!((combined.signed_volume(Tolerance::DEFAULT).unwrap() - 992.).abs() < 1e-9);
+}
+
+#[test]
+fn planar_brep_step_export_does_not_label_disjoint_boxes_as_voids() {
+    use viboceros_geometry::{Brep, Frame3, Vector3};
+    let frame = Frame3::try_from_directions(
+        Point3::try_new(0., 0., 0.).unwrap(),
+        Vector3::try_new(1., 0., 0.).unwrap(),
+        Vector3::try_new(0., 1., 0.).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let left = Brep::try_box(frame, [[0., 1.], [0., 1.], [0., 1.]], Tolerance::DEFAULT).unwrap();
+    let right = Brep::try_box(frame, [[3., 4.], [0., 1.], [0., 1.]], Tolerance::DEFAULT).unwrap();
+    let source = Brep::try_combine(vec![left, right], Tolerance::DEFAULT).unwrap();
+    let mut output = Vec::new();
+    write_step_planar_breps(&mut output, [&source]).unwrap();
+    let text = String::from_utf8(output).unwrap();
+    assert!(!text.contains("BREP_WITH_VOIDS("));
+    assert_eq!(text.matches("SHELL_BASED_SURFACE_MODEL(").count(), 2);
+    let restored = read_step_planar_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    assert_eq!(restored.instances.len(), 2);
+    assert_ne!(
+        restored.instances[0].source_shape_id,
+        restored.instances[1].source_shape_id
+    );
+}
+
+#[test]
+fn planar_brep_step_export_requires_separated_contained_void_boxes() {
+    use viboceros_geometry::{Brep, Frame3, Vector3};
+    let frame = Frame3::try_from_directions(
+        Point3::try_new(0., 0., 0.).unwrap(),
+        Vector3::try_new(1., 0., 0.).unwrap(),
+        Vector3::try_new(0., 1., 0.).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let make_box =
+        |x: [f64; 2]| Brep::try_box(frame, [x, [-1., 1.], [-1., 1.]], Tolerance::DEFAULT).unwrap();
+    let outer = Brep::try_box(frame, [[-10., 10.]; 3], Tolerance::DEFAULT).unwrap();
+    for (second, expected_voids) in [([2., 4.], 2), ([-2., 0.], 0), ([-11., -9.], 0)] {
+        let source = Brep::try_combine(
+            vec![
+                make_box([-4., -2.]).reversed(),
+                make_box(second).reversed(),
+                outer.clone(),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut output = Vec::new();
+        write_step_planar_breps(&mut output, [&source]).unwrap();
+        let text = String::from_utf8(output).unwrap();
+        assert_eq!(
+            text.matches("ORIENTED_CLOSED_SHELL(").count(),
+            expected_voids
+        );
+        assert_eq!(text.contains("BREP_WITH_VOIDS("), expected_voids != 0);
+    }
 }
 
 #[test]

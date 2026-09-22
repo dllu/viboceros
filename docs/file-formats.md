@@ -212,9 +212,11 @@ plane faces and shared line edges, including polygon holes. It preserves
 face/edge incidence and converts coordinates to millimetres without rebuilding
 the source B-rep's UV trims. Curved edges, singular trims, nonplanar faces, and
 non-B-rep document objects produce an explicit error; staged file replacement
-leaves an existing destination intact. Each edge-disconnected shell is a separate
-STEP shell model, so native export does not yet preserve compound B-rep object
-grouping, object names, or materials. See [command details](commands/export-step.md).
+leaves an existing destination intact. Certified axis-aligned boxes become STEP
+solids; strictly contained, disjoint inward box cavities remain one solid shape.
+Other edge-disconnected shells become separate STEP surface models, so general
+compound B-rep object grouping, names, and materials are not yet preserved.
+See [command details](commands/export-step.md).
 
 General editable STEP B-rep interchange is not implemented yet. The low-level
 `read_step_planar_shells` API converts supported planar source shell definitions

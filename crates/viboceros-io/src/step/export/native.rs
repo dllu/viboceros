@@ -6,7 +6,7 @@ use monstertruck::step::save::{
     CompleteStepDisplay, StepHeaderDescriptor, StepMeasurementContext, StepModels,
 };
 use monstertruck::topology::compress::{
-    CompressedEdge, CompressedEdgeIndex, CompressedFace, CompressedShell,
+    CompressedEdge, CompressedEdgeIndex, CompressedFace, CompressedShell, CompressedSolid,
 };
 use viboceros_geometry::{Brep, LengthUnitSystem, Point3, Tolerance};
 
@@ -14,12 +14,20 @@ use super::super::export_geometry::{ExportLine, ExportPoint};
 use super::super::export_plane::ExportPlane;
 use super::super::{StepError, TruckPoint3};
 use super::components;
+mod boxes;
 
 type PlanarShell = CompressedShell<ExportPoint, ExportLine, ExportPlane>;
+type PlanarSolid = CompressedSolid<ExportPoint, ExportLine, ExportPlane>;
+
+enum NativeModel {
+    Shell(PlanarShell),
+    Solid(PlanarSolid),
+}
 
 /// Writes straight-edged planar B-reps as editable STEP shell models in millimetres.
-/// Each edge-disconnected shell is emitted separately. Curved edges, singular
-/// trims, and nonplanar faces are rejected before writing output.
+/// Certified axis boxes and their contained cavities retain solid structure.
+/// Other edge-disconnected shells are emitted separately. Curved edges,
+/// singular trims, and nonplanar faces are rejected before writing output.
 pub fn write_step_planar_breps<'a, W: Write>(
     writer: W,
     breps: impl IntoIterator<Item = &'a Brep>,
@@ -40,19 +48,43 @@ fn write_with_accuracy<'a, W: Write>(
     scale: f64,
     accuracy: f64,
 ) -> Result<(), StepError> {
-    let mut shells = Vec::new();
+    let mut items = Vec::new();
     for (index, brep) in breps.into_iter().enumerate() {
-        shells.extend(components::partition(brep_to_shell(
-            brep, index, tolerance, scale,
-        )?));
+        let shells = components::partition(brep_to_shell(brep, index, tolerance, scale)?);
+        if let Some(order) = boxes::solid_shell_order(brep)
+            && order.len() == shells.len()
+        {
+            let mut slots = shells.into_iter().map(Some).collect::<Vec<_>>();
+            let boundaries = order
+                .into_iter()
+                .map(|shell| {
+                    slots[shell]
+                        .take()
+                        .expect("component order is a permutation")
+                })
+                .collect();
+            items.push(NativeModel::Solid(PlanarSolid {
+                boundaries,
+                id_allocator: None,
+                attributes: None,
+            }));
+        } else {
+            items.extend(shells.into_iter().map(NativeModel::Shell));
+        }
     }
-    if shells.is_empty() {
+    if items.is_empty() {
         return Err(StepError::NoBrepsToWrite);
     }
-    let models = StepModels::from_iter(&shells).with_measurement_context(StepMeasurementContext {
+    let mut models = StepModels::default().with_measurement_context(StepMeasurementContext {
         distance_accuracy_value: accuracy,
         ..Default::default()
     });
+    for item in &items {
+        match item {
+            NativeModel::Shell(shell) => models.push_shell(shell),
+            NativeModel::Solid(solid) => models.push_solid(solid),
+        }
+    }
     let display = CompleteStepDisplay::new(
         models,
         StepHeaderDescriptor {

@@ -54,6 +54,56 @@ fn native_step_export_preserves_editable_box_and_units() {
 }
 
 #[test]
+fn native_step_export_and_import_keep_a_box_cavity_in_one_document_object() {
+    use viboceros_geometry::{Brep, Frame3, Vector3};
+    let frame = Frame3::try_from_directions(
+        Point3::try_new(0., 0., 0.).unwrap(),
+        Vector3::try_new(1., 0., 0.).unwrap(),
+        Vector3::try_new(0., 1., 0.).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let outer = Brep::try_box(frame, [[-5., 5.]; 3], Tolerance::DEFAULT).unwrap();
+    let cavity = Brep::try_box(frame, [[-1., 1.]; 3], Tolerance::DEFAULT)
+        .unwrap()
+        .reversed();
+    let compound = Brep::try_combine(vec![cavity, outer], Tolerance::DEFAULT).unwrap();
+    let registry = CommandRegistry::with_builtins();
+    let mut source = Document::default();
+    source.add_geometry(Geometry::Brep(compound)).unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("cavity.step");
+    registry
+        .execute(
+            &mut source,
+            &format!("ExportStep Native=Yes {}", path.display()),
+        )
+        .unwrap();
+    let text = std::fs::read_to_string(&path).unwrap();
+    assert!(text.contains("BREP_WITH_VOIDS("));
+    let mut target = Document::default();
+    registry
+        .execute(
+            &mut target,
+            &format!("ImportStep Native=Yes {}", path.display()),
+        )
+        .unwrap();
+    assert_eq!(target.objects().len(), 1);
+    let Geometry::Brep(restored) = target.objects().next().unwrap().geometry() else {
+        panic!("native STEP import lost the cavity B-rep")
+    };
+    assert!((restored.signed_volume(Tolerance::DEFAULT).unwrap() - 992.).abs() < 1e-9);
+    assert_eq!(
+        (
+            restored.vertices().len(),
+            restored.edges().len(),
+            restored.faces().len()
+        ),
+        (16, 24, 12)
+    );
+}
+
+#[test]
 fn native_step_export_rejects_non_breps_without_replacing_destination() {
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("existing.step");
