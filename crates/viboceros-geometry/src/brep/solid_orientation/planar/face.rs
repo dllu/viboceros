@@ -66,7 +66,7 @@ pub(super) fn extract(face: &BrepFace, remaining: &mut usize) -> Option<PolygonF
     }
     // A convex planar bilinear rectangle is exactly its corner polygon, even
     // with a collapsed side. A general diagonal UV trim is not a straight edge.
-    let [[u0, u1], [v0, v1]] = super::super::rectangle::bounds(face)?;
+    let [[u0, u1], [v0, v1]] = super::super::rectangle::bounds(face, remaining)?;
     spend(remaining, 32)?;
     let mut corners = [[u0, v0], [u1, v0], [u1, v1], [u0, v1]]
         .map(evaluate)
@@ -104,34 +104,15 @@ fn linear_loop(boundary: &BrepLoop, remaining: &mut usize) -> Option<Vec<[Real; 
     let mut polygon = Vec::new();
     let mut previous = None;
     for trim in &boundary.trims {
-        let curve = &trim.curve;
-        let controls = curve.control_points();
-        spend(remaining, controls.len().saturating_mul(8))?;
-        let knots = curve.knots();
-        if curve.degree() != 1
-            || knots[0] != knots[1]
-            || knots[knots.len() - 1] != knots[knots.len() - 2]
-            || knots[1..knots.len() - 1].windows(2).any(|k| k[0] >= k[1])
-        {
-            return None;
-        }
-        let sign = controls[0].weight().is_sign_positive();
-        if controls
-            .iter()
-            .any(|p| p.weight().is_sign_positive() != sign)
-        {
-            return None;
-        }
-        let start = controls[0].point().to_array();
+        let mut points = super::super::trim::polygon(&trim.curve, remaining)?;
+        let end = points.next_back()?;
+        let start = points.next()?;
         if previous.is_some_and(|p| p != start) {
             return None;
         }
-        previous = Some(controls.last()?.point().to_array());
-        polygon.extend(
-            controls[..controls.len() - 1]
-                .iter()
-                .map(|p| p.point().to_array()),
-        );
+        previous = Some(end);
+        polygon.push(start);
+        polygon.extend(points);
     }
     if previous != polygon.first().copied() {
         return None;

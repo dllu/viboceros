@@ -1,4 +1,5 @@
 use super::*;
+mod linear_trims;
 use BrepSolidOrientation::*;
 
 fn point(p: [Real; 3]) -> Point3 {
@@ -207,7 +208,7 @@ fn common_negative_weights_preserve_orientation_but_mixed_weights_cannot_use_the
 fn rectangular_trim_proof_requires_exact_closed_continuous_boundary() {
     use crate::{Point2, WeightedPoint2};
     let original = cube([0.; 3], 1.).faces[0].clone();
-    let expected = rectangle::bounds(&original).unwrap();
+    let expected = rectangle::bounds(&original, &mut 1000).unwrap();
     let controls = original.loops[0].trims[0].curve.control_points();
     let a = controls[0].point().to_array();
     let b = controls[1].point().to_array();
@@ -248,7 +249,7 @@ fn rectangular_trim_proof_requires_exact_closed_continuous_boundary() {
         )
         .unwrap();
         assert_eq!(
-            rectangle::bounds(&face),
+            rectangle::bounds(&face, &mut 1000),
             if matches!(kind, "positive" | "negative") {
                 Some(expected)
             } else {
@@ -261,14 +262,14 @@ fn rectangular_trim_proof_requires_exact_closed_continuous_boundary() {
     let mut inner = hole.loops[0].clone();
     inner.loop_type = BrepLoopType::Inner;
     hole.loops.push(inner);
-    assert_eq!(rectangle::bounds(&hole), None);
+    assert_eq!(rectangle::bounds(&hole, &mut 1000), None);
     let mut shuffled = original.clone();
     shuffled.loops[0].trims.swap(0, 1);
-    assert_eq!(rectangle::bounds(&shuffled), None);
+    assert_eq!(rectangle::bounds(&shuffled, &mut 1000), None);
 }
 
 #[test]
-fn unsupported_but_equivalent_quadratic_trims_return_unknown_without_modification() {
+fn equivalent_quadratic_trims_preserve_orientation_without_modification() {
     use crate::Point2;
     let mut brep = cube([0.; 3], 1.);
     for face in &mut brep.faces {
@@ -293,6 +294,7 @@ fn unsupported_but_equivalent_quadratic_trims_return_unknown_without_modificatio
     let brep = Brep::try_new(brep.vertices, brep.edges, brep.faces, Tolerance::DEFAULT).unwrap();
     assert!(brep.is_solid());
     let before = brep.clone();
-    assert_eq!(brep.solid_orientation().unwrap(), Unknown);
+    assert_eq!(brep.solid_orientation().unwrap(), Outward);
+    assert_eq!(brep.reversed().solid_orientation().unwrap(), Inward);
     assert_eq!(brep, before);
 }

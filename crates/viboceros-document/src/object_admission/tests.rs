@@ -1,6 +1,7 @@
 use crate::*;
 use viboceros_geometry::{
     BrepFace, BrepLoop, BrepSolidOrientation, BrepTrim, Frame3, NurbsCurve2, Point2, Vector3,
+    WeightedPoint2,
 };
 
 fn point(x: f64, y: f64, z: f64) -> Point3 {
@@ -31,7 +32,7 @@ fn shell(x: f64, radius: f64) -> Brep {
 
 #[test]
 fn admission_normalizes_whole_solids_without_volume_sign_or_representable_volume() {
-    let mut sources = vec![shell(0., 1.)];
+    let mut sources = vec![shell(0., 1.), higher_degree_inward_box(false).reversed()];
     for (outer, inner) in [
         (shell(-5., 1.), shell(5., 2.)),
         (shell(-3., 1.), shell(3., 1.)),
@@ -150,6 +151,70 @@ fn admission_normalization_precedes_noop_and_explicit_replacement_history() {
     }
 }
 
+fn higher_degree_inward_box(mixed: bool) -> Brep {
+    let solid = shell(0., 1.);
+    let faces = solid
+        .reversed()
+        .faces()
+        .iter()
+        .map(|face| {
+            let loops = face
+                .loops()
+                .iter()
+                .map(|boundary| {
+                    let trims = boundary
+                        .trims()
+                        .iter()
+                        .map(|trim| {
+                            let cp = trim.curve().control_points();
+                            assert_eq!(cp.len(), 2);
+                            let (a, b) = (cp[0].point(), cp[1].point());
+                            let degree = if mixed { 4 } else { 2 };
+                            let controls = (0..=degree)
+                                .map(|i| {
+                                    let t = i as f64 / degree as f64;
+                                    WeightedPoint2::try_new(
+                                        Point2::try_new(
+                                            a.x() + t * (b.x() - a.x()),
+                                            a.y() + t * (b.y() - a.y()),
+                                        )
+                                        .unwrap(),
+                                        if mixed && i == 2 { -0.125 } else { 1. },
+                                    )
+                                    .unwrap()
+                                })
+                                .collect();
+                            let mut knots = vec![0.; degree + 1];
+                            knots.extend(vec![1.; degree + 1]);
+                            let curve =
+                                NurbsCurve2::try_new_rational(degree, controls, knots).unwrap();
+                            BrepTrim::try_new(
+                                trim.vertices(),
+                                trim.edge(),
+                                trim.is_reversed_3d(),
+                                curve,
+                                trim.trim_type(),
+                                trim.iso(),
+                                trim.tolerance(),
+                            )
+                            .unwrap()
+                        })
+                        .collect();
+                    BrepLoop::try_new(boundary.loop_type(), trims).unwrap()
+                })
+                .collect();
+            BrepFace::try_new(face.surface().clone(), face.is_reversed(), loops).unwrap()
+        })
+        .collect();
+    Brep::try_new(
+        solid.vertices().to_vec(),
+        solid.edges().to_vec(),
+        faces,
+        Tolerance::DEFAULT,
+    )
+    .unwrap()
+}
+
 #[test]
 fn admission_preserves_nonsolids_unknown_solids_and_mesh_winding() {
     let solid = shell(0., 1.);
@@ -177,57 +242,10 @@ fn admission_preserves_nonsolids_unknown_solids_and_mesh_winding() {
         coincident.solid_orientation().unwrap(),
         BrepSolidOrientation::Unknown
     );
-    // Equivalent quadratic UV lines are not supported by the exact witness.
-    // This inward box has negative volume, but Unknown must still be preserved.
-    let faces = solid
-        .reversed()
-        .faces()
-        .iter()
-        .map(|face| {
-            let loops = face
-                .loops()
-                .iter()
-                .map(|boundary| {
-                    let trims = boundary
-                        .trims()
-                        .iter()
-                        .map(|trim| {
-                            let cp = trim.curve().control_points();
-                            assert_eq!(cp.len(), 2);
-                            let (a, b) = (cp[0].point(), cp[1].point());
-                            let mid = Point2::try_new((a.x() + b.x()) / 2., (a.y() + b.y()) / 2.)
-                                .unwrap();
-                            let curve = NurbsCurve2::try_new(
-                                2,
-                                vec![a, mid, b],
-                                vec![0., 0., 0., 1., 1., 1.],
-                            )
-                            .unwrap();
-                            BrepTrim::try_new(
-                                trim.vertices(),
-                                trim.edge(),
-                                trim.is_reversed_3d(),
-                                curve,
-                                trim.trim_type(),
-                                trim.iso(),
-                                trim.tolerance(),
-                            )
-                            .unwrap()
-                        })
-                        .collect();
-                    BrepLoop::try_new(boundary.loop_type(), trims).unwrap()
-                })
-                .collect();
-            BrepFace::try_new(face.surface().clone(), face.is_reversed(), loops).unwrap()
-        })
-        .collect();
-    let unsupported = Brep::try_new(
-        solid.vertices().to_vec(),
-        solid.edges().to_vec(),
-        faces,
-        Tolerance::DEFAULT,
-    )
-    .unwrap();
+    // The mixed-weight quartic is pole-free with the original segment image
+    // (proved in the kernel trim tests), but has no same-sign hull certificate.
+    // Its volume is negative; Unknown must still be preserved on admission.
+    let unsupported = higher_degree_inward_box(true);
     assert_eq!(
         unsupported.solid_orientation().unwrap(),
         BrepSolidOrientation::Unknown

@@ -19,9 +19,11 @@ interiors, holes, and boundary hits. The first regular crossing from outside
 supplies its orientation. No axis-aligned tangent plane is needed, so rotated,
 sheared, concave, hollow, and corner-only polyhedra can be classified.
 
-Supported images are equal-weight clamped 2×2 affine patches with continuous
-degree-one trims, and convex planar bilinear rectangles, including collapsed
-triangle sides. Exact predicates reject nearly planar patches and trim gaps.
+Supported images are equal-weight clamped 2×2 affine patches with certified
+polygonal trims, and convex planar bilinear rectangles, including collapsed
+triangle sides. Degree-one trims retain their full polygon. Higher-degree trims
+are supported when a shared exact certificate proves their oriented image is
+the endpoint segment. Exact predicates reject nearly planar patches and trim gaps.
 All tied components must agree. Ambiguous edge/coplanar/tied ray hits do not
 authorize a result. This is not support for every planar NURBS representation;
 see [planar classification and translation audit](planar-solid-orientation.md).
@@ -55,13 +57,19 @@ the guard against rational de Boor values and exact surface queries, including
 negative gauges and rational poles.
 
 Containment is accepted only for a single exactly closed, counterclockwise
-rectangle of four continuous, clamped, degree-one UV curves with same-sign
-weights. Collinear multi-span sides may retrace within their segment, but gaps,
-jumps, off-line controls, holes, and other trim representations are unsupported.
+rectangle of four continuous, clamped UV curves with same-sign weights and
+control points contained exactly in their endpoint segment. This includes
+higher-degree and multi-span sides. Clamping attains the endpoints, continuity
+fills the segment, and the same-sign rational convex hull prevents departure
+from it. Retraces cancel in winding tests. Interior knot multiplicity greater
+than the degree is rejected. Oblique collinearity uses exact rational arithmetic
+on the stored coefficients, without rounded differences or determinants; axis
+alignment needs only comparisons. Gaps, jumps, off-line/out-of-segment controls,
+holes in the rectangular support path, and mixed trim weights remain unsupported.
 All tied components must supply the same sense. Mixed surface weights, an
 unattained hull bound, unsupported trims, conflicting ties, or exhausting the
 262,144-unit work budget yield `Unknown`. This budget charges planar extraction
-and predicates as well as degree-weighted NURBS evaluations; it does not bound
+and predicates, trim controls on both paths, and degree-weighted NURBS evaluations; it does not bound
 wall time or rational-integer bit complexity.
 
 A nonzero normal **X component alone is insufficient** at a corner. For example,
@@ -100,8 +108,26 @@ capture establishes a general source-order tie rule. Both original observations
 are retained unchanged. The native classifier does not guess that rule.
 
 Native tests additionally cover rational spheres and capped cylinders, common
-negative and mixed weights, work exhaustion, and unsupported but geometrically
-equivalent quadratic trims. These are not additional cases in the Rhino capture.
+negative and mixed weights, and work exhaustion. Higher-degree straight trims
+are tested on boxes, tetrahedra, and spheres, with degrees 2/3/7, repeated interior
+knots, nonuniform weights, and common negative gauges. Certificate regressions
+reject one-ULP bulges at extreme scales, discontinuities, unclamped endpoints,
+and mixed weights. A pole-free mixed-weight quartic with a proved segment image
+keeps the document and Cap `Unknown` preservation regressions meaningful.
+These are native tests, not additional cases in the retained Rhino capture;
+no new Rhino parity or performance claim is made for higher-degree trims.
+
+There is a separate, reproducible construction limitation with stationary trim
+spans: replace each box UV edge `a→b` by a quadratic with controls
+`[a,a,b,b,b]`, weights `[1,2,1,2,1]`, and knots
+`[-3,-3,-3,2,2,7,7,7]`. Its image is exactly the segment, but the existing sampled
+edge/trim correspondence validator rejects it with
+`a model-space edge interior leaves its lifted p-curve`. Its nearest-sample
+search can concentrate its bounded seeds on the constant span. The orientation
+certificate supports such segment images; this change does not bypass or change
+the separate construction validator. Resolving that validation limitation and
+fresh same-source Rhino observations remain follow-up work.
+
 Definition-only records retain every coefficient, knot, topology field, face
 sense, and tolerance without evaluating samples that would be discarded. Shared
 artifact round-trip validation still compares definitions **and** samples.

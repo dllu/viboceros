@@ -1,5 +1,7 @@
 use super::*;
-use viboceros_geometry::{BrepFace, BrepLoop, BrepSolidOrientation, BrepTrim, NurbsCurve2, Point2};
+use viboceros_geometry::{
+    BrepFace, BrepLoop, BrepSolidOrientation, BrepTrim, NurbsCurve2, Point2, WeightedPoint2,
+};
 
 fn box_shell(x: Real, radius: Real, opened: bool) -> Brep {
     let source = Brep::try_box(
@@ -128,9 +130,10 @@ fn cap_normalizes_inward_compounds_even_when_signed_volume_is_zero() {
     }
 }
 
-// Equivalent quadratic trims deliberately lie outside the exact classifier's
-// supported representation. Do not mistake unsupported for inward or outward.
-fn quadratic_trims(source: Brep) -> Brep {
+// Both encodings have exactly the original segment image. The mixed-weight
+// quartic is pole-free but remains outside the same-sign hull certificate;
+// its denominator and image bounds are proved in the kernel trim tests.
+fn nonlinear_trims(source: Brep, mixed: bool) -> Brep {
     let faces = source
         .faces()
         .iter()
@@ -146,14 +149,25 @@ fn quadratic_trims(source: Brep) -> Brep {
                             let cp = trim.curve().control_points();
                             assert_eq!(cp.len(), 2);
                             let (a, b) = (cp[0].point(), cp[1].point());
-                            let mid = Point2::try_new((a.x() + b.x()) / 2., (a.y() + b.y()) / 2.)
-                                .unwrap();
-                            let curve = NurbsCurve2::try_new(
-                                2,
-                                vec![a, mid, b],
-                                vec![0., 0., 0., 1., 1., 1.],
-                            )
-                            .unwrap();
+                            let degree = if mixed { 4 } else { 2 };
+                            let controls = (0..=degree)
+                                .map(|i| {
+                                    let t = i as Real / degree as Real;
+                                    WeightedPoint2::try_new(
+                                        Point2::try_new(
+                                            a.x() + t * (b.x() - a.x()),
+                                            a.y() + t * (b.y() - a.y()),
+                                        )
+                                        .unwrap(),
+                                        if mixed && i == 2 { -0.125 } else { 1. },
+                                    )
+                                    .unwrap()
+                                })
+                                .collect();
+                            let mut knots = vec![0.; degree + 1];
+                            knots.extend(vec![1.; degree + 1]);
+                            let curve =
+                                NurbsCurve2::try_new_rational(degree, controls, knots).unwrap();
                             BrepTrim::try_new(
                                 trim.vertices(),
                                 trim.edge(),
@@ -186,8 +200,8 @@ fn cap_preserves_unresolved_compound_sense_and_reports_uncertainty_atomically() 
     for reverse in [false, true] {
         let mut source = Brep::try_combine(
             vec![
-                quadratic_trims(box_shell(-10., 1., true)),
-                quadratic_trims(box_shell(10., 2., true)).reversed(),
+                nonlinear_trims(box_shell(-10., 1., true), true),
+                nonlinear_trims(box_shell(10., 2., true), true).reversed(),
             ],
             Tolerance::DEFAULT,
         )
@@ -218,6 +232,47 @@ fn cap_preserves_unresolved_compound_sense_and_reports_uncertainty_atomically() 
         let after = doc.object(id).unwrap().clone();
         assert_eq!(after.geometry(), &Geometry::Brep(expected));
         assert_eq!(doc.undo_label(), Some("Cap"));
+        registry.execute(&mut doc, "Undo").unwrap();
+        assert_eq!(doc.object(id), Some(&before));
+        registry.execute(&mut doc, "Redo").unwrap();
+        assert_eq!(doc.object(id), Some(&after));
+    }
+}
+
+#[test]
+fn cap_normalizes_higher_degree_linear_trims_without_using_compound_volume_sign() {
+    for reverse in [false, true] {
+        let mut source = Brep::try_combine(
+            vec![
+                nonlinear_trims(box_shell(-10., 1., true), false),
+                nonlinear_trims(box_shell(10., 2., true), false).reversed(),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        if reverse {
+            source.reverse_orientation();
+        }
+        let capped = source
+            .try_cap_planar_holes(Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        let expected = if reverse { capped.reversed() } else { capped };
+        assert_eq!(
+            expected.solid_orientation().unwrap(),
+            BrepSolidOrientation::Outward
+        );
+        assert!((expected.signed_volume(Tolerance::DEFAULT).unwrap() + 56.).abs() < 1e-10);
+        let mut doc = Document::default();
+        let id = doc.add_geometry(Geometry::Brep(source)).unwrap();
+        doc.select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        let before = doc.object(id).unwrap().clone();
+        let registry = CommandRegistry::with_builtins();
+        let message = registry.execute(&mut doc, "Cap").unwrap();
+        assert!(!message.contains("orientation unresolved"));
+        let after = doc.object(id).unwrap().clone();
+        assert_eq!(after.geometry(), &Geometry::Brep(expected));
         registry.execute(&mut doc, "Undo").unwrap();
         assert_eq!(doc.object(id), Some(&before));
         registry.execute(&mut doc, "Redo").unwrap();

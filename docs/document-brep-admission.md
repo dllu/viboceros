@@ -110,8 +110,8 @@ all numeric fields match exactly. Low-level 3dm readers and writers still retain
 raw face orientation; it is admission to a document that now normalizes known
 inward solids. No import-specific bypass or file-data rewrite was added.
 
-Native regressions also cover rational spheres, quadratic trims deliberately
-outside classifier support, underflow/overflow volume scales, identity and
+Native regressions also cover rational spheres, certified straight quadratic
+trims, unsupported pole-free mixed-weight quartic trims, underflow/overflow volume scales, identity and
 history sharing, atomic permission failures, and explicit-copy group ownership.
 The first two normalization regressions failed before the implementation change.
 These native cases are not additional Rhino observations. The Rhino matrices do

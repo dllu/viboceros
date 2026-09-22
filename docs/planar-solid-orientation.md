@@ -8,9 +8,11 @@ not by a corner normal component or summed signed volume.
 ## Geometry and predicates
 
 `face` extracts two exact image classes from clamped, equal-weight 2×2 bilinear
-surfaces. Affine patches map continuous degree-one UV trim spans to exact spatial
-segments, including rational trim weights of a common sign, multiple spans,
-concave loops, and holes. Non-affine but convex planar bilinear rectangles map
+surfaces. Affine patches map certified polygonal UV trims to exact spatial
+segments, including degree-one polylines, rational trim weights of a common sign,
+multiple spans, concave loops, and holes. A shared [trim certificate](solid-orientation.md)
+also admits higher-degree curves contained exactly in their endpoint segment.
+Non-affine but convex planar bilinear rectangles map
 to their corner polygons, including a collapsed side representing a triangle.
 Planarity, convexity, UV containment, and boundary closure are exact predicates.
 Near-planarity at modeling tolerance is not accepted as exact planarity.
@@ -31,9 +33,10 @@ modified, and no floating-point ray origin at an enormous distance is needed.
 
 This does not validate global non-self-intersection or support arbitrary planar
 NURBS representations. Unsupported images retain the conservative curved-support
-path. General document insertion, replacement, and `Flip` policy are unchanged.
-The later [`Cap` audit](cap-compound-orientation.md) uses this query to normalize
-newly closed command results.
+path. The later [`Cap` audit](cap-compound-orientation.md) and
+[document admission audit](document-brep-admission.md) use this query to normalize
+known inward results. Explicit `Flip` and recorded Undo/Redo snapshots retain
+their senses.
 
 ## Shared-source evidence
 

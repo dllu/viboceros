@@ -46,12 +46,6 @@ pub(super) fn classify(brep: &Brep, remaining: &mut usize) -> Option<BrepSolidOr
     })
 }
 
-fn spend(remaining: &mut usize, cost: usize) -> Option<()> {
-    let next = remaining.checked_sub(cost);
-    *remaining = next.unwrap_or(0);
-    next.map(|_| ())
-}
-
 fn point(p: Point3) -> ExactPoint {
     p.to_array().map(rational)
 }

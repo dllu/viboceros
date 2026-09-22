@@ -2,6 +2,7 @@
 use super::*;
 mod planar;
 mod rectangle;
+mod trim;
 
 #[cfg(test)]
 mod tests;
@@ -29,7 +30,8 @@ impl Brep {
     /// Exactly supported planar polygons use actual trim bounds to select the
     /// minimum-X components, then exact first crossings of +X rays to classify
     /// each component. Affine patches with piecewise-linear trims (including
-    /// holes) and convex planar bilinear rectangles are supported. Ambiguous
+    /// holes), certified higher-degree straight trims, and convex planar
+    /// bilinear rectangles are supported. Ambiguous
     /// edge, coplanar, and tied ray hits are not classification evidence.
     ///
     /// Otherwise same-sign surface weights give a control-hull bound. A witness
@@ -99,7 +101,7 @@ impl Brep {
                     // rejection avoids evaluating other faces of an axis box.
                     continue;
                 }
-                let Some(rectangle) = rectangle::bounds(face) else {
+                let Some(rectangle) = rectangle::bounds(face, &mut remaining) else {
                     continue;
                 };
                 let u = stations(face.surface.spans_u(), rectangle[0]);
@@ -144,6 +146,12 @@ impl Brep {
         }
         Ok(orientation.unwrap_or(Unknown))
     }
+}
+
+fn spend(remaining: &mut usize, cost: usize) -> Option<()> {
+    let next = remaining.checked_sub(cost);
+    *remaining = next.unwrap_or(0);
+    next.map(|_| ())
 }
 
 fn stations(spans: impl Iterator<Item = (Real, Real)>, [lo, hi]: [Real; 2]) -> Vec<Real> {

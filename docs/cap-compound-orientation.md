@@ -30,9 +30,11 @@ Already closed inputs remain no-ops. Geometry replacements still form one
 atomic undo step with IDs, attributes, groups, and selection behavior retained.
 
 Native regressions cover 24 negative-volume command workflows, both senses of
-zero-volume compounds, and unresolved compounds with geometrically equivalent
-quadratic UV trims. The latter deliberately exercise unsupported representation
-handling; they are not additional Rhino observations.
+zero-volume compounds, and higher-degree straight UV trims. Quadratic trims now
+use the exact segment certificate. Unresolved compounds instead use pole-free
+mixed-weight quartics whose image is proved to be the same segment, preserving
+unsupported-representation coverage, including negative volume and Undo/Redo.
+These are native regressions, not additional Rhino observations.
 
 ## Retained Rhino evidence
 

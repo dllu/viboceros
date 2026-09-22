@@ -1,33 +1,15 @@
 //! Exact trim containment for four axis-aligned linear boundary curves.
 use super::*;
 
-pub(super) fn bounds(face: &BrepFace) -> Option<[[Real; 2]; 2]> {
+pub(super) fn bounds(face: &BrepFace, remaining: &mut usize) -> Option<[[Real; 2]; 2]> {
     if face.loops.len() != 1 || face.loops[0].trims.len() != 4 {
         return None;
     }
     let mut ends = Vec::with_capacity(4);
     for trim in &face.loops[0].trims {
-        let curve = &trim.curve;
-        let controls = curve.control_points();
-        let knots = curve.knots();
-        if curve.degree() != 1
-            || knots[0] != knots[1]
-            || knots[knots.len() - 1] != knots[knots.len() - 2]
-            || knots[1..knots.len() - 1]
-                .windows(2)
-                .any(|pair| pair[0] >= pair[1])
-        {
-            return None;
-        }
-        let sign = controls[0].weight().is_sign_positive();
-        if controls
-            .iter()
-            .any(|c| c.weight().is_sign_positive() != sign)
-        {
-            return None;
-        }
-        let a = controls.first()?.point().to_array();
-        let b = controls.last()?.point().to_array();
+        let mut points = super::trim::polygon(&trim.curve, remaining)?;
+        let a = points.next()?;
+        let b = points.next_back()?;
         let axis = if a[0] == b[0] && a[1] != b[1] {
             0
         } else if a[1] == b[1] && a[0] != b[0] {
@@ -35,8 +17,7 @@ pub(super) fn bounds(face: &BrepFace) -> Option<[[Real; 2]; 2]> {
         } else {
             return None;
         };
-        if controls.iter().any(|c| {
-            let p = c.point().to_array();
+        if points.any(|p| {
             p[axis] != a[axis]
                 || p[1 - axis] < a[1 - axis].min(b[1 - axis])
                 || p[1 - axis] > a[1 - axis].max(b[1 - axis])
