@@ -1,0 +1,1868 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "brep_solid_orientation",
+      "id": "disjoint-outward",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -11,
+              -1,
+              -1
+            ],
+            "max": [
+              -9,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              9,
+              -1,
+              -1
+            ],
+            "max": [
+              11,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "disjoint-outward-reverse-order",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              9,
+              -1,
+              -1
+            ],
+            "max": [
+              11,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -11,
+              -1,
+              -1
+            ],
+            "max": [
+              -9,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "disjoint-inward",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -11,
+              -1,
+              -1
+            ],
+            "max": [
+              -9,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              9,
+              -1,
+              -1
+            ],
+            "max": [
+              11,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "disjoint-inward-reverse-order",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              9,
+              -1,
+              -1
+            ],
+            "max": [
+              11,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -11,
+              -1,
+              -1
+            ],
+            "max": [
+              -9,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "disjoint-opposed-zero",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -11,
+              -1,
+              -1
+            ],
+            "max": [
+              -9,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              9,
+              -1,
+              -1
+            ],
+            "max": [
+              11,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "disjoint-opposed-zero-reverse-order",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              9,
+              -1,
+              -1
+            ],
+            "max": [
+              11,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -11,
+              -1,
+              -1
+            ],
+            "max": [
+              -9,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "disjoint-opposed-negative",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -11,
+              -1,
+              -1
+            ],
+            "max": [
+              -9,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              8,
+              -2,
+              -2
+            ],
+            "max": [
+              12,
+              2,
+              2
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "disjoint-opposed-negative-reverse-order",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              8,
+              -2,
+              -2
+            ],
+            "max": [
+              12,
+              2,
+              2
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -11,
+              -1,
+              -1
+            ],
+            "max": [
+              -9,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "disjoint-opposed-positive",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -12,
+              -2,
+              -2
+            ],
+            "max": [
+              -8,
+              2,
+              2
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              9,
+              -1,
+              -1
+            ],
+            "max": [
+              11,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "disjoint-opposed-positive-reverse-order",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              9,
+              -1,
+              -1
+            ],
+            "max": [
+              11,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -12,
+              -2,
+              -2
+            ],
+            "max": [
+              -8,
+              2,
+              2
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "nested-cavity",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -4,
+              -4,
+              -4
+            ],
+            "max": [
+              4,
+              4,
+              4
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "nested-cavity-reverse-order",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -4,
+              -4,
+              -4
+            ],
+            "max": [
+              4,
+              4,
+              4
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "nested-reversed-cavity",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -4,
+              -4,
+              -4
+            ],
+            "max": [
+              4,
+              4,
+              4
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "nested-reversed-cavity-reverse-order",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -4,
+              -4,
+              -4
+            ],
+            "max": [
+              4,
+              4,
+              4
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "nested-both-outward",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -4,
+              -4,
+              -4
+            ],
+            "max": [
+              4,
+              4,
+              4
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "nested-both-outward-reverse-order",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -4,
+              -4,
+              -4
+            ],
+            "max": [
+              4,
+              4,
+              4
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "nested-both-inward",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -4,
+              -4,
+              -4
+            ],
+            "max": [
+              4,
+              4,
+              4
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "nested-both-inward-reverse-order",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -4,
+              -4,
+              -4
+            ],
+            "max": [
+              4,
+              4,
+              4
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "coincident-opposed",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "coincident-opposed-reverse-order",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-x-size-1-reversed-False-order-False",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -11,
+              -1,
+              -1
+            ],
+            "max": [
+              -9,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              8,
+              -2,
+              -2
+            ],
+            "max": [
+              12,
+              2,
+              2
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-x-size-1-reversed-False-order-True",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              8,
+              -2,
+              -2
+            ],
+            "max": [
+              12,
+              2,
+              2
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -11,
+              -1,
+              -1
+            ],
+            "max": [
+              -9,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-x-size-1-reversed-True-order-False",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -11,
+              -1,
+              -1
+            ],
+            "max": [
+              -9,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              8,
+              -2,
+              -2
+            ],
+            "max": [
+              12,
+              2,
+              2
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-x-size-1-reversed-True-order-True",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              8,
+              -2,
+              -2
+            ],
+            "max": [
+              12,
+              2,
+              2
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -11,
+              -1,
+              -1
+            ],
+            "max": [
+              -9,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-x-size-2-reversed-False-order-False",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -12,
+              -2,
+              -2
+            ],
+            "max": [
+              -8,
+              2,
+              2
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              9,
+              -1,
+              -1
+            ],
+            "max": [
+              11,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-x-size-2-reversed-False-order-True",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              9,
+              -1,
+              -1
+            ],
+            "max": [
+              11,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -12,
+              -2,
+              -2
+            ],
+            "max": [
+              -8,
+              2,
+              2
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-x-size-2-reversed-True-order-False",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -12,
+              -2,
+              -2
+            ],
+            "max": [
+              -8,
+              2,
+              2
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              9,
+              -1,
+              -1
+            ],
+            "max": [
+              11,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-x-size-2-reversed-True-order-True",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              9,
+              -1,
+              -1
+            ],
+            "max": [
+              11,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -12,
+              -2,
+              -2
+            ],
+            "max": [
+              -8,
+              2,
+              2
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-y-size-1-reversed-False-order-False",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -11,
+              -1
+            ],
+            "max": [
+              1,
+              -9,
+              1
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -2,
+              8,
+              -2
+            ],
+            "max": [
+              2,
+              12,
+              2
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-y-size-1-reversed-False-order-True",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -2,
+              8,
+              -2
+            ],
+            "max": [
+              2,
+              12,
+              2
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -11,
+              -1
+            ],
+            "max": [
+              1,
+              -9,
+              1
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-y-size-1-reversed-True-order-False",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -11,
+              -1
+            ],
+            "max": [
+              1,
+              -9,
+              1
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -2,
+              8,
+              -2
+            ],
+            "max": [
+              2,
+              12,
+              2
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-y-size-1-reversed-True-order-True",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -2,
+              8,
+              -2
+            ],
+            "max": [
+              2,
+              12,
+              2
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -11,
+              -1
+            ],
+            "max": [
+              1,
+              -9,
+              1
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-y-size-2-reversed-False-order-False",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -2,
+              -12,
+              -2
+            ],
+            "max": [
+              2,
+              -8,
+              2
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              9,
+              -1
+            ],
+            "max": [
+              1,
+              11,
+              1
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-y-size-2-reversed-False-order-True",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              9,
+              -1
+            ],
+            "max": [
+              1,
+              11,
+              1
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -2,
+              -12,
+              -2
+            ],
+            "max": [
+              2,
+              -8,
+              2
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-y-size-2-reversed-True-order-False",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -2,
+              -12,
+              -2
+            ],
+            "max": [
+              2,
+              -8,
+              2
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              9,
+              -1
+            ],
+            "max": [
+              1,
+              11,
+              1
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-y-size-2-reversed-True-order-True",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              9,
+              -1
+            ],
+            "max": [
+              1,
+              11,
+              1
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -2,
+              -12,
+              -2
+            ],
+            "max": [
+              2,
+              -8,
+              2
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-z-size-1-reversed-False-order-False",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -11
+            ],
+            "max": [
+              1,
+              1,
+              -9
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -2,
+              -2,
+              8
+            ],
+            "max": [
+              2,
+              2,
+              12
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-z-size-1-reversed-False-order-True",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -2,
+              -2,
+              8
+            ],
+            "max": [
+              2,
+              2,
+              12
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -11
+            ],
+            "max": [
+              1,
+              1,
+              -9
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-z-size-1-reversed-True-order-False",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -11
+            ],
+            "max": [
+              1,
+              1,
+              -9
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -2,
+              -2,
+              8
+            ],
+            "max": [
+              2,
+              2,
+              12
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-z-size-1-reversed-True-order-True",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -2,
+              -2,
+              8
+            ],
+            "max": [
+              2,
+              2,
+              12
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -11
+            ],
+            "max": [
+              1,
+              1,
+              -9
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-z-size-2-reversed-False-order-False",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -2,
+              -2,
+              -12
+            ],
+            "max": [
+              2,
+              2,
+              -8
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              9
+            ],
+            "max": [
+              1,
+              1,
+              11
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-z-size-2-reversed-False-order-True",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              9
+            ],
+            "max": [
+              1,
+              1,
+              11
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -2,
+              -2,
+              -12
+            ],
+            "max": [
+              2,
+              2,
+              -8
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-z-size-2-reversed-True-order-False",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -2,
+              -2,
+              -12
+            ],
+            "max": [
+              2,
+              2,
+              -8
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              9
+            ],
+            "max": [
+              1,
+              1,
+              11
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "axis-z-size-2-reversed-True-order-True",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              9
+            ],
+            "max": [
+              1,
+              1,
+              11
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -2,
+              -2,
+              -12
+            ],
+            "max": [
+              2,
+              2,
+              -8
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "open-box",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ],
+            "keep_faces": [
+              0,
+              1,
+              2,
+              3,
+              4
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "unoriented-1",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          }
+        }
+      ],
+      "flip_faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "unoriented-3",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          }
+        }
+      ],
+      "flip_faces": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "corner-False",
+      "sources": [
+        {
+          "source": {
+            "type": "mesh_brep",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                10,
+                0
+              ],
+              [
+                1,
+                11,
+                1
+              ],
+              [
+                2,
+                15,
+                0
+              ]
+            ],
+            "faces": [
+              [
+                0,
+                2,
+                1
+              ],
+              [
+                0,
+                1,
+                3
+              ],
+              [
+                0,
+                3,
+                2
+              ],
+              [
+                1,
+                2,
+                3
+              ]
+            ]
+          },
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "op": "brep_solid_orientation",
+      "id": "corner-True",
+      "sources": [
+        {
+          "source": {
+            "type": "mesh_brep",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                10,
+                0
+              ],
+              [
+                1,
+                11,
+                1
+              ],
+              [
+                2,
+                15,
+                0
+              ]
+            ],
+            "faces": [
+              [
+                0,
+                2,
+                1
+              ],
+              [
+                0,
+                1,
+                3
+              ],
+              [
+                0,
+                3,
+                2
+              ],
+              [
+                1,
+                2,
+                3
+              ]
+            ]
+          },
+          "reversed": true
+        }
+      ]
+    }
+  ]
+}

@@ -36,7 +36,9 @@ mod reorder;
 use parameter_normalization::{
     TrimParameterNormalization, floating_parameter_epsilon, trim_parameter_epsilon,
 };
+mod solid_orientation;
 mod surface_grid;
+pub use solid_orientation::BrepSolidOrientation;
 mod tessellation;
 mod tolerance;
 use tolerance::scaled_tolerance;

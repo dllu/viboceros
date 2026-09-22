@@ -116,6 +116,38 @@ impl<'a> ExactJetNet<'a> {
         &mut self,
         parameters: [Real; 2],
     ) -> Result<crate::UnitVector3, GeometryError> {
+        let (_, n) = self.normal_numerator(parameters)?;
+        let scale = n.iter().map(Signed::abs).max().unwrap();
+        if scale.is_zero() {
+            return Err(GeometryError::Degenerate {
+                context: "surface normal",
+            });
+        }
+        vector(&std::array::from_fn(|i| &n[i] / &scale))?.normalized_nonzero()
+    }
+
+    pub(super) fn minimum_x_support_sense(
+        &mut self,
+        parameters: [Real; 2],
+        bound: Real,
+    ) -> Result<Option<bool>, GeometryError> {
+        let (h, n) = self.normal_numerator(parameters)?;
+        // A hull bound is attained exactly, and the regular tangent plane is
+        // parallel to that supporting plane. A merely nonzero X component at
+        // a corner is not sufficient: outward corner normals can point +X.
+        Ok(
+            (h[0] == rational(bound) * &h[3]
+                && n[1].is_zero()
+                && n[2].is_zero()
+                && !n[0].is_zero())
+            .then(|| n[0].is_positive()),
+        )
+    }
+
+    fn normal_numerator(
+        &mut self,
+        parameters: [Real; 2],
+    ) -> Result<(Homogeneous, [Rational; 3]), GeometryError> {
         let surface = self.surface;
         let u = Direction {
             knots: &surface.knots_u,
@@ -148,13 +180,7 @@ impl<'a> ExactJetNet<'a> {
             let (j, k) = ((i + 1) % 3, (i + 2) % 3);
             &a[j] * &b[k] - &a[k] * &b[j]
         });
-        let scale = n.iter().map(Signed::abs).max().unwrap();
-        if scale.is_zero() {
-            return Err(GeometryError::Degenerate {
-                context: "surface normal",
-            });
-        }
-        vector(&std::array::from_fn(|i| &n[i] / &scale))?.normalized_nonzero()
+        Ok((h, n))
     }
 
     pub(super) fn evaluate(

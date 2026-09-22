@@ -74,6 +74,7 @@ mod merge_edges_command;
 mod object_layout;
 mod object_source;
 mod plane_arrays;
+mod solid_orientation;
 #[cfg(test)]
 mod test_json;
 mod trimmed_brep;
@@ -165,6 +166,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    BrepSolidOrientation {
+        id: String,
+        #[serde(flatten)]
+        fixture: solid_orientation::SolidOrientationFixture,
+    },
     VolumeCommand {
         id: String,
         #[serde(flatten)]
@@ -1698,6 +1704,7 @@ impl Operation {
     pub fn id(&self) -> &str {
         match self {
             Self::VolumeCommand { id, .. }
+            | Self::BrepSolidOrientation { id, .. }
             | Self::AreaCentroidCommand { id, .. }
             | Self::VolumeCentroidCommand { id, .. }
             | Self::ProjectedObjectSnap { id, .. }
@@ -2091,6 +2098,9 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::BrepSolidOrientation { fixture, .. } => {
+            solid_orientation::run(fixture, iterations, tolerance)?
+        }
         Operation::VolumeCommand { fixture, .. } => {
             centroid_command::run(fixture, tolerance, centroid_command::Measure::ScalarVolume)?
         }

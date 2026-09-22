@@ -426,6 +426,8 @@ def _owned_artifact_request(request):
                     operation["artifact_path"] = str(Path(job) / f"border-{index}.3dm")
             elif operation.get("op") == "cap_command":
                 operation["artifact_path"] = str(Path(job) / f"cap-{index}.3dm")
+            elif operation.get("op") == "brep_solid_orientation":
+                operation["artifact_path"] = str(Path(job) / f"orientation-{index}.3dm")
             elif operation.get("op") == "brep_merge_edge":
                 source = operation.get("source")
                 if not isinstance(source, Mapping):

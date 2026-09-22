@@ -7,6 +7,20 @@ mod filter;
 mod tests;
 
 impl NurbsSurface {
+    pub(crate) fn minimum_x_support_sense_at(
+        &self,
+        u: Real,
+        v: Real,
+        bound: Real,
+    ) -> Result<Option<bool>, GeometryError> {
+        require_finite([bound], "surface support bound")?;
+        let spans = [
+            checked_span(self.degree_u, self.control_point_count_u, &self.knots_u, u)?,
+            checked_span(self.degree_v, self.control_point_count_v, &self.knots_v, v)?,
+        ];
+        exact::ExactJetNet::new(self, spans).minimum_x_support_sense([u, v], bound)
+    }
+
     /// Unit normal in the natural U×V sense at a regular parameter station.
     ///
     /// This derived direction has no model-length cutoff and does not require

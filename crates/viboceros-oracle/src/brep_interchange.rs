@@ -195,7 +195,12 @@ fn read(path: &Path, tolerance: Tolerance) -> Result<Brep, ProbeError> {
     }
 }
 
-fn curve_record(curve: &NurbsCurve) -> Result<Value, GeometryError> {
+fn curve_record(curve: &NurbsCurve, include_samples: bool) -> Result<Value, GeometryError> {
+    let mut record =
+        json!({"definition": serialized_definition(super::nurbs_curve_definition_value(curve))});
+    if !include_samples {
+        return Ok(record);
+    }
     let samples = (0..=32)
         .map(|i| {
             curve
@@ -203,44 +208,53 @@ fn curve_record(curve: &NurbsCurve) -> Result<Value, GeometryError> {
                 .map(|p| p.to_array())
         })
         .collect::<Result<Vec<_>, _>>()?;
-    Ok(
-        json!({"definition": serialized_definition(super::nurbs_curve_definition_value(curve)), "samples": samples}),
-    )
+    record["samples"] = json!(samples);
+    Ok(record)
 }
 
 pub(super) fn geometry_record(brep: &Brep) -> Result<Value, GeometryError> {
+    record(brep, true)
+}
+
+pub(super) fn definition_record(brep: &Brep) -> Result<Value, GeometryError> {
+    record(brep, false)
+}
+
+fn record(brep: &Brep, include_samples: bool) -> Result<Value, GeometryError> {
     let edges = brep
         .edges()
         .iter()
         .map(|edge| {
             Ok(json!({
-                "tolerance": edge.tolerance(), "curve": curve_record(edge.curve())?,
+                "tolerance": edge.tolerance(), "curve": curve_record(edge.curve(), include_samples)?,
             }))
         })
         .collect::<Result<Vec<_>, GeometryError>>()?;
     let faces = brep
         .faces()
         .iter()
-        .map(face_record)
+        .map(|face| face_record(face, include_samples))
         .collect::<Result<Vec<_>, _>>()?;
     Ok(json!({"topology": brep_morph::topology(brep),
         "vertices": brep.vertices().iter().map(|v| json!({"point": v.point().to_array(), "tolerance": v.tolerance()})).collect::<Vec<_>>(),
         "edges": edges, "faces": faces}))
 }
 
-fn face_record(face: &BrepFace) -> Result<Value, GeometryError> {
+fn face_record(face: &BrepFace, include_samples: bool) -> Result<Value, GeometryError> {
     let surface = face.surface();
     let mut samples = Vec::new();
-    for j in 0..=8 {
-        for i in 0..=8 {
-            samples.push(
-                surface
-                    .evaluate(
-                        surface.parameter_at_u(i as f64 / 8.0)?,
-                        surface.parameter_at_v(j as f64 / 8.0)?,
-                    )?
-                    .to_array(),
-            );
+    if include_samples {
+        for j in 0..=8 {
+            for i in 0..=8 {
+                samples.push(
+                    surface
+                        .evaluate(
+                            surface.parameter_at_u(i as f64 / 8.0)?,
+                            surface.parameter_at_v(j as f64 / 8.0)?,
+                        )?
+                        .to_array(),
+                );
+            }
         }
     }
     let loops = face
@@ -250,22 +264,30 @@ fn face_record(face: &BrepFace) -> Result<Value, GeometryError> {
             boundary
                 .trims()
                 .iter()
-                .map(|trim| trim_record(trim, surface))
+                .map(|trim| trim_record(trim, surface, include_samples))
                 .collect::<Result<Vec<_>, _>>()
         })
         .collect::<Result<Vec<_>, _>>()?;
-    Ok(
-        json!({"definition": serialized_definition(super::nurbs_surface_definition_value(surface)), "samples": samples, "loops": loops}),
-    )
+    let mut record = json!({"definition": serialized_definition(super::nurbs_surface_definition_value(surface)), "loops": loops});
+    if include_samples {
+        record["samples"] = json!(samples);
+    }
+    Ok(record)
 }
 
-fn trim_record(trim: &BrepTrim, surface: &NurbsSurface) -> Result<Value, GeometryError> {
+fn trim_record(
+    trim: &BrepTrim,
+    surface: &NurbsSurface,
+    include_samples: bool,
+) -> Result<Value, GeometryError> {
     let mut lifted = Vec::new();
-    for i in 0..=32 {
-        let uv = trim
-            .curve()
-            .evaluate(trim.curve().parameter_at(i as f64 / 32.0)?)?;
-        lifted.push(surface.evaluate(uv.x(), uv.y())?.to_array());
+    if include_samples {
+        for i in 0..=32 {
+            let uv = trim
+                .curve()
+                .evaluate(trim.curve().parameter_at(i as f64 / 32.0)?)?;
+            lifted.push(surface.evaluate(uv.x(), uv.y())?.to_array());
+        }
     }
     let iso = match trim.iso() {
         SurfaceIso::NotIso => 0,
@@ -276,8 +298,12 @@ fn trim_record(trim: &BrepTrim, surface: &NurbsSurface) -> Result<Value, Geometr
         SurfaceIso::East => 5,
         SurfaceIso::North => 6,
     };
-    Ok(json!({"iso": iso, "tolerance": trim.tolerance(),
-        "definition": serialized_definition(super::nurbs_curve2_definition_value(trim.curve())), "lifted": lifted}))
+    let mut record = json!({"iso": iso, "tolerance": trim.tolerance(),
+        "definition": serialized_definition(super::nurbs_curve2_definition_value(trim.curve()))});
+    if include_samples {
+        record["lifted"] = json!(lifted);
+    }
+    Ok(record)
 }
 
 // OpenNURBS stores the interior N+p-1 knot entries, omitting the two
@@ -320,6 +346,42 @@ pub(super) fn roundtrip_equal(actual: &Value, expected: &Value) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn definition_only_record_retains_every_non_sample_field() {
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for brep in [
+            Brep::try_box(frame, [[-1., 1.]; 3], Tolerance::DEFAULT).unwrap(),
+            Brep::try_surface_face(
+                NurbsSurface::try_sphere(frame, 2.).unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+            .reversed(),
+        ] {
+            let mut full = geometry_record(&brep).unwrap();
+            for edge in full["edges"].as_array_mut().unwrap() {
+                assert_eq!(edge["curve"]["samples"].as_array().unwrap().len(), 33);
+                edge["curve"].as_object_mut().unwrap().remove("samples");
+            }
+            for face in full["faces"].as_array_mut().unwrap() {
+                assert_eq!(face["samples"].as_array().unwrap().len(), 81);
+                face.as_object_mut().unwrap().remove("samples");
+                for boundary in face["loops"].as_array_mut().unwrap() {
+                    for trim in boundary.as_array_mut().unwrap() {
+                        assert_eq!(trim["lifted"].as_array().unwrap().len(), 33);
+                        trim.as_object_mut().unwrap().remove("lifted");
+                    }
+                }
+            }
+            assert_eq!(definition_record(&brep).unwrap(), full);
+        }
+    }
 
     #[test]
     fn interchange_canonicalizes_only_the_two_unstored_outer_knots() {

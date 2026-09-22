@@ -1,0 +1,37 @@
+{
+  "capture_date_utc": "2026-09-22",
+  "engine_version": "8.32.26160.13001",
+  "base_commit": "9d9769f",
+  "completed_operations": 49,
+  "full_matches": 45,
+  "geometry_matches": 49,
+  "unresolved_ids": [
+    "coincident-opposed",
+    "coincident-opposed-reverse-order",
+    "corner-False",
+    "corner-True"
+  ],
+  "absolute_epsilon": 2e-12,
+  "relative_epsilon": 1e-14,
+  "maximum_numeric_error": 0.0,
+  "raw_response_sha256_before_compaction": "04634161476ebedc0356bb34d06b4a92b694dfa3a56faf83b5bfe46799b7fdb7",
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/solid_orientation.json": "073e61cda089a06df3bd9aefe8a1338bd3f48d67a1717cce37c0041139a94308",
+    "tools/rhino_oracle/observations/solid_orientation.json": "58d72b98ff3158b7448882d42d202df56dc2f464336bf719729cd5df1c036ed5"
+  },
+  "capture_source_sha256": {
+    "tools/rhino_oracle/rhino_worker.py": "181a35a143f422762ec9aa0cb247e5791f893149e9c164379211c7814a263850",
+    "tools/rhino_oracle/references/solid_orientation.py": "88e3f90f92f8bc1b9b1e44237b2d5c0321ddef524d95648e7a8a6d5cc67970c0",
+    "tools/rhino_oracle/references/orientation_audit.py": "b78585385b4163d411424fc3720a417d30d1cd3a970d0418245566deb5032a71",
+    "tools/rhino_oracle/client.py": "5d7ba19054855fb4e95414de0b77e7a43807f98b043b2117b809fd47356ba21f"
+  },
+  "notes": [
+    "One owned private-Xvfb session completed all 49 operations with a 900-second deadline; no manual recovery or user-session interaction was needed.",
+    "The host assigns owned paths. Native source geometry is written to 3dm and reread with complete definition and sample checks; Rhino reads that same artifact without document insertion.",
+    "All geometry definitions, face senses, topology, and tolerances are retained. Definition-only recording performs no discarded edge/face/trim sampling; shared artifact validation still samples.",
+    "The retained capture is recursively identical to the raw response including every floating-point IEEE-754 bit pattern and negative zero.",
+    "The native classifier is incomplete: four orientation values remain Unknown, not matches. No observed value has been rewritten to agree with native output.",
+    "Coincident opposed shells have opposite Rhino classifications from the earlier independently constructed compound batch. The representations differ; neither batch establishes a general tie policy.",
+    "This is a raw public geometry-query comparison, not a document insertion, Flip command, mass integral, or kernel benchmark. Elapsed times are intentionally zero."
+  ]
+}

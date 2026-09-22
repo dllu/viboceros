@@ -11,6 +11,45 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_solid_orientation_reads_uninserted_geometry_and_disposes_its_file(self):
+        class Brep:
+            IsValid = True
+            IsSolid = True
+            SolidOrientation = "Inward"
+            Edges = [SimpleNamespace(Valence="interior")]
+
+        for failure in (None, "read", "empty", "extra", "type", "invalid", "record"):
+            with self.subTest(failure=failure):
+                brep = Brep()
+                if failure == "invalid": brep.IsValid = False
+                items = [SimpleNamespace(Geometry=brep)]
+                if failure == "empty": items = []
+                if failure == "extra": items *= 2
+                if failure == "type": items = [SimpleNamespace(Geometry=object())]
+                model = Mock(Objects=items)
+                read = Mock(return_value=None if failure == "read" else model)
+                # No RhinoDoc or document object table exists in this host.
+                host = SimpleNamespace(FileIO=SimpleNamespace(File3dm=SimpleNamespace(Read=read)),
+                    Geometry=SimpleNamespace(Brep=Brep, EdgeAdjacency=SimpleNamespace(Interior="interior")))
+                with patch.object(self.worker, "Rhino", host), patch.object(
+                    self.worker, "_interchange_brep_record", return_value={"definition": "retained"},
+                    side_effect=ValueError("record failed") if failure == "record" else None,
+                ) as record:
+                    if failure:
+                        with self.assertRaises(ValueError):
+                            self.worker._brep_solid_orientation({"artifact_path": "/owned/source.3dm"}, 1)
+                    else:
+                        value, elapsed = self.worker._brep_solid_orientation({"artifact_path": "/owned/source.3dm"}, 1)
+                        self.assertEqual(value, dict(orientation="Inward", solid=True, closed=True,
+                                                    geometry={"definition": "retained"}))
+                        self.assertEqual(elapsed, 0)
+                        record.assert_called_once_with(brep, include_samples=False)
+                    read.assert_called_once_with("Z:\\owned\\source.3dm")
+                    if failure == "read": model.Dispose.assert_not_called()
+                    else: model.Dispose.assert_called_once_with()
+        for operation, iterations in [({}, 1), ({"artifact_path": "source.3dm"}, 2)]:
+            with self.assertRaises(ValueError): self.worker._brep_solid_orientation(operation, iterations)
+
     def test_surface_evaluation_uses_public_normal_and_disposes_even_on_failure(self):
         operation = dict(degree_u=1, degree_v=1, control_point_count_u=2, control_point_count_v=2,
                          control_points=[], knots_u=[], knots_v=[], u=0.25, v=0.75)

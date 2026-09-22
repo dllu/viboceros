@@ -1731,6 +1731,29 @@ def _interchange_brep_record(brep, include_samples=True):
             "faces": faces}
 
 
+def _brep_solid_orientation(operation, iterations):
+    if iterations != 1:
+        raise ValueError("solid orientation requires one iteration")
+    path = operation.get("artifact_path")
+    if not path:
+        raise ValueError("solid orientation requires a shared artifact from compare mode")
+    if path.startswith("/"): path = "Z:" + path.replace("/", "\\")
+    model = Rhino.FileIO.File3dm.Read(path)
+    if model is None: raise ValueError("cannot read solid orientation artifact")
+    try:
+        items = list(model.Objects)
+        if len(items) != 1 or not isinstance(items[0].Geometry, Rhino.Geometry.Brep):
+            raise ValueError("solid orientation artifact must contain one B-rep")
+        brep = items[0].Geometry
+        if not brep.IsValid: raise ValueError("invalid solid orientation B-rep")
+        # Do not insert into a document: insertion can normalize face sense.
+        return dict(orientation=str(brep.SolidOrientation), solid=bool(brep.IsSolid),
+                    closed=all(edge.Valence == Rhino.Geometry.EdgeAdjacency.Interior for edge in brep.Edges),
+                    geometry=_interchange_brep_record(brep, include_samples=False)), 0
+    finally:
+        model.Dispose()
+
+
 def _interchange_brep_mesh_flags(brep):
     parameters = mesh = None
     parts = []
@@ -5102,6 +5125,8 @@ def _execute(operation, iterations, tolerance):
     if kind == "orientation_audit":
         import orientation_probe
         return orientation_probe.run(operation, tolerance, globals())
+    if kind == "brep_solid_orientation":
+        return _brep_solid_orientation(operation, iterations)
     if kind == "volume_command":
         import area_centroid_probe
         return area_centroid_probe.run(operation, tolerance, globals(), "volume", False)
