@@ -61,7 +61,24 @@ impl VolumeMassProperties {
         boundaries: &[VolumeBoundary<'_>],
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
-        Self::boundary_integrals::<true>(boundaries, tolerance)
+        Self::from_boundaries_with_surface_moments(
+            boundaries,
+            tolerance,
+            SurfaceVolumeMoments::Cone,
+        )
+    }
+
+    /// Integrates surfaces with an explicit first-moment convention, while mesh
+    /// contributions retain exact tetrahedral cones. This exposes a convention,
+    /// not an enclosed-solid certificate: mixing coordinate surface primitives
+    /// with open mesh cones can differ from the true centroid even when those
+    /// pieces jointly enclose a solid. Use `from_boundaries` for uniform cones.
+    pub fn from_boundaries_with_surface_moments(
+        boundaries: &[VolumeBoundary<'_>],
+        tolerance: Tolerance,
+        moments: SurfaceVolumeMoments,
+    ) -> Result<Self, GeometryError> {
+        Self::boundary_integrals::<true>(boundaries, tolerance, moments)
     }
 
     /// Signed cone volume using the same reference convention as
@@ -71,12 +88,14 @@ impl VolumeMassProperties {
         boundaries: &[VolumeBoundary<'_>],
         tolerance: Tolerance,
     ) -> Result<Real, GeometryError> {
-        Self::boundary_integrals::<false>(boundaries, tolerance)?.signed_volume()
+        Self::boundary_integrals::<false>(boundaries, tolerance, SurfaceVolumeMoments::Cone)?
+            .signed_volume()
     }
 
     fn boundary_integrals<const FIRST: bool>(
         boundaries: &[VolumeBoundary<'_>],
         tolerance: Tolerance,
+        moments: SurfaceVolumeMoments,
     ) -> Result<Self, GeometryError> {
         let mut bounds = None;
         for boundary in boundaries {
@@ -107,7 +126,7 @@ impl VolumeMassProperties {
                     } else {
                         base
                     };
-                    b.volume_integrals::<FIRST>(reference, tolerance)?
+                    b.volume_integrals::<FIRST>(reference, tolerance, moments)?
                 }
                 VolumeBoundary::Surface(s) => {
                     let b = Brep::try_surface_face(s.clone(), tolerance)?;
@@ -116,7 +135,7 @@ impl VolumeMassProperties {
                     } else {
                         base
                     };
-                    b.volume_integrals::<FIRST>(reference, tolerance)?
+                    b.volume_integrals::<FIRST>(reference, tolerance, moments)?
                 }
             };
             total.add(&mass);

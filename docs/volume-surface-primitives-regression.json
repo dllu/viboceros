@@ -1,0 +1,1373 @@
+{
+  "closed_centroids": {
+    "protocol_version": 1,
+    "absolute_epsilon": 1e-9,
+    "relative_epsilon": 0,
+    "passed": true,
+    "operations": [
+      {
+        "id": "tetrahedron",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "reversed-tetrahedron",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "translated-tetrahedron",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "separate",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "group",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "partial-group",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "reverse-order",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "postselected",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "mixed-orientations",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "equal-opposite-volumes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "post-equal-opposite-volumes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "opposed-disjoint-shells",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "mixed-line",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "line-only",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "mixed-point",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "brep-paraboloid-capped-outward",
+        "passed": true,
+        "max_absolute_error": 7.216449660063518e-16,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "brep-paraboloid-capped-inward",
+        "passed": true,
+        "max_absolute_error": 7.216449660063518e-16,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "brep-paraboloid-rotated-translated",
+        "passed": true,
+        "max_absolute_error": 3.552713678800501e-15,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "warped-box-0-0",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "warped-box-0-1",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "warped-box-0-2",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "warped-box-0-3",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "warped-box-1-0",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "warped-box-1-1",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "warped-box-1-2",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "warped-box-1-3",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      }
+    ],
+    "max_absolute_error": 3.552713678800501e-15,
+    "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation.",
+    "scope": "actual command marker/selection/attributes and conditional warning when captured; API diagnostics retained separately"
+  },
+  "open_centroids": {
+    "protocol_version": 1,
+    "absolute_epsilon": 1e-9,
+    "relative_epsilon": 0,
+    "passed": true,
+    "operations": [
+      {
+        "id": "open-tetra-pre-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-tetra-pre-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-tetra-pre-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-tetra-post-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-tetra-post-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-tetra-post-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unoriented-tetra-pre-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unoriented-tetra-pre-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unoriented-tetra-pre-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unoriented-tetra-post-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unoriented-tetra-post-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unoriented-tetra-post-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "closed-tetra-pre-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "closed-tetra-pre-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "closed-tetra-pre-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "closed-tetra-post-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "closed-tetra-post-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "closed-tetra-post-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "translated-open-tetra-pre-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "translated-open-tetra-pre-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "translated-open-tetra-pre-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "translated-open-tetra-post-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "translated-open-tetra-post-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "translated-open-tetra-post-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-quad-pre-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-quad-pre-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-quad-pre-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-quad-post-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-quad-post-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-quad-post-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-surface-pre-yes",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-surface-pre-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-surface-pre-escape",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-surface-post-yes",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-surface-post-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-surface-post-escape",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unjoined-box-meshes-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unjoined-box-meshes-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unjoined-box-meshes-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unjoined-box-surfaces-yes",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unjoined-box-surfaces-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unjoined-box-surfaces-escape",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      }
+    ],
+    "max_absolute_error": 8.881784197001252e-16,
+    "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation.",
+    "scope": "actual command marker/selection/attributes and conditional warning when captured; API diagnostics retained separately"
+  },
+  "volume_commands": {
+    "protocol_version": 1,
+    "absolute_epsilon": 1e-9,
+    "relative_epsilon": 0,
+    "passed": false,
+    "operations": [
+      {
+        "id": "tetrahedron",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "reversed-tetrahedron",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "translated-tetrahedron",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "separate",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "group",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "partial-group",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "reverse-order",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "postselected",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "mixed-orientations",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "equal-opposite-volumes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "post-equal-opposite-volumes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "opposed-disjoint-shells",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "mixed-line",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "line-only",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "mixed-point",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "brep-paraboloid-capped-outward",
+        "passed": false,
+        "max_absolute_error": 4.5448100838285654e-9,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": [
+          "brep-paraboloid-capped-outward.value.volume: 0.64339817545518996 != 0.64339818000000004 (error 4.54e-09, limit 1e-09)"
+        ]
+      },
+      {
+        "id": "brep-paraboloid-capped-inward",
+        "passed": false,
+        "max_absolute_error": 1.28679635545519,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": [
+          "brep-paraboloid-capped-inward.value.volume: -0.64339817545518996 != 0.64339818000000004 (error 1.29, limit 1e-09)"
+        ]
+      },
+      {
+        "id": "brep-paraboloid-rotated-translated",
+        "passed": false,
+        "max_absolute_error": 1.575318958613181e-9,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": [
+          "brep-paraboloid-rotated-translated.value.volume: 0.098174770424681035 != 0.098174771999999993 (error 1.58e-09, limit 1e-09)"
+        ]
+      },
+      {
+        "id": "warped-box-0-0",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "warped-box-0-1",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "warped-box-0-2",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "warped-box-0-3",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "warped-box-1-0",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "warped-box-1-1",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "warped-box-1-2",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "warped-box-1-3",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-tetra-pre-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-tetra-pre-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-tetra-pre-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-tetra-post-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-tetra-post-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-tetra-post-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unoriented-tetra-pre-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unoriented-tetra-pre-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unoriented-tetra-pre-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unoriented-tetra-post-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unoriented-tetra-post-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unoriented-tetra-post-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "closed-tetra-pre-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "closed-tetra-pre-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "closed-tetra-pre-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "closed-tetra-post-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "closed-tetra-post-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "closed-tetra-post-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "translated-open-tetra-pre-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "translated-open-tetra-pre-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "translated-open-tetra-pre-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "translated-open-tetra-post-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "translated-open-tetra-post-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "translated-open-tetra-post-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-quad-pre-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-quad-pre-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-quad-pre-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-quad-post-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-quad-post-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-quad-post-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-surface-pre-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-surface-pre-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-surface-pre-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-surface-post-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-surface-post-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "open-surface-post-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unjoined-box-meshes-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unjoined-box-meshes-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unjoined-box-meshes-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unjoined-box-surfaces-yes",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unjoined-box-surfaces-no",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "unjoined-box-surfaces-escape",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "diagnostic-base-volume_command",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "diagnostic-base-volume_centroid_command",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "diagnostic-translated-volume_command",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "diagnostic-translated-volume_centroid_command",
+        "passed": true,
+        "max_absolute_error": 7.105427357601002e-15,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "diagnostic-cycle-axes-volume_command",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "diagnostic-cycle-axes-volume_centroid_command",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "diagnostic-swap-xy-volume_command",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "diagnostic-swap-xy-volume_centroid_command",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "diagnostic-scaled-volume_command",
+        "passed": true,
+        "max_absolute_error": 7.105427357601002e-15,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "diagnostic-scaled-volume_centroid_command",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "diagnostic-reversed-u-volume_command",
+        "passed": true,
+        "max_absolute_error": 0,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      {
+        "id": "diagnostic-reversed-u-volume_centroid_command",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "viboceros_ns_per_iteration": 0,
+        "rhino_ns_per_iteration": 0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      }
+    ],
+    "max_absolute_error": 1.28679635545519,
+    "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation.",
+    "scope": "actual command values/points, selection and warning; fixed 1e-9 absolute tolerance including printed-value residuals; API diagnostics not command targets"
+  }
+}

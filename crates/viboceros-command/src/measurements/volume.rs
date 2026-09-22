@@ -3,7 +3,7 @@ use super::*;
 use crate::{
     BooleanSelectionOption, ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSelectionWorkflow,
 };
-use viboceros_geometry::{VolumeBoundary, VolumeMassProperties};
+use viboceros_geometry::{SurfaceVolumeMoments, VolumeBoundary, VolumeMassProperties};
 
 #[cfg(test)]
 mod tests;
@@ -134,7 +134,15 @@ impl Command for VolumeCommand {
                 format_measurement(volume)
             ));
         }
-        let total = VolumeMassProperties::from_boundaries(&boundaries, document.tolerance())?;
+        // Rhino averages coordinate primitives for surfaces but tetrahedral
+        // cones for meshes. This differs from uniform physical cone moments
+        // on open pieces (and on mixed unjoined boundaries); keep the choice
+        // explicit here rather than redefining the kernel's default integral.
+        let total = VolumeMassProperties::from_boundaries_with_surface_moments(
+            &boundaries,
+            document.tolerance(),
+            SurfaceVolumeMoments::CoordinatePrimitives,
+        )?;
         // Rhino completes a signed zero-volume query without inventing a marker.
         if total.is_zero() {
             return Ok("Volume centroid is undefined: total signed volume is zero".into());

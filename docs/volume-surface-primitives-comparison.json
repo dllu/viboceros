@@ -1,0 +1,335 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 0.0,
+  "passed": true,
+  "operations": [
+    {
+      "id": "bilinear-original",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "bilinear-rotated",
+      "passed": true,
+      "max_absolute_error": 1.3322676295501878e-15,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "bilinear-sheared",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "bilinear-translated",
+      "passed": true,
+      "max_absolute_error": 7.105427357601002e-15,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "bilinear-reference--10",
+      "passed": true,
+      "max_absolute_error": 4.884981308350689e-15,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "bilinear-reference-10",
+      "passed": true,
+      "max_absolute_error": 5.329070518200751e-15,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "bilinear-reference-30",
+      "passed": true,
+      "max_absolute_error": 6.217248937900877e-15,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "spatial-original",
+      "passed": true,
+      "max_absolute_error": 1.0658141036401503e-14,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "spatial-rotated",
+      "passed": true,
+      "max_absolute_error": 1.0658141036401503e-14,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "spatial-sheared",
+      "passed": true,
+      "max_absolute_error": 9.769962616701378e-15,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "spatial-translated",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-14,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "spatial-reference--10",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "spatial-reference-10",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "spatial-reference-30",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "two-surfaces",
+      "passed": true,
+      "max_absolute_error": 6.217248937900877e-15,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "two-surfaces-reverse-order",
+      "passed": true,
+      "max_absolute_error": 6.217248937900877e-15,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "box-all-surfaces",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "rotated-box-all-surfaces",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "box-all-meshes",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "rotated-box-all-meshes",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "box-mesh-face-0",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "rotated-box-mesh-face-0",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "box-mesh-face-1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "rotated-box-mesh-face-1",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "box-mesh-face-2",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "rotated-box-mesh-face-2",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "box-mesh-face-3",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "rotated-box-mesh-face-3",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "box-mesh-face-4",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "rotated-box-mesh-face-4",
+      "passed": true,
+      "max_absolute_error": 2.5673907444456745e-16,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "box-mesh-face-5",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "rotated-box-mesh-face-5",
+      "passed": true,
+      "max_absolute_error": 2.0426368929626904e-16,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "box-opposed-meshes",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "rotated-box-opposed-meshes",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "box-alternating-meshes",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "rotated-box-alternating-meshes",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    }
+  ],
+  "max_absolute_error": 3.552713678800501e-14,
+  "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation.",
+  "scope": "actual command marker/selection/attributes and conditional warning when captured; API diagnostics retained separately"
+}

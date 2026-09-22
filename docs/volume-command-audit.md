@@ -2,6 +2,11 @@
 
 [Volume](commands/volume.md) · [Open-centroid audit](volume-centroid-open.md)
 
+This page retains the initial scalar audit and its comparison snapshot.
+The later [surface-primitive investigation](volume-surface-primitives.md) resolves
+its six centroid controls with an independently derived density. The original
+observations, scalar discrepancies and comparison report remain unchanged.
+
 The [source-only generator](../tools/rhino_oracle/references/volume_command.py)
 constructs 80 cases: 74 actual `Volume` commands and six paired
 `VolumeCentroid` controls. The [request](../tools/rhino_oracle/fixtures/volume_command.json)

@@ -302,11 +302,15 @@ class OracleClient:
             owned_window: str | None = None
             fallback_ready_at: float | None = None
             fallback_sent = False
+            worker_exited = False
             try:
                 while not response_path.is_file() and time.monotonic() < deadline:
                     owned_pids.update(
                         _rhino_process_ids(windows_worker) - existing_pids
                     )
+                    if _owned_worker_exited(owned_pids, job_path / "worker-progress.log"):
+                        worker_exited = True
+                        break
                     if not fallback_sent and _ui_fallback_enabled():
                         candidate = _rhino_window_for_pids(owned_pids)
                         if candidate is not None and owned_window != candidate:
@@ -337,8 +341,13 @@ class OracleClient:
                     suffix = (
                         "\n" + "\n".join(diagnostics) if diagnostics else ""
                     )
+                    failure = (
+                        "Rhino worker exited without publishing a response"
+                        if worker_exited
+                        else f"Rhino probe did not respond within {timeout:g} seconds"
+                    )
                     raise OracleError(
-                        f"Rhino probe did not respond within {timeout:g} seconds "
+                        f"{failure} "
                         f"(owned_pids={sorted(owned_pids)}, "
                         f"owned_window={owned_window!r}, "
                         f"ui_fallback_sent={fallback_sent}){suffix}"
@@ -620,6 +629,15 @@ def _wait_for_process_exit(pids: set[int], timeout: float) -> bool:
             return True
         time.sleep(0.05)
     return not any((Path("/proc") / str(pid)).exists() for pid in pids)
+
+
+def _owned_worker_exited(pids: set[int], progress_path: Path) -> bool:
+    """A started worker whose observed processes are all gone is terminal.
+
+    No PID seen yet, missing procfs, or merely a quiet progress log is not proof
+    of exit. The caller rechecks the atomic response after leaving its loop.
+    """
+    return bool(pids) and progress_path.is_file() and _wait_for_process_exit(pids, 0.0)
 
 
 def _terminate_owned_rhino_processes(

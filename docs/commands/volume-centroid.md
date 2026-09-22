@@ -22,10 +22,18 @@ is required for an actual enclosed volume, but the command's warning follows
 topological mesh closure rather than certifying its winding, as Rhino does.
 Inconsistent winding and isolated open pieces produce signed reference-dependent
 flux, not a validated solid. The [42-case confirmation audit](../volume-centroid-open.md)
-retains the original timeout, actual warning behavior, and the isolated bilinear
-surface counterexample. General open-surface compatibility is not claimed.
-Native warning/command replay matches 38/42 cases at `1e-9`; the four retained
-failures are the isolated bilinear surface's marker coordinates.
+retains the original timeout, actual warning behavior, and the former bilinear
+surface counterexample. The [surface-primitive investigation](../volume-surface-primitives.md)
+derives and tests the missing first-moment convention without changing those
+captures or the `1e-9` threshold. General open-surface compatibility is not claimed.
+Current replay matches all 42 original warning cases and all 36 new
+surface-convention controls; the older 38/42 report is retained as history.
+
+Rhino combines coordinate-direction surface primitives with tetrahedral mesh
+cones. `VolumeCentroid` explicitly uses that convention. For mixed unjoined
+mesh/surface boundaries it can differ from the physical centroid even when they
+enclose a solid; see the retained box counterexamples. The geometry kernel's
+default uniform-cone API remains physically consistent across geometry types.
 
 Reversing a complete shell changes its signed volume and first moments, but not
 its individual centroid. Oppositely wound objects subtract when combined, so the
@@ -57,6 +65,9 @@ still require oriented solids. Reference-dependent cone determinants are expande
 algebraically into exact cubic/quartic monomials, never computed by rounded
 vertex-minus-base subtraction. This also handles differences outside binary64
 range. Closed oriented objects retain their reference-independent fast paths.
+The command selects `from_boundaries_with_surface_moments` with
+`SurfaceVolumeMoments::CoordinatePrimitives`; the default cone kernel and explicit
+alternative convention have separate exact polynomial witnesses.
 
 B-reps integrate divergence-theorem densities on exact rational surfaces and UV
 trims. All faces share one centered/scaled spatial frame, including cavity shells;

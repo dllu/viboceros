@@ -1,0 +1,7492 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "volume_centroid_command",
+      "id": "bilinear-original",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "bilinear-rotated",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "bilinear-sheared",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3,
+                3,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7,
+                5,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "bilinear-translated",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                10,
+                -20,
+                30
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                14,
+                -20,
+                30
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10,
+                -17,
+                30
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                14,
+                -17,
+                32
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "bilinear-reference--10",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              -10.0,
+              -5.0,
+              7.0
+            ],
+            [
+              -4.0,
+              -5.0,
+              7.0
+            ],
+            [
+              -10.0,
+              3.0,
+              7.0
+            ],
+            [
+              -10.0,
+              -5.0,
+              17.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              -10.0,
+              -5.0,
+              7.0
+            ],
+            [
+              -4.0,
+              -5.0,
+              7.0
+            ],
+            [
+              -10.0,
+              3.0,
+              7.0
+            ],
+            [
+              -10.0,
+              -5.0,
+              17.0
+            ]
+          ],
+          "faces": [
+            [
+              1,
+              2,
+              0
+            ],
+            [
+              3,
+              1,
+              0
+            ],
+            [
+              2,
+              3,
+              0
+            ],
+            [
+              3,
+              2,
+              1
+            ]
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "bilinear-reference-10",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              10.0,
+              -5.0,
+              7.0
+            ],
+            [
+              16.0,
+              -5.0,
+              7.0
+            ],
+            [
+              10.0,
+              3.0,
+              7.0
+            ],
+            [
+              10.0,
+              -5.0,
+              17.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              10.0,
+              -5.0,
+              7.0
+            ],
+            [
+              16.0,
+              -5.0,
+              7.0
+            ],
+            [
+              10.0,
+              3.0,
+              7.0
+            ],
+            [
+              10.0,
+              -5.0,
+              17.0
+            ]
+          ],
+          "faces": [
+            [
+              1,
+              2,
+              0
+            ],
+            [
+              3,
+              1,
+              0
+            ],
+            [
+              2,
+              3,
+              0
+            ],
+            [
+              3,
+              2,
+              1
+            ]
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "bilinear-reference-30",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              30.0,
+              -5.0,
+              7.0
+            ],
+            [
+              36.0,
+              -5.0,
+              7.0
+            ],
+            [
+              30.0,
+              3.0,
+              7.0
+            ],
+            [
+              30.0,
+              -5.0,
+              17.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              30.0,
+              -5.0,
+              7.0
+            ],
+            [
+              36.0,
+              -5.0,
+              7.0
+            ],
+            [
+              30.0,
+              3.0,
+              7.0
+            ],
+            [
+              30.0,
+              -5.0,
+              17.0
+            ]
+          ],
+          "faces": [
+            [
+              1,
+              2,
+              0
+            ],
+            [
+              3,
+              1,
+              0
+            ],
+            [
+              2,
+              3,
+              0
+            ],
+            [
+              3,
+              2,
+              1
+            ]
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "spatial-original",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                -2,
+                3
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5,
+                1,
+                -1
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -3,
+                4,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7,
+                6,
+                8
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "spatial-rotated",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                2.2,
+                -2.6399999999999997,
+                1.48
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.2,
+                3.5599999999999996,
+                3.0799999999999996
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -5.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.6,
+                -0.8800000000000004,
+                12.16
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "spatial-sheared",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -1,
+                1,
+                3.5
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                6,
+                0,
+                1.5
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1,
+                6,
+                0.5
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                13,
+                14,
+                11.5
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "spatial-translated",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                11,
+                -22,
+                33
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                15,
+                -19,
+                29
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7,
+                -16,
+                32
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                17,
+                -14,
+                38
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "spatial-reference--10",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                -2,
+                3
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5,
+                1,
+                -1
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -3,
+                4,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7,
+                6,
+                8
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              -10.0,
+              -5.0,
+              7.0
+            ],
+            [
+              -4.0,
+              -5.0,
+              7.0
+            ],
+            [
+              -10.0,
+              3.0,
+              7.0
+            ],
+            [
+              -10.0,
+              -5.0,
+              17.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              -10.0,
+              -5.0,
+              7.0
+            ],
+            [
+              -4.0,
+              -5.0,
+              7.0
+            ],
+            [
+              -10.0,
+              3.0,
+              7.0
+            ],
+            [
+              -10.0,
+              -5.0,
+              17.0
+            ]
+          ],
+          "faces": [
+            [
+              1,
+              2,
+              0
+            ],
+            [
+              3,
+              1,
+              0
+            ],
+            [
+              2,
+              3,
+              0
+            ],
+            [
+              3,
+              2,
+              1
+            ]
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "spatial-reference-10",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                -2,
+                3
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5,
+                1,
+                -1
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -3,
+                4,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7,
+                6,
+                8
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              10.0,
+              -5.0,
+              7.0
+            ],
+            [
+              16.0,
+              -5.0,
+              7.0
+            ],
+            [
+              10.0,
+              3.0,
+              7.0
+            ],
+            [
+              10.0,
+              -5.0,
+              17.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              10.0,
+              -5.0,
+              7.0
+            ],
+            [
+              16.0,
+              -5.0,
+              7.0
+            ],
+            [
+              10.0,
+              3.0,
+              7.0
+            ],
+            [
+              10.0,
+              -5.0,
+              17.0
+            ]
+          ],
+          "faces": [
+            [
+              1,
+              2,
+              0
+            ],
+            [
+              3,
+              1,
+              0
+            ],
+            [
+              2,
+              3,
+              0
+            ],
+            [
+              3,
+              2,
+              1
+            ]
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "spatial-reference-30",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                -2,
+                3
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5,
+                1,
+                -1
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -3,
+                4,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7,
+                6,
+                8
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              30.0,
+              -5.0,
+              7.0
+            ],
+            [
+              36.0,
+              -5.0,
+              7.0
+            ],
+            [
+              30.0,
+              3.0,
+              7.0
+            ],
+            [
+              30.0,
+              -5.0,
+              17.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              30.0,
+              -5.0,
+              7.0
+            ],
+            [
+              36.0,
+              -5.0,
+              7.0
+            ],
+            [
+              30.0,
+              3.0,
+              7.0
+            ],
+            [
+              30.0,
+              -5.0,
+              17.0
+            ]
+          ],
+          "faces": [
+            [
+              1,
+              2,
+              0
+            ],
+            [
+              3,
+              1,
+              0
+            ],
+            [
+              2,
+              3,
+              0
+            ],
+            [
+              3,
+              2,
+              1
+            ]
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "two-surfaces",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                6,
+                2,
+                5
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10,
+                5,
+                1
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                8,
+                4
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                12,
+                10,
+                10
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "two-surfaces-reverse-order",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                6,
+                2,
+                5
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10,
+                5,
+                1
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                8,
+                4
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                12,
+                10,
+                10
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "box-all-surfaces",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "rotated-box-all-surfaces",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "box-all-meshes",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              2
+            ],
+            [
+              4,
+              0,
+              2
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              2
+            ],
+            [
+              0,
+              0,
+              2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              4,
+              0,
+              2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              4,
+              3,
+              2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              2
+            ],
+            [
+              0,
+              3,
+              2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "rotated-box-all-meshes",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              -2.4,
+              1.08,
+              1.44
+            ],
+            [
+              0.0,
+              3.0,
+              4.0
+            ],
+            [
+              2.4,
+              1.9200000000000004,
+              2.56
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0.0,
+              -1.6,
+              1.2
+            ],
+            [
+              2.4,
+              0.3200000000000003,
+              3.7600000000000002
+            ],
+            [
+              0.0,
+              1.4,
+              5.2
+            ],
+            [
+              -2.4,
+              -0.5199999999999999,
+              2.6399999999999997
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.4,
+              1.9200000000000004,
+              2.56
+            ],
+            [
+              2.4,
+              0.3200000000000003,
+              3.7600000000000002
+            ],
+            [
+              0.0,
+              -1.6,
+              1.2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.4,
+              1.9200000000000004,
+              2.56
+            ],
+            [
+              0.0,
+              3.0,
+              4.0
+            ],
+            [
+              0.0,
+              1.4,
+              5.2
+            ],
+            [
+              2.4,
+              0.3200000000000003,
+              3.7600000000000002
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0.0,
+              3.0,
+              4.0
+            ],
+            [
+              -2.4,
+              1.08,
+              1.44
+            ],
+            [
+              -2.4,
+              -0.5199999999999999,
+              2.6399999999999997
+            ],
+            [
+              0.0,
+              1.4,
+              5.2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              -2.4,
+              1.08,
+              1.44
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -1.6,
+              1.2
+            ],
+            [
+              -2.4,
+              -0.5199999999999999,
+              2.6399999999999997
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "box-mesh-face-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "rotated-box-mesh-face-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              -2.4,
+              1.08,
+              1.44
+            ],
+            [
+              0.0,
+              3.0,
+              4.0
+            ],
+            [
+              2.4,
+              1.9200000000000004,
+              2.56
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "box-mesh-face-1",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              2
+            ],
+            [
+              4,
+              0,
+              2
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "rotated-box-mesh-face-1",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0.0,
+              -1.6,
+              1.2
+            ],
+            [
+              2.4,
+              0.3200000000000003,
+              3.7600000000000002
+            ],
+            [
+              0.0,
+              1.4,
+              5.2
+            ],
+            [
+              -2.4,
+              -0.5199999999999999,
+              2.6399999999999997
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "box-mesh-face-2",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              2
+            ],
+            [
+              0,
+              0,
+              2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "rotated-box-mesh-face-2",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.4,
+              1.9200000000000004,
+              2.56
+            ],
+            [
+              2.4,
+              0.3200000000000003,
+              3.7600000000000002
+            ],
+            [
+              0.0,
+              -1.6,
+              1.2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "box-mesh-face-3",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              4,
+              0,
+              2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "rotated-box-mesh-face-3",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2.4,
+              1.9200000000000004,
+              2.56
+            ],
+            [
+              0.0,
+              3.0,
+              4.0
+            ],
+            [
+              0.0,
+              1.4,
+              5.2
+            ],
+            [
+              2.4,
+              0.3200000000000003,
+              3.7600000000000002
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "box-mesh-face-4",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              4,
+              3,
+              2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "rotated-box-mesh-face-4",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0.0,
+              3.0,
+              4.0
+            ],
+            [
+              -2.4,
+              1.08,
+              1.44
+            ],
+            [
+              -2.4,
+              -0.5199999999999999,
+              2.6399999999999997
+            ],
+            [
+              0.0,
+              1.4,
+              5.2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "box-mesh-face-5",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              2
+            ],
+            [
+              0,
+              3,
+              2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "rotated-box-mesh-face-5",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              -2.4,
+              1.08,
+              1.44
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -1.6,
+              1.2
+            ],
+            [
+              -2.4,
+              -0.5199999999999999,
+              2.6399999999999997
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "box-opposed-meshes",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              2
+            ],
+            [
+              4,
+              0,
+              2
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "rotated-box-opposed-meshes",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              -2.4,
+              1.08,
+              1.44
+            ],
+            [
+              0.0,
+              3.0,
+              4.0
+            ],
+            [
+              2.4,
+              1.9200000000000004,
+              2.56
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0.0,
+              -1.6,
+              1.2
+            ],
+            [
+              2.4,
+              0.3200000000000003,
+              3.7600000000000002
+            ],
+            [
+              0.0,
+              1.4,
+              5.2
+            ],
+            [
+              -2.4,
+              -0.5199999999999999,
+              2.6399999999999997
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "box-alternating-meshes",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              2
+            ],
+            [
+              0,
+              0,
+              2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                0,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4,
+                3,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              4,
+              3,
+              2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                3,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                3,
+                2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "volume_centroid_command",
+      "id": "rotated-box-alternating-meshes",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              -2.4,
+              1.08,
+              1.44
+            ],
+            [
+              0.0,
+              3.0,
+              4.0
+            ],
+            [
+              2.4,
+              1.9200000000000004,
+              2.56
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.4,
+              1.9200000000000004,
+              2.56
+            ],
+            [
+              2.4,
+              0.3200000000000003,
+              3.7600000000000002
+            ],
+            [
+              0.0,
+              -1.6,
+              1.2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                2.4,
+                1.9200000000000004,
+                2.56
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.4,
+                0.3200000000000003,
+                3.7600000000000002
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.4,
+                5.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0.0,
+              3.0,
+              4.0
+            ],
+            [
+              -2.4,
+              1.08,
+              1.44
+            ],
+            [
+              -2.4,
+              -0.5199999999999999,
+              2.6399999999999997
+            ],
+            [
+              0.0,
+              1.4,
+              5.2
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2.4,
+                1.08,
+                1.44
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.4,
+                -0.5199999999999999,
+                2.6399999999999997
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.6,
+                1.2
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "collection_api": true,
+      "open_confirmation": "yes"
+    }
+  ]
+}

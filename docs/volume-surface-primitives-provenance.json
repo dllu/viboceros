@@ -1,0 +1,38 @@
+{
+  "capture_date_utc": "2026-09-22",
+  "engine_version": "8.32.26160.13001",
+  "completed_cases": 36,
+  "completed_batch_sizes": [8, 8, 8, 8, 4],
+  "native_command_matches": 36,
+  "independent_coordinate_reference_matches": 36,
+  "independent_uniform_cone_matches": 6,
+  "native_maximum_absolute_difference": 3.552713678800501e-14,
+  "absolute_epsilon": 1e-9,
+  "relative_epsilon": 0,
+  "regression_matches": {"closed_centroids": [26, 26], "open_centroids": [42, 42], "volume_commands": [77, 80]},
+  "raw_batch_response_sha256": [
+    "b79e41606de665377159dd004ef78108dac0c6b79c05ba8e06435cbb9a544403",
+    "2f3a307c1c52d1e060e5290967602756a0396a6aab533bd56a5f2cafaf86bfa9",
+    "e6f9ff782c8a2fa4e8ef5731162342f7318c039cfeac8d2ba92a638c15b0c260",
+    "f9ee69c2bc4c295c17fb18968b6ad0f55b15355110abcbc7deb482390a9964eb",
+    "b91d229b993d40846f0a792e7105427d2ec5fd66c8b23917da79c533dcea5fd7"
+  ],
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/volume_surface_primitives.json": "db28323374258cf94fd06d99e3e3c5aefedb0dacff84dbd11d1337c0dbb1a47e",
+    "tools/rhino_oracle/fixtures/volume_surface_primitives_reference.json": "ddd14a556f0f48c3e77b8d3b4fc54bf6a3df8fb2182319f4631dae3b632f3da3",
+    "tools/rhino_oracle/observations/volume_surface_primitives.json": "7355e7393f387427f263aa20075c593721566ed2a93ee2a9e8e53a6a35111231",
+    "tools/rhino_oracle/observations/volume_surface_primitives_attempt.txt": "f26bd58f6d05648dc78bd2e87de27c9d47cebec3a5a7f8228e1a8965ffbf7deb",
+    "docs/volume-surface-primitives-comparison.json": "d9d9ff483f7da343670ddbf793e0142d3390d9afd08a03309a3a8e48c1e6247a",
+    "docs/volume-surface-primitives-regression.json": "fb51fbf700a6749461b6442f7d89e617c9f84336725c53e676975f55af88442f"
+  },
+  "notes": [
+    "Actual commands and public APIs only, in fresh owned private-Xvfb sessions. Existing user Rhino sessions were untouched.",
+    "The initial worker suffered a runtime access violation and published no response. Its process was confirmed absent before the host was interrupted; no result is claimed for that failed attempt.",
+    "The combined retained observation concatenates all five completed responses in original request order, after verifying identical headers and every numeric value bit-for-bit.",
+    "The exact polynomial witnesses read only generated source geometry. No observed target is passed to the native runner.",
+    "VolumeCentroid explicitly selects coordinate surface primitives and tetrahedral mesh cones for observed command parity; the geometry kernel default remains uniform physical cone integration.",
+    "Mixed open mesh/surface boundaries can enclose a box but produce a nonphysical Rhino command centroid. Both the real command and the independent uniform-cone result are retained, not conflated.",
+    "Older captures and comparison snapshots remain unchanged. The three remaining scalar Volume mismatches are printed curved-volume residuals and inward B-rep insertion reversal.",
+    "This is not a proof of all rational/trimmed open-surface parity, an explanation of the runtime access violation, or a Rhino performance comparison."
+  ]
+}

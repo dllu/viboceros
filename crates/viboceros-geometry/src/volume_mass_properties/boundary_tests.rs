@@ -193,12 +193,103 @@ fn unjoined_planar_surface_faces_share_a_reference_and_enclose_the_box() {
             .unwrap()
             < 1e-10
     );
+    // Mixing gauges is a well-defined flux convention, but NOT the physical
+    // box centroid. Keep the default uniform cone API mathematically sound.
+    let hybrid = VolumeMassProperties::from_boundaries_with_surface_moments(
+        &mixed,
+        Tolerance::DEFAULT,
+        SurfaceVolumeMoments::CoordinatePrimitives,
+    )
+    .unwrap();
+    assert!((hybrid.signed_volume().unwrap() - 24.).abs() < 1e-10);
+    assert!(
+        hybrid
+            .centroid()
+            .unwrap()
+            .distance_to(p([2., 1.5, 23. / 24.]))
+            .unwrap()
+            < 1e-10
+    );
+    for base in [[2., 1.5, 1.], [-1., -2., -3.], [10., 11., 12.]] {
+        let mut mass = VolumeMassProperties::default();
+        for s in &surfaces {
+            mass.add(
+                &s.volume_flux_with_moments(
+                    p(base),
+                    Tolerance::DEFAULT,
+                    SurfaceVolumeMoments::CoordinatePrimitives,
+                )
+                .unwrap(),
+            );
+        }
+        assert!((mass.signed_volume().unwrap() - 24.).abs() < 1e-10);
+        assert!(
+            mass.centroid()
+                .unwrap()
+                .distance_to(p([2., 1.5, 1.]))
+                .unwrap()
+                < 1e-10
+        );
+    }
     let solid = Brep::try_box(frame(), [[0., 4.], [0., 3.], [0., 2.]], Tolerance::DEFAULT).unwrap();
     assert!(
         VolumeBoundary::Brep(&solid)
             .is_closed(Tolerance::DEFAULT)
             .unwrap()
     );
+}
+
+#[test]
+fn coordinate_primitives_have_independent_polynomial_moments_and_preserve_reversal() {
+    let surface = NurbsSurface::try_new(
+        1,
+        1,
+        2,
+        2,
+        [[0., 0., 0.], [4., 0., 0.], [0., 3., 0.], [4., 3., 2.]]
+            .map(p)
+            .to_vec(),
+        vec![0., 0., 1., 1.],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap();
+    for (base, volume, first) in [
+        ([2., 1.5, 1.], -2., [-10. / 3., -2.5, -2.]),
+        ([2., 1.5, 0.5], 0., [2. / 3., 0.5, -0.5]),
+    ] {
+        for (s, sign) in [(&surface, 1.), (&surface.try_reversed_u().unwrap(), -1.)] {
+            let m = s
+                .volume_flux_with_moments(
+                    p(base),
+                    Tolerance::DEFAULT,
+                    SurfaceVolumeMoments::CoordinatePrimitives,
+                )
+                .unwrap();
+            assert!((m.signed_volume().unwrap() - sign * volume).abs() < 1e-12);
+            for (value, expected) in m.first.iter().zip(first) {
+                assert!((scalar(value).unwrap() - sign * expected).abs() < 1e-12);
+            }
+        }
+    }
+    let solid = Brep::try_box(frame(), [[0., 4.], [0., 3.], [0., 2.]], Tolerance::DEFAULT).unwrap();
+    for b in [&solid, &solid.reversed()] {
+        let cone = b.volume_mass_properties(Tolerance::DEFAULT).unwrap();
+        let axis = b
+            .volume_flux_with_moments(
+                p([2., 1.5, 1.]),
+                Tolerance::DEFAULT,
+                SurfaceVolumeMoments::CoordinatePrimitives,
+            )
+            .unwrap();
+        assert!((cone.signed_volume().unwrap() - axis.signed_volume().unwrap()).abs() < 1e-12);
+        assert!(
+            cone.centroid()
+                .unwrap()
+                .distance_to(axis.centroid().unwrap())
+                .unwrap()
+                < 1e-12
+        );
+    }
 }
 
 #[test]

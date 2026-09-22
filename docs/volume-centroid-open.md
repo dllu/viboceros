@@ -10,7 +10,10 @@ they jointly enclose a consistently oriented region. No performance parity is cl
 The later [scalar/collection audit](volume-command-audit.md) also implements this
 workflow for `Volume`. It establishes that Rhino's public collection API matches
 the isolated-surface centroid command while the single-object API does not;
-the native cone first-moment discrepancy remains unresolved.
+the cone first-moment discrepancy was unresolved at that stage. The later
+[surface-primitive investigation](volume-surface-primitives.md) derives the
+alternative density and adds 36 independent controls, without replacing this
+historical capture or its original 38/42 comparison report.
 
 ## Dialog and owned input
 
@@ -74,7 +77,7 @@ See [capture provenance](volume-centroid-open-provenance.json). The original
 capture-only commit rejected native confirmation replay; the kernel and command
 now implement that workflow, without changing the retained observations.
 
-The [full native replay](volume-centroid-open-comparison.json) matches **38/42**
+The [historical cone-only replay](volume-centroid-open-comparison.json) matched **38/42**
 cases at absolute `1e-9`, relative zero. All 42 warning-presence, completion,
 selection and marker-attribute checks agree; four isolated-surface marker
 coordinates differ. The maximum coordinate error among matching cases is

@@ -6,6 +6,19 @@ use num_traits::Zero;
 mod boundary;
 mod mesh;
 pub use boundary::VolumeBoundary;
+
+/// Surface first-moment flux choice. Both vector fields have divergence equal
+/// to the coordinate being integrated and agree on a closed oriented boundary.
+/// They differ on open pieces; meshes continue to use exact tetrahedral cones.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum SurfaceVolumeMoments {
+    /// Radial cone density `q_j * (q dot n) / 4`.
+    #[default]
+    Cone,
+    /// Average of three coordinate-direction antiderivatives:
+    /// `(q_j * (q dot n) - q_j^2 * n_j / 2) / 3`.
+    CoordinatePrimitives,
+}
 #[cfg(test)]
 mod boundary_tests;
 #[cfg(test)]

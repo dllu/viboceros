@@ -22,7 +22,11 @@ Rhino numerical differences and independent high-precision reference checks.
 `Volume` and `VolumeCentroid` ask before accepting open collections; their strict per-solid
 kernel APIs are unchanged. See the [open-boundary audit](volume-centroid-open.md)
 for the exact mesh reference expansion, curved flux densities, confirmation
-semantics, and retained isolated-surface centroid mismatch. Scalar collection
+semantics, and the historical isolated-surface centroid mismatch. The
+[surface-primitive investigation](volume-surface-primitives.md) separates the
+command's observed surface density from the kernel's default uniform cones,
+including mixed-boundary cases where only the latter is a physical centroid.
+Scalar collection
 volume skips first moments and uses exact cubic mesh accumulation, including
 cancellation between individually unrepresentable volumes.
 

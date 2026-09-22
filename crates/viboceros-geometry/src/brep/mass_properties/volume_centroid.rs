@@ -1,6 +1,6 @@
 use super::*;
 use crate::{
-    FiniteSum, Point3, VolumeMassProperties,
+    FiniteSum, Point3, SurfaceVolumeMoments, VolumeMassProperties,
     mass_integration::{SpatialFrame, rectangle_density},
 };
 #[cfg(test)]
@@ -29,13 +29,26 @@ impl Brep {
         base: Point3,
         tolerance: Tolerance,
     ) -> Result<VolumeMassProperties, GeometryError> {
-        self.volume_integrals::<true>(base, tolerance)
+        self.volume_flux_with_moments(base, tolerance, SurfaceVolumeMoments::Cone)
+    }
+
+    /// Volume flux with an explicit surface first-moment convention. Different
+    /// conventions must not be mixed when interpreting unjoined boundary
+    /// pieces as one physical distribution. Closed-surface results agree.
+    pub fn volume_flux_with_moments(
+        &self,
+        base: Point3,
+        tolerance: Tolerance,
+        moments: SurfaceVolumeMoments,
+    ) -> Result<VolumeMassProperties, GeometryError> {
+        self.volume_integrals::<true>(base, tolerance, moments)
     }
 
     pub(crate) fn volume_integrals<const FIRST: bool>(
         &self,
         base: Point3,
         tolerance: Tolerance,
+        moments: SurfaceVolumeMoments,
     ) -> Result<VolumeMassProperties, GeometryError> {
         let spatial = SpatialFrame::with_origin(self.bounds(), base)?;
         let absolute =
@@ -52,14 +65,24 @@ impl Brep {
                 rectangular = true;
             }
             let density = |point: Point3, normal: Vector3, component: usize| {
-                let flux = Vector3::try_from(point.to_array())?.dot(normal)?
-                    * if face.reversed { -1. } else { 1. };
+                let orientation = if face.reversed { -1. } else { 1. };
+                let flux = Vector3::try_from(point.to_array())?.dot(normal)? * orientation;
                 // div(p)=3; div(p_j*p)=4*p_j. Normal contains 1/4
                 // of the span-scaled Jacobian, including UV boundary sign.
                 Ok(if component == 0 {
                     flux * (4. / 3.)
                 } else {
-                    flux * point.to_array()[component - 1]
+                    let axis = component - 1;
+                    let q = point.to_array()[axis];
+                    match moments {
+                        SurfaceVolumeMoments::Cone => flux * q,
+                        // Three separate coordinate primitives each have
+                        // divergence q_j. Their average has diagonal term
+                        // q_j^2*n_j/6 and off-diagonal terms q_j*q_i*n_i/3.
+                        SurfaceVolumeMoments::CoordinatePrimitives => {
+                            q * (flux - 0.5 * q * normal.to_array()[axis] * orientation) * (4. / 3.)
+                        }
+                    }
                 })
             };
             let values = if rectangular {
@@ -106,6 +129,17 @@ impl Brep {
 }
 
 impl NurbsSurface {
+    /// Surface flux using the explicitly selected first-moment convention.
+    pub fn volume_flux_with_moments(
+        &self,
+        base: Point3,
+        tolerance: Tolerance,
+        moments: SurfaceVolumeMoments,
+    ) -> Result<VolumeMassProperties, GeometryError> {
+        Brep::try_surface_face(self.clone(), tolerance)?
+            .volume_flux_with_moments(base, tolerance, moments)
+    }
+
     /// Signed cone flux of an open or closed natural surface boundary.
     pub fn volume_flux(
         &self,

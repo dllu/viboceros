@@ -1,0 +1,50 @@
+Failed 36-case volume-surface primitive capture, 2026-09-22 UTC.
+No response JSON was published. The owned Rhino.exe worker process disappeared;
+the runtime launcher log reports an access violation. The still-waiting host
+was explicitly interrupted only after the worker's absence was verified.
+Completed progress markers are NOT retained command observations or results.
+A fresh smaller batch is a retry of a terminal worker failure, not of a live timeout.
+
+Worker progress tail:
+centroid spatial-reference-30: command _VolumeCentroid _Enter
+VOLUME_CONFIRM spatial-reference-30 yes
+VOLUME_CONFIRM_DONE spatial-reference-30
+centroid spatial-reference-30: command complete
+operation two-surfaces: start
+centroid two-surfaces: construct source
+centroid two-surfaces: construct source
+centroid two-surfaces: source APIs complete
+centroid two-surfaces: command _VolumeCentroid _Enter
+VOLUME_CONFIRM two-surfaces yes
+VOLUME_CONFIRM_DONE two-surfaces
+centroid two-surfaces: command complete
+operation two-surfaces-reverse-order: start
+centroid two-surfaces-reverse-order: construct source
+centroid two-surfaces-reverse-order: construct source
+centroid two-surfaces-reverse-order: source APIs complete
+centroid two-surfaces-reverse-order: command _VolumeCentroid _Enter
+VOLUME_CONFIRM two-surfaces-reverse-order yes
+VOLUME_CONFIRM_DONE two-surfaces-reverse-order
+centroid two-surfaces-reverse-order: command complete
+operation box-all-surfaces: start
+centroid box-all-surfaces: construct source
+centroid box-all-surfaces: construct source
+centroid box-all-surfaces: construct source
+centroid box-all-surfaces: construct source
+centroid box-all-surfaces: construct source
+centroid box-all-surfaces: construct source
+centroid box-all-surfaces: source APIs complete
+centroid box-all-surfaces: command _VolumeCentroid _Enter
+VOLUME_CONFIRM box-all-surfaces yes
+VOLUME_CONFIRM_DONE box-all-surfaces
+centroid box-all-surfaces: command complete
+operation rotated-box-all-surfaces: start
+centroid rotated-box-all-surfaces: construct source
+centroid rotated-box-all-surfaces: construct source
+centroid rotated-box-all-surfaces: construct source
+
+Owned launch runtime diagnostic:
+Fatal error. System.AccessViolationException: Attempted to read or write protected memory. This is often an indication that other memory is corrupt.
+   at Microsoft.Scripting.Interpreter.Interpreter.Run(Microsoft.Scripting.Interpreter.InterpretedFrame)
+   at Microsoft.Scripting.Interpreter.Interpreter.HandleException(Microsoft.Scripting.Interpreter.InterpretedFrame, System.Exception)
+   at DynamicClass.CallSite.Target(System.Runtime.CompilerServices.Closure, System.Runtime.CompilerServices.CallSite, IronPython.Runtime.CodeContext, System.Object)
