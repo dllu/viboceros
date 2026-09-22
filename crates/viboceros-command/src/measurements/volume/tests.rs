@@ -4,7 +4,7 @@ use crate::{CommandContext, CommandRegistry};
 use viboceros_document::{ObjectAttributes, SelectionMode};
 use viboceros_geometry::{Point3, TriangleMesh};
 
-fn mesh(x: Real, scale: Real, reversed: bool) -> Geometry {
+pub(super) fn mesh(x: Real, scale: Real, reversed: bool) -> Geometry {
     let p = |x, y, z| Point3::try_new(x, y, z).unwrap();
     let m = TriangleMesh::try_new(
         vec![

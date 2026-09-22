@@ -92,6 +92,22 @@ impl VolumeMassProperties {
             .signed_volume()
     }
 
+    /// Converts the accumulated signed scalar before its first binary64
+    /// projection. Exact nominal unit ratios are cubed without overflow or
+    /// underflow; no source coordinate, tolerance or first moment is changed.
+    /// Unitless conversion follows `LengthUnitSystem::scale_to` (factor one).
+    pub fn signed_volume_from_boundaries_in_units(
+        boundaries: &[VolumeBoundary<'_>],
+        tolerance: Tolerance,
+        source: &crate::LengthUnitSystem,
+        target: &crate::LengthUnitSystem,
+    ) -> Result<Real, GeometryError> {
+        let scale = source.exact_scale_to(target)?;
+        let total =
+            Self::boundary_integrals::<false>(boundaries, tolerance, SurfaceVolumeMoments::Cone)?;
+        scalar(&(total.volume * &scale * &scale * &scale))
+    }
+
     fn boundary_integrals<const FIRST: bool>(
         boundaries: &[VolumeBoundary<'_>],
         tolerance: Tolerance,

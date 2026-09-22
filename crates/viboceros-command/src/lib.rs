@@ -223,6 +223,11 @@ pub trait Command: Send + Sync {
         Ok(false)
     }
 
+    /// Enter without an eligible pick ends the query instead of reprompting.
+    fn cancel_empty_object_selection(&self) -> bool {
+        false
+    }
+
     /// Accepts choices entered at an object prompt, independently of model edits.
     fn accept_object_selection_options(&self, _arguments: &[&str]) -> Result<(), CommandError> {
         Ok(())
@@ -641,10 +646,10 @@ impl CommandRegistry {
             .register(measurements::AreaCentroidCommand)
             .expect("unique built-in command");
         registry
-            .register(VolumeCommand { centroid: false })
+            .register(VolumeCommand::new(false))
             .expect("unique built-in command");
         registry
-            .register(VolumeCommand { centroid: true })
+            .register(VolumeCommand::new(true))
             .expect("unique built-in command");
         registry
             .register(DivideCommand)

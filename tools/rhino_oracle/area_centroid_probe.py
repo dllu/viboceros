@@ -1,12 +1,16 @@
 """Owned area/volume mass-command observations; public APIs only."""
 import re
 
+DISPLAY_UNITS = ("ModelUnits", "Micron", "Millimeter", "Centimeter", "Liter", "Decimeter", "Meter", "Kilometer",
+                 "Microinch", "Mil", "Inch", "Foot", "Yard", "Mile")
+
 
 def validate(operation, measure="area", centroid=True):
     if measure not in ("area", "volume"): raise ValueError("invalid centroid measure")
     if not centroid and measure != "volume": raise ValueError("unsupported scalar mass command")
     optional = {"groups", "selected", "preselect"}
     if measure == "volume": optional.update(("open_confirmation", "collection_api"))
+    if not centroid: optional.update(("display_units", "unit_setup", "model_units"))
     kind = measure + ("_centroid_command" if centroid else "_command")
     if (not isinstance(operation,dict) or operation.get("op") != kind
             or set(operation) - optional != set(("op", "id", "sources"))):
@@ -17,6 +21,16 @@ def validate(operation, measure="area", centroid=True):
         raise ValueError("invalid area centroid id")
     if type(operation.get("preselect", True)) is not bool: raise ValueError("invalid preselection")
     if type(operation.get("collection_api", False)) is not bool: raise ValueError("invalid collection diagnostic")
+    if "display_units" in operation and (operation["display_units"] not in DISPLAY_UNITS
+            or operation.get("preselect", True)):
+        raise ValueError("display units require a known postselection choice")
+    if "unit_setup" in operation and (not isinstance(operation["unit_setup"], list)
+            or not 1 <= len(operation["unit_setup"]) <= 4
+            or any(unit not in DISPLAY_UNITS for unit in operation["unit_setup"])):
+        raise ValueError("invalid display unit setup")
+    if "model_units" in operation and (type(operation["model_units"]) is not int
+            or operation["model_units"] not in (0, 2, 4, 8)):
+        raise ValueError("invalid model units")
     sources = operation["sources"]
     if not isinstance(sources, list) or not 1 <= len(sources) <= 32:
         raise ValueError("expected 1 to 32 centroid sources")
@@ -44,6 +58,7 @@ def run(operation, tolerance, helper, measure="area", centroid=True):
         return {measure: float(mass.Area if measure == "area" else mass.Volume), "centroid": helper["_xyz"](mass.Centroid)}
     document = Rhino.RhinoDoc.ActiveDoc
     precision_before = document.ModelDistanceDisplayPrecision
+    units_before = document.ModelUnitSystem
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
     settings.NormalObjects = settings.HiddenObjects = settings.LockedObjects = True
     def objects(): return list(document.Objects.GetObjectList(settings))
@@ -62,7 +77,19 @@ def run(operation, tolerance, helper, measure="area", centroid=True):
         raise ValueError("unsupported centroid source")
     try:
         if not centroid: document.ModelDistanceDisplayPrecision = 7
+        if "model_units" in operation:
+            document.ModelUnitSystem = System.Enum.ToObject(Rhino.UnitSystem, operation["model_units"])
         document.Objects.UnselectAll()
+        unit_setup = []
+        for units in operation.get("unit_setup", []):
+            marker = "Viboceros volume units " + str(System.Guid.NewGuid())
+            Rhino.RhinoApp.WriteLine(marker)
+            succeeded, _, _ = observe_command(Rhino.Commands.Command, command,
+                lambda: Rhino.RhinoApp.RunScript("_Volume _Units _" + units + " _Enter", True),
+                lambda: None, lambda: [])
+            history = Rhino.RhinoApp.CommandHistoryWindowText.split(marker, 1)
+            if len(history) != 2: raise ValueError("volume unit setup history missing")
+            unit_setup.append(dict(units=units, succeeded=succeeded, history=history[1].strip()))
         for source in operation["sources"]:
             helper["_record_progress"]("centroid %s: construct source" % operation["id"])
             geometry = helper["_object_source"](source, tolerance)
@@ -143,7 +170,8 @@ def run(operation, tolerance, helper, measure="area", centroid=True):
             for i in selected_indices: document.Objects.Select(ids[i])
             macro = "_" + command + " _Enter"
         else:
-            macro = "_" + command + " " + " ".join("_SelID %s" % ids[i] for i in selected_indices) + " _Enter"
+            options = "_Units _" + operation["display_units"] + " " if "display_units" in operation else ""
+            macro = "_" + command + " " + options + " ".join("_SelID %s" % ids[i] for i in selected_indices) + " _Enter"
         marker = "Viboceros centroid " + str(System.Guid.NewGuid())
         Rhino.RhinoApp.WriteLine(marker)
         helper["_record_progress"]("centroid %s: command %s" % (operation["id"], macro))
@@ -180,9 +208,11 @@ def run(operation, tolerance, helper, measure="area", centroid=True):
         if not centroid:
             result["display"] = dict(precision=int(document.ModelDistanceDisplayPrecision),
                                      units=str(document.ModelUnitSystem))
+            if "unit_setup" in operation: result["unit_setup"] = unit_setup
         return result, 0
     finally:
         document.ModelDistanceDisplayPrecision = precision_before
+        document.ModelUnitSystem = units_before
         Rhino.RhinoApp.RunScript("!", False)
         for obj in objects():
             if obj.Id not in before: document.Objects.Delete(obj.Id, True)

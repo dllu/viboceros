@@ -2,6 +2,91 @@ use super::*;
 use crate::{Frame3, MeshFace, NurbsSurface, Tolerance, TriangleMesh};
 
 #[test]
+fn dimensional_conversion_precedes_volume_and_conversion_cube_range_loss() {
+    use crate::LengthUnitSystem;
+    for exponent in [-1000, -600, 0, 600, 1000] {
+        let scale = 2_f64.powi(exponent);
+        let mesh = TriangleMesh::try_new(
+            [
+                [0., 0., 0.],
+                [3. * scale, 0., 0.],
+                [0., 4. * scale, 0.],
+                [0., 0., 5. * scale],
+            ]
+            .map(|p| Point3::try_from(p).unwrap())
+            .to_vec(),
+            vec![[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]],
+            // These are already-defined facets, including features far below
+            // the default document's modeling tolerance.
+            Tolerance::MESH_VALIDATION,
+        )
+        .unwrap();
+        let units = LengthUnitSystem::Custom {
+            name: "scaled meter".into(),
+            meters_per_unit: 2_f64.powi(-exponent),
+        };
+        for (m, expected) in [(&mesh, 10.), (&mesh.reversed(), -10.)] {
+            assert_eq!(
+                VolumeMassProperties::signed_volume_from_boundaries_in_units(
+                    &[VolumeBoundary::Mesh(m)],
+                    Tolerance::DEFAULT,
+                    &units,
+                    &LengthUnitSystem::Meters,
+                )
+                .unwrap(),
+                expected
+            );
+        }
+    }
+}
+
+#[test]
+fn nominal_units_have_exact_cubic_ratios_before_final_rounding() {
+    use crate::LengthUnitSystem::*;
+    let frame = Frame3::try_from_points(
+        Point3::try_from([0.; 3]).unwrap(),
+        Point3::try_from([1., 0., 0.]).unwrap(),
+        Point3::try_from([0., 1., 0.]).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let b = crate::Brep::try_box(frame, [[0., 1.]; 3], Tolerance::DEFAULT).unwrap();
+    for (source, target, expected) in [
+        (Millimeters, Microns, 1e9),
+        (Inches, Microinches, 1e18),
+        (Feet, Inches, 1728.),
+        (Meters, Decimeters, 1000.),
+        (Millimeters, Meters, 1e-9),
+        (None, Meters, 1.),
+    ] {
+        let value = VolumeMassProperties::signed_volume_from_boundaries_in_units(
+            &[VolumeBoundary::Brep(&b)],
+            Tolerance::DEFAULT,
+            &source,
+            &target,
+        )
+        .unwrap();
+        // The B-rep integral is numerical; compare its unchanged raw value with
+        // independently specified exact conversion factors, not observed targets.
+        let raw = VolumeMassProperties::signed_volume_from_boundaries(
+            &[VolumeBoundary::Brep(&b)],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!((value / (raw * expected) - 1.).abs() < 3e-16);
+    }
+    assert!(
+        VolumeMassProperties::signed_volume_from_boundaries_in_units(
+            &[VolumeBoundary::Brep(&b)],
+            Tolerance::DEFAULT,
+            &Unset,
+            &Meters,
+        )
+        .is_err()
+    );
+}
+
+#[test]
 fn scalar_collection_cancels_unrepresentable_mesh_volumes_before_rounding() {
     let make = |scale| {
         TriangleMesh::try_new_faces(

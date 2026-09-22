@@ -1,0 +1,32 @@
+{
+  "capture_date_utc": "2026-09-22",
+  "engine_version": "8.32.26160.13001",
+  "completed_operations": 30,
+  "successful_measurements": 29,
+  "declined_open_volume_queries": 1,
+  "display_unit_choices": 14,
+  "native_command_matches": 30,
+  "maximum_absolute_difference": 3.703703316260132e-11,
+  "absolute_epsilon": 1e-9,
+  "relative_epsilon": 0,
+  "regression_matches": {
+    "surface_centroids": [36, 36],
+    "warning_centroids": [42, 42],
+    "closed_centroids": [26, 26],
+    "scalar_and_centroid_commands": [77, 80]
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/volume_display_units.json": "b14b54feb48f6f01cb126b3aaebffa64f87a4b53673ce5912d20c3edf5aedfc3",
+    "tools/rhino_oracle/observations/volume_display_units.json": "5a4610d4f518e500edb5cdac947fc49fb5cf308f2dfaa09b501d5b4de4c28a34",
+    "tools/rhino_oracle/fixtures/volume_display_units_reference.json": "0709a1600523c22eb007302f7482854cd0045f2aed0ac00029206fb6fceade2c",
+    "docs/volume-display-units-comparison.json": "266971958429e13d21827054c28fe3de7a934b9957c38532662f2ff42764426f"
+  },
+  "notes": [
+    "One fresh owned private-Xvfb session captured all thirty operations; existing user sessions were untouched.",
+    "Raw request and response are retained byte-for-byte, including histories, unit labels, printed uncertainty, source definitions, selection and separate API diagnostics.",
+    "Every setup and measurement uses the named command's public EndCommand event. Empty-selection setup commands report failure but retain their accepted display choice.",
+    "Independent Fraction witnesses read only source geometry and nominal unit definitions, never observed results or native output.",
+    "All thirty native command replays pass at the original fixed absolute tolerance; the largest residual is finite printed precision in cubic yards.",
+    "The three earlier scalar discrepancies remain unmodified. This is not a Rhino speed comparison, SubD implementation, or proof of persistence across new Rhino documents or application restarts."
+  ]
+}

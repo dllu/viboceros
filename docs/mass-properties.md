@@ -29,6 +29,9 @@ including mixed-boundary cases where only the latter is a physical centroid.
 Scalar collection
 volume skips first moments and uses exact cubic mesh accumulation, including
 cancellation between individually unrepresentable volumes.
+Its [display-unit conversion](volume-display-units.md) cubes exact nominal unit
+ratios before projecting the accumulated scalar into binary64, without changing
+geometry or document tolerances.
 
 ## Integration
 

@@ -121,6 +121,60 @@ pub enum UnitError {
 }
 
 impl LengthUnitSystem {
+    /// Exact nominal unit definitions for dimensional measurements. Custom
+    /// units intentionally preserve their stored binary64 scale. Keeping the
+    /// ratio rational avoids both a rounded conversion cube and intermediate
+    /// range loss; astronomical definitions retain the existing 3DM convention.
+    pub(crate) fn exact_scale_to(
+        &self,
+        target: &Self,
+    ) -> Result<crate::exact_scalar::Rational, UnitError> {
+        self.validate()?;
+        target.validate()?;
+        if matches!(self, Self::Unset) || matches!(target, Self::Unset) {
+            return Err(UnitError::Unset);
+        }
+        if matches!(self, Self::None) || matches!(target, Self::None) {
+            return Ok(crate::exact_scalar::rational(1.));
+        }
+        Ok(self.exact_meters_per_unit() / target.exact_meters_per_unit())
+    }
+
+    fn exact_meters_per_unit(&self) -> crate::exact_scalar::Rational {
+        use crate::exact_scalar::{Rational, rational};
+        let (numerator, denominator): (i64, i64) = match self {
+            Self::None | Self::Unset => unreachable!("validated physical unit"),
+            Self::Microns => (1, 1_000_000),
+            Self::Millimeters => (1, 1_000),
+            Self::Centimeters => (1, 100),
+            Self::Meters => (1, 1),
+            Self::Kilometers => (1_000, 1),
+            Self::Microinches => (127, 5_000_000_000),
+            Self::Mils => (127, 5_000_000),
+            Self::Inches => (127, 5_000),
+            Self::Feet => (381, 1_250),
+            Self::Miles => (201_168, 125),
+            Self::Angstroms => (1, 10_000_000_000),
+            Self::Nanometers => (1, 1_000_000_000),
+            Self::Decimeters => (1, 10),
+            Self::Dekameters => (10, 1),
+            Self::Hectometers => (100, 1),
+            Self::Megameters => (1_000_000, 1),
+            Self::Gigameters => (1_000_000_000, 1),
+            Self::Yards => (1_143, 1_250),
+            Self::PrinterPoints => (127, 360_000),
+            Self::PrinterPicas => (127, 30_000),
+            Self::NauticalMiles => (1_852, 1),
+            Self::AstronomicalUnits => (149_597_870_000, 1),
+            Self::LightYears => (9_460_730_472_580_800, 1),
+            Self::Parsecs => (30_856_775_800_000_000, 1),
+            Self::Custom {
+                meters_per_unit, ..
+            } => return rational(*meters_per_unit),
+        };
+        Rational::new(numerator.into(), denominator.into())
+    }
+
     /// Human-readable model-unit name; custom names are retained verbatim.
     /// UI callers should bound or truncate untrusted custom names as needed.
     pub fn name(&self) -> &str {

@@ -1,0 +1,122 @@
+{
+  "millimeters-to-meters": {
+    "volume": "1",
+    "rounded_volume": 1.0
+  },
+  "inches-to-feet": {
+    "volume": "1",
+    "rounded_volume": 1.0
+  },
+  "canceled-choice-remembered-preselection": {
+    "volume": "1",
+    "rounded_volume": 1.0
+  },
+  "choice-modelunits": {
+    "volume": "1000",
+    "rounded_volume": 1000.0
+  },
+  "choice-micron": {
+    "volume": "1000000000000",
+    "rounded_volume": 1000000000000.0
+  },
+  "choice-millimeter": {
+    "volume": "1000",
+    "rounded_volume": 1000.0
+  },
+  "choice-centimeter": {
+    "volume": "1",
+    "rounded_volume": 1.0
+  },
+  "choice-liter": {
+    "volume": "1/1000",
+    "rounded_volume": 0.001
+  },
+  "choice-decimeter": {
+    "volume": "1/1000",
+    "rounded_volume": 0.001
+  },
+  "choice-meter": {
+    "volume": "1/1000000",
+    "rounded_volume": 1e-06
+  },
+  "choice-kilometer": {
+    "volume": "1/1000000000000000",
+    "rounded_volume": 1e-15
+  },
+  "choice-microinch": {
+    "volume": "1728000000000000000000",
+    "rounded_volume": 1.728e+21
+  },
+  "choice-mil": {
+    "volume": "1728000000000",
+    "rounded_volume": 1728000000000.0
+  },
+  "choice-inch": {
+    "volume": "1728",
+    "rounded_volume": 1728.0
+  },
+  "choice-foot": {
+    "volume": "1",
+    "rounded_volume": 1.0
+  },
+  "choice-yard": {
+    "volume": "1/27",
+    "rounded_volume": 0.037037037037037035
+  },
+  "choice-mile": {
+    "volume": "1/147197952000",
+    "rounded_volume": 6.793572780143028e-12
+  },
+  "model-0-modelunits": {
+    "volume": "8",
+    "rounded_volume": 8.0
+  },
+  "model-0-meter": {
+    "volume": "8",
+    "rounded_volume": 8.0
+  },
+  "model-2-modelunits": {
+    "volume": "8",
+    "rounded_volume": 8.0
+  },
+  "model-2-meter": {
+    "volume": "1/125000000",
+    "rounded_volume": 8e-09
+  },
+  "model-4-modelunits": {
+    "volume": "8",
+    "rounded_volume": 8.0
+  },
+  "model-4-meter": {
+    "volume": "8",
+    "rounded_volume": 8.0
+  },
+  "model-8-modelunits": {
+    "volume": "8",
+    "rounded_volume": 8.0
+  },
+  "model-8-meter": {
+    "volume": "2048383/15625000000",
+    "rounded_volume": 0.000131096512
+  },
+  "last-canceled-choice-wins": {
+    "volume": "1",
+    "rounded_volume": 1.0
+  },
+  "signed-liter": {
+    "volume": "-1/1000",
+    "rounded_volume": -0.001
+  },
+  "open-meter-yes": {
+    "volume": "1",
+    "rounded_volume": 1.0
+  },
+  "open-meter-no": {
+    "volume": "1",
+    "rounded_volume": 1.0
+  },
+  "open-meter-escape": {
+    "volume": "1",
+    "rounded_volume": 1.0
+  }
+}

@@ -1,0 +1,8047 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "millimeters-to-meters",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Millimeters"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Millimeter ): _Units\nUnits <Millimeter> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Meter\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _SelID\nObject ID to select: 361add5b-bd84-4428-b7e3-e8692c6a647e\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter )\nCalculating volume... Press Esc to cancel\nVolume = 1 (+/- 1e-09) cubic meters",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              500.00000000000006,
+              500.00000000000006,
+              500.00000000000006
+            ],
+            "volume": 1000000000.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            500000000000.0,
+            500000000000.0,
+            500000000000.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              500.00000000000006,
+              500.00000000000006,
+              500.00000000000006
+            ],
+            "volume": 1000000000.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              500.00000000000006,
+              500.00000000000006,
+              500.00000000000006
+            ],
+            "volume": 1000000000.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Python Script ( ResetEngine ): _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Millimeter\nSelect solids or solid meshes for volume calculation ( Units=Millimeter ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=Millimeter )",
+            "succeeded": false,
+            "units": "Millimeter"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "inches-to-feet",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                12.0,
+                12.0
+              ],
+              [
+                0.0,
+                12.0,
+                12.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Inches"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Inch ): _Units\nUnits <Inch> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Foot\nSelect solids or solid meshes for volume calculation ( Units=Foot ): _SelID\nObject ID to select: 3f1a4587-1f74-4da9-a7b1-31820a534e63\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Foot ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Foot )\nCalculating volume... Press Esc to cancel\nVolume = 1 (+/- 1e-10) cubic feet",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                12.0,
+                12.0
+              ],
+              [
+                0.0,
+                12.0,
+                12.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            10368.0,
+            10368.0,
+            10368.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _Units\nUnits <Meter> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Inch\nSelect solids or solid meshes for volume calculation ( Units=Inch ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=Inch )",
+            "succeeded": false,
+            "units": "Inch"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "canceled-choice-remembered-preselection",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Millimeters"
+        },
+        "history": "Command: _Volume\nCalculating volume... Press Esc to cancel\nVolume = 1 (+/- 1e-09) cubic meters\nCommand: _Enter",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              500.00000000000006,
+              500.00000000000006,
+              500.00000000000006
+            ],
+            "volume": 1000000000.0
+          }
+        ],
+        "selected": [
+          0
+        ],
+        "source_first_moments": [
+          [
+            500000000000.0,
+            500000000000.0,
+            500000000000.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              500.00000000000006,
+              500.00000000000006,
+              500.00000000000006
+            ],
+            "volume": 1000000000.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              500.00000000000006,
+              500.00000000000006,
+              500.00000000000006
+            ],
+            "volume": 1000000000.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Foot ): _Units\nUnits <Foot> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Meter\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=Meter )",
+            "succeeded": false,
+            "units": "Meter"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "choice-modelunits",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Millimeters"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _SelID\nObject ID to select: 388bb083-bbf5-4078-9326-d760337a9907\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=ModelUnits )\nCalculating volume... Press Esc to cancel\nVolume = 1000 (+/- 1e-06) cubic millimeters",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            5000.0,
+            5000.0,
+            5000.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _Units\nUnits <Meter> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "choice-micron",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Millimeters"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Micron\nSelect solids or solid meshes for volume calculation ( Units=Micron ): _SelID\nObject ID to select: 2ca7320e-3675-4dd9-b68f-22ae991a5b9b\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Micron ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Micron )\nCalculating volume... Press Esc to cancel\nVolume = 1e+12 (+/- 1e+03) cubic microns",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            5000.0,
+            5000.0,
+            5000.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "choice-millimeter",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Millimeters"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Millimeter\nSelect solids or solid meshes for volume calculation ( Units=Millimeter ): _SelID\nObject ID to select: bdb0920d-6b18-41d8-962f-8af541eb373c\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Millimeter ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Millimeter )\nCalculating volume... Press Esc to cancel\nVolume = 1000 (+/- 1e-06) cubic millimeters",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            5000.0,
+            5000.0,
+            5000.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Micron ): _Units\nUnits <Micron> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "choice-centimeter",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Millimeters"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Centimeter\nSelect solids or solid meshes for volume calculation ( Units=Centimeter ): _SelID\nObject ID to select: cd7cff69-4294-4dda-a5b3-6f4f77d5b013\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Centimeter ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Centimeter )\nCalculating volume... Press Esc to cancel\nVolume = 1 (+/- 1e-09) cubic centimeters",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            5000.0,
+            5000.0,
+            5000.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Millimeter ): _Units\nUnits <Millimeter> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "choice-liter",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Millimeters"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Liter\nSelect solids or solid meshes for volume calculation ( Units=Liter ): _SelID\nObject ID to select: b7e05c62-d84f-49ae-9fe3-bdf19f3a03ab\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Liter ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Liter )\nCalculating volume... Press Esc to cancel\nVolume = 0.001 (+/- 1e-12) liters",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            5000.0,
+            5000.0,
+            5000.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Centimeter ): _Units\nUnits <Centimeter> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "choice-decimeter",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Millimeters"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Decimeter\nSelect solids or solid meshes for volume calculation ( Units=Decimeter ): _SelID\nObject ID to select: d7bdc970-052f-4ebf-97e2-4c9c6e7ef50a\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Decimeter ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Decimeter )\nCalculating volume... Press Esc to cancel\nVolume = 0.001 (+/- 1e-12) cubic decimeters",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            5000.0,
+            5000.0,
+            5000.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Liter ): _Units\nUnits <Liter> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "choice-meter",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Millimeters"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Meter\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _SelID\nObject ID to select: cb5e71f5-170e-43fa-8964-97c2f3a84e0d\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter )\nCalculating volume... Press Esc to cancel\nVolume = 1e-06 (+/- 1e-15) cubic meters",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            5000.0,
+            5000.0,
+            5000.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Decimeter ): _Units\nUnits <Decimeter> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "choice-kilometer",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Millimeters"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Kilometer\nSelect solids or solid meshes for volume calculation ( Units=Kilometer ): _SelID\nObject ID to select: 3b13ac2e-7851-4c11-b153-aa03e7687d41\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Kilometer ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Kilometer )\nCalculating volume... Press Esc to cancel\nVolume = 1e-15 (+/- 1e-24) cubic kilometers",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            5000.0,
+            5000.0,
+            5000.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _Units\nUnits <Meter> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "choice-microinch",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                12.0,
+                12.0
+              ],
+              [
+                0.0,
+                12.0,
+                12.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Inches"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Microinch\nSelect solids or solid meshes for volume calculation ( Units=Microinch ): _SelID\nObject ID to select: 4bd90d37-47c6-48ba-af50-190b84f298d8\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Microinch ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Microinch )\nCalculating volume... Press Esc to cancel\nVolume = 1.728e+21 (+/- 1e+12) cubic microinches",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                12.0,
+                12.0
+              ],
+              [
+                0.0,
+                12.0,
+                12.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            10368.0,
+            10368.0,
+            10368.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Kilometer ): _Units\nUnits <Kilometer> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "choice-mil",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                12.0,
+                12.0
+              ],
+              [
+                0.0,
+                12.0,
+                12.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Inches"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Mil\nSelect solids or solid meshes for volume calculation ( Units=Mil ): _SelID\nObject ID to select: 11f2a32b-6f9a-40a0-a488-22468f4159a3\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Mil ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Mil )\nCalculating volume... Press Esc to cancel\nVolume = 1.728e+12 (+/- 1e+03) cubic mils",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                12.0,
+                12.0
+              ],
+              [
+                0.0,
+                12.0,
+                12.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            10368.0,
+            10368.0,
+            10368.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Microinch ): _Units\nUnits <Microinch> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "choice-inch",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                12.0,
+                12.0
+              ],
+              [
+                0.0,
+                12.0,
+                12.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Inches"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Inch\nSelect solids or solid meshes for volume calculation ( Units=Inch ): _SelID\nObject ID to select: a2cb853d-af3c-41e0-a70c-4727a237cc1a\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Inch ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Inch )\nCalculating volume... Press Esc to cancel\nVolume = 1728 (+/- 1e-06) cubic inches",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                12.0,
+                12.0
+              ],
+              [
+                0.0,
+                12.0,
+                12.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            10368.0,
+            10368.0,
+            10368.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Mil ): _Units\nUnits <Mil> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "choice-foot",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                12.0,
+                12.0
+              ],
+              [
+                0.0,
+                12.0,
+                12.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Inches"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Foot\nSelect solids or solid meshes for volume calculation ( Units=Foot ): _SelID\nObject ID to select: 3c4eb15c-82ff-4927-a98f-a89229e43df9\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Foot ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Foot )\nCalculating volume... Press Esc to cancel\nVolume = 1 (+/- 1e-10) cubic feet",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                12.0,
+                12.0
+              ],
+              [
+                0.0,
+                12.0,
+                12.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            10368.0,
+            10368.0,
+            10368.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Inch ): _Units\nUnits <Inch> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "choice-yard",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                12.0,
+                12.0
+              ],
+              [
+                0.0,
+                12.0,
+                12.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Inches"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Yard\nSelect solids or solid meshes for volume calculation ( Units=Yard ): _SelID\nObject ID to select: c6cfb5c7-68c2-47c8-92a2-15f096f7892e\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Yard ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Yard )\nCalculating volume... Press Esc to cancel\nVolume = 0.037037037 (+/- 1e-11) cubic yards",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                12.0,
+                12.0
+              ],
+              [
+                0.0,
+                12.0,
+                12.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            10368.0,
+            10368.0,
+            10368.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Foot ): _Units\nUnits <Foot> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "choice-mile",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                12.0,
+                12.0
+              ],
+              [
+                0.0,
+                12.0,
+                12.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Inches"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Mile\nSelect solids or solid meshes for volume calculation ( Units=Mile ): _SelID\nObject ID to select: f6eb2fa8-21d5-4219-addb-9166836f979b\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Mile ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Mile )\nCalculating volume... Press Esc to cancel\nVolume = 6.79357278e-12 (+/- 1e-21) cubic miles",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                0.0,
+                0.0
+              ],
+              [
+                12.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                12.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                0.0,
+                12.0
+              ],
+              [
+                12.0,
+                12.0,
+                12.0
+              ],
+              [
+                0.0,
+                12.0,
+                12.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            10368.0,
+            10368.0,
+            10368.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              6.0,
+              6.0,
+              6.0
+            ],
+            "volume": 1728.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Yard ): _Units\nUnits <Yard> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "model-0-modelunits",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ],
+              [
+                0.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "None"
+        },
+        "history": "Command: _Volume\nCalculating volume... Press Esc to cancel\nVolume = 8 (+/- 1e-09) cubic units\nCommand: _Enter",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ],
+              [
+                0.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "selected": [
+          0
+        ],
+        "source_first_moments": [
+          [
+            8.0,
+            8.0,
+            8.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Mile ): _Units\nUnits <Mile> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "model-0-meter",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ],
+              [
+                0.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "None"
+        },
+        "history": "Command: _Volume\nCalculating volume... Press Esc to cancel\nVolume = 8 (+/- 1e-09) cubic meters\nCommand: _Enter",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ],
+              [
+                0.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "selected": [
+          0
+        ],
+        "source_first_moments": [
+          [
+            8.0,
+            8.0,
+            8.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Meter\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=Meter )",
+            "succeeded": false,
+            "units": "Meter"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "model-2-modelunits",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ],
+              [
+                0.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Millimeters"
+        },
+        "history": "Command: _Volume\nCalculating volume... Press Esc to cancel\nVolume = 8 (+/- 1e-09) cubic millimeters\nCommand: _Enter",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ],
+              [
+                0.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "selected": [
+          0
+        ],
+        "source_first_moments": [
+          [
+            8.0,
+            8.0,
+            8.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _Units\nUnits <Meter> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "model-2-meter",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ],
+              [
+                0.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Millimeters"
+        },
+        "history": "Command: _Volume\nCalculating volume... Press Esc to cancel\nVolume = 8e-09 (+/- 1e-18) cubic meters\nCommand: _Enter",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ],
+              [
+                0.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "selected": [
+          0
+        ],
+        "source_first_moments": [
+          [
+            8.0,
+            8.0,
+            8.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Meter\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=Meter )",
+            "succeeded": false,
+            "units": "Meter"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "model-4-modelunits",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ],
+              [
+                0.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Meters"
+        },
+        "history": "Command: _Volume\nCalculating volume... Press Esc to cancel\nVolume = 8 (+/- 1e-09) cubic meters\nCommand: _Enter",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ],
+              [
+                0.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "selected": [
+          0
+        ],
+        "source_first_moments": [
+          [
+            8.0,
+            8.0,
+            8.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _Units\nUnits <Meter> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "model-4-meter",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ],
+              [
+                0.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Meters"
+        },
+        "history": "Command: _Volume\nCalculating volume... Press Esc to cancel\nVolume = 8 (+/- 1e-09) cubic meters\nCommand: _Enter",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ],
+              [
+                0.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "selected": [
+          0
+        ],
+        "source_first_moments": [
+          [
+            8.0,
+            8.0,
+            8.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Meter\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=Meter )",
+            "succeeded": false,
+            "units": "Meter"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "model-8-modelunits",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ],
+              [
+                0.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Inches"
+        },
+        "history": "Command: _Volume\nCalculating volume... Press Esc to cancel\nVolume = 8 (+/- 1e-09) cubic inches\nCommand: _Enter",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ],
+              [
+                0.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "selected": [
+          0
+        ],
+        "source_first_moments": [
+          [
+            8.0,
+            8.0,
+            8.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _Units\nUnits <Meter> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "model-8-meter",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ],
+              [
+                0.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Inches"
+        },
+        "history": "Command: _Volume\nCalculating volume... Press Esc to cancel\nVolume = 0.000131096512 (+/- 1e-13) cubic meters\nCommand: _Enter",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ],
+              [
+                0.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "selected": [
+          0
+        ],
+        "source_first_moments": [
+          [
+            8.0,
+            8.0,
+            8.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "volume": 8.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Meter\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=Meter )",
+            "succeeded": false,
+            "units": "Meter"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "last-canceled-choice-wins",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Millimeters"
+        },
+        "history": "Command: _Volume\nCalculating volume... Press Esc to cancel\nVolume = 1 (+/- 1e-09) cubic centimeters\nCommand: _Enter",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                3,
+                2,
+                1
+              ],
+              [
+                4,
+                5,
+                6,
+                7
+              ],
+              [
+                0,
+                1,
+                5,
+                4
+              ],
+              [
+                1,
+                2,
+                6,
+                5
+              ],
+              [
+                2,
+                3,
+                7,
+                6
+              ],
+              [
+                3,
+                0,
+                4,
+                7
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "selected": [
+          0
+        ],
+        "source_first_moments": [
+          [
+            5000.0,
+            5000.0,
+            5000.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "volume": 1000.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _Units\nUnits <Meter> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Meter\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=Meter )",
+            "succeeded": false,
+            "units": "Meter"
+          },
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _Units\nUnits <Meter> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Liter\nSelect solids or solid meshes for volume calculation ( Units=Liter ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=Liter )",
+            "succeeded": false,
+            "units": "Liter"
+          },
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Liter ): _Units\nUnits <Liter> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Centimeter\nSelect solids or solid meshes for volume calculation ( Units=Centimeter ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=Centimeter )",
+            "succeeded": false,
+            "units": "Centimeter"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "signed-liter",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                1,
+                2,
+                3,
+                0
+              ],
+              [
+                7,
+                6,
+                5,
+                4
+              ],
+              [
+                4,
+                5,
+                1,
+                0
+              ],
+              [
+                5,
+                6,
+                2,
+                1
+              ],
+              [
+                6,
+                7,
+                3,
+                2
+              ],
+              [
+                7,
+                4,
+                0,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Millimeters"
+        },
+        "history": "Command: _Volume\nCalculating volume... Press Esc to cancel\nVolume = -0.001 (+/- 1e-12) liters\nCommand: _Enter",
+        "inputs": [
+          {
+            "faces": [
+              [
+                1,
+                2,
+                3,
+                0
+              ],
+              [
+                7,
+                6,
+                5,
+                4
+              ],
+              [
+                4,
+                5,
+                1,
+                0
+              ],
+              [
+                5,
+                6,
+                2,
+                1
+              ],
+              [
+                6,
+                7,
+                3,
+                2
+              ],
+              [
+                7,
+                4,
+                0,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                10.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                0.0,
+                10.0
+              ],
+              [
+                10.0,
+                10.0,
+                10.0
+              ],
+              [
+                0.0,
+                10.0,
+                10.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged"
+        ],
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": -1000.0
+          }
+        ],
+        "selected": [
+          0
+        ],
+        "source_first_moments": [
+          [
+            -5000.0,
+            -5000.0,
+            -5000.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": -1000.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": -1000.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Centimeter ): _Units\nUnits <Centimeter> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Liter\nSelect solids or solid meshes for volume calculation ( Units=Liter ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=Liter )",
+            "succeeded": false,
+            "units": "Liter"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "open-meter-yes",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ],
+              [
+                0.0,
+                0.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                1000.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1000.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Millimeters"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Meter\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _SelID\nObject ID to select: 5a1183aa-8a96-4343-a42a-d3285de6324c\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _SelID\nObject ID to select: f490936c-37b6-472e-9785-cc86a76265e8\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _SelID\nObject ID to select: f50f256e-e555-418c-9624-a78a82f7f30a\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _SelID\nObject ID to select: 9eb18747-b6f2-4489-a828-bba380593902\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _SelID\nObject ID to select: cdd8baff-2829-4601-82f0-dbf5eeda8208\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _SelID\nObject ID to select: c7f175ff-abfb-4c78-b489-92b87fef5194\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter )\nCalculating volume... Press Esc to cancel\nVolume = 1 (+/- 1e-10) cubic meters",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ],
+              [
+                0.0,
+                0.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                1000.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1000.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged",
+          "unchanged",
+          "unchanged",
+          "unchanged",
+          "unchanged",
+          "unchanged"
+        ],
+        "open_confirmation": {
+          "dialog": {
+            "owner_pid": 967373,
+            "parent_window": "0xa00006",
+            "title": "Rhino 8  Volume properties of non-Closed",
+            "window": "0x00a00015"
+          },
+          "requested": "yes"
+        },
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Liter ): _Units\nUnits <Liter> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "open-meter-no",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ],
+              [
+                0.0,
+                0.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                1000.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1000.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Millimeters"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Meter\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _SelID\nObject ID to select: 7d86382e-8826-4036-a389-6b12dd7fe058\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _SelID\nObject ID to select: f9582b55-c602-4a98-9026-1c0908243a3e\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _SelID\nObject ID to select: b02c53a1-a8fd-4b8f-9107-fb3b6e3e5d5f\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _SelID\nObject ID to select: 1e45128b-0734-41dd-8bc2-6d91dfada191\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _SelID\nObject ID to select: 378076db-a2aa-44ec-9233-f534d62951f6\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _SelID\nObject ID to select: 4f8652a0-62db-4737-b90a-26c717dd7b29\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter )",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ],
+              [
+                0.0,
+                0.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                1000.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1000.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged",
+          "unchanged",
+          "unchanged",
+          "unchanged",
+          "unchanged",
+          "unchanged"
+        ],
+        "open_confirmation": {
+          "dialog": {
+            "owner_pid": 967373,
+            "parent_window": "0xa00006",
+            "title": "Rhino 8  Volume properties of non-Closed",
+            "window": "0x00a00016"
+          },
+          "requested": "no"
+        },
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          }
+        ],
+        "succeeded": false,
+        "tight_properties": [
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _Units\nUnits <Meter> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "open-meter-escape",
+      "value": {
+        "constructed_inputs": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ],
+              [
+                0.0,
+                0.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                1000.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1000.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          }
+        ],
+        "display": {
+          "precision": 7,
+          "units": "Millimeters"
+        },
+        "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Units\nUnits <ModelUnits> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _Meter\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _SelID\nObject ID to select: 9d53f154-4f54-463e-8859-ef7f0b7fa255\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _SelID\nObject ID to select: afe2bf31-f8a5-405f-9e3e-87b43ffb12d8\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _SelID\nObject ID to select: f6480bb2-83f6-4daa-a202-9069913db4df\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _SelID\nObject ID to select: 674a1835-c16c-4945-89f8-b8ec08f252a2\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _SelID\nObject ID to select: b9736e4b-4347-474f-9e4d-0133e08be5b1\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _SelID\nObject ID to select: c79a144d-9d8b-4d03-8416-84a4250e99c5\n1 mesh added to selection.\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter ): _Enter\nSelect solids or solid meshes for volume calculation. Press Enter when done ( Units=Meter )\nCalculating volume... Press Esc to cancel\nVolume = 1 (+/- 1e-10) cubic meters",
+        "inputs": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ],
+              [
+                0.0,
+                0.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                1000.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                0.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                1000.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ],
+              [
+                1000.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          },
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1000.0
+              ],
+              [
+                0.0,
+                1000.0,
+                1000.0
+              ]
+            ]
+          }
+        ],
+        "insertions": [
+          "unchanged",
+          "unchanged",
+          "unchanged",
+          "unchanged",
+          "unchanged",
+          "unchanged"
+        ],
+        "open_confirmation": {
+          "dialog": {
+            "owner_pid": 967373,
+            "parent_window": "0xa00006",
+            "title": "Rhino 8  Volume properties of non-Closed",
+            "window": "0x00a00017"
+          },
+          "requested": "escape"
+        },
+        "points": [],
+        "properties": [
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          }
+        ],
+        "selected": [],
+        "source_first_moments": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "source_properties": [
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          }
+        ],
+        "succeeded": true,
+        "tight_properties": [
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          },
+          {
+            "centroid": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "volume": 0.0
+          }
+        ],
+        "unit_setup": [
+          {
+            "history": "Command: _Volume\nSelect solids or solid meshes for volume calculation ( Units=Meter ): _Units\nUnits <Meter> ( ModelUnits  Micron  Millimeter  Centimeter  Liter  Decimeter  Meter  Kilometer  Microinch  Mil  Inch  Foot  Yard  Mile ): _ModelUnits\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits ): _Enter\nSelect solids or solid meshes for volume calculation ( Units=ModelUnits )",
+            "succeeded": false,
+            "units": "ModelUnits"
+          }
+        ]
+      }
+    }
+  ]
+}

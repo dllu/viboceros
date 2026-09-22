@@ -122,6 +122,16 @@ pub struct ObjectSelectionPrompt {
 }
 
 impl ObjectSelectionPrompt {
+    /// A conditional question may follow ordinary picking-time choices. Its
+    /// confirmation descriptor then removes those choices and keeps the answer.
+    pub fn allows_selection_options(&self) -> bool {
+        self.workflow == ObjectSelectionWorkflow::OptionsDuringSelection
+            || (matches!(
+                self.workflow,
+                ObjectSelectionWorkflow::QuestionAfterSelection { .. }
+            ) && !self.choices.is_empty())
+    }
+
     /// Stage an entire input before accepting any option, including duplicates.
     pub fn update_options(&mut self, input: &str) -> Result<(), CommandError> {
         if self.workflow.answers_immediately()
@@ -245,6 +255,13 @@ impl ObjectSelectionPrompt {
 }
 
 impl CommandRegistry {
+    /// Whether Enter without any eligible pick ends this query.
+    pub fn cancel_empty_object_selection(&self, prompt: &ObjectSelectionPrompt) -> bool {
+        self.lookup
+            .get(&normalize_command_name(prompt.command))
+            .is_some_and(|index| self.commands[*index].cancel_empty_object_selection())
+    }
+
     pub fn object_selection_complete(
         &self,
         document: &Document,

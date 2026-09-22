@@ -32,6 +32,15 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if self.phase == ObjectPromptPhase::Selecting
+            && self.description.allows_selection_options()
+            && matches!(
+                self.description.workflow,
+                ObjectSelectionWorkflow::QuestionAfterSelection { .. }
+            )
+        {
+            return "Select objects or type options; Enter finishes, Esc cancels";
+        }
         match self.phase {
             ObjectPromptPhase::Selecting => match self.description.workflow {
                 ObjectSelectionWorkflow::OptionsDuringSelection => {
@@ -150,7 +159,7 @@ impl VibocerosApp {
             }
         } else {
             self.cancel_interactive_command(false);
-            if description.workflow == ObjectSelectionWorkflow::OptionsDuringSelection
+            if description.allows_selection_options()
                 && let Err(error) = self.commands.accept_object_selection_options(&description)
             {
                 self.push_log(format!("Error: {error}"));
@@ -199,7 +208,11 @@ impl VibocerosApp {
                 pending.phase,
                 ObjectPromptPhase::Menu(_) | ObjectPromptPhase::Choice(_)
             ) {
-                pending.phase = ObjectPromptPhase::Options;
+                pending.phase = if pending.description.allows_selection_options() {
+                    ObjectPromptPhase::Selecting
+                } else {
+                    ObjectPromptPhase::Options
+                };
                 self.object_prompt = Some(pending);
                 self.log_object_prompt();
                 self.command_input.clear();
@@ -211,6 +224,13 @@ impl VibocerosApp {
                     .selected_objects()
                     .any(|o| pending.description.filter.accepts_object(o))
                 {
+                    if self
+                        .commands
+                        .cancel_empty_object_selection(&pending.description)
+                    {
+                        self.cancel_object_prompt(true);
+                        return true;
+                    }
                     self.push_log("Select at least one eligible object; Esc cancels".into());
                     return true;
                 }
@@ -342,12 +362,14 @@ impl VibocerosApp {
             return false;
         }
         if pending.phase == ObjectPromptPhase::Selecting
-            && pending.description.workflow != ObjectSelectionWorkflow::OptionsDuringSelection
+            && !pending.description.allows_selection_options()
         {
             self.push_log("Select objects first; Enter continues".into());
             return true;
         }
-        if pending.phase == ObjectPromptPhase::Options
+        if (pending.phase == ObjectPromptPhase::Options
+            || (pending.phase == ObjectPromptPhase::Selecting
+                && pending.description.allows_selection_options()))
             && let Some(index) = pending
                 .description
                 .choices
@@ -391,9 +413,14 @@ impl VibocerosApp {
         }) {
             Ok(()) => {
                 if matches!(pending.phase, ObjectPromptPhase::Choice(_)) {
-                    pending.phase = ObjectPromptPhase::Options;
+                    pending.phase = if pending.description.allows_selection_options() {
+                        ObjectPromptPhase::Selecting
+                    } else {
+                        ObjectPromptPhase::Options
+                    };
                 }
-                let answered = pending.description.workflow.answers_immediately();
+                let answered = pending.phase == ObjectPromptPhase::Options
+                    && pending.description.workflow.answers_immediately();
                 self.object_prompt = Some(pending);
                 self.command_input.clear();
                 if answered {

@@ -1,0 +1,281 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 0.0,
+  "passed": true,
+  "operations": [
+    {
+      "id": "millimeters-to-meters",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "inches-to-feet",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "canceled-choice-remembered-preselection",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "choice-modelunits",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "choice-micron",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "choice-millimeter",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "choice-centimeter",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "choice-liter",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "choice-decimeter",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "choice-meter",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "choice-kilometer",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "choice-microinch",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "choice-mil",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "choice-inch",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "choice-foot",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "choice-yard",
+      "passed": true,
+      "max_absolute_error": 3.703703316260132e-11,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "choice-mile",
+      "passed": true,
+      "max_absolute_error": 1.4302792896351473e-22,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "model-0-modelunits",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "model-0-meter",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "model-2-modelunits",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "model-2-meter",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "model-4-modelunits",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "model-4-meter",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "model-8-modelunits",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "model-8-meter",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "last-canceled-choice-wins",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "signed-liter",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "open-meter-yes",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "open-meter-no",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "open-meter-escape",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    }
+  ],
+  "max_absolute_error": 3.703703316260132e-11,
+  "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation.",
+  "scope": "actual command values/points, selection and warning; fixed 1e-9 absolute tolerance including printed-value residuals; API diagnostics not command targets"
+}

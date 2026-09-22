@@ -5,6 +5,8 @@ use crate::object_source::ObjectSource;
 mod area_tests;
 #[cfg(test)]
 mod volume_tests;
+#[cfg(test)]
+mod volume_unit_tests;
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct CentroidFixture {
@@ -16,6 +18,9 @@ pub struct CentroidFixture {
     pub preselect: bool,
     /// Literal input to the conditional non-closed warning, not a command result.
     pub open_confirmation: Option<String>,
+    pub display_units: Option<String>,
+    pub unit_setup: Option<Vec<String>>,
+    pub model_units: Option<u32>,
 }
 fn preselect_default() -> bool {
     true
@@ -34,6 +39,15 @@ pub(super) fn run(
     measure: Measure,
 ) -> Result<(Value, u64), ProbeError> {
     let invalid = || ProbeError::FixtureInvariant("invalid area centroid fixture");
+    if (measure != Measure::ScalarVolume
+        && (f.display_units.is_some() || f.unit_setup.is_some() || f.model_units.is_some()))
+        || (f.preselect && f.display_units.is_some())
+        || f.unit_setup
+            .as_ref()
+            .is_some_and(|steps| steps.is_empty() || steps.len() > 4)
+    {
+        return Err(invalid());
+    }
     if let Some(answer) = &f.open_confirmation
         && (measure == Measure::Area || !matches!(answer.as_str(), "yes" | "no" | "escape"))
     {
@@ -55,6 +69,39 @@ pub(super) fn run(
         return Err(invalid());
     }
     let mut d = Document::new(tolerance);
+    if let Some(code) = f.model_units {
+        use viboceros_geometry::LengthUnitSystem;
+        d.set_units(
+            match code {
+                0 => LengthUnitSystem::None,
+                2 => LengthUnitSystem::Millimeters,
+                4 => LengthUnitSystem::Meters,
+                8 => LengthUnitSystem::Inches,
+                _ => return Err(invalid()),
+            },
+            false,
+        )?;
+    }
+    let r = CommandRegistry::with_builtins();
+    if measure == Measure::ScalarVolume {
+        let units = r.object_selection_prompt("Volume")?.ok_or_else(invalid)?;
+        if f.display_units
+            .iter()
+            .chain(f.unit_setup.iter().flatten())
+            .any(|unit| !units.choices[0].choices.contains(&unit.as_str()))
+        {
+            return Err(invalid());
+        }
+    }
+    let mut unit_setup = Vec::new();
+    for unit in f.unit_setup.iter().flatten() {
+        let input = format!("Volume Units={unit}");
+        r.accept_object_selection_input(&input)?;
+        unit_setup.push(
+            r.execute_postselected(&mut d, &input, viboceros_command::CommandContext::default())
+                .is_ok(),
+        );
+    }
     let mut ids = Vec::new();
     let mut properties = Vec::new();
     for source in &f.sources {
@@ -103,16 +150,21 @@ pub(super) fn run(
     }
     d.select_objects_direct(selected.iter().map(|i| ids[*i]), SelectionMode::Replace)?;
     let before = d.objects().cloned().collect::<Vec<_>>();
-    let r = CommandRegistry::with_builtins();
     let command = match measure {
         Measure::Area => "AreaCentroid",
         Measure::Volume => "VolumeCentroid",
         Measure::ScalarVolume => "Volume",
     };
     let mut invocation = command.to_owned();
+    if let Some(unit) = &f.display_units {
+        invocation.push_str(&format!(" Units={unit}"));
+        r.accept_object_selection_input(&invocation)?;
+    }
     let mut confirmation = None;
     if let Some(answer) = &f.open_confirmation {
-        let prompt = r.object_selection_prompt(command)?.ok_or_else(invalid)?;
+        let prompt = r
+            .object_selection_prompt(&invocation)?
+            .ok_or_else(invalid)?;
         let question = if d
             .selected_objects()
             .any(|o| prompt.filter.accepts_object(o))
@@ -168,6 +220,9 @@ pub(super) fn run(
     if let Some(asked) = confirmation {
         value["confirmation"] = json!(asked);
     }
+    if f.unit_setup.is_some() {
+        value["unit_setup"] = json!(unit_setup);
+    }
     if measure == Measure::ScalarVolume {
         let volume = match result {
             Ok(message) => Some(
@@ -175,6 +230,9 @@ pub(super) fn run(
                     .rsplit_once("total volume ")
                     .ok_or_else(invalid)?
                     .1
+                    .split_whitespace()
+                    .next()
+                    .ok_or_else(invalid)?
                     .parse::<f64>()
                     .map_err(|_| invalid())?,
             ),

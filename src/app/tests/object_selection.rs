@@ -2,6 +2,112 @@ use super::*;
 use viboceros_document::SelectionMode;
 
 #[test]
+fn volume_units_submenu_returns_to_picking_and_empty_enter_retains_the_choice() {
+    use crate::app::object_selection::ObjectPromptPhase;
+    let mut app = test_app();
+    enter(&mut app, "Box 0,0,0 1000,1000,0 1000");
+    let id = app.document.objects().last().unwrap().id();
+    app.document.clear_selection();
+    let before = format!("{:?}", app.document);
+    let objects = app.document.objects().cloned().collect::<Vec<_>>();
+    let tolerance = app.document.tolerance();
+    let units = app.document.units().clone();
+    enter(&mut app, "Volume");
+    enter(&mut app, "Units");
+    assert_eq!(
+        app.object_prompt.as_ref().unwrap().phase,
+        ObjectPromptPhase::Choice(0)
+    );
+    enter(&mut app, "Meter");
+    assert_eq!(
+        app.object_prompt.as_ref().unwrap().phase,
+        ObjectPromptPhase::Selecting
+    );
+    assert_eq!(format!("{:?}", app.document), before);
+    enter(&mut app, "");
+    assert!(app.object_prompt.is_none());
+    app.document
+        .select_object(id, SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "Volume");
+    assert!(app.object_prompt.is_none());
+    assert!(app.document.is_selected(id));
+    assert!(
+        app.command_log
+            .iter()
+            .any(|line| line.contains("total volume 1 cubic Metres"))
+    );
+    app.document.clear_selection();
+    enter(&mut app, "Volume");
+    enter(&mut app, "Units=Liter");
+    assert_eq!(
+        app.object_prompt.as_ref().unwrap().phase,
+        ObjectPromptPhase::Selecting
+    );
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(id),
+        mode: SelectionMode::Replace,
+    });
+    enter(&mut app, "");
+    assert!(app.object_prompt.is_none());
+    assert_eq!(app.document.selected_object_count(), 0);
+    assert!(
+        app.command_log
+            .iter()
+            .any(|line| line.contains("total volume 1000 liters"))
+    );
+    // Picking legitimately updates SelPrev; the geometry and model history
+    // remain unchanged. Verify real Undo/Redo rather than comparing UI state.
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
+    assert_eq!(app.document.tolerance(), tolerance);
+    assert_eq!(app.document.units(), &units);
+    assert_eq!(app.document.undo_label(), Some("Box"));
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().len(), 0);
+    enter(&mut app, "Redo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
+}
+
+#[test]
+fn volume_display_choice_does_not_answer_or_bypass_the_open_warning() {
+    use crate::app::object_selection::ObjectPromptPhase;
+    let mut app = test_app();
+    let mesh = viboceros_geometry::TriangleMesh::try_new(
+        vec![
+            point(0., 0., 0.),
+            point(3., 0., 0.),
+            point(0., 4., 0.),
+            point(0., 0., 5.),
+        ],
+        vec![[0, 1, 3], [0, 3, 2], [1, 2, 3]],
+        app.document.tolerance(),
+    )
+    .unwrap();
+    let id = app.document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+    enter(&mut app, "Volume");
+    enter(&mut app, "Units=Liter");
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(id),
+        mode: SelectionMode::Replace,
+    });
+    assert_eq!(
+        app.object_prompt.as_ref().unwrap().phase,
+        ObjectPromptPhase::Selecting
+    );
+    enter(&mut app, "");
+    let warning = app.object_prompt.as_ref().unwrap();
+    assert_eq!(warning.phase, ObjectPromptPhase::Options);
+    assert!(warning.description.choices.is_empty());
+    assert!(app.answer_object_prompt_escape());
+    assert!(app.object_prompt.is_none());
+    assert!(
+        app.command_log
+            .iter()
+            .any(|line| line.contains("total volume 0.000005 liters"))
+    );
+}
+
+#[test]
 fn volume_warning_answers_and_escape_are_separate_from_cancelling_selection() {
     use crate::app::object_selection::ObjectPromptPhase;
     use viboceros_geometry::{Tolerance, TriangleMesh};

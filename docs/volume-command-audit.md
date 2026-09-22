@@ -6,6 +6,8 @@ This page retains the initial scalar audit and its comparison snapshot.
 The later [surface-primitive investigation](volume-surface-primitives.md) resolves
 its six centroid controls with an independently derived density. The original
 observations, scalar discrepancies and comparison report remain unchanged.
+The subsequent [display-unit audit](volume-display-units.md) implements the
+postselection Units option with a separate 30-case capture.
 
 The [source-only generator](../tools/rhino_oracle/references/volume_command.py)
 constructs 80 cases: 74 actual `Volume` commands and six paired

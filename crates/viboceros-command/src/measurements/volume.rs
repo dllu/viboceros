@@ -1,38 +1,65 @@
 //! Shared volume selection, scalar queries and atomic centroid markers.
 use super::*;
 use crate::{
-    BooleanSelectionOption, ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSelectionWorkflow,
+    BooleanSelectionOption, ChoiceSelectionOption, ObjectSelectionFilter, ObjectSelectionPrompt,
+    ObjectSelectionWorkflow,
 };
 use viboceros_geometry::{SurfaceVolumeMoments, VolumeBoundary, VolumeMassProperties};
 
 #[cfg(test)]
 mod tests;
+mod units;
+#[cfg(test)]
+mod units_tests;
 
 pub(crate) struct VolumeCommand {
-    pub(crate) centroid: bool,
+    centroid: bool,
+    display_units: crate::remembered::Remembered<&'static str>,
 }
 impl VolumeCommand {
+    pub(crate) fn new(centroid: bool) -> Self {
+        Self {
+            centroid,
+            display_units: crate::remembered::Remembered::new("ModelUnits"),
+        }
+    }
+
     fn usage(&self) -> &'static str {
         if self.centroid {
             "VolumeCentroid [Continue=Yes|No]"
         } else {
-            "Volume [Continue=Yes|No]"
+            "Volume [Units=name] [Continue=Yes|No]"
         }
+    }
+
+    fn parse(&self, arguments: &[&str]) -> Result<Options, CommandError> {
+        let mut options = Options {
+            answer: None,
+            units: self.display_units.get(),
+        };
+        let mut unit_seen = false;
+        let mut i = 0;
+        while i < arguments.len() {
+            let (name, value, used) = crate::orient_option(arguments, i, self.usage())?;
+            if crate::option_name_eq(name, "Continue") && options.answer.is_none() {
+                options.answer =
+                    Some(crate::parse_yes_no(value).ok_or(CommandError::Usage(self.usage()))?);
+            } else if !self.centroid && crate::option_name_eq(name, "Units") && !unit_seen {
+                options.units = units::parse(value).ok_or(CommandError::Usage(self.usage()))?;
+                unit_seen = true;
+            } else {
+                return Err(CommandError::Usage(self.usage()));
+            }
+            i += used;
+        }
+        Ok(options)
     }
 }
 const QUESTION: &str = "Some objects are not closed. Volume is meaningful only when the selected objects jointly enclose it. Continue? Yes/No; Enter or Esc uses Yes";
 
-fn continuation(arguments: &[&str], usage: &'static str) -> Result<Option<bool>, CommandError> {
-    if arguments.is_empty() {
-        return Ok(None);
-    }
-    let (name, value, used) = crate::orient_option(arguments, 0, usage)?;
-    if !crate::option_name_eq(name, "Continue") || used != arguments.len() {
-        return Err(CommandError::Usage(usage));
-    }
-    crate::parse_yes_no(value)
-        .map(Some)
-        .ok_or(CommandError::Usage(usage))
+struct Options {
+    answer: Option<bool>,
+    units: &'static str,
 }
 
 fn selected_boundaries(document: &Document) -> Result<Vec<VolumeBoundary<'_>>, CommandError> {
@@ -75,15 +102,20 @@ impl Command for VolumeCommand {
         self.centroid
     }
 
+    fn cancel_empty_object_selection(&self) -> bool {
+        !self.centroid
+    }
+
     fn object_selection_prompt(
         &self,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        let answer = continuation(arguments, self.usage())?;
+        let options = self.parse(arguments)?;
         Ok(Some(ObjectSelectionPrompt {
             command: self.name(),
             filter: ObjectSelectionFilter::Volume,
-            options: answer
+            options: options
+                .answer
                 .into_iter()
                 .map(|value| BooleanSelectionOption {
                     name: "Continue",
@@ -92,7 +124,16 @@ impl Command for VolumeCommand {
                 })
                 .collect(),
             menus: vec![],
-            choices: vec![],
+            choices: if self.centroid {
+                vec![]
+            } else {
+                vec![ChoiceSelectionOption {
+                    name: "Units",
+                    value: options.units,
+                    choices: units::CHOICES,
+                    toggle: None,
+                }]
+            },
             workflow: ObjectSelectionWorkflow::QuestionAfterSelection {
                 message: QUESTION,
                 escape_answer: Some(true),
@@ -100,24 +141,36 @@ impl Command for VolumeCommand {
         }))
     }
 
+    fn accept_object_selection_options(&self, arguments: &[&str]) -> Result<(), CommandError> {
+        let options = self.parse(arguments)?;
+        self.display_units.set(options.units);
+        Ok(())
+    }
+
     fn object_selection_confirmation(
         &self,
         document: &Document,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        let answer = continuation(arguments, self.usage())?;
+        let options = self.parse(arguments)?;
         let boundaries = selected_boundaries(document)?;
-        if answer.is_some() || !requires_confirmation(&boundaries, document.tolerance())? {
+        if options.answer.is_some() || !requires_confirmation(&boundaries, document.tolerance())? {
             return Ok(None);
         }
-        self.object_selection_prompt(&["Continue=Yes"])
+        // Unit choices belong to the picking phase, not the modal question.
+        // Preserve the accepted display choice while keeping only Yes/No there.
+        self.display_units.set(options.units);
+        let mut question = self.object_selection_prompt(&["Continue=Yes"])?.unwrap();
+        question.choices.clear();
+        Ok(Some(question))
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let answer = continuation(arguments, self.usage())?;
+        let options = self.parse(arguments)?;
+        self.display_units.set(options.units);
         let boundaries = selected_boundaries(document)?;
         if requires_confirmation(&boundaries, document.tolerance())? {
-            match answer {
+            match options.answer {
                 Some(true) => {}
                 Some(false) => return Err(CommandError::OperationDeclined),
                 None => return Err(CommandError::OpenVolumeConfirmationRequired),
@@ -125,13 +178,23 @@ impl Command for VolumeCommand {
         }
         let count = boundaries.len();
         if !self.centroid {
-            let volume = VolumeMassProperties::signed_volume_from_boundaries(
-                &boundaries,
-                document.tolerance(),
-            )?;
+            let volume = if let Some(target) = units::target(options.units) {
+                VolumeMassProperties::signed_volume_from_boundaries_in_units(
+                    &boundaries,
+                    document.tolerance(),
+                    document.units(),
+                    &target,
+                )?
+            } else {
+                VolumeMassProperties::signed_volume_from_boundaries(
+                    &boundaries,
+                    document.tolerance(),
+                )?
+            };
             return Ok(format!(
-                "Measured {count} object(s): total volume {}",
-                format_measurement(volume)
+                "Measured {count} object(s): total volume {}{}",
+                format_measurement(volume),
+                units::label(options.units)
             ));
         }
         // Rhino averages coordinate primitives for surfaces but tetrahedral
