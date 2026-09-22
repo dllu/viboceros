@@ -1,0 +1,446 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "orientation_audit",
+      "id": "box-False-generic",
+      "sources": [
+        {
+          "kind": "box",
+          "reversed": false
+        }
+      ],
+      "insertion": "generic",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "box-False-no_kink",
+      "sources": [
+        {
+          "kind": "box",
+          "reversed": false
+        }
+      ],
+      "insertion": "no_kink",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "box-True-generic",
+      "sources": [
+        {
+          "kind": "box",
+          "reversed": true
+        }
+      ],
+      "insertion": "generic",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "box-True-no_kink",
+      "sources": [
+        {
+          "kind": "box",
+          "reversed": true
+        }
+      ],
+      "insertion": "no_kink",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "open_box-False-generic",
+      "sources": [
+        {
+          "kind": "open_box",
+          "reversed": false
+        }
+      ],
+      "insertion": "generic",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "open_box-False-no_kink",
+      "sources": [
+        {
+          "kind": "open_box",
+          "reversed": false
+        }
+      ],
+      "insertion": "no_kink",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "open_box-True-generic",
+      "sources": [
+        {
+          "kind": "open_box",
+          "reversed": true
+        }
+      ],
+      "insertion": "generic",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "open_box-True-no_kink",
+      "sources": [
+        {
+          "kind": "open_box",
+          "reversed": true
+        }
+      ],
+      "insertion": "no_kink",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "plane-False-generic",
+      "sources": [
+        {
+          "kind": "plane",
+          "reversed": false
+        }
+      ],
+      "insertion": "generic",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "plane-False-no_kink",
+      "sources": [
+        {
+          "kind": "plane",
+          "reversed": false
+        }
+      ],
+      "insertion": "no_kink",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "plane-True-generic",
+      "sources": [
+        {
+          "kind": "plane",
+          "reversed": true
+        }
+      ],
+      "insertion": "generic",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "plane-True-no_kink",
+      "sources": [
+        {
+          "kind": "plane",
+          "reversed": true
+        }
+      ],
+      "insertion": "no_kink",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "sphere-False-generic",
+      "sources": [
+        {
+          "kind": "sphere",
+          "reversed": false
+        }
+      ],
+      "insertion": "generic",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "sphere-False-no_kink",
+      "sources": [
+        {
+          "kind": "sphere",
+          "reversed": false
+        }
+      ],
+      "insertion": "no_kink",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "sphere-True-generic",
+      "sources": [
+        {
+          "kind": "sphere",
+          "reversed": true
+        }
+      ],
+      "insertion": "generic",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "sphere-True-no_kink",
+      "sources": [
+        {
+          "kind": "sphere",
+          "reversed": true
+        }
+      ],
+      "insertion": "no_kink",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "mesh-False-generic",
+      "sources": [
+        {
+          "kind": "mesh",
+          "reversed": false
+        }
+      ],
+      "insertion": "generic",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "mesh-False-no_kink",
+      "sources": [
+        {
+          "kind": "mesh",
+          "reversed": false
+        }
+      ],
+      "insertion": "no_kink",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "mesh-True-generic",
+      "sources": [
+        {
+          "kind": "mesh",
+          "reversed": true
+        }
+      ],
+      "insertion": "generic",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "mesh-True-no_kink",
+      "sources": [
+        {
+          "kind": "mesh",
+          "reversed": true
+        }
+      ],
+      "insertion": "no_kink",
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "flip-box-False",
+      "sources": [
+        {
+          "kind": "box"
+        }
+      ],
+      "preselect": false,
+      "flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "flip-open_box-False",
+      "sources": [
+        {
+          "kind": "open_box"
+        }
+      ],
+      "preselect": false,
+      "flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "flip-plane-False",
+      "sources": [
+        {
+          "kind": "plane"
+        }
+      ],
+      "preselect": false,
+      "flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "flip-sphere-False",
+      "sources": [
+        {
+          "kind": "sphere"
+        }
+      ],
+      "preselect": false,
+      "flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "flip-mesh-False",
+      "sources": [
+        {
+          "kind": "mesh"
+        }
+      ],
+      "preselect": false,
+      "flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "flip-line-False",
+      "sources": [
+        {
+          "kind": "line"
+        }
+      ],
+      "preselect": false,
+      "flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "flip-point-False",
+      "sources": [
+        {
+          "kind": "point"
+        }
+      ],
+      "preselect": false,
+      "flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "flip-mixed-False",
+      "sources": [
+        {
+          "kind": "box"
+        },
+        {
+          "kind": "open_box"
+        },
+        {
+          "kind": "mesh"
+        },
+        {
+          "kind": "line"
+        },
+        {
+          "kind": "point"
+        }
+      ],
+      "preselect": false,
+      "flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "flip-box-True",
+      "sources": [
+        {
+          "kind": "box"
+        }
+      ],
+      "preselect": true,
+      "flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "flip-open_box-True",
+      "sources": [
+        {
+          "kind": "open_box"
+        }
+      ],
+      "preselect": true,
+      "flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "flip-plane-True",
+      "sources": [
+        {
+          "kind": "plane"
+        }
+      ],
+      "preselect": true,
+      "flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "flip-sphere-True",
+      "sources": [
+        {
+          "kind": "sphere"
+        }
+      ],
+      "preselect": true,
+      "flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "flip-mesh-True",
+      "sources": [
+        {
+          "kind": "mesh"
+        }
+      ],
+      "preselect": true,
+      "flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "flip-line-True",
+      "sources": [
+        {
+          "kind": "line"
+        }
+      ],
+      "preselect": true,
+      "flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "flip-point-True",
+      "sources": [
+        {
+          "kind": "point"
+        }
+      ],
+      "preselect": true,
+      "flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "flip-mixed-True",
+      "sources": [
+        {
+          "kind": "box"
+        },
+        {
+          "kind": "open_box"
+        },
+        {
+          "kind": "mesh"
+        },
+        {
+          "kind": "line"
+        },
+        {
+          "kind": "point"
+        }
+      ],
+      "preselect": true,
+      "flip": true
+    }
+  ]
+}

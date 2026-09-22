@@ -5,6 +5,10 @@
 [Diagnostic replay and Python API](oracle-replay.md) retain per-operation native
 errors while comparing every successful record against saved Rhino observations.
 
+The [orientation audit](orientation-audit.md) separates public document insertion
+and replacement from actual `Flip` command behavior, retaining full definitions
+and selection states. This diagnostic is not an identical-source native replay.
+
 The [conic-center audit](conic-center-audit.md) compares 32 full-coordinate public
 API records and 62 calibrated point-prompt records. It keeps API recognition,
 interactive snap policy, and their remaining discrepancies separate.

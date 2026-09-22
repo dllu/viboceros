@@ -2,6 +2,81 @@ use super::*;
 use viboceros_document::SelectionMode;
 
 #[test]
+fn flip_prompt_reverses_only_supported_group_members_and_releases_only_those_picks() {
+    for preselected in [false, true] {
+        let mut app = test_app();
+        enter(&mut app, "Box 0,0,0 1,1,0 1");
+        enter(&mut app, "Line 2,0,0 3,1,0");
+        enter(&mut app, "Point 4,0,0");
+        let ids = app.document.objects().map(|o| o.id()).collect::<Vec<_>>();
+        app.document
+            .add_group(Some("mixed".into()), ids.iter().copied())
+            .unwrap();
+        app.document.clear_selection();
+        let before = app.document.objects().cloned().collect::<Vec<_>>();
+        if preselected {
+            app.document
+                .select_object(ids[0], SelectionMode::Replace)
+                .unwrap();
+        }
+        enter(&mut app, "Flip");
+        if !preselected {
+            assert!(app.object_prompt.is_some());
+            // The retained Rhino probe adds each source by SelID. Exercise
+            // explicit command-first picks, not unaudited mouse group expansion.
+            for id in [ids[2], ids[0], ids[1]] {
+                app.apply_selection_click(SelectionClick {
+                    object_id: Some(id),
+                    mode: SelectionMode::Add,
+                });
+            }
+            assert_eq!(app.document.selected_object_count(), 3);
+            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+            enter(&mut app, "");
+        }
+        assert!(app.object_prompt.is_none());
+        assert!(app.document.is_selected(ids[0]));
+        assert_eq!(app.document.is_selected(ids[1]), preselected);
+        assert!(app.document.is_selected(ids[2]));
+        let after = app.document.objects().cloned().collect::<Vec<_>>();
+        assert_eq!(after[0], before[0]);
+        assert_eq!(after[2], before[2]);
+        let Geometry::Line(line) = after[1].geometry() else {
+            panic!("line")
+        };
+        assert_eq!(line.start(), point(3., 1., 0.));
+        assert_eq!(line.end(), point(2., 0., 0.));
+        assert_eq!(app.document.undo_label(), Some("Flip"));
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        enter(&mut app, "Redo");
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), after);
+    }
+}
+
+#[test]
+fn cancelling_flip_picking_never_changes_geometry_or_consumes_redo() {
+    let mut app = test_app();
+    enter(&mut app, "Line 0,0,0 1,2,3");
+    let id = app.document.objects().next().unwrap().id();
+    enter(&mut app, "Point 99,99,99");
+    enter(&mut app, "Undo");
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    app.document.clear_selection();
+    enter(&mut app, "Flip");
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(id),
+        mode: SelectionMode::Replace,
+    });
+    app.cancel_interactive_command(true);
+    assert!(app.object_prompt.is_none());
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    assert!(app.document.can_redo());
+    enter(&mut app, "Redo");
+    assert_eq!(app.document.objects().len(), 2);
+}
+
+#[test]
 fn volume_units_submenu_returns_to_picking_and_empty_enter_retains_the_choice() {
     use crate::app::object_selection::ObjectPromptPhase;
     let mut app = test_app();

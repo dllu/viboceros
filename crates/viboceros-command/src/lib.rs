@@ -98,6 +98,8 @@ use plane_primitives::{
     BoxCommand, CircleCommand, MeshBoxCommand, MeshPlaneCommand, PolygonCommand, RectangleCommand,
 };
 mod cap;
+mod flip;
+use flip::FlipCommand;
 mod curve_edit;
 mod merge_edge;
 mod merge_edges;
@@ -11749,7 +11751,7 @@ impl Command for DirectionCommand {
                     Geometry::NurbsSurface(surface.try_swapped_uv()?)
                 }
                 (DirectionEdit::Flip, geometry) => {
-                    flipped_geometry(geometry, document.tolerance())?
+                    flip::flipped_curve_or_mesh(geometry, document.tolerance())?
                         .ok_or(CommandError::UnsupportedDirectionEditGeometry)?
                 }
                 _ => return Err(CommandError::UnsupportedDirectionEditGeometry),
@@ -11796,56 +11798,6 @@ fn parse_direction_edit(arguments: &[&str]) -> Result<DirectionEdit, CommandErro
         Ok(DirectionEdit::SwapUv)
     } else {
         Err(CommandError::Usage(DIRECTION_USAGE))
-    }
-}
-
-fn flipped_geometry(
-    geometry: &Geometry,
-    tolerance: Tolerance,
-) -> Result<Option<Geometry>, GeometryError> {
-    Ok(match geometry {
-        Geometry::Line(line) => Some(Geometry::Line(line.reversed())),
-        Geometry::Circle(circle) => Some(Geometry::Circle(circle.reversed())),
-        Geometry::Arc(arc) => Some(Geometry::Arc(arc.reversed(tolerance)?)),
-        Geometry::Ellipse(ellipse) => Some(Geometry::Ellipse(ellipse.reversed())),
-        Geometry::Polyline(polyline) => Some(Geometry::Polyline(polyline.reversed())),
-        Geometry::NurbsCurve(curve) => Some(Geometry::NurbsCurve(curve.reversed()?)),
-        Geometry::PolyCurve(curve) => Some(Geometry::PolyCurve(curve.reversed()?)),
-        Geometry::Mesh(mesh) => Some(Geometry::Mesh(mesh.reversed())),
-        _ => None,
-    })
-}
-
-struct FlipCommand;
-
-impl Command for FlipCommand {
-    fn name(&self) -> &'static str {
-        "Flip"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["Reverse", "Rev"]
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        require_consumed(arguments, 0, "Flip")?;
-        let selected = document
-            .selected_objects()
-            .map(|object| (object.id(), object.geometry()))
-            .collect::<Vec<_>>();
-        if selected.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
-        let replacements = selected
-            .into_iter()
-            .map(|(id, geometry)| {
-                let reversed = flipped_geometry(geometry, document.tolerance())?
-                    .ok_or(CommandError::UnsupportedFlipGeometry)?;
-                Ok((id, reversed))
-            })
-            .collect::<Result<Vec<_>, CommandError>>()?;
-        let count = document.replace_object_geometries(replacements)?;
-        Ok(format!("Flipped {count} object(s)"))
     }
 }
 
@@ -17162,11 +17114,6 @@ pub enum CommandError {
     #[error("the requested Dir mode is unsupported for one or more selected object types")]
     UnsupportedDirectionEditGeometry,
 
-    #[error(
-        "Flip supports selected lines, analytic curves, polylines, NURBS curves, and meshes only"
-    )]
-    UnsupportedFlipGeometry,
-
     #[error("UnifyMeshNormals supports selected meshes only")]
     UnsupportedUnifyMeshNormalsGeometry,
 
@@ -17607,7 +17554,7 @@ mod tests {
         Brep::try_cylinder(frame, 5.0, 0.0, 10.0, Tolerance::DEFAULT).unwrap()
     }
 
-    fn rational_multi_span_surface() -> NurbsSurface {
+    pub(super) fn rational_multi_span_surface() -> NurbsSurface {
         let mut controls = Vec::new();
         for v in 0..4 {
             for u in 0..4 {
@@ -27101,14 +27048,20 @@ mod tests {
 
         registry.execute(&mut document, "Point 99,99").unwrap();
         registry.execute(&mut document, "SelAll").unwrap();
-        let before = document.objects().cloned().collect::<Vec<_>>();
-        assert!(matches!(
-            registry.execute(&mut document, "Reverse"),
-            Err(CommandError::UnsupportedFlipGeometry)
-        ));
+        let point = document.objects().last().unwrap().clone();
         assert_eq!(
-            document.objects().collect::<Vec<_>>(),
-            before.iter().collect::<Vec<_>>()
+            registry.execute(&mut document, "Reverse").unwrap(),
+            "Flipped 2 object(s)"
+        );
+        assert_eq!(document.object(point.id()), Some(&point));
+        assert_eq!(document.selected_object_count(), 3);
+        assert_eq!(
+            document.object(ids[0]).unwrap().geometry(),
+            &Geometry::Line(original_line)
+        );
+        assert_eq!(
+            document.object(ids[1]).unwrap().geometry(),
+            &Geometry::Circle(original_circle)
         );
     }
 

@@ -1,0 +1,20 @@
+{
+  "capture_date_utc": "2026-09-22",
+  "engine_version": "8.32.26160.13001",
+  "completed_operations": 36,
+  "actual_flip_command_cases": 16,
+  "insertion_replacement_cases": 20,
+  "raw_response_sha256_before_compaction": "d6a1209bb178b8c0e25d25529cf4446342ba9e724c589b8ba12c1ff74416bbcf",
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/orientation_audit.json": "d9e62f0851065f6698f606cfd7f88ca9e1714136815fd86340df4b01e0f6026a",
+    "tools/rhino_oracle/observations/orientation_audit.json": "bf298173f6ad642ea23a59a9c0108f9a55be7cd81283b5eb57b336abee15fcf8"
+  },
+  "notes": [
+    "An owned private-Xvfb session captured the entire 36-case batch; no existing user session was targeted.",
+    "The response was compacted as JSON and all retained values were checked recursively against the original, including IEEE-754 numeric bit patterns.",
+    "The probe checks insertion does not mutate caller-owned input and replacement/commands do not change identity or object count.",
+    "Native command and UI tests independently exercise these behavioral witnesses. This is not an identical-source native replay or speed comparison.",
+    "Mesh SolidOrientation diagnostics remain unchanged while raw face winding reverses; the raw diagnostic and face definitions are both preserved.",
+    "Document-wide normalization of multi-shell geometry is not implemented on the basis of single-shell observations."
+  ]
+}

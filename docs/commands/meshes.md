@@ -174,11 +174,12 @@ non-orientable constraints atomically. `Dir UReverse|VReverse|SwapUV` reverses
 either parameter direction or transposes selected untrimmed NURBS surfaces
 exactly; `Mode=FlipU|FlipV|SwapUV` is also accepted. Rational weights,
 non-clamped domains, periodic directions, identities, attributes, groups,
-selection, and undo are preserved. `Dir Flip` reverses the same selected curve
-and mesh types as `Flip`; standalone surface-normal orientation is not yet a
-separate property in the native surface model. `Flip` (aliases `Reverse` and `Rev`)
-reverses selected curve directions or every face in selected meshes without
-changing object identities, attributes, groups, or closed-curve seams.
+selection, and undo are preserved. `Dir Flip` currently supports curves and
+meshes only; its interactive surface menu remains incomplete. Standalone
+[`Flip`](flip.md) (aliases `Reverse` and `Rev`) also reverses open surfaces and
+B-reps without reparameterizing them. Closed B-reps and unsupported objects
+are skipped; closed meshes can flip. Identities, attributes, groups, and
+closed-curve seams are preserved.
 These three commands borrow selected input geometry while constructing their
 replacement results, avoiding an extra copy of every mesh, curve, or surface
 before the geometry operation. All results are still staged before document
