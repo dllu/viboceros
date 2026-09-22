@@ -2,6 +2,9 @@
 
 [Command index](README.md)
 
+For a permanent cumulative area-centroid point, use [AreaCentroid](area-centroid.md).
+Unlike the read-only queries below, it creates geometry and an undo step.
+
 ## Angle
 
 Enter `Angle 0,0,0 1,0,0 4,5,6 4,6,6` to measure the angle between two

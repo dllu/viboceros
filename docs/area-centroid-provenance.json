@@ -1,0 +1,26 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "retained_command_cases": 54,
+  "command_successes": 53,
+  "no_eligible_geometry": 1,
+  "default_full_matches": 46,
+  "explicit_tolerance_api_matches": 52,
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 0,
+  "verified_mesh_sources": 35,
+  "complete_brep_reversals_on_insertion": 1,
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/area_centroid.json": "51cbf8ccd9326b9ced67c0c538204c6c00832c817d33f8e3df1b8115637f091a",
+    "tools/rhino_oracle/observations/area_centroid.json": "e8ef3e5a142377960732d379e21f7ce3254653ff48884d08913b11526a544b9f",
+    "tools/rhino_oracle/fixtures/area_centroid_integrals.json": "2580b30504a75cf91de45e7a6f031ba8eb404957a1b366474cef21f0dea2ae78"
+  },
+  "raw_response_sha256": "42bcf446e2963e162167776ab3a0b903b00d9a285eaa33e7be4b9ec703d8ab96",
+  "notes": [
+    "Captured public APIs in an owned private-Xvfb Rhino session; existing Rhino processes were untouched.",
+    "All 54 cases retained, including rejected input, both API precision levels, actual command state and complete constructed/stored geometry definitions. Meshes use Point3dAt binary64 recording.",
+    "The inward capped B-rep was accepted only after public DuplicateBrep/Flip exactly reproduced the stored definition; both definitions are retained. Native area mass is orientation-independent.",
+    "Seven independent analytic/Decimal references use source definitions only; bilinear integration compares 32/64-point rules at 68-digit precision.",
+    "Eight default comparisons and two explicit-tolerance API comparisons remain real failures at 1e-9; no epsilon widening or observed-target substitution.",
+    "Command-history strings and source definitions are retained context, not native outputs. Native Undo/Redo and UI tests are separate. No Rhino Undo/Redo or performance-parity claim."
+  ]
+}

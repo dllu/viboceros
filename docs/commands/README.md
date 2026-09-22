@@ -28,6 +28,7 @@ Rhino's complete command set is still a work in progress.
 - [Joining curves, meshes, and surfaces; JoinCopy](join.md)
 - [Extraction, measurement, and intersections](editing.md)
 - [Angle, distance, length, area, and volume queries](measurements.md)
+- [Cumulative area-centroid markers](area-centroid.md)
 - [Local curve radius and diameter](radius.md)
 - [World and construction-plane point coordinates](evaluate-point.md)
 - [Curve and surface parameter domains](domain.md)
@@ -199,6 +200,7 @@ Explode
 Length
 Curvature MarkCurvature=No 2,0,0
 Area
+AreaCentroid
 Volume
 Divide 8
 Divide Length 2.5 MarkEnds

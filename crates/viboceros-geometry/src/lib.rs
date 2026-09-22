@@ -4,6 +4,8 @@
 //! or produce degenerate geometry return [`GeometryError`] rather than letting
 //! invalid values enter the model.
 
+mod area_mass_properties;
+pub use area_mass_properties::AreaMassProperties;
 mod bezier;
 mod binary_accumulator;
 mod bounds;

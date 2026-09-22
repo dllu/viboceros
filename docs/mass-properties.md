@@ -7,6 +7,13 @@
 outward normals give positive volume and reversing every face gives negative
 volume. Both commands preserve selection, geometry, attributes, and undo history.
 
+[AreaCentroid](commands/area-centroid.md) integrates area first moments and creates
+one cumulative point. Its independent exact weighted aggregation is separate from
+document selection, grouping, and history. Mesh area and area moments split quads
+along the shorter spatial diagonal (A-C on exact ties); the fixed display/volume
+triangulation is unchanged. The command documentation retains the associated
+Rhino numerical differences and independent high-precision reference checks.
+
 ## Integration
 
 B-rep measurements use the NURBS surfaces and parameter-space trim curves.

@@ -16,6 +16,39 @@ pub(super) fn integrate(
     absolute_tolerance: Real,
     relative_tolerance: Real,
 ) -> Result<Real, GeometryError> {
+    let value = integrate_density(
+        face,
+        surface,
+        absolute_tolerance,
+        relative_tolerance,
+        |point, normal, sign| match measure {
+            Measure::Area => {
+                Ok(sign * product_three(normal.length()?, 4.0, 1.0, "trimmed area integrand")?)
+            }
+            Measure::Volume => {
+                let triple = Vector3::try_new(point.x(), point.y(), point.z())?.dot(normal)?;
+                let orientation = if face.reversed { -1.0 } else { 1.0 };
+                Ok(orientation
+                    * triple.signum()
+                    * product_three(triple.abs(), 4.0, 1.0 / 3.0, "trimmed volume integrand")?)
+            }
+        },
+    )?;
+    if matches!(measure, Measure::Area) && value < 0.0 {
+        return Err(GeometryError::NumericalIntegrationDidNotConverge);
+    }
+    Ok(value)
+}
+
+/// Shared Green-theorem boundary traversal. The normal includes oriented
+/// boundary/parameter scaling; `sign` is the UV boundary direction.
+pub(super) fn integrate_density(
+    face: &BrepFace,
+    surface: &NurbsSurface,
+    absolute_tolerance: Real,
+    relative_tolerance: Real,
+    mut density: impl FnMut(crate::Point3, Vector3, Real) -> Result<Real, GeometryError>,
+) -> Result<Real, GeometryError> {
     let curves = boundary::prepare(face, surface)?;
     let interval_count = curves.iter().map(|c| c.intervals.len()).sum::<usize>();
     let outer_tolerance =
@@ -65,28 +98,7 @@ pub(super) fn integrate(
                         // Scale derivatives before the cross product: equivalent
                         // very small/large UV domains must not overflow it.
                         let normal = du.scaled(half_u)?.cross(dv.scaled(v_scale)?)?;
-                        match measure {
-                            Measure::Area => Ok(v_scale.signum()
-                                * product_three(
-                                    normal.length()?,
-                                    4.0,
-                                    1.0,
-                                    "trimmed area integrand",
-                                )?),
-                            Measure::Volume => {
-                                let triple = Vector3::try_new(point.x(), point.y(), point.z())?
-                                    .dot(normal)?;
-                                let orientation = if face.reversed { -1.0 } else { 1.0 };
-                                Ok(orientation
-                                    * triple.signum()
-                                    * product_three(
-                                        triple.abs(),
-                                        4.0,
-                                        1.0 / 3.0,
-                                        "trimmed volume integrand",
-                                    )?)
-                            }
-                        }
+                        density(point, normal, v_scale.signum())
                     })?;
                 neumaier_add(&mut inner_sum, &mut inner_correction, value);
             }
@@ -98,9 +110,6 @@ pub(super) fn integrate(
     }
     let value = sum + correction;
     require_finite([value], "trimmed face integral")?;
-    if matches!(measure, Measure::Area) && value < 0.0 {
-        return Err(GeometryError::NumericalIntegrationDidNotConverge);
-    }
     Ok(value)
 }
 

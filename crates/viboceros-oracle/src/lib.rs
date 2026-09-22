@@ -39,6 +39,7 @@ use viboceros_io::{
     ThreeDmObject, read_3dm_file, write_3dm_file,
 };
 
+mod area_centroid;
 mod construction_plane;
 #[cfg(test)]
 mod curve_closest_tests;
@@ -164,6 +165,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    AreaCentroidCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: area_centroid::AreaCentroidFixture,
+    },
     ProjectedObjectSnap {
         id: String,
         #[serde(flatten)]
@@ -1681,7 +1687,8 @@ pub enum SurfaceSplitCutterDefinition {
 impl Operation {
     pub fn id(&self) -> &str {
         match self {
-            Self::ProjectedObjectSnap { id, .. }
+            Self::AreaCentroidCommand { id, .. }
+            | Self::ProjectedObjectSnap { id, .. }
             | Self::PolycurveGeometry { id, .. }
             | Self::CurveBounds { id, .. }
             | Self::SurfaceBounds { id, .. }
@@ -2034,9 +2041,13 @@ fn validate_request(request: &ProbeRequest) -> Result<(), ProbeError> {
         if id.trim().is_empty() || !ids.insert(id) {
             return Err(ProbeError::InvalidOperationId(id.to_owned()));
         }
-        if matches!(operation, Operation::ProjectedObjectSnap { .. }) && request.iterations != 1 {
+        if matches!(
+            operation,
+            Operation::ProjectedObjectSnap { .. } | Operation::AreaCentroidCommand { .. }
+        ) && request.iterations != 1
+        {
             return Err(ProbeError::FixtureInvariant(
-                "projected snaps require one iteration",
+                "projected snaps and area centroid commands require one iteration",
             ));
         }
         if matches!(
@@ -2065,6 +2076,7 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::AreaCentroidCommand { fixture, .. } => area_centroid::run(fixture, tolerance)?,
         Operation::ProjectedObjectSnap { fixture, .. } => {
             projected_object_snap::run(fixture, tolerance)?
         }

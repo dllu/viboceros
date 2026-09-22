@@ -1,8 +1,39 @@
 //! Planar enclosed-area dispatch using analytic formulas or exact boundaries.
 
-use crate::{Brep, CurveRef, GeometryError, Real, Tolerance};
+use crate::exact_scalar::rational;
+use crate::{AreaMassProperties, Brep, CurveRef, GeometryError, Real, Tolerance};
 
 impl CurveRef<'_> {
+    /// Area centroid of a closed planar boundary. Curves are integrated as
+    /// exact rational trims, not sampled polygons or perimeter distributions.
+    pub fn planar_area_mass_properties(
+        self,
+        tolerance: Tolerance,
+    ) -> Result<AreaMassProperties, GeometryError> {
+        match self {
+            Self::Circle(curve) => Ok(AreaMassProperties::at_point(
+                rational(std::f64::consts::PI)
+                    * rational(curve.radius())
+                    * rational(curve.radius()),
+                curve.center(),
+            )),
+            Self::Ellipse(curve) => Ok(AreaMassProperties::at_point(
+                rational(std::f64::consts::PI)
+                    * rational(curve.radius_x())
+                    * rational(curve.radius_y()),
+                curve.center(),
+            )),
+            Self::Line(_) => Err(GeometryError::InvalidPlanarFaceBoundary),
+            Self::NurbsCurve(curve) => {
+                Brep::try_planar_face(curve.for_integration()?.as_ref(), tolerance)?
+                    .area_mass_properties(tolerance)
+            }
+            Self::PolyCurve(curve) => CurveRef::NurbsCurve(&curve.for_integration()?.to_nurbs()?)
+                .planar_area_mass_properties(tolerance),
+            _ => CurveRef::NurbsCurve(&self.to_nurbs()?).planar_area_mass_properties(tolerance),
+        }
+    }
+
     /// Measures enclosed planar area without using display tessellation.
     /// General boundaries must satisfy the planar-face builder's closure,
     /// planarity, and trim-validity checks. Reversal does not change area.

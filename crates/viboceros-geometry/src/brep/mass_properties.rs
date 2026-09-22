@@ -10,6 +10,7 @@ use crate::{
 };
 
 mod boundary;
+mod centroid;
 mod trimmed;
 
 #[cfg(test)]

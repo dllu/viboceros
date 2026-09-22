@@ -5061,6 +5061,9 @@ def _execute(operation, iterations, tolerance):
         return _curvature_command(operation, iterations, tolerance)
     if kind == "distance_command":
         return _distance_command(operation)
+    if kind == "area_centroid_command":
+        import area_centroid_probe
+        return area_centroid_probe.run(operation, tolerance, globals())
     if kind == "angle_command":
         return _angle_command(operation)
     if kind == "angle_objects_command":

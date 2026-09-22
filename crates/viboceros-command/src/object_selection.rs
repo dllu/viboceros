@@ -21,6 +21,7 @@ pub enum ObjectSelectionFilter {
     SurfaceComponents,
     Surfaces,
     PointCloudSources,
+    Area,
 }
 
 impl ObjectSelectionFilter {
@@ -29,6 +30,14 @@ impl ObjectSelectionFilter {
     pub fn accepts_object(self, object: &viboceros_document::Object) -> bool {
         let geometry = object.geometry();
         match self {
+            Self::Area => {
+                matches!(
+                    geometry,
+                    Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)
+                ) || geometry
+                    .curve_ref()
+                    .is_some_and(|curve| curve.is_closed().unwrap_or(false))
+            }
             Self::Any => true,
             Self::Grouped => !object.group_ids().is_empty(),
             Self::PointCloudSources => matches!(geometry, Geometry::Point(_) | Geometry::Mesh(_)),

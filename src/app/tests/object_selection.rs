@@ -2,6 +2,44 @@ use super::*;
 use viboceros_document::SelectionMode;
 
 #[test]
+fn area_centroid_uses_filtered_object_prompt_and_creates_one_undoable_point() {
+    for cancel in [false, true] {
+        let mut app = test_app();
+        enter(&mut app, "Circle 0,0 2");
+        let curve = app.document.objects().last().unwrap().id();
+        enter(&mut app, "Line 5,0 6,0");
+        let line = app.document.objects().last().unwrap().id();
+        let before = app.document.objects().cloned().collect::<Vec<_>>();
+        app.document.clear_selection();
+        enter(&mut app, "AreaCentroid");
+        assert!(app.object_prompt.is_some());
+        for id in [line, curve] {
+            app.apply_selection_click(SelectionClick {
+                object_id: Some(id),
+                mode: SelectionMode::Replace,
+            });
+        }
+        assert!(!app.document.is_selected(line));
+        assert!(app.document.is_selected(curve));
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        if cancel {
+            app.cancel_interactive_command(false);
+        } else {
+            enter(&mut app, "");
+            assert_eq!(app.document.objects().len(), before.len() + 1);
+            assert!(
+                matches!(app.document.objects().last().unwrap().geometry(),Geometry::Point(p) if *p==point(0.,0.,0.))
+            );
+            assert_eq!(app.document.selected_object_count(), 0);
+            assert_eq!(app.document.undo_label(), Some("AreaCentroid"));
+            enter(&mut app, "Undo");
+        }
+        assert!(app.object_prompt.is_none());
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    }
+}
+
+#[test]
 fn merge_all_edges_filters_picks_waits_for_enter_and_cancels_without_edits() {
     use viboceros_geometry::{Brep, Tolerance};
     for cancel in [false, true] {

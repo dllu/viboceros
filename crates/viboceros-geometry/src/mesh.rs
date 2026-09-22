@@ -1,5 +1,6 @@
 mod append;
 mod join;
+mod mass_triangles;
 pub use join::{MeshJoinComponent, MeshJoinOptions, join_meshes};
 #[cfg(test)]
 mod area_tests;
@@ -1927,15 +1928,9 @@ impl TriangleMesh {
             let MeshFace::Quad([a, b, c, d]) = self.faces[face_index] else {
                 continue;
             };
-            let diagonal_ac = self.vertices[a as usize].distance_to(self.vertices[c as usize])?;
-            let diagonal_bd = self.vertices[b as usize].distance_to(self.vertices[d as usize])?;
-            if diagonal_ac <= diagonal_bd {
-                faces[face_index] = MeshFace::Triangle([a, b, c]);
-                faces.push(MeshFace::Triangle([a, c, d]));
-            } else {
-                faces[face_index] = MeshFace::Triangle([a, b, d]);
-                faces.push(MeshFace::Triangle([b, c, d]));
-            }
+            let [first, second] = mass_triangles::split(&self.vertices, [a, b, c, d]);
+            faces[face_index] = MeshFace::Triangle(first);
+            faces.push(MeshFace::Triangle(second));
         }
         Ok((
             Self::try_new_faces(self.vertices.clone(), faces, tolerance)?,
@@ -3475,10 +3470,7 @@ impl TriangleMesh {
     pub fn area(&self) -> Result<Real, GeometryError> {
         let mut sum = 0.0;
         let mut correction = 0.0;
-        for index in 0..self.triangles.len() {
-            let points = self
-                .triangle_points(index)
-                .expect("a validated mesh has valid triangle indices");
+        for points in self.mass_triangles() {
             let first = points[0].vector_to(points[1])?;
             let second = points[0].vector_to(points[2])?;
             let area = first.half_cross_length(second)?;

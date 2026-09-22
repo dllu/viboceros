@@ -114,6 +114,7 @@ See [Length, Area, and Volume](measurements.md) for read-only measurement
 commands, supported geometry, and signed-volume behavior. The separate
 [mass-properties documentation](../mass-properties.md) describes trimmed-boundary
 integration, translation-stable accumulation, and numerical validation.
+Use [AreaCentroid](area-centroid.md) to create one cumulative area-weighted marker.
 
 ## Curvature
 

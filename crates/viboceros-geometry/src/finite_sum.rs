@@ -70,15 +70,19 @@ impl FiniteSum {
         if self.count == 0 {
             return Err(GeometryError::EmptyPointSet);
         }
+        Ok(self.exact_total() / Rational::from_integer(self.count.into()))
+    }
+
+    pub(crate) fn exact_total(&self) -> Rational {
         let integer = |words: &[u64; LIMBS]| {
             let digits: [u32; LIMBS * 2] =
                 std::array::from_fn(|i| (words[i / 2] >> (32 * (i % 2))) as u32);
             BigInt::from_slice(Sign::Plus, &digits)
         };
-        Ok(Rational::new(
+        Rational::new(
             integer(&self.positive) - integer(&self.negative),
-            BigInt::from(self.count) << 1074,
-        ))
+            BigInt::from(1) << 1074,
+        )
     }
 }
 

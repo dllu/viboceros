@@ -132,9 +132,13 @@ topology, planarity, and short-curve selectors. It preflights eligible matches
 before applying additive selection and leaves model history unchanged.
 The geometry [shortness module](curve-shortness.md) keeps representation-dependent
 selection integration separate from accuracy-controlled arc-length measurement.
-The read-only [`measurements` command module](commands/measurements.md) owns
+The [`measurements` command module](commands/measurements.md) owns read-only
 Length, Area, and Volume, with shared streaming exact finite-value aggregation and
 separate nonnegative/signed policies. Its tests live beside the implementation.
+Its separate [`area_centroid` command](commands/area-centroid.md) owns filtered
+selection and atomic marker creation. The kernel's `area_mass_properties` module
+owns exact weighted aggregation, mesh accumulation, and normalized surface
+densities; B-rep moments reuse the existing trimmed-boundary traversal.
 Its `distance` submodule handles read-only two-point distance, world/CPlane deltas,
 and angular reporting. The application supplies picked or typed points through
 the shared drafting path; neither implementation mutates document history.
