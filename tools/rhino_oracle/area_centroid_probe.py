@@ -1,9 +1,10 @@
-"""Owned AreaCentroid command observations; public APIs only."""
+"""Owned area/volume centroid command observations; public APIs only."""
 import re
 
 
-def validate(operation):
-    if (not isinstance(operation,dict) or operation.get("op") != "area_centroid_command"
+def validate(operation, measure="area"):
+    if measure not in ("area", "volume"): raise ValueError("invalid centroid measure")
+    if (not isinstance(operation,dict) or operation.get("op") != measure + "_centroid_command"
             or set(operation) - set(("groups", "selected", "preselect")) != set(("op", "id", "sources"))):
         raise ValueError("invalid area centroid fields")
     if not isinstance(operation["id"],str) or re.match(r"^[A-Za-z0-9_.-]{1,100}\Z",operation["id"]) is None:
@@ -24,11 +25,16 @@ def validate(operation):
     indices(operation.get("selected", list(range(len(sources)))))
 
 
-def run(operation, tolerance, helper):
+def run(operation, tolerance, helper, measure="area"):
     import Rhino
     import System
     from join_probe import observe_command
-    validate(operation)
+    validate(operation, measure)
+    command = "AreaCentroid" if measure == "area" else "VolumeCentroid"
+    mass_api = Rhino.Geometry.AreaMassProperties if measure == "area" else Rhino.Geometry.VolumeMassProperties
+    def mass_record(mass):
+        if mass is None: return None
+        return {measure: float(mass.Area if measure == "area" else mass.Volume), "centroid": helper["_xyz"](mass.Centroid)}
     document = Rhino.RhinoDoc.ActiveDoc
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
     settings.NormalObjects = settings.HiddenObjects = settings.LockedObjects = True
@@ -37,18 +43,28 @@ def run(operation, tolerance, helper):
     selected_before = [obj.Id for obj in objects() if obj.IsSelected(False)]
     groups_before = set(i for i in range(document.Groups.Count) if not document.Groups.IsDeleted(i))
     geometries, ids, original, properties, constructed, insertions, tight = [], [], [], [], [], [], []
+    source_properties, source_first_moments = [], []
     def geometry_record(geometry):
         if isinstance(geometry, Rhino.Geometry.Mesh):
             return helper["_polygon_mesh_value"](geometry)
         if isinstance(geometry, Rhino.Geometry.Brep): return helper["_interchange_brep_record"](geometry)
         if isinstance(geometry, Rhino.Geometry.Surface): return helper["_nurbs_surface_definition"](geometry)
         if isinstance(geometry, Rhino.Geometry.Curve): return helper["_nurbs_curve_definition"](geometry)
+        if isinstance(geometry, Rhino.Geometry.Point): return {"point": helper["_xyz"](geometry.Location)}
         raise ValueError("unsupported centroid source")
     try:
         document.Objects.UnselectAll()
         for source in operation["sources"]:
             geometry = helper["_object_source"](source, tolerance)
             geometries.append(geometry)
+            if measure == "volume":
+                supported = isinstance(geometry, (Rhino.Geometry.Brep, Rhino.Geometry.Surface, Rhino.Geometry.Mesh))
+                mass = mass_api.Compute(geometry) if supported else None
+                try:
+                    source_properties.append(mass_record(mass))
+                    source_first_moments.append(None if mass is None else helper["_xyz"](mass.WorldCoordinatesFirstMoments))
+                finally:
+                    if mass is not None: mass.Dispose()
             key = document.Objects.Add(geometry)
             if key == System.Guid.Empty: raise ValueError("centroid source insertion failed")
             ids.append(key)
@@ -71,9 +87,11 @@ def run(operation, tolerance, helper):
             finally:
                 if promoted is not None: promoted.Dispose()
             original.append(geometry_record(stored))
-            mass = Rhino.Geometry.AreaMassProperties.Compute(stored)
+            supported = isinstance(stored, (Rhino.Geometry.Brep, Rhino.Geometry.Surface, Rhino.Geometry.Mesh))
+            if measure == "area": supported = supported or isinstance(stored, Rhino.Geometry.Curve)
+            mass = mass_api.Compute(stored) if supported else None
             try:
-                properties.append(None if mass is None else dict(area=float(mass.Area), centroid=helper["_xyz"](mass.Centroid)))
+                properties.append(mass_record(mass))
             finally:
                 if mass is not None: mass.Dispose()
             if isinstance(stored, (Rhino.Geometry.Brep, Rhino.Geometry.Surface)):
@@ -82,9 +100,9 @@ def run(operation, tolerance, helper):
                 promoted = stored.ToBrep() if isinstance(stored, Rhino.Geometry.Surface) else None
                 mass = None
                 try:
-                    mass = Rhino.Geometry.AreaMassProperties.Compute(promoted if promoted is not None else stored,
+                    mass = mass_api.Compute(promoted if promoted is not None else stored,
                         True, True, False, False, tolerance["relative"], tolerance["absolute"])
-                    tight.append(None if mass is None else dict(area=float(mass.Area), centroid=helper["_xyz"](mass.Centroid)))
+                    tight.append(mass_record(mass))
                 finally:
                     if mass is not None: mass.Dispose()
                     if promoted is not None: promoted.Dispose()
@@ -95,12 +113,12 @@ def run(operation, tolerance, helper):
         selected_indices = operation.get("selected", list(range(len(ids))))
         if operation.get("preselect", True):
             for i in selected_indices: document.Objects.Select(ids[i])
-            macro = "_AreaCentroid _Enter"
+            macro = "_" + command + " _Enter"
         else:
-            macro = "_AreaCentroid " + " ".join("_SelID %s" % ids[i] for i in selected_indices) + " _Enter"
+            macro = "_" + command + " " + " ".join("_SelID %s" % ids[i] for i in selected_indices) + " _Enter"
         marker = "Viboceros centroid " + str(System.Guid.NewGuid())
         Rhino.RhinoApp.WriteLine(marker)
-        succeeded, _, _ = observe_command(Rhino.Commands.Command, "AreaCentroid",
+        succeeded, _, _ = observe_command(Rhino.Commands.Command, command,
             lambda: Rhino.RhinoApp.RunScript(macro, True), lambda: None, lambda: [])
         history = Rhino.RhinoApp.CommandHistoryWindowText.split(marker, 1)
         if len(history) != 2: raise ValueError("centroid history marker missing")
@@ -118,9 +136,12 @@ def run(operation, tolerance, helper):
             if obj is None or geometry_record(obj.Geometry) != original[i]:
                 raise ValueError("centroid changed source geometry")
             if obj.IsSelected(False): selected.append(i)
-        return dict(succeeded=succeeded, properties=properties, points=points, selected=selected, inputs=original,
+        result = dict(succeeded=succeeded, properties=properties, points=points, selected=selected, inputs=original,
                     constructed_inputs=constructed, insertions=insertions, tight_properties=tight,
-                    history=history[1].strip()), 0
+                    history=history[1].strip())
+        if measure == "volume":
+            result.update(source_properties=source_properties, source_first_moments=source_first_moments)
+        return result, 0
     finally:
         Rhino.RhinoApp.RunScript("!", False)
         for obj in objects():

@@ -51,8 +51,8 @@ Mesh `Area`, `AreaCentroid`, and `TriangulateMesh` use the shorter spatial quad
 diagonal; an exact tie retains A-C. Near-equal or overflowing chord lengths use
 exact squared-distance comparison. For a warped quad with equal diagonals,
 cyclically reordering vertices can therefore change its measured area. Display
-triangulation is unchanged. Mesh `Volume` still uses its existing triangulation;
-this audit does not establish warped-quad volume parity.
+triangulation is unchanged. The subsequent [VolumeCentroid audit](volume-centroid.md)
+also established and implemented the shorter-diagonal policy for mesh `Volume`.
 
 ## Validation and retained differences
 

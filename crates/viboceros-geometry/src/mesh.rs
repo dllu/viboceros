@@ -3530,10 +3530,8 @@ impl TriangleMesh {
 
         let mut sum = 0.0;
         let mut correction = 0.0;
-        for triangle in &self.triangles {
-            let a = relative_vertices[triangle[0] as usize];
-            let b = relative_vertices[triangle[1] as usize];
-            let c = relative_vertices[triangle[2] as usize];
+        for triangle in self.mass_triangle_indices() {
+            let [a, b, c] = triangle.map(|i| relative_vertices[i as usize]);
             let cross = [
                 b[1].mul_add(c[2], -b[2] * c[1]),
                 b[2].mul_add(c[0], -b[0] * c[2]),

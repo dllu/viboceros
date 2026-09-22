@@ -3,6 +3,67 @@ use super::*;
 use crate::binary_accumulator::{add_product, decompose};
 use std::cmp::Ordering;
 
+/// Exact ordering of two independent endpoint pairs, without a rounded origin
+/// shift or allocation. 18 products, at most twice MAX², fit in 66 limbs at
+/// quantum 2^-2148, including every same-sign carry.
+pub(crate) fn compare_chords(first: [Point3; 2], second: [Point3; 2]) -> Ordering {
+    let mut sum = DistanceComparison::default();
+    for axis in 0..3 {
+        let [a, b] = first.map(|p| p.to_array()[axis]);
+        let [c, d] = second.map(|p| p.to_array()[axis]);
+        if (a == c && b == d) || (a == d && b == c) {
+            continue;
+        }
+        // (a-b)²-(c-d)² = a²+b²-2ab-c²-d²+2cd.
+        for (x, y, subtract, twice) in [
+            (a, a, false, false),
+            (b, b, false, false),
+            (a, b, true, true),
+            (c, c, true, false),
+            (d, d, true, false),
+            (c, d, false, true),
+        ] {
+            sum.add(x, y, subtract, twice);
+        }
+    }
+    sum.ordering()
+}
+
+struct DistanceComparison {
+    positive: [u64; 66],
+    negative: [u64; 66],
+}
+
+impl Default for DistanceComparison {
+    fn default() -> Self {
+        Self {
+            positive: [0; 66],
+            negative: [0; 66],
+        }
+    }
+}
+
+impl DistanceComparison {
+    fn add(&mut self, a: Real, b: Real, subtract: bool, twice: bool) {
+        let (a_bits, a_shift) = decompose(a);
+        let (b_bits, b_shift) = decompose(b);
+        let target = if a.is_sign_negative() ^ b.is_sign_negative() ^ subtract {
+            &mut self.negative
+        } else {
+            &mut self.positive
+        };
+        add_product(
+            target,
+            u128::from(a_bits) * u128::from(b_bits),
+            a_shift + b_shift + usize::from(twice),
+        );
+    }
+
+    fn ordering(&self) -> Ordering {
+        self.positive.iter().rev().cmp(self.negative.iter().rev())
+    }
+}
+
 impl Point3 {
     /// Orders the distances from this point to `first` and `second` exactly for
     /// their stored binary64 coordinates, even when distances overflow or tie
@@ -13,22 +74,7 @@ impl Point3 {
         }
         // 12 products, at most twice MAX² each: 66 limbs at quantum 2^-2148
         // cover every finite binary64 input and all carries (highest bit <4201).
-        let mut positive = [0_u64; 66];
-        let mut negative = [0_u64; 66];
-        let mut add = |a: Real, b: Real, subtract: bool, twice: bool| {
-            let (a_bits, a_shift) = decompose(a);
-            let (b_bits, b_shift) = decompose(b);
-            let target = if a.is_sign_negative() ^ b.is_sign_negative() ^ subtract {
-                &mut negative
-            } else {
-                &mut positive
-            };
-            add_product(
-                target,
-                u128::from(a_bits) * u128::from(b_bits),
-                a_shift + b_shift + usize::from(twice),
-            );
-        };
+        let mut sum = DistanceComparison::default();
         for ((t, a), b) in self
             .to_array()
             .into_iter()
@@ -39,18 +85,48 @@ impl Point3 {
                 continue;
             }
             // |a-t|² - |b-t|² = a² - b² - 2ta + 2tb; t² cancels exactly.
-            add(a, a, false, false);
-            add(b, b, true, false);
-            add(t, a, true, true);
-            add(t, b, false, true);
+            sum.add(a, a, false, false);
+            sum.add(b, b, true, false);
+            sum.add(t, a, true, true);
+            sum.add(t, b, false, true);
         }
-        positive.iter().rev().cmp(negative.iter().rev())
+        sum.ordering()
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn independent_chord_order_matches_full_range_rational_differences() {
+        use num_rational::BigRational as R;
+        let mut state = 0x57917198324_u64;
+        for _ in 0..512 {
+            let mut next = || loop {
+                state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
+                let x = Real::from_bits(state);
+                if x.is_finite() {
+                    break x;
+                }
+            };
+            let points: [Point3; 4] = std::array::from_fn(|_| p(std::array::from_fn(|_| next())));
+            let squared = |a: Point3, b: Point3| {
+                a.to_array()
+                    .into_iter()
+                    .zip(b.to_array())
+                    .map(|(a, b)| {
+                        let difference = R::from_float(a).unwrap() - R::from_float(b).unwrap();
+                        &difference * &difference
+                    })
+                    .sum::<R>()
+            };
+            assert_eq!(
+                compare_chords([points[0], points[1]], [points[2], points[3]]),
+                squared(points[0], points[1]).cmp(&squared(points[2], points[3]))
+            );
+        }
+    }
 
     #[test]
     fn product_distance_order_matches_independent_finite_binary64_rationals() {

@@ -139,6 +139,12 @@ Its separate [`area_centroid` command](commands/area-centroid.md) owns filtered
 selection and atomic marker creation. The kernel's `area_mass_properties` module
 owns exact weighted aggregation, mesh accumulation, and normalized surface
 densities; B-rep moments reuse the existing trimmed-boundary traversal.
+The independent [`volume_mass_properties` module](commands/volume-centroid.md)
+retains oriented volume moments. Shared `mass_integration` owns spatial frames
+and rectangle density quadrature, with one common frame across a solid's faces.
+`binary_accumulator::monomials` supplies allocation-free cubic/quartic sums for
+mesh volume moments. Command marker/selection policy stays outside the kernel;
+the oracle's `centroid_command` module shares owned fixture setup, not algorithms.
 Its `distance` submodule handles read-only two-point distance, world/CPlane deltas,
 and angular reporting. The application supplies picked or typed points through
 the shared drafting path; neither implementation mutates document history.

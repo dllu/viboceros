@@ -2,6 +2,7 @@
 //! Full-range QUANTUM is the negated exponent of bit zero (at least 1074).
 //! Compact windows carry their own exact binary exponent origin.
 
+pub(crate) mod monomials;
 pub(crate) mod products;
 #[cfg(test)]
 mod tests;

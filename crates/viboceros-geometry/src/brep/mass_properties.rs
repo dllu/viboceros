@@ -12,6 +12,7 @@ use crate::{
 mod boundary;
 mod centroid;
 mod trimmed;
+mod volume_centroid;
 
 #[cfg(test)]
 mod parameter_tests;

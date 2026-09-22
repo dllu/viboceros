@@ -10,8 +10,10 @@ volume. Both commands preserve selection, geometry, attributes, and undo history
 [AreaCentroid](commands/area-centroid.md) integrates area first moments and creates
 one cumulative point. Its independent exact weighted aggregation is separate from
 document selection, grouping, and history. Mesh area and area moments split quads
-along the shorter spatial diagonal (A-C on exact ties); the fixed display/volume
-triangulation is unchanged. The command documentation retains the associated
+along the shorter spatial diagonal (A-C on exact ties); display triangulation is
+unchanged. [VolumeCentroid](commands/volume-centroid.md) adds exact mesh volume
+moments and normalized B-rep flux integration. Mesh `Volume` now uses that same
+shorter-diagonal policy. The command documentation retains the associated
 Rhino numerical differences and independent high-precision reference checks.
 
 ## Integration

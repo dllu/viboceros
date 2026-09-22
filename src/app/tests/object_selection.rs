@@ -2,6 +2,41 @@ use super::*;
 use viboceros_document::SelectionMode;
 
 #[test]
+fn volume_centroid_object_prompt_finishes_or_cancels_with_filtered_picks() {
+    for cancel in [false, true] {
+        let mut app = test_app();
+        enter(&mut app, "Box 0,0,0 4,6,0 8");
+        let solid = app.document.objects().last().unwrap().id();
+        enter(&mut app, "Line 10,0 11,0");
+        let line = app.document.objects().last().unwrap().id();
+        let before = app.document.objects().cloned().collect::<Vec<_>>();
+        app.document.clear_selection();
+        enter(&mut app, "VolumeCentroid");
+        assert!(app.object_prompt.is_some());
+        for id in [line, solid] {
+            app.apply_selection_click(SelectionClick {
+                object_id: Some(id),
+                mode: SelectionMode::Replace,
+            });
+        }
+        assert!(!app.document.is_selected(line));
+        assert!(app.document.is_selected(solid));
+        if cancel {
+            app.cancel_interactive_command(false);
+        } else {
+            enter(&mut app, "");
+            assert!(
+                matches!(app.document.objects().last().unwrap().geometry(),Geometry::Point(p) if p.distance_to(point(2.,3.,4.)).unwrap()<1e-12)
+            );
+            assert_eq!(app.document.selected_object_count(), 0);
+            enter(&mut app, "Undo");
+        }
+        assert!(app.object_prompt.is_none());
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    }
+}
+
+#[test]
 fn area_centroid_uses_filtered_object_prompt_and_creates_one_undoable_point() {
     for cancel in [false, true] {
         let mut app = test_app();

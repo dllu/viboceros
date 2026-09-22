@@ -1,3 +1,4 @@
+//! Retained area observations keep their existing precision and comparison scope.
 use super::*;
 
 #[test]

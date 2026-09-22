@@ -3,7 +3,9 @@
 [Command index](README.md)
 
 For a permanent cumulative area-centroid point, use [AreaCentroid](area-centroid.md).
-Unlike the read-only queries below, it creates geometry and an undo step.
+Use [VolumeCentroid](volume-centroid.md) for a signed-volume marker.
+Unlike the read-only queries below, nonzero centroid queries create geometry and
+an undo step.
 
 ## Angle
 

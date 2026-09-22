@@ -29,6 +29,7 @@ Rhino's complete command set is still a work in progress.
 - [Extraction, measurement, and intersections](editing.md)
 - [Angle, distance, length, area, and volume queries](measurements.md)
 - [Cumulative area-centroid markers](area-centroid.md)
+- [Signed-volume centroid markers](volume-centroid.md)
 - [Local curve radius and diameter](radius.md)
 - [World and construction-plane point coordinates](evaluate-point.md)
 - [Curve and surface parameter domains](domain.md)
@@ -202,6 +203,7 @@ Curvature MarkCurvature=No 2,0,0
 Area
 AreaCentroid
 Volume
+VolumeCentroid
 Divide 8
 Divide Length 2.5 MarkEnds
 CrvStart

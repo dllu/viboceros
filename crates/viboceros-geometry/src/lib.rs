@@ -5,7 +5,10 @@
 //! invalid values enter the model.
 
 mod area_mass_properties;
+mod mass_integration;
 pub use area_mass_properties::AreaMassProperties;
+mod volume_mass_properties;
+pub use volume_mass_properties::VolumeMassProperties;
 mod bezier;
 mod binary_accumulator;
 mod bounds;

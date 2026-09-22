@@ -470,6 +470,9 @@ pub enum GeometryError {
     #[error("oriented volume requires a closed, consistently oriented B-rep")]
     OpenBrepVolume,
 
+    #[error("volume mass properties require a closed, consistently oriented manifold mesh")]
+    InvalidVolumeMesh,
+
     #[error("a capped curve extrusion requires a closed, nondegenerate planar profile")]
     InvalidCappedExtrusionProfile,
 

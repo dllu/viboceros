@@ -197,12 +197,13 @@ class OracleClient:
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
         interaction = None
-        if any(op.get("op") == "area_centroid_command" for op in request.get("operations", [])):
+        if any(op.get("op") in ("area_centroid_command", "volume_centroid_command") for op in request.get("operations", [])):
             from .area_centroid_probe import validate
             if type(request.get("iterations",1)) is not int or request.get("iterations",1) != 1:
-                raise OracleProtocolError("area centroid commands require one iteration")
+                raise OracleProtocolError("centroid commands require one iteration")
             for operation in request["operations"]:
-                if operation.get("op") == "area_centroid_command": validate(operation)
+                if operation.get("op") in ("area_centroid_command", "volume_centroid_command"):
+                    validate(operation, operation["op"].split("_")[0])
         if any(op.get("op") == "point_snap" for op in request.get("operations", [])):
             from .point_snap_input import PointSnapPicker
             interaction = PointSnapPicker(request)
@@ -233,7 +234,7 @@ class OracleClient:
             worker_request["_host"] = {"exit_rhino_when_complete": True}
             _write_json(request_path, worker_request)
             shutil.copyfile(worker_source, worker_path)
-            if any(op.get("op") == "area_centroid_command" for op in request.get("operations", [])):
+            if any(op.get("op") in ("area_centroid_command", "volume_centroid_command") for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("area_centroid_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") in ("point_snap", "split_edge_command") for op in request.get("operations", [])):
@@ -249,7 +250,7 @@ class OracleClient:
             if any(op.get("op") == "border_command" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("border_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
-            if any(op.get("op") in ("join_command", "cap_command", "merge_edges_command", "merge_edge_command", "split_edge_command", "area_centroid_command") for op in request.get("operations", [])):
+            if any(op.get("op") in ("join_command", "cap_command", "merge_edges_command", "merge_edge_command", "split_edge_command", "area_centroid_command", "volume_centroid_command") for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("join_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
             brep_join_commands = any(op.get("op") == "join_command" and any("brep" in s for s in op.get("sources", [])) for op in request.get("operations", []))

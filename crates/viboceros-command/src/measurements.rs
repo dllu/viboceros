@@ -6,7 +6,9 @@ use viboceros_geometry::{FiniteSum, GeometryError, Real, Tolerance};
 
 mod angle;
 mod area_centroid;
+mod volume_centroid;
 pub(super) use area_centroid::AreaCentroidCommand;
+pub(super) use volume_centroid::VolumeCentroidCommand;
 mod distance;
 mod domain;
 pub(super) use domain::DomainCommand;

@@ -1,6 +1,5 @@
 //! Mass-property quads use their shorter spatial diagonal, not display wires.
 use super::*;
-use crate::exact_scalar::rational;
 
 pub(super) fn split(vertices: &[Point3], [a, b, c, d]: [u32; 4]) -> [[u32; 3]; 2] {
     let (pa, pb, pc, pd) = (
@@ -20,17 +19,7 @@ pub(super) fn split(vertices: &[Point3], [a, b, c, d]: [u32; 4]) -> [[u32; 3]; 2
         _ => {
             // Distances that overflow or overlap at rounding precision retain
             // an exact, translation-independent comparison, including ties.
-            let squared = |p: Point3, q: Point3| {
-                p.to_array()
-                    .into_iter()
-                    .zip(q.to_array())
-                    .map(|(a, b)| {
-                        let d = rational(a) - rational(b);
-                        &d * &d
-                    })
-                    .sum::<crate::exact_scalar::Rational>()
-            };
-            squared(pa, pc) <= squared(pb, pd)
+            !crate::point::compare_chords([pa, pc], [pb, pd]).is_gt()
         }
     };
     if ac_first {
@@ -42,15 +31,17 @@ pub(super) fn split(vertices: &[Point3], [a, b, c, d]: [u32; 4]) -> [[u32; 3]; 2
 
 impl TriangleMesh {
     pub(crate) fn mass_triangles(&self) -> impl Iterator<Item = [Point3; 3]> + '_ {
+        self.mass_triangle_indices()
+            .map(|t| t.map(|i| self.vertices[i as usize]))
+    }
+
+    pub(crate) fn mass_triangle_indices(&self) -> impl Iterator<Item = [u32; 3]> + '_ {
         self.faces.iter().flat_map(|face| {
             let triangles = match *face {
                 MeshFace::Triangle(t) => [Some(t), None],
                 MeshFace::Quad(q) => split(&self.vertices, q).map(Some),
             };
-            triangles
-                .into_iter()
-                .flatten()
-                .map(|t| t.map(|i| self.vertices[i as usize]))
+            triangles.into_iter().flatten()
         })
     }
 }

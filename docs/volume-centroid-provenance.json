@@ -1,0 +1,42 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "retained_completed_cases": 26,
+  "command_matches": 26,
+  "command_maximum_absolute_difference": 3.552713678800501e-15,
+  "raw_constructed_source_api_matches": 14,
+  "raw_source_api_differences": [
+    "reversed-tetrahedron",
+    "mixed-orientations",
+    "equal-opposite-volumes",
+    "post-equal-opposite-volumes",
+    "opposed-disjoint-shells",
+    "brep-paraboloid-capped-outward",
+    "brep-paraboloid-capped-inward",
+    "brep-paraboloid-rotated-translated",
+    "warped-box-1-0",
+    "warped-box-1-1",
+    "warped-box-1-2",
+    "warped-box-1-3"
+  ],
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 0,
+  "fresh_area_centroid_regression_cases": 54,
+  "fresh_area_centroid_geometry_and_compared_values_unchanged": true,
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/volume_centroid.json": "fd4e35d1b06ce7a226482cc443054155cd49003fc7c953824c69a529a01ad8bb",
+    "tools/rhino_oracle/observations/volume_centroid.json": "908f48f2d3e1f8525b3ec35841930e97e368496e117ef25f520613607dc21dce",
+    "tools/rhino_oracle/fixtures/volume_centroid_open.json": "c5cfa1fd157143ab294e02d8eb02f8b8c211c47e673ebd5f94106038597b2cd8",
+    "tools/rhino_oracle/observations/volume_centroid_open_timeout.txt": "74afb1f06bfbf37df3fdd4fec2de96db76c4db072d2cd8e7b37e894060ed9f72"
+  },
+  "raw_response_sha256": "c2f4c32a43b9a44d67253c98fbf52e4e5eeca278906c65ecec2871d23d983345",
+  "fresh_area_response_sha256": "6277b19a802fcd49094037ca20a4e8300ee631941d0b7ab46a027e47b734ab35",
+  "notes": [
+    "Public APIs only, in owned isolated Xvfb/Rhino sessions; no pre-existing Rhino processes were modified.",
+    "The 26 completed cases retain constructed/stored geometry, both source and stored API values, source first moments, actual command markers, selection and history.",
+    "Default native replay compares actual command output and selection/marker attributes. Source API replay is separate and compares the original constructed geometry, not the insertion-reversed B-rep.",
+    "Nine negative-mesh fixture rows retain the Rhino API zero-centroid getter discrepancy; signed first moments and actual command markers are not replaced or discarded.",
+    "Three curved-solid source API volumes retain errors greater than 1e-9; native analytic tests use independent radial formulas.",
+    "The four-case open-object request timed out on its first case with no command result. The request and terminal failure report are retained, not counted as rejection or success. Open-object confirmation remains unimplemented.",
+    "Native UI, atomicity and Undo/Redo are tested separately. Exact command-history strings, Rhino Undo/Redo and performance parity are not claimed."
+  ]
+}

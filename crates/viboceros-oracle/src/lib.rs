@@ -39,7 +39,7 @@ use viboceros_io::{
     ThreeDmObject, read_3dm_file, write_3dm_file,
 };
 
-mod area_centroid;
+mod centroid_command;
 mod construction_plane;
 #[cfg(test)]
 mod curve_closest_tests;
@@ -168,7 +168,12 @@ pub enum Operation {
     AreaCentroidCommand {
         id: String,
         #[serde(flatten)]
-        fixture: area_centroid::AreaCentroidFixture,
+        fixture: centroid_command::CentroidFixture,
+    },
+    VolumeCentroidCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: centroid_command::CentroidFixture,
     },
     ProjectedObjectSnap {
         id: String,
@@ -1688,6 +1693,7 @@ impl Operation {
     pub fn id(&self) -> &str {
         match self {
             Self::AreaCentroidCommand { id, .. }
+            | Self::VolumeCentroidCommand { id, .. }
             | Self::ProjectedObjectSnap { id, .. }
             | Self::PolycurveGeometry { id, .. }
             | Self::CurveBounds { id, .. }
@@ -2043,11 +2049,13 @@ fn validate_request(request: &ProbeRequest) -> Result<(), ProbeError> {
         }
         if matches!(
             operation,
-            Operation::ProjectedObjectSnap { .. } | Operation::AreaCentroidCommand { .. }
+            Operation::ProjectedObjectSnap { .. }
+                | Operation::AreaCentroidCommand { .. }
+                | Operation::VolumeCentroidCommand { .. }
         ) && request.iterations != 1
         {
             return Err(ProbeError::FixtureInvariant(
-                "projected snaps and area centroid commands require one iteration",
+                "projected snaps and centroid commands require one iteration",
             ));
         }
         if matches!(
@@ -2076,7 +2084,12 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
-        Operation::AreaCentroidCommand { fixture, .. } => area_centroid::run(fixture, tolerance)?,
+        Operation::AreaCentroidCommand { fixture, .. } => {
+            centroid_command::run(fixture, tolerance, centroid_command::Measure::Area)?
+        }
+        Operation::VolumeCentroidCommand { fixture, .. } => {
+            centroid_command::run(fixture, tolerance, centroid_command::Measure::Volume)?
+        }
         Operation::ProjectedObjectSnap { fixture, .. } => {
             projected_object_snap::run(fixture, tolerance)?
         }
