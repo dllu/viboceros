@@ -5,6 +5,7 @@ use crate::nurbs::project_homogeneous;
 use crate::{GeometryError, ParameterSide, Point3, Real, Vector3, require_finite};
 mod exact;
 mod grid;
+mod normal;
 mod query;
 mod tensor;
 pub(super) use query::SurfaceQuery;

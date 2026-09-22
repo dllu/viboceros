@@ -1,8 +1,7 @@
-use crate::{
-    AffineTransform3, NurbsCurve, NurbsSurface, Point3, Tolerance, Vector3, WeightedPoint3,
-};
+use crate::{AffineTransform3, NurbsCurve, NurbsSurface, Point3, Vector3, WeightedPoint3};
 
 mod jets;
+mod normals;
 mod poles;
 mod range;
 mod sides;
@@ -74,11 +73,7 @@ fn a_far_away_constant_rational_surface_has_exactly_zero_partials() {
     assert_eq!(actual.0, point);
     assert_eq!(actual.1.to_array(), [0.0; 3]);
     assert_eq!(actual.2.to_array(), [0.0; 3]);
-    assert!(
-        surface
-            .normal_at(1.0 / 3.0, 0.4, Tolerance::DEFAULT)
-            .is_err()
-    );
+    assert!(surface.normal_at(1.0 / 3.0, 0.4).is_err());
 }
 
 #[test]

@@ -1,0 +1,20 @@
+{
+  "capture_date_utc": "2026-09-22",
+  "engine_version": "8.32.26160.13001",
+  "completed_operations": 20,
+  "base_commit": "634b429",
+  "raw_response_sha256_before_compaction": "12dec9e771a7d3dc0c912a7c8d1ea9b2c7f3d28064c0c93ab1c71a30b7d5fb8e",
+  "capture_worker_sha256": "5092792e9b03f2b262f5e6e1b6fccbde89e47bfc79a6caf5775a3883bc149db1",
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/surface_normals.json": "e545a9074cc18b023e9bd69450d3f183f82c829e775d6c5c389c5034d8179e1d",
+    "tools/rhino_oracle/observations/surface_normals.json": "bf8bb1bfdf8bc5685aa13fe357ee0d1f5be37eccf7be1b0c64c9e8d5b37bf77b"
+  },
+  "notes": [
+    "One owned private-Xvfb Rhino session completed all twenty cases and exited without manual recovery or interaction with existing user sessions.",
+    "Normals are verbatim public Surface.NormalAt results. Derivatives are separately sampled through Surface.Evaluate; measured elapsed_ns still times only Evaluate, not NormalAt.",
+    "This corrects the old worker's hand-computed cross followed by a model-length cutoff. Older captures are retained unchanged and are not retroactively described as public NormalAt observations.",
+    "JSON compaction preserves every numeric IEEE-754 bit pattern, including negative zero in the rational-cylinder normals.",
+    "The source-only generator imports no observed targets. Independent Fraction/Bernstein and Decimal-normalization references exercise harder cases separately; those are not Rhino comparisons.",
+    "These twenty cases cover regular normals, not singular-parameter limiting normals or a general B-rep orientation classifier."
+  ]
+}

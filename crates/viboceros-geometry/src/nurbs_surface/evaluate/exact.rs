@@ -1,7 +1,7 @@
 //! Exact-rational surface jets for range loss, signed cancellation, and continuation.
 use super::*;
 use crate::nurbs::exact::{Direction, Homogeneous, Rational, rational, scalar, vector};
-use num_traits::Zero;
+use num_traits::{Signed, Zero};
 
 #[cfg(test)]
 mod tests;
@@ -98,6 +98,65 @@ impl<'a> ExactJetNet<'a> {
         }
     }
 
+    fn prepare_first_nets(
+        &mut self,
+        u: Direction<'_>,
+        v: Direction<'_>,
+    ) -> Result<(), GeometryError> {
+        if self.first.is_none() {
+            self.first = Some(FirstNets {
+                u: u.derivative_controls(&self.controls, u.degree + 1, true)?,
+                v: v.derivative_controls(&self.controls, u.degree + 1, false)?,
+            });
+        }
+        Ok(())
+    }
+
+    pub(super) fn normal(
+        &mut self,
+        parameters: [Real; 2],
+    ) -> Result<crate::UnitVector3, GeometryError> {
+        let surface = self.surface;
+        let u = Direction {
+            knots: &surface.knots_u,
+            degree: surface.degree_u,
+            span: self.spans[0],
+            parameter: parameters[0],
+        };
+        let v = Direction {
+            knots: &surface.knots_v,
+            degree: surface.degree_v,
+            span: self.spans[1],
+            parameter: parameters[1],
+        };
+        let h = tensor(&self.controls, u, v)?;
+        if h[3].is_zero() {
+            return Err(GeometryError::ZeroWeightAtParameter);
+        }
+        self.prepare_first_nets(u, v)?;
+        let first = self
+            .first
+            .as_ref()
+            .expect("first derivative nets initialized");
+        let hu = tensor(&first.u, u.differentiated(), v)?;
+        let hv = tensor(&first.v, u, v.differentiated())?;
+        // Su=(Hu W-H Wu)/W², and likewise for v. W⁴ is strictly positive,
+        // so its magnitude and sign need not be representable to orient Su×Sv.
+        let a: [Rational; 3] = std::array::from_fn(|i| &hu[i] * &h[3] - &h[i] * &hu[3]);
+        let b: [Rational; 3] = std::array::from_fn(|i| &hv[i] * &h[3] - &h[i] * &hv[3]);
+        let n: [Rational; 3] = std::array::from_fn(|i| {
+            let (j, k) = ((i + 1) % 3, (i + 2) % 3);
+            &a[j] * &b[k] - &a[k] * &b[j]
+        });
+        let scale = n.iter().map(Signed::abs).max().unwrap();
+        if scale.is_zero() {
+            return Err(GeometryError::Degenerate {
+                context: "surface normal",
+            });
+        }
+        vector(&std::array::from_fn(|i| &n[i] / &scale))?.normalized_nonzero()
+    }
+
     pub(super) fn evaluate(
         &mut self,
         parameters: [Real; 2],
@@ -132,12 +191,7 @@ impl<'a> ExactJetNet<'a> {
             Point3::try_new(scalar(&p[0])?, scalar(&p[1])?, scalar(&p[2])?)?
         };
         let mut jet = point_jet(point)?;
-        if self.first.is_none() {
-            self.first = Some(FirstNets {
-                u: u.derivative_controls(&self.controls, u.degree + 1, true)?,
-                v: v.derivative_controls(&self.controls, u.degree + 1, false)?,
-            });
-        }
+        self.prepare_first_nets(u, v)?;
         let first = self
             .first
             .as_ref()

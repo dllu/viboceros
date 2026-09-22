@@ -3038,16 +3038,6 @@ impl NurbsSurface {
         normalized_parameter(normalized, self.domain_v())
     }
 
-    pub fn normal_at(
-        &self,
-        u: Real,
-        v: Real,
-        tolerance: Tolerance,
-    ) -> Result<UnitVector3, GeometryError> {
-        let (_, derivative_u, derivative_v) = self.evaluate_with_derivatives(u, v)?;
-        derivative_u.cross(derivative_v)?.normalized(tolerance)
-    }
-
     /// Evaluates the right-handed surface frame used by Rhino: x follows the
     /// positive U derivative, y is the component of the positive V derivative
     /// perpendicular to x, and z is the surface normal.
@@ -4879,7 +4869,7 @@ mod tests {
         assert_eq!(center, point(2.0, 1.0, 1.0));
         assert_eq!(derivative_u, Vector3::try_new(4.0, 0.0, 0.0).unwrap());
         assert_eq!(derivative_v, Vector3::try_new(0.0, 2.0, 2.0).unwrap());
-        let normal = surface.normal_at(0.5, 0.5, Tolerance::DEFAULT).unwrap();
+        let normal = surface.normal_at(0.5, 0.5).unwrap();
         assert!(normal.y() < 0.0 && normal.z() > 0.0);
     }
 
@@ -6117,7 +6107,7 @@ mod tests {
             ));
         }
         assert_eq!(disk.evaluate(0.0, 2.0).unwrap(), point(1.0, 4.0, 3.0));
-        let normal = disk.normal_at(0.25, 2.0, Tolerance::DEFAULT).unwrap();
+        let normal = disk.normal_at(0.25, 2.0).unwrap();
         assert!(normal.as_vector().dot(frame.z_axis().as_vector()).unwrap() < -0.999_999);
         assert!(
             !disk
@@ -6954,7 +6944,7 @@ mod tests {
             .unwrap()
             .translated(
                 surface
-                    .normal_at(0.37, 0.62, Tolerance::DEFAULT)
+                    .normal_at(0.37, 0.62)
                     .unwrap()
                     .as_vector()
                     .scaled(2.0)

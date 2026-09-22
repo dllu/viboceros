@@ -5077,7 +5077,7 @@ fn execute(
             let ((point, derivative_u, derivative_v), elapsed) = measure(iterations, || {
                 surface.evaluate_with_derivatives(black_box(*u), black_box(*v))
             })?;
-            let normal = surface.normal_at(*u, *v, tolerance)?;
+            let normal = surface.normal_at(*u, *v)?;
             (
                 json!({
                     "derivative_u": derivative_u.to_array(),
@@ -13593,6 +13593,57 @@ mod tests {
                 [1.0, 2.0, 3.0]
             ])
         );
+    }
+
+    #[test]
+    fn regular_surface_normals_match_public_rhino_queries_under_domain_rescaling() {
+        let input: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/surface_normals.json"
+        ))
+        .unwrap();
+        let response = run_request(&input).unwrap();
+        let observed: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/surface_normals.json"
+        ))
+        .unwrap();
+        let observed = observed["results"].as_array().unwrap();
+        assert_eq!(response.results.len(), 20);
+        assert_eq!(observed.len(), 20);
+        for (index, (actual, recorded)) in response.results.iter().zip(observed).enumerate() {
+            assert_eq!(recorded["id"], actual.id);
+            for key in ["point", "derivative_u", "derivative_v", "normal"] {
+                let a = actual.value[key].as_array().unwrap();
+                let b = recorded["value"][key].as_array().unwrap();
+                assert_eq!(a.len(), 3);
+                assert_eq!(b.len(), 3);
+                for (a, b) in a.iter().zip(b) {
+                    let (a, b) = (a.as_f64().unwrap(), b.as_f64().unwrap());
+                    assert!(
+                        (a - b).abs() <= 1.001e-12 * a.abs().max(b.abs()).max(1.),
+                        "{}, {key}: {a} != {b}",
+                        actual.id
+                    );
+                }
+            }
+            let expected = if index < 18 {
+                let sign = if index % 2 == 0 { 1. } else { -1. };
+                [-1., -2., 1.].map(|x| sign * x / 6.0_f64.sqrt())
+            } else {
+                [
+                    actual.value["point"][0].as_f64().unwrap(),
+                    actual.value["point"][1].as_f64().unwrap(),
+                    0.,
+                ]
+            };
+            for (actual, expected) in actual.value["normal"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .zip(expected)
+            {
+                assert!((actual.as_f64().unwrap() - expected).abs() <= 1.001e-12);
+            }
+        }
     }
 
     #[test]

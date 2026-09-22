@@ -362,6 +362,8 @@ for local-coordinate evaluation, degree-one acceleration, and scale-safe seam jo
 `nurbs/exact` supplies shared exact homogeneous recurrences for guarded curve and
 surface evaluation. Curve [range-loss and failure recovery](curve-rational-range.md)
 keeps tangent direction separate from representability of derivative magnitude.
+Surface [regular normal queries](surface-normals.md) likewise separate direction
+from derivative magnitude, with outward-rounded filtering and exact recovery.
 `nurbs/arc_length` owns accuracy-controlled full-curve length integration.
 `nurbs/integration_frame` supplies checked dimensionless parameter preparation
 shared by length, sampling, shortness, and enclosed curve-area queries.

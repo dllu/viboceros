@@ -11515,10 +11515,7 @@ mod tests {
             assert_eq!(face.loops()[0].trims().len(), 4);
             let midpoint = face.surface().evaluate(0.5, 0.5).unwrap();
             let outward = center.vector_to(midpoint).unwrap();
-            let normal = face
-                .surface()
-                .normal_at(0.5, 0.5, Tolerance::DEFAULT)
-                .unwrap();
+            let normal = face.surface().normal_at(0.5, 0.5).unwrap();
             assert!(outward.dot(normal.as_vector()).unwrap() > 0.0);
             assert!(
                 !face
@@ -13437,10 +13434,7 @@ mod tests {
             assert!(face.is_reversed());
             let midpoint = face.surface().evaluate(0.5, 0.5).unwrap();
             let toward_face = center.vector_to(midpoint).unwrap();
-            let natural_normal = face
-                .surface()
-                .normal_at(0.5, 0.5, Tolerance::DEFAULT)
-                .unwrap();
+            let natural_normal = face.surface().normal_at(0.5, 0.5).unwrap();
             assert!(toward_face.dot(natural_normal.as_vector()).unwrap() < 0.0);
         }
 

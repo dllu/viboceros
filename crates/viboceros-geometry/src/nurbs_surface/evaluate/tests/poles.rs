@@ -66,7 +66,7 @@ fn mixed_weight_surface_poles_cannot_hide_in_rounded_interpolation() {
                 pole(surface.evaluate_extended(u, v));
                 pole(surface.evaluate_extended_with_derivatives(u, v));
                 pole(surface.evaluate_extended_with_second_derivatives(u, v));
-                pole(surface.normal_at(u, v, Tolerance::DEFAULT));
+                pole(surface.normal_at(u, v));
                 for su in [ParameterSide::Left, ParameterSide::Right] {
                     for sv in [ParameterSide::Left, ParameterSide::Right] {
                         pole(surface.evaluate_on_sides(u, v, su, sv));

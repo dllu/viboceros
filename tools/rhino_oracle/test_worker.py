@@ -11,6 +11,33 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_surface_evaluation_uses_public_normal_and_disposes_even_on_failure(self):
+        operation = dict(degree_u=1, degree_v=1, control_point_count_u=2, control_point_count_v=2,
+                         control_points=[], knots_u=[], knots_v=[], u=0.25, v=0.75)
+        p = lambda x, y, z: SimpleNamespace(X=x, Y=y, Z=z)
+        # Equal rounded derivatives intentionally cannot supply the reported
+        # direction. Also retain a public zero result instead of fabricating one.
+        for fail in (None, "evaluation", "missing", "normal", "parameter"):
+            for normal in (p(0., 0., 1.), p(0., 0., 0.)):
+                with self.subTest(fail=fail, normal=normal):
+                    surface = Mock()
+                    surface.Evaluate.return_value = (True, p(1., 2., 3.), [p(1., 1., 0.)]*2)
+                    if fail == "evaluation": surface.Evaluate.return_value = (False, None, None)
+                    if fail == "missing": surface.Evaluate.return_value = (True, p(1., 2., 3.), [])
+                    surface.NormalAt.return_value = normal
+                    if fail == "normal": surface.NormalAt.side_effect = ValueError("normal query failed")
+                    op = dict(operation, u=float("nan")) if fail == "parameter" else operation
+                    with patch.object(self.worker, "_nurbs_surface_from_definition", return_value=surface):
+                        if fail:
+                            with self.assertRaises(ValueError): self.worker._nurbs_surface_evaluate(op, 2)
+                        else:
+                            value, _ = self.worker._nurbs_surface_evaluate(op, 2)
+                            self.assertEqual(value["normal"], [normal.X, normal.Y, normal.Z])
+                            self.assertEqual(value["derivative_u"], value["derivative_v"])
+                            surface.NormalAt.assert_called_once_with(0.25, 0.75)
+                    surface.Dispose.assert_called_once_with()
+                    if fail in ("evaluation", "missing", "parameter"): surface.NormalAt.assert_not_called()
+
     def test_curve_alignment_binds_only_an_owned_curve_id_after_source_creation(self):
         op={"mode":"ToCurve","curve":1,"selected":[0],"sources":[{"type":"point"},{"type":"line"}]}
         self.assertEqual(self.worker._align_script(op),"_Align _AlignTo=_CPlane _ToCurve ")

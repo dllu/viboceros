@@ -69,7 +69,9 @@ evaluation; this does not detect every later recurrence underflow or guarantee
 correct rounding for those unflagged nets.
 Equal active weights prove a polynomial continuation's denominator is constant;
 that fast path uses affine-difference extrapolation to retain constant coordinates.
-Singular-surface limiting normals remain unsupported. The separate [curvature module](curvature.md)
+The separate [regular normal query](surface-normals.md) uses bounded arithmetic
+and exact recovery, not the cross of these rounded partials. Singular-surface
+limiting normals remain unsupported. The separate [curvature module](curvature.md)
 computes principal, mean and Gaussian curvature from regular analytic surface
 jets, including one-sided limits.
 

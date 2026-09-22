@@ -1010,6 +1010,30 @@ def _nurbs_surface_from_definition(definition):
         raise
 
 
+def _nurbs_surface_evaluate(operation, iterations):
+    definition = {key: operation[key] for key in (
+        "degree_u", "degree_v", "control_point_count_u", "control_point_count_v",
+        "control_points", "knots_u", "knots_v")}
+    surface = _nurbs_surface_from_definition(definition)
+    try:
+        u = _finite(operation["u"], "surface U parameter")
+        v = _finite(operation["v"], "surface V parameter")
+        value, elapsed = _measure(iterations, lambda: surface.Evaluate(u, v, 1))
+        if value is None or len(value) < 3 or not value[0]:
+            raise ValueError("NURBS surface evaluation failed")
+        if value[2] is None or len(value[2]) < 2:
+            raise ValueError("NURBS surface derivatives are missing")
+        # Query the public normal independently. Crossing rounded derivatives
+        # with a model-length cutoff merely repeats the native implementation's
+        # former error and is not an independent normal oracle. Retain a zero
+        # result verbatim; NormalAt has no separate success/error return value.
+        normal = surface.NormalAt(u, v)
+        return dict(point=_xyz(value[1]), derivative_u=_xyz(value[2][0]),
+                    derivative_v=_xyz(value[2][1]), normal=_xyz(normal)), elapsed
+    finally:
+        surface.Dispose()
+
+
 def _curve_extension_boundary_from_definition(definition, tolerance):
     surface_definition = definition.get("surface")
     if surface_definition is not None:
@@ -14134,43 +14158,7 @@ def _execute(operation, iterations, tolerance):
             surface.Dispose()
 
     if kind == "nurbs_surface_evaluate":
-        degree_u = int(operation["degree_u"])
-        degree_v = int(operation["degree_v"])
-        count_u = int(operation["control_point_count_u"])
-        count_v = int(operation["control_point_count_v"])
-        surface = Rhino.Geometry.NurbsSurface.Create(
-            3, True, degree_u + 1, degree_v + 1, count_u, count_v
-        )
-        if surface is None:
-            raise ValueError("could not allocate NURBS surface")
-        _set_surface_controls(
-            surface, operation["control_points"], count_u, count_v
-        )
-        _set_knots(surface.KnotsU, operation["knots_u"], "surface U knot")
-        _set_knots(surface.KnotsV, operation["knots_v"], "surface V knot")
-        if not surface.IsValid:
-            raise ValueError("NURBS surface is invalid")
-        u_value = _finite(operation["u"], "surface U parameter")
-        v_value = _finite(operation["v"], "surface V parameter")
-        value, elapsed = _measure(
-            iterations, lambda: surface.Evaluate(u_value, v_value, 1)
-        )
-        if value is None or len(value) < 3 or not value[0]:
-            raise ValueError("NURBS surface evaluation failed")
-        point = value[1]
-        derivatives = value[2]
-        if derivatives is None or len(derivatives) < 2:
-            raise ValueError("NURBS surface derivatives are missing")
-        derivative_u = derivatives[0]
-        derivative_v = derivatives[1]
-        normal = Rhino.Geometry.Vector3d.CrossProduct(derivative_u, derivative_v)
-        normal = _unit(normal, tolerance["absolute"], "surface normal")
-        return {
-            "point": _xyz(point),
-            "derivative_u": _xyz(derivative_u),
-            "derivative_v": _xyz(derivative_v),
-            "normal": _xyz(normal),
-        }, elapsed
+        return _nurbs_surface_evaluate(operation, iterations)
 
     raise ValueError("unsupported oracle operation: %s" % kind)
 
