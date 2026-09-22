@@ -269,9 +269,26 @@ impl Viewport {
         if button == PointerButton::Middle
             || (button == PointerButton::Secondary && (self.kind.is_parallel() || modifiers.shift))
         {
-            let pan = self.pan + delta;
-            if pan.is_finite() {
-                self.pan = pan;
+            if self.kind == ViewKind::Perspective {
+                let Some(rect) = self
+                    .last_rect
+                    .filter(|rect| rect.is_finite() && rect.is_positive())
+                else {
+                    return;
+                };
+                let (right, up, _) = self.perspective_basis();
+                let scale =
+                    self.perspective_camera_distance / self.perspective_focal_length_pixels(rect);
+                let target = self.target - right * (Real::from(delta.x) * scale)
+                    + up * (Real::from(delta.y) * scale);
+                if target.iter().all(|value| value.is_finite()) {
+                    self.target = target;
+                }
+            } else {
+                let pan = self.pan + delta;
+                if pan.is_finite() {
+                    self.pan = pan;
+                }
             }
         } else if button == PointerButton::Secondary {
             self.orbit_yaw -= Real::from(delta.x) * 0.01;
@@ -281,7 +298,11 @@ impl Viewport {
     }
 
     pub(super) fn world_origin(&self, rect: Rect) -> Pos2 {
-        rect.center() + self.pan
+        if self.kind == ViewKind::Perspective {
+            rect.center()
+        } else {
+            rect.center() + self.pan
+        }
     }
 
     pub(super) fn project(&self, point: Point3, rect: Rect) -> Option<Pos2> {
@@ -440,15 +461,21 @@ impl Viewport {
             if new_distance == old_distance {
                 return Ok(false);
             }
-            // At the target plane, screen offsets scale by old/new distance.
-            // This needs no world-plane intersection or large model subtraction.
-            if let Some(pointer) = pointer {
-                let Some(pan) = zoom_pan(self.pan, pointer, rect, old_distance / new_distance)
-                else {
-                    return Err("zoom exceeds the screen-coordinate range");
-                };
-                self.pan = pan;
+            // Dolly along the cursor ray. Translating both camera and orbit
+            // target laterally pins the target-depth point under the cursor,
+            // while the lens and principal point stay fixed. A projection
+            // offset instead produces an increasingly oblique, distorted view.
+            let pointer = pointer.unwrap_or(rect.center());
+            let focal = self.perspective_focal_length_pixels(rect);
+            let (right, up, _) = self.perspective_basis();
+            let travel = old_distance - new_distance;
+            let horizontal = (Real::from(pointer.x) - Real::from(rect.center().x)) / focal;
+            let vertical = (Real::from(rect.center().y) - Real::from(pointer.y)) / focal;
+            let target = self.target + (right * horizontal + up * vertical) * travel;
+            if !target.iter().all(|value| value.is_finite()) {
+                return Err("zoom exceeds the model-coordinate range");
             }
+            self.target = target;
             self.perspective_camera_distance = new_distance;
             return Ok(true);
         }
@@ -480,8 +507,13 @@ impl Viewport {
     ) -> GpuViewUniform {
         let width = Real::from(rect.width().max(1.0));
         let height = Real::from(rect.height().max(1.0));
-        let offset_x = 2.0 * Real::from(self.pan.x) / width;
-        let offset_y = -2.0 * Real::from(self.pan.y) / height;
+        let pan = if self.kind.is_parallel() {
+            self.pan
+        } else {
+            Vec2::ZERO
+        };
+        let offset_x = 2.0 * Real::from(pan.x) / width;
+        let offset_y = -2.0 * Real::from(pan.y) / height;
         let view_projection = match self.kind {
             ViewKind::Perspective => {
                 let (right, up, forward) = self.perspective_basis();
@@ -670,7 +702,14 @@ mod tests {
                 view.perspective_camera_distance,
             );
             assert_eq!(view.zoom_factor(2.0), Ok(true));
-            assert_eq!(view.pan, before.0 * 2.0);
+            assert_eq!(
+                view.pan,
+                if kind.is_parallel() {
+                    before.0 * 2.0
+                } else {
+                    before.0
+                }
+            );
             if kind.is_parallel() {
                 assert_eq!(view.pixels_per_unit, before.1 * 2.0);
             } else {
@@ -699,7 +738,9 @@ mod tests {
                 );
             }
             view.pan = Vec2::splat(f32::MAX);
-            assert!(view.zoom_factor(2.0).is_err());
+            if kind.is_parallel() {
+                assert!(view.zoom_factor(2.0).is_err());
+            }
             assert_eq!(view.pan, Vec2::splat(f32::MAX));
             assert_eq!(
                 (view.pixels_per_unit, view.perspective_camera_distance),
@@ -849,7 +890,7 @@ mod tests {
             ..Viewport::new(ViewKind::Perspective)
         };
         let actual = view.unproject(pointer, rect, 0.0).unwrap();
-        let expected_y = -2.0 * Real::from(f32::MAX) / view.perspective_focal_length_pixels(rect)
+        let expected_y = -Real::from(f32::MAX) / view.perspective_focal_length_pixels(rect)
             * view.perspective_camera_distance;
         assert!((actual.y() / expected_y - 1.0).abs() < 1e-14);
         assert!(actual.z().abs() < 1e-12);
@@ -863,5 +904,95 @@ mod tests {
         );
         let drafted = view.unproject_drafting_plane(pointer, rect, None).unwrap();
         assert!((drafted.y() + 1.0).abs() < 1e-12);
+    }
+}
+
+#[cfg(test)]
+mod navigation_tests {
+    use super::*;
+
+    #[test]
+    fn repeated_off_center_zoom_is_a_translation_along_a_fixed_cursor_ray() {
+        let rect = Rect::from_min_size(Pos2::new(19., 37.), Vec2::new(900., 600.));
+        let cursor = rect.min + Vec2::new(760., 100.);
+        for offset in [0., 1e9] {
+            let mut view = Viewport::new(ViewKind::Perspective);
+            view.target = NaVector3::new(offset, -offset, 2. * offset);
+            view.perspective_camera_distance = 1e5;
+            let initial_target = view.target;
+            let initial_distance = view.perspective_camera_distance;
+            let focal = view.perspective_focal_length_pixels(rect);
+            let (_, ray) = view.perspective_local_ray(cursor, rect);
+            let (_, _, forward) = view.perspective_basis();
+            let anchor = view.target - forward * initial_distance + ray * initial_distance;
+            let anchor = Point3::try_new(anchor.x, anchor.y, anchor.z).unwrap();
+            for _ in 0..80 {
+                let old_camera = view.target - forward * view.perspective_camera_distance;
+                view.zoom_by(1.1, Some(cursor), rect);
+                let camera = view.target - forward * view.perspective_camera_distance;
+                assert!(
+                    (camera - old_camera)
+                        .normalize()
+                        .cross(&ray.normalize())
+                        .norm()
+                        < 1e-6
+                );
+                assert_eq!(view.world_origin(rect), rect.center());
+                assert_eq!(view.perspective_focal_length_pixels(rect), focal);
+                assert_eq!(view.pan, Vec2::ZERO);
+                assert!(view.project(anchor, rect).unwrap().distance(cursor) < 0.02);
+                let (_, next_ray) = view.perspective_local_ray(cursor, rect);
+                assert_eq!(ray, next_ray);
+                let center_point = view.target + forward * 10.;
+                assert!(
+                    view.project(
+                        Point3::try_new(center_point.x, center_point.y, center_point.z).unwrap(),
+                        rect
+                    )
+                    .unwrap()
+                    .distance(rect.center())
+                        < 0.001
+                );
+            }
+            for _ in 0..80 {
+                view.zoom_by_factor(1. / Real::from(1.1_f32), Some(cursor), rect)
+                    .unwrap();
+            }
+            assert!((view.target - initial_target).norm() < 1e-4);
+            assert!((view.perspective_camera_distance - initial_distance).abs() < 1e-6);
+        }
+    }
+
+    #[test]
+    fn perspective_pan_translates_camera_and_preserves_centered_projection() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        let mut view = Viewport::new(ViewKind::Perspective);
+        view.last_rect = Some(rect);
+        let (right, _, forward) = view.perspective_basis();
+        let distance = view.perspective_camera_distance;
+        let near = Point3::try_new(0., 0., 0.).unwrap();
+        let far = forward * distance;
+        let far = Point3::try_new(far.x, far.y, far.z).unwrap();
+        view.apply_navigation_drag(
+            PointerButton::Middle,
+            egui::Modifiers::NONE,
+            Vec2::new(200., 0.),
+        );
+        let scale = distance / view.perspective_focal_length_pixels(rect);
+        assert!((view.target + right * (200. * scale)).norm() < 1e-12);
+        assert_eq!(view.world_origin(rect), rect.center());
+        assert_eq!(view.pan, Vec2::ZERO);
+        assert!(
+            view.project(near, rect)
+                .unwrap()
+                .distance(rect.center() + Vec2::new(200., 0.))
+                < 0.001
+        );
+        assert!(
+            view.project(far, rect)
+                .unwrap()
+                .distance(rect.center() + Vec2::new(100., 0.))
+                < 0.001
+        );
     }
 }

@@ -100,7 +100,11 @@ corner/parallel/short-wire selection; see the
 SmartTrack captures local plane-axis alignment from the first picked
 point in every viewport. Grid Snap rounds construction-plane picks to the unit grid. Right-drag
 pans parallel views and rotates the Perspective view; Shift-right-drag pans the
-Perspective view, middle-drag pans any view, and the mouse wheel zooms. A plain
+Perspective view, middle-drag pans any view, and the mouse wheel zooms.
+Perspective pan translates the camera and its orbit target in world space.
+Wheel zoom dollies along the cursor ray, retaining a fixed field of view and a
+centered projection; repeated zooms toward objects far from the origin do not
+accumulate an off-axis lens shift. A plain
 right-click acts as Enter. Outside a drafting command, left-drag from left to
 right selects only fully enclosed objects, while right-to-left makes a crossing
 selection. Click geometry to replace the selection, Shift-click/drag to add,
@@ -115,7 +119,8 @@ behavior. Multi-frame egui event tests verify middle-drag, right-drag, and
 Shift-right-drag across all four views: movement accumulates once per frame,
 stationary frames do not move the camera, release does not emit Enter or select
 geometry, and later pointer movement does not continue navigation. Camera
-targets and construction planes stay unchanged during these drags.
+orientation stays unchanged during panning; construction planes stay unchanged
+during all navigation.
 `Zoom Extents` (or `ZE`) fits visible objects in the active viewport;
 `Zoom Selected` (or `ZS`) fits only the visible selection. Add `All` before the
 option, or use `ZEA`/`ZSA`, to fit all four viewports together. See

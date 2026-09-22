@@ -42,7 +42,10 @@ prompts, selection, and undo/redo. It currently requires an inline factor; bare
 Perspective wheel zoom pins the point under the pointer on the camera-target
 plane (through the target, perpendicular to the viewing direction), rather than
 intersecting world Z=0. This remains defined after retargeting and when the world
-XY plane is edge-on. The lens, target, and construction plane are unchanged.
+XY plane is edge-on. The camera and orbit target translate laterally along the
+cursor ray as camera distance changes. The lens, projection center, orientation,
+and construction plane are unchanged. Perspective pan also translates the
+camera and target instead of shifting the projection center.
 Parallel and perspective zoom share an f64 screen-space pan calculation and
 reject an unrepresentable final pan before committing scale or camera distance.
 Tests cover translated targets, positive/negative/zero camera pitch, zoom in/out,

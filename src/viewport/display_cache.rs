@@ -138,7 +138,7 @@ impl DisplayGeometry {
                     .tessellate(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
                     .ok(),
                 Geometry::Brep(brep) => brep
-                    .tessellate(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
+                    .display_mesh(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
                     .ok(),
                 _ => None,
             })

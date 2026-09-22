@@ -233,6 +233,9 @@ fn conforming_fallback_does_not_bridge_an_interior_surface_jump() {
     assert!(source.tessellate(2, tolerance).is_err());
     let open = source.duplicate_faces(&[0], tolerance).unwrap();
     assert!(open.tessellate(2, tolerance).is_err());
+    // The display fallback must not turn an unsupported positional jump
+    // into triangles bridging the two sides.
+    assert!(open.display_mesh(2, tolerance).is_err());
 }
 
 #[test]

@@ -43,6 +43,7 @@ mod tessellation;
 mod tolerance;
 use tolerance::scaled_tolerance;
 mod trim_image;
+mod trim_region;
 mod validate;
 
 #[cfg(test)]
@@ -8567,23 +8568,7 @@ fn triangulate_trim_region(
         loop_ranges.push(start..end);
         start = end;
     }
-    let loop_bounds = loop_ranges
-        .iter()
-        .map(|range| {
-            normalized[range.clone()].iter().fold(
-                [[Real::INFINITY, Real::NEG_INFINITY]; 2],
-                |mut bounds, point| {
-                    for coordinate in 0..2 {
-                        bounds[coordinate][0] = bounds[coordinate][0].min(point[coordinate]);
-                        bounds[coordinate][1] = bounds[coordinate][1].max(point[coordinate]);
-                    }
-                    bounds
-                },
-            )
-        })
-        .collect::<Vec<_>>();
     let epsilon = 64.0 * Real::EPSILON;
-    let outer = &normalized[loop_ranges[0].clone()];
 
     // A valid Rhino loop can revisit a point where otherwise-disjoint boundary
     // branches touch. Spade requires one vertex per coordinate, so retain the
@@ -8626,6 +8611,7 @@ fn triangulate_trim_region(
         return Ok(None);
     }
 
+    let interior = trim_region::interior_faces(&triangulation, &normalized, &loop_ranges, epsilon);
     let mut triangles = Vec::new();
     let mut actual_area = 0.0;
     let mut actual_area_correction = 0.0;
@@ -8635,19 +8621,7 @@ fn triangulate_trim_region(
             let point = vertex.data().position;
             [point.x, point.y]
         });
-        let centroid = [
-            (points[0][0] + points[1][0] + points[2][0]) / 3.0,
-            (points[0][1] + points[1][1] + points[2][1]) / 3.0,
-        ];
-        if !point_in_trim_polygon(centroid, outer, epsilon)
-            || loop_ranges[1..]
-                .iter()
-                .zip(&loop_bounds[1..])
-                .any(|(range, bounds)| {
-                    point_in_trim_bounds(centroid, *bounds, epsilon)
-                        && point_in_trim_polygon(centroid, &normalized[range.clone()], epsilon)
-                })
-        {
+        if !interior[face.index()] {
             continue;
         }
         let doubled_area = polygon_cross(points[0], points[1], points[2]);
@@ -8842,13 +8816,6 @@ fn trim_triangulation_constraints(
         }
     }
     Some(constraints)
-}
-
-fn point_in_trim_bounds(point: [Real; 2], bounds: [[Real; 2]; 2], epsilon: Real) -> bool {
-    (0..2).all(|coordinate| {
-        point[coordinate] >= bounds[coordinate][0] - epsilon
-            && point[coordinate] <= bounds[coordinate][1] + epsilon
-    })
 }
 
 fn point_in_trim_polygon(point: [Real; 2], polygon: &[[Real; 2]], epsilon: Real) -> bool {

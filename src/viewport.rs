@@ -39,6 +39,8 @@ mod screen;
 mod selection;
 use selection::{ProjectedPrimitives, is_crossing_selection, selection_mode};
 #[cfg(test)]
+mod imported_shading_tests;
+#[cfg(test)]
 mod raster_tests;
 #[cfg(test)]
 use camera::zoom_pan;
@@ -1132,11 +1134,29 @@ mod tests {
                                 < 1e-14
                         );
                     } else {
-                        assert_eq!(viewport.pan, delta);
+                        if kind.is_parallel() {
+                            assert_eq!(viewport.pan, delta);
+                        } else {
+                            assert_eq!(viewport.pan, Vec2::ZERO);
+                            let model = point(target.x, target.y, target.z);
+                            let rect = viewport.last_rect.unwrap();
+                            assert!(
+                                viewport
+                                    .project(model, rect)
+                                    .unwrap()
+                                    .distance(rect.center() + delta)
+                                    < 0.001
+                            );
+                        }
                         assert_eq!((viewport.orbit_yaw, viewport.orbit_pitch), angles);
                     }
                 }
-                let final_state = (viewport.pan, viewport.orbit_yaw, viewport.orbit_pitch);
+                let final_state = (
+                    viewport.pan,
+                    viewport.orbit_yaw,
+                    viewport.orbit_pitch,
+                    viewport.target,
+                );
                 let output = viewport_frame_with_modifiers(
                     modifiers,
                     &context,
@@ -1154,10 +1174,17 @@ mod tests {
                     vec![egui::Event::PointerMoved(finish + Vec2::new(20.0, 10.0))],
                 );
                 assert_eq!(
-                    (viewport.pan, viewport.orbit_yaw, viewport.orbit_pitch),
+                    (
+                        viewport.pan,
+                        viewport.orbit_yaw,
+                        viewport.orbit_pitch,
+                        viewport.target
+                    ),
                     final_state
                 );
-                assert_eq!(viewport.target, target);
+                if kind.is_parallel() || (button == PointerButton::Secondary && !modifiers.shift) {
+                    assert_eq!(viewport.target, target);
+                }
                 assert_eq!(viewport.construction_plane(), plane);
             }
         }
@@ -1182,6 +1209,8 @@ mod tests {
         );
 
         let mut shifted = Viewport::new(ViewKind::Perspective);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        shifted.last_rect = Some(rect);
         let shifted_angles = (shifted.orbit_yaw, shifted.orbit_pitch);
         shifted.apply_navigation_drag(
             PointerButton::Secondary,
@@ -1191,7 +1220,14 @@ mod tests {
             },
             delta,
         );
-        assert_eq!(shifted.pan, delta);
+        assert_eq!(shifted.pan, Vec2::ZERO);
+        assert!(
+            shifted
+                .project(Point3::try_new(0., 0., 0.).unwrap(), rect)
+                .unwrap()
+                .distance(rect.center() + delta)
+                < 0.001
+        );
         assert_eq!((shifted.orbit_yaw, shifted.orbit_pitch), shifted_angles);
     }
 
@@ -1710,6 +1746,7 @@ mod tests {
                     view.perspective_camera_distance,
                     view.orbit_yaw,
                     view.orbit_pitch,
+                    view.target,
                 )
             };
             let original = state(&viewport);
@@ -1807,7 +1844,6 @@ mod tests {
                 let world = view.target + right * 2.0 + up * 3.0;
                 let model = point(world.x, world.y, world.z);
                 let pointer = view.project(model, rect).unwrap();
-                let target = view.target;
                 let plane = view.construction_plane();
                 let lens = view.perspective_focal_length_pixels(rect);
                 view.zoom_by(factor, Some(pointer), rect);
@@ -1815,7 +1851,7 @@ mod tests {
                     (view.project(model, rect).unwrap() - pointer).length() < 0.001,
                     "pitch {pitch}, factor {factor}"
                 );
-                assert_eq!(view.target, target);
+                assert_eq!(view.world_origin(rect), rect.center());
                 assert_eq!(view.construction_plane(), plane);
                 assert_eq!(view.perspective_focal_length_pixels(rect), lens);
             }
