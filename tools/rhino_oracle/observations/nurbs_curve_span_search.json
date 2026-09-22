@@ -1,0 +1,242 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 11016846,
+      "id": "stationary-line-forward-on",
+      "value": {
+        "distance": 1.1102230246251565e-16,
+        "parameter": 1.9874134625953244,
+        "point": [
+          0.9900000000000001,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 1136780,
+      "id": "stationary-line-forward-offset",
+      "value": {
+        "distance": 3.0,
+        "parameter": 1.9874134625953244,
+        "point": [
+          0.9900000000000001,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 244141,
+      "id": "stationary-line-forward-distant",
+      "value": {
+        "distance": 1e+100,
+        "parameter": 1.95,
+        "point": [
+          0.9610707981957246,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 549316,
+      "id": "stationary-line-reverse-on",
+      "value": {
+        "distance": 3.3306690738754696e-16,
+        "parameter": -1.9874134625953241,
+        "point": [
+          0.9899999999999997,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 152588,
+      "id": "stationary-line-reverse-offset",
+      "value": {
+        "distance": 3.0,
+        "parameter": -1.9874134625953241,
+        "point": [
+          0.9899999999999997,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 251770,
+      "id": "stationary-line-reverse-distant",
+      "value": {
+        "distance": 1e+100,
+        "parameter": -6.991862028837204,
+        "point": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 205994,
+      "id": "stationary-arc-forward-on",
+      "value": {
+        "distance": 2.138343537634607e-13,
+        "parameter": 0.49499999999992483,
+        "point": [
+          0.01418296533622523,
+          0.9998994166886345,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 114441,
+      "id": "stationary-arc-forward-offset",
+      "value": {
+        "distance": 3.0,
+        "parameter": 0.49499999999992483,
+        "point": [
+          0.01418296533622523,
+          0.9998994166886345,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 175476,
+      "id": "stationary-arc-forward-distant",
+      "value": {
+        "distance": 1e+100,
+        "parameter": 0.125,
+        "point": [
+          0.9297883010624304,
+          0.36809470956187285,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 76294,
+      "id": "stationary-arc-reverse-on",
+      "value": {
+        "distance": 2.138343537634607e-13,
+        "parameter": -0.49499999999992483,
+        "point": [
+          0.01418296533622523,
+          0.9998994166886345,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 83923,
+      "id": "stationary-arc-reverse-offset",
+      "value": {
+        "distance": 3.0,
+        "parameter": -0.49499999999992483,
+        "point": [
+          0.01418296533622523,
+          0.9998994166886345,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 144958,
+      "id": "stationary-arc-reverse-distant",
+      "value": {
+        "distance": 1e+100,
+        "parameter": -0.9991862028837204,
+        "point": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 129700,
+      "id": "decoy-polyline-forward-on",
+      "value": {
+        "distance": 0.0,
+        "parameter": 0.03,
+        "point": [
+          990.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 129700,
+      "id": "decoy-polyline-forward-offset",
+      "value": {
+        "distance": 3.0,
+        "parameter": 0.03,
+        "point": [
+          990.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 190735,
+      "id": "decoy-polyline-forward-distant",
+      "value": {
+        "distance": 1e+100,
+        "parameter": 0.03,
+        "point": [
+          990.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 114441,
+      "id": "decoy-polyline-reverse-on",
+      "value": {
+        "distance": 0.0,
+        "parameter": -0.03,
+        "point": [
+          990.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 114441,
+      "id": "decoy-polyline-reverse-offset",
+      "value": {
+        "distance": 3.0,
+        "parameter": -0.03,
+        "point": [
+          990.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 228882,
+      "id": "decoy-polyline-reverse-distant",
+      "value": {
+        "distance": 1e+100,
+        "parameter": -0.9696969696969697,
+        "point": [
+          990.0,
+          3.875,
+          0.0
+        ]
+      }
+    }
+  ]
+}

@@ -18,6 +18,24 @@ impl CurveQuery<'_> {
                 Ok((_, first, second)) => (first, Some(second)),
                 Err(_) => (self.evaluate_with_derivative(parameter)?.1, None),
             };
+            let (derivative, second) = if derivative.normalized_nonzero().is_ok() {
+                (derivative, second)
+            } else {
+                // At a multiple knot the derivative belongs to the span on
+                // its right. If that span is stationary, inspect the adjacent
+                // one-sided tangents before declaring this a local minimum.
+                let adjacent = [parameter.next_down(), parameter.next_up()]
+                    .into_iter()
+                    .filter(|candidate| domain[0] <= *candidate && *candidate <= domain[1])
+                    .find_map(|candidate| {
+                        let tangent = self.evaluate_with_derivative(candidate).ok()?.1;
+                        tangent.normalized_nonzero().ok().map(|_| tangent)
+                    });
+                let Some(tangent) = adjacent else {
+                    break;
+                };
+                (tangent, None)
+            };
             let Ok(unit) = derivative.normalized_nonzero() else {
                 break;
             };

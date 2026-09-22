@@ -1,0 +1,282 @@
+{
+  "absolute_epsilon": 1e-09,
+  "cases": 18,
+  "matched": 13,
+  "mismatched": 5,
+  "native_failed": 0,
+  "operations": [
+    {
+      "comparison": {
+        "differences": [],
+        "id": "stationary-line-forward-on",
+        "max_absolute_error": 6.661338147750939e-16,
+        "passed": true,
+        "rhino_ns_per_iteration": 11016846.0,
+        "rhino_to_viboceros_ratio": 604.524034240562,
+        "viboceros_ns_per_iteration": 18224.0
+      },
+      "id": "stationary-line-forward-on",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "stationary-line-forward-offset",
+        "max_absolute_error": 6.661338147750939e-16,
+        "passed": true,
+        "rhino_ns_per_iteration": 1136780.0,
+        "rhino_to_viboceros_ratio": 63.04236912156167,
+        "viboceros_ns_per_iteration": 18032.0
+      },
+      "id": "stationary-line-forward-offset",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [
+          "stationary-line-forward-distant.value.parameter: 1.987413462595325 != 1.95 (error 0.0374, limit 1e-09)",
+          "stationary-line-forward-distant.value.point[0]: 0.99000000000000032 != 0.96107079819572461 (error 0.0289, limit 1e-09)"
+        ],
+        "id": "stationary-line-forward-distant",
+        "max_absolute_error": 0.037413462595325075,
+        "passed": false,
+        "rhino_ns_per_iteration": 244141.0,
+        "rhino_to_viboceros_ratio": 12.395461007311129,
+        "viboceros_ns_per_iteration": 19696.0
+      },
+      "id": "stationary-line-forward-distant",
+      "native_error": null,
+      "passed": false
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "stationary-line-reverse-on",
+        "max_absolute_error": 1.9317880628477724e-14,
+        "passed": true,
+        "rhino_ns_per_iteration": 549316.0,
+        "rhino_to_viboceros_ratio": 32.8852969348659,
+        "viboceros_ns_per_iteration": 16704.0
+      },
+      "id": "stationary-line-reverse-on",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "stationary-line-reverse-offset",
+        "max_absolute_error": 1.9317880628477724e-14,
+        "passed": true,
+        "rhino_ns_per_iteration": 152588.0,
+        "rhino_to_viboceros_ratio": 8.96311090225564,
+        "viboceros_ns_per_iteration": 17024.0
+      },
+      "id": "stationary-line-reverse-offset",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [
+          "stationary-line-reverse-distant.value.parameter: -1.9874134625953435 != -6.991862028837204 (error 5, limit 1e-09)",
+          "stationary-line-reverse-distant.value.point[0]: 0.99000000000001487 != 1 (error 0.01, limit 1e-09)"
+        ],
+        "id": "stationary-line-reverse-distant",
+        "max_absolute_error": 5.0044485662418605,
+        "passed": false,
+        "rhino_ns_per_iteration": 251770.0,
+        "rhino_to_viboceros_ratio": 13.392021276595745,
+        "viboceros_ns_per_iteration": 18800.0
+      },
+      "id": "stationary-line-reverse-distant",
+      "native_error": null,
+      "passed": false
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "stationary-arc-forward-on",
+        "max_absolute_error": 2.1385324067146882e-13,
+        "passed": true,
+        "rhino_ns_per_iteration": 205994.0,
+        "rhino_to_viboceros_ratio": 9.557999257609502,
+        "viboceros_ns_per_iteration": 21552.0
+      },
+      "id": "stationary-arc-forward-on",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "stationary-arc-forward-offset",
+        "max_absolute_error": 2.1385324067146882e-13,
+        "passed": true,
+        "rhino_ns_per_iteration": 114441.0,
+        "rhino_to_viboceros_ratio": 4.849400398321963,
+        "viboceros_ns_per_iteration": 23599.0
+      },
+      "id": "stationary-arc-forward-offset",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [
+          "stationary-arc-forward-distant.value.parameter: 0.49500000000000005 != 0.125 (error 0.37, limit 1e-09)",
+          "stationary-arc-forward-distant.value.point[0]: 0.014182965336011377 != 0.92978830106243038 (error 0.916, limit 1e-09)",
+          "stationary-arc-forward-distant.value.point[1]: 0.99989941668863747 != 0.36809470956187285 (error 0.632, limit 1e-09)"
+        ],
+        "id": "stationary-arc-forward-distant",
+        "max_absolute_error": 0.915605335726419,
+        "passed": false,
+        "rhino_ns_per_iteration": 175476.0,
+        "rhino_to_viboceros_ratio": 6.383731082654249,
+        "viboceros_ns_per_iteration": 27488.0
+      },
+      "id": "stationary-arc-forward-distant",
+      "native_error": null,
+      "passed": false
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "stationary-arc-reverse-on",
+        "max_absolute_error": 2.138343537634607e-13,
+        "passed": true,
+        "rhino_ns_per_iteration": 76294.0,
+        "rhino_to_viboceros_ratio": 3.297631396957123,
+        "viboceros_ns_per_iteration": 23136.0
+      },
+      "id": "stationary-arc-reverse-on",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "stationary-arc-reverse-offset",
+        "max_absolute_error": 2.1381334203152136e-13,
+        "passed": true,
+        "rhino_ns_per_iteration": 83923.0,
+        "rhino_to_viboceros_ratio": 3.4148356119791665,
+        "viboceros_ns_per_iteration": 24576.0
+      },
+      "id": "stationary-arc-reverse-offset",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [
+          "stationary-arc-reverse-distant.value.parameter: -0.495 != -0.9991862028837204 (error 0.504, limit 1e-09)",
+          "stationary-arc-reverse-distant.value.point[0]: 0.014182965336011417 != 0 (error 0.0142, limit 1e-09)",
+          "stationary-arc-reverse-distant.value.point[1]: 0.99989941668863747 != 1 (error 0.000101, limit 1e-09)"
+        ],
+        "id": "stationary-arc-reverse-distant",
+        "max_absolute_error": 0.5041862028837204,
+        "passed": false,
+        "rhino_ns_per_iteration": 144958.0,
+        "rhino_to_viboceros_ratio": 5.227856318522793,
+        "viboceros_ns_per_iteration": 27728.0
+      },
+      "id": "stationary-arc-reverse-distant",
+      "native_error": null,
+      "passed": false
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "decoy-polyline-forward-on",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 129700.0,
+        "rhino_to_viboceros_ratio": 0.444299808166621,
+        "viboceros_ns_per_iteration": 291920.0
+      },
+      "id": "decoy-polyline-forward-on",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "decoy-polyline-forward-offset",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 129700.0,
+        "rhino_to_viboceros_ratio": 0.4071651012105078,
+        "viboceros_ns_per_iteration": 318544.0
+      },
+      "id": "decoy-polyline-forward-offset",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "decoy-polyline-forward-distant",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 190735.0,
+        "rhino_to_viboceros_ratio": 0.43562716974237164,
+        "viboceros_ns_per_iteration": 437840.0
+      },
+      "id": "decoy-polyline-forward-distant",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "decoy-polyline-reverse-on",
+        "max_absolute_error": 3.469446951953614e-18,
+        "passed": true,
+        "rhino_ns_per_iteration": 114441.0,
+        "rhino_to_viboceros_ratio": 0.3754244154957993,
+        "viboceros_ns_per_iteration": 304831.0
+      },
+      "id": "decoy-polyline-reverse-on",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "decoy-polyline-reverse-offset",
+        "max_absolute_error": 3.469446951953614e-18,
+        "passed": true,
+        "rhino_ns_per_iteration": 114441.0,
+        "rhino_to_viboceros_ratio": 0.34625473887404656,
+        "viboceros_ns_per_iteration": 330511.0
+      },
+      "id": "decoy-polyline-reverse-offset",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [
+          "decoy-polyline-reverse-distant.value.parameter: -0.030000000000000002 != -0.96969696969696972 (error 0.94, limit 1e-09)",
+          "decoy-polyline-reverse-distant.value.point[1]: 0 != 3.875 (error 3.88, limit 1e-09)"
+        ],
+        "id": "decoy-polyline-reverse-distant",
+        "max_absolute_error": 3.875,
+        "passed": false,
+        "rhino_ns_per_iteration": 228882.0,
+        "rhino_to_viboceros_ratio": 0.5094066248099869,
+        "viboceros_ns_per_iteration": 449311.0
+      },
+      "id": "decoy-polyline-reverse-distant",
+      "native_error": null,
+      "passed": false
+    }
+  ],
+  "passed": false,
+  "protocol_version": 1,
+  "relative_epsilon": 1e-12,
+  "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison."
+}

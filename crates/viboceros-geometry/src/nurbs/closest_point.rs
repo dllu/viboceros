@@ -36,9 +36,9 @@ impl NurbsCurve {
     /// Finds an active-domain parameter nearest to a finite model-space point.
     ///
     /// Each nonempty span contributes endpoint/midpoint seeds, supplemented by
-    /// a uniform set. Exact ordering of evaluated points retains sixteen starts
-    /// for curvature-aware Newton refinement with a tangent fallback. This is a
-    /// bounded numerical search, not a certified global rational minimum.
+    /// a uniform set. Every seed gets curvature-aware Newton refinement with a
+    /// tangent fallback. This is a bounded numerical search, not a certified
+    /// global rational minimum.
     pub fn closest_parameter(
         &self,
         target: Point3,
@@ -87,14 +87,14 @@ impl NurbsCurve {
                 candidates.push(candidate);
             }
         }
+        // Coarse seed distances cannot safely cull a span. A stationary span
+        // may supply many closer seeds than the span containing the minimum;
+        // an unusually long segment may have distant endpoints and midpoint
+        // even when its interior passes exactly through the target.
         let order = |a: &Candidate, b: &Candidate| a.compare(b, target);
-        if candidates.len() > 16 {
-            candidates.select_nth_unstable_by(16, order);
-            candidates.truncate(16);
-        }
-        candidates.sort_unstable_by(order);
         let mut best = candidates
-            .first()
+            .iter()
+            .min_by(|a, b| order(a, b))
             .copied()
             .ok_or(GeometryError::Degenerate {
                 context: "NURBS curve closest-point search",
