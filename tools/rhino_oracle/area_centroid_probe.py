@@ -1,12 +1,14 @@
-"""Owned area/volume centroid command observations; public APIs only."""
+"""Owned area/volume mass-command observations; public APIs only."""
 import re
 
 
-def validate(operation, measure="area"):
+def validate(operation, measure="area", centroid=True):
     if measure not in ("area", "volume"): raise ValueError("invalid centroid measure")
+    if not centroid and measure != "volume": raise ValueError("unsupported scalar mass command")
     optional = {"groups", "selected", "preselect"}
-    if measure == "volume": optional.add("open_confirmation")
-    if (not isinstance(operation,dict) or operation.get("op") != measure + "_centroid_command"
+    if measure == "volume": optional.update(("open_confirmation", "collection_api"))
+    kind = measure + ("_centroid_command" if centroid else "_command")
+    if (not isinstance(operation,dict) or operation.get("op") != kind
             or set(operation) - optional != set(("op", "id", "sources"))):
         raise ValueError("invalid area centroid fields")
     if "open_confirmation" in operation and operation["open_confirmation"] not in ("yes", "no", "escape"):
@@ -14,6 +16,7 @@ def validate(operation, measure="area"):
     if not isinstance(operation["id"],str) or re.match(r"^[A-Za-z0-9_.-]{1,100}\Z",operation["id"]) is None:
         raise ValueError("invalid area centroid id")
     if type(operation.get("preselect", True)) is not bool: raise ValueError("invalid preselection")
+    if type(operation.get("collection_api", False)) is not bool: raise ValueError("invalid collection diagnostic")
     sources = operation["sources"]
     if not isinstance(sources, list) or not 1 <= len(sources) <= 32:
         raise ValueError("expected 1 to 32 centroid sources")
@@ -29,17 +32,18 @@ def validate(operation, measure="area"):
     indices(operation.get("selected", list(range(len(sources)))))
 
 
-def run(operation, tolerance, helper, measure="area"):
+def run(operation, tolerance, helper, measure="area", centroid=True):
     import Rhino
     import System
     from join_probe import observe_command
-    validate(operation, measure)
-    command = "AreaCentroid" if measure == "area" else "VolumeCentroid"
+    validate(operation, measure, centroid)
+    command = ("Area" if measure == "area" else "Volume") + ("Centroid" if centroid else "")
     mass_api = Rhino.Geometry.AreaMassProperties if measure == "area" else Rhino.Geometry.VolumeMassProperties
     def mass_record(mass):
         if mass is None: return None
         return {measure: float(mass.Area if measure == "area" else mass.Volume), "centroid": helper["_xyz"](mass.Centroid)}
     document = Rhino.RhinoDoc.ActiveDoc
+    precision_before = document.ModelDistanceDisplayPrecision
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
     settings.NormalObjects = settings.HiddenObjects = settings.LockedObjects = True
     def objects(): return list(document.Objects.GetObjectList(settings))
@@ -57,6 +61,7 @@ def run(operation, tolerance, helper, measure="area"):
         if isinstance(geometry, Rhino.Geometry.Point): return {"point": helper["_xyz"](geometry.Location)}
         raise ValueError("unsupported centroid source")
     try:
+        if not centroid: document.ModelDistanceDisplayPrecision = 7
         document.Objects.UnselectAll()
         for source in operation["sources"]:
             helper["_record_progress"]("centroid %s: construct source" % operation["id"])
@@ -117,6 +122,23 @@ def run(operation, tolerance, helper, measure="area"):
             if document.Groups.Add("Viboceros centroid " + str(System.Guid.NewGuid()), [ids[i] for i in group]) < 0:
                 raise ValueError("centroid group insertion failed")
         selected_indices = operation.get("selected", list(range(len(ids))))
+        collection = None
+        if operation.get("collection_api", False):
+            # Explicit typed collection selects the public IEnumerable overload,
+            # not the scalar geometry overload. Diagnostics are never targets
+            # for the command itself, and use only the requested source subset.
+            supported = (Rhino.Geometry.Brep, Rhino.Geometry.Surface, Rhino.Geometry.Mesh)
+            items = System.Collections.Generic.List[Rhino.Geometry.GeometryBase]()
+            for i in selected_indices:
+                stored = document.Objects.FindId(ids[i]).Geometry
+                if isinstance(stored, supported): items.Add(stored)
+            mass = mass_api.Compute(items, True, True, False, False)
+            try:
+                collection = None if mass is None else dict(properties=mass_record(mass),
+                    first_moments=helper["_xyz"](mass.WorldCoordinatesFirstMoments),
+                    volume_error=float(mass.VolumeError))
+            finally:
+                if mass is not None: mass.Dispose()
         if operation.get("preselect", True):
             for i in selected_indices: document.Objects.Select(ids[i])
             macro = "_" + command + " _Enter"
@@ -137,6 +159,7 @@ def run(operation, tolerance, helper, measure="area"):
         points = []
         for obj in objects():
             if obj.Id in before or obj.Id in ids: continue
+            if not centroid: raise ValueError("scalar mass command created geometry")
             if not isinstance(obj.Geometry, Rhino.Geometry.Point):
                 raise ValueError("unexpected centroid output geometry")
             points.append(dict(point=helper["_xyz"](obj.Geometry.Location), selected=bool(obj.IsSelected(False)),
@@ -153,8 +176,13 @@ def run(operation, tolerance, helper, measure="area"):
                     history=history[1].strip())
         if measure == "volume":
             result.update(source_properties=source_properties, source_first_moments=source_first_moments)
+        if operation.get("collection_api", False): result["collection"] = collection
+        if not centroid:
+            result["display"] = dict(precision=int(document.ModelDistanceDisplayPrecision),
+                                     units=str(document.ModelUnitSystem))
         return result, 0
     finally:
+        document.ModelDistanceDisplayPrecision = precision_before
         Rhino.RhinoApp.RunScript("!", False)
         for obj in objects():
             if obj.Id not in before: document.Objects.Delete(obj.Id, True)

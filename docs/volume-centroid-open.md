@@ -7,6 +7,11 @@ This audit retains the Rhino observations that motivated that workflow, includin
 real counterexamples. Open pieces are meaningful as volume boundaries only when
 they jointly enclose a consistently oriented region. No performance parity is claimed.
 
+The later [scalar/collection audit](volume-command-audit.md) also implements this
+workflow for `Volume`. It establishes that Rhino's public collection API matches
+the isolated-surface centroid command while the single-object API does not;
+the native cone first-moment discrepancy remains unresolved.
+
 ## Dialog and owned input
 
 The earlier [open-object request](../tools/rhino_oracle/fixtures/volume_centroid_open.json)

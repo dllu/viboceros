@@ -1,0 +1,63 @@
+{
+  "profile": "release",
+  "samples": 7,
+  "statistic": "median",
+  "construction_included": false,
+  "rhino_comparison": false,
+  "rows": [
+    {
+      "translation": 0,
+      "quad_faces": 96,
+      "raw_scalar_us": 5.6,
+      "strict_first_moments_us": 67.1,
+      "exact_collection_scalar_us": 19,
+      "legacy_closure_checked_scalar_us": 14.7
+    },
+    {
+      "translation": 0,
+      "quad_faces": 1536,
+      "raw_scalar_us": 84.6,
+      "strict_first_moments_us": 1353.7,
+      "exact_collection_scalar_us": 607.8,
+      "legacy_closure_checked_scalar_us": 554.7
+    },
+    {
+      "translation": 0,
+      "quad_faces": 6144,
+      "raw_scalar_us": 337.6,
+      "strict_first_moments_us": 5751.9,
+      "exact_collection_scalar_us": 2686.9,
+      "legacy_closure_checked_scalar_us": 2507.2
+    },
+    {
+      "translation": 1000000000000,
+      "quad_faces": 96,
+      "raw_scalar_us": 5.6,
+      "strict_first_moments_us": 174.1,
+      "exact_collection_scalar_us": 26,
+      "legacy_closure_checked_scalar_us": 14.8
+    },
+    {
+      "translation": 1000000000000,
+      "quad_faces": 1536,
+      "raw_scalar_us": 84.6,
+      "strict_first_moments_us": 3123.2,
+      "exact_collection_scalar_us": 615.7,
+      "legacy_closure_checked_scalar_us": 418
+    },
+    {
+      "translation": 1000000000000,
+      "quad_faces": 6144,
+      "raw_scalar_us": 336.6,
+      "strict_first_moments_us": 14425.7,
+      "exact_collection_scalar_us": 3614.2,
+      "legacy_closure_checked_scalar_us": 2826.7
+    }
+  ],
+  "notes": [
+    "Local non-gating kernel throughput, not command/UI latency or Rhino performance parity.",
+    "Raw scalar excludes closure validation. Both exact collection and legacy closure-checked scalar include one topology inspection. The interactive command's selection and warning work is outside these timings.",
+    "Exact collection scalar skips quartic first moments and preserves unrepresentable-per-object cancellation. It is slower than the older conditioned floating scalar path; the cost is retained rather than described as an unconditional speedup.",
+    "Command: cargo run --release -p viboceros-geometry --example volume_mass_bench."
+  ]
+}

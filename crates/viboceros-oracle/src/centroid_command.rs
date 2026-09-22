@@ -25,6 +25,7 @@ fn preselect_default() -> bool {
 pub(super) enum Measure {
     Area,
     Volume,
+    ScalarVolume,
 }
 
 pub(super) fn run(
@@ -34,7 +35,7 @@ pub(super) fn run(
 ) -> Result<(Value, u64), ProbeError> {
     let invalid = || ProbeError::FixtureInvariant("invalid area centroid fixture");
     if let Some(answer) = &f.open_confirmation
-        && (measure != Measure::Volume || !matches!(answer.as_str(), "yes" | "no" | "escape"))
+        && (measure == Measure::Area || !matches!(answer.as_str(), "yes" | "no" | "escape"))
     {
         return Err(invalid());
     }
@@ -76,7 +77,7 @@ pub(super) fn run(
                     None => Value::Null,
                 }
             }
-            Measure::Volume => {
+            Measure::Volume | Measure::ScalarVolume => {
                 let mass = geometry
                     .volume_boundary()
                     .map(|boundary| {
@@ -106,6 +107,7 @@ pub(super) fn run(
     let command = match measure {
         Measure::Area => "AreaCentroid",
         Measure::Volume => "VolumeCentroid",
+        Measure::ScalarVolume => "Volume",
     };
     let mut invocation = command.to_owned();
     let mut confirmation = None;
@@ -127,7 +129,7 @@ pub(super) fn run(
             invocation = question.command_line();
         }
     }
-    let succeeded = if f.preselect {
+    let result = if f.preselect {
         r.execute(&mut d, &invocation)
     } else {
         r.execute_postselected(
@@ -135,8 +137,8 @@ pub(super) fn run(
             &invocation,
             viboceros_command::CommandContext::default(),
         )
-    }
-    .is_ok();
+    };
+    let succeeded = result.is_ok();
     if d.objects().take(before.len()).ne(before.iter()) {
         return Err(invalid());
     }
@@ -165,6 +167,20 @@ pub(super) fn run(
         json!({"properties":properties,"succeeded":succeeded,"points":points,"selected":selected});
     if let Some(asked) = confirmation {
         value["confirmation"] = json!(asked);
+    }
+    if measure == Measure::ScalarVolume {
+        let volume = match result {
+            Ok(message) => Some(
+                message
+                    .rsplit_once("total volume ")
+                    .ok_or_else(invalid)?
+                    .1
+                    .parse::<f64>()
+                    .map_err(|_| invalid())?,
+            ),
+            Err(_) => None,
+        };
+        value["volume"] = json!(volume);
     }
     Ok((value, 0))
 }

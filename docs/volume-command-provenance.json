@@ -1,0 +1,34 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "capture_date_utc": "2026-09-22",
+  "completed_cases": 80,
+  "scalar_volume_commands": 74,
+  "paired_centroid_commands": 6,
+  "successful_commands": 69,
+  "observed_warning_dialogs": 42,
+  "native_comparison_cases": 80,
+  "native_comparison_matches": 71,
+  "native_scalar_cases": 74,
+  "native_scalar_matches": 71,
+  "native_warning_control_matches": 42,
+  "native_paired_open_centroid_matches": 0,
+  "native_state_checks_match_all_cases": true,
+  "native_confirmation_checks": 54,
+  "native_confirmation_matches": 54,
+  "absolute_epsilon": 1e-9,
+  "relative_epsilon": 0,
+  "raw_response_sha256": "b903e152699e8c859b4a294009b25142e5b0683c0964e8d4d62628b9926e147c",
+  "retained_file_sha256": {
+    "docs/volume-command-comparison.json": "4fee7d76c58bda67c82ea69e51fa2aa7eae9fd6ea7c7e09b9e688a67d96e7247",
+    "docs/volume-command-performance.json": "e3ec4f06708788d12fffa0574e664e1e40c71ecf7b0db2a61fd01fc2d17f08ba",
+    "tools/rhino_oracle/fixtures/volume_command.json": "f99e4695158f3ff84779791cae8996155def697a1783d60524709751f5593052",
+    "tools/rhino_oracle/observations/volume_command.json": "c729f4213fc59b6259ed4c22fc1fd47aed0b681ed90b7b14f94099d788684d1b"
+  },
+  "notes": [
+    "Public API and command captures in a newly owned private-Xvfb Rhino session; no existing Rhino process or window was targeted.",
+    "Every numeric value in the compact retained response was checked bit-for-bit against the raw response, not merely within an epsilon.",
+    "The generator uses source definitions only. Command values come from real Volume history lines; source/stored/tight/collection APIs are separate diagnostics.",
+    "The strict replay retains displayed-value residuals, inward B-rep document-insertion reversal, and isolated-surface centroid differences. Printed uncertainty never widens epsilon.",
+    "No command Units-option, SubD, exact history-text, Rhino Undo/Redo or Rhino performance-parity claim. Local UI and history invariants have separate native tests."
+  ]
+}

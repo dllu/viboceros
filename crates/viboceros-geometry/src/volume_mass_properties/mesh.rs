@@ -13,7 +13,7 @@ impl TriangleMesh {
         if !self.topology().is_solid() {
             return Err(GeometryError::InvalidVolumeMesh);
         }
-        self.volume_flux_impl::<false>([0.; 3])
+        self.volume_flux_impl::<false, true>([0.; 3])
     }
 
     /// Exact signed cone volume and first moments about a caller-chosen base.
@@ -22,17 +22,24 @@ impl TriangleMesh {
     /// Use the SAME base when adding separate boundary pieces. No subtraction
     /// is rounded, even when a coordinate difference would overflow binary64.
     pub fn volume_flux(&self, base: Point3) -> Result<VolumeMassProperties, GeometryError> {
+        self.volume_integrals::<true>(base)
+    }
+
+    pub(crate) fn volume_integrals<const FIRST: bool>(
+        &self,
+        base: Point3,
+    ) -> Result<VolumeMassProperties, GeometryError> {
         let base = base.to_array();
         if base == [0.; 3] {
-            self.volume_flux_impl::<false>(base)
+            self.volume_flux_impl::<false, FIRST>(base)
         } else {
-            self.volume_flux_impl::<true>(base)
+            self.volume_flux_impl::<true, FIRST>(base)
         }
     }
 
     // Specialize the closed/origin path so reference support adds no per-term
     // tests or extra determinant columns to ordinary closed-solid integration.
-    fn volume_flux_impl<const OFFSET: bool>(
+    fn volume_flux_impl<const OFFSET: bool, const FIRST: bool>(
         &self,
         base: [Real; 3],
     ) -> Result<VolumeMassProperties, GeometryError> {
@@ -63,9 +70,11 @@ impl TriangleMesh {
                     let sign = orientation * if (j + 1) % 3 == k { 1. } else { -1. };
                     let factors = [sign * columns[0][i], columns[1][j], columns[2][k]];
                     volume.add(factors)?;
-                    for (axis, sum) in first.iter_mut().enumerate() {
-                        for point in points.into_iter().chain(OFFSET.then_some(base)) {
-                            sum.add([factors[0], factors[1], factors[2], point[axis]])?;
+                    if FIRST {
+                        for (axis, sum) in first.iter_mut().enumerate() {
+                            for point in points.into_iter().chain(OFFSET.then_some(base)) {
+                                sum.add([factors[0], factors[1], factors[2], point[axis]])?;
+                            }
                         }
                     }
                 }
@@ -73,7 +82,11 @@ impl TriangleMesh {
         }
         let result = VolumeMassProperties {
             volume: volume.total() / Rational::from_integer(6.into()),
-            first: first.map(|m| m.total() / Rational::from_integer(24.into())),
+            first: if FIRST {
+                first.map(|m| m.total() / Rational::from_integer(24.into()))
+            } else {
+                std::array::from_fn(|_| Rational::zero())
+            },
         };
         Ok(result)
     }

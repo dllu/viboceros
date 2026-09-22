@@ -110,7 +110,9 @@ fn measurement_output_preserves_small_nonzero_geometry() {
         document.tolerance(),
     )
     .unwrap();
-    let expected_volume = mesh.signed_volume().unwrap();
+    // Independently rounded Fraction(binary64(1e-5))**3 / 6. The old
+    // conditioned floating scalar path was one ulp below this exact value.
+    let expected_volume = 1.666666666666667e-16;
     let id = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
     document.select_object(id, SelectionMode::Replace).unwrap();
     let output = registry.execute(&mut document, "Volume").unwrap();
@@ -173,7 +175,9 @@ fn volume_cancels_large_closed_meshes_without_intermediate_overflow() {
         document.tolerance(),
     )
     .unwrap();
-    let expected = mesh.signed_volume().unwrap();
+    // Independently rounded Fraction(binary64(1e103))**3 / 6, not the
+    // older floating mesh API (which loses one ulp in normalization).
+    let expected = 1.6666666666666668e308;
     assert!(expected > f64::MAX * 0.5);
     let ids = [mesh.clone(), mesh.clone(), mesh.reversed()]
         .into_iter()
@@ -210,29 +214,18 @@ fn streaming_aggregation_preserves_small_terms_and_rejects_invalid_values() {
     document
         .select_objects(ids, SelectionMode::Replace)
         .unwrap();
-    for (sign, values, expected) in [
-        (MeasurementSign::Nonnegative, [1e16, 1., 1.], 1e16 + 2.),
-        (MeasurementSign::Signed, [1e16, 1., -1e16], 1.),
-        (
-            MeasurementSign::Signed,
-            [f64::MAX, f64::MAX, -f64::MAX],
-            f64::MAX,
-        ),
-    ] {
+    for (values, expected) in [([1e16, 1., 1.], 1e16 + 2.), ([1., 1e16, 1.], 1e16 + 2.)] {
         let mut values = values.into_iter();
         assert_eq!(
-            selected_measurement(&document, sign, |_, _| Ok(values.next().unwrap())).unwrap(),
+            selected_measurement(&document, |_, _| Ok(values.next().unwrap())).unwrap(),
             (3, expected)
         );
         assert!(values.next().is_none());
     }
     for invalid in [f64::NAN, f64::INFINITY, -1.] {
-        assert!(
-            selected_measurement(&document, MeasurementSign::Nonnegative, |_, _| Ok(invalid))
-                .is_err()
-        );
+        assert!(selected_measurement(&document, |_, _| Ok(invalid)).is_err());
     }
-    assert!(selected_measurement(&document, MeasurementSign::Signed, |_, _| Ok(f64::MAX)).is_err());
+    assert!(selected_measurement(&document, |_, _| Ok(f64::MAX)).is_err());
 }
 
 #[test]
@@ -414,35 +407,35 @@ fn volume_measures_meshes_and_exact_breps_with_stable_signed_accumulation() {
         .unwrap();
     assert_eq!(
         registry.execute(&mut document, "Volume").unwrap(),
-        "Measured 1 closed object(s): total volume 4"
+        "Measured 1 object(s): total volume 4"
     );
     document
         .select_object(reversed_id, SelectionMode::Replace)
         .unwrap();
     assert_eq!(
         registry.execute(&mut document, "Volume").unwrap(),
-        "Measured 1 closed object(s): total volume -4"
+        "Measured 1 object(s): total volume -4"
     );
     document
         .select_object(outward_id, SelectionMode::Add)
         .unwrap();
     assert_eq!(
         registry.execute(&mut document, "Volume").unwrap(),
-        "Measured 2 closed object(s): total volume 0"
+        "Measured 2 object(s): total volume 0"
     );
     document
         .select_object(box_id, SelectionMode::Replace)
         .unwrap();
     assert_eq!(
         registry.execute(&mut document, "Volume").unwrap(),
-        "Measured 1 closed object(s): total volume 24"
+        "Measured 1 object(s): total volume 24"
     );
     document
         .select_object(reversed_id, SelectionMode::Add)
         .unwrap();
     assert_eq!(
         registry.execute(&mut document, "Volume").unwrap(),
-        "Measured 2 closed object(s): total volume 20"
+        "Measured 2 object(s): total volume 20"
     );
     assert_eq!(document.undo_label(), history.as_deref());
 
@@ -451,7 +444,7 @@ fn volume_measures_meshes_and_exact_breps_with_stable_signed_accumulation() {
         .unwrap();
     assert!(matches!(
         registry.execute(&mut document, "Volume"),
-        Err(CommandError::OpenMeshVolume)
+        Err(CommandError::OpenVolumeConfirmationRequired)
     ));
     registry.execute(&mut document, "Point 9,9").unwrap();
     registry.execute(&mut document, "SelNone").unwrap();

@@ -72,9 +72,9 @@ class VolumeConfirmation:
         self.choices = {}
         for operation in operations:
             try:
-                validate(operation, "volume")
+                validate(operation, "volume", operation.get("op") != "volume_command")
             except ValueError as error:
-                raise OracleProtocolError("volume confirmation requires a dedicated volume-centroid request") from error
+                raise OracleProtocolError("volume confirmation requires a dedicated volume command request") from error
             name = operation["id"]
             if name in self.ids:
                 raise OracleProtocolError("duplicated volume confirmation id")

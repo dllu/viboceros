@@ -9,6 +9,8 @@ pub use boundary::VolumeBoundary;
 #[cfg(test)]
 mod boundary_tests;
 #[cfg(test)]
+mod scalar_tests;
+#[cfg(test)]
 mod tests;
 
 /// Signed volume and its signed first moments. Whole-shell reversal changes

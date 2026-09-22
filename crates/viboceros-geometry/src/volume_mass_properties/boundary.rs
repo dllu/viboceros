@@ -61,6 +61,23 @@ impl VolumeMassProperties {
         boundaries: &[VolumeBoundary<'_>],
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        Self::boundary_integrals::<true>(boundaries, tolerance)
+    }
+
+    /// Signed cone volume using the same reference convention as
+    /// `from_boundaries`, without computing first moments. Mesh contributions
+    /// and cross-object cancellation remain exact until the final conversion.
+    pub fn signed_volume_from_boundaries(
+        boundaries: &[VolumeBoundary<'_>],
+        tolerance: Tolerance,
+    ) -> Result<Real, GeometryError> {
+        Self::boundary_integrals::<false>(boundaries, tolerance)?.signed_volume()
+    }
+
+    fn boundary_integrals<const FIRST: bool>(
+        boundaries: &[VolumeBoundary<'_>],
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
         let mut bounds = None;
         for boundary in boundaries {
             let next = boundary.bounds()?;
@@ -76,19 +93,31 @@ impl VolumeMassProperties {
             // their efficient exact origin-based mesh path and well-conditioned
             // individual surface frames, particularly for widely spaced solids.
             let mass = match *boundary {
-                VolumeBoundary::Mesh(m) if m.topology().is_solid() => {
-                    m.volume_flux(Point3::try_new(0., 0., 0.)?)?
+                VolumeBoundary::Mesh(m) => {
+                    let reference = if m.topology().is_solid() {
+                        Point3::try_new(0., 0., 0.)?
+                    } else {
+                        base
+                    };
+                    m.volume_integrals::<FIRST>(reference)?
                 }
-                VolumeBoundary::Brep(b) if b.is_solid() => b.volume_mass_properties(tolerance)?,
+                VolumeBoundary::Brep(b) => {
+                    let reference = if b.is_solid() {
+                        b.bounds().center()?
+                    } else {
+                        base
+                    };
+                    b.volume_integrals::<FIRST>(reference, tolerance)?
+                }
                 VolumeBoundary::Surface(s) => {
                     let b = Brep::try_surface_face(s.clone(), tolerance)?;
-                    if b.is_solid() {
-                        b.volume_mass_properties(tolerance)?
+                    let reference = if b.is_solid() {
+                        b.bounds().center()?
                     } else {
-                        b.volume_flux(base, tolerance)?
-                    }
+                        base
+                    };
+                    b.volume_integrals::<FIRST>(reference, tolerance)?
                 }
-                _ => boundary.volume_flux(base, tolerance)?,
             };
             total.add(&mass);
         }

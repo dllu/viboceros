@@ -5067,6 +5067,9 @@ def _execute(operation, iterations, tolerance):
     if kind == "volume_centroid_command":
         import area_centroid_probe
         return area_centroid_probe.run(operation, tolerance, globals(), "volume")
+    if kind == "volume_command":
+        import area_centroid_probe
+        return area_centroid_probe.run(operation, tolerance, globals(), "volume", False)
     if kind == "angle_command":
         return _angle_command(operation)
     if kind == "angle_objects_command":

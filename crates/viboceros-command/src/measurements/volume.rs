@@ -1,4 +1,4 @@
-//! Signed-volume aggregation and an atomic current-layer centroid marker.
+//! Shared volume selection, scalar queries and atomic centroid markers.
 use super::*;
 use crate::{
     BooleanSelectionOption, ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSelectionWorkflow,
@@ -8,21 +8,31 @@ use viboceros_geometry::{VolumeBoundary, VolumeMassProperties};
 #[cfg(test)]
 mod tests;
 
-pub(crate) struct VolumeCentroidCommand;
-const USAGE: &str = "VolumeCentroid [Continue=Yes|No]";
+pub(crate) struct VolumeCommand {
+    pub(crate) centroid: bool,
+}
+impl VolumeCommand {
+    fn usage(&self) -> &'static str {
+        if self.centroid {
+            "VolumeCentroid [Continue=Yes|No]"
+        } else {
+            "Volume [Continue=Yes|No]"
+        }
+    }
+}
 const QUESTION: &str = "Some objects are not closed. Volume is meaningful only when the selected objects jointly enclose it. Continue? Yes/No; Enter or Esc uses Yes";
 
-fn continuation(arguments: &[&str]) -> Result<Option<bool>, CommandError> {
+fn continuation(arguments: &[&str], usage: &'static str) -> Result<Option<bool>, CommandError> {
     if arguments.is_empty() {
         return Ok(None);
     }
-    let (name, value, used) = crate::orient_option(arguments, 0, USAGE)?;
+    let (name, value, used) = crate::orient_option(arguments, 0, usage)?;
     if !crate::option_name_eq(name, "Continue") || used != arguments.len() {
-        return Err(CommandError::Usage(USAGE));
+        return Err(CommandError::Usage(usage));
     }
     crate::parse_yes_no(value)
         .map(Some)
-        .ok_or(CommandError::Usage(USAGE))
+        .ok_or(CommandError::Usage(usage))
 }
 
 fn selected_boundaries(document: &Document) -> Result<Vec<VolumeBoundary<'_>>, CommandError> {
@@ -52,18 +62,26 @@ fn requires_confirmation(
     Ok(false)
 }
 
-impl Command for VolumeCentroidCommand {
+impl Command for VolumeCommand {
     fn name(&self) -> &'static str {
-        "VolumeCentroid"
+        if self.centroid {
+            "VolumeCentroid"
+        } else {
+            "Volume"
+        }
+    }
+
+    fn records_history(&self) -> bool {
+        self.centroid
     }
 
     fn object_selection_prompt(
         &self,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        let answer = continuation(arguments)?;
+        let answer = continuation(arguments, self.usage())?;
         Ok(Some(ObjectSelectionPrompt {
-            command: "VolumeCentroid",
+            command: self.name(),
             filter: ObjectSelectionFilter::Volume,
             options: answer
                 .into_iter()
@@ -87,7 +105,7 @@ impl Command for VolumeCentroidCommand {
         document: &Document,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        let answer = continuation(arguments)?;
+        let answer = continuation(arguments, self.usage())?;
         let boundaries = selected_boundaries(document)?;
         if answer.is_some() || !requires_confirmation(&boundaries, document.tolerance())? {
             return Ok(None);
@@ -96,7 +114,7 @@ impl Command for VolumeCentroidCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let answer = continuation(arguments)?;
+        let answer = continuation(arguments, self.usage())?;
         let boundaries = selected_boundaries(document)?;
         if requires_confirmation(&boundaries, document.tolerance())? {
             match answer {
@@ -106,6 +124,16 @@ impl Command for VolumeCentroidCommand {
             }
         }
         let count = boundaries.len();
+        if !self.centroid {
+            let volume = VolumeMassProperties::signed_volume_from_boundaries(
+                &boundaries,
+                document.tolerance(),
+            )?;
+            return Ok(format!(
+                "Measured {count} object(s): total volume {}",
+                format_measurement(volume)
+            ));
+        }
         let total = VolumeMassProperties::from_boundaries(&boundaries, document.tolerance())?;
         // Rhino completes a signed zero-volume query without inventing a marker.
         if total.is_zero() {
@@ -136,7 +164,10 @@ impl Command for VolumeCentroidCommand {
         error: &CommandError,
         postselected: bool,
     ) {
-        if matches!(error, CommandError::UnsupportedVolumeGeometry)
+        // Scalar Volume retains an unsupported-only preselection in the real
+        // command capture; VolumeCentroid clears it. Do not conflate their
+        // failure cleanup merely because their successful selection is shared.
+        if (self.centroid && matches!(error, CommandError::UnsupportedVolumeGeometry))
             || (postselected && matches!(error, CommandError::OperationDeclined))
         {
             document.clear_selection();

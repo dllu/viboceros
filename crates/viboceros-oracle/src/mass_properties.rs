@@ -4,7 +4,7 @@ use super::{ProbeError, TrimmedBrepFixture, measure, trimmed_brep::build};
 use serde_json::{Value, json};
 use viboceros_command::CommandRegistry;
 use viboceros_document::{Document, Geometry, SelectionMode};
-use viboceros_geometry::{GeometryError, Tolerance};
+use viboceros_geometry::{GeometryError, Tolerance, VolumeBoundary, VolumeMassProperties};
 
 #[cfg(test)]
 mod parameter_tests;
@@ -38,7 +38,10 @@ pub(super) fn run(
         Ok((
             brep.area(tolerance)?,
             if is_solid {
-                Some(brep.signed_volume(tolerance)?)
+                Some(VolumeMassProperties::signed_volume_from_boundaries(
+                    &[VolumeBoundary::Brep(&brep)],
+                    tolerance,
+                )?)
             } else {
                 None
             },
@@ -65,7 +68,7 @@ pub(super) fn run(
     if let Some(volume) = volume {
         let message = registry.execute(&mut document, "Volume")?;
         if message
-            .strip_prefix("Measured 1 closed object(s): total volume ")
+            .strip_prefix("Measured 1 object(s): total volume ")
             .and_then(|value| value.parse::<f64>().ok())
             != Some(volume)
         {

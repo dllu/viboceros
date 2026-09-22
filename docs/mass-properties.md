@@ -3,9 +3,11 @@
 [Project overview](../README.md) · [Measurement commands](commands/editing.md)
 
 `Area` measures analytic geometry, meshes, NURBS surfaces, and trimmed B-reps.
-`Volume` measures closed meshes and consistently oriented, closed B-reps;
-outward normals give positive volume and reversing every face gives negative
-volume. Both commands preserve selection, geometry, attributes, and undo history.
+[Volume](commands/volume.md) measures meshes, NURBS surfaces and B-reps, asking
+before integrating open boundary collections. Outward normals give positive
+volume and reversing every face gives negative volume. Both commands preserve
+geometry, attributes and model undo history; Volume retains preselection but
+clears command-first selection after completion or a declined warning.
 
 [AreaCentroid](commands/area-centroid.md) integrates area first moments and creates
 one cumulative point. Its independent exact weighted aggregation is separate from
@@ -17,11 +19,12 @@ shorter-diagonal policy. The command documentation retains the associated
 Rhino numerical differences and independent high-precision reference checks.
 
 `VolumeBoundary` integrates unjoined boundary pieces about one common reference.
-`VolumeCentroid` asks before accepting open collections; its strict per-solid
+`Volume` and `VolumeCentroid` ask before accepting open collections; their strict per-solid
 kernel APIs are unchanged. See the [open-boundary audit](volume-centroid-open.md)
 for the exact mesh reference expansion, curved flux densities, confirmation
-semantics, and retained isolated-surface mismatch. The scalar `Volume` command
-still requires closed input.
+semantics, and retained isolated-surface centroid mismatch. Scalar collection
+volume skips first moments and uses exact cubic mesh accumulation, including
+cancellation between individually unrepresentable volumes.
 
 ## Integration
 

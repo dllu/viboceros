@@ -5,7 +5,10 @@ use viboceros_document::SelectionMode;
 fn volume_warning_answers_and_escape_are_separate_from_cancelling_selection() {
     use crate::app::object_selection::ObjectPromptPhase;
     use viboceros_geometry::{Tolerance, TriangleMesh};
-    for post in [false, true] {
+    for (post, command) in [false, true]
+        .into_iter()
+        .flat_map(|post| ["Volume", "VolumeCentroid"].map(|command| (post, command)))
+    {
         for answer in ["Yes", "No", "", "Escape", "replace"] {
             let mut app = test_app();
             let m = TriangleMesh::try_new(
@@ -28,7 +31,7 @@ fn volume_warning_answers_and_escape_are_separate_from_cancelling_selection() {
                     .select_objects_direct([id], SelectionMode::Replace)
                     .unwrap();
             }
-            enter(&mut app, "VolumeCentroid");
+            enter(&mut app, command);
             if post {
                 assert_eq!(
                     app.object_prompt.as_ref().unwrap().phase,
@@ -61,10 +64,17 @@ fn volume_warning_answers_and_escape_are_separate_from_cancelling_selection() {
             }
             assert!(app.object_prompt.is_none(), "{answer}");
             assert_eq!(app.document.selected_object_count(), usize::from(!post));
-            if matches!(answer, "No" | "replace") {
+            if matches!(answer, "No" | "replace") || command == "Volume" {
                 assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
                 assert_eq!(app.document.undo_label(), undo_before.as_deref());
                 assert_eq!(app.document.redo_label(), redo_before.as_deref());
+                if command == "Volume" && !matches!(answer, "No" | "replace") {
+                    assert!(
+                        app.command_log
+                            .iter()
+                            .any(|line| line.contains("total volume 5"))
+                    );
+                }
             } else {
                 assert!(
                     matches!(app.document.objects().last().unwrap().geometry(),Geometry::Point(p) if p.to_array()==[0.375,0.5,1.875])

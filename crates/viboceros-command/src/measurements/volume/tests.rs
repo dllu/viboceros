@@ -1,3 +1,4 @@
+//! Scalar and centroid commands share warning and selection policy.
 use super::*;
 use crate::{CommandContext, CommandRegistry};
 use viboceros_document::{ObjectAttributes, SelectionMode};
@@ -160,6 +161,56 @@ fn open_mesh() -> Geometry {
         )
         .unwrap(),
     )
+}
+
+#[test]
+fn scalar_volume_filters_selection_requires_confirmation_and_never_changes_history() {
+    let r = CommandRegistry::with_builtins();
+    for post in [false, true] {
+        for answer in ["", " Continue=Yes", " Continue=No"] {
+            let mut d = Document::default();
+            let open = d.add_geometry(open_mesh()).unwrap();
+            let point = d
+                .add_geometry(Geometry::Point(Point3::try_from([0.; 3]).unwrap()))
+                .unwrap();
+            r.execute(&mut d, "Point 9,9").unwrap();
+            r.execute(&mut d, "Undo").unwrap();
+            d.select_objects_direct([open, point], SelectionMode::Replace)
+                .unwrap();
+            let before = d.objects().cloned().collect::<Vec<_>>();
+            let undo = d.undo_label().map(str::to_owned);
+            let redo = d.redo_label().map(str::to_owned);
+            let command = format!("Volume{answer}");
+            let result = if post {
+                r.execute_postselected(&mut d, &command, CommandContext::default())
+            } else {
+                r.execute(&mut d, &command)
+            };
+            match answer {
+                "" => assert!(matches!(
+                    result,
+                    Err(CommandError::OpenVolumeConfirmationRequired)
+                )),
+                " Continue=No" => assert!(matches!(result, Err(CommandError::OperationDeclined))),
+                _ => assert_eq!(result.unwrap(), "Measured 1 object(s): total volume 5"),
+            }
+            assert_eq!(d.objects().cloned().collect::<Vec<_>>(), before);
+            assert_eq!(d.undo_label(), undo.as_deref());
+            assert_eq!(d.redo_label(), redo.as_deref());
+            assert_eq!(
+                d.selected_object_count(),
+                if post && !answer.is_empty() { 0 } else { 2 }
+            );
+        }
+    }
+    let mut d = Document::default();
+    let solid = d.add_geometry(mesh(0., 1., true)).unwrap();
+    d.select_objects_direct([solid], SelectionMode::Replace)
+        .unwrap();
+    assert_eq!(
+        r.execute(&mut d, "Volume Continue=No").unwrap(),
+        "Measured 1 object(s): total volume -10"
+    );
 }
 
 #[test]

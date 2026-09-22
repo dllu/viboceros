@@ -27,6 +27,7 @@ def prepare(request, observed, tight_api=False, measure="area", source_api=False
         v=row["value"]; count=len(op["sources"])
         confirmed = "open_confirmation" in op
         expected_keys = keys | ({"open_confirmation"} if confirmed else set())
+        if op.get("collection_api", False): expected_keys.add("collection")
         if not isinstance(v,dict) or set(v)!=expected_keys or type(v["succeeded"]) is not bool or not isinstance(v["history"],str):
             raise OracleProtocolError("invalid centroid observation fields")
         if confirmed:
@@ -76,6 +77,14 @@ def prepare(request, observed, tight_api=False, measure="area", source_api=False
                         or not isinstance(mass["centroid"],list) or len(mass["centroid"])!=3 or not all(map(finite,mass["centroid"]))):
                     raise OracleProtocolError("invalid centroid mass observation")
         if measure=="volume":
+            if op.get("collection_api", False) and v["collection"] is not None:
+                mass = v["collection"]
+                if (not isinstance(mass,dict) or set(mass)!={"properties","first_moments","volume_error"}
+                        or not isinstance(mass["properties"],dict) or set(mass["properties"])!={"volume","centroid"}
+                        or not finite(mass["properties"]["volume"]) or not finite(mass["volume_error"]) or mass["volume_error"]<0
+                        or any(not isinstance(a,list) or len(a)!=3 or not all(map(finite,a))
+                               for a in (mass["first_moments"], mass["properties"]["centroid"]))):
+                    raise OracleProtocolError("invalid collection mass diagnostic")
             for moment in v["source_first_moments"]:
                 if moment is not None and (not isinstance(moment,list) or len(moment)!=3 or not all(map(finite,moment))):
                     raise OracleProtocolError("invalid volume first-moment observation")

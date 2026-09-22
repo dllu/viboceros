@@ -69,19 +69,19 @@ impl SpatialFrame {
 
 /// `normal` is one quarter of the oriented span-scaled surface Jacobian.
 /// Components share a two-million-evaluation budget, not an unbounded retry.
-pub(crate) fn rectangle_density(
+pub(crate) fn rectangle_density<const N: usize>(
     surface: &NurbsSurface,
     absolute: Real,
     relative: Real,
     mut density: impl FnMut(Point3, Vector3, usize) -> Result<Real, GeometryError>,
-) -> Result<[Real; 4], GeometryError> {
+) -> Result<[Real; N], GeometryError> {
     let count = surface
         .spans_u()
         .count()
         .checked_mul(surface.spans_v().count())
         .ok_or(GeometryError::NumericalIntegrationDidNotConverge)?;
     let tolerance = (absolute / count as Real).max(Real::MIN_POSITIVE);
-    let mut sums: [FiniteSum; 4] = std::array::from_fn(|_| FiniteSum::default());
+    let mut sums: [FiniteSum; N] = std::array::from_fn(|_| FiniteSum::default());
     let mut remaining_evaluations = 2_000_000usize;
     for (component, sum) in sums.iter_mut().enumerate() {
         for u in surface.spans_u() {
@@ -112,10 +112,9 @@ pub(crate) fn rectangle_density(
             }
         }
     }
-    Ok([
-        sums[0].total()?,
-        sums[1].total()?,
-        sums[2].total()?,
-        sums[3].total()?,
-    ])
+    let mut result = [0.; N];
+    for (value, sum) in result.iter_mut().zip(sums) {
+        *value = sum.total()?;
+    }
+    Ok(result)
 }

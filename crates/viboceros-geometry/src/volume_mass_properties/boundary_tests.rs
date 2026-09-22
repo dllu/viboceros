@@ -65,6 +65,7 @@ fn open_mesh_cones_match_independent_exact_rationals_without_rounded_subtraction
             let actual = m.volume_flux(p(base)).unwrap();
             assert_eq!(actual.volume, volume);
             assert_eq!(actual.first, first);
+            assert_eq!(m.volume_integrals::<false>(p(base)).unwrap().volume, volume);
         }
     }
 }
@@ -88,6 +89,11 @@ fn reference_changes_open_piece_results_but_not_the_enclosing_mesh_collection() 
     );
     let expected = VolumeMassProperties::from_boundaries(&boundaries, Tolerance::DEFAULT).unwrap();
     assert_eq!(expected.signed_volume().unwrap(), 10.);
+    assert_eq!(
+        VolumeMassProperties::signed_volume_from_boundaries(&boundaries, Tolerance::DEFAULT)
+            .unwrap(),
+        10.
+    );
     assert_eq!(expected.centroid().unwrap().to_array(), [0.75, 1., 1.25]);
     for base in [[0.; 3], [1.5, 2., 2.5], [1e100, -1e100, 1e100]] {
         let mut total = VolumeMassProperties::default();

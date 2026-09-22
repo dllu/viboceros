@@ -165,6 +165,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    VolumeCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: centroid_command::CentroidFixture,
+    },
     AreaCentroidCommand {
         id: String,
         #[serde(flatten)]
@@ -1692,7 +1697,8 @@ pub enum SurfaceSplitCutterDefinition {
 impl Operation {
     pub fn id(&self) -> &str {
         match self {
-            Self::AreaCentroidCommand { id, .. }
+            Self::VolumeCommand { id, .. }
+            | Self::AreaCentroidCommand { id, .. }
             | Self::VolumeCentroidCommand { id, .. }
             | Self::ProjectedObjectSnap { id, .. }
             | Self::PolycurveGeometry { id, .. }
@@ -2052,6 +2058,7 @@ fn validate_request(request: &ProbeRequest) -> Result<(), ProbeError> {
             Operation::ProjectedObjectSnap { .. }
                 | Operation::AreaCentroidCommand { .. }
                 | Operation::VolumeCentroidCommand { .. }
+                | Operation::VolumeCommand { .. }
         ) && request.iterations != 1
         {
             return Err(ProbeError::FixtureInvariant(
@@ -2084,6 +2091,9 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::VolumeCommand { fixture, .. } => {
+            centroid_command::run(fixture, tolerance, centroid_command::Measure::ScalarVolume)?
+        }
         Operation::AreaCentroidCommand { fixture, .. } => {
             centroid_command::run(fixture, tolerance, centroid_command::Measure::Area)?
         }

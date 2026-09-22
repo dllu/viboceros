@@ -142,7 +142,7 @@ failure, and reports no performance timing. It runs in an oracle-owned session.
 
 ## Selected-object measurements
 
-Select objects, then enter `Length` (alias `Len`), `Area`, or `Volume` without
+Select objects, then enter `Length` (alias `Len`) or `Area` without
 arguments. Each command reports the selected count and aggregate measurement.
 They do not change geometry, selection, or undo/redo history. An empty selection,
 unsupported object, invalid measurement, or numerical failure rejects the query
@@ -159,7 +159,7 @@ tolerances.
 | --- | --- |
 | Length | Lines, circles, arcs, ellipses, polylines, NURBS curves, and polycurves |
 | Area | Circles, ellipses, closed planar polylines/NURBS/polycurves, NURBS surfaces, B-reps, and meshes |
-| Volume | Closed meshes and solid B-reps |
+| [Volume](volume.md) | Meshes, NURBS surfaces and B-reps; open collections require confirmation |
 
 NURBS/B-rep measurements use the geometry kernel's accuracy-controlled routines,
 not viewport tessellation. General curve area uses `CurveRef::planar_area`,
@@ -178,17 +178,20 @@ relative span size or extreme leaf domain can be converted.
 Self-intersecting winding-area semantics are
 not established. Separate selected curves contribute separate areas, not holes
 in one region. A lower-overhead standalone boundary-integral path remains future
-work. Volume is signed: reversing orientation reverses its contribution,
-so oppositely oriented objects can cancel. Open meshes/B-reps are rejected for
-volume. Length and area contributions must be nonnegative.
+work. Length and area contributions must be nonnegative. See [Volume](volume.md)
+for signed aggregation, filtered pre/postselection, open-boundary confirmation,
+and the separately retained command/API discrepancies.
 
 `viboceros-command/measurements` streams selected objects without building a
-temporary selection vector. All three commands share an allocation-free
+temporary selection vector for Length and Area. Those two commands share an allocation-free
 [exact finite-value accumulator](../numerical-sums.md), with one final rounding.
 Overflowing intermediate totals may cancel to a finite result without losing
 small contributions. Non-finite input values or rounded totals are errors rather
 than formatted infinities. This improves aggregation, not the accuracy of each
 underlying geometry measurement.
+
+Volume separately accumulates exact cubic mesh determinants before rounding,
+without computing first moments; curved contributions use bounded quadrature.
 
 Tests cover mixed analytic lengths/areas, surface and B-rep area, signed mesh
 and B-rep volumes, rational circles and mixed polynomial/line polycurves,

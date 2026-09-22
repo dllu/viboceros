@@ -29,6 +29,7 @@ Rhino's complete command set is still a work in progress.
 - [Extraction, measurement, and intersections](editing.md)
 - [Angle, distance, length, area, and volume queries](measurements.md)
 - [Cumulative area-centroid markers](area-centroid.md)
+- [Signed scalar volume and open-boundary confirmation](volume.md)
 - [Signed-volume centroid markers](volume-centroid.md)
 - [Local curve radius and diameter](radius.md)
 - [World and construction-plane point coordinates](evaluate-point.md)

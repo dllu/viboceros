@@ -6,9 +6,9 @@ use viboceros_geometry::{FiniteSum, GeometryError, Real, Tolerance};
 
 mod angle;
 mod area_centroid;
-mod volume_centroid;
+mod volume;
 pub(super) use area_centroid::AreaCentroidCommand;
-pub(super) use volume_centroid::VolumeCentroidCommand;
+pub(super) use volume::VolumeCommand;
 mod distance;
 mod domain;
 pub(super) use domain::DomainCommand;
@@ -50,16 +50,12 @@ impl Command for LengthCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         require_consumed(arguments, 0, "Length")?;
-        let (count, total) = selected_measurement(
-            document,
-            MeasurementSign::Nonnegative,
-            |geometry, tolerance| {
-                geometry_curve_ref(geometry)
-                    .ok_or(CommandError::UnsupportedLengthGeometry)?
-                    .length(tolerance)
-                    .map_err(CommandError::from)
-            },
-        )?;
+        let (count, total) = selected_measurement(document, |geometry, tolerance| {
+            geometry_curve_ref(geometry)
+                .ok_or(CommandError::UnsupportedLengthGeometry)?
+                .length(tolerance)
+                .map_err(CommandError::from)
+        })?;
         let total = format_measurement(total);
         Ok(format!("Measured {count} curve(s): total length {total}"))
     }
@@ -78,10 +74,8 @@ impl Command for AreaCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         require_consumed(arguments, 0, "Area")?;
-        let (count, total) = selected_measurement(
-            document,
-            MeasurementSign::Nonnegative,
-            |geometry, tolerance| match geometry {
+        let (count, total) =
+            selected_measurement(document, |geometry, tolerance| match geometry {
                 Geometry::NurbsSurface(surface) => Ok(surface.area(tolerance)?),
                 Geometry::Brep(brep) => Ok(brep.area(tolerance)?),
                 Geometry::Mesh(mesh) => Ok(mesh.area()?),
@@ -89,67 +83,21 @@ impl Command for AreaCommand {
                     .ok_or(CommandError::UnsupportedAreaGeometry)?
                     .planar_area(tolerance)
                     .map_err(CommandError::from),
-            },
-        )?;
+            })?;
         let total = format_measurement(total);
         Ok(format!("Measured {count} object(s): total area {total}"))
     }
 }
 
-pub(super) struct VolumeCommand;
-
-impl Command for VolumeCommand {
-    fn name(&self) -> &'static str {
-        "Volume"
-    }
-
-    fn records_history(&self) -> bool {
-        false
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        require_consumed(arguments, 0, "Volume")?;
-        let (count, total) =
-            selected_measurement(document, MeasurementSign::Signed, |geometry, tolerance| {
-                Ok(match geometry {
-                    Geometry::Mesh(mesh) => {
-                        if !mesh.topology().is_closed() {
-                            return Err(CommandError::OpenMeshVolume);
-                        }
-                        mesh.signed_volume()?
-                    }
-                    Geometry::Brep(brep) => {
-                        if !brep.is_solid() {
-                            return Err(CommandError::OpenBrepVolume);
-                        }
-                        brep.signed_volume(tolerance)?
-                    }
-                    _ => return Err(CommandError::UnsupportedVolumeGeometry),
-                })
-            })?;
-        let total = format_measurement(total);
-        Ok(format!(
-            "Measured {count} closed object(s): total volume {total}"
-        ))
-    }
-}
-
-#[derive(Clone, Copy)]
-enum MeasurementSign {
-    Nonnegative,
-    Signed,
-}
-
 fn selected_measurement(
     document: &Document,
-    sign: MeasurementSign,
     mut measure: impl FnMut(&Geometry, Tolerance) -> Result<Real, CommandError>,
 ) -> Result<(usize, Real), CommandError> {
     let mut count = 0;
     let mut sum = FiniteSum::default();
     for object in document.selected_objects() {
         let value = measure(object.geometry(), document.tolerance())?;
-        if !value.is_finite() || (matches!(sign, MeasurementSign::Nonnegative) && value < 0.0) {
+        if !value.is_finite() || value < 0.0 {
             return Err(GeometryError::NonFinite {
                 context: "geometry measurement",
             }

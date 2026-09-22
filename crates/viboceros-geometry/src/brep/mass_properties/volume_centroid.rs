@@ -29,6 +29,14 @@ impl Brep {
         base: Point3,
         tolerance: Tolerance,
     ) -> Result<VolumeMassProperties, GeometryError> {
+        self.volume_integrals::<true>(base, tolerance)
+    }
+
+    pub(crate) fn volume_integrals<const FIRST: bool>(
+        &self,
+        base: Point3,
+        tolerance: Tolerance,
+    ) -> Result<VolumeMassProperties, GeometryError> {
         let spatial = SpatialFrame::with_origin(self.bounds(), base)?;
         let absolute =
             (spatial.tolerance(tolerance) / self.faces.len() as Real).max(Real::MIN_POSITIVE);
@@ -55,10 +63,21 @@ impl Brep {
                 })
             };
             let values = if rectangular {
-                rectangle_density(&surface, absolute, tolerance.relative(), density)?
+                if FIRST {
+                    rectangle_density(&surface, absolute, tolerance.relative(), density)?
+                } else {
+                    let [volume] =
+                        rectangle_density(&surface, absolute, tolerance.relative(), density)?;
+                    [volume, 0., 0., 0.]
+                }
             } else {
                 let mut values = [0.; 4];
-                for (component, value) in values.iter_mut().enumerate() {
+                for (component, value) in
+                    values
+                        .iter_mut()
+                        .enumerate()
+                        .take(if FIRST { 4 } else { 1 })
+                {
                     *value = trimmed::integrate_density(
                         face,
                         &surface,

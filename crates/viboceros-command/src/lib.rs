@@ -641,10 +641,10 @@ impl CommandRegistry {
             .register(measurements::AreaCentroidCommand)
             .expect("unique built-in command");
         registry
-            .register(VolumeCommand)
+            .register(VolumeCommand { centroid: false })
             .expect("unique built-in command");
         registry
-            .register(measurements::VolumeCentroidCommand)
+            .register(VolumeCommand { centroid: true })
             .expect("unique built-in command");
         registry
             .register(DivideCommand)
@@ -17137,14 +17137,8 @@ pub enum CommandError {
     #[error("Area supports selected closed planar curves, NURBS surfaces, B-reps, and meshes only")]
     UnsupportedAreaGeometry,
 
-    #[error("Volume supports selected triangle meshes and exact B-reps only")]
+    #[error("Volume supports selected meshes, NURBS surfaces, and exact B-reps only")]
     UnsupportedVolumeGeometry,
-
-    #[error("Volume requires every selected mesh to be closed")]
-    OpenMeshVolume,
-
-    #[error("Volume requires every selected B-rep to be a closed, oriented solid")]
-    OpenBrepVolume,
 
     #[error(
         "open objects only define volume when they jointly enclose it; confirm with Continue=Yes or decline with Continue=No"
