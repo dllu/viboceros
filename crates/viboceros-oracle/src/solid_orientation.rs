@@ -19,44 +19,66 @@ pub(super) fn run(
     iterations: u32,
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
-    if iterations != 1 || f.sources.is_empty() || f.sources.len() > 8 {
+    if iterations != 1 {
         return Err(ProbeError::FixtureInvariant(
-            "solid orientation requires one iteration and one to eight B-rep sources",
+            "solid orientation requires one iteration",
         ));
     }
-    let parts = f
-        .sources
-        .iter()
-        .map(|s| s.build(tolerance))
-        .collect::<Result<Vec<_>, _>>()?;
-    let mut brep = Brep::try_combine(parts, tolerance)?;
-    let mut faces = brep.faces().to_vec();
-    let mut seen = std::collections::BTreeSet::new();
-    for &index in &f.flip_faces {
-        if index >= faces.len() || !seen.insert(index) {
+    let brep = f.build(tolerance)?;
+    f.write_artifact(&brep, tolerance)?;
+    Ok((geometry_record(&brep)?, 0))
+}
+
+impl SolidOrientationFixture {
+    pub(super) fn build(&self, tolerance: Tolerance) -> Result<Brep, ProbeError> {
+        let f = self;
+        if f.sources.is_empty() || f.sources.len() > 8 {
             return Err(ProbeError::FixtureInvariant(
-                "invalid individual face reversal",
+                "solid orientation requires one to eight B-rep sources",
             ));
         }
-        let face = &faces[index];
-        faces[index] = BrepFace::try_new(
-            face.surface().clone(),
-            !face.is_reversed(),
-            face.loops().to_vec(),
-        )?;
+        let parts = f
+            .sources
+            .iter()
+            .map(|s| s.build(tolerance))
+            .collect::<Result<Vec<_>, _>>()?;
+        let mut brep = Brep::try_combine(parts, tolerance)?;
+        let mut faces = brep.faces().to_vec();
+        let mut seen = std::collections::BTreeSet::new();
+        for &index in &f.flip_faces {
+            if index >= faces.len() || !seen.insert(index) {
+                return Err(ProbeError::FixtureInvariant(
+                    "invalid individual face reversal",
+                ));
+            }
+            let face = &faces[index];
+            faces[index] = BrepFace::try_new(
+                face.surface().clone(),
+                !face.is_reversed(),
+                face.loops().to_vec(),
+            )?;
+        }
+        if !f.flip_faces.is_empty() {
+            brep = Brep::try_new(
+                brep.vertices().to_vec(),
+                brep.edges().to_vec(),
+                faces,
+                tolerance,
+            )?;
+        }
+        Ok(brep)
     }
-    if !f.flip_faces.is_empty() {
-        brep = Brep::try_new(
-            brep.vertices().to_vec(),
-            brep.edges().to_vec(),
-            faces,
-            tolerance,
-        )?;
+
+    pub(super) fn write_artifact(
+        &self,
+        brep: &Brep,
+        tolerance: Tolerance,
+    ) -> Result<(), ProbeError> {
+        if let Some(path) = &self.artifact_path {
+            write_shared_artifact(&Geometry::Brep(brep.clone()), path, tolerance)?;
+        }
+        Ok(())
     }
-    if let Some(path) = &f.artifact_path {
-        write_shared_artifact(&Geometry::Brep(brep.clone()), path, tolerance)?;
-    }
-    Ok((geometry_record(&brep)?, 0))
 }
 
 /// Definition-only orientation witness: no samples or mass integration.

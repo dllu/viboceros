@@ -155,3 +155,8 @@ The coincident-shell Rhino classifications differ from the independently
 constructed boxes above. Their representations differ, so the original table
 must not be read as a representation-independent source-order tie rule.
 Both captures remain intact. The new query is not document normalization.
+
+The subsequent [shared-source document admission audit](document-brep-admission.md)
+compares actual insertion and replacement on identical native-exported B-reps,
+including separate original-source and reversed-source witnesses. It does not
+infer import, transform, or undo policy from those public object-table calls.

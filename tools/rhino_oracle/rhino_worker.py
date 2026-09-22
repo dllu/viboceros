@@ -5127,6 +5127,9 @@ def _execute(operation, iterations, tolerance):
         return orientation_probe.run(operation, tolerance, globals())
     if kind == "brep_solid_orientation":
         return _brep_solid_orientation(operation, iterations)
+    if kind == "document_brep":
+        import document_brep_probe
+        return document_brep_probe.run(operation, iterations, globals())
     if kind == "volume_command":
         import area_centroid_probe
         return area_centroid_probe.run(operation, tolerance, globals(), "volume", False)

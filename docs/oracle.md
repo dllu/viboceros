@@ -17,6 +17,9 @@ despite identical geometric definitions after exact inverse translation.
 The [Join scale audit](join-orientation.md) adds full-definition command records
 at unit and volume-overflow scales, separating fixed native execution errors
 from Rhino's large-coordinate orientation and normalization discrepancies.
+The [shared-source document admission probe](document-brep-admission.md) separates
+insertion and replacement using identical caller-owned inputs, with full
+definitions, identity, attributes, groups, selection, and immutability checks.
 
 The [conic-center audit](conic-center-audit.md) compares 32 full-coordinate public
 API records and 62 calibrated point-prompt records. It keeps API recognition,

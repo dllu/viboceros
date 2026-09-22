@@ -65,6 +65,7 @@ mod cap_command;
 mod conversion;
 mod conversion_session;
 mod distribute;
+mod document_brep;
 mod document_units;
 mod group_memberships;
 mod group_picking;
@@ -166,6 +167,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    DocumentBrep {
+        id: String,
+        #[serde(flatten)]
+        fixture: document_brep::DocumentBrepFixture,
+    },
     BrepSolidOrientation {
         id: String,
         #[serde(flatten)]
@@ -1704,6 +1710,7 @@ impl Operation {
     pub fn id(&self) -> &str {
         match self {
             Self::VolumeCommand { id, .. }
+            | Self::DocumentBrep { id, .. }
             | Self::BrepSolidOrientation { id, .. }
             | Self::AreaCentroidCommand { id, .. }
             | Self::VolumeCentroidCommand { id, .. }
@@ -2098,6 +2105,9 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::DocumentBrep { fixture, .. } => {
+            document_brep::run(fixture, iterations, tolerance)?
+        }
         Operation::BrepSolidOrientation { fixture, .. } => {
             solid_orientation::run(fixture, iterations, tolerance)?
         }
