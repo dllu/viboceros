@@ -1115,6 +1115,70 @@ fn cube_step() -> String {
 }
 
 #[test]
+fn planar_brep_step_export_keeps_cube_faces_edges_and_volume_editable() {
+    let source = read_step_planar_instances(Cursor::new(cube_step()), Tolerance::DEFAULT).unwrap();
+    assert_eq!(source.instances.len(), 1);
+    let brep = &source.instances[0].brep;
+    let mut output = Vec::new();
+    write_step_planar_breps(&mut output, std::slice::from_ref(brep)).unwrap();
+    let text = String::from_utf8(output).unwrap();
+    assert_eq!(text.matches("ADVANCED_FACE(").count(), brep.faces().len());
+    assert_eq!(text.matches("EDGE_CURVE(").count(), brep.edges().len());
+    assert!(!text.contains("TRIANGULATED_FACE_SET"));
+    let table = Table::from_step(&text).unwrap();
+    assert_eq!(table.entity_report.total(), 0);
+    let restored = read_step_planar_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    assert_eq!(restored.instances.len(), 1);
+    let actual = &restored.instances[0].brep;
+    assert_eq!(actual.vertices().len(), brep.vertices().len());
+    assert_eq!(actual.edges().len(), brep.edges().len());
+    assert_eq!(actual.faces().len(), brep.faces().len());
+    assert!(
+        (actual.signed_volume(Tolerance::DEFAULT).unwrap()
+            - brep.signed_volume(Tolerance::DEFAULT).unwrap())
+        .abs()
+            < 1e-9
+    );
+}
+
+#[test]
+fn planar_brep_step_export_keeps_polygon_hole_and_rejects_curved_edges_atomically() {
+    use viboceros_geometry::{Brep, Frame3, Vector3};
+    let source = polygon_face_step(
+        &[
+            vec![[0., 0.], [10., 0.], [10., 10.], [0., 10.]],
+            vec![[2., 2.], [2., 4.], [4., 4.], [4., 2.]],
+        ],
+        false,
+    );
+    let imported = read_step_planar_instances(Cursor::new(source), Tolerance::DEFAULT).unwrap();
+    let brep = &imported.instances[0].brep;
+    let mut output = Vec::new();
+    write_step_planar_breps(&mut output, std::slice::from_ref(brep)).unwrap();
+    let restored = read_step_planar_instances(Cursor::new(output), Tolerance::DEFAULT).unwrap();
+    assert_eq!(restored.instances.len(), 1);
+    assert_eq!(restored.instances[0].brep.faces()[0].loops().len(), 2);
+    assert!((restored.instances[0].brep.area(Tolerance::DEFAULT).unwrap() - 96.).abs() < 1e-9);
+
+    let frame = Frame3::try_from_directions(
+        Point3::try_new(0., 0., 0.).unwrap(),
+        Vector3::try_new(1., 0., 0.).unwrap(),
+        Vector3::try_new(0., 1., 0.).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let cylinder = Brep::try_cylinder(frame, 2., 0., 3., Tolerance::DEFAULT).unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("existing.step");
+    std::fs::write(&path, b"original").unwrap();
+    assert!(matches!(
+        write_step_planar_breps_file(&path, &[brep.clone(), cylinder]),
+        Err(StepError::UnsupportedNativeBrep { brep: 1, .. })
+    ));
+    assert_eq!(std::fs::read(&path).unwrap(), b"original");
+}
+
+#[test]
 fn imports_si_length_units_into_target_coordinates() {
     let metres = cube_step().replace("SI_UNIT(.MILLI.,.METRE.)", "SI_UNIT($,.METRE.)");
     let imported = read_step_in_units(

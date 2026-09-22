@@ -4,6 +4,10 @@ use std::path::Path;
 mod export;
 mod export_geometry;
 mod export_plane;
+pub use export::native::{
+    write_step_planar_breps, write_step_planar_breps_file, write_step_planar_breps_file_in_units,
+    write_step_planar_breps_in_units,
+};
 pub use export::{write_step, write_step_file, write_step_file_in_units, write_step_in_units};
 mod instance_plan;
 mod native_instances;
@@ -81,6 +85,10 @@ pub struct StepImport {
 
 #[derive(Debug, Error)]
 pub enum StepError {
+    #[error("STEP native export cannot represent B-rep {brep}: {reason}")]
+    UnsupportedNativeBrep { brep: usize, reason: &'static str },
+    #[error("STEP native export requires a B-rep at document object {object}")]
+    NativeExportRequiresBrep { object: usize },
     #[error("STEP shell #{shell} cannot be converted to a native planar B-rep: {reason}")]
     UnsupportedPlanarShell { shell: u64, reason: &'static str },
     #[error(transparent)]
@@ -121,6 +129,9 @@ pub enum StepError {
 
     #[error("at least one triangle mesh is required for STEP export")]
     NoMeshesToWrite,
+
+    #[error("at least one B-rep is required for native STEP export")]
+    NoBrepsToWrite,
 
     #[error(
         "STEP exporter cannot represent directions for mesh triangle {face} at this coordinate scale"

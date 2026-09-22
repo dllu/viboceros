@@ -39,6 +39,7 @@ Rhino's complete command set is still a work in progress.
 - [Selection, attributes, layers, and groups](document.md)
 - [Model units](units.md)
 - [Model tolerances](../tolerances.md)
+- [Native planar STEP export](export-step.md)
 - [Display modes and drafting controls](interface.md)
 - [Zoom to extents and selection](zoom.md)
 - [Construction-plane editing](../cplane.md)
@@ -289,6 +290,7 @@ ExportStl Binary path/to/model.stl
 ExportStl Ascii path/to/model.stl
 ImportStep path/to/model.step
 ExportStep path/to/model.step
+ExportStep Native=Yes path/to/editable.step
 Import3dm path/to/model.3dm
 Export3dm path/to/model.3dm
 Help

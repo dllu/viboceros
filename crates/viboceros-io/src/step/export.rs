@@ -15,6 +15,7 @@ use super::export_geometry::{ExportLine, ExportPoint};
 use super::export_plane::ExportPlane;
 use super::{StepError, TruckPoint3};
 mod components;
+pub mod native;
 
 #[cfg(test)]
 mod tests;

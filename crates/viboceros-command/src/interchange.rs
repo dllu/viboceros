@@ -181,6 +181,16 @@ pub(super) struct ExportStepCommand;
 
 impl Command for ExportStepCommand {
     fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
+        let input = input.trim();
+        let end = input.find(char::is_whitespace).unwrap_or(input.len());
+        if input[..end].eq_ignore_ascii_case("Native=Yes") {
+            let mut arguments = paths::parse(&input[end..], false)?;
+            if arguments.is_empty() {
+                return Err(CommandError::Usage("ExportStep Native=Yes path"));
+            }
+            arguments.insert(0, "Native=Yes");
+            return Ok(arguments);
+        }
         paths::parse(input, false)
     }
 
@@ -199,6 +209,27 @@ impl Command for ExportStepCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         if arguments.is_empty() {
             return Err(CommandError::Usage("ExportStep path"));
+        }
+        if arguments.len() == 2 && arguments[0] == "Native=Yes" {
+            let path = arguments[1];
+            let breps = document
+                .objects()
+                .enumerate()
+                .map(|(index, object)| match object.geometry() {
+                    Geometry::Brep(brep) => Ok(brep),
+                    _ => Err(viboceros_io::StepError::NativeExportRequiresBrep { object: index }),
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            viboceros_io::write_step_planar_breps_file_in_units(
+                path,
+                breps.iter().copied(),
+                document.units(),
+                document.tolerance(),
+            )?;
+            return Ok(format!(
+                "Exported {} planar B-rep object(s) as native STEP to '{path}'",
+                breps.len()
+            ));
         }
         let path = arguments.join(" ");
         let mesh = combined_document_mesh(document)?;

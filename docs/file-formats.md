@@ -146,7 +146,7 @@ each transformed mesh is validated independently. Cached tessellations are
 released after their last instance; shell-conversion losses are reported
 once per source shape, not once per instance. Parser,
 topology, and unsupported-representation losses are reported instead of being
-silent. STL and STEP export tessellate visible NURBS surfaces and B-rep faces;
+silent. Default STL and STEP export tessellate visible NURBS surfaces and B-rep faces;
 exact outer and inner p-curves are sampled into a constrained UV triangulation
 so holes remain open, with interior knot-span samples refining nonplanar
 trimmed surfaces. STEP writes the results as faceted shells with shared
@@ -157,6 +157,7 @@ directed face boundary against source triangle indices; two quad cases check
 the shared triangulation diagonal and opposite edge-use orientations. The
 generated STEP files are also parsed and checked for face/edge record counts.
 These establish the exporter's topology policy, not Rhino seam-conversion parity.
+
 Before serialization, the exporter partitions faces by shared raw edges into
 separate shells, in first-face order, retaining face order within each piece.
 This follows the [STEP connected-face-set shell hierarchy](https://steptools.com/docs/stp_aim/html/t_connected_face_set.html).
@@ -205,6 +206,16 @@ Unitless and unset documents are rejected; conversion failures leave an
 existing destination unchanged. The low-level
 `write_step`/`write_step_file` APIs interpret coordinates as millimetres;
 their `_in_units` counterparts accept explicit source units and tolerance.
+
+`ExportStep Native=Yes` writes editable straight-edged planar B-reps as STEP
+plane faces and shared line edges, including polygon holes. It preserves
+face/edge incidence and converts coordinates to millimetres without rebuilding
+the source B-rep's UV trims. Curved edges, singular trims, nonplanar faces, and
+non-B-rep document objects produce an explicit error; staged file replacement
+leaves an existing destination intact. Each edge-disconnected shell is a separate
+STEP shell model, so native export does not yet preserve compound B-rep object
+grouping, object names, or materials. See [command details](commands/export-step.md).
+
 General editable STEP B-rep interchange is not implemented yet. The low-level
 `read_step_planar_shells` API converts supported planar source shell definitions
 to validated native B-reps without tessellation; its `_in_units` counterpart

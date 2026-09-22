@@ -4,6 +4,78 @@ use viboceros_document::SelectionMode;
 use viboceros_geometry::Point3;
 
 #[test]
+fn native_step_export_preserves_editable_box_and_units() {
+    use viboceros_geometry::{Brep, Frame3, Vector3};
+    let frame = Frame3::try_from_directions(
+        Point3::try_new(0., 0., 0.).unwrap(),
+        Vector3::try_new(1., 0., 0.).unwrap(),
+        Vector3::try_new(0., 1., 0.).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let box_brep =
+        Brep::try_box(frame, [[0., 2.], [0., 3.], [0., 4.]], Tolerance::DEFAULT).unwrap();
+    let mut document =
+        Document::with_units(Tolerance::DEFAULT, viboceros_io::LengthUnitSystem::Inches).unwrap();
+    document.add_geometry(Geometry::Brep(box_brep)).unwrap();
+    let before = format!("{document:?}");
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("editable  box.step");
+    let registry = CommandRegistry::with_builtins();
+    let report = registry
+        .execute(
+            &mut document,
+            &format!("ExportStep Native=Yes \"{}\"", path.display()),
+        )
+        .unwrap();
+    assert!(report.contains("1 planar B-rep object"));
+    assert_eq!(format!("{document:?}"), before);
+    let output = std::fs::read_to_string(&path).unwrap();
+    assert_eq!(output.matches("ADVANCED_FACE(").count(), 6);
+    assert_eq!(output.matches("EDGE_CURVE(").count(), 12);
+    let mut imported = Document::with_units(
+        Tolerance::DEFAULT,
+        viboceros_io::LengthUnitSystem::Millimeters,
+    )
+    .unwrap();
+    registry
+        .execute(
+            &mut imported,
+            &format!("ImportStep Native=Yes \"{}\"", path.display()),
+        )
+        .unwrap();
+    let Geometry::Brep(restored) = imported.objects().next().unwrap().geometry() else {
+        panic!("native STEP roundtrip lost editable geometry")
+    };
+    assert_eq!(restored.faces().len(), 6);
+    assert!(
+        (restored.signed_volume(Tolerance::DEFAULT).unwrap() - 24. * 25.4_f64.powi(3)).abs() < 1e-7
+    );
+}
+
+#[test]
+fn native_step_export_rejects_non_breps_without_replacing_destination() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("existing.step");
+    std::fs::write(&path, b"original").unwrap();
+    let mut document = Document::default();
+    document.add_geometry(triangle(0.)).unwrap();
+    let before = format!("{document:?}");
+    let result = CommandRegistry::with_builtins().execute(
+        &mut document,
+        &format!("ExportStep Native=Yes {}", path.display()),
+    );
+    assert!(matches!(
+        result,
+        Err(CommandError::Step(
+            viboceros_io::StepError::NativeExportRequiresBrep { object: 0 }
+        ))
+    ));
+    assert_eq!(std::fs::read(&path).unwrap(), b"original");
+    assert_eq!(format!("{document:?}"), before);
+}
+
+#[test]
 fn file_commands_preserve_repeated_spaces_in_quoted_and_unquoted_paths() {
     let directory = tempfile::tempdir().unwrap();
     let registry = CommandRegistry::with_builtins();
