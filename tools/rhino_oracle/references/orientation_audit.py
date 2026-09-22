@@ -61,8 +61,27 @@ def face_request():
     return dict(protocol_version=1, iterations=1, operations=cases)
 
 
+def spatial_request():
+    """Vary separation axis, relative size, sense and order without integration."""
+    cases = []
+    for axis, name in enumerate("xyz"):
+        for low_size in (1, 2):
+            for reverse in (False, True):
+                for reverse_order in (False, True):
+                    parts = []
+                    for offset, size, sense in ((-10, low_size, reverse), (10, 3-low_size, not reverse)):
+                        translation = [0, 0, 0]
+                        translation[axis] = offset
+                        parts.append(dict(kind="box", translation=translation, size=size, reversed=sense))
+                    if reverse_order: parts.reverse()
+                    cases.append(dict(op="orientation_audit",
+                        id="axis-%s-size-%d-reversed-%s-order-%s" % (name, low_size, reverse, reverse_order),
+                        sources=[dict(kind="compound", parts=parts)], measure_volume=False))
+    return dict(protocol_version=1, iterations=1, operations=cases)
+
+
 if __name__ == "__main__":
-    generators = {"basic": request, "compound": compound_request, "faces": face_request}
+    generators = {"basic": request, "compound": compound_request, "faces": face_request, "spatial": spatial_request}
     if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] not in generators):
-        raise SystemExit("usage: orientation_audit [basic|compound|faces]")
+        raise SystemExit("usage: orientation_audit [basic|compound|faces|spatial]")
     print(json.dumps(generators[sys.argv[1] if len(sys.argv) == 2 else "basic"](), indent=2, allow_nan=False))

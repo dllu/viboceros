@@ -1670,10 +1670,13 @@ def _three_dm_curve_interchange(operation, iterations):
     return _measure(iterations, read)
 
 
-def _interchange_brep_record(brep):
+def _interchange_brep_record(brep, include_samples=True):
+    """Retain definitions and topology, with optional evaluation-only samples."""
     def curve_record(curve):
-        return {"definition": _nurbs_curve_definition(curve),
-                "samples": [_xyz(curve.PointAt(curve.Domain.ParameterAt(i / 32.0))) for i in range(33)]}
+        record = {"definition": _nurbs_curve_definition(curve)}
+        if include_samples:
+            record["samples"] = [_xyz(curve.PointAt(curve.Domain.ParameterAt(i / 32.0))) for i in range(33)]
+        return record
 
     faces = []
     for face in brep.Faces:
@@ -1682,17 +1685,22 @@ def _interchange_brep_record(brep):
         for loop in face.Loops:
             trims = []
             for trim in loop.Trims:
-                lifted = []
-                for i in range(33):
-                    uv = trim.PointAt(trim.Domain.ParameterAt(i / 32.0))
-                    lifted.append(_xyz(surface.PointAt(uv.X, uv.Y)))
-                trims.append({"iso": int(trim.IsoStatus), "tolerance": list(trim.GetTolerances()),
-                              "definition": _nurbs_parameter_curve_definition(trim), "lifted": lifted})
+                record = {"iso": int(trim.IsoStatus), "tolerance": list(trim.GetTolerances()),
+                          "definition": _nurbs_parameter_curve_definition(trim)}
+                if include_samples:
+                    lifted = []
+                    for i in range(33):
+                        uv = trim.PointAt(trim.Domain.ParameterAt(i / 32.0))
+                        lifted.append(_xyz(surface.PointAt(uv.X, uv.Y)))
+                    record["lifted"] = lifted
+                trims.append(record)
             loops.append(trims)
-        faces.append({"definition": _nurbs_surface_definition(surface),
-                      "samples": [_xyz(surface.PointAt(surface.Domain(0).ParameterAt(i / 8.0),
-                                                       surface.Domain(1).ParameterAt(j / 8.0)))
-                                  for j in range(9) for i in range(9)], "loops": loops})
+        record = {"definition": _nurbs_surface_definition(surface), "loops": loops}
+        if include_samples:
+            record["samples"] = [_xyz(surface.PointAt(surface.Domain(0).ParameterAt(i / 8.0),
+                                                      surface.Domain(1).ParameterAt(j / 8.0)))
+                                 for j in range(9) for i in range(9)]
+        faces.append(record)
     return {"topology": _brep_morph_topology(brep),
             "vertices": [{"point": _xyz(v.Location), "tolerance": float(v.Tolerance)} for v in brep.Vertices],
             "edges": [{"tolerance": float(e.Tolerance), "curve": curve_record(e)} for e in brep.Edges],

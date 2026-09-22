@@ -104,3 +104,40 @@ general spatial classification algorithm. The kernel's new shared-edge face
 component query preserves disconnected shells and supplies deterministic
 topology for that work. It is also used by automatic joining, replacing a
 duplicated adjacency traversal, but does not classify containment or orientation.
+
+## Spatial-axis follow-up
+
+The [24 spatial requests](../tools/rhino_oracle/fixtures/orientation_spatial.json)
+and [observations](../tools/rhino_oracle/observations/orientation_spatial.json)
+vary X/Y/Z separation, relative box size, global sense, and source-table order.
+Each source contains two disjoint, oppositely oriented boxes of half-size 1 and 2.
+
+- For X separation, the reported orientation follows the lower-X box, regardless
+  of size or table order.
+- For Y and Z separation, it follows the larger box, regardless of table order.
+  That box extends farther in X even when it has the higher Y or Z coordinate.
+- Insertion leaves outward-classified sources unchanged and globally reverses
+  inward-classified sources; complete definitions otherwise remain identical.
+
+These observations are consistent with selecting the unique minimum-X shell in
+these fixtures. They do **not** establish a general algorithm or an equal-extremum
+tie policy, and do not cover curved, trimmed, or intersecting shells. No native
+classification heuristic or document normalization was introduced from this batch.
+
+The probe now records definitions directly, without computing and then deleting
+edge, surface, and lifted-trim samples. Sampling remains enabled by default for
+interchange callers. The optional `measure_volume=False` skips mass integration;
+its retained `volume=null` means unmeasured, not zero. All older request defaults
+are unchanged. Four repeated X-axis cases match the earlier compound definitions
+and orientation records exactly, apart from the explicitly unmeasured volume.
+Tests also prove that the definition-only path makes no sample-evaluation calls.
+These changes reduce unnecessary work; this is not a kernel-speed benchmark.
+
+The [spatial provenance](orientation-spatial-provenance.json) records capture
+source hashes and lossless-compaction checks. Reproduce with:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino \
+  tools/rhino_oracle/fixtures/orientation_spatial.json --timeout 900
+python3 -m unittest tools.rhino_oracle.test_orientation_spatial
+```

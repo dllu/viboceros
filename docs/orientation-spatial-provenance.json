@@ -1,0 +1,25 @@
+{
+  "capture_date_utc": "2026-09-22",
+  "engine_version": "8.32.26160.13001",
+  "completed_operations": 24,
+  "base_commit": "bf3e43b",
+  "raw_response_sha256_before_compaction": "8c3d752e45b14a17a11a7461f55149c5b4dfd21794c86074dc4a2f33e1fc5df8",
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/orientation_spatial.json": "b334b0e40a5e49ff079f7cf2845394fa82315a347bf4bb3a74fbbed117789e28",
+    "tools/rhino_oracle/observations/orientation_spatial.json": "ce8c57d9433cd5e3298193948329d0c210673bc1b629a91ab20aafd5754c380d"
+  },
+  "capture_source_sha256": {
+    "tools/rhino_oracle/orientation_probe.py": "bad5aff26093c576c53c74fbd24f0342ad006930950ba64950e6621eb803abda",
+    "tools/rhino_oracle/rhino_worker.py": "46f0637a7d4cedbef70deaf51d70f9a640fd7d51cc67f828670dea1eab5ed563",
+    "tools/rhino_oracle/references/orientation_audit.py": "b78585385b4163d411424fc3720a417d30d1cd3a970d0418245566deb5032a71"
+  },
+  "notes": [
+    "One owned private-Xvfb session, with a 900-second deadline, completed all 24 cases and exited; no manual startup recovery or user-session interaction was needed.",
+    "The source-only generator varies separation axis, relative size, global sense, and source table order. All components are disjoint axis-aligned boxes with distinct minimum X coordinates.",
+    "Definition-only recording avoids evaluation samples that the orientation probe previously discarded. Volume integration is disabled explicitly; null volumes are not observed zero volumes.",
+    "Retained JSON was compared recursively to the original, including each numeric IEEE-754 bit pattern, after compaction.",
+    "Four repeated X-axis sources retain exactly the earlier compound definitions and orientation records, excluding the explicitly unmeasured volume field.",
+    "The minimum-X observation applies only to these bounded fixtures. It does not establish a general classifier, equal-extremum tie policy, or behavior for curved, trimmed, or intersecting shells.",
+    "These are public-API behavioral witnesses, not actual Flip command runs, identical-source native replay, or performance measurements."
+  ]
+}

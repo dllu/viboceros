@@ -3,10 +3,12 @@ import copy
 import hashlib
 import json
 from pathlib import Path
+from types import SimpleNamespace
 import unittest
+from unittest.mock import Mock, patch
 
-from .orientation_probe import validate
-from .references.orientation_audit import request, compound_request, face_request
+from .orientation_probe import validate, geometry_record
+from .references.orientation_audit import request, compound_request, face_request, spatial_request
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -36,7 +38,8 @@ class OrientationTests(unittest.TestCase):
         self.assertEqual(len(request()["operations"]), 36)
         self.assertEqual(len(compound_request()["operations"]), 20)
         self.assertEqual(len(face_request()["operations"]), 16)
-        for data in (request(), compound_request(), face_request()):
+        self.assertEqual(len(spatial_request()["operations"]), 24)
+        for data in (request(), compound_request(), face_request(), spatial_request()):
             ids = [op["id"] for op in data["operations"]]
             self.assertEqual(len(ids), len(set(ids)))
             for op in data["operations"]: validate(op)
@@ -45,21 +48,63 @@ class OrientationTests(unittest.TestCase):
         base = dict(op="orientation_audit", id="test", sources=[dict(kind="box")])
         for fields in (dict(id="x _Delete"), dict(flip=1), dict(preselect=None), dict(replace_flip=[]),
                        dict(insertion="macro"), dict(sources=[]), dict(sources=[{}] * 9),
-                       dict(extra=True), dict(op="Flip")):
+                       dict(extra=True), dict(op="Flip"), dict(measure_volume=0)):
             with self.subTest(fields=fields), self.assertRaises(ValueError):
                 validate(dict(base, **fields))
         for spec in (None, {}, dict(kind="unknown"), dict(kind="box", reversed=1),
                      dict(kind="box", size=True), dict(kind="box", size=3),
                      dict(kind="box", offset=101), dict(kind="box", offset=1.5),
+                     dict(kind="box", translation=None), dict(kind="box", translation=[0, 0]),
+                     dict(kind="box", translation=[0, 0, 101]), dict(kind="box", translation=[0, 0, True]),
+                     dict(kind="box", translation=[0, 0, 0.5]), dict(kind="box", translation=[0, 0, "0"]),
+                     dict(kind="box", translation=[0, 0, 0], offset=0),
                      dict(kind="box", parts=[]), dict(kind="point", reversed=True),
                      dict(kind="box", flipped_faces=[]), dict(kind="box", flipped_faces=[True]),
                      dict(kind="box", flipped_faces=[6]), dict(kind="box", flipped_faces=[0, 0]),
                      dict(kind="box", flipped_faces=[[]]), dict(kind="mesh", flipped_faces=[0]),
                      dict(kind="compound", parts=[None]),
                      dict(kind="compound", parts=[dict(kind="mesh")]),
-                     dict(kind="compound", parts=[dict(kind="box")], offset=1)):
+                     dict(kind="compound", parts=[dict(kind="box")], offset=1),
+                     dict(kind="compound", parts=[dict(kind="box")], translation=[0, 0, 0])):
             with self.subTest(spec=spec), self.assertRaises(ValueError):
                 validate(dict(base, sources=[spec]))
+
+    def test_mass_integration_is_optional_and_never_inferred_from_orientation(self):
+        class Brep:
+            IsSolid = True
+            SolidOrientation = "Outward"
+        for solid in (False, True):
+            for measure in (False, True):
+                for missing in (False, True):
+                    with self.subTest(solid=solid, measure=measure, missing=missing):
+                        source = Brep()
+                        source.IsSolid = solid
+                        mass = Mock(Volume=-56.)
+                        compute = Mock(return_value=None if missing else mass)
+                        record = Mock(return_value={"definitions": [1, 2, 3]})
+                        rhino = SimpleNamespace(Geometry=SimpleNamespace(Brep=Brep,
+                            VolumeMassProperties=SimpleNamespace(Compute=compute)))
+                        with patch.dict("sys.modules", {"Rhino": rhino}):
+                            value = geometry_record(source, {"_interchange_brep_record": record}, measure)
+                        record.assert_called_once_with(source, include_samples=False)
+                        self.assertEqual(value, dict(definitions=[1, 2, 3], type="brep", solid=solid,
+                            orientation="Outward", volume=-56. if solid and measure and not missing else None))
+                        if solid and measure:
+                            compute.assert_called_once_with(source)
+                        else:
+                            compute.assert_not_called()
+                        self.assertEqual(mass.Dispose.call_count, int(solid and measure and not missing))
+
+    def test_mass_properties_are_disposed_when_volume_recording_fails(self):
+        class Brep:
+            IsSolid = True
+            SolidOrientation = "Inward"
+        mass = Mock(Volume=object())
+        rhino = SimpleNamespace(Geometry=SimpleNamespace(Brep=Brep,
+            VolumeMassProperties=SimpleNamespace(Compute=Mock(return_value=mass))))
+        with patch.dict("sys.modules", {"Rhino": rhino}), self.assertRaises(TypeError):
+            geometry_record(Brep(), {"_interchange_brep_record": Mock(return_value={})})
+        mass.Dispose.assert_called_once_with()
 
     def test_flip_selection_events_identity_and_complete_definitions(self):
         cases = {op["id"]: op for op in request()["operations"]}

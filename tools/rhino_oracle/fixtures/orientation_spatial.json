@@ -1,0 +1,774 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "orientation_audit",
+      "id": "axis-x-size-1-reversed-False-order-False",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                -10,
+                0,
+                0
+              ],
+              "size": 1,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "translation": [
+                10,
+                0,
+                0
+              ],
+              "size": 2,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-x-size-1-reversed-False-order-True",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                10,
+                0,
+                0
+              ],
+              "size": 2,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "translation": [
+                -10,
+                0,
+                0
+              ],
+              "size": 1,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-x-size-1-reversed-True-order-False",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                -10,
+                0,
+                0
+              ],
+              "size": 1,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "translation": [
+                10,
+                0,
+                0
+              ],
+              "size": 2,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-x-size-1-reversed-True-order-True",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                10,
+                0,
+                0
+              ],
+              "size": 2,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "translation": [
+                -10,
+                0,
+                0
+              ],
+              "size": 1,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-x-size-2-reversed-False-order-False",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                -10,
+                0,
+                0
+              ],
+              "size": 2,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "translation": [
+                10,
+                0,
+                0
+              ],
+              "size": 1,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-x-size-2-reversed-False-order-True",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                10,
+                0,
+                0
+              ],
+              "size": 1,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "translation": [
+                -10,
+                0,
+                0
+              ],
+              "size": 2,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-x-size-2-reversed-True-order-False",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                -10,
+                0,
+                0
+              ],
+              "size": 2,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "translation": [
+                10,
+                0,
+                0
+              ],
+              "size": 1,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-x-size-2-reversed-True-order-True",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                10,
+                0,
+                0
+              ],
+              "size": 1,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "translation": [
+                -10,
+                0,
+                0
+              ],
+              "size": 2,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-y-size-1-reversed-False-order-False",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                -10,
+                0
+              ],
+              "size": 1,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                10,
+                0
+              ],
+              "size": 2,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-y-size-1-reversed-False-order-True",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                10,
+                0
+              ],
+              "size": 2,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                -10,
+                0
+              ],
+              "size": 1,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-y-size-1-reversed-True-order-False",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                -10,
+                0
+              ],
+              "size": 1,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                10,
+                0
+              ],
+              "size": 2,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-y-size-1-reversed-True-order-True",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                10,
+                0
+              ],
+              "size": 2,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                -10,
+                0
+              ],
+              "size": 1,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-y-size-2-reversed-False-order-False",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                -10,
+                0
+              ],
+              "size": 2,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                10,
+                0
+              ],
+              "size": 1,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-y-size-2-reversed-False-order-True",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                10,
+                0
+              ],
+              "size": 1,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                -10,
+                0
+              ],
+              "size": 2,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-y-size-2-reversed-True-order-False",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                -10,
+                0
+              ],
+              "size": 2,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                10,
+                0
+              ],
+              "size": 1,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-y-size-2-reversed-True-order-True",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                10,
+                0
+              ],
+              "size": 1,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                -10,
+                0
+              ],
+              "size": 2,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-z-size-1-reversed-False-order-False",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                0,
+                -10
+              ],
+              "size": 1,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                0,
+                10
+              ],
+              "size": 2,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-z-size-1-reversed-False-order-True",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                0,
+                10
+              ],
+              "size": 2,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                0,
+                -10
+              ],
+              "size": 1,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-z-size-1-reversed-True-order-False",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                0,
+                -10
+              ],
+              "size": 1,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                0,
+                10
+              ],
+              "size": 2,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-z-size-1-reversed-True-order-True",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                0,
+                10
+              ],
+              "size": 2,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                0,
+                -10
+              ],
+              "size": 1,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-z-size-2-reversed-False-order-False",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                0,
+                -10
+              ],
+              "size": 2,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                0,
+                10
+              ],
+              "size": 1,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-z-size-2-reversed-False-order-True",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                0,
+                10
+              ],
+              "size": 1,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                0,
+                -10
+              ],
+              "size": 2,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-z-size-2-reversed-True-order-False",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                0,
+                -10
+              ],
+              "size": 2,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                0,
+                10
+              ],
+              "size": 1,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "axis-z-size-2-reversed-True-order-True",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                0,
+                10
+              ],
+              "size": 1,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "translation": [
+                0,
+                0,
+                -10
+              ],
+              "size": 2,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "measure_volume": false
+    }
+  ]
+}

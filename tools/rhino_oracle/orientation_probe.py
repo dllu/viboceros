@@ -7,12 +7,12 @@ import re
 
 
 def validate(operation):
-    if (not isinstance(operation, dict) or set(operation) - {"preselect", "insertion", "replace_flip", "flip"}
+    if (not isinstance(operation, dict) or set(operation) - {"preselect", "insertion", "replace_flip", "flip", "measure_volume"}
             != {"op", "id", "sources"} or operation.get("op") != "orientation_audit"
             or not isinstance(operation["id"], str)
             or re.match(r"^[A-Za-z0-9_.-]{1,100}\Z", operation["id"]) is None):
         raise ValueError("invalid orientation audit fields")
-    for key in ("preselect", "replace_flip", "flip"):
+    for key in ("preselect", "replace_flip", "flip", "measure_volume"):
         if type(operation.get(key, False)) is not bool:
             raise ValueError("orientation options must be boolean")
     if operation.get("insertion", "generic") not in ("generic", "no_kink"):
@@ -21,7 +21,7 @@ def validate(operation):
     if not isinstance(sources, list) or not 1 <= len(sources) <= 8:
         raise ValueError("orientation audit requires 1 to 8 sources")
     def source(spec, depth=0):
-        if (not isinstance(spec, dict) or set(spec) - {"reversed", "offset", "size", "parts", "flipped_faces"} != {"kind"}
+        if (not isinstance(spec, dict) or set(spec) - {"reversed", "offset", "translation", "size", "parts", "flipped_faces"} != {"kind"}
                 or type(spec.get("reversed", False)) is not bool or depth > 2):
             raise ValueError("invalid orientation source")
         if spec["kind"] not in ("box", "open_box", "plane", "sphere", "mesh", "line", "point", "compound"):
@@ -30,6 +30,11 @@ def validate(operation):
             raise ValueError("unsupported orientation size")
         if type(spec.get("offset", 0)) is not int or abs(spec.get("offset", 0)) > 100:
             raise ValueError("invalid orientation offset")
+        if "translation" in spec:
+            translation = spec["translation"]
+            if ("offset" in spec or not isinstance(translation, list) or len(translation) != 3
+                    or any(type(x) is not int or abs(x) > 100 for x in translation)):
+                raise ValueError("invalid orientation translation")
         if "flipped_faces" in spec:
             faces = spec["flipped_faces"]
             count = {"box": 6, "open_box": 5}.get(spec["kind"], 0)
@@ -38,7 +43,7 @@ def validate(operation):
                     or len(set(faces)) != len(faces)):
                 raise ValueError("invalid individual face reversals")
         if spec["kind"] == "compound":
-            if "size" in spec or "offset" in spec:
+            if "size" in spec or "offset" in spec or "translation" in spec:
                 raise ValueError("compound placement belongs to its parts")
             parts = spec.get("parts")
             if not isinstance(parts, list) or not 1 <= len(parts) <= 4:
@@ -54,6 +59,27 @@ def validate(operation):
     for spec in sources: source(spec)
 
 
+def geometry_record(g, host, measure_volume=True):
+    """Definitions are always retained; expensive mass integration is optional."""
+    import Rhino
+    if isinstance(g, Rhino.Geometry.Brep):
+        record = host["_interchange_brep_record"](g, include_samples=False)
+        solid = bool(g.IsSolid)
+        record.update(type="brep", solid=solid, orientation=str(g.SolidOrientation))
+        mass = Rhino.Geometry.VolumeMassProperties.Compute(g) if solid and measure_volume else None
+        try: record["volume"] = None if mass is None else float(mass.Volume)
+        finally:
+            if mass is not None: mass.Dispose()
+        return record
+    if isinstance(g, Rhino.Geometry.Mesh):
+        record = host["_polygon_mesh_value"](g)
+        record.update(type="mesh", solid=bool(g.IsClosed), orientation=int(g.SolidOrientation()))
+        return record
+    if isinstance(g, Rhino.Geometry.Curve):
+        return dict(type="curve", definition=host["_nurbs_curve_definition"](g))
+    return dict(type="point", point=host["_xyz"](g.Location))
+
+
 def run(operation, tolerance, host):
     import Rhino
     import System
@@ -66,26 +92,27 @@ def run(operation, tolerance, host):
         elif isinstance(g, Rhino.Geometry.Curve): g.Reverse()
         else: raise ValueError("cannot reverse this source")
     def source(spec):
-        x, s = float(spec.get("offset", 0)), float(spec.get("size", 1))
-        lo, hi = Rhino.Geometry.Point3d(x-s, -s, -s), Rhino.Geometry.Point3d(x+s, s, s)
+        x, y, z = [float(v) for v in spec.get("translation", [spec.get("offset", 0), 0, 0])]
+        s = float(spec.get("size", 1))
+        lo, hi = Rhino.Geometry.Point3d(x-s, y-s, z-s), Rhino.Geometry.Point3d(x+s, y+s, z+s)
         kind = spec["kind"]
         if kind in ("box", "open_box"):
             g = Rhino.Geometry.Brep.CreateFromBox(Rhino.Geometry.BoundingBox(lo, hi))
             if kind == "open_box": g.Faces.RemoveAt(g.Faces.Count-1)
-        elif kind == "sphere": g = Rhino.Geometry.Sphere(Rhino.Geometry.Point3d(x, 0, 0), s).ToBrep()
+        elif kind == "sphere": g = Rhino.Geometry.Sphere(Rhino.Geometry.Point3d(x, y, z), s).ToBrep()
         elif kind == "plane":
-            plane = Rhino.Geometry.Plane(Rhino.Geometry.Point3d(x, 0, 0), Rhino.Geometry.Vector3d.ZAxis)
+            plane = Rhino.Geometry.Plane(Rhino.Geometry.Point3d(x, y, z), Rhino.Geometry.Vector3d.ZAxis)
             surface = Rhino.Geometry.PlaneSurface(plane, Rhino.Geometry.Interval(-s, s), Rhino.Geometry.Interval(-s, s))
             try: g = surface.ToBrep()
             finally: surface.Dispose()
         elif kind == "mesh":
             g = Rhino.Geometry.Mesh()
             g.Vertices.UseDoublePrecisionVertices = True
-            for p in ((x,0,0), (x+3*s,0,0), (x,4*s,0), (x,0,5*s)): g.Vertices.Add(*p)
+            for p in ((x,y,z), (x+3*s,y,z), (x,y+4*s,z), (x,y,z+5*s)): g.Vertices.Add(*p)
             for f in ((0,2,1), (0,1,3), (0,3,2), (1,2,3)): g.Faces.AddFace(*f)
         elif kind == "line":
-            g = Rhino.Geometry.LineCurve(Rhino.Geometry.Point3d(x,0,0), Rhino.Geometry.Point3d(x+s,s,s))
-        elif kind == "point": g = Rhino.Geometry.Point(Rhino.Geometry.Point3d(x,0,0))
+            g = Rhino.Geometry.LineCurve(Rhino.Geometry.Point3d(x,y,z), Rhino.Geometry.Point3d(x+s,y+s,z+s))
+        elif kind == "point": g = Rhino.Geometry.Point(Rhino.Geometry.Point3d(x,y,z))
         else:
             g = Rhino.Geometry.Brep()
             for part in spec["parts"]: g.Append(source(part))
@@ -96,26 +123,7 @@ def run(operation, tolerance, host):
         if not g.IsValid: raise ValueError("invalid constructed orientation source")
         return g
     def geometry(g):
-        if isinstance(g, Rhino.Geometry.Brep):
-            record = host["_interchange_brep_record"](g)
-            for edge in record["edges"]: edge["curve"].pop("samples")
-            for face in record["faces"]:
-                face.pop("samples")
-                for loop in face["loops"]:
-                    for trim in loop: trim.pop("lifted")
-            record.update(type="brep", solid=bool(g.IsSolid), orientation=str(g.SolidOrientation))
-            mass = Rhino.Geometry.VolumeMassProperties.Compute(g) if g.IsSolid else None
-            try: record["volume"] = None if mass is None else float(mass.Volume)
-            finally:
-                if mass is not None: mass.Dispose()
-            return record
-        if isinstance(g, Rhino.Geometry.Mesh):
-            record = host["_polygon_mesh_value"](g)
-            record.update(type="mesh", solid=bool(g.IsClosed), orientation=int(g.SolidOrientation()))
-            return record
-        if isinstance(g, Rhino.Geometry.Curve):
-            return dict(type="curve", definition=host["_nurbs_curve_definition"](g))
-        return dict(type="point", point=host["_xyz"](g.Location))
+        return geometry_record(g, host, operation.get("measure_volume", True))
     document = Rhino.RhinoDoc.ActiveDoc
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
     settings.NormalObjects = settings.HiddenObjects = settings.LockedObjects = True

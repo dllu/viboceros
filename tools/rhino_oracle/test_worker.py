@@ -1628,6 +1628,39 @@ class RhinoWorkerTests(unittest.TestCase):
             for item in sources + results:
                 item.Dispose.assert_called_once_with()
 
+    def test_definition_only_brep_record_never_evaluates_discarded_samples(self):
+        point = SimpleNamespace(X=1., Y=2., Z=3.)
+        domain = SimpleNamespace(ParameterAt=lambda t: t)
+        edge = SimpleNamespace(Tolerance=0.01, Domain=domain, PointAt=Mock(return_value=point))
+        trim = SimpleNamespace(IsoStatus=2, GetTolerances=lambda: [0.02, 0.03],
+                               Domain=domain, PointAt=Mock(return_value=point))
+        surface = SimpleNamespace(Domain=Mock(return_value=domain), PointAt=Mock(return_value=point))
+        face = SimpleNamespace(UnderlyingSurface=lambda: surface,
+                               Loops=[SimpleNamespace(Trims=[trim])])
+        brep = SimpleNamespace(Faces=[face], Edges=[edge],
+                               Vertices=[SimpleNamespace(Location=point, Tolerance=0.04)])
+        with patch.object(self.worker, "_nurbs_curve_definition", return_value={"edge": [1, 2, 3]}), \
+             patch.object(self.worker, "_nurbs_parameter_curve_definition", return_value={"trim": [4, 5]}), \
+             patch.object(self.worker, "_nurbs_surface_definition", return_value={"surface": [6, 7, 8]}), \
+             patch.object(self.worker, "_brep_morph_topology", return_value={"faces": [False]}):
+            sampled = self.worker._interchange_brep_record(brep)
+            self.assertEqual(len(sampled["edges"][0]["curve"].pop("samples")), 33)
+            self.assertEqual(len(sampled["faces"][0].pop("samples")), 81)
+            self.assertEqual(len(sampled["faces"][0]["loops"][0][0].pop("lifted")), 33)
+            self.assertEqual(edge.PointAt.call_count, 33)
+            self.assertEqual(trim.PointAt.call_count, 33)
+            self.assertEqual(surface.PointAt.call_count, 114)
+            for evaluate in (edge.PointAt, trim.PointAt, surface.PointAt, surface.Domain):
+                evaluate.reset_mock()
+                evaluate.side_effect = AssertionError("definition recording must not sample")
+            definitions = self.worker._interchange_brep_record(brep, include_samples=False)
+            self.assertEqual(definitions, sampled)
+            for evaluate in (edge.PointAt, trim.PointAt, surface.PointAt, surface.Domain):
+                evaluate.assert_not_called()
+        self.assertEqual(definitions["vertices"], [{"point": [1., 2., 3.], "tolerance": 0.04}])
+        self.assertEqual(definitions["edges"][0]["tolerance"], 0.01)
+        self.assertEqual(definitions["faces"][0]["loops"][0][0]["tolerance"], [0.02, 0.03])
+
     def test_brep_interchange_disposes_repeated_models_and_failed_recording(self):
         for fail in [False, True]:
             models = []
