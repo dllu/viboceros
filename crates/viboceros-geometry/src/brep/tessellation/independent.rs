@@ -20,6 +20,47 @@ impl Brep {
         self.tessellate_impl(samples_per_span, false, false, tolerance)
     }
 
+    /// Creates a display approximation without requiring a watertight mesh.
+    ///
+    /// Prefer the audited, conforming tessellation. If shared-edge stitching
+    /// cannot be certified, sample the trimmed faces independently instead.
+    /// Trims and face winding are retained, but seams may have small cracks.
+    /// Use `tessellate` or `polygon_mesh` for exports and geometric operations.
+    pub fn display_mesh(
+        &self,
+        samples_per_span: usize,
+        tolerance: Tolerance,
+    ) -> Result<TriangleMesh, GeometryError> {
+        self.tessellate(samples_per_span, tolerance)
+            .or_else(|error| {
+                // Independent UV triangulation does not constrain internal
+                // positional breaks. Never bridge one to obtain a display mesh.
+                for face in &self.faces {
+                    for (knots, degree, domain) in [
+                        (
+                            face.surface.knots_u(),
+                            face.surface.degree_u(),
+                            face.surface.domain_u(),
+                        ),
+                        (
+                            face.surface.knots_v(),
+                            face.surface.degree_v(),
+                            face.surface.domain_v(),
+                        ),
+                    ] {
+                        if knots.chunk_by(|a, b| a == b).any(|group| {
+                            group.len() > degree
+                                && group[0] > *domain.start()
+                                && group[0] < *domain.end()
+                        }) {
+                            return Err(error);
+                        }
+                    }
+                }
+                self.tessellate_impl(samples_per_span, false, true, tolerance)
+            })
+    }
+
     /// Creates one editable triangle/quad mesh for this B-rep.
     ///
     /// Full rectangular surface cells remain quadrilaterals and trimmed
@@ -87,7 +128,7 @@ impl Brep {
                 TriangleMesh::try_new_faces(
                     face_vertices,
                     surface_mesh.faces().to_vec(),
-                    tolerance,
+                    Tolerance::MESH_VALIDATION,
                 )?
             } else if let Some(bounds) = rectangular_face_trim_bounds(face, tolerance)? {
                 let surface = face
@@ -138,7 +179,7 @@ impl Brep {
                 face_sources.push(face_index);
             }
         }
-        let mesh = TriangleMesh::try_new_faces(vertices, faces, tolerance)?;
+        let mesh = TriangleMesh::try_new_faces(vertices, faces, Tolerance::MESH_VALIDATION)?;
         if !jagged_seams
             && !self.mesh_boundary_conforms(&mesh, &face_sources, samples_per_span, tolerance)?
         {
@@ -192,7 +233,7 @@ impl Brep {
                 tolerance,
             );
         }
-        TriangleMesh::try_new(face_vertices, triangles, tolerance)
+        trimmed_face_mesh(face_vertices, triangles)
     }
 
     fn tessellate_nonplanar_trimmed_face(
@@ -231,7 +272,7 @@ impl Brep {
                 tolerance,
             );
         }
-        TriangleMesh::try_new(face_vertices, triangles, tolerance)
+        trimmed_face_mesh(face_vertices, triangles)
     }
 
     fn snap_face_boundary_vertices(
@@ -377,5 +418,41 @@ impl Brep {
             }
         }
         Ok(candidates)
+    }
+}
+
+// A trim may meet a singular pole or snap several UV samples to one model
+// point. As with surface-grid meshing, omit collapsed facets; the strict
+// caller still audits the resulting boundary and rebuilds it if necessary.
+// Validate retained facets numerically, independently of the modeling angle.
+fn trimmed_face_mesh(
+    vertices: Vec<Point3>,
+    triangles: Vec<[u32; 3]>,
+) -> Result<TriangleMesh, GeometryError> {
+    let mut nondegenerate = Vec::with_capacity(triangles.len());
+    for triangle in triangles {
+        if crate::nurbs_surface::tessellation_triangle_is_nondegenerate(
+            &vertices,
+            triangle,
+            Tolerance::MESH_VALIDATION,
+        )? {
+            nondegenerate.push(triangle);
+        }
+    }
+    TriangleMesh::try_new(vertices, nondegenerate, Tolerance::MESH_VALIDATION)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn trimmed_mesh_omits_collapsed_poles_and_keeps_narrow_nonzero_facets() {
+        let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+        let vertices = vec![p(0., 0.), p(1., 0.), p(0., 0.), p(1., 1e-12), p(0., 1.)];
+        let mesh = trimmed_face_mesh(vertices, vec![[0, 1, 2], [0, 1, 3], [0, 3, 4]]).unwrap();
+        assert_eq!(mesh.triangles(), &[[0, 1, 3], [0, 3, 4]]);
+        assert!(mesh.topology().is_oriented());
+        assert!((mesh.area().unwrap() - (0.5 + 0.5e-12)).abs() < 1e-15);
     }
 }

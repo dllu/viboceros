@@ -38,6 +38,7 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 - [Viewport controls and drafting](docs/interface.md)
 - [Viewport caching and performance checks](docs/viewport-caching.md)
 - [Opt-in offscreen GPU tests](docs/gpu-tests.md)
+- [Imported surface shading and mesh checks](docs/imported-shading.md)
 - [File formats and limitations](docs/file-formats.md)
 - [Architecture and implementation status](docs/architecture.md)
 - [Rhino oracle setup, Python API, and comparisons](docs/oracle.md)
