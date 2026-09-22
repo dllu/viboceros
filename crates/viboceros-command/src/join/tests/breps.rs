@@ -1,6 +1,7 @@
 use super::*;
 use viboceros_geometry::Frame3;
 
+mod orientation;
 mod thresholds;
 
 fn box_brep(height: f64) -> Brep {

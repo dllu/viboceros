@@ -13,6 +13,8 @@ pub struct JoinFixture {
     join_disjoint: bool,
     #[serde(default)]
     preselect: bool,
+    #[serde(default)]
+    definition_only: bool,
     absolute_tolerance: Option<f64>,
 }
 
@@ -152,7 +154,11 @@ pub(super) fn run(f: &JoinFixture, tolerance: Tolerance) -> Result<(Value, u64),
         if let Geometry::Mesh(mesh) = object.geometry() {
             record["mesh"] = polygon_mesh_value(mesh);
         } else if let Geometry::Brep(brep) = object.geometry() {
-            record["brep"] = crate::brep_join::geometry_record(brep,tolerance)?;
+            record["brep"] = if f.definition_only {
+                crate::solid_orientation::geometry_record(brep)?
+            } else {
+                crate::brep_join::geometry_record(brep,tolerance)?
+            };
         } else if let Some(curve) = object.geometry().curve_ref() {
             record["curve"] = crate::curve_interchange::curve_record(curve)?;
         } else { return Err(invalid()); }

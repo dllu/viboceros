@@ -14,6 +14,9 @@ now match, with two coincident-shell orientations unresolved. Its
 [planar follow-up](planar-solid-orientation.md) retains 68 further cases and eight
 fresh-session repeats, exposing ten translation-sensitive Rhino classifications
 despite identical geometric definitions after exact inverse translation.
+The [Join scale audit](join-orientation.md) adds full-definition command records
+at unit and volume-overflow scales, separating fixed native execution errors
+from Rhino's large-coordinate orientation and normalization discrepancies.
 
 The [conic-center audit](conic-center-audit.md) compares 32 full-coordinate public
 API records and 62 calibrated point-prompt records. It keeps API recognition,

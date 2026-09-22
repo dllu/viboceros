@@ -41,7 +41,7 @@ def validate(operation):
             any(type(i) is not int or i < 0 or i >= len(sources) for i in order) or
             len(set(order)) != len(order)):
         raise ValueError("invalid join selection")
-    for key in ("join_disjoint", "preselect", "trace_commands"):
+    for key in ("join_disjoint", "preselect", "trace_commands", "definition_only"):
         if type(operation.get(key, False)) is not bool:
             raise ValueError("join options must be boolean")
     absolute = operation.get("absolute_tolerance")
@@ -55,6 +55,16 @@ def validate(operation):
             if not isinstance(brep, dict) or not isinstance(brep.get("artifact_path"), (str, type(u""))) or not brep["artifact_path"]:
                 raise ValueError("B-rep Join commands require shared source artifacts")
     return sources, order
+
+
+def record_brep(brep, tolerance, host, definition_only=False):
+    if definition_only:
+        Rhino = host["Rhino"]
+        return dict(orientation=str(brep.SolidOrientation), solid=bool(brep.IsSolid),
+            closed=all(e.Valence == Rhino.Geometry.EdgeAdjacency.Interior for e in brep.Edges),
+            geometry=host["_interchange_brep_record"](brep, include_samples=False))
+    import brep_join_probe
+    return brep_join_probe.geometry_record(brep, tolerance, host)
 
 
 def run(operation, tolerance, host):
@@ -87,8 +97,7 @@ def run(operation, tolerance, host):
             elif isinstance(obj.Geometry, Rhino.Geometry.Curve):
                 record["curve"] = host["_interchange_curve_record"](obj.Geometry)
             elif isinstance(obj.Geometry, Rhino.Geometry.Brep):
-                import brep_join_probe
-                record["brep"] = brep_join_probe.geometry_record(obj.Geometry, tolerance, host)
+                record["brep"] = record_brep(obj.Geometry, tolerance, host, operation.get("definition_only", False))
             else:
                 raise ValueError("unexpected join geometry")
             records.append(record)
@@ -161,8 +170,8 @@ def run(operation, tolerance, host):
                 if object_id == System.Guid.Empty: raise ValueError("join insertion failed")
                 ids.append(object_id)
                 if "brep" in source:
-                    import brep_join_probe
-                    if brep_join_probe.geometry_record(mesh, tolerance, host) != brep_join_probe.geometry_record(document.Objects.FindId(object_id).Geometry, tolerance, host):
+                    definition_only = operation.get("definition_only", False)
+                    if record_brep(mesh, tolerance, host, definition_only) != record_brep(document.Objects.FindId(object_id).Geometry, tolerance, host, definition_only):
                         raise ValueError("Join insertion changed shared B-rep geometry")
                 elif "type" not in source and host["_polygon_mesh_value"](document.Objects.FindId(object_id).Geometry) != source:
                     raise ValueError("join source changed during document insertion")

@@ -5,11 +5,44 @@ mod curved_certificates;
 mod edge_cleanup;
 mod gaps;
 mod isocurve_certificates;
+mod orientation;
 mod projective_correspondence;
 mod selection_distance;
 mod short_overlaps;
 mod surfaces;
 mod trim_certificates;
+
+#[test]
+fn definition_only_join_records_geometry_without_unrepresentable_mass_properties() {
+    for exponent in [-360, 0, 360] {
+        let scale = 2_f64.powi(exponent);
+        let fixture = json!({"sources":[{"brep":{"source":{
+            "type":"box","min":[0.,0.,0.],"max":[scale,2.*scale,4.*scale]
+        }}}],"preselect":true,"definition_only":true});
+        let fixture: JoinFixture = serde_json::from_value(fixture).unwrap();
+        let (value, elapsed) = run(
+            &fixture,
+            Tolerance::try_new(scale * 1e-9, 1e-12, 1e-10).unwrap(),
+        )
+        .unwrap();
+        assert_eq!(elapsed, 0);
+        assert_eq!(value["succeeded"], false); // Closed inputs are untouched.
+        let record = &value["objects"][0]["brep"];
+        assert_eq!(record["orientation"], "Outward");
+        assert_eq!(record["solid"], true);
+        assert_eq!(record["geometry"]["faces"].as_array().unwrap().len(), 6);
+        assert!(record.get("volume").is_none());
+        assert!(record.get("area").is_none());
+    }
+    for bad in [json!(null), json!(0), json!("true")] {
+        assert!(
+            serde_json::from_value::<JoinFixture>(json!({
+                "sources":[],"definition_only":bad
+            }))
+            .is_err()
+        );
+    }
+}
 
 #[test]
 fn document_join_tolerance_does_not_rebuild_or_collapse_short_input_edges() {

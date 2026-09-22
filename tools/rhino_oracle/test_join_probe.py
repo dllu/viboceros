@@ -1,6 +1,7 @@
 """Validation must reject malformed fixtures before accessing the Rhino host."""
 import unittest
 from types import SimpleNamespace
+from unittest.mock import Mock
 from . import join_probe
 
 
@@ -21,7 +22,7 @@ class JoinProbeTests(unittest.TestCase):
         for sources in ([], [{}] * 33, {}):
             with self.subTest(sources=sources), self.assertRaisesRegex(ValueError, "sources"):
                 join_probe.run({"sources": sources}, None, {})
-        for key in ("join_disjoint", "preselect", "trace_commands"):
+        for key in ("join_disjoint", "preselect", "trace_commands", "definition_only"):
             for value in (0, 1, "Yes", None):
                 with self.subTest(key=key, value=value), self.assertRaisesRegex(ValueError, "boolean"):
                     join_probe.run({"sources": [{}], key: value}, None, {})
@@ -41,6 +42,18 @@ class JoinProbeTests(unittest.TestCase):
                 join_probe.run({"sources": [{}], "command": command}, None, {})
         for command in ("Join", "JoinCopy"):
             self.assertEqual(join_probe.validate({"sources": [{}], "command": command}), ([{}], [0]))
+
+    def test_definition_only_records_never_request_samples_or_mass_properties(self):
+        record = Mock(return_value={"complete": "definition"})
+        source = SimpleNamespace(SolidOrientation="Inward", IsSolid=True,
+            Edges=[SimpleNamespace(Valence="Interior")])
+        host = {"Rhino": SimpleNamespace(Geometry=SimpleNamespace(
+            EdgeAdjacency=SimpleNamespace(Interior="Interior"))),
+            "_interchange_brep_record": record}
+        actual = join_probe.record_brep(source, None, host, definition_only=True)
+        self.assertEqual(actual, {"orientation": "Inward", "solid": True,
+            "closed": True, "geometry": {"complete": "definition"}})
+        record.assert_called_once_with(source, include_samples=False)
 
 
 class Event:

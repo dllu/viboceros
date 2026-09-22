@@ -1,0 +1,2043 @@
+{
+  "unit_before": {
+    "protocol_version": 1,
+    "absolute_epsilon": 0.0,
+    "relative_epsilon": 1e-12,
+    "operations": [
+      {
+        "id": "scale-0-mask-0-order-False-Join-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-0-order-False-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-0-order-False-Join-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-0-order-False-Join-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-0-order-False-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-0-order-False-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-0-order-False-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-0-order-False-JoinCopy-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-0-order-True-Join-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-0-order-True-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-0-order-True-Join-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-0-order-True-Join-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-0-order-True-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-0-order-True-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-0-order-True-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-0-order-True-JoinCopy-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-1-order-False-Join-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-1-order-False-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-1-order-False-Join-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-1-order-False-Join-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-1-order-False-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-1-order-False-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-1-order-False-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-1-order-False-JoinCopy-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-1-order-True-Join-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-1-order-True-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-1-order-True-Join-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-1-order-True-Join-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-1-order-True-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-1-order-True-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-1-order-True-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-1-order-True-JoinCopy-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-42-order-False-Join-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-42-order-False-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-42-order-False-Join-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-42-order-False-Join-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-42-order-False-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-42-order-False-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-42-order-False-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-42-order-False-JoinCopy-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-42-order-True-Join-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-42-order-True-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-42-order-True-Join-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-42-order-True-Join-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-42-order-True-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-42-order-True-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-42-order-True-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-42-order-True-JoinCopy-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-63-order-False-Join-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-63-order-False-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-63-order-False-Join-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-63-order-False-Join-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-63-order-False-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-63-order-False-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-63-order-False-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-63-order-False-JoinCopy-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-63-order-True-Join-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-63-order-True-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-63-order-True-Join-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-63-order-True-Join-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-63-order-True-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-63-order-True-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-63-order-True-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-63-order-True-JoinCopy-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "cases": 32,
+    "matched": 32,
+    "native_failed": 0,
+    "mismatched": 0,
+    "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison."
+  },
+  "large_before": {
+    "protocol_version": 1,
+    "absolute_epsilon": 0.0,
+    "relative_epsilon": 1e-12,
+    "operations": [
+      {
+        "id": "scale-360-mask-0-order-False-Join-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-0-order-False-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-0-order-False-Join-pre-True",
+        "comparison": null,
+        "native_error": {
+          "kind": "command",
+          "message": "dot product contains a non-finite value"
+        },
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-0-order-False-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-0-order-False-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-0-order-False-JoinCopy-pre-True",
+        "comparison": null,
+        "native_error": {
+          "kind": "command",
+          "message": "dot product contains a non-finite value"
+        },
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-0-order-True-Join-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-0-order-True-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-0-order-True-Join-pre-True",
+        "comparison": null,
+        "native_error": {
+          "kind": "command",
+          "message": "dot product contains a non-finite value"
+        },
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-0-order-True-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-0-order-True-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-0-order-True-JoinCopy-pre-True",
+        "comparison": null,
+        "native_error": {
+          "kind": "command",
+          "message": "dot product contains a non-finite value"
+        },
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-1-order-False-Join-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-1-order-False-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-1-order-False-Join-pre-True",
+        "comparison": null,
+        "native_error": {
+          "kind": "command",
+          "message": "dot product contains a non-finite value"
+        },
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-1-order-False-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-1-order-False-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-1-order-False-JoinCopy-pre-True",
+        "comparison": null,
+        "native_error": {
+          "kind": "command",
+          "message": "dot product contains a non-finite value"
+        },
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-1-order-True-Join-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-1-order-True-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-1-order-True-Join-pre-True",
+        "comparison": null,
+        "native_error": {
+          "kind": "command",
+          "message": "dot product contains a non-finite value"
+        },
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-1-order-True-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-1-order-True-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-1-order-True-JoinCopy-pre-True",
+        "comparison": null,
+        "native_error": {
+          "kind": "command",
+          "message": "dot product contains a non-finite value"
+        },
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-42-order-False-Join-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-42-order-False-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-42-order-False-Join-pre-True",
+        "comparison": null,
+        "native_error": {
+          "kind": "command",
+          "message": "dot product contains a non-finite value"
+        },
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-42-order-False-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-42-order-False-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-42-order-False-JoinCopy-pre-True",
+        "comparison": null,
+        "native_error": {
+          "kind": "command",
+          "message": "dot product contains a non-finite value"
+        },
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-42-order-True-Join-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-42-order-True-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-42-order-True-Join-pre-True",
+        "comparison": null,
+        "native_error": {
+          "kind": "command",
+          "message": "dot product contains a non-finite value"
+        },
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-42-order-True-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-42-order-True-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-42-order-True-JoinCopy-pre-True",
+        "comparison": null,
+        "native_error": {
+          "kind": "command",
+          "message": "dot product contains a non-finite value"
+        },
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-63-order-False-Join-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-63-order-False-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-63-order-False-Join-pre-True",
+        "comparison": null,
+        "native_error": {
+          "kind": "command",
+          "message": "dot product contains a non-finite value"
+        },
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-63-order-False-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-63-order-False-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-63-order-False-JoinCopy-pre-True",
+        "comparison": null,
+        "native_error": {
+          "kind": "command",
+          "message": "dot product contains a non-finite value"
+        },
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-63-order-True-Join-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-63-order-True-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-63-order-True-Join-pre-True",
+        "comparison": null,
+        "native_error": {
+          "kind": "command",
+          "message": "dot product contains a non-finite value"
+        },
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-63-order-True-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-63-order-True-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-63-order-True-JoinCopy-pre-True",
+        "comparison": null,
+        "native_error": {
+          "kind": "command",
+          "message": "dot product contains a non-finite value"
+        },
+        "passed": false
+      }
+    ],
+    "passed": false,
+    "cases": 32,
+    "matched": 16,
+    "native_failed": 16,
+    "mismatched": 0,
+    "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison."
+  },
+  "unit_after": {
+    "protocol_version": 1,
+    "absolute_epsilon": 0.0,
+    "relative_epsilon": 1e-12,
+    "operations": [
+      {
+        "id": "scale-0-mask-0-order-False-Join-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-0-order-False-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-0-order-False-Join-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-0-order-False-Join-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-0-order-False-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-0-order-False-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-0-order-False-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-0-order-False-JoinCopy-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-0-order-True-Join-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-0-order-True-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-0-order-True-Join-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-0-order-True-Join-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-0-order-True-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-0-order-True-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-0-order-True-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-0-order-True-JoinCopy-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-1-order-False-Join-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-1-order-False-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-1-order-False-Join-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-1-order-False-Join-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-1-order-False-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-1-order-False-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-1-order-False-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-1-order-False-JoinCopy-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-1-order-True-Join-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-1-order-True-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-1-order-True-Join-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-1-order-True-Join-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-1-order-True-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-1-order-True-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-1-order-True-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-1-order-True-JoinCopy-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-42-order-False-Join-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-42-order-False-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-42-order-False-Join-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-42-order-False-Join-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-42-order-False-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-42-order-False-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-42-order-False-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-42-order-False-JoinCopy-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-42-order-True-Join-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-42-order-True-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-42-order-True-Join-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-42-order-True-Join-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-42-order-True-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-42-order-True-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-42-order-True-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-42-order-True-JoinCopy-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-63-order-False-Join-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-63-order-False-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-63-order-False-Join-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-63-order-False-Join-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-63-order-False-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-63-order-False-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-63-order-False-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-63-order-False-JoinCopy-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-63-order-True-Join-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-63-order-True-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-63-order-True-Join-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-63-order-True-Join-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-63-order-True-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-0-mask-63-order-True-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-0-mask-63-order-True-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-0-mask-63-order-True-JoinCopy-pre-True",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "cases": 32,
+    "matched": 32,
+    "native_failed": 0,
+    "mismatched": 0,
+    "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison."
+  },
+  "large_after": {
+    "protocol_version": 1,
+    "absolute_epsilon": 0.0,
+    "relative_epsilon": 1e-12,
+    "operations": [
+      {
+        "id": "scale-360-mask-0-order-False-Join-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-0-order-False-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-0-order-False-Join-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-0-order-False-Join-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-0-order-False-Join-pre-True.value.objects[0].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-0-order-False-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-0-order-False-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-0-order-False-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-0-order-False-JoinCopy-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-0-order-False-JoinCopy-pre-True.value.objects[6].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-0-order-True-Join-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-0-order-True-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-0-order-True-Join-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-0-order-True-Join-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-0-order-True-Join-pre-True.value.objects[0].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-0-order-True-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-0-order-True-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-0-order-True-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-0-order-True-JoinCopy-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-0-order-True-JoinCopy-pre-True.value.objects[6].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-1-order-False-Join-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-1-order-False-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-1-order-False-Join-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-1-order-False-Join-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-1-order-False-Join-pre-True.value.objects[0].brep.geometry.topology.faces[0].reversed: False != True",
+            "scale-360-mask-1-order-False-Join-pre-True.value.objects[0].brep.geometry.topology.faces[1].reversed: False != True",
+            "scale-360-mask-1-order-False-Join-pre-True.value.objects[0].brep.geometry.topology.faces[2].reversed: False != True",
+            "scale-360-mask-1-order-False-Join-pre-True.value.objects[0].brep.geometry.topology.faces[3].reversed: False != True",
+            "scale-360-mask-1-order-False-Join-pre-True.value.objects[0].brep.geometry.topology.faces[4].reversed: False != True",
+            "scale-360-mask-1-order-False-Join-pre-True.value.objects[0].brep.geometry.topology.faces[5].reversed: False != True",
+            "scale-360-mask-1-order-False-Join-pre-True.value.objects[0].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-1-order-False-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-1-order-False-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-1-order-False-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-1-order-False-JoinCopy-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-1-order-False-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[0].reversed: False != True",
+            "scale-360-mask-1-order-False-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[1].reversed: False != True",
+            "scale-360-mask-1-order-False-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[2].reversed: False != True",
+            "scale-360-mask-1-order-False-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[3].reversed: False != True",
+            "scale-360-mask-1-order-False-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[4].reversed: False != True",
+            "scale-360-mask-1-order-False-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[5].reversed: False != True",
+            "scale-360-mask-1-order-False-JoinCopy-pre-True.value.objects[6].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-1-order-True-Join-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-1-order-True-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-1-order-True-Join-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-1-order-True-Join-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-1-order-True-Join-pre-True.value.objects[0].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-1-order-True-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-1-order-True-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-1-order-True-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-1-order-True-JoinCopy-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-1-order-True-JoinCopy-pre-True.value.objects[6].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-42-order-False-Join-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-42-order-False-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-42-order-False-Join-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-42-order-False-Join-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-42-order-False-Join-pre-True.value.objects[0].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-42-order-False-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-42-order-False-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-42-order-False-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-42-order-False-JoinCopy-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-42-order-False-JoinCopy-pre-True.value.objects[6].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-42-order-True-Join-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-42-order-True-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-42-order-True-Join-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-42-order-True-Join-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-42-order-True-Join-pre-True.value.objects[0].brep.geometry.topology.faces[0].reversed: False != True",
+            "scale-360-mask-42-order-True-Join-pre-True.value.objects[0].brep.geometry.topology.faces[1].reversed: False != True",
+            "scale-360-mask-42-order-True-Join-pre-True.value.objects[0].brep.geometry.topology.faces[2].reversed: False != True",
+            "scale-360-mask-42-order-True-Join-pre-True.value.objects[0].brep.geometry.topology.faces[3].reversed: False != True",
+            "scale-360-mask-42-order-True-Join-pre-True.value.objects[0].brep.geometry.topology.faces[4].reversed: False != True",
+            "scale-360-mask-42-order-True-Join-pre-True.value.objects[0].brep.geometry.topology.faces[5].reversed: False != True",
+            "scale-360-mask-42-order-True-Join-pre-True.value.objects[0].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-42-order-True-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-42-order-True-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-42-order-True-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-42-order-True-JoinCopy-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-42-order-True-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[0].reversed: False != True",
+            "scale-360-mask-42-order-True-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[1].reversed: False != True",
+            "scale-360-mask-42-order-True-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[2].reversed: False != True",
+            "scale-360-mask-42-order-True-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[3].reversed: False != True",
+            "scale-360-mask-42-order-True-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[4].reversed: False != True",
+            "scale-360-mask-42-order-True-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[5].reversed: False != True",
+            "scale-360-mask-42-order-True-JoinCopy-pre-True.value.objects[6].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-63-order-False-Join-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-63-order-False-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-63-order-False-Join-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-63-order-False-Join-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-63-order-False-Join-pre-True.value.objects[0].brep.geometry.topology.faces[0].reversed: False != True",
+            "scale-360-mask-63-order-False-Join-pre-True.value.objects[0].brep.geometry.topology.faces[1].reversed: False != True",
+            "scale-360-mask-63-order-False-Join-pre-True.value.objects[0].brep.geometry.topology.faces[2].reversed: False != True",
+            "scale-360-mask-63-order-False-Join-pre-True.value.objects[0].brep.geometry.topology.faces[3].reversed: False != True",
+            "scale-360-mask-63-order-False-Join-pre-True.value.objects[0].brep.geometry.topology.faces[4].reversed: False != True",
+            "scale-360-mask-63-order-False-Join-pre-True.value.objects[0].brep.geometry.topology.faces[5].reversed: False != True",
+            "scale-360-mask-63-order-False-Join-pre-True.value.objects[0].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-63-order-False-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-63-order-False-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-63-order-False-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-63-order-False-JoinCopy-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-63-order-False-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[0].reversed: False != True",
+            "scale-360-mask-63-order-False-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[1].reversed: False != True",
+            "scale-360-mask-63-order-False-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[2].reversed: False != True",
+            "scale-360-mask-63-order-False-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[3].reversed: False != True",
+            "scale-360-mask-63-order-False-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[4].reversed: False != True",
+            "scale-360-mask-63-order-False-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[5].reversed: False != True",
+            "scale-360-mask-63-order-False-JoinCopy-pre-True.value.objects[6].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-63-order-True-Join-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-63-order-True-Join-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-63-order-True-Join-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-63-order-True-Join-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-63-order-True-Join-pre-True.value.objects[0].brep.geometry.topology.faces[0].reversed: False != True",
+            "scale-360-mask-63-order-True-Join-pre-True.value.objects[0].brep.geometry.topology.faces[1].reversed: False != True",
+            "scale-360-mask-63-order-True-Join-pre-True.value.objects[0].brep.geometry.topology.faces[2].reversed: False != True",
+            "scale-360-mask-63-order-True-Join-pre-True.value.objects[0].brep.geometry.topology.faces[3].reversed: False != True",
+            "scale-360-mask-63-order-True-Join-pre-True.value.objects[0].brep.geometry.topology.faces[4].reversed: False != True",
+            "scale-360-mask-63-order-True-Join-pre-True.value.objects[0].brep.geometry.topology.faces[5].reversed: False != True",
+            "scale-360-mask-63-order-True-Join-pre-True.value.objects[0].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-63-order-True-JoinCopy-pre-False",
+        "comparison": {
+          "id": "scale-360-mask-63-order-True-JoinCopy-pre-False",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "scale-360-mask-63-order-True-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-63-order-True-JoinCopy-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-63-order-True-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[0].reversed: False != True",
+            "scale-360-mask-63-order-True-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[1].reversed: False != True",
+            "scale-360-mask-63-order-True-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[2].reversed: False != True",
+            "scale-360-mask-63-order-True-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[3].reversed: False != True",
+            "scale-360-mask-63-order-True-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[4].reversed: False != True",
+            "scale-360-mask-63-order-True-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[5].reversed: False != True",
+            "scale-360-mask-63-order-True-JoinCopy-pre-True.value.objects[6].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      }
+    ],
+    "passed": false,
+    "cases": 32,
+    "matched": 16,
+    "native_failed": 0,
+    "mismatched": 16,
+    "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison."
+  },
+  "repeat": {
+    "protocol_version": 1,
+    "absolute_epsilon": 0.0,
+    "relative_epsilon": 1e-12,
+    "operations": [
+      {
+        "id": "scale-360-mask-0-order-False-Join-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-0-order-False-Join-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-0-order-False-Join-pre-True.value.objects[0].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-0-order-False-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-0-order-False-JoinCopy-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-0-order-False-JoinCopy-pre-True.value.objects[6].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-1-order-False-Join-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-1-order-False-Join-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-1-order-False-Join-pre-True.value.objects[0].brep.geometry.topology.faces[0].reversed: False != True",
+            "scale-360-mask-1-order-False-Join-pre-True.value.objects[0].brep.geometry.topology.faces[1].reversed: False != True",
+            "scale-360-mask-1-order-False-Join-pre-True.value.objects[0].brep.geometry.topology.faces[2].reversed: False != True",
+            "scale-360-mask-1-order-False-Join-pre-True.value.objects[0].brep.geometry.topology.faces[3].reversed: False != True",
+            "scale-360-mask-1-order-False-Join-pre-True.value.objects[0].brep.geometry.topology.faces[4].reversed: False != True",
+            "scale-360-mask-1-order-False-Join-pre-True.value.objects[0].brep.geometry.topology.faces[5].reversed: False != True",
+            "scale-360-mask-1-order-False-Join-pre-True.value.objects[0].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-1-order-False-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-1-order-False-JoinCopy-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-1-order-False-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[0].reversed: False != True",
+            "scale-360-mask-1-order-False-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[1].reversed: False != True",
+            "scale-360-mask-1-order-False-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[2].reversed: False != True",
+            "scale-360-mask-1-order-False-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[3].reversed: False != True",
+            "scale-360-mask-1-order-False-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[4].reversed: False != True",
+            "scale-360-mask-1-order-False-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[5].reversed: False != True",
+            "scale-360-mask-1-order-False-JoinCopy-pre-True.value.objects[6].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-42-order-False-Join-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-42-order-False-Join-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-42-order-False-Join-pre-True.value.objects[0].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-42-order-False-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-42-order-False-JoinCopy-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-42-order-False-JoinCopy-pre-True.value.objects[6].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-63-order-True-Join-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-63-order-True-Join-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-63-order-True-Join-pre-True.value.objects[0].brep.geometry.topology.faces[0].reversed: False != True",
+            "scale-360-mask-63-order-True-Join-pre-True.value.objects[0].brep.geometry.topology.faces[1].reversed: False != True",
+            "scale-360-mask-63-order-True-Join-pre-True.value.objects[0].brep.geometry.topology.faces[2].reversed: False != True",
+            "scale-360-mask-63-order-True-Join-pre-True.value.objects[0].brep.geometry.topology.faces[3].reversed: False != True",
+            "scale-360-mask-63-order-True-Join-pre-True.value.objects[0].brep.geometry.topology.faces[4].reversed: False != True",
+            "scale-360-mask-63-order-True-Join-pre-True.value.objects[0].brep.geometry.topology.faces[5].reversed: False != True",
+            "scale-360-mask-63-order-True-Join-pre-True.value.objects[0].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "scale-360-mask-63-order-True-JoinCopy-pre-True",
+        "comparison": {
+          "id": "scale-360-mask-63-order-True-JoinCopy-pre-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "scale-360-mask-63-order-True-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[0].reversed: False != True",
+            "scale-360-mask-63-order-True-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[1].reversed: False != True",
+            "scale-360-mask-63-order-True-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[2].reversed: False != True",
+            "scale-360-mask-63-order-True-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[3].reversed: False != True",
+            "scale-360-mask-63-order-True-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[4].reversed: False != True",
+            "scale-360-mask-63-order-True-JoinCopy-pre-True.value.objects[6].brep.geometry.topology.faces[5].reversed: False != True",
+            "scale-360-mask-63-order-True-JoinCopy-pre-True.value.objects[6].brep.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "uninserted-large-reversed-False",
+        "comparison": {
+          "id": "uninserted-large-reversed-False",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "uninserted-large-reversed-False.value.orientation: 'Outward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      },
+      {
+        "id": "uninserted-large-reversed-True",
+        "comparison": {
+          "id": "uninserted-large-reversed-True",
+          "passed": false,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 0.0,
+          "rhino_ns_per_iteration": 0.0,
+          "rhino_to_viboceros_ratio": null,
+          "differences": [
+            "uninserted-large-reversed-True.value.orientation: 'Inward' != 'None'"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      }
+    ],
+    "passed": false,
+    "cases": 10,
+    "matched": 0,
+    "native_failed": 0,
+    "mismatched": 10,
+    "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison."
+  }
+}

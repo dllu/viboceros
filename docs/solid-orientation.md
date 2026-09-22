@@ -4,7 +4,8 @@
 This read-only kernel query separates spatial sense from `is_closed()` (two edge
 uses) and `is_solid()` (consistent oriented incidence). It is deliberately
 incomplete and does not validate that a solid is embedded without intersections.
-It is used by [`Cap`](cap-compound-orientation.md) to orient newly closed results.
+It is used by [`Cap`](cap-compound-orientation.md) and
+[automatic B-rep joining](join-orientation.md) to orient newly closed results.
 General document insertion and replacement do not yet normalize orientation.
 
 ## Exact planar crossings
@@ -116,5 +117,5 @@ Comparison and replay correctly exit nonzero for the two unresolved values.
 Passing regression tests retain those gaps; they do not claim full compatibility.
 General extrema, arbitrary trimmed contacts, and representation-dependent ties
 remain work for a broader spatial classifier. Existing document normalization
-gaps remain; `Cap` now uses this query with an explicitly limited single-shell
-numerical fallback, outside the exact kernel API.
+gaps remain. `Cap` and automatic joining use this query with explicitly limited
+single-shell numerical fallbacks, outside the exact classifier itself.

@@ -53,8 +53,11 @@ pub struct BrepJoinReport {
 /// Original vertices precede subdivision vertices. Complete spatial boundaries
 /// precede cut ones; two cut boundaries and deferred closures retain the later
 /// source's edge. Nonorientable
-/// candidate sets fail atomically. Newly closed positive-volume shells are
-/// oriented outward; zero-volume double sheets retain the first face's sense.
+/// candidate sets fail atomically. Newly closed shells use exact spatial
+/// orientation witnesses, independently of whether their volume is representable.
+/// Unsupported witnesses retain a numerical signed-volume fallback for this
+/// single connected component. This is not a solid-validity certificate;
+/// zero-volume double sheets can remain unresolved.
 /// This does not classify nested/cavity solids or compute a Boolean union.
 /// Successfully joined components coalesce redundant smooth valence-two edges
 /// at the angular tolerance; untouched components and explicit edge-pair

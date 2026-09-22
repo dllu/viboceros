@@ -80,8 +80,20 @@ pub(super) fn collect(
             })
             .collect();
         let mut brep = Brep::try_new(vertices, edges, faces, tolerance)?;
-        if counts[i] > 0 && brep.is_solid() && brep.signed_volume(tolerance)? < 0. {
-            brep = brep.reversed();
+        if counts[i] > 0 {
+            // Orientation does not require a representable mass integral:
+            // finite, regular shells can have underflowing/overflowing volume.
+            // Every extracted result here is one edge-connected component.
+            // Unsupported spatial witnesses retain the numerical fallback;
+            // it is neither a certificate nor a solid-validity test.
+            let inward = match brep.solid_orientation()? {
+                BrepSolidOrientation::Inward => true,
+                BrepSolidOrientation::Unknown => brep.signed_volume(tolerance)? < 0.,
+                BrepSolidOrientation::Outward | BrepSolidOrientation::NotSolid => false,
+            };
+            if inward {
+                brep = brep.reversed();
+            }
         }
         outputs.push(BrepJoinComponent {
             brep,

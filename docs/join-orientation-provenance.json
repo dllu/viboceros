@@ -1,0 +1,63 @@
+{
+  "capture_date_utc": "2026-09-22",
+  "engine_version": "8.32.26160.13001",
+  "base_commit": "725949b",
+  "baseline_components_sha256": "44ce8a89f1845b26c9b5cf0e425fbcf1492f09f35b5a492edf45596bd1f870c5",
+  "primary_commands": 64,
+  "repeat_commands": 8,
+  "uninserted_repeat_queries": 2,
+  "native_only_tiny_commands": 32,
+  "baseline_primary_full_matches": 48,
+  "baseline_primary_native_failures": 16,
+  "updated_primary_full_matches": 48,
+  "updated_primary_native_failures": 0,
+  "updated_primary_orientation_difference_cases": 16,
+  "updated_primary_face_sense_difference_cases": 8,
+  "repeat_full_matches": 0,
+  "repeat_native_failures": 0,
+  "native_only_tiny_inward_closed_outputs_before": 8,
+  "native_only_tiny_inward_closed_outputs_after": 0,
+  "absolute_epsilon": 0.0,
+  "relative_epsilon": 1e-12,
+  "maximum_numeric_error": 0.0,
+  "raw_capture_sha256": {
+    "join_orientation-observed.json": "de446bc638d3c6ad760f20205ae1ec562770d25d79fd707ea8eaf7e172f95343",
+    "join_orientation_large-observed.json": "15c6b4469f8472e45fb2437f1e378f938755d501f95f9738ffe00bcfe50db2b8",
+    "join_orientation_large_repeat-observed.json": "35332185062c8f718cb30425962822cb2f53e44d5070bbb3c58ea56be67797de",
+    "join_orientation_tiny-native-direct-before.json": "5e72a5afb8c132e407dfa586687ddec0844c15e5bf08013a19cf38aa054f1062",
+    "join_orientation_tiny-native-after.json": "800c8aada0f18d06c3e07bf261bc7de93bef36c2a4125fc619a62becd795f206"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/join_orientation.json": "fa2d5ea20fbee675438e85673bfd284c4aa9eb59cbe88cacdb8b55558b095ba0",
+    "tools/rhino_oracle/fixtures/join_orientation_large.json": "a5e06e52c38a50e0f41ba4341a5291985b9b69939e269908bb9bda2bd934ca4e",
+    "tools/rhino_oracle/fixtures/join_orientation_tiny.json": "bfeaeee1710e869f8cdc668d31633e81df7d34c5fc755c25f505850d232c137d",
+    "tools/rhino_oracle/fixtures/join_orientation_large_repeat.json": "bbaf1bebb257ff9122f95b7f75731882bf41c0f6ce441901586be480678481f4",
+    "tools/rhino_oracle/observations/join_orientation.json": "8a0712dcc9935fd3dfdc77497b1dac4a22c8f7629c055d3eb0d9f00f58c82bbe",
+    "tools/rhino_oracle/observations/join_orientation_large.json": "bc186ba71665793309067117cfad058dc326646141e73e3e906dbae7c60ad627",
+    "tools/rhino_oracle/observations/join_orientation_large_repeat.json": "1c305d85d7dcdc639f8add1db491003fa007bfaad887bcdf7088e724c430ab2c",
+    "tools/rhino_oracle/observations/join_orientation_source_discovery.json": "902268d2a62b5b98f7045b036449f0b74810a3566e5224a5cdcf02d1dc1b7a8c",
+    "tools/rhino_oracle/observations/join_orientation_tiny_native_before.json": "f6a21da7c235c4e3aeba9256da63dfcf71748a81659baee0f58b11d9e750fbec",
+    "tools/rhino_oracle/observations/join_orientation_comparisons.json": "2bfcb321ec7a8e093c9ec8fca1cb7d8d766d973fda8e4855209ad291974d4202"
+  },
+  "capture_source_sha256": {
+    "tools/rhino_oracle/client.py": "5d7ba19054855fb4e95414de0b77e7a43807f98b043b2117b809fd47356ba21f",
+    "tools/rhino_oracle/rhino_worker.py": "181a35a143f422762ec9aa0cb247e5791f893149e9c164379211c7814a263850",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "crates/viboceros-oracle/src/join_command.rs": "e7525043f5be55c7a0171e4920abe2ef4118245958b7cc95940729384fbab01d",
+    "crates/viboceros-oracle/src/solid_orientation.rs": "fd36bd90aa710d8e2ff6c087d34dd05ee4e0a585f9eb7c0d9f76d2307f7566e4"
+  },
+  "reproduction_recipe_sha256": {
+    "tools/rhino_oracle/references/join_orientation.py": "9245fadcf9e50daedaf4e328d1fc307ac2dbdbebae987cfefe151f980e2e41d4"
+  },
+  "notes": [
+    "Three completed owned private-Xvfb Rhino sessions: unit and large command matrices, then eight large command repeats and two uninserted large-box orientation queries. No user-owned sessions were targeted.",
+    "Both engines read the same native-exported 3DM sources; export verifies a definition/sample round trip. Definition-only command records include every spatial/UV coefficient, knot, domain, weight, tolerance, topology field, face sense and document state, but do not compute discarded samples or mass integrals.",
+    "The captured source order intentionally puts an opposite face second. Postselection skips it and produces open five-face outputs; preselection produces closed six-face outputs. Independent 48-workflow native history regressions use contacting pick sequences and close in both selection modes.",
+    "Before the fix, all 16 large closed native joins failed during signed-volume normalization. Afterward all execute; Rhino reports orientation None despite IsSolid true for these 16 outputs, leaving eight inward. Native orients all outward. Every other raw geometry/document field matches; these are explicit remaining compatibility differences.",
+    "Exact Fraction cross/dot witnesses on affine box patches verify the observed face senses without either engine's mass properties or classifier. Eight repeated complete command records agree with the original records. The uninserted opposite-sense boxes both report None in Rhino, isolating the getter issue from document insertion and command history.",
+    "At scale 2^-360 the exact volume is 2^-1077, which rounds to zero; at scale 2^360 it is 2^1083, beyond finite binary64. Coordinates and orientation remain well-defined. The tiny native-only baseline contains eight inward closed results among 32 executions; they are corrected, with an exact power-of-two definition equivariance regression against unit witnesses.",
+    "Tiny shared sources are rejected by OpenNURBS as closed surfaces with boundary trims that should be seams. No tiny Rhino command observation exists. The initial failed source attempt also used an inappropriately strict globally fixed construction tolerance at unit/large scales; its request and all failures are retained as discovery evidence, not successful comparisons.",
+    "Already closed unjoined sources and explicit edge-pair assembly remain unchanged. Unknown exact witnesses retain a numerical volume fallback only for the single connected output, without a rigorous integration certificate or self-intersection validation.",
+    "Raw observations are retained without rewriting numeric values, including negative zero. Before/after full comparison reports retain all differences and execution failures. Timing fields are zero; this audit is not a speed benchmark."
+  ]
+}

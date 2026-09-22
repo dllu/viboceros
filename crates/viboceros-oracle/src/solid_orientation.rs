@@ -56,15 +56,19 @@ pub(super) fn run(
     if let Some(path) = &f.artifact_path {
         write_shared_artifact(&Geometry::Brep(brep.clone()), path, tolerance)?;
     }
+    Ok((geometry_record(&brep)?, 0))
+}
+
+/// Definition-only orientation witness: no samples or mass integration.
+pub(super) fn geometry_record(brep: &Brep) -> Result<Value, ProbeError> {
     let sense = match brep.solid_orientation()? {
         BrepSolidOrientation::NotSolid => "None",
         BrepSolidOrientation::Outward => "Outward",
         BrepSolidOrientation::Inward => "Inward",
         BrepSolidOrientation::Unknown => "Unknown",
     };
-    Ok((
+    Ok(
         json!({"orientation":sense,"solid":brep.is_solid(),"closed":brep.is_closed(),
-        "geometry":crate::brep_interchange::definition_record(&brep)?}),
-        0,
-    ))
+        "geometry":crate::brep_interchange::definition_record(brep)?}),
+    )
 }

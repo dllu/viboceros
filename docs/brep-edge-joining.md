@@ -157,11 +157,17 @@ unadjusted policy for the entire assembly. The work budget covers this refinemen
 
 Connected extraction visits face/edge references and compacts each component's
 tables without rescanning the entire assembly per output. Newly joined closed
-shells with negative signed volume are reversed; zero-volume double sheets retain
-their first face sense. This is not cavity classification or a Boolean operation.
+shells use [exact spatial orientation](solid-orientation.md), independent of
+whether their volume fits in `f64`. Unsupported witnesses retain a numerical
+signed-volume fallback for that single connected component; it is not a validity
+certificate. Untouched components keep their original sense. This is not cavity
+classification or a Boolean operation. The [scale audit](join-orientation.md)
+retains overflow/underflow fixes and explicit large-coordinate Rhino differences.
 Limits are 10,000 sources, 200,000 naked edges, one million candidate pairs, and
 16 million charged work units, plus the subdivision/explicit-assembly limits.
 These bound search work, not every validation or high-degree geometry cost.
+Orientation has its own 262,144-unit exact-work budget per queried output;
+that budget does not bound rational-integer bit complexity or fallback integration.
 Tests cover 1,000 disconnected sheets, all 64 box-face orientation masks,
 one-to-many straight overlaps, independent rational speeds (including partial
 cuts on negative and large shifted parameter domains), immutable sources,

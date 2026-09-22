@@ -41,7 +41,10 @@ curved degrees, knot refinements and positive rational weights now have an
 certifies changed rational speeds. Continuous, exactly straight boundaries
 support independent degrees/parameter speeds
 and automatic partial-overlap splitting. Surfaces are never refitted. Newly
-closed nonzero-volume outputs are oriented outward. This is not a Boolean union.
+closed outputs use exact spatial orientation, with a numerical volume fallback
+for unsupported single-shell representations. [Scale-independent normalization](../join-orientation.md)
+does not require a representable volume. This is not a Boolean union or a
+non-self-intersection certificate.
 
 Preselection processes document order and emits every connected output, including
 fresh copies of unjoined open inputs. A disconnected source can contribute to
