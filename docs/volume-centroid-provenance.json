@@ -36,8 +36,8 @@
     "Default native replay compares actual command output and selection/marker attributes. Source API replay is separate and compares the original constructed geometry, not the insertion-reversed B-rep.",
     "Nine negative-mesh fixture rows retain the Rhino API zero-centroid getter discrepancy; signed first moments and actual command markers are not replaced or discarded.",
     "Three curved-solid source API volumes retain errors greater than 1e-9; native analytic tests use independent radial formulas.",
-    "The four-case open-object request timed out on its first case with no command result. The request and terminal failure report are retained, not counted as rejection or success. Open-object confirmation remains unimplemented.",
-    "A later owned-dialog investigation and 42-case warning capture are documented separately in volume-centroid-open.md and volume-centroid-open-provenance.json; they are not native compatibility passes and do not change the closed-command counts here.",
+    "The four-case open-object request timed out on its first case with no command result. The request and terminal failure report are retained, not counted as rejection or success. Open-object confirmation was unimplemented at this initial capture stage.",
+    "A later owned-dialog investigation, 42-case warning capture and native boundary replay are documented separately in volume-centroid-open.md and volume-centroid-open-provenance.json. Native replay matches 38/42 with four isolated-surface counterexamples; it does not change the closed-command counts here.",
     "Native UI, atomicity and Undo/Redo are tested separately. Exact command-history strings, Rhino Undo/Redo and performance parity are not claimed."
   ]
 }

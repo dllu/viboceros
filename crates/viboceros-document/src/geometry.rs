@@ -71,6 +71,18 @@ impl Geometry {
         }
     }
 
+    /// A volume-boundary view, without asserting that this object is closed or
+    /// oriented. Callers must validate or explicitly confirm open collections.
+    pub fn volume_boundary(&self) -> Option<viboceros_geometry::VolumeBoundary<'_>> {
+        use viboceros_geometry::VolumeBoundary;
+        match self {
+            Self::Mesh(m) => Some(VolumeBoundary::Mesh(m)),
+            Self::Brep(b) => Some(VolumeBoundary::Brep(b)),
+            Self::NurbsSurface(s) => Some(VolumeBoundary::Surface(s)),
+            _ => None,
+        }
+    }
+
     /// Returns exact NURBS geometry for a supported non-NURBS curve.
     ///
     /// All families retain their native intervals (by default, length for

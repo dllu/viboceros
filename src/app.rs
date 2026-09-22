@@ -5172,7 +5172,9 @@ impl eframe::App for VibocerosApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.handle_interface_shortcuts(ui);
         if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
-            if self.plane_prompt.is_some() {
+            if self.answer_object_prompt_escape() {
+                // A command-owned warning consumed this Escape key.
+            } else if self.plane_prompt.is_some() {
                 self.cancel_plane_prompt();
             } else if self.active_command.is_some()
                 || self.object_prompt.is_some()

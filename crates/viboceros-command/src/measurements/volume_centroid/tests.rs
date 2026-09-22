@@ -147,3 +147,126 @@ fn late_open_mesh_and_argument_errors_are_atomic() {
         assert_eq!(d.selected_object_count(), 2);
     }
 }
+
+fn open_mesh() -> Geometry {
+    let Geometry::Mesh(m) = mesh(0., 1., false) else {
+        panic!()
+    };
+    Geometry::Mesh(
+        TriangleMesh::try_new(
+            m.vertices().to_vec(),
+            m.triangles()[1..].to_vec(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap(),
+    )
+}
+
+#[test]
+fn open_warning_is_conditional_fresh_and_declining_preserves_model_history() {
+    let r = CommandRegistry::with_builtins();
+    for post in [false, true] {
+        let mut d = Document::default();
+        let id = d.add_geometry(open_mesh()).unwrap();
+        d.select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        let before = d.objects().cloned().collect::<Vec<_>>();
+        let undo_before = d.undo_label().map(str::to_owned);
+        let redo_before = d.redo_label().map(str::to_owned);
+        let initial = r
+            .object_selection_prompt("VolumeCentroid")
+            .unwrap()
+            .unwrap();
+        let mut question = r
+            .object_selection_confirmation(&d, &initial)
+            .unwrap()
+            .unwrap();
+        assert_eq!(question.options[0].name, "Continue");
+        assert!(question.options[0].value);
+        question.update_options("No").unwrap();
+        let result = if post {
+            r.execute_postselected(&mut d, &question.command_line(), CommandContext::default())
+        } else {
+            r.execute(&mut d, &question.command_line())
+        };
+        assert!(matches!(result, Err(CommandError::OperationDeclined)));
+        assert_eq!(d.selected_object_count(), usize::from(!post));
+        assert_eq!(d.objects().cloned().collect::<Vec<_>>(), before);
+        assert_eq!(d.undo_label(), undo_before.as_deref());
+        assert_eq!(d.redo_label(), redo_before.as_deref());
+        d.select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        let again = r
+            .object_selection_confirmation(&d, &initial)
+            .unwrap()
+            .unwrap();
+        assert!(again.options[0].value);
+        assert!(
+            r.object_selection_confirmation(&d, &again)
+                .unwrap()
+                .is_none()
+        );
+        if post {
+            r.execute_postselected(&mut d, &again.command_line(), CommandContext::default())
+                .unwrap();
+        } else {
+            r.execute(&mut d, &again.command_line()).unwrap();
+        }
+        assert!(
+            matches!(d.objects().last().unwrap().geometry(),Geometry::Point(p) if p.to_array()==[0.375,0.5,1.875])
+        );
+        assert_eq!(d.selected_object_count(), usize::from(!post));
+        r.execute(&mut d, "Undo").unwrap();
+        assert_eq!(d.objects().cloned().collect::<Vec<_>>(), before);
+        r.execute(&mut d, "Redo").unwrap();
+        assert_eq!(d.objects().len(), before.len() + 1);
+    }
+    let mut d = Document::default();
+    let id = d.add_geometry(mesh(0., 1., false)).unwrap();
+    d.select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    let initial = r
+        .object_selection_prompt("VolumeCentroid")
+        .unwrap()
+        .unwrap();
+    assert!(
+        r.object_selection_confirmation(&d, &initial)
+            .unwrap()
+            .is_none()
+    );
+    // A choice for a nonexistent warning cannot cancel a closed-solid query.
+    r.execute(&mut d, "VolumeCentroid Continue=No").unwrap();
+    assert_eq!(d.objects().len(), 2);
+}
+
+#[test]
+fn separate_mesh_faces_enclose_a_volume_without_becoming_joined_objects() {
+    let Geometry::Mesh(m) = mesh(0., 1., false) else {
+        panic!()
+    };
+    let r = CommandRegistry::with_builtins();
+    let mut d = Document::default();
+    let ids = m
+        .triangles()
+        .iter()
+        .map(|face| {
+            d.add_geometry(Geometry::Mesh(
+                TriangleMesh::try_new(m.vertices().to_vec(), vec![*face], Tolerance::DEFAULT)
+                    .unwrap(),
+            ))
+            .unwrap()
+        })
+        .collect::<Vec<_>>();
+    d.select_objects_direct(ids.clone(), SelectionMode::Replace)
+        .unwrap();
+    let before = d.objects().cloned().collect::<Vec<_>>();
+    r.execute(&mut d, "VolumeCentroid Continue=Yes").unwrap();
+    assert_eq!(
+        d.objects().take(before.len()).cloned().collect::<Vec<_>>(),
+        before
+    );
+    assert_eq!(d.selected_object_ids().collect::<Vec<_>>(), ids);
+    assert!(
+        matches!(d.objects().last().unwrap().geometry(),Geometry::Point(p) if p.to_array()==[0.75,1.,1.25])
+    );
+}

@@ -15,8 +15,6 @@ def prepare(request, observed, tight_api=False, measure="area", source_api=False
             or not isinstance(request.get("operations"),list) or not request["operations"]):
         raise OracleProtocolError("centroid replay requires one iteration")
     for operation in request["operations"]: validate(operation, measure)
-    if any("open_confirmation" in operation for operation in request["operations"]):
-        raise OracleProtocolError("open-volume confirmation captures are not yet supported by native replay")
     ids=[op["id"] for op in request["operations"]]
     _validate_response(observed,"rhino")
     if len(set(ids))!=len(ids) or observed["iterations"]!=1 or ids!=[r["id"] for r in observed["results"]]:
@@ -27,8 +25,24 @@ def prepare(request, observed, tight_api=False, measure="area", source_api=False
     finite=lambda x:type(x) in (int,float) and math.isfinite(x)
     for op,row in zip(request["operations"],evidence["results"]):
         v=row["value"]; count=len(op["sources"])
-        if not isinstance(v,dict) or set(v)!=keys or type(v["succeeded"]) is not bool or not isinstance(v["history"],str):
+        confirmed = "open_confirmation" in op
+        expected_keys = keys | ({"open_confirmation"} if confirmed else set())
+        if not isinstance(v,dict) or set(v)!=expected_keys or type(v["succeeded"]) is not bool or not isinstance(v["history"],str):
             raise OracleProtocolError("invalid centroid observation fields")
+        if confirmed:
+            from .volume_confirmation import DIALOG_TITLE
+            import re
+            diagnostic = v["open_confirmation"]
+            if (not isinstance(diagnostic,dict) or set(diagnostic)!={"requested","dialog"}
+                    or diagnostic["requested"] != op["open_confirmation"]):
+                raise OracleProtocolError("invalid volume confirmation evidence")
+            dialog = diagnostic["dialog"]
+            if dialog is not None and (not isinstance(dialog,dict)
+                    or set(dialog)!={"window","owner_pid","parent_window","title"}
+                    or dialog["title"] != DIALOG_TITLE or type(dialog["owner_pid"]) is not int or dialog["owner_pid"]<=0
+                    or any(not isinstance(dialog[k],str) or re.fullmatch(r"0x[0-9a-fA-F]+",dialog[k]) is None for k in ("window","parent_window"))
+                    or int(dialog["window"],16)==int(dialog["parent_window"],16)):
+                raise OracleProtocolError("invalid owned volume confirmation dialog")
         fields=["constructed_inputs","inputs","insertions","properties","tight_properties"]
         if measure=="volume": fields.extend(("source_properties","source_first_moments"))
         for field in fields:
@@ -77,6 +91,7 @@ def prepare(request, observed, tight_api=False, measure="area", source_api=False
                 raise OracleProtocolError("invalid centroid point observation")
         if measure=="volume":
             row["value"] = {"properties":v["source_properties"]} if source_api else {k:v[k] for k in ("points","selected","succeeded")}
+            if confirmed and not source_api: row["value"]["confirmation"] = v["open_confirmation"]["dialog"] is not None
         else:
             row["value"] = {"properties":v["tight_properties"]} if tight_api else {k:v[k] for k in ("properties","points","selected","succeeded")}
     return copy.deepcopy(request),evidence
@@ -88,7 +103,9 @@ def replay(request,observed,client=None,tight_api=False,measure="area",source_ap
     if tight_api or source_api:
         for row in actual["results"]: row["value"]={"properties":row["value"]["properties"]}
     elif measure=="volume":
-        for row in actual["results"]: row["value"]={k:row["value"][k] for k in ("points","selected","succeeded")}
+        for row in actual["results"]:
+            fields = ("points","selected","succeeded") + (("confirmation",) if "confirmation" in row["value"] else ())
+            row["value"]={k:row["value"][k] for k in fields}
     return compare_responses(actual,evidence,absolute_epsilon=1e-9,relative_epsilon=0.)
 
 
@@ -102,7 +119,7 @@ def main(measure="area"):
         report=replay(load_request(args.request),load_request(args.observations),tight_api=getattr(args,"tight_api",False),
                       measure=measure,source_api=getattr(args,"source_api",False))
         output=report.as_dict()
-        if measure=="volume": output["scope"]="raw API on constructed source geometry" if args.source_api else "actual command marker/selection/attributes; API diagnostics retained separately"
+        if measure=="volume": output["scope"]="raw API on constructed source geometry" if args.source_api else "actual command marker/selection/attributes and conditional warning when captured; API diagnostics retained separately"
         else: output["scope"]="explicit-tolerance per-object API only" if args.tight_api else "default per-object API and command marker/selection/attributes; no history-string comparison"
         print(json.dumps(output,indent=2,allow_nan=False))
         return 0 if report.passed else 1

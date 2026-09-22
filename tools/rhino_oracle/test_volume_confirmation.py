@@ -46,8 +46,6 @@ class VolumeConfirmationTests(unittest.TestCase):
             with self.assertRaises(OracleProtocolError): VolumeConfirmation(invalid)
         area = dict(self.request["operations"][0], op="area_centroid_command")
         with self.assertRaises(ValueError): validate(area)
-        with self.assertRaisesRegex(OracleProtocolError, "not yet supported"):
-            prepare(self.request, {}, measure="volume")
 
     def test_no_marker_no_owned_pid_or_no_matching_dialog_means_no_input(self):
         responder = VolumeConfirmation(self.request)
@@ -177,17 +175,28 @@ class VolumeConfirmationTests(unittest.TestCase):
         self.assertEqual(data, request())
         self.assertEqual(len(data["operations"]), 42)
         self.assertEqual([op["id"] for op in data["operations"]], [row["id"] for row in observed["results"]])
-        with self.assertRaisesRegex(OracleProtocolError, "not yet supported"):
-            prepare(data, observed, measure="volume")
-        # Reuse the existing full source/geometry/diagnostic validator, not the
-        # native runner. This validates capture fidelity, never compatibility.
+        native, targets = prepare(data, observed, measure="volume")
+        self.assertEqual(native, data)
         for operation, row in zip(data["operations"], observed["results"]):
-            self.assertEqual(row["value"]["open_confirmation"]["requested"], operation.pop("open_confirmation"))
-            row["value"].pop("open_confirmation")
-        self.assertEqual(prepare(data, observed, measure="volume")[0], data)
+            self.assertEqual(row["value"]["open_confirmation"]["requested"], operation["open_confirmation"])
+        for target,row in zip(targets["results"],observed["results"]):
+            self.assertEqual(target["value"]["confirmation"],row["value"]["open_confirmation"]["dialog"] is not None)
         for row in observed["results"]:
             for point in row["value"]["points"]: point["point"] = [123.,456.,789.]
         self.assertEqual(prepare(data, observed, measure="volume")[0], data)
+
+    def test_replay_rejects_missing_mismatched_or_unowned_confirmation_diagnostics(self):
+        data = request()
+        observed = json.loads((ROOT/"tools/rhino_oracle/observations/volume_centroid_confirmation.json").read_text())
+        valid = observed["results"][0]["value"]["open_confirmation"]
+        for diagnostic in [None, dict(requested="no",dialog=valid["dialog"]),
+                           dict(valid, extra=True),
+                           dict(valid,dialog=dict(valid["dialog"],owner_pid=True)),
+                           dict(valid,dialog=dict(valid["dialog"],title="other window")),
+                           dict(valid,dialog=dict(valid["dialog"],window=valid["dialog"]["parent_window"]))]:
+            wrong=copy.deepcopy(observed)
+            wrong["results"][0]["value"]["open_confirmation"]=diagnostic
+            with self.assertRaises(OracleProtocolError): prepare(data,wrong,measure="volume")
 
     def test_retained_warning_choices_selection_and_api_differences_are_not_normalized(self):
         data = request()
@@ -242,9 +251,23 @@ class VolumeConfirmationTests(unittest.TestCase):
         provenance = json.loads((ROOT/"docs/volume-centroid-open-provenance.json").read_text())
         for path, digest in provenance["retained_file_sha256"].items():
             self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(), digest)
+        current = provenance["current_native_replay"]
+        self.assertEqual(hashlib.sha256((ROOT/current["report"]).read_bytes()).hexdigest(), current["report_sha256"])
         failed = (ROOT/"tools/rhino_oracle/observations/volume_centroid_confirmation_attempt.txt").read_text()
         self.assertIn("BadWindow", failed)
         with self.assertRaises(ValueError): json.loads(failed)
+
+    def test_native_report_retains_all_cases_and_exactly_the_four_surface_differences(self):
+        report = json.loads((ROOT/"docs/volume-centroid-open-comparison.json").read_text())
+        self.assertEqual([row["id"] for row in report["operations"]], [op["id"] for op in request()["operations"]])
+        self.assertFalse(report["passed"])
+        self.assertEqual(report["absolute_epsilon"],1e-9)
+        self.assertEqual(report["relative_epsilon"],0.)
+        failed = [row for row in report["operations"] if not row["passed"]]
+        self.assertEqual([row["id"] for row in failed], ["open-surface-pre-yes","open-surface-pre-escape","open-surface-post-yes","open-surface-post-escape"])
+        for row in failed:
+            self.assertEqual(len(row["differences"]),3)
+            self.assertTrue(all(".value.points[0].point[" in d for d in row["differences"]))
 
 
 if __name__ == "__main__": unittest.main()

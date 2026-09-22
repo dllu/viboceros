@@ -3,7 +3,11 @@ use crate::exact_scalar::{Rational, rational, scalar};
 use crate::{GeometryError, Point3, Real, require_finite};
 use num_traits::Zero;
 
+mod boundary;
 mod mesh;
+pub use boundary::VolumeBoundary;
+#[cfg(test)]
+mod boundary_tests;
 #[cfg(test)]
 mod tests;
 

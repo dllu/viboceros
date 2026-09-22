@@ -47,12 +47,28 @@ impl PendingObjectCommand {
                 ObjectSelectionWorkflow::ChooseBooleanAfterSelection => {
                     "Select curves and surfaces; Enter opens the deletion question, Esc cancels"
                 }
+                ObjectSelectionWorkflow::QuestionAfterSelection { .. } => {
+                    "Select objects; Enter continues, Esc cancels selection"
+                }
             },
             ObjectPromptPhase::Options
                 if self.description.workflow
                     == ObjectSelectionWorkflow::ChooseBooleanAfterSelection =>
             {
                 "Delete input? Yes or No converts; Enter uses the shown choice, Esc cancels"
+            }
+            ObjectPromptPhase::Options
+                if matches!(
+                    self.description.workflow,
+                    ObjectSelectionWorkflow::QuestionAfterSelection { .. }
+                ) =>
+            {
+                let ObjectSelectionWorkflow::QuestionAfterSelection { message, .. } =
+                    self.description.workflow
+                else {
+                    unreachable!()
+                };
+                message
             }
             ObjectPromptPhase::Options => "Set conversion options; Enter converts, Esc cancels",
             ObjectPromptPhase::Menu(_) => {
@@ -103,7 +119,7 @@ impl VibocerosApp {
             }
             // An explicit answer in a complete preselected invocation executes
             // directly. The bare command still asks its Yes/No question.
-            if description.workflow == ObjectSelectionWorkflow::ChooseBooleanAfterSelection
+            if description.workflow.answers_immediately()
                 && input.split_whitespace().nth(1).is_some()
             {
                 return false;
@@ -266,7 +282,14 @@ impl VibocerosApp {
                     self.object_prompt = None;
                     self.push_log(message);
                 }
-                Err(error) => self.push_log(format!("Error: {error}")),
+                Err(error) => {
+                    if matches!(error, viboceros_command::CommandError::OperationDeclined) {
+                        self.object_prompt = None;
+                        self.push_log(format!("{} declined", pending.description.command));
+                    } else {
+                        self.push_log(format!("Error: {error}"));
+                    }
+                }
             }
             self.command_input.clear();
             return true;
@@ -274,7 +297,7 @@ impl VibocerosApp {
         let normalized = input.trim_start_matches(['_', '-']).to_ascii_lowercase();
         if normalized == "selall" || normalized == "selnone" {
             if pending.phase != ObjectPromptPhase::Selecting {
-                self.push_log("Selection is fixed; finish or cancel the conversion".into());
+                self.push_log("Selection is fixed; finish or cancel the command".into());
                 return true;
             }
             if normalized == "selnone" {
@@ -321,7 +344,7 @@ impl VibocerosApp {
         if pending.phase == ObjectPromptPhase::Selecting
             && pending.description.workflow != ObjectSelectionWorkflow::OptionsDuringSelection
         {
-            self.push_log("Select objects first; Enter opens conversion options".into());
+            self.push_log("Select objects first; Enter continues".into());
             return true;
         }
         if pending.phase == ObjectPromptPhase::Options
@@ -370,8 +393,7 @@ impl VibocerosApp {
                 if matches!(pending.phase, ObjectPromptPhase::Choice(_)) {
                     pending.phase = ObjectPromptPhase::Options;
                 }
-                let answered = pending.description.workflow
-                    == ObjectSelectionWorkflow::ChooseBooleanAfterSelection;
+                let answered = pending.description.workflow.answers_immediately();
                 self.object_prompt = Some(pending);
                 self.command_input.clear();
                 if answered {
@@ -394,6 +416,25 @@ impl VibocerosApp {
                 self.push_log(format!("Cancelled {}", pending.description.command));
             }
         }
+    }
+
+    /// Keyboard Escape at an explicit warning may mean a default answer, unlike
+    /// replacing a command, cancelling selection, or closing a document.
+    pub(super) fn answer_object_prompt_escape(&mut self) -> bool {
+        let Some(pending) = &self.object_prompt else {
+            return false;
+        };
+        if pending.phase != ObjectPromptPhase::Options {
+            return false;
+        }
+        let ObjectSelectionWorkflow::QuestionAfterSelection {
+            escape_answer: Some(answer),
+            ..
+        } = pending.description.workflow
+        else {
+            return false;
+        };
+        self.try_continue_object_prompt(if answer { "Yes" } else { "No" })
     }
 
     pub(super) fn select_prompt_objects(

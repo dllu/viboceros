@@ -1,12 +1,21 @@
 {
   "engine_version": "8.32.26160.13001",
-  "scope": "actual Rhino VolumeCentroid warning and command observations; native confirmation replay is explicitly unsupported",
+  "scope": "actual Rhino VolumeCentroid warning and command observations; native replay was unsupported at capture time, with current implementation documented in volume-centroid-open.md",
   "retained_completed_cases": 42,
   "warning_dialog_cases": 30,
   "no_warning_control_cases": 12,
   "rhino_command_successes": 32,
   "rhino_command_unsuccessful_completions": 10,
-  "native_compatibility_passes_claimed": 0,
+  "native_compatibility_passes_claimed_at_capture": 0,
+  "current_native_replay": {
+    "report": "docs/volume-centroid-open-comparison.json",
+    "report_sha256": "dc4c48e9f5360efe47715b06dc02714ab82c8f48ab025a2c40e364abf7cb68c0",
+    "matched_cases": 38,
+    "compared_cases": 42,
+    "absolute_epsilon": 1e-9,
+    "relative_epsilon": 0,
+    "differences": "Four isolated bilinear-surface marker coordinates; warning presence, completion, selection and marker attributes agree for all 42 cases."
+  },
   "retained_file_sha256": {
     "tools/rhino_oracle/fixtures/volume_centroid_confirmation.json": "7bdec57667d6ffb345fb7b6d147b748c336e2ad25230b2a9b15d454288272633",
     "tools/rhino_oracle/observations/volume_centroid_confirmation.json": "43b95bf5d2e0c203614d01a0ad1628a32345a8aba704e715d46211c824fb8049",
@@ -22,7 +31,7 @@
     "Focused XTest input after a nonblocking settling interval completed the full 42 cases. The final capture renamed the literal Escape input from cancel to escape to avoid assuming its effect. Geometry, API values, output points/attributes and selection exactly reproduced the earlier completed capture; changing labels, transient window IDs and history were excluded from that repeat comparison.",
     "Yes and Escape continued all warned cases; No produced the ten unsuccessful completions. The twelve closed/unoriented-closed controls displayed no warning and received no answer, irrespective of the requested choice.",
     "Full numeric observations are retained with only JSON whitespace/key formatting changed. Near-zero API volumes, enormous surface API centroids and negative-volume getter discrepancies are not normalized or replaced with command targets.",
-    "The generator reads no observed targets. Python replay and direct Rust execution reject confirmation inputs until native support exists; these cases do not increase the existing 26 closed-command compatibility matches.",
-    "No Rhino Undo/Redo, general open-surface integration policy, timing parity or native open-volume compatibility is claimed."
+    "The generator reads no observed targets. The initial capture-only implementation rejected native confirmation inputs. Current native boundary replay is documented separately and does not change the existing 26 closed-command comparison scope.",
+    "No Rhino Undo/Redo, general open-surface integration policy or timing parity is claimed. Current native compatibility is limited to the separately reported matches, with all counterexamples retained."
   ]
 }

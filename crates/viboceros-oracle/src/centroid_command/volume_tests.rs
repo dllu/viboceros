@@ -1,22 +1,23 @@
 use super::*;
 
 #[test]
-fn native_runner_does_not_silently_ignore_open_volume_confirmation_even_for_closed_controls() {
+fn native_runner_validates_volume_warning_input_instead_of_ignoring_unknown_fields() {
     let mut fixture: Value = serde_json::from_str(include_str!(
         "../../../../tools/rhino_oracle/fixtures/volume_centroid.json"
     ))
     .unwrap();
     fixture["operations"].as_array_mut().unwrap().truncate(1);
-    for command in ["volume_centroid_command", "area_centroid_command"] {
-        for choice in ["yes", "no", "escape"] {
+    for (command, choices) in [
+        ("area_centroid_command", vec!["yes", "no", "escape"]),
+        ("volume_centroid_command", vec!["cancel", "Yes", "invalid"]),
+    ] {
+        for choice in choices {
             fixture["operations"][0]["op"] = json!(command);
             fixture["operations"][0]["open_confirmation"] = json!(choice);
             let request: ProbeRequest = serde_json::from_value(fixture.clone()).unwrap();
             assert!(matches!(
                 run_request(&request),
-                Err(ProbeError::FixtureInvariant(
-                    "open-volume confirmation captures are not yet supported by native replay"
-                ))
+                Err(ProbeError::FixtureInvariant(_))
             ));
         }
     }
@@ -122,4 +123,65 @@ fn volume_centroid_fixture_requires_one_iteration_and_valid_indices() {
     };
     fixture.selected = Some(vec![0, 0]);
     assert!(run_request(&request).is_err());
+}
+
+#[test]
+fn open_volume_warning_replay_keeps_isolated_bilinear_surface_counterexamples() {
+    let request: ProbeRequest = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/volume_centroid_confirmation.json"
+    ))
+    .unwrap();
+    let observed: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/volume_centroid_confirmation.json"
+    ))
+    .unwrap();
+    let actual = run_request(&request).unwrap();
+    assert_eq!(actual.results.len(), 42);
+    let mut differences = Vec::new();
+    for (a, b) in actual
+        .results
+        .iter()
+        .zip(observed["results"].as_array().unwrap())
+    {
+        assert_eq!(a.id, b["id"]);
+        let (x, y) = (&a.value, &b["value"]);
+        assert_eq!(
+            x["confirmation"],
+            !y["open_confirmation"]["dialog"].is_null(),
+            "{}",
+            a.id
+        );
+        for field in ["succeeded", "selected"] {
+            assert_eq!(x[field], y[field], "{}", a.id);
+        }
+        let (points, expected) = (
+            x["points"].as_array().unwrap(),
+            y["points"].as_array().unwrap(),
+        );
+        assert_eq!(points.len(), expected.len(), "{}", a.id);
+        for (p, q) in points.iter().zip(expected) {
+            for field in ["selected", "current_layer", "groups", "name"] {
+                assert_eq!(p[field], q[field]);
+            }
+            if !(0..3).all(|i| {
+                (p["point"][i].as_f64().unwrap() - q["point"][i].as_f64().unwrap()).abs() <= 1e-9
+            }) {
+                differences.push(a.id.as_str());
+                // Independent cone integral; do not replace it with an observed
+                // target or loosen epsilon to turn the counterexample green.
+                for (i, value) in [2., 1.5, 2. / 3.].into_iter().enumerate() {
+                    assert!((p["point"][i].as_f64().unwrap() - value).abs() < 1e-12);
+                }
+            }
+        }
+    }
+    assert_eq!(
+        differences,
+        [
+            "open-surface-pre-yes",
+            "open-surface-pre-escape",
+            "open-surface-post-yes",
+            "open-surface-post-escape"
+        ]
+    );
 }

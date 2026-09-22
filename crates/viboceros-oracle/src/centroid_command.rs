@@ -14,14 +14,14 @@ pub struct CentroidFixture {
     pub selected: Option<Vec<usize>>,
     #[serde(default = "preselect_default")]
     pub preselect: bool,
-    /// Captured Rhino modal input is not yet implemented by the native runner.
+    /// Literal input to the conditional non-closed warning, not a command result.
     pub open_confirmation: Option<String>,
 }
 fn preselect_default() -> bool {
     true
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub(super) enum Measure {
     Area,
     Volume,
@@ -32,12 +32,12 @@ pub(super) fn run(
     tolerance: Tolerance,
     measure: Measure,
 ) -> Result<(Value, u64), ProbeError> {
-    if f.open_confirmation.is_some() {
-        return Err(ProbeError::FixtureInvariant(
-            "open-volume confirmation captures are not yet supported by native replay",
-        ));
-    }
     let invalid = || ProbeError::FixtureInvariant("invalid area centroid fixture");
+    if let Some(answer) = &f.open_confirmation
+        && (measure != Measure::Volume || !matches!(answer.as_str(), "yes" | "no" | "escape"))
+    {
+        return Err(invalid());
+    }
     if f.sources.is_empty() || f.sources.len() > 32 || f.groups.len() > 16 {
         return Err(invalid());
     }
@@ -77,12 +77,15 @@ pub(super) fn run(
                 }
             }
             Measure::Volume => {
-                let mass = match &geometry {
-                    Geometry::Mesh(m) => Some(m.volume_mass_properties()?),
-                    Geometry::Brep(b) => Some(b.volume_mass_properties(tolerance)?),
-                    Geometry::NurbsSurface(s) => Some(s.volume_mass_properties(tolerance)?),
-                    _ => None,
-                };
+                let mass = geometry
+                    .volume_boundary()
+                    .map(|boundary| {
+                        viboceros_geometry::VolumeMassProperties::from_boundaries(
+                            &[boundary],
+                            tolerance,
+                        )
+                    })
+                    .transpose()?;
                 match mass {
                     Some(m) => {
                         json!({"volume":m.signed_volume()?,"centroid": if m.is_zero() { None } else { Some(m.centroid()?.to_array()) }})
@@ -104,12 +107,32 @@ pub(super) fn run(
         Measure::Area => "AreaCentroid",
         Measure::Volume => "VolumeCentroid",
     };
+    let mut invocation = command.to_owned();
+    let mut confirmation = None;
+    if let Some(answer) = &f.open_confirmation {
+        let prompt = r.object_selection_prompt(command)?.ok_or_else(invalid)?;
+        let question = if d
+            .selected_objects()
+            .any(|o| prompt.filter.accepts_object(o))
+        {
+            r.object_selection_confirmation(&d, &prompt)?
+        } else {
+            None
+        };
+        confirmation = Some(question.is_some());
+        if let Some(mut question) = question {
+            // The captured warning treats Escape as Yes. The requested input
+            // is ignored when this actual source selection needs no warning.
+            question.update_options(if answer == "no" { "No" } else { "Yes" })?;
+            invocation = question.command_line();
+        }
+    }
     let succeeded = if f.preselect {
-        r.execute(&mut d, command)
+        r.execute(&mut d, &invocation)
     } else {
         r.execute_postselected(
             &mut d,
-            command,
+            &invocation,
             viboceros_command::CommandContext::default(),
         )
     }
@@ -138,8 +161,10 @@ pub(super) fn run(
         .enumerate()
         .filter_map(|(i, id)| d.is_selected(*id).then_some(i))
         .collect::<Vec<_>>();
-    Ok((
-        json!({"properties":properties,"succeeded":succeeded,"points":points,"selected":selected}),
-        0,
-    ))
+    let mut value =
+        json!({"properties":properties,"succeeded":succeeded,"points":points,"selected":selected});
+    if let Some(asked) = confirmation {
+        value["confirmation"] = json!(asked);
+    }
+    Ok((value, 0))
 }

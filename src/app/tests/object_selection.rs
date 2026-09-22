@@ -2,6 +2,84 @@ use super::*;
 use viboceros_document::SelectionMode;
 
 #[test]
+fn volume_warning_answers_and_escape_are_separate_from_cancelling_selection() {
+    use crate::app::object_selection::ObjectPromptPhase;
+    use viboceros_geometry::{Tolerance, TriangleMesh};
+    for post in [false, true] {
+        for answer in ["Yes", "No", "", "Escape", "replace"] {
+            let mut app = test_app();
+            let m = TriangleMesh::try_new(
+                vec![
+                    point(0., 0., 0.),
+                    point(3., 0., 0.),
+                    point(0., 4., 0.),
+                    point(0., 0., 5.),
+                ],
+                vec![[0, 1, 3], [0, 3, 2], [1, 2, 3]],
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            let id = app.document.add_geometry(Geometry::Mesh(m)).unwrap();
+            let before = app.document.objects().cloned().collect::<Vec<_>>();
+            let undo_before = app.document.undo_label().map(str::to_owned);
+            let redo_before = app.document.redo_label().map(str::to_owned);
+            if !post {
+                app.document
+                    .select_objects_direct([id], SelectionMode::Replace)
+                    .unwrap();
+            }
+            enter(&mut app, "VolumeCentroid");
+            if post {
+                assert_eq!(
+                    app.object_prompt.as_ref().unwrap().phase,
+                    ObjectPromptPhase::Selecting
+                );
+                assert!(!app.answer_object_prompt_escape());
+                app.apply_selection_click(SelectionClick {
+                    object_id: Some(id),
+                    mode: SelectionMode::Replace,
+                });
+                enter(&mut app, "");
+            }
+            assert_eq!(
+                app.object_prompt.as_ref().unwrap().phase,
+                ObjectPromptPhase::Options
+            );
+            assert!(
+                app.object_prompt
+                    .as_ref()
+                    .unwrap()
+                    .hint()
+                    .contains("jointly enclose")
+            );
+            assert!(app.viewport_object_filter().is_none());
+            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+            match answer {
+                "Escape" => assert!(app.answer_object_prompt_escape()),
+                "replace" => app.cancel_interactive_command(false),
+                _ => enter(&mut app, answer),
+            }
+            assert!(app.object_prompt.is_none(), "{answer}");
+            assert_eq!(app.document.selected_object_count(), usize::from(!post));
+            if matches!(answer, "No" | "replace") {
+                assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+                assert_eq!(app.document.undo_label(), undo_before.as_deref());
+                assert_eq!(app.document.redo_label(), redo_before.as_deref());
+            } else {
+                assert!(
+                    matches!(app.document.objects().last().unwrap().geometry(),Geometry::Point(p) if p.to_array()==[0.375,0.5,1.875])
+                );
+                assert_eq!(app.document.undo_label(), Some("VolumeCentroid"));
+                enter(&mut app, "Undo");
+                assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+                enter(&mut app, "Redo");
+                assert_eq!(app.document.objects().len(), before.len() + 1);
+            }
+        }
+    }
+}
+
+#[test]
 fn volume_centroid_object_prompt_finishes_or_cancels_with_filtered_picks() {
     for cancel in [false, true] {
         let mut app = test_app();

@@ -17,7 +17,19 @@ impl Brep {
         if !self.is_solid() {
             return Err(GeometryError::OpenBrepVolume);
         }
-        let spatial = SpatialFrame::new(self.bounds())?;
+        self.volume_flux(self.bounds().center()?, tolerance)
+    }
+
+    /// Oriented cone-flux integrals, including open boundary pieces. All pieces
+    /// of an enclosing collection must use the same base point; no independent
+    /// recentering of open faces is permitted. An isolated open piece does not
+    /// define an enclosed solid and its result depends on the chosen base.
+    pub fn volume_flux(
+        &self,
+        base: Point3,
+        tolerance: Tolerance,
+    ) -> Result<VolumeMassProperties, GeometryError> {
+        let spatial = SpatialFrame::with_origin(self.bounds(), base)?;
         let absolute =
             (spatial.tolerance(tolerance) / self.faces.len() as Real).max(Real::MIN_POSITIVE);
         let mut totals: [FiniteSum; 4] = std::array::from_fn(|_| FiniteSum::default());
@@ -75,6 +87,15 @@ impl Brep {
 }
 
 impl NurbsSurface {
+    /// Signed cone flux of an open or closed natural surface boundary.
+    pub fn volume_flux(
+        &self,
+        base: Point3,
+        tolerance: Tolerance,
+    ) -> Result<VolumeMassProperties, GeometryError> {
+        Brep::try_surface_face(self.clone(), tolerance)?.volume_flux(base, tolerance)
+    }
+
     /// Mass properties of a closed surface, with periodic seams and singular
     /// boundaries validated by the exact rectangular-face topology builder.
     pub fn volume_mass_properties(

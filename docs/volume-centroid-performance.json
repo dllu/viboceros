@@ -85,6 +85,48 @@
       "quad_faces": 6144,
       "volume_microseconds": 342.5,
       "volume_and_first_moments_microseconds": 13122.1
+    },
+    {
+      "phase": "shared_reference_specialized_origin",
+      "translation": 0.0,
+      "quad_faces": 96,
+      "volume_microseconds": 10.4,
+      "volume_and_first_moments_microseconds": 124.4
+    },
+    {
+      "phase": "shared_reference_specialized_origin",
+      "translation": 0.0,
+      "quad_faces": 1536,
+      "volume_microseconds": 157.4,
+      "volume_and_first_moments_microseconds": 2266.6
+    },
+    {
+      "phase": "shared_reference_specialized_origin",
+      "translation": 0.0,
+      "quad_faces": 6144,
+      "volume_microseconds": 632.0,
+      "volume_and_first_moments_microseconds": 5948.0
+    },
+    {
+      "phase": "shared_reference_specialized_origin",
+      "translation": 1000000000000.0,
+      "quad_faces": 96,
+      "volume_microseconds": 5.5,
+      "volume_and_first_moments_microseconds": 146.8
+    },
+    {
+      "phase": "shared_reference_specialized_origin",
+      "translation": 1000000000000.0,
+      "quad_faces": 1536,
+      "volume_microseconds": 83.8,
+      "volume_and_first_moments_microseconds": 3131.1
+    },
+    {
+      "phase": "shared_reference_specialized_origin",
+      "translation": 1000000000000.0,
+      "quad_faces": 6144,
+      "volume_microseconds": 331.0,
+      "volume_and_first_moments_microseconds": 14036.4
     }
   ]
 }

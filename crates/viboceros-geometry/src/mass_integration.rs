@@ -12,6 +12,10 @@ pub(crate) struct SpatialFrame {
 impl SpatialFrame {
     pub(crate) fn new(bounds: BoundingBox3) -> Result<Self, GeometryError> {
         let origin = bounds.center()?;
+        Self::with_origin(bounds, origin)
+    }
+
+    pub(crate) fn with_origin(bounds: BoundingBox3, origin: Point3) -> Result<Self, GeometryError> {
         let scale = [bounds.min(), bounds.max()]
             .into_iter()
             .map(|p| origin.vector_to(p).map(|v| v.to_array()))

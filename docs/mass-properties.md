@@ -16,6 +16,13 @@ moments and normalized B-rep flux integration. Mesh `Volume` now uses that same
 shorter-diagonal policy. The command documentation retains the associated
 Rhino numerical differences and independent high-precision reference checks.
 
+`VolumeBoundary` integrates unjoined boundary pieces about one common reference.
+`VolumeCentroid` asks before accepting open collections; its strict per-solid
+kernel APIs are unchanged. See the [open-boundary audit](volume-centroid-open.md)
+for the exact mesh reference expansion, curved flux densities, confirmation
+semantics, and retained isolated-surface mismatch. The scalar `Volume` command
+still requires closed input.
+
 ## Integration
 
 B-rep measurements use the NURBS surfaces and parameter-space trim curves.

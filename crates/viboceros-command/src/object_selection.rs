@@ -93,6 +93,22 @@ pub enum ObjectSelectionWorkflow {
     ConfirmAfterSelection,
     /// A single Yes/No answer executes immediately; Enter uses its current value.
     ChooseBooleanAfterSelection,
+    /// A command-owned Yes/No question, asked only when the selected geometry
+    /// requires it. Keyboard Escape may have a distinct, observed answer;
+    /// replacing/cancelling the command never implicitly accepts the question.
+    QuestionAfterSelection {
+        message: &'static str,
+        escape_answer: Option<bool>,
+    },
+}
+
+impl ObjectSelectionWorkflow {
+    pub fn answers_immediately(self) -> bool {
+        matches!(
+            self,
+            Self::ChooseBooleanAfterSelection | Self::QuestionAfterSelection { .. }
+        )
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -108,7 +124,7 @@ pub struct ObjectSelectionPrompt {
 impl ObjectSelectionPrompt {
     /// Stage an entire input before accepting any option, including duplicates.
     pub fn update_options(&mut self, input: &str) -> Result<(), CommandError> {
-        if self.workflow == ObjectSelectionWorkflow::ChooseBooleanAfterSelection
+        if self.workflow.answers_immediately()
             && let [option] = self.options.as_mut_slice()
             && let Some(value) = parse_yes_no(input.trim())
         {

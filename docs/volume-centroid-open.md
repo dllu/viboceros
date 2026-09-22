@@ -2,9 +2,10 @@
 
 [VolumeCentroid](commands/volume-centroid.md) · [Mass integration](mass-properties.md)
 
-Native `VolumeCentroid` still requires solid, consistently oriented input.
-This audit captures Rhino's actual command and warning behavior before extending
-that contract. No open-volume native compatibility or performance is claimed.
+Native `VolumeCentroid` now asks before calculating open-object collections.
+This audit retains the Rhino observations that motivated that workflow, including
+real counterexamples. Open pieces are meaningful as volume boundaries only when
+they jointly enclose a consistently oriented region. No performance parity is claimed.
 
 ## Dialog and owned input
 
@@ -64,15 +65,59 @@ history, and actual dialog-input diagnostics. Captures use Rhino
   API volumes were zero or numerical residuals. This demonstrates why summing
   independently centered open-object properties is insufficient.
 
-These results constrain a future shared-reference integration/confirmation
-workflow, but do not establish a general open-surface reference-frame policy.
-No tolerance was enlarged to hide the API/command differences. Both the Python
-replay entry point and the native Rust runner reject confirmation fixtures
-explicitly until native support exists; none of these 42 cases is counted among
-the existing 26 closed-command matches. See [provenance](volume-centroid-open-provenance.json).
+See [capture provenance](volume-centroid-open-provenance.json). The original
+capture-only commit rejected native confirmation replay; the kernel and command
+now implement that workflow, without changing the retained observations.
+
+The [full native replay](volume-centroid-open-comparison.json) matches **38/42**
+cases at absolute `1e-9`, relative zero. All 42 warning-presence, completion,
+selection and marker-attribute checks agree; four isolated-surface marker
+coordinates differ. The maximum coordinate error among matching cases is
+`4.45e-16`. These results are separate from the unchanged 26 closed-command matches.
+
+## Native boundary integration
+
+`VolumeBoundary` gives meshes, B-reps and natural NURBS surfaces a shared kernel
+interface. `VolumeMassProperties::from_boundaries` chooses the center of their
+combined bounds; `volume_flux(base, ...)` accepts an explicit common reference.
+For a surface point `S`, oriented normal density `n`, and `q = S - base`:
+
+```text
+V       = integral(q · n) / 3
+M_world = base * V + integral(q * (q · n)) / 4
+```
+
+These cone-flux densities integrate a genuinely enclosing oriented collection
+independently of the reference, and are well-defined but reference-dependent
+for an isolated open piece. Mesh contributions are exact for stored binary64
+coordinates and the selected binary64 base. Expanding determinants before
+accumulation preserves cancellation without rounding `vertex - base`, even for
+overflowing differences. B-rep contributions retain bounded quadrature on exact
+surface/trim geometry. Strict per-solid mass APIs still reject open/nonoriented
+inputs; explicit boundary APIs do not pretend to certify closure.
+
+The isolated bilinear patch is a known command mismatch: native cone integration
+at base `(2,1.5,1)` gives `V=-2` and centroid `(2,1.5,2/3)` from independent
+polynomial integrals. Rhino's command produces `(5/3,5/4,1)`, and its raw API has
+a different, near-zero-volume result. No targets are copied and no epsilon is
+enlarged to make these conventions agree. All cases are replayed, including the
+counterexamples; the existing 26 closed-command controls remain a separate scope.
+
+UI tests distinguish the warning's Escape-as-Yes from cancelling selection or
+replacing a pending command. No preserves preselection but clears postselection,
+without changing geometry or history. Yes creates one undoable marker. The
+scalar `Volume` command still has its older closed-input restriction; this
+workflow currently belongs to `VolumeCentroid`.
+
+McNeel's [public mesh mass-properties documentation](https://mcneel.github.io/rhino-cpp-api-docs/api/cpp/class_o_n___mesh.html)
+also specifies a common base point for separately represented boundary pieces.
 
 ```sh
 python3 -m tools.rhino_oracle.references.volume_centroid_confirmation > /tmp/volume-confirmation.json
 tools/rhino_oracle/run_headless.sh rhino /tmp/volume-confirmation.json --timeout 300
 python3 -m unittest tools.rhino_oracle.test_volume_confirmation
+# Full native comparison, retaining isolated-surface differences (exit 1).
+python3 -m tools.rhino_oracle.volume_centroid_replay \
+  tools/rhino_oracle/fixtures/volume_centroid_confirmation.json \
+  tools/rhino_oracle/observations/volume_centroid_confirmation.json
 ```

@@ -17146,6 +17146,14 @@ pub enum CommandError {
     #[error("Volume requires every selected B-rep to be a closed, oriented solid")]
     OpenBrepVolume,
 
+    #[error(
+        "open objects only define volume when they jointly enclose it; confirm with Continue=Yes or decline with Continue=No"
+    )]
+    OpenVolumeConfirmationRequired,
+
+    #[error("operation declined")]
+    OperationDeclined,
+
     #[error("Divide supports selected lines, analytic curves, polylines, and NURBS curves only")]
     UnsupportedDivideGeometry,
 
