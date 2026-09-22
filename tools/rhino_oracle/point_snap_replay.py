@@ -44,6 +44,16 @@ def prepare(request, observed):
     for operation,row in zip(request["operations"],observed["results"]):
         value = row["value"]
         if not isinstance(value,dict): raise OracleProtocolError("missing point observation")
+        delay = operation.get("input_settle_ms",0)
+        motion = value.get("input_motion")
+        if delay:
+            if (not isinstance(motion,dict) or set(motion) != {"requested_settle_ms","motion_to_click_ms","detour_pixels"}
+                    or type(motion["requested_settle_ms"]) is not int or motion["requested_settle_ms"] != delay
+                    or type(motion["detour_pixels"]) is not int or motion["detour_pixels"] != 1
+                    or not probe.finite(motion["motion_to_click_ms"]) or motion["motion_to_click_ms"] < delay):
+                raise OracleProtocolError("unverified owned point input settling")
+        elif motion is not None:
+            raise OracleProtocolError("unexpected owned point input settling")
         frame = value.get("frame")
         camera = camera_input(operation,frame)
         kind,source,point = [value.get(key) for key in ("kind","source","point")]

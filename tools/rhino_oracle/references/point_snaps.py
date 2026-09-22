@@ -11,9 +11,7 @@ def reference_target(operation, frame):
     mesh = source["type"] == "mesh"
     if mesh and not operation["snap_to_meshes"]: return None
     if mesh:
-        vertices = source["vertices"]
-        edges = sorted(set(tuple(sorted((tuple(vertices[face[i]]),tuple(vertices[face[(i+1)%len(face)]]))))
-                           for face in source["faces"] for i in range(len(face))))
+        edges = mesh_near.wires(source)
     else: edges = [(source["start"],source["end"])]
     radius = operation.get("capture_radius",12)
     modes = operation["persistent_snaps"]

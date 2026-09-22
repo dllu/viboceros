@@ -14,8 +14,7 @@ def reference_target(item, frame, mesh_weighted=False):
     modes = item["persistent_snaps"] if pick["osnap"] == "Persistent" else [pick["osnap"]]
     source = item["sources"][1]
     vertices = source["vertices"]
-    wires = sorted(set(tuple(sorted((tuple(vertices[face[i]]), tuple(vertices[face[(i+1)%len(face)]]))))
-                       for face in source["faces"] for i in range(len(face))))
+    wires = mesh_near.wires(source)
     if "Mid" in modes:
         mids = [([(x+y)/2. for x,y in zip(a,b)]) for a,b in wires]
         mids = [p for p in mids if projected_near.in_square(frame,p,12.)]

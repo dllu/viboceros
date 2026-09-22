@@ -24,12 +24,14 @@ def point(value):
 
 def validate(operation):
     required = set(("op", "id", "sources", "view", "bounds", "aim", "offset", "persistent_snaps", "snap_to_meshes"))
-    if (not isinstance(operation, dict) or set(operation)-set(("capture_radius","pick_diagnostics")) != required
+    if (not isinstance(operation, dict) or set(operation)-set(("capture_radius","pick_diagnostics","input_settle_ms")) != required
             or operation["op"] != "point_snap"):
         raise ValueError("invalid point snap fields")
     radius = operation.get("capture_radius",12)
     if type(radius) is not int or not 1 <= radius <= 64: raise ValueError("invalid snap aperture")
     if type(operation.get("pick_diagnostics",False)) is not bool: raise ValueError("invalid picking diagnostic switch")
+    settle = operation.get("input_settle_ms",0)
+    if type(settle) is not int or not 0 <= settle <= 1000: raise ValueError("invalid point input settling interval")
     name = operation["id"]
     if not isinstance(name, (str, type(u""))) or re.match(r"^[A-Za-z0-9_.-]{1,100}\Z", name) is None:
         raise ValueError("invalid point snap id")

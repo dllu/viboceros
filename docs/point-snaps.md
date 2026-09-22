@@ -50,13 +50,14 @@ API. General Rhino mesh wire ranking remains unresolved, not only at corners.
 
 ## Measured per-wire calculation
 
-Scope update: the [square-aperture follow-up](snap-capture-box.md) retains eight
-short-wire endpoint counterexamples to this calculation, in addition to the
-separate wire-selection differences. The formula below remains the implemented
-model, not a universal Rhino per-wire rule.
+The [square-aperture follow-up](snap-capture-box.md) exposed eight short-wire
+counterexamples; the [endpoint follow-up](mesh-snap-endpoints.md) resolves those
+with a both-endpoints-inside branch. Competing-wire selection remains unresolved.
 
-Curve Near minimizes ordinary squared screen distance. Mesh Near uses that same
-calculation when a wire endpoint is inside the **square** capture aperture; an
+Curve Near minimizes ordinary squared screen distance. Mesh Near chooses the
+screen-nearest endpoint when both original endpoints are inside the **square**
+aperture, retaining the first endpoint on exact distance ties. With exactly one
+endpoint inside, it uses ordinary squared screen distance; an
 endpoint outside the aperture's circle can still trigger this branch.
 Otherwise, the measured mesh target uses a different endpoint-depth weighting.
 

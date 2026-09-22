@@ -79,6 +79,13 @@ class IdlePicker:
         self.ready = {}
         self.aborted = set()
 
+    def send_input(self, name, x, y, window):
+        # X11 processes the warp before the following click. Waiting for
+        # a motion event can stall repeated picks at the same location.
+        subprocess.run(["xdotool", "windowactivate", "--sync", window,
+                        "mousemove", x, y, "click", "1"], check=True, timeout=10)
+        return True
+
     def __call__(self, job, owned_pids):
         progress = _read_optional_text(job / "worker-progress.log")
         aborts = re.findall(r"^PICK_ABORT ([A-Za-z0-9_.-]{1,100})$", progress, re.MULTILINE)
@@ -106,10 +113,7 @@ class IdlePicker:
             if window is None:
                 continue
             try:
-                # X11 processes the warp before the following click. Waiting for
-                # a motion event can stall repeated picks at the same location.
-                subprocess.run(["xdotool", "windowactivate", "--sync", window,
-                                "mousemove", x, y, "click", "1"], check=True, timeout=10)
+                if not self.send_input(name,x,y,window): continue
             except subprocess.SubprocessError as error:
                 progress = _read_optional_text(job / "worker-progress.log")[-2000:]
                 raise OracleError("mouse input failed for %s in owned window %s: %s\n%s" %

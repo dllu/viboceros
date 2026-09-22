@@ -3662,6 +3662,7 @@ dependencies = [
 name = "viboceros-drafting"
 version = "0.1.0"
 dependencies = [
+ "serde_json",
  "thiserror 2.0.20",
  "viboceros-document",
  "viboceros-geometry",

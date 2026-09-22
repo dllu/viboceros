@@ -198,10 +198,8 @@ class OracleClient:
         worker_source = Path(__file__).with_name("rhino_worker.py")
         interaction = None
         if any(op.get("op") == "point_snap" for op in request.get("operations", [])):
-            from .group_picking import IdlePicker
-            from .point_snap_probe import validate_request
-            validate_request(request)
-            interaction = IdlePicker()
+            from .point_snap_input import PointSnapPicker
+            interaction = PointSnapPicker(request)
         if any(op.get("op") in ("merge_edge_command", "split_edge_command") and op.get("pick") == "mouse"
                for op in request.get("operations", [])):
             from .group_picking import IdlePicker
@@ -345,6 +343,8 @@ class OracleClient:
                     _close_rhino_window(owned_window, self.repo_root)
                 _terminate_owned_rhino_processes(owned_pids, windows_worker)
         _validate_response(response, "rhino")
+        if any(op.get("op") == "point_snap" for op in request.get("operations", [])):
+            interaction.record_diagnostics(response)
         return response
 
     def compare(

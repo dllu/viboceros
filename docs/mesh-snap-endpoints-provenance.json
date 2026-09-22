@@ -1,0 +1,42 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "retained_getpoint_observations": 272,
+  "captures": 196,
+  "non_admissions": 76,
+  "order_controls": 80,
+  "timing_controls": 120,
+  "edge_on_controls": 72,
+  "per_line_picking_checks": 520,
+  "per_line_picking_hits": 300,
+  "per_line_picking_misses": 220,
+  "per_line_screen_ties": 36,
+  "unchanged_timing_repetitions": 120,
+  "native_full_matches": {
+    "mesh_snap_endpoints": 59,
+    "mesh_snap_endpoint_settling": 93,
+    "mesh_snap_edge_on": 58,
+    "snap_capture_box": 123
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/mesh_snap_endpoints.json": "c7ac5c34ed63a7c0afe18d94894aeb1bfdeff7bfea187113e7d486dff4d8a11b",
+    "tools/rhino_oracle/observations/mesh_snap_endpoints.json": "9de299adf85d46c804cfb86e3483b60eb71b966ce6fe5116192b924e1f4a9bc5",
+    "tools/rhino_oracle/fixtures/mesh_snap_endpoint_settling.json": "29b072ffdc7c0395c038340236e69fe3c9c6cd01448a91629ce24790a1c4ec92",
+    "tools/rhino_oracle/observations/mesh_snap_endpoint_settling.json": "0f2a05637e53038ec6ac798b513ee13f3e2de09e3b58cf6791278b1222d6e724",
+    "tools/rhino_oracle/fixtures/mesh_snap_edge_on.json": "924cfde532f2542e0ebd5676fa195291d10c7654cbd3a3ee1600a925cca1e440",
+    "tools/rhino_oracle/observations/mesh_snap_edge_on.json": "a08197df416f49066f5409025494dc532d58dca51413b1d489de7d1685441afd"
+  },
+  "raw_response_sha256": {
+    "mesh_snap_endpoints": "dd8c0e0566f723c72a2311f03694c368bc44579ce427ea933b1ea1644371bcb4",
+    "mesh_snap_endpoint_settling": "ccd48d2f4b7de44c16416ef0ba4fa42aaf5bed13aa2ee129b452931e9b39672b",
+    "mesh_snap_edge_on": "ed69f07068f3c2e593bf6c4dd321682d005fe70711768a376886fce956cbe03e"
+  },
+  "notes": [
+    "All three captures used newly owned private-Xvfb Rhino sessions and public APIs; no proprietary implementation was inspected.",
+    "All 272 results are retained without altering values, including signed zeros and host input_motion metadata on settled controls.",
+    "The per-wire correction selects the screen-nearest endpoint when both original endpoints are inside the square aperture; exact screen-distance ties retain the first endpoint, independent of endpoint depths in the edge-on controls.",
+    "All 120 input timing controls exactly repeat the original point, kind, owner, component, calibrated camera and public picking diagnostics. Requested 250/750 ms settling is checked against recorded host intervals and does not enter native inputs.",
+    "All 520 public per-line picks, including 300 captures and 36 exact ties, agree with the independent reference and native tests. This is not whole-mesh picking or wire-selection parity.",
+    "The 630-case generated mathematical CSV changes 96 expected targets after correcting the inferred endpoint model. Its original digest is retained separately. Original Rhino observations and 101-case target fixtures remain unchanged.",
+    "Whole-mesh selection remains unresolved. Real replay retains parity-failure status at absolute epsilon 1e-9, relative epsilon zero. No history, general occlusion/clipping or performance parity is claimed."
+  ]
+}

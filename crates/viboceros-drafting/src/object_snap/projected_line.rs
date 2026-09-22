@@ -4,6 +4,8 @@ use super::SnapMetric;
 use viboceros_geometry::{Point3, Real};
 
 #[cfg(test)]
+mod observed_tests;
+#[cfg(test)]
 mod tests;
 
 pub(super) enum Capture {
@@ -75,8 +77,9 @@ pub(super) fn capture(a: Point3, b: Point3, metric: &impl SnapMetric) -> Capture
 }
 
 /// Mesh Near uses measured endpoint-depth weighting when neither endpoint is
-/// inside the square snap aperture. Curve Near remains screen-Euclidean.
-/// This does not yet reproduce Rhino's short-wire endpoint preference.
+/// inside the square snap aperture. Both inside selects the screen-nearest
+/// endpoint; exactly one inside uses ordinary screen proximity. Curve Near
+/// remains screen-Euclidean independently of endpoint admission.
 pub(super) fn capture_mesh(a: Point3, b: Point3, metric: &impl SnapMetric) -> Capture {
     capture_with_policy(a, b, metric, true)
 }
@@ -100,10 +103,17 @@ fn capture_with_policy(a: Point3, b: Point3, metric: &impl SnapMetric, mesh: boo
     {
         return Capture::Miss;
     }
-    let endpoint_in_box = [segment.pa, segment.pb]
-        .iter()
-        .any(|p| p.iter().all(|x| x.abs() <= radius));
-    let point = if mesh && !metric.is_affine() && !endpoint_in_box {
+    let inside = [segment.pa, segment.pb].map(|p| p.iter().all(|x| x.abs() <= radius));
+    if mesh && segment.a == a && segment.b == b && inside.into_iter().all(|v| v) {
+        // Retained GetPoint and public per-line picking controls distinguish
+        // this endpoint rule from the screen-nearest interior point. Exact
+        // screen ties retain the first endpoint, even at different depths.
+        // A synthesized clipping-plane point is not an original wire endpoint.
+        let da = segment.pa[0].hypot(segment.pa[1]);
+        let db = segment.pb[0].hypot(segment.pb[1]);
+        return Capture::Point(if db < da { segment.b } else { segment.a });
+    }
+    let point = if mesh && !metric.is_affine() && !inside.into_iter().any(|v| v) {
         visible_mesh_line(segment, metric)
     } else {
         visible_line(segment.a, segment.b, segment.pa, segment.pb, metric)

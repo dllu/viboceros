@@ -175,12 +175,12 @@ fn retained_differences(input: &str, observations: &str) -> Vec<String> {
 }
 
 #[test]
-fn square_aperture_replays_all_128_admissions_but_preserves_13_mesh_target_differences() {
+fn square_aperture_replays_all_128_admissions_but_preserves_five_mesh_selection_differences() {
     let differences = retained_differences(
         include_str!("../../../../tools/rhino_oracle/fixtures/snap_capture_box.json"),
         include_str!("../../../../tools/rhino_oracle/observations/snap_capture_box.json"),
     );
-    let mut expected: Vec<String> = [
+    let expected: Vec<String> = [
         "box-top-mesh-near--10-10",
         "box-perspective-mesh-near--8--8",
         "box-perspective-mesh-near--10--10",
@@ -190,11 +190,6 @@ fn square_aperture_replays_all_128_admissions_but_preserves_13_mesh_target_diffe
     .into_iter()
     .map(str::to_owned)
     .collect();
-    for rotation in 0..4 {
-        for reverse in 0..2 {
-            expected.push(format!("slanted-1-{rotation}-{reverse}-r16"));
-        }
-    }
     assert_eq!(differences, expected);
 }
 
@@ -216,4 +211,20 @@ fn all_48_separate_sources_match_and_combined_mesh_selection_differences_remain(
             "sources-perspective-combined-1-10",
         ]
     );
+}
+
+#[test]
+fn short_wire_and_edge_on_replay_fix_endpoints_without_hiding_selection_mismatches() {
+    let endpoints = retained_differences(
+        include_str!("../../../../tools/rhino_oracle/fixtures/mesh_snap_endpoints.json"),
+        include_str!("../../../../tools/rhino_oracle/observations/mesh_snap_endpoints.json"),
+    );
+    assert_eq!(endpoints.len(), 21);
+    assert!(endpoints.iter().all(|id| !id.contains("line")));
+    let triangles = retained_differences(
+        include_str!("../../../../tools/rhino_oracle/fixtures/mesh_snap_edge_on.json"),
+        include_str!("../../../../tools/rhino_oracle/observations/mesh_snap_edge_on.json"),
+    );
+    assert_eq!(triangles.len(), 14);
+    assert!(triangles.iter().all(|id| id.ends_with("r16")));
 }

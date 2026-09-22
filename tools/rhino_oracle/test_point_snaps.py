@@ -149,6 +149,7 @@ class PointSnapTests(unittest.TestCase):
                         dict(offset=[True,0]), dict(snap_to_meshes=None), dict(snap_to_meshes=1),
                         dict(capture_radius=0), dict(capture_radius=65), dict(capture_radius=True), dict(capture_radius=12.5),
                         dict(pick_diagnostics=None), dict(pick_diagnostics=1),
+                        dict(input_settle_ms=True), dict(input_settle_ms=-1), dict(input_settle_ms=1001), dict(input_settle_ms=0.5),
                         dict(persistent_snaps=["Near","Near"]), dict(persistent_snaps=[{}]),
                         dict(persistent_snaps=["Near _Delete"]), dict(persistent_snaps=None),
                         dict(bounds=[[2,2,2],[1,1,1]]), dict(view="Perspective _Delete"),

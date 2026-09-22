@@ -41,14 +41,18 @@ minimizing Chebyshev distance would incorrectly admit them. Two rotated line
 controls capture a nearest point about 12.101 pixels away inside that square.
 
 Native replay agrees on **all 128 admission decisions and snap kinds/owners**,
-and on 115 full 3D targets including non-admissions, at componentwise absolute
-`1e-9` with zero relative epsilon. Thirteen genuine mesh target differences remain:
+and, after the [endpoint follow-up](mesh-snap-endpoints.md), on 123 full 3D targets
+including non-admissions, at componentwise absolute `1e-9` with zero relative
+epsilon. The initial checkpoint had 115 matches and thirteen differences:
 
 - Five corner cases choose a different wire/target from minimum screen distance.
 - Eight short-wire cases at half-width 16 return a wire endpoint rather than the
   predicted interior point **on the same reported topology edge**. These are new
   counterexamples to the per-wire calculation, not merely wire-selection issues.
   All four rotations and both endpoint orientations retain them.
+
+Those eight short-wire cases now match: two endpoints inside the aperture select
+the screen-nearest endpoint. The five competing-wire differences remain unresolved.
 
 The [72 representation inputs](../tools/rhino_oracle/fixtures/mesh_snap_sources.json)
 and [observations](../tools/rhino_oracle/observations/mesh_snap_sources.json) compare
@@ -58,9 +62,9 @@ cases match native point, kind and owner. Seven of the 24 combined-mesh cases
 differ; overall replay is 65/72. This localizes those competition discrepancies
 to selection inside one mesh rather than the between-object ranking rule.
 
-Across the two new corpora, 60 of 68 captured mesh Near targets agree with the
-independent per-wire formula on the observed component. The eight short-wire
-counterexamples are explicitly asserted and preserved. The earlier 101-case
+At the initial checkpoint, 60 of 68 captured mesh Near targets agreed with the
+independent per-wire formula on the observed component; all 68 now agree after
+the endpoint correction. All original observations are preserved. The earlier 101-case
 and 84-case corpora remain unchanged, as do their 98/101 and 35/84 native matches.
 Tests that preserve known differences are not Rhino compatibility passes.
 
@@ -89,7 +93,7 @@ still a bounded search, not a certified general global minimizer. These probes
 do not establish full mesh endpoint/selection parity, occlusion, arbitrary-scene
 compatibility, model-history behavior, or a Rhino performance advantage.
 
-Validation checkpoint: 3,152 release workspace tests pass (29 ignored), along
+Validation checkpoint at `2949124`: 3,152 release workspace tests pass (29 ignored), along
 with all 328 Python tests, warning-denied Clippy/rustdoc, formatting and whitespace
 checks. All four real replay CLI runs retain their documented parity-failure
 status and counts; no epsilon was widened to obtain these results.

@@ -1,6 +1,99 @@
 use super::*;
 
 #[test]
+fn both_mesh_endpoints_inside_select_the_nearer_endpoint_not_curve_near() {
+    use super::super::ProjectedSnapMetric;
+    for scale in [1e-200, 1., 1e200] {
+        let p = |x, y| Point3::try_new(x * scale, y * scale, 1.).unwrap();
+        let a = p(-0.75, 0.5);
+        let b = p(0.5, 0.5);
+        let metric = ProjectedSnapMetric {
+            cursor: [0.; 2],
+            capture_radius: scale,
+            project: |p: Point3| Some([p.x(), p.y()]),
+        };
+        for (a, b) in [(a, b), (b, a)] {
+            let Capture::Point(mesh) = capture_mesh(a, b, &metric) else {
+                panic!()
+            };
+            assert_eq!(mesh, p(0.5, 0.5));
+            let Capture::Point(curve) = capture(a, b, &metric) else {
+                panic!()
+            };
+            assert!((curve.x() / scale).abs() < 1e-14);
+            assert_eq!(curve.y(), 0.5 * scale);
+        }
+    }
+}
+
+#[test]
+fn inside_mesh_endpoint_ties_retain_wire_orientation_even_at_different_depths() {
+    use super::super::ProjectedSnapMetric;
+    let p = |x, z| Point3::try_new(x, 0.5, z).unwrap();
+    let metric = ProjectedSnapMetric {
+        cursor: [0.; 2],
+        capture_radius: 1.,
+        project: |p: Point3| Some([p.x(), p.y()]),
+    };
+    for (a, b) in [
+        (p(-0.5, 1.), p(0.5, 9.)),
+        (p(0.5, 9.), p(-0.5, 1.)),
+        (p(0.5, 1.), p(0.5, 9.)),
+        (p(0.5, 9.), p(0.5, 1.)),
+    ] {
+        let Capture::Point(point) = capture_mesh(a, b, &metric) else {
+            panic!()
+        };
+        assert_eq!(point, a);
+    }
+}
+
+#[test]
+fn clipping_does_not_turn_an_interior_point_into_a_mesh_endpoint() {
+    use super::super::ProjectedSnapMetric;
+    let a = Point3::try_new(-2., 0.5, 0.).unwrap();
+    let b = Point3::try_new(0.5, 0.5, 1.).unwrap();
+    let metric = ProjectedSnapMetric {
+        cursor: [0.; 2],
+        capture_radius: 1.,
+        project: |p: Point3| (p.z() >= 0.5).then_some([p.x(), p.y()]),
+    };
+    for (a, b) in [(a, b), (b, a)] {
+        let Capture::Point(point) = capture_mesh(a, b, &metric) else {
+            panic!()
+        };
+        assert!(
+            point
+                .distance_to(Point3::try_new(0., 0.5, 0.8).unwrap())
+                .unwrap()
+                < 1e-14
+        );
+    }
+}
+
+#[test]
+fn one_or_no_inside_endpoint_still_uses_the_interior_wire_target() {
+    use super::super::ProjectedSnapMetric;
+    let p = |x| Point3::try_new(x, 0.5, 1.).unwrap();
+    let metric = ProjectedSnapMetric {
+        cursor: [0.; 2],
+        capture_radius: 1.,
+        project: |p: Point3| Some([p.x(), p.y()]),
+    };
+    for (a, b) in [
+        (p(-0.5), p(2.)),
+        (p(2.), p(-0.5)),
+        (p(-2.), p(2.)),
+        (p(2.), p(-2.)),
+    ] {
+        let Capture::Point(point) = capture_mesh(a, b, &metric) else {
+            panic!()
+        };
+        assert!(point.distance_to(p(0.)).unwrap() < 1e-14);
+    }
+}
+
+#[test]
 fn mesh_depth_weighting_matches_independent_fraction_reference() {
     use super::super::ProjectedSnapMetric;
     let mut count = 0;

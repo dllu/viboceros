@@ -2,22 +2,42 @@
 
 Away from endpoint capture boxes, measured Rhino targets minimize
 |Hxy(t) - cursor * W(t)|² / W(1-t)² on each visible wire. Curve Near instead
-divides by W(t)². A wire endpoint inside the square aperture selects the
-ordinary screen-distance calculation. This reference
+divides by W(t)². One wire endpoint inside the square aperture selects the
+ordinary screen-distance calculation. With both endpoints inside, the nearer
+screen endpoint wins, with the first endpoint retaining exact distance ties.
+This reference
 implements the mathematical hypothesis; it does not read observed target values.
-The retained snap_capture_box short-wire cases contradict this hypothesis's
-endpoint behavior. Those differences remain explicit, not fitted away here.
+Competing-wire selection is a separate, unresolved question.
 """
 from fractions import Fraction as F
 import itertools
 from .projected_lines import homogeneous, interpolate, closest as screen_closest
 
 
+def wires(source):
+    """Exact-location topology in first-source order, not coordinate sorting."""
+    locations,vertices,indices = {},[],[]
+    for point in source["vertices"]:
+        key = tuple(point)
+        if key not in locations:
+            locations[key] = len(vertices)
+            vertices.append(point)
+        indices.append(locations[key])
+    edges = {tuple(sorted((indices[face[i]],indices[face[(i+1)%len(face)]])))
+             for face in source["faces"] for i in range(len(face))}
+    return [[vertices[a],vertices[b]] for a,b in sorted(edges) if a != b]
+
+
 def closest(matrix, a, b, cursor, radius=12):
     ha, hb = homogeneous(matrix, a), homogeneous(matrix, b)
     wa, wb = ha[2], hb[2]
     if min(wa, wb) <= 0: raise ValueError("mesh reference requires fully visible wires")
-    if any(all(abs(h[i]/h[2]-F(cursor[i])) <= radius for i in range(2)) for h in (ha,hb)):
+    inside = [all(abs(h[i]/h[2]-F(cursor[i])) <= radius for i in range(2)) for h in (ha,hb)]
+    if all(inside):
+        distances = [sum((h[i]/h[2]-F(cursor[i]))**2 for i in range(2)) for h in (ha,hb)]
+        index = int(distances[1] < distances[0])
+        return list(map(F,(a,b)[index])),distances[index]
+    if any(inside):
         return screen_closest(matrix,a,b,cursor,min(wa,wb)/2)
     # pa*wa² and pb*wb² are homogeneous cursor-relative X/Y times
     # their own endpoint depth.
