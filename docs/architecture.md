@@ -292,6 +292,12 @@ exact NURBS boundaries and adaptive quadrature, including nonplanar faces and ho
 [Boundary validation](brep-validation.md) in `brep/validate` checks shared topology
 and bidirectional edge/trim correspondence; matching endpoints alone do not
 establish a valid face boundary.
+`brep/components` exposes deterministic shared-edge face components, also used
+by automatic B-rep joining. Union/find avoids constructing per-face adjacency
+lists or copying geometry. Vertex-only contact and geometric coincidence do not
+connect otherwise independent components; this is not a spatial containment or
+solid-orientation classifier. Those policies are tracked in the
+[orientation audit](orientation-audit.md).
 The [morph assembler](brep-morphing.md) in `brep/morph` retains shared topology
 and exact UV trims. `brep/trim_image` supplies composed-curve correspondence to
 validation and [B-rep meshing](brep-meshing.md). `brep/tessellation` separates

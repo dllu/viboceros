@@ -16,6 +16,7 @@ use crate::{
 mod borders;
 mod cap;
 mod combine;
+mod components;
 mod edge_split;
 mod face_split;
 mod incidence;

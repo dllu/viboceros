@@ -7,38 +7,12 @@ pub(super) fn collect(
     sources: &[usize],
     tolerance: Tolerance,
 ) -> Result<Vec<BrepJoinComponent>, GeometryError> {
-    let mut first: Vec<Option<usize>> = vec![None; joined.edges.len()];
-    let mut adjacent = vec![Vec::new(); joined.faces.len()];
-    for usage in joined.trim_uses() {
-        if let Some(edge) = usage.trim.edge {
-            if let Some(face) = first[edge] {
-                adjacent[usage.face].push(face);
-                adjacent[face].push(usage.face);
-            } else {
-                first[edge] = Some(usage.face);
-            }
-        }
-    }
+    let components = joined.edge_connected_face_components();
     let mut membership = vec![usize::MAX; joined.faces.len()];
-    let mut components = Vec::new();
-    for seed in 0..joined.faces.len() {
-        if membership[seed] != usize::MAX {
-            continue;
+    for (component, faces) in components.iter().enumerate() {
+        for &face in faces {
+            membership[face] = component;
         }
-        let mut pending = vec![seed];
-        let mut faces = Vec::new();
-        membership[seed] = components.len();
-        while let Some(face) = pending.pop() {
-            faces.push(face);
-            for &next in &adjacent[face] {
-                if membership[next] == usize::MAX {
-                    membership[next] = components.len();
-                    pending.push(next);
-                }
-            }
-        }
-        faces.sort_unstable();
-        components.push(faces);
     }
     let mut counts = vec![0; components.len()];
     let mut edge_face = vec![0; before.edges.len()];
