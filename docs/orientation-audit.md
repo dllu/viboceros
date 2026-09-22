@@ -19,7 +19,7 @@ Observed single-shell behavior:
 - Closed boxes and spheres are oriented outward on insertion and replacement.
 - Open B-reps preserve their input sense on insertion and accept reversed replacements.
 - Meshes preserve input winding, including inward closed meshes.
-- `Flip` skips closed B-reps and points but flips open B-reps, curves, and meshes.
+- `Flip` skips closed B-rep solids and points but flips open B-reps, curves, and meshes.
 - Preselected objects stay selected. Postselected flipped objects are deselected;
   skipped objects stay selected, even within a mixed group.
 
@@ -44,6 +44,63 @@ tools/rhino_oracle/run_headless.sh rhino \
 python3 -m unittest tools.rhino_oracle.test_orientation
 ```
 
+## Compound shells and inconsistent face orientation
+
+The follow-up retains [20 compound requests](../tools/rhino_oracle/fixtures/orientation_compounds.json)
+and their [complete observations](../tools/rhino_oracle/observations/orientation_compounds.json).
+It varies disconnected and nested boxes, shell senses, relative size, and face
+table order. The scalar volume is checked against the independent exact box
+integral `(2r)^3`, summed with each source shell's sign.
+
+| Input | Reported solid orientation | Exact signed volume | Insertion |
+| --- | --- | ---: | --- |
+| Disjoint small outward box, larger inward box | Outward | −56 | Unchanged |
+| Reversed nested cavity | Inward | −504 | All face senses flipped |
+| Coincident outward then inward boxes | Inward | 0 | All face senses flipped |
+| Coincident inward then outward boxes | Outward | 0 | Unchanged |
+
+The table uses analytic volumes, not rounded or rewritten observations. For
+example, the first raw volume is `-56.000000000000014`. A global negative-volume
+test would incorrectly reverse that source. The zero-volume coincident cases
+also show ordering-sensitive classification; the noncoincident cases retain
+their orientation classification when the two source tables are exchanged.
+In all 20 cases, document replacement of a reversed duplicate restores the
+inserted sense, and `Flip` leaves the closed solid selected and unchanged.
+
+A separate [16-case face-sense request](../tools/rhino_oracle/fixtures/orientation_faces.json)
+and [clean capture](../tools/rhino_oracle/observations/orientation_faces.json) toggle
+one or three faces of a box, with global reversal, both insertion overloads,
+and pre/postselection. Every edge still has two uses, but oriented incidence is
+inconsistent. Rhino reports `IsSolid=False`, preserves the input on insertion,
+and accepts both a reversed replacement and an actual `Flip`. It does not repair
+the inconsistent sense. This corrected the native command's guard from
+`is_closed()` to `is_solid()`, with a regression test that failed before the fix.
+The [public orientation enum](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/T_Rhino_Geometry_BrepSolidOrientation.htm)
+distinguishes non-solids from inward, outward, and unknown solid orientations.
+
+The [first face capture](../tools/rhino_oracle/observations/orientation_faces_startup_recovery.json)
+is retained separately. Its first history contains queued startup-recovery
+commands after `Flip`; an apparently idle window and missing progress file did
+not establish that startup had failed. The batch was recaptured without manual
+input. Tests reject the contaminated history, compare the two sets of geometry,
+and use only the clean batch as primary evidence. The earlier 300-second compound
+attempt timed out; the completed 20-case run had an 1800-second limit. These
+harness durations are not kernel benchmarks.
+
+The [follow-up provenance](orientation-followup-provenance.json) records hashes
+before and after lossless JSON compaction. Reproduce with:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino \
+  tools/rhino_oracle/fixtures/orientation_compounds.json --timeout 2400
+tools/rhino_oracle/run_headless.sh rhino \
+  tools/rhino_oracle/fixtures/orientation_faces.json --timeout 900
+python3 -m unittest tools.rhino_oracle.test_orientation_followup
+```
+
 Document-wide normalization remains separate from [`Flip`](commands/flip.md).
-Multi-shell solids, cavities, and coincident/opposed shells require separate
-evidence; a volume-sign shortcut must not be inferred from a single inward box.
+The counterexamples rule out a volume-sign shortcut; they do not establish a
+general spatial classification algorithm. The kernel's new shared-edge face
+component query preserves disconnected shells and supplies deterministic
+topology for that work. It is also used by automatic joining, replacing a
+duplicated adjacency traversal, but does not classify containment or orientation.

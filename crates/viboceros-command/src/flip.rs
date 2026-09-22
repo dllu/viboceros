@@ -88,9 +88,10 @@ fn flipped_geometry(
         }
         _ => return flipped_curve_or_mesh(geometry, tolerance),
     };
-    // This is command policy, not a restriction on the mathematical kernel:
-    // inward B-reps remain representable, and closed meshes can still flip.
-    Ok((!brep.is_closed()).then(|| Geometry::Brep(brep.reversed())))
+    // Closed topology alone does not make a solid: an inconsistently oriented
+    // closed B-rep is flippable. This is command policy, not a restriction on
+    // the kernel: inward solids remain representable and closed meshes can flip.
+    Ok((!brep.is_solid()).then(|| Geometry::Brep(brep.reversed())))
 }
 
 /// Shared with Dir's existing curve/mesh mode; Dir's surface menu has a separate

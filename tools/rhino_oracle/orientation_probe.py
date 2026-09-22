@@ -21,7 +21,7 @@ def validate(operation):
     if not isinstance(sources, list) or not 1 <= len(sources) <= 8:
         raise ValueError("orientation audit requires 1 to 8 sources")
     def source(spec, depth=0):
-        if (not isinstance(spec, dict) or set(spec) - {"reversed", "offset", "size", "parts"} != {"kind"}
+        if (not isinstance(spec, dict) or set(spec) - {"reversed", "offset", "size", "parts", "flipped_faces"} != {"kind"}
                 or type(spec.get("reversed", False)) is not bool or depth > 2):
             raise ValueError("invalid orientation source")
         if spec["kind"] not in ("box", "open_box", "plane", "sphere", "mesh", "line", "point", "compound"):
@@ -30,6 +30,13 @@ def validate(operation):
             raise ValueError("unsupported orientation size")
         if type(spec.get("offset", 0)) is not int or abs(spec.get("offset", 0)) > 100:
             raise ValueError("invalid orientation offset")
+        if "flipped_faces" in spec:
+            faces = spec["flipped_faces"]
+            count = {"box": 6, "open_box": 5}.get(spec["kind"], 0)
+            if (not isinstance(faces, list) or not 1 <= len(faces) <= count
+                    or any(type(i) is not int or not 0 <= i < count for i in faces)
+                    or len(set(faces)) != len(faces)):
+                raise ValueError("invalid individual face reversals")
         if spec["kind"] == "compound":
             if "size" in spec or "offset" in spec:
                 raise ValueError("compound placement belongs to its parts")
@@ -84,6 +91,8 @@ def run(operation, tolerance, host):
             for part in spec["parts"]: g.Append(source(part))
         owned.append(g)
         if spec.get("reversed", False): reverse(g)
+        for index in spec.get("flipped_faces", []):
+            g.Faces[index].OrientationIsReversed = not g.Faces[index].OrientationIsReversed
         if not g.IsValid: raise ValueError("invalid constructed orientation source")
         return g
     def geometry(g):

@@ -212,6 +212,70 @@ fn periodic_open_surface_is_not_mistaken_for_a_closed_solid() {
 }
 
 #[test]
+fn closed_but_inconsistently_oriented_breps_can_flip_and_keep_their_inconsistency() {
+    for (mask, reverse, post) in [1_u8, 7].into_iter().flat_map(|mask| {
+        [false, true]
+            .into_iter()
+            .flat_map(move |reverse| [false, true].map(|post| (mask, reverse, post)))
+    }) {
+        let mut doc = Document::default();
+        let b = solid();
+        let faces = b
+            .faces()
+            .iter()
+            .enumerate()
+            .map(|(i, f)| {
+                BrepFace::try_new(
+                    f.surface().clone(),
+                    (mask & (1 << i) != 0) ^ reverse,
+                    f.loops().to_vec(),
+                )
+                .unwrap()
+            })
+            .collect();
+        let b = Brep::try_new(
+            b.vertices().to_vec(),
+            b.edges().to_vec(),
+            faces,
+            doc.tolerance(),
+        )
+        .unwrap();
+        assert!(b.is_closed());
+        assert!(!b.is_solid());
+        let id = doc.add_geometry(Geometry::Brep(b.clone())).unwrap();
+        doc.select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        let before = doc.object(id).unwrap().clone();
+        let registry = CommandRegistry::with_builtins();
+        let message = if post {
+            registry.execute_postselected(&mut doc, "Flip", Default::default())
+        } else {
+            registry.execute(&mut doc, "Flip")
+        }
+        .unwrap();
+        assert_eq!(message, "Flipped 1 object(s)");
+        let after = doc.object(id).unwrap().clone();
+        let Geometry::Brep(flipped) = after.geometry() else {
+            panic!("B-rep")
+        };
+        assert!(flipped.is_closed());
+        assert!(!flipped.is_solid());
+        assert_eq!(flipped.vertices(), b.vertices());
+        assert_eq!(flipped.edges(), b.edges());
+        for (f, source) in flipped.faces().iter().zip(b.faces()) {
+            assert_ne!(f.is_reversed(), source.is_reversed());
+            assert_eq!(f.surface(), source.surface());
+            assert_eq!(f.loops(), source.loops());
+        }
+        assert_eq!(doc.is_selected(id), !post);
+        registry.execute(&mut doc, "Undo").unwrap();
+        assert_eq!(doc.object(id), Some(&before));
+        registry.execute(&mut doc, "Redo").unwrap();
+        assert_eq!(doc.object(id), Some(&after));
+    }
+}
+
+#[test]
 fn prompt_accepts_skipped_peers_and_invalid_arguments_do_not_mutate() {
     let prompt = FlipCommand.object_selection_prompt(&[]).unwrap().unwrap();
     assert_eq!(prompt.filter, ObjectSelectionFilter::Any);

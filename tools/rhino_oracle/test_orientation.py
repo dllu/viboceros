@@ -6,7 +6,7 @@ from pathlib import Path
 import unittest
 
 from .orientation_probe import validate
-from .references.orientation_audit import request, compound_request
+from .references.orientation_audit import request, compound_request, face_request
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -35,7 +35,8 @@ class OrientationTests(unittest.TestCase):
         self.assertEqual(request(), retained("fixtures"))
         self.assertEqual(len(request()["operations"]), 36)
         self.assertEqual(len(compound_request()["operations"]), 20)
-        for data in (request(), compound_request()):
+        self.assertEqual(len(face_request()["operations"]), 16)
+        for data in (request(), compound_request(), face_request()):
             ids = [op["id"] for op in data["operations"]]
             self.assertEqual(len(ids), len(set(ids)))
             for op in data["operations"]: validate(op)
@@ -51,6 +52,9 @@ class OrientationTests(unittest.TestCase):
                      dict(kind="box", size=True), dict(kind="box", size=3),
                      dict(kind="box", offset=101), dict(kind="box", offset=1.5),
                      dict(kind="box", parts=[]), dict(kind="point", reversed=True),
+                     dict(kind="box", flipped_faces=[]), dict(kind="box", flipped_faces=[True]),
+                     dict(kind="box", flipped_faces=[6]), dict(kind="box", flipped_faces=[0, 0]),
+                     dict(kind="box", flipped_faces=[[]]), dict(kind="mesh", flipped_faces=[0]),
                      dict(kind="compound", parts=[None]),
                      dict(kind="compound", parts=[dict(kind="mesh")]),
                      dict(kind="compound", parts=[dict(kind="box")], offset=1)):

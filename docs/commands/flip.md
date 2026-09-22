@@ -1,10 +1,12 @@
 # Flip
 
 `Flip` (aliases `Reverse`, `Rev`) reverses selected curve directions, mesh face
-winding, and the face orientation of open surfaces and B-reps. Invoke it on a
+winding, and surface/B-rep face orientations. Invoke it on a
 selection or enter the command first and pick objects, then press Enter.
 
-Closed B-reps, including single-face spheres, are left unchanged. Closed meshes
+Closed, consistently oriented B-rep solids, including single-face spheres, are
+left unchanged. Closed B-reps with inconsistent face orientations can flip;
+this reverses their faces without repairing the inconsistency. Closed meshes
 can point inward and are flipped normally. Unsupported objects such as points
 are skipped instead of failing the whole mixed selection. Preselection remains
 selected; after command-first picking, only flipped objects are deselected.
@@ -26,6 +28,8 @@ planes, lights, or subobject picking.
 
 The [orientation audit](../orientation-audit.md) retains 36 public Rhino cases,
 including actual named `Flip` command events for 16 pre/postselection cases.
+Its follow-up adds 20 compound-solid cases and 16 clean closed-but-unoriented
+cases; the latter distinguishes solid rejection from mere topological closure.
 Complete before/after definitions distinguish face-sense changes from UV edits.
 Native command and application tests exercise the same behavior with independent
 geometry fixtures, actual selection workflows, and undo/redo. These are behavioral

@@ -47,5 +47,22 @@ def compound_request():
     return dict(protocol_version=1, iterations=1, operations=cases)
 
 
+def face_request():
+    """Closed topology need not be a consistently oriented solid."""
+    cases = []
+    for mask in ([0], [0, 1, 2]):
+        for reverse in (False, True):
+            for mode in ("generic", "no_kink"):
+                for preselect in (False, True):
+                    cases.append(dict(op="orientation_audit",
+                        id="faces-%d-%s-%s-%s" % (len(mask), reverse, mode, preselect),
+                        sources=[dict(kind="box", flipped_faces=mask, reversed=reverse)],
+                        insertion=mode, flip=True, preselect=preselect, replace_flip=True))
+    return dict(protocol_version=1, iterations=1, operations=cases)
+
+
 if __name__ == "__main__":
-    print(json.dumps(compound_request() if sys.argv[1:] == ["compound"] else request(), indent=2, allow_nan=False))
+    generators = {"basic": request, "compound": compound_request, "faces": face_request}
+    if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] not in generators):
+        raise SystemExit("usage: orientation_audit [basic|compound|faces]")
+    print(json.dumps(generators[sys.argv[1] if len(sys.argv) == 2 else "basic"](), indent=2, allow_nan=False))

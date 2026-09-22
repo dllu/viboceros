@@ -177,8 +177,9 @@ non-clamped domains, periodic directions, identities, attributes, groups,
 selection, and undo are preserved. `Dir Flip` currently supports curves and
 meshes only; its interactive surface menu remains incomplete. Standalone
 [`Flip`](flip.md) (aliases `Reverse` and `Rev`) also reverses open surfaces and
-B-reps without reparameterizing them. Closed B-reps and unsupported objects
-are skipped; closed meshes can flip. Identities, attributes, groups, and
+B-reps without reparameterizing them. Consistently oriented closed B-rep solids
+and unsupported objects are skipped; closed meshes and inconsistently oriented
+closed B-reps can flip. Identities, attributes, groups, and
 closed-curve seams are preserved.
 These three commands borrow selected input geometry while constructing their
 replacement results, avoiding an extra copy of every mesh, curve, or surface

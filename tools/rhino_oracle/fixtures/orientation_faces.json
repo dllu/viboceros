@@ -1,0 +1,294 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "orientation_audit",
+      "id": "faces-1-False-generic-False",
+      "sources": [
+        {
+          "kind": "box",
+          "flipped_faces": [
+            0
+          ],
+          "reversed": false
+        }
+      ],
+      "insertion": "generic",
+      "flip": true,
+      "preselect": false,
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "faces-1-False-generic-True",
+      "sources": [
+        {
+          "kind": "box",
+          "flipped_faces": [
+            0
+          ],
+          "reversed": false
+        }
+      ],
+      "insertion": "generic",
+      "flip": true,
+      "preselect": true,
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "faces-1-False-no_kink-False",
+      "sources": [
+        {
+          "kind": "box",
+          "flipped_faces": [
+            0
+          ],
+          "reversed": false
+        }
+      ],
+      "insertion": "no_kink",
+      "flip": true,
+      "preselect": false,
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "faces-1-False-no_kink-True",
+      "sources": [
+        {
+          "kind": "box",
+          "flipped_faces": [
+            0
+          ],
+          "reversed": false
+        }
+      ],
+      "insertion": "no_kink",
+      "flip": true,
+      "preselect": true,
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "faces-1-True-generic-False",
+      "sources": [
+        {
+          "kind": "box",
+          "flipped_faces": [
+            0
+          ],
+          "reversed": true
+        }
+      ],
+      "insertion": "generic",
+      "flip": true,
+      "preselect": false,
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "faces-1-True-generic-True",
+      "sources": [
+        {
+          "kind": "box",
+          "flipped_faces": [
+            0
+          ],
+          "reversed": true
+        }
+      ],
+      "insertion": "generic",
+      "flip": true,
+      "preselect": true,
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "faces-1-True-no_kink-False",
+      "sources": [
+        {
+          "kind": "box",
+          "flipped_faces": [
+            0
+          ],
+          "reversed": true
+        }
+      ],
+      "insertion": "no_kink",
+      "flip": true,
+      "preselect": false,
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "faces-1-True-no_kink-True",
+      "sources": [
+        {
+          "kind": "box",
+          "flipped_faces": [
+            0
+          ],
+          "reversed": true
+        }
+      ],
+      "insertion": "no_kink",
+      "flip": true,
+      "preselect": true,
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "faces-3-False-generic-False",
+      "sources": [
+        {
+          "kind": "box",
+          "flipped_faces": [
+            0,
+            1,
+            2
+          ],
+          "reversed": false
+        }
+      ],
+      "insertion": "generic",
+      "flip": true,
+      "preselect": false,
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "faces-3-False-generic-True",
+      "sources": [
+        {
+          "kind": "box",
+          "flipped_faces": [
+            0,
+            1,
+            2
+          ],
+          "reversed": false
+        }
+      ],
+      "insertion": "generic",
+      "flip": true,
+      "preselect": true,
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "faces-3-False-no_kink-False",
+      "sources": [
+        {
+          "kind": "box",
+          "flipped_faces": [
+            0,
+            1,
+            2
+          ],
+          "reversed": false
+        }
+      ],
+      "insertion": "no_kink",
+      "flip": true,
+      "preselect": false,
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "faces-3-False-no_kink-True",
+      "sources": [
+        {
+          "kind": "box",
+          "flipped_faces": [
+            0,
+            1,
+            2
+          ],
+          "reversed": false
+        }
+      ],
+      "insertion": "no_kink",
+      "flip": true,
+      "preselect": true,
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "faces-3-True-generic-False",
+      "sources": [
+        {
+          "kind": "box",
+          "flipped_faces": [
+            0,
+            1,
+            2
+          ],
+          "reversed": true
+        }
+      ],
+      "insertion": "generic",
+      "flip": true,
+      "preselect": false,
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "faces-3-True-generic-True",
+      "sources": [
+        {
+          "kind": "box",
+          "flipped_faces": [
+            0,
+            1,
+            2
+          ],
+          "reversed": true
+        }
+      ],
+      "insertion": "generic",
+      "flip": true,
+      "preselect": true,
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "faces-3-True-no_kink-False",
+      "sources": [
+        {
+          "kind": "box",
+          "flipped_faces": [
+            0,
+            1,
+            2
+          ],
+          "reversed": true
+        }
+      ],
+      "insertion": "no_kink",
+      "flip": true,
+      "preselect": false,
+      "replace_flip": true
+    },
+    {
+      "op": "orientation_audit",
+      "id": "faces-3-True-no_kink-True",
+      "sources": [
+        {
+          "kind": "box",
+          "flipped_faces": [
+            0,
+            1,
+            2
+          ],
+          "reversed": true
+        }
+      ],
+      "insertion": "no_kink",
+      "flip": true,
+      "preselect": true,
+      "replace_flip": true
+    }
+  ]
+}

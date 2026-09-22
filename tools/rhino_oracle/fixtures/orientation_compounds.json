@@ -1,0 +1,526 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "orientation_audit",
+      "id": "disjoint-outward",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": -10,
+              "size": 1,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "offset": 10,
+              "size": 1,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "disjoint-outward-reverse-order",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": 10,
+              "size": 1,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "offset": -10,
+              "size": 1,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "disjoint-inward",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": -10,
+              "size": 1,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "offset": 10,
+              "size": 1,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "disjoint-inward-reverse-order",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": 10,
+              "size": 1,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "offset": -10,
+              "size": 1,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "disjoint-opposed-zero",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": -10,
+              "size": 1,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "offset": 10,
+              "size": 1,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "disjoint-opposed-zero-reverse-order",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": 10,
+              "size": 1,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "offset": -10,
+              "size": 1,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "disjoint-opposed-negative",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": -10,
+              "size": 1,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "offset": 10,
+              "size": 2,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "disjoint-opposed-negative-reverse-order",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": 10,
+              "size": 2,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "offset": -10,
+              "size": 1,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "disjoint-opposed-positive",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": -10,
+              "size": 2,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "offset": 10,
+              "size": 1,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "disjoint-opposed-positive-reverse-order",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": 10,
+              "size": 1,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "offset": -10,
+              "size": 2,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "nested-cavity",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 4,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 1,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "nested-cavity-reverse-order",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 1,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 4,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "nested-reversed-cavity",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 4,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 1,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "nested-reversed-cavity-reverse-order",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 1,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 4,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "nested-both-outward",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 4,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 1,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "nested-both-outward-reverse-order",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 1,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 4,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "nested-both-inward",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 4,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 1,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "nested-both-inward-reverse-order",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 1,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 4,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "coincident-opposed",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 1,
+              "reversed": false
+            },
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 1,
+              "reversed": true
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    },
+    {
+      "op": "orientation_audit",
+      "id": "coincident-opposed-reverse-order",
+      "sources": [
+        {
+          "kind": "compound",
+          "parts": [
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 1,
+              "reversed": true
+            },
+            {
+              "kind": "box",
+              "offset": 0,
+              "size": 1,
+              "reversed": false
+            }
+          ]
+        }
+      ],
+      "replace_flip": true,
+      "flip": true,
+      "preselect": false
+    }
+  ]
+}

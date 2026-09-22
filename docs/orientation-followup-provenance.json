@@ -1,0 +1,29 @@
+{
+  "capture_date_utc": "2026-09-22",
+  "engine_version": "8.32.26160.13001",
+  "primary_compound_cases": 20,
+  "primary_inconsistent_face_cases": 16,
+  "diagnostic_face_repeat_cases": 16,
+  "diagnostic_repeats_with_extraneous_history": 1,
+  "raw_response_sha256_before_compaction": {
+    "orientation_compounds": "ffd1706ddb9ad8ec5beac63af673dfc915a99a453e79054a91d65ed00193e618",
+    "orientation_faces": "6f1df15fab65aee4c7f238cf40e8adbc12acab5154805f4ff6193f72c6c64752",
+    "orientation_faces_startup_recovery": "fe3bc75e9985038f5a978fb516fb3192e1ebd0c81e76c3f467f2dccc783531d5"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/orientation_faces.json": "e122ff8e30ec16631ae6b7e4e6b5c713f7432c9b9cbade53476174b049cedce7",
+    "tools/rhino_oracle/fixtures/orientation_compounds.json": "107bad38bbef70ed1fc2b0a604bedca032b0ace0a028edf75c3a807da9d42e88",
+    "tools/rhino_oracle/observations/orientation_faces.json": "5399b770173ae5dc3f88aa5e4d36b038ab454e739aace97fbb21ae490074600a",
+    "tools/rhino_oracle/observations/orientation_compounds.json": "162b95ba324bfa58535738e3be87bd2c225804a4c27900faafe98c192e152181",
+    "tools/rhino_oracle/observations/orientation_faces_startup_recovery.json": "2ca34509a04c53b0cd407b012a79344a64d405437f59b3ca516f1ce0ae8741ad"
+  },
+  "notes": [
+    "All sessions used owned private Xvfb displays; existing user sessions were not targeted.",
+    "The first compound attempt ended at its 300-second deadline. A later 1800-second run completed all twenty cases; no observation timeout was treated as process completion.",
+    "Manual startup-recovery input was queued into the first face batch and appears after its first Flip in the retained history. A fresh full sixteen-case batch without manual intervention supplies clean evidence.",
+    "Every retained response was compared recursively with its original, including every numeric IEEE-754 bit pattern, after JSON compaction.",
+    "Independent Fraction box integrals use only source sizes and senses. Observed scalar results do not define native input or desired orientation.",
+    "This audit disproves global volume-sign normalization but does not implement or claim a general spatial orientation classifier.",
+    "These are public-API and actual-command behavioral witnesses, not an identical-source native replay or a kernel-speed benchmark."
+  ]
+}
