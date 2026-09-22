@@ -64,6 +64,9 @@ large knot origin; the latter also retains analytic area/volume witnesses.
 Its schema compares exact spatial edge definitions and oriented incidence,
 not newly generated cap UV parameterizations. The probe verifies that Rhino
 document insertion preserves the shared source before invoking the command.
+The [compound follow-up](cap-compound-orientation.md) adds 100 actual command
+records: 96 match after correcting 28 total-volume orientation errors, while
+four coincident-shell topology discrepancies remain explicit.
 
 The [B-rep edge assembly audit](brep-edge-joining.md) compares explicitly paired
 native boundaries with public automatic RhinoCommon `JoinBreps` on identical

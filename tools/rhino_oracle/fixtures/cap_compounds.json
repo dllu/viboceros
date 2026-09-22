@@ -1,0 +1,5482 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-both-reversed-False-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-both-reversed-False-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-both-reversed-False-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-both-reversed-False-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-both-reversed-True-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-both-reversed-True-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-both-reversed-True-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-both-reversed-True-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-low-reversed-False-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-low-reversed-False-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-low-reversed-False-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-low-reversed-False-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-low-reversed-True-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-low-reversed-True-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-low-reversed-True-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-low-reversed-True-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-high-reversed-False-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-high-reversed-False-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-high-reversed-False-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-high-reversed-False-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-high-reversed-True-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-high-reversed-True-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-high-reversed-True-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-1-open-high-reversed-True-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                8,
+                -2,
+                -2
+              ],
+              "max": [
+                12,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-both-reversed-False-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-both-reversed-False-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-both-reversed-False-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-both-reversed-False-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-both-reversed-True-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-both-reversed-True-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-both-reversed-True-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-both-reversed-True-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-low-reversed-False-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-low-reversed-False-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-low-reversed-False-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-low-reversed-False-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-low-reversed-True-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-low-reversed-True-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-low-reversed-True-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-low-reversed-True-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-high-reversed-False-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-high-reversed-False-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-high-reversed-False-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-high-reversed-False-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-high-reversed-True-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-high-reversed-True-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-high-reversed-True-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-x-size-2-open-high-reversed-True-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -12,
+                -2,
+                -2
+              ],
+              "max": [
+                -8,
+                2,
+                2
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-y-size-1-open-both-reversed-False-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -11,
+                -1
+              ],
+              "max": [
+                1,
+                -9,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                8,
+                -2
+              ],
+              "max": [
+                2,
+                12,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-y-size-1-open-both-reversed-False-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -11,
+                -1
+              ],
+              "max": [
+                1,
+                -9,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                8,
+                -2
+              ],
+              "max": [
+                2,
+                12,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-y-size-1-open-both-reversed-False-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                8,
+                -2
+              ],
+              "max": [
+                2,
+                12,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -11,
+                -1
+              ],
+              "max": [
+                1,
+                -9,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-y-size-1-open-both-reversed-False-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                8,
+                -2
+              ],
+              "max": [
+                2,
+                12,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -11,
+                -1
+              ],
+              "max": [
+                1,
+                -9,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-y-size-1-open-both-reversed-True-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -11,
+                -1
+              ],
+              "max": [
+                1,
+                -9,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                8,
+                -2
+              ],
+              "max": [
+                2,
+                12,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-y-size-1-open-both-reversed-True-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -11,
+                -1
+              ],
+              "max": [
+                1,
+                -9,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                8,
+                -2
+              ],
+              "max": [
+                2,
+                12,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-y-size-1-open-both-reversed-True-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                8,
+                -2
+              ],
+              "max": [
+                2,
+                12,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -11,
+                -1
+              ],
+              "max": [
+                1,
+                -9,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-y-size-1-open-both-reversed-True-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                8,
+                -2
+              ],
+              "max": [
+                2,
+                12,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -11,
+                -1
+              ],
+              "max": [
+                1,
+                -9,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-y-size-2-open-both-reversed-False-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -12,
+                -2
+              ],
+              "max": [
+                2,
+                -8,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                9,
+                -1
+              ],
+              "max": [
+                1,
+                11,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-y-size-2-open-both-reversed-False-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -12,
+                -2
+              ],
+              "max": [
+                2,
+                -8,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                9,
+                -1
+              ],
+              "max": [
+                1,
+                11,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-y-size-2-open-both-reversed-False-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                9,
+                -1
+              ],
+              "max": [
+                1,
+                11,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -12,
+                -2
+              ],
+              "max": [
+                2,
+                -8,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-y-size-2-open-both-reversed-False-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                9,
+                -1
+              ],
+              "max": [
+                1,
+                11,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -12,
+                -2
+              ],
+              "max": [
+                2,
+                -8,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-y-size-2-open-both-reversed-True-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -12,
+                -2
+              ],
+              "max": [
+                2,
+                -8,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                9,
+                -1
+              ],
+              "max": [
+                1,
+                11,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-y-size-2-open-both-reversed-True-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -12,
+                -2
+              ],
+              "max": [
+                2,
+                -8,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                9,
+                -1
+              ],
+              "max": [
+                1,
+                11,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-y-size-2-open-both-reversed-True-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                9,
+                -1
+              ],
+              "max": [
+                1,
+                11,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -12,
+                -2
+              ],
+              "max": [
+                2,
+                -8,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-y-size-2-open-both-reversed-True-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                9,
+                -1
+              ],
+              "max": [
+                1,
+                11,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -12,
+                -2
+              ],
+              "max": [
+                2,
+                -8,
+                2
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-z-size-1-open-both-reversed-False-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -11
+              ],
+              "max": [
+                1,
+                1,
+                -9
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -2,
+                8
+              ],
+              "max": [
+                2,
+                2,
+                12
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-z-size-1-open-both-reversed-False-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -11
+              ],
+              "max": [
+                1,
+                1,
+                -9
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -2,
+                8
+              ],
+              "max": [
+                2,
+                2,
+                12
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-z-size-1-open-both-reversed-False-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -2,
+                8
+              ],
+              "max": [
+                2,
+                2,
+                12
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -11
+              ],
+              "max": [
+                1,
+                1,
+                -9
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-z-size-1-open-both-reversed-False-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -2,
+                8
+              ],
+              "max": [
+                2,
+                2,
+                12
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -11
+              ],
+              "max": [
+                1,
+                1,
+                -9
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-z-size-1-open-both-reversed-True-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -11
+              ],
+              "max": [
+                1,
+                1,
+                -9
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -2,
+                8
+              ],
+              "max": [
+                2,
+                2,
+                12
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-z-size-1-open-both-reversed-True-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -11
+              ],
+              "max": [
+                1,
+                1,
+                -9
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -2,
+                8
+              ],
+              "max": [
+                2,
+                2,
+                12
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-z-size-1-open-both-reversed-True-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -2,
+                8
+              ],
+              "max": [
+                2,
+                2,
+                12
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -11
+              ],
+              "max": [
+                1,
+                1,
+                -9
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-z-size-1-open-both-reversed-True-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -2,
+                8
+              ],
+              "max": [
+                2,
+                2,
+                12
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -11
+              ],
+              "max": [
+                1,
+                1,
+                -9
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-z-size-2-open-both-reversed-False-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -2,
+                -12
+              ],
+              "max": [
+                2,
+                2,
+                -8
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                9
+              ],
+              "max": [
+                1,
+                1,
+                11
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-z-size-2-open-both-reversed-False-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -2,
+                -12
+              ],
+              "max": [
+                2,
+                2,
+                -8
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                9
+              ],
+              "max": [
+                1,
+                1,
+                11
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-z-size-2-open-both-reversed-False-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                9
+              ],
+              "max": [
+                1,
+                1,
+                11
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -2,
+                -12
+              ],
+              "max": [
+                2,
+                2,
+                -8
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-z-size-2-open-both-reversed-False-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                9
+              ],
+              "max": [
+                1,
+                1,
+                11
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -2,
+                -12
+              ],
+              "max": [
+                2,
+                2,
+                -8
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-z-size-2-open-both-reversed-True-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -2,
+                -12
+              ],
+              "max": [
+                2,
+                2,
+                -8
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                9
+              ],
+              "max": [
+                1,
+                1,
+                11
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-z-size-2-open-both-reversed-True-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -2,
+                -12
+              ],
+              "max": [
+                2,
+                2,
+                -8
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                9
+              ],
+              "max": [
+                1,
+                1,
+                11
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-z-size-2-open-both-reversed-True-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                9
+              ],
+              "max": [
+                1,
+                1,
+                11
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -2,
+                -12
+              ],
+              "max": [
+                2,
+                2,
+                -8
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "axis-z-size-2-open-both-reversed-True-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                9
+              ],
+              "max": [
+                1,
+                1,
+                11
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -2,
+                -2,
+                -12
+              ],
+              "max": [
+                2,
+                2,
+                -8
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "disjoint-zero-volume-reversed-False-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "disjoint-zero-volume-reversed-False-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "disjoint-zero-volume-reversed-False-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "disjoint-zero-volume-reversed-False-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "disjoint-zero-volume-reversed-True-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "disjoint-zero-volume-reversed-True-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "disjoint-zero-volume-reversed-True-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "disjoint-zero-volume-reversed-True-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                9,
+                -1,
+                -1
+              ],
+              "max": [
+                11,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -11,
+                -1,
+                -1
+              ],
+              "max": [
+                -9,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "nested-cavity-reversed-False-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -4,
+                -4,
+                -4
+              ],
+              "max": [
+                4,
+                4,
+                4
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -1
+              ],
+              "max": [
+                1,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "nested-cavity-reversed-False-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -4,
+                -4,
+                -4
+              ],
+              "max": [
+                4,
+                4,
+                4
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -1
+              ],
+              "max": [
+                1,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "nested-cavity-reversed-False-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -1
+              ],
+              "max": [
+                1,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -4,
+                -4,
+                -4
+              ],
+              "max": [
+                4,
+                4,
+                4
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "nested-cavity-reversed-False-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -1
+              ],
+              "max": [
+                1,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -4,
+                -4,
+                -4
+              ],
+              "max": [
+                4,
+                4,
+                4
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "nested-cavity-reversed-True-order-False-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -4,
+                -4,
+                -4
+              ],
+              "max": [
+                4,
+                4,
+                4
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -1
+              ],
+              "max": [
+                1,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "nested-cavity-reversed-True-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -4,
+                -4,
+                -4
+              ],
+              "max": [
+                4,
+                4,
+                4
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -1
+              ],
+              "max": [
+                1,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "nested-cavity-reversed-True-order-True-pre-False",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -1
+              ],
+              "max": [
+                1,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -4,
+                -4,
+                -4
+              ],
+              "max": [
+                4,
+                4,
+                4
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": false
+    },
+    {
+      "op": "cap_command",
+      "id": "nested-cavity-reversed-True-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -1
+              ],
+              "max": [
+                1,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -4,
+                -4,
+                -4
+              ],
+              "max": [
+                4,
+                4,
+                4
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "coincident-opposed-reversed-False-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -1
+              ],
+              "max": [
+                1,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -1
+              ],
+              "max": [
+                1,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "coincident-opposed-reversed-False-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -1
+              ],
+              "max": [
+                1,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -1
+              ],
+              "max": [
+                1,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": false,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "coincident-opposed-reversed-True-order-False-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -1
+              ],
+              "max": [
+                1,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -1
+              ],
+              "max": [
+                1,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    },
+    {
+      "op": "cap_command",
+      "id": "coincident-opposed-reversed-True-order-True-pre-True",
+      "source": {
+        "type": "compound",
+        "parts": [
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -1
+              ],
+              "max": [
+                1,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": true
+          },
+          {
+            "source": {
+              "type": "box",
+              "min": [
+                -1,
+                -1,
+                -1
+              ],
+              "max": [
+                1,
+                1,
+                1
+              ],
+              "keep_faces": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "reversed": false
+          }
+        ]
+      },
+      "reversed": true,
+      "preselect": true
+    }
+  ]
+}

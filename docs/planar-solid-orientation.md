@@ -31,7 +31,9 @@ modified, and no floating-point ray origin at an enormous distance is needed.
 
 This does not validate global non-self-intersection or support arbitrary planar
 NURBS representations. Unsupported images retain the conservative curved-support
-path. It does not change document insertion, replacement, `Flip`, or `Cap` policy.
+path. General document insertion, replacement, and `Flip` policy are unchanged.
+The later [`Cap` audit](cap-compound-orientation.md) uses this query to normalize
+newly closed command results.
 
 ## Shared-source evidence
 

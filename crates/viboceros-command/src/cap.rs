@@ -1,5 +1,6 @@
 //! In-place planar surface/B-rep hole capping.
 use super::*;
+use viboceros_geometry::BrepSolidOrientation;
 
 #[cfg(test)]
 mod tests;
@@ -33,6 +34,7 @@ impl Command for CapCommand {
         }
         let mut replacements = Vec::new();
         let mut face_count = 0;
+        let mut unresolved_compounds = 0;
         for object in document.selected_objects() {
             let converted;
             let brep = match object.geometry() {
@@ -60,10 +62,13 @@ impl Command for CapCommand {
                 if let Some(result) = split {
                     capped = result;
                 }
-                // The kernel retains the source shell sense. Rhino's command
-                // orients newly closed solids outward, including inward inputs.
-                if capped.is_solid() && capped.signed_volume(document.tolerance())? < 0.0 {
-                    capped = capped.reversed();
+                // Normalize the entire result, not each component: cavity and
+                // mixed-shell senses must be retained. Total signed volume
+                // does not determine a compound solid's spatial orientation.
+                match orientation_action(&capped, document.tolerance())? {
+                    CapOrientationAction::Reverse => capped = capped.reversed(),
+                    CapOrientationAction::Preserve => {}
+                    CapOrientationAction::UnresolvedCompound => unresolved_compounds += 1,
                 }
                 // A single periodic face keeps its seam first in Rhino's
                 // capped B-rep. This is table ordering, not curve rebuilding.
@@ -88,9 +93,13 @@ impl Command for CapCommand {
             }
         }
         let count = document.replace_object_geometries(replacements)?;
-        Ok(format!(
-            "Capped {count} object(s) with {face_count} planar face(s)"
-        ))
+        let mut message = format!("Capped {count} object(s) with {face_count} planar face(s)");
+        if unresolved_compounds > 0 {
+            message.push_str(&format!(
+                "; orientation unresolved for {unresolved_compounds} compound solid(s)"
+            ));
+        }
+        Ok(message)
     }
 
     fn run_postselected(
@@ -103,4 +112,33 @@ impl Command for CapCommand {
         document.clear_selection();
         Ok(message)
     }
+}
+
+enum CapOrientationAction {
+    Preserve,
+    Reverse,
+    UnresolvedCompound,
+}
+
+fn orientation_action(
+    capped: &Brep,
+    tolerance: Tolerance,
+) -> Result<CapOrientationAction, GeometryError> {
+    Ok(match capped.solid_orientation()? {
+        BrepSolidOrientation::Inward => CapOrientationAction::Reverse,
+        BrepSolidOrientation::Outward | BrepSolidOrientation::NotSolid => {
+            CapOrientationAction::Preserve
+        }
+        BrepSolidOrientation::Unknown if capped.edge_connected_face_components().len() == 1 => {
+            // The exact classifier does not yet cover all curved faces. Keep
+            // the numerical volume fallback for a single connected shell only.
+            // This is not an exact orientation certificate or a validity test.
+            if capped.signed_volume(tolerance)? < 0.0 {
+                CapOrientationAction::Reverse
+            } else {
+                CapOrientationAction::Preserve
+            }
+        }
+        BrepSolidOrientation::Unknown => CapOrientationAction::UnresolvedCompound,
+    })
 }

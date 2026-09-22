@@ -1,0 +1,85 @@
+{
+  "capture_date_utc": "2026-09-22",
+  "engine_version": "8.32.26160.13001",
+  "base_commit": "3629cb0",
+  "baseline_command_sha256": "99ab72fc2bf077e64baf4f641196b8fc5523cabb553e1a1053ddf4a4ca6151a4",
+  "source_note": "The base commit plus the retained compound source fixture support; command behavior was unchanged for the initial capture.",
+  "operations": 100,
+  "baseline_full_matches": 68,
+  "updated_full_matches": 96,
+  "native_failures_before_and_after": [
+    0,
+    0
+  ],
+  "resolved_orientation_difference_ids": [
+    "axis-x-size-1-open-both-reversed-False-order-False-pre-False",
+    "axis-x-size-1-open-both-reversed-False-order-False-pre-True",
+    "axis-x-size-1-open-both-reversed-False-order-True-pre-False",
+    "axis-x-size-1-open-both-reversed-False-order-True-pre-True",
+    "axis-x-size-1-open-both-reversed-True-order-False-pre-False",
+    "axis-x-size-1-open-both-reversed-True-order-False-pre-True",
+    "axis-x-size-1-open-both-reversed-True-order-True-pre-False",
+    "axis-x-size-1-open-both-reversed-True-order-True-pre-True",
+    "axis-x-size-1-open-low-reversed-False-order-False-pre-False",
+    "axis-x-size-1-open-low-reversed-False-order-False-pre-True",
+    "axis-x-size-1-open-low-reversed-False-order-True-pre-False",
+    "axis-x-size-1-open-low-reversed-False-order-True-pre-True",
+    "axis-x-size-1-open-low-reversed-True-order-False-pre-False",
+    "axis-x-size-1-open-low-reversed-True-order-False-pre-True",
+    "axis-x-size-1-open-low-reversed-True-order-True-pre-False",
+    "axis-x-size-1-open-low-reversed-True-order-True-pre-True",
+    "axis-x-size-1-open-high-reversed-False-order-False-pre-False",
+    "axis-x-size-1-open-high-reversed-False-order-False-pre-True",
+    "axis-x-size-1-open-high-reversed-False-order-True-pre-False",
+    "axis-x-size-1-open-high-reversed-False-order-True-pre-True",
+    "axis-x-size-1-open-high-reversed-True-order-False-pre-False",
+    "axis-x-size-1-open-high-reversed-True-order-False-pre-True",
+    "axis-x-size-1-open-high-reversed-True-order-True-pre-False",
+    "axis-x-size-1-open-high-reversed-True-order-True-pre-True",
+    "disjoint-zero-volume-reversed-True-order-False-pre-False",
+    "disjoint-zero-volume-reversed-True-order-False-pre-True",
+    "disjoint-zero-volume-reversed-True-order-True-pre-False",
+    "disjoint-zero-volume-reversed-True-order-True-pre-True"
+  ],
+  "remaining_topology_difference_ids": [
+    "coincident-opposed-reversed-False-order-False-pre-True",
+    "coincident-opposed-reversed-False-order-True-pre-True",
+    "coincident-opposed-reversed-True-order-False-pre-True",
+    "coincident-opposed-reversed-True-order-True-pre-True"
+  ],
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 1e-10,
+  "maximum_numeric_error_among_matching_records": 5.684341886080802e-14,
+  "raw_capture_sha256": {
+    "observed.json": "5f4df78ca3ce18cc2356739473b1b56ffdfe6167b7ef20f3ae340255f70a7276",
+    "native-before.json": "7f98ba762c3f0144492855daf8eff8879bf0cdcfd3664f2f4a87892e39599318",
+    "comparison-before.json": "3f7d20b1b184202212a028b579a362eccb0aaaf45c55804b26fbe8bde75c3553"
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/cap_compounds.json": "2b99f5969f253bd08eee62aba5b38046281842c96d84e44f77676c4efc621adf",
+    "tools/rhino_oracle/observations/cap_compounds.json": "c68103072cf1fea3cfaa067db119e8d338c751a83221bf2cea4312675ac8cedd",
+    "tools/rhino_oracle/observations/cap_compounds_before_report.json": "fc8a9408d28be0350c7f1b68bbd20ed2b2fbb541ebdcfa2a908c99b5c72a12b6",
+    "tools/rhino_oracle/observations/cap_compounds_after_report.json": "143384331ae8e34117eb701fe646c9d5f5c6462510e7096f00bfad7526e8085d"
+  },
+  "capture_source_sha256": {
+    "tools/rhino_oracle/rhino_worker.py": "181a35a143f422762ec9aa0cb247e5791f893149e9c164379211c7814a263850",
+    "tools/rhino_oracle/client.py": "5d7ba19054855fb4e95414de0b77e7a43807f98b043b2117b809fd47356ba21f",
+    "tools/rhino_oracle/cap_probe.py": "c2c4a91b00e926cb47fe0cc685369a3e78ff2bf14420d3fb4a99bbc64d763bcf",
+    "crates/viboceros-oracle/src/brep_source.rs": "8f31f9989fd95c53581fa7d387c70e5025c95d1f1ea0be3d0e2b46a90606be09",
+    "crates/viboceros-oracle/src/cap_command.rs": "0f6e63c4cb3fd7e5ff667561d909c5214818286b23b74bbd364c4251200a1c86"
+  },
+  "reproduction_recipe_sha256": {
+    "tools/rhino_oracle/references/cap_compounds.py": "fd2d9ef5e086c0f47a3cc2b0f213d5f727f36f703fe9857c3e44bd413ea34b00"
+  },
+  "notes": [
+    "One completed owned private-Xvfb Rhino session with a 2400-second deadline; no user-owned desktop/session interaction. Subsequent checks replay saved observations without launching Rhino.",
+    "Both engines used the same native-generated 3DM sources. Export validates a native definition/sample round trip. The public Rhino Cap probe rejects document insertion changes to its recorded source, snapshots EndCommand, and restores selection/layers/groups while deleting only owned objects.",
+    "24 negative-volume X-separated cases and four reversed zero-volume cases distinguish spatial sense from the former total signed-volume rule. The exact classifier now supplies global reversal where supported, not independent component normalization.",
+    "Four coincident-opposed sources remain topology differences: native 12 faces/24 edges/solid/zero volume versus Rhino 11 faces/32 edges/open/no volume. Full raw observations and unfiltered before/after comparison reports are retained.",
+    "The 96 ordinary outputs have independent box area/volume witnesses; input vertex multisets, input areas and output document state are also checked. All 140 earlier ordinary Cap command records still match.",
+    "Comparison includes spatial edge definitions/domains/samples, physical vertices, oriented loop incidence, areas, volume, solid/manifold flags, identity, attributes, groups and selection. It does not compare generated cap UV frames, surface coefficients/domains, loop starts or face insertion order.",
+    "Compaction was recursively verified against the raw capture, including IEEE-754 numeric bit patterns and negative zero. Baseline native response is hashed here; the retained source recipe and historical command commit reproduce it.",
+    "Unknown multi-component orientation preserves face sense with an explicit command warning. Unknown single-component orientation retains approximate volume normalization, not an exact certificate or self-intersection validation. General document insertion/replacement normalization remains unimplemented.",
+    "All command timing fields are zero; this is correctness evidence, not a performance benchmark."
+  ]
+}

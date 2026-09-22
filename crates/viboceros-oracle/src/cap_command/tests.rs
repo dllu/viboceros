@@ -86,6 +86,60 @@ fn cap_kink_cutoff_is_independent_of_document_angle_and_edge_table_order() {
 }
 
 #[test]
+fn compound_cap_replays_spatial_orientation_and_retains_coincident_topology_gaps() {
+    let request: ProbeRequest = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/cap_compounds.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/cap_compounds.json"
+    ))
+    .unwrap();
+    let actual = run_request(&request).unwrap();
+    assert_eq!(actual.results.len(), 100);
+    assert_eq!(expected["results"].as_array().unwrap().len(), 100);
+    let mut matched = 0;
+    let mut gaps = 0;
+    for (a, b) in actual
+        .results
+        .iter()
+        .zip(expected["results"].as_array().unwrap())
+    {
+        assert_eq!(a.id, b["id"]);
+        if !a.id.starts_with("coincident-opposed-") {
+            close(&a.value, &b["value"], &a.id);
+            matched += 1;
+            continue;
+        }
+        // These are partial-capping topology differences, not an orientation
+        // tie to guess. Retain these gaps and check both observed topologies.
+        let mut native = a.value.clone();
+        let mut rhino = b["value"].clone();
+        let ng = native["objects"][0]
+            .as_object_mut()
+            .unwrap()
+            .remove("geometry")
+            .unwrap();
+        let rg = rhino["objects"][0]
+            .as_object_mut()
+            .unwrap()
+            .remove("geometry")
+            .unwrap();
+        close(&native, &rhino, &format!("{}/input-and-document", a.id));
+        assert_eq!(ng["solid"], true);
+        assert_eq!(ng["faces"].as_array().unwrap().len(), 12);
+        assert_eq!(ng["edges"].as_array().unwrap().len(), 24);
+        close(&ng["volume"], &json!(0.), "native-coincident-volume");
+        assert_eq!(rg["solid"], false);
+        assert_eq!(rg["faces"].as_array().unwrap().len(), 11);
+        assert_eq!(rg["edges"].as_array().unwrap().len(), 32);
+        assert!(rg["volume"].is_null());
+        gaps += 1;
+    }
+    assert_eq!((matched, gaps), (96, 4));
+}
+
+#[test]
 fn large_parameter_origin_retains_rhino_topology_and_integral_discrepancies() {
     let request: ProbeRequest = serde_json::from_str(include_str!(
         "../../../../tools/rhino_oracle/fixtures/cap_parameter_origin.json"

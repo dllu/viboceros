@@ -17,6 +17,16 @@ pub struct CapFixture {
 }
 
 pub(super) fn run(f: &CapFixture, tolerance: Tolerance) -> Result<(Value, u64), ProbeError> {
+    let brep = build_source(f, tolerance)?;
+    let before = geometry_record(&brep, tolerance)?;
+    let geometry = Geometry::Brep(brep);
+    if let Some(path) = &f.artifact_path {
+        write_shared_artifact(&geometry, path, tolerance)?;
+    }
+    execute(f, geometry, before, tolerance)
+}
+
+fn build_source(f: &CapFixture, tolerance: Tolerance) -> Result<Brep, ProbeError> {
     let geometry = f.source.geometry(tolerance)?;
     let mut brep = match geometry {
         Geometry::Brep(brep) => brep,
@@ -36,11 +46,15 @@ pub(super) fn run(f: &CapFixture, tolerance: Tolerance) -> Result<(Value, u64), 
     if f.reversed {
         brep = brep.reversed();
     }
-    let before = geometry_record(&brep, tolerance)?;
-    let geometry = Geometry::Brep(brep);
-    if let Some(path) = &f.artifact_path {
-        write_shared_artifact(&geometry, path, tolerance)?;
-    }
+    Ok(brep)
+}
+
+fn execute(
+    f: &CapFixture,
+    geometry: Geometry,
+    before: Value,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
     let mut document = Document::new(tolerance);
     let source_layer = document.add_layer("Source", ColorRgb::BLACK)?;
     let current_layer = document.add_layer("Current", ColorRgb::BLACK)?;

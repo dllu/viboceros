@@ -63,10 +63,16 @@ validation. Tolerance is never silently widened; tolerances below the precision
 of translated coordinates can cause an atomic failure.
 
 Generated cap UV frames, surface domains, loop start positions, and cap-face
-insertion order are not Rhino parameterization parity claims. Multi-component
-orientation repair is also incomplete: the command reverses a newly closed
-B-rep as a whole when its signed volume is negative; independently reversing
-mixed-orientation closed components is not implemented.
+insertion order are not Rhino parameterization parity claims.
+
+Newly closed results use the conservative [spatial orientation query](../solid-orientation.md).
+An inward result is reversed as a whole; components are not independently flipped,
+which preserves cavity and mixed-shell senses. An outward compound may have
+negative or zero signed volume. If the exact query is unresolved, a single
+edge-connected shell retains a numerical signed-volume fallback; this is not a
+certified orientation or a self-intersection test. Unresolved compound solids
+retain their face senses and report `orientation unresolved` in the command
+message. See the [compound audit](../cap-compound-orientation.md).
 
 ## Oracle evidence
 
@@ -124,6 +130,11 @@ Two new discrepancies remain explicit, with complete input/output observations:
   while Rhino differs by about `1.33e-7`.
   These are topology and integration discrepancies, not a claim that the
   retained curve loci differ by the per-edge sample-record differences.
+
+The [100-case compound follow-up](../cap-compound-orientation.md) adds 96 matching
+records and four retained coincident-shell topology differences. It resolves
+28 orientation errors in the former total-volume rule without changing the
+140 passing ordinary-source comparisons above.
 
 Native tests additionally cover seam splitting, independent rational trim
 parameter speeds, full-order knots, nonclamped curves, and rejected ambiguous

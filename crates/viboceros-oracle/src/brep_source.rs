@@ -50,6 +50,9 @@ pub(super) enum BrepCommandSource {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub(super) enum Primitive {
+    Compound {
+        parts: Vec<BrepSourceFixture>,
+    },
     Tube {
         radii: [f64; 2],
         height: f64,
@@ -82,6 +85,25 @@ impl BrepCommandSource {
     pub(super) fn geometry(&self, tolerance: Tolerance) -> Result<Geometry, ProbeError> {
         Ok(match self {
             Self::Object(source) => source.geometry(tolerance)?,
+            Self::Primitive(Primitive::Compound { parts }) => {
+                if parts.is_empty()
+                    || parts.len() > 8
+                    || parts
+                        .iter()
+                        .any(|p| matches!(p.source, Self::Primitive(Primitive::Compound { .. })))
+                {
+                    return Err(ProbeError::FixtureInvariant(
+                        "compound source requires one to eight non-compound B-rep parts",
+                    ));
+                }
+                Geometry::Brep(Brep::try_combine(
+                    parts
+                        .iter()
+                        .map(|p| p.build(tolerance))
+                        .collect::<Result<Vec<_>, _>>()?,
+                    tolerance,
+                )?)
+            }
             Self::Primitive(Primitive::Tube { radii, height }) => Geometry::Brep(
                 Brep::try_tube(
                     viboceros_command::CommandContext::default().construction_plane,
@@ -222,6 +244,37 @@ pub(super) fn write_shared_artifact(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn compound_sources_preserve_part_order_and_sense_and_bound_nesting() {
+        let box_source = json!({"source":{"type":"box","min":[0,0,0],"max":[1,1,1]}});
+        let source = json!({"type":"compound","parts":[box_source,{
+            "source":{"type":"box","min":[3,0,0],"max":[5,2,2]},"reversed":true
+        }]});
+        let fixture: BrepCommandSource = serde_json::from_value(source.clone()).unwrap();
+        let Geometry::Brep(brep) = fixture.geometry(Tolerance::DEFAULT).unwrap() else {
+            panic!("B-rep");
+        };
+        assert_eq!(brep.faces().len(), 12);
+        assert!(brep.faces()[..6].iter().all(|f| !f.is_reversed()));
+        assert!(brep.faces()[6..].iter().all(BrepFace::is_reversed));
+        assert_eq!(
+            brep.edge_connected_face_components(),
+            vec![(0..6).collect::<Vec<_>>(), (6..12).collect()]
+        );
+        for parts in [
+            json!([]),
+            json!(vec![box_source; 9]),
+            json!([{"source":source}]),
+        ] {
+            let fixture: BrepCommandSource =
+                serde_json::from_value(json!({"type":"compound","parts":parts})).unwrap();
+            assert!(matches!(
+                fixture.geometry(Tolerance::DEFAULT),
+                Err(ProbeError::FixtureInvariant(_))
+            ));
+        }
+    }
 
     #[test]
     fn surface_face_fixture_keeps_underlying_surface_and_rejects_invalid_trim_bounds() {
