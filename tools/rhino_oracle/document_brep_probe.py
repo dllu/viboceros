@@ -5,8 +5,11 @@ import re
 def validate(operation, iterations=1):
     if type(iterations) is not int or iterations != 1:
         raise ValueError("document B-rep admission requires one iteration")
-    if (not isinstance(operation, dict) or operation.get("op") != "document_brep"
-            or set(operation) - {"insertion", "selected", "flip_faces", "artifact_path"} != {"op", "id", "sources"}
+    optional = {"flip_faces", "artifact_path"}
+    if isinstance(operation, dict) and operation.get("op") == "document_brep":
+        optional.update(("insertion", "selected"))
+    if (not isinstance(operation, dict) or operation.get("op") not in ("document_brep", "document_brep_import")
+            or set(operation) - optional != {"op", "id", "sources"}
             or not isinstance(operation["id"], str)
             or re.match(r"^[A-Za-z0-9_.-]{1,100}\Z", operation["id"]) is None):
         raise ValueError("invalid document B-rep admission fields")
@@ -94,4 +97,40 @@ def run(operation, iterations, host):
         for previous in selected_before: document.Objects.Select(previous)
         if attrs is not None: attrs.Dispose()
         if replacement is not None: replacement.Dispose()
+        model.Dispose()
+
+
+def run_import(operation, iterations, tolerance, host):
+    """A disposable headless document: file admission is not object-table Add."""
+    import Rhino
+    validate(operation, iterations)
+    path = operation.get("artifact_path")
+    if not path: raise ValueError("B-rep import requires a shared artifact")
+    if path.startswith("/"): path = "Z:" + path.replace("/", "\\")
+    model = Rhino.FileIO.File3dm.Read(path)
+    if model is None: raise ValueError("cannot read import artifact")
+    document = None
+    try:
+        items = list(model.Objects)
+        if len(items) != 1 or not isinstance(items[0].Geometry, Rhino.Geometry.Brep):
+            raise ValueError("import artifact must contain one B-rep")
+        source = items[0].Geometry
+        if not source.IsValid: raise ValueError("invalid import source")
+        before = geometry_record(source, host)
+        document = Rhino.RhinoDoc.CreateHeadless(None)
+        if document is None: raise ValueError("cannot create isolated import document")
+        # Shared native artifacts and the native command document use millimeters.
+        document.ModelUnitSystem = Rhino.UnitSystem.Millimeters
+        with host["_document_tolerance"](document, tolerance):
+            succeeded = bool(document.Import(path))
+            settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+            settings.NormalObjects = settings.HiddenObjects = settings.LockedObjects = True
+            objects = list(document.Objects.GetObjectList(settings))
+            if not succeeded or len(objects) != 1:
+                raise ValueError("import failed or changed object count")
+            imported = geometry_record(objects[0].Geometry, host)
+        return dict(input=before, imported=imported, object_count=len(objects), succeeded=succeeded,
+            source_unchanged=before==geometry_record(source, host)), 0
+    finally:
+        if document is not None: document.Dispose()
         model.Dispose()

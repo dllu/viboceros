@@ -3087,10 +3087,17 @@ impl Brep {
     /// topology. Global orientation reversal preserves all incidence invariants.
     pub fn reversed(&self) -> Self {
         let mut result = self.clone();
-        for face in &mut result.faces {
+        result.reverse_orientation();
+        result
+    }
+
+    /// Reverses all face normals in place without reallocating or changing
+    /// surfaces, trims, vertices, or shared edge topology. As with `reversed`,
+    /// global reversal preserves every oriented-incidence invariant.
+    pub fn reverse_orientation(&mut self) {
+        for face in &mut self.faces {
             face.reversed = !face.reversed;
         }
-        result
     }
 
     /// Conservative control-geometry bounds. Exact curved-edge bounds can be
@@ -8991,6 +8998,55 @@ mod tests {
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn in_place_orientation_reversal_preserves_geometry_storage_and_is_an_involution() {
+        let frame = Frame3::try_from_normal(
+            point(0., 0., 0.),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut brep = Brep::try_box(frame, [[-1., 1.]; 3], Tolerance::DEFAULT).unwrap();
+        let original = brep.clone();
+        let vertices = brep.vertices().as_ptr();
+        let edges = brep.edges().as_ptr();
+        let faces = brep.faces().as_ptr();
+        let controls = brep
+            .faces()
+            .iter()
+            .map(|f| f.surface().control_points().as_ptr())
+            .collect::<Vec<_>>();
+        for inward in [true, false] {
+            brep.reverse_orientation();
+            assert_eq!(brep.vertices().as_ptr(), vertices);
+            assert_eq!(brep.edges().as_ptr(), edges);
+            assert_eq!(brep.faces().as_ptr(), faces);
+            assert_eq!(
+                brep.faces()
+                    .iter()
+                    .map(|f| f.surface().control_points().as_ptr())
+                    .collect::<Vec<_>>(),
+                controls
+            );
+            assert_eq!(
+                brep,
+                if inward {
+                    original.reversed()
+                } else {
+                    original.clone()
+                }
+            );
+            assert_eq!(
+                brep.solid_orientation().unwrap(),
+                if inward {
+                    BrepSolidOrientation::Inward
+                } else {
+                    BrepSolidOrientation::Outward
+                }
+            );
+        }
     }
 
     #[test]

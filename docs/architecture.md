@@ -306,6 +306,12 @@ submodule separates exact face extraction, trim winding, and outside-ray tests.
 The curved path shares exact homogeneous normal numerators with surface
 evaluation; neither path normalizes document objects or uses volume sign as an
 orientation predicate.
+`document/object_admission` applies that query at explicit insertion/replacement
+boundaries, including file imports and explicit replacement-geometry copies.
+It reverses only known inward B-reps, before equality/history decisions or edits;
+unknown geometry stays unchanged. Transform/morph paths remain separate, and
+history restores immutable snapshots without reclassification. See the
+[shared-source admission and import audit](document-brep-admission.md).
 The [morph assembler](brep-morphing.md) in `brep/morph` retains shared topology
 and exact UV trims. `brep/trim_image` supplies composed-curve correspondence to
 validation and [B-rep meshing](brep-meshing.md). `brep/tessellation` separates

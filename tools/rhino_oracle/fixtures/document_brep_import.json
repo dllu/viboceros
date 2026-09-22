@@ -1,0 +1,588 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "document_brep_import",
+      "id": "box-reverse-False-import",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        }
+      ],
+      "flip_faces": []
+    },
+    {
+      "op": "document_brep_import",
+      "id": "box-reverse-True-import",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        }
+      ],
+      "flip_faces": []
+    },
+    {
+      "op": "document_brep_import",
+      "id": "negative-volume-reverse-False-import",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -6,
+              -1,
+              -1
+            ],
+            "max": [
+              -4,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              3,
+              -2,
+              -2
+            ],
+            "max": [
+              7,
+              2,
+              2
+            ]
+          },
+          "reversed": true
+        }
+      ],
+      "flip_faces": []
+    },
+    {
+      "op": "document_brep_import",
+      "id": "negative-volume-reverse-True-import",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -6,
+              -1,
+              -1
+            ],
+            "max": [
+              -4,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              3,
+              -2,
+              -2
+            ],
+            "max": [
+              7,
+              2,
+              2
+            ]
+          },
+          "reversed": false
+        }
+      ],
+      "flip_faces": []
+    },
+    {
+      "op": "document_brep_import",
+      "id": "nested-cavity-reverse-False-import",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -4,
+              -4,
+              -4
+            ],
+            "max": [
+              4,
+              4,
+              4
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        }
+      ],
+      "flip_faces": []
+    },
+    {
+      "op": "document_brep_import",
+      "id": "nested-cavity-reverse-True-import",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -4,
+              -4,
+              -4
+            ],
+            "max": [
+              4,
+              4,
+              4
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        }
+      ],
+      "flip_faces": []
+    },
+    {
+      "op": "document_brep_import",
+      "id": "zero-volume-reverse-False-import",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -4,
+              -1,
+              -1
+            ],
+            "max": [
+              -2,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              2,
+              -1,
+              -1
+            ],
+            "max": [
+              4,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        }
+      ],
+      "flip_faces": []
+    },
+    {
+      "op": "document_brep_import",
+      "id": "zero-volume-reverse-True-import",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -4,
+              -1,
+              -1
+            ],
+            "max": [
+              -2,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              2,
+              -1,
+              -1
+            ],
+            "max": [
+              4,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        }
+      ],
+      "flip_faces": []
+    },
+    {
+      "op": "document_brep_import",
+      "id": "coincident-reverse-False-import",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        }
+      ],
+      "flip_faces": []
+    },
+    {
+      "op": "document_brep_import",
+      "id": "coincident-reverse-True-import",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        },
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        }
+      ],
+      "flip_faces": []
+    },
+    {
+      "op": "document_brep_import",
+      "id": "open-reverse-False-import",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ],
+            "keep_faces": [
+              0,
+              1,
+              2,
+              3,
+              4
+            ]
+          },
+          "reversed": false
+        }
+      ],
+      "flip_faces": []
+    },
+    {
+      "op": "document_brep_import",
+      "id": "open-reverse-True-import",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ],
+            "keep_faces": [
+              0,
+              1,
+              2,
+              3,
+              4
+            ]
+          },
+          "reversed": true
+        }
+      ],
+      "flip_faces": []
+    },
+    {
+      "op": "document_brep_import",
+      "id": "inconsistent-reverse-False-import",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": false
+        }
+      ],
+      "flip_faces": [
+        0
+      ]
+    },
+    {
+      "op": "document_brep_import",
+      "id": "inconsistent-reverse-True-import",
+      "sources": [
+        {
+          "source": {
+            "type": "box",
+            "min": [
+              -1,
+              -1,
+              -1
+            ],
+            "max": [
+              1,
+              1,
+              1
+            ]
+          },
+          "reversed": true
+        }
+      ],
+      "flip_faces": [
+        0
+      ]
+    },
+    {
+      "op": "document_brep_import",
+      "id": "corner-reverse-False-import",
+      "sources": [
+        {
+          "source": {
+            "type": "mesh_brep",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                10,
+                0
+              ],
+              [
+                1,
+                11,
+                1
+              ],
+              [
+                2,
+                15,
+                0
+              ]
+            ],
+            "faces": [
+              [
+                0,
+                2,
+                1
+              ],
+              [
+                0,
+                1,
+                3
+              ],
+              [
+                0,
+                3,
+                2
+              ],
+              [
+                1,
+                2,
+                3
+              ]
+            ]
+          },
+          "reversed": false
+        }
+      ],
+      "flip_faces": []
+    },
+    {
+      "op": "document_brep_import",
+      "id": "corner-reverse-True-import",
+      "sources": [
+        {
+          "source": {
+            "type": "mesh_brep",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                10,
+                0
+              ],
+              [
+                1,
+                11,
+                1
+              ],
+              [
+                2,
+                15,
+                0
+              ]
+            ],
+            "faces": [
+              [
+                0,
+                2,
+                1
+              ],
+              [
+                0,
+                1,
+                3
+              ],
+              [
+                0,
+                3,
+                2
+              ],
+              [
+                1,
+                2,
+                3
+              ]
+            ]
+          },
+          "reversed": true
+        }
+      ],
+      "flip_faces": []
+    }
+  ]
+}

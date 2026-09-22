@@ -1,0 +1,103 @@
+{
+  "capture_date_utc": "2026-09-22",
+  "engine_version": "8.32.26160.13001",
+  "source_parent_commit": "f6237cd3819d742915a0b8c09bb677c35a238cea",
+  "capture": "One owned private-Xvfb session, public RhinoDoc.Import into disposable headless documents. Shared native 3dm sources, millimeter units, full definitions, no manual startup recovery or proprietary inspection.",
+  "native_baseline": "Parent revision plus the new import adapter, before document admission normalization.",
+  "implementation": "Add, explicit Replace and replacement-geometry copies globally reverse only exact Inward B-reps; Import3dm uses Add. Unknown/non-solid/non-B-rep input is unchanged. Transforms/morphs and historical snapshot restoration are not reclassified.",
+  "admission_replay": {
+    "cases": 64,
+    "before_matches": 16,
+    "after_matches": 56,
+    "remaining_coincident_gaps": 8,
+    "native_failed": 0
+  },
+  "import_replay": {
+    "cases": 16,
+    "before_matches": 9,
+    "after_matches": 14,
+    "remaining_coincident_gaps": 2,
+    "native_failed": 0
+  },
+  "comparison": {
+    "absolute_epsilon": 0.0,
+    "relative_epsilon": 1e-12,
+    "maximum_observed_absolute_numeric_error": 0.0
+  },
+  "retained_file_sha256": {
+    "tools/rhino_oracle/fixtures/document_brep_import.json": "be324db3bb7059faa11287c6cc7e51bf8517cf96ad77c337b0a0d42f76295d5c",
+    "tools/rhino_oracle/observations/document_brep_import.json": "f2d4a98ba2711ff06765c5922b8e5303805f05b2b7d5babe21317e1ad340a1db",
+    "tools/rhino_oracle/observations/document_brep_import_before_report.json": "fd020dabe190c8eba24f3e3a536abc406aa3260a68666c44e28c662176ee6c3f",
+    "tools/rhino_oracle/observations/document_brep_import_after_report.json": "98789ef8e93b185d52c8e986948bcbae5f04659c862c6704efff1efd0eb7e8fb",
+    "tools/rhino_oracle/observations/document_brep_after_report.json": "e693d813ac1731b3b6650429f219b4cd28bf53a64fe69c78ff2c515dc41fb1a2"
+  },
+  "implementation_source_sha256": {
+    "crates/viboceros-document/src/lib.rs": "e96bca5c0206a41414cb6eff9c63280f3cd2ec8dab69bff404e6f55daca09227",
+    "crates/viboceros-document/src/object_admission.rs": "deddf9b8d82a8c09fd9a7b09e57abae03ed52926e6250252b0cf8e03f4e01d67",
+    "crates/viboceros-document/src/object_copy.rs": "b9a9d2c877b7ca7ce242b3fff8131c1de80f83c6b0b6762740a36ac0bf7b81fb",
+    "crates/viboceros-document/src/object_geometry.rs": "b7f95cc2eb9697a44c24eb20178711c51ce37b1107f6dbca916bdfa1fbf57b0b",
+    "crates/viboceros-geometry/src/brep.rs": "aab7ca1d448a0fae8d96405c1ed38557f785705a2109cd1a409377835d6c2ca1",
+    "crates/viboceros-oracle/src/document_brep.rs": "8bd4e4511337462d949ef3b657fc5fbd7de424083cc82f9b7eee24e8cb86a137",
+    "crates/viboceros-oracle/src/solid_orientation.rs": "a9684fdc73debcd8327c86b0f1fea48c567d686c3bf011d05d9928f2486b9aa5",
+    "crates/viboceros-oracle/src/lib.rs": "077c3ba36ed4ff2a02308ddf334717b6c8f8fb0a521c4cd94a2e12838c0fec73",
+    "tools/rhino_oracle/document_brep_probe.py": "1169e92117e7e95f8afe6b82b42efbca58cc60cb853107926eb1b78d5c8f37a0",
+    "tools/rhino_oracle/rhino_worker.py": "5cf94ce55677e6e888e8c5f5075ab4fa35e566ccac50492ac14a749175d06917",
+    "tools/rhino_oracle/client.py": "32a5fd08abe2851feb1991c497af3ecd45e99136c09704fba690afd675512066",
+    "tools/rhino_oracle/references/document_brep.py": "2d89339c0e6e2d969928096ab7eaf36adceb17ed6ef13cb8763db2041642d048",
+    "crates/viboceros-geometry/src/nurbs_surface/evaluate/normal.rs": "896dbc79c30bbeb0078e0da420db4f627aa4860e8446c17d2eb7093c387de9ed",
+    "crates/viboceros-geometry/src/nurbs_surface/evaluate/normal/support.rs": "9a3490e10d5be26ccf00c6db3b7faed36f108ef8fa6a55c0294f544b2ed1d804"
+  },
+  "raw_import_capture_sha256": "68fe85abf5446c28ae4b06f9f3114986023a0da52c1552aa3c90f336d473ef5b",
+  "raw_native_import_baseline_sha256": "0aabbc151567a85c3c65eb2d8d2c26ff3fcf5c7ec170ead918da3f02c1754fba",
+  "shared_artifact_sha256": {
+    "box-reverse-False-import": "eac2f8573cf759c32db8e32c0052aaf22ade1631836af7019c2d5ec143e1ea5f",
+    "box-reverse-True-import": "999fd19ce48539f0bd081cc86d9a3b9f7be1ea7a4444c949a7b6780e41c8dcb2",
+    "negative-volume-reverse-False-import": "8dd3ca12916c02be5964aab65b6ab2c6f062bda97b53312dab80bb4be66cf3c7",
+    "negative-volume-reverse-True-import": "ab1a562909821be08ab29f8dfec3b0db70614277c437d5d8eafeaf80d91e4f98",
+    "nested-cavity-reverse-False-import": "dcd3d30d0814d42321b016c7c8a0a1d3ad1051f0becb10753f7a9c900d47b810",
+    "nested-cavity-reverse-True-import": "8d41ea930418c223915d8679ae1d7419940ac7b26a62cf49b4679ca8aada8fe4",
+    "zero-volume-reverse-False-import": "d13a3e909699c19cfb85c6f4a3d518b996304a2ab0877e21f58bdf4eaf0649a0",
+    "zero-volume-reverse-True-import": "3809e0803377d3c5389ab85865ebb69b79372693cf5c4647abdbc4c90cb8d49c",
+    "coincident-reverse-False-import": "656be487a9a670e99421841e6e9af1a454594ad65c46a9184604ec885477469a",
+    "coincident-reverse-True-import": "0b20a4ddd269f46befefe848fba9cce664bdd80969043641c1e4de76a9705f78",
+    "open-reverse-False-import": "e9f1dafa88060833cdc76832986c1cac9f16338c4661f33549c62b758e73d84a",
+    "open-reverse-True-import": "1c9dfd135511cf44e3029954516f83e7fdf3905d9997b69f308b4c158ce3489b",
+    "inconsistent-reverse-False-import": "7535b45a2de16bb22047fc9468e8094f5cb1f2eb0bb3fa606d22ee79083e2103",
+    "inconsistent-reverse-True-import": "136f37bc6cc561ad45748440ea1d8e927047a373e51efe52c13e579df8553861",
+    "corner-reverse-False-import": "dd92a5d0add9f5cdde91d61cb54e9a25c20c4df6c50a397195c531ada2018c9c",
+    "corner-reverse-True-import": "3ee5a05a2f2b7dc370f021c9748f4c02c32a746c303f8fb015b5523b28bad783"
+  },
+  "lossless_compaction": "Every JSON scalar type and all binary64 bits (including signed zero) checked recursively against the raw response.",
+  "red_regressions": {
+    "passed_before": 1,
+    "failed_before": [
+      "admission_normalizes_whole_solids_without_volume_sign_or_representable_volume",
+      "admission_normalization_precedes_noop_and_explicit_replacement_history"
+    ],
+    "log_sha256": "bab735d909d4993970d472b6d6841d954beac83d371a4b53d73b4991dc37e6da"
+  },
+  "limitations": [
+    "No general spatial classifier for arbitrary curved/trimmed B-reps or coincident shells.",
+    "No volume fallback for document admission; unsupported geometry remains unchanged.",
+    "Import capture is not Open, unit conversion, mesh, curved/extreme-scale, transform/morph, or undo oracle evidence.",
+    "Additional curved/extreme-scale/history/copy tests are native regressions, not Rhino observations.",
+    "Timing values are zero; no performance benchmark claim."
+  ],
+  "support_rejection": "An exact comparison-only boolean interpretation of nonnegative tensor de Boor blends rejects strictly above-bound candidates before rational jet construction. It never accepts a contact; exact witnesses and work-budget accounting are unchanged.",
+  "verification": {
+    "rust_passed": 3282,
+    "rust_ignored": 31,
+    "python_passed": 436,
+    "clippy": "workspace all targets, -D warnings",
+    "format": "cargo fmt --all -- --check",
+    "local_oracle_suite_seconds_before_guard": 110.79,
+    "local_oracle_suite_seconds_after_guard": 43.02,
+    "timing_scope": "Local release-test observations, not a controlled kernel/Rhino benchmark.",
+    "log_sha256": {
+      "workspace-final.log": "9707806fb42ee048f2605f0761c279c9935bd83af30f9803affd6f13db3fd9d9",
+      "workspace-optimized.log": "3e64c205897d112df9e96243e353a0632246eda5df071043b4d106f83898ea30",
+      "clippy-final.log": "ce24b64f5c1104c47480b3a12b6b6d8996bdd2a126dc97d6384bedcbde758446",
+      "python-final.log": "667e69658354f711a45e1b6b47501b24535c16d1e11ddd0d1deb3d76f2220e32"
+    }
+  }
+}

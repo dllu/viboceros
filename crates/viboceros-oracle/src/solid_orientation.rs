@@ -11,7 +11,7 @@ pub struct SolidOrientationFixture {
     sources: Vec<BrepSourceFixture>,
     #[serde(default)]
     flip_faces: Vec<usize>,
-    artifact_path: Option<String>,
+    pub(super) artifact_path: Option<String>,
 }
 
 pub(super) fn run(

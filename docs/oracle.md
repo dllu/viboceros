@@ -20,6 +20,9 @@ from Rhino's large-coordinate orientation and normalization discrepancies.
 The [shared-source document admission probe](document-brep-admission.md) separates
 insertion and replacement using identical caller-owned inputs, with full
 definitions, identity, attributes, groups, selection, and immutability checks.
+It now resolves 40 normalization differences (56/64 full matches); a separate
+16-case actual file-import capture has 14 full matches. Coincident-shell
+orientation remains unresolved in both audits, with all numeric fields equal.
 
 The [conic-center audit](conic-center-audit.md) compares 32 full-coordinate public
 API records and 62 calibrated point-prompt records. It keeps API recognition,

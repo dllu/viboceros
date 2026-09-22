@@ -197,10 +197,10 @@ class OracleClient:
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
         interaction = None
-        if any(op.get("op") == "document_brep" for op in request.get("operations", [])):
+        if any(op.get("op") in ("document_brep", "document_brep_import") for op in request.get("operations", [])):
             from .document_brep_probe import validate
             for operation in request["operations"]:
-                if operation.get("op") == "document_brep": validate(operation, request.get("iterations", 1))
+                if operation.get("op") in ("document_brep", "document_brep_import"): validate(operation, request.get("iterations", 1))
         if any(op.get("op") == "orientation_audit" for op in request.get("operations", [])):
             from .orientation_probe import validate
             if type(request.get("iterations", 1)) is not int or request.get("iterations", 1) != 1:
@@ -247,7 +247,7 @@ class OracleClient:
             worker_request["_host"] = {"exit_rhino_when_complete": True}
             _write_json(request_path, worker_request)
             shutil.copyfile(worker_source, worker_path)
-            if any(op.get("op") == "document_brep" for op in request.get("operations", [])):
+            if any(op.get("op") in ("document_brep", "document_brep_import") for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("document_brep_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "orientation_audit" for op in request.get("operations", [])):
@@ -435,7 +435,7 @@ def _owned_artifact_request(request):
                 operation["artifact_path"] = str(Path(job) / f"cap-{index}.3dm")
             elif operation.get("op") == "brep_solid_orientation":
                 operation["artifact_path"] = str(Path(job) / f"orientation-{index}.3dm")
-            elif operation.get("op") == "document_brep":
+            elif operation.get("op") in ("document_brep", "document_brep_import"):
                 operation["artifact_path"] = str(Path(job) / f"document-brep-{index}.3dm")
             elif operation.get("op") == "brep_merge_edge":
                 source = operation.get("source")

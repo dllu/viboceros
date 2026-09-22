@@ -2,6 +2,7 @@
 use super::*;
 use crate::UnitVector3;
 mod filter;
+mod support;
 
 #[cfg(test)]
 mod tests;
@@ -18,6 +19,9 @@ impl NurbsSurface {
             checked_span(self.degree_u, self.control_point_count_u, &self.knots_u, u)?,
             checked_span(self.degree_v, self.control_point_count_v, &self.knots_v, v)?,
         ];
+        if support::strictly_above(self, spans, [u, v], bound) {
+            return Ok(None);
+        }
         exact::ExactJetNet::new(self, spans).minimum_x_support_sense([u, v], bound)
     }
 

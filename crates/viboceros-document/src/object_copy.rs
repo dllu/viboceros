@@ -86,6 +86,7 @@ impl Document {
     /// Atomically copies replacement geometry while preserving source
     /// attributes and appending each copy to every group containing its source.
     /// Source selection is retained and the new objects remain unselected.
+    /// Explicit replacement inputs use ordinary geometry-admission normalization.
     pub fn copy_object_geometries_into_source_groups(
         &mut self,
         copies: impl IntoIterator<Item = (ObjectId, Geometry)>,
@@ -120,11 +121,11 @@ impl Document {
             .into_iter()
             .map(|index| (self.objects[index].id, index))
             .collect::<BTreeMap<_, _>>();
-        self.commit_source_group_copies(
-            pieces
-                .into_iter()
-                .map(|(id, geometry)| (by_id[&id], geometry)),
-        )
+        let staged = pieces
+            .into_iter()
+            .map(|(id, geometry)| Ok((by_id[&id], object_admission::normalize_geometry(geometry)?)))
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        self.commit_source_group_copies(staged.into_iter())
     }
 
     fn copy_object_geometries_with_order(
@@ -147,7 +148,7 @@ impl Document {
         for index in indices {
             let object = &self.objects[index];
             let (rank, geometry) = copies.remove(&object.id).unwrap();
-            staged.push((index, rank, geometry));
+            staged.push((index, rank, object_admission::normalize_geometry(geometry)?));
         }
         if staged.is_empty() {
             return Ok(Vec::new());

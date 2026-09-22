@@ -44,8 +44,8 @@ and zero native failures**:
 
 - All 16 open/inconsistently oriented cases agree completely; insertion preserves
   their sense and replacement accepts the reversed original source.
-- Forty regular solid workflows differ because native insertion/replacement
-  currently preserves inward inputs, while Rhino globally reverses them.
+- Forty regular solid workflows differed because native insertion/replacement
+  preserved inward inputs, while Rhino globally reversed them.
 - Eight coincident opposed-shell workflows additionally retain native `Unknown`
   versus Rhino `Outward`/`Inward` getter differences. Their native orientation
   remains unresolved, not repaired with an ordering heuristic.
@@ -66,19 +66,58 @@ whole-object normalization. The cavity retains opposite outer/inner senses.
 [Provenance](document-brep-provenance.json) records source and shared artifact
 hashes. Lossless JSON compaction was checked recursively, including each scalar
 type and every binary64 bit (signed zero included). Replay tests explicitly
-assert the 40 normalization-only gaps and eight coincident-query gaps before
-checking every remaining field; these gaps are not counted as matches.
+assert the remaining eight coincident-query gaps before checking every remaining
+field; the original 40 normalization-only gaps remain in the baseline report.
 
-## Scope and implementation boundary
+## Document normalization and import
 
-This audit does not change document admission policy. Imports currently share
-the native insertion API; file reading, document import, explicit replacement,
-transform/copy, and history restoration must not be conflated. A `File3dm` read
-preserving source geometry does not establish Rhino document Open/Import policy.
-The native conservative spatial classifier can also return `Unknown`, including
-opposed coincident shells. Neither case justifies a total-volume fallback or
-independently flipping each connected shell, which would destroy cavity sense.
-The matrix does not cover curved B-reps, meshes, or extreme numeric scales.
+`document/object_admission` now globally reverses a B-rep **only** when the exact
+spatial query returns `Inward`. `Outward`, `NotSolid`, and `Unknown` retain their
+supplied sense; non-B-rep geometry, including mesh winding, is untouched. There
+is no signed-volume fallback and connected shells are never flipped separately.
+In-place reversal changes face flags without cloning/reallocating surfaces,
+trims, edges, or vertices.
+The curved support query also cheaply rejects provably unattainable hull-bound
+contacts before constructing rational jets; this avoids an admission-time
+regression on periodic point-grid surfaces without weakening its exact witness.
+
+Add, explicit replacement, and explicit replacement-geometry copies share this
+policy. All editability and group checks precede geometry work, and all fallible
+staging precedes document/history mutation. Replacement normalization happens
+before the equality check: `ChangesOnly` retains geometry snapshot identity,
+redo history, and selection for normalized no-ops; `EveryReplacement` still
+records explicit assignments. Undo/Redo restores the recorded immutable
+snapshots without reclassifying geometry. Transform/morph and their copy paths
+retain their existing material-side behavior, separate from explicit admission.
+
+The [updated 64-case replay](../tools/rhino_oracle/observations/document_brep_after_report.json)
+has **56 complete matches and eight coincident-shell differences**, with no
+native failures or numeric errors. All 40 normalization-only gaps are resolved.
+
+A fresh [16-case import request](../tools/rhino_oracle/fixtures/document_brep_import.json)
+and [full Rhino capture](../tools/rhino_oracle/observations/document_brep_import.json)
+separately test `RhinoDoc.Import` in disposable headless documents, in an owned
+private-Xvfb session. The native adapter executes actual `Import3dm`. The
+low-level `File3dm` source remains unchanged, but document import globally
+normalizes inward solids just like Add. Source and destination units are
+millimeters. This is file-import evidence, not an Open-command or unit-conversion
+audit; each adapter disposes its own document/artifacts.
+
+Import improves from [nine matches/seven differences](../tools/rhino_oracle/observations/document_brep_import_before_report.json)
+to [14 matches/two differences](../tools/rhino_oracle/observations/document_brep_import_after_report.json).
+The remaining coincident-shell getter/sense differences are preserved explicitly;
+all numeric fields match exactly. Low-level 3dm readers and writers still retain
+raw face orientation; it is admission to a document that now normalizes known
+inward solids. No import-specific bypass or file-data rewrite was added.
+
+Native regressions also cover rational spheres, quadratic trims deliberately
+outside classifier support, underflow/overflow volume scales, identity and
+history sharing, atomic permission failures, and explicit-copy group ownership.
+The first two normalization regressions failed before the implementation change.
+These native cases are not additional Rhino observations. The Rhino matrices do
+not cover curved B-reps, meshes, extreme scales, transforms, or Undo/Redo.
+[Implementation/import provenance](document-normalization-provenance.json)
+records the new capture, retained comparisons, and implementation source hashes.
 
 To recapture both engines, use an owned private Xvfb session:
 

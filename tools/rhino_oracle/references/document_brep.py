@@ -35,5 +35,16 @@ def request():
     return dict(protocol_version=1, iterations=1, operations=operations)
 
 
+def import_request():
+    operations = []
+    for source in request()["operations"]:
+        if source["insertion"] != "generic" or source["selected"]: continue
+        operation = {k:v for k,v in source.items() if k not in ("selected", "insertion")}
+        operation["op"] = "document_brep_import"
+        operation["id"] = operation["id"].replace("-generic-selected-False", "-import")
+        operations.append(operation)
+    return dict(protocol_version=1, iterations=1, operations=operations)
+
+
 if __name__ == "__main__":
     print(json.dumps(request(), indent=2, allow_nan=False))

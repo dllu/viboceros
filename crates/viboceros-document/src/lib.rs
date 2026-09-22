@@ -6,6 +6,7 @@ mod geometry_snapshot;
 pub use geometry_snapshot::GeometrySnapshot;
 mod groups;
 mod history;
+mod object_admission;
 mod object_copy;
 mod object_deletion;
 mod object_geometry;
@@ -1246,7 +1247,8 @@ impl Document {
     }
 
     /// Atomically replaces geometry while retaining object identity,
-    /// attributes, group membership, and selection.
+    /// attributes, group membership, and selection. Known inward B-rep solids
+    /// are globally reversed before equality/history decisions, as on insertion.
     pub fn replace_object_geometries(
         &mut self,
         replacements: impl IntoIterator<Item = (ObjectId, Geometry)>,
@@ -1274,7 +1276,7 @@ impl Document {
         let mut replacements = replacements;
         for index in indices {
             let geometry = replacements.remove(&self.objects[index].id).unwrap();
-            staged.push((index, geometry));
+            staged.push((index, object_admission::normalize_geometry(geometry)?));
         }
         self.commit_object_geometries(
             staged,
@@ -1299,43 +1301,6 @@ impl Document {
             "Replace object geometry",
             ReplacementHistory::ChangesOnly,
         )
-    }
-
-    pub fn add_geometry(&mut self, geometry: Geometry) -> Result<ObjectId, DocumentError> {
-        self.add_geometry_with_attributes(geometry, ObjectAttributes::on_layer(self.current_layer))
-    }
-
-    pub fn add_geometry_with_attributes(
-        &mut self,
-        geometry: Geometry,
-        attributes: ObjectAttributes,
-    ) -> Result<ObjectId, DocumentError> {
-        let layer = self
-            .layer(attributes.layer_id)
-            .ok_or(DocumentError::LayerNotFound(attributes.layer_id))?;
-        if layer.locked {
-            return Err(DocumentError::LayerLocked(layer.id));
-        }
-
-        let id = ObjectId::new();
-        let index = self.objects.len();
-        self.objects.push(Object {
-            id,
-            geometry: geometry.into(),
-            attributes,
-            isolation: ObjectIsolation::None,
-            group_ids: Vec::new(),
-        });
-        self.record_edit(
-            "Add object",
-            Edit::ObjectInserted {
-                index,
-                id,
-                stored: None,
-                selected: false,
-            },
-        );
-        Ok(id)
     }
 
     pub fn delete_object(&mut self, id: ObjectId) -> Result<(), DocumentError> {

@@ -45,6 +45,12 @@ object state are also preserved, including the raw RGB display color, its
 layer/object/material/parent source, and surface wire density. Named group
 definitions and ordered membership survive round trips, including overlapping
 and empty groups.
+Low-level B-rep readers/writers preserve raw face sense. On admission to a
+document, `Import3dm` now globally reverses known inward solids, as measured in
+Rhino's file import; unsupported/unknown orientation and nonsolids remain as read.
+This is the same [document-admission policy](document-brep-admission.md) as Add
+and explicit replacement, not a modification of the source file or its low-level
+geometry representation. Nested cavity senses are retained relative to each other.
 Unnamed groups receive deterministic `GroupNN` names on export without changing
 the document. All existing names are reserved before allocation; a single
 candidate sequence avoids repeated scans when many unnamed groups are exported.

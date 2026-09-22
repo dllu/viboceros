@@ -58,7 +58,7 @@ fn document_brep_probe_rejects_invalid_iterations_and_insertion_overloads() {
 }
 
 #[test]
-fn shared_document_admission_replay_exposes_normalization_and_coincident_query_gaps() {
+fn shared_document_admission_replay_resolves_normalization_but_retains_coincident_gaps() {
     let request: ProbeRequest = serde_json::from_str(include_str!(
         "../../../../tools/rhino_oracle/fixtures/document_brep.json"
     ))
@@ -70,16 +70,15 @@ fn shared_document_admission_replay_exposes_normalization_and_coincident_query_g
     let actual = run_request(&request).unwrap();
     let expected = observed["results"].as_array().unwrap();
     assert_eq!((actual.results.len(), expected.len()), (64, 64));
-    let (mut matches, mut normalization_gaps, mut coincident_gaps) = (0, 0, 0);
+    let (mut matches, mut coincident_gaps) = (0, 0);
     for (actual, expected) in actual.results.iter().zip(expected) {
         assert_eq!(actual.id, expected["id"]);
-        let nonsolid = actual.id.starts_with("open-") || actual.id.starts_with("inconsistent-");
-        if nonsolid {
+        let coincident = actual.id.starts_with("coincident-");
+        if !coincident {
             crate::test_json::close(&actual.value, &expected["value"], &actual.id, 0., 0.);
             matches += 1;
             continue;
         }
-        let coincident = actual.id.starts_with("coincident-");
         let reversed = actual.id.contains("-reverse-True-");
         let mut native = actual.value.clone();
         let mut rhino = expected["value"].clone();
@@ -93,13 +92,6 @@ fn shared_document_admission_replay_exposes_normalization_and_coincident_query_g
         ] {
             let n = native.pointer_mut(path).unwrap();
             let r = rhino.pointer_mut(path).unwrap();
-            let native_sense = if coincident {
-                "Unknown"
-            } else if inward {
-                "Inward"
-            } else {
-                "Outward"
-            };
             let rhino_sense = if document_state || !inward {
                 "Outward"
             } else {
@@ -107,7 +99,7 @@ fn shared_document_admission_replay_exposes_normalization_and_coincident_query_g
             };
             assert_eq!(
                 n.as_object_mut().unwrap().remove("orientation").unwrap(),
-                native_sense,
+                "Unknown",
                 "{}:{path}",
                 actual.id
             );
@@ -143,11 +135,73 @@ fn shared_document_admission_replay_exposes_normalization_and_coincident_query_g
         // Full raw definitions and metadata otherwise agree exactly, with no
         // gauge/domain/component-order normalization or modeling epsilon.
         crate::test_json::close(&native, &rhino, &actual.id, 0., 0.);
-        if coincident {
-            coincident_gaps += 1;
-        } else {
-            normalization_gaps += 1;
-        }
+        coincident_gaps += 1;
     }
-    assert_eq!((matches, normalization_gaps, coincident_gaps), (16, 40, 8));
+    assert_eq!((matches, coincident_gaps), (56, 8));
+}
+
+#[test]
+fn actual_file_import_normalizes_known_inward_solids_without_changing_the_source_file() {
+    let request: ProbeRequest = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/document_brep_import.json"
+    ))
+    .unwrap();
+    let observed: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/document_brep_import.json"
+    ))
+    .unwrap();
+    let actual = run_request(&request).unwrap();
+    let expected = observed["results"].as_array().unwrap();
+    assert_eq!((actual.results.len(), expected.len()), (16, 16));
+    let mut matches = 0;
+    for (a, e) in actual.results.iter().zip(expected) {
+        assert_eq!(a.id, e["id"]);
+        if !a.id.starts_with("coincident-") {
+            crate::test_json::close(&a.value, &e["value"], &a.id, 0., 0.);
+            matches += 1;
+            continue;
+        }
+        let reversed = a.id.contains("-reverse-True-");
+        let mut n = a.value.clone();
+        let mut r = e["value"].clone();
+        for key in ["input", "imported"] {
+            assert_eq!(
+                n[key]
+                    .as_object_mut()
+                    .unwrap()
+                    .remove("orientation")
+                    .unwrap(),
+                "Unknown"
+            );
+            assert_eq!(
+                r[key]
+                    .as_object_mut()
+                    .unwrap()
+                    .remove("orientation")
+                    .unwrap(),
+                if key == "input" && reversed {
+                    "Inward"
+                } else {
+                    "Outward"
+                }
+            );
+            if key == "imported" && reversed {
+                let nf = n[key]["geometry"]["topology"]["faces"]
+                    .as_array_mut()
+                    .unwrap();
+                let rf = r[key]["geometry"]["topology"]["faces"]
+                    .as_array_mut()
+                    .unwrap();
+                assert_eq!(nf.len(), rf.len());
+                for (n, r) in nf.iter_mut().zip(rf) {
+                    assert_ne!(
+                        n.as_object_mut().unwrap().remove("reversed").unwrap(),
+                        r.as_object_mut().unwrap().remove("reversed").unwrap()
+                    );
+                }
+            }
+        }
+        crate::test_json::close(&n, &r, &a.id, 0., 0.);
+    }
+    assert_eq!(matches, 14);
 }

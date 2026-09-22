@@ -1,0 +1,255 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 0.0,
+  "relative_epsilon": 1e-12,
+  "operations": [
+    {
+      "id": "box-reverse-False-import",
+      "comparison": {
+        "id": "box-reverse-False-import",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "box-reverse-True-import",
+      "comparison": {
+        "id": "box-reverse-True-import",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "negative-volume-reverse-False-import",
+      "comparison": {
+        "id": "negative-volume-reverse-False-import",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "negative-volume-reverse-True-import",
+      "comparison": {
+        "id": "negative-volume-reverse-True-import",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "nested-cavity-reverse-False-import",
+      "comparison": {
+        "id": "nested-cavity-reverse-False-import",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "nested-cavity-reverse-True-import",
+      "comparison": {
+        "id": "nested-cavity-reverse-True-import",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "zero-volume-reverse-False-import",
+      "comparison": {
+        "id": "zero-volume-reverse-False-import",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "zero-volume-reverse-True-import",
+      "comparison": {
+        "id": "zero-volume-reverse-True-import",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "coincident-reverse-False-import",
+      "comparison": {
+        "id": "coincident-reverse-False-import",
+        "passed": false,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": [
+          "coincident-reverse-False-import.value.imported.orientation: 'Unknown' != 'Outward'",
+          "coincident-reverse-False-import.value.input.orientation: 'Unknown' != 'Outward'"
+        ]
+      },
+      "native_error": null,
+      "passed": false
+    },
+    {
+      "id": "coincident-reverse-True-import",
+      "comparison": {
+        "id": "coincident-reverse-True-import",
+        "passed": false,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": [
+          "coincident-reverse-True-import.value.imported.geometry.topology.faces[0].reversed: True != False",
+          "coincident-reverse-True-import.value.imported.geometry.topology.faces[1].reversed: True != False",
+          "coincident-reverse-True-import.value.imported.geometry.topology.faces[2].reversed: True != False",
+          "coincident-reverse-True-import.value.imported.geometry.topology.faces[3].reversed: True != False",
+          "coincident-reverse-True-import.value.imported.geometry.topology.faces[4].reversed: True != False",
+          "coincident-reverse-True-import.value.imported.geometry.topology.faces[5].reversed: True != False",
+          "coincident-reverse-True-import.value.imported.geometry.topology.faces[6].reversed: False != True",
+          "coincident-reverse-True-import.value.imported.geometry.topology.faces[7].reversed: False != True",
+          "coincident-reverse-True-import.value.imported.geometry.topology.faces[8].reversed: False != True",
+          "coincident-reverse-True-import.value.imported.geometry.topology.faces[9].reversed: False != True",
+          "coincident-reverse-True-import.value.imported.geometry.topology.faces[10].reversed: False != True",
+          "coincident-reverse-True-import.value.imported.geometry.topology.faces[11].reversed: False != True",
+          "coincident-reverse-True-import.value.imported.orientation: 'Unknown' != 'Outward'",
+          "coincident-reverse-True-import.value.input.orientation: 'Unknown' != 'Inward'"
+        ]
+      },
+      "native_error": null,
+      "passed": false
+    },
+    {
+      "id": "open-reverse-False-import",
+      "comparison": {
+        "id": "open-reverse-False-import",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "open-reverse-True-import",
+      "comparison": {
+        "id": "open-reverse-True-import",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "inconsistent-reverse-False-import",
+      "comparison": {
+        "id": "inconsistent-reverse-False-import",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "inconsistent-reverse-True-import",
+      "comparison": {
+        "id": "inconsistent-reverse-True-import",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "corner-reverse-False-import",
+      "comparison": {
+        "id": "corner-reverse-False-import",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "corner-reverse-True-import",
+      "comparison": {
+        "id": "corner-reverse-True-import",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    }
+  ],
+  "passed": false,
+  "cases": 16,
+  "matched": 14,
+  "native_failed": 0,
+  "mismatched": 2,
+  "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison."
+}

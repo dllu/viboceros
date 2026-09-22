@@ -167,6 +167,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    DocumentBrepImport {
+        id: String,
+        #[serde(flatten)]
+        fixture: solid_orientation::SolidOrientationFixture,
+    },
     DocumentBrep {
         id: String,
         #[serde(flatten)]
@@ -1710,6 +1715,7 @@ impl Operation {
     pub fn id(&self) -> &str {
         match self {
             Self::VolumeCommand { id, .. }
+            | Self::DocumentBrepImport { id, .. }
             | Self::DocumentBrep { id, .. }
             | Self::BrepSolidOrientation { id, .. }
             | Self::AreaCentroidCommand { id, .. }
@@ -2105,6 +2111,9 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::DocumentBrepImport { fixture, .. } => {
+            document_brep::run_import(fixture, iterations, tolerance)?
+        }
         Operation::DocumentBrep { fixture, .. } => {
             document_brep::run(fixture, iterations, tolerance)?
         }

@@ -82,3 +82,48 @@ fn snapshot(document: &Document, id: ObjectId) -> Result<Value, ProbeError> {
         "object_count":document.objects().len(),"identity_preserved":object.id()==id}),
     )
 }
+
+/// Import the actual shared file through the command, not through AddBrep.
+pub(super) fn run_import(
+    fixture: &SolidOrientationFixture,
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    if iterations != 1 {
+        return Err(ProbeError::FixtureInvariant(
+            "B-rep import requires one iteration",
+        ));
+    }
+    let source = fixture.build(tolerance)?;
+    let input = geometry_record(&source)?;
+    let temporary = OracleTemporaryFile::new("document-brep-import");
+    let path = fixture
+        .artifact_path
+        .as_deref()
+        .map(Path::new)
+        .unwrap_or(&temporary.path);
+    let path = path
+        .to_str()
+        .ok_or(ProbeError::FixtureInvariant("import path must be UTF-8"))?;
+    if path.contains(['"', '\n', '\r']) {
+        return Err(ProbeError::FixtureInvariant(
+            "unsupported import path quoting",
+        ));
+    }
+    crate::brep_source::write_shared_artifact(&Geometry::Brep(source.clone()), path, tolerance)?;
+    let mut document = Document::new(tolerance);
+    CommandRegistry::with_builtins().execute(&mut document, &format!("Import3dm \"{path}\""))?;
+    if document.objects().len() != 1 {
+        return Err(ProbeError::FixtureInvariant(
+            "import must retain exactly one object",
+        ));
+    }
+    let Geometry::Brep(imported) = document.objects().next().unwrap().geometry() else {
+        return Err(ProbeError::FixtureInvariant("import lost B-rep"));
+    };
+    Ok((
+        json!({"input":input,"imported":geometry_record(imported)?,
+        "object_count":1,"succeeded":true,"source_unchanged":input==geometry_record(&source)?}),
+        0,
+    ))
+}

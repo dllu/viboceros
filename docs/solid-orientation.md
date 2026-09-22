@@ -6,7 +6,9 @@ uses) and `is_solid()` (consistent oriented incidence). It is deliberately
 incomplete and does not validate that a solid is embedded without intersections.
 It is used by [`Cap`](cap-compound-orientation.md) and
 [automatic B-rep joining](join-orientation.md) to orient newly closed results.
-General document insertion and replacement do not yet normalize orientation.
+[Document admission](document-brep-admission.md) also uses the exact query to
+globally reverse known inward solids on Add, explicit replacement/copy, and
+document import. Unknown sense is preserved without a volume fallback.
 
 ## Exact planar crossings
 
@@ -39,6 +41,18 @@ rational arithmetic on the original binary64 coefficients verifies both contact
 and normal direction. No sampling tolerance authorizes a result; the homogeneous
 normal numerator avoids division and floating-point cross-product cancellation.
 The same exact numerator supports [regular surface normals](surface-normals.md).
+
+A comparison-only rejection guard skips unattainable contacts before constructing
+rational jet nets. With same-sign active weights and all active X controls at or
+above the bound, a boolean interpretation of nonnegative de Boor blends proves
+whether any strictly higher control contributes. A positive contribution rules
+out exact contact. Knot order comparisons handle repeated knots, endpoints, and
+extreme scales without subtraction, division, or rounded basis coefficients.
+This guard only rejects candidates; accepted orientation still requires the
+original exact contact/normal witness. Mixed weights, controls below the bound,
+and unsupported blend intervals fall through to exact arithmetic. Tests compare
+the guard against rational de Boor values and exact surface queries, including
+negative gauges and rational poles.
 
 Containment is accepted only for a single exactly closed, counterclockwise
 rectangle of four continuous, clamped, degree-one UV curves with same-sign
@@ -116,6 +130,6 @@ python3 -m unittest tools.rhino_oracle.test_solid_orientation
 Comparison and replay correctly exit nonzero for the two unresolved values.
 Passing regression tests retain those gaps; they do not claim full compatibility.
 General extrema, arbitrary trimmed contacts, and representation-dependent ties
-remain work for a broader spatial classifier. Existing document normalization
+remain work for a broader spatial classifier. Coincident document-admission
 gaps remain. `Cap` and automatic joining use this query with explicitly limited
 single-shell numerical fallbacks, outside the exact classifier itself.

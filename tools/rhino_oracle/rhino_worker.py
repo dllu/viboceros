@@ -5130,6 +5130,9 @@ def _execute(operation, iterations, tolerance):
     if kind == "document_brep":
         import document_brep_probe
         return document_brep_probe.run(operation, iterations, globals())
+    if kind == "document_brep_import":
+        import document_brep_probe
+        return document_brep_probe.run_import(operation, iterations, tolerance, globals())
     if kind == "volume_command":
         import area_centroid_probe
         return area_centroid_probe.run(operation, tolerance, globals(), "volume", False)
