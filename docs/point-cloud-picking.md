@@ -15,6 +15,10 @@ and index nodes. Lazy indexes initialized through any clone are available to all
 clones of that data. Equality has a constant-time shared-storage fast path and
 otherwise compares ordered points and channels. Transformations create fresh
 data and fresh indexes, leaving the original and its snapshots unchanged.
+Changing runtime hidden flags creates a new channel snapshot while sharing the
+point array and all existing index caches. Even warmed XZ/YZ and oblique bounds
+remain shared, so Hide/Show does not rebuild the search tree. Color, normal, and
+value arrays are copied with the new channel snapshot.
 
 `point_cloud.rs` owns the public type, shared storage, and cache lifecycle.
 `point_cloud/index.rs` owns k-d tree construction, deterministic ordering, and

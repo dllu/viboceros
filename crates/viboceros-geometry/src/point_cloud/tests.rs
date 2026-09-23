@@ -127,6 +127,63 @@ fn hidden_members_keep_indices_and_visible_queries_skip_them() {
 }
 
 #[test]
+fn visibility_edits_share_points_and_spatial_indexes() {
+    let points = vec![point(0.0, 0.0, 0.0), point(1.0, 2.0, 3.0)];
+    let cloud = PointCloud3::try_with_colors(
+        points.clone(),
+        Some(vec![[10, 20, 30, 0], [40, 50, 60, 128]]),
+    )
+    .unwrap();
+    for projection in [PointCloudProjection::Xz, PointCloudProjection::Yz] {
+        cloud
+            .nearest_projected_relative(projection, points[0], [0.0, 0.0], 1.0)
+            .unwrap();
+    }
+    let frame = Frame3::try_from_directions(
+        points[0],
+        Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+        Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+        crate::Tolerance::DEFAULT,
+    )
+    .unwrap();
+    cloud
+        .nearest_projected_frame_relative(frame, [0.0, 0.0], 1.0)
+        .unwrap();
+    let hidden = cloud.with_hidden(vec![true, false]).unwrap();
+    assert!(!Arc::ptr_eq(&cloud.data, &hidden.data));
+    assert!(Arc::ptr_eq(&cloud.data.points, &hidden.data.points));
+    assert!(Arc::ptr_eq(&cloud.data.xy, &hidden.data.xy));
+    assert!(Arc::ptr_eq(&cloud.data.xz, &hidden.data.xz));
+    assert!(Arc::ptr_eq(&cloud.data.yz, &hidden.data.yz));
+    assert!(Arc::ptr_eq(
+        &cloud.data.spatial_bounds,
+        &hidden.data.spatial_bounds
+    ));
+    assert!(hidden.data.xz.get().is_some());
+    assert!(hidden.data.yz.get().is_some());
+    assert!(hidden.data.spatial_bounds.get().is_some());
+    assert_eq!(hidden.colors(), cloud.colors());
+    assert_eq!(cloud.hidden(), None);
+    assert_eq!(hidden.hidden(), Some(&[true, false][..]));
+    assert_eq!(
+        hidden
+            .nearest_visible_projected_in_frame_box_relative(frame, [0.0, 0.0], 2.0)
+            .unwrap()
+            .unwrap()
+            .0,
+        1
+    );
+    assert!(Arc::ptr_eq(
+        &hidden.data,
+        &hidden.with_hidden(vec![true, false]).unwrap().data
+    ));
+    let shown = hidden.with_hidden(vec![false, false]).unwrap();
+    assert_eq!(shown.hidden(), None);
+    assert!(Arc::ptr_eq(&cloud.data.points, &shown.data.points));
+    assert!(Arc::ptr_eq(&cloud.data.xy, &shown.data.xy));
+}
+
+#[test]
 fn optional_normals_values_and_order_validate_and_survive_transforms() {
     let points = vec![point(1.0, 2.0, 3.0), point(4.0, 5.0, 6.0)];
     let normals = vec![

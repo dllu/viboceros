@@ -131,13 +131,13 @@ pub struct PointCloudChannels {
 
 #[derive(Debug)]
 struct PointCloudData {
-    points: Vec<Point3>,
+    points: Arc<Vec<Point3>>,
     channels: PointCloudChannels,
     bounds: BoundingBox3,
-    xy: ProjectedIndex,
-    xz: OnceLock<ProjectedIndex>,
-    yz: OnceLock<ProjectedIndex>,
-    spatial_bounds: OnceLock<Vec<NodeBounds>>,
+    xy: Arc<ProjectedIndex>,
+    xz: Arc<OnceLock<ProjectedIndex>>,
+    yz: Arc<OnceLock<ProjectedIndex>>,
+    spatial_bounds: Arc<OnceLock<Vec<NodeBounds>>>,
 }
 
 impl PointCloud3 {
@@ -216,20 +216,20 @@ impl PointCloud3 {
         let xy = ProjectedIndex::new(&points, PointCloudProjection::Xy);
         Ok(Self {
             data: Arc::new(PointCloudData {
-                points,
+                points: Arc::new(points),
                 channels,
                 bounds,
-                xy,
-                xz: OnceLock::new(),
-                yz: OnceLock::new(),
-                spatial_bounds: OnceLock::new(),
+                xy: Arc::new(xy),
+                xz: Arc::new(OnceLock::new()),
+                yz: Arc::new(OnceLock::new()),
+                spatial_bounds: Arc::new(OnceLock::new()),
             }),
         })
     }
 
     #[inline]
     pub fn points(&self) -> &[Point3] {
-        &self.data.points
+        self.data.points.as_slice()
     }
 
     #[inline]
@@ -273,9 +273,33 @@ impl PointCloud3 {
 
     /// Returns a new cloud with the same stored members and updated runtime visibility.
     pub fn with_hidden(&self, hidden: Vec<bool>) -> Result<Self, GeometryError> {
-        let mut channels = self.data.channels.clone();
-        channels.hidden = Some(hidden);
-        Self::try_with_channels(self.points().to_vec(), channels)
+        if hidden.len() != self.points().len() {
+            return Err(GeometryError::InvalidPointCloudHiddenCount);
+        }
+        if self.hidden().is_some_and(|current| current == hidden)
+            || (self.hidden().is_none() && !hidden.contains(&true))
+        {
+            return Ok(self.clone());
+        }
+        let channels = PointCloudChannels {
+            colors: self.data.channels.colors.clone(),
+            normals: self.data.channels.normals.clone(),
+            values: self.data.channels.values.clone(),
+            ordered: self.data.channels.ordered,
+            plane: self.data.channels.plane,
+            hidden: hidden.contains(&true).then_some(hidden),
+        };
+        Ok(Self {
+            data: Arc::new(PointCloudData {
+                points: Arc::clone(&self.data.points),
+                channels,
+                bounds: self.data.bounds,
+                xy: Arc::clone(&self.data.xy),
+                xz: Arc::clone(&self.data.xz),
+                yz: Arc::clone(&self.data.yz),
+                spatial_bounds: Arc::clone(&self.data.spatial_bounds),
+            }),
+        })
     }
 
     #[inline]
