@@ -267,6 +267,113 @@ fn none_option_selects_each_disconnected_offset_piece() {
 }
 
 #[test]
+fn through_point_chooses_distance_for_each_selected_curve() {
+    let mut document = Document::default();
+    let normal = CommandContext::default().construction_plane.z_axis();
+    let line = document
+        .add_geometry(Geometry::Line(
+            LineSegment::try_new(
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    let circle = document
+        .add_geometry(Geometry::Circle(
+            Circle3::try_new(point(0.0, 0.0, 0.0), 5.0, normal, document.tolerance()).unwrap(),
+        ))
+        .unwrap();
+    document
+        .select_objects_direct([line, circle], SelectionMode::Replace)
+        .unwrap();
+    let message = CommandRegistry::with_builtins()
+        .execute(&mut document, "Offset ThroughPoint=2,2,0")
+        .unwrap();
+    assert!(message.contains("through 2.000000,2.000000,0.000000"));
+    let results = document
+        .selected_objects()
+        .map(|object| object.geometry())
+        .collect::<Vec<_>>();
+    let [Geometry::Line(offset_line), Geometry::Circle(offset_circle)] = results.as_slice() else {
+        panic!("analytic offsets")
+    };
+    assert_eq!(offset_line.start(), point(0.0, 2.0, 0.0));
+    assert!((offset_circle.radius() - 8.0_f64.sqrt()).abs() <= document.tolerance().absolute());
+    assert_eq!(document.objects().count(), 4);
+}
+
+#[test]
+fn through_point_failure_leaves_selected_sources_unchanged() {
+    let mut document = Document::default();
+    let normal = CommandContext::default().construction_plane.z_axis();
+    let line = document
+        .add_geometry(Geometry::Line(
+            LineSegment::try_new(
+                point(-10.0, 0.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    let circle = Circle3::try_new(point(0.0, 0.0, 0.0), 5.0, normal, document.tolerance()).unwrap();
+    let arc = document
+        .add_geometry(Geometry::Arc(
+            CircularArc3::try_from_circle_sweep(circle, std::f64::consts::FRAC_PI_2).unwrap(),
+        ))
+        .unwrap();
+    document
+        .select_objects_direct([line, arc], SelectionMode::Replace)
+        .unwrap();
+    let before = document.objects().cloned().collect::<Vec<_>>();
+    assert!(matches!(
+        CommandRegistry::with_builtins().execute(&mut document, "Offset ThroughPoint=-7,2,0",),
+        Err(CommandError::Geometry(
+            GeometryError::OffsetThroughPointNoSolution
+        ))
+    ));
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    assert!(matches!(
+        parse(&["ThroughPoint=2,2,0", "BothSides=Yes"]),
+        Err(CommandError::Usage(_))
+    ));
+}
+
+#[test]
+fn through_point_reaches_a_polyline_chamfer() {
+    let mut document = Document::default();
+    let source = document
+        .add_geometry(Geometry::Polyline(
+            viboceros_geometry::Polyline3::try_new(
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.0, -4.0, 0.0),
+                ],
+                document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    document
+        .select_object(source, SelectionMode::Replace)
+        .unwrap();
+    CommandRegistry::with_builtins()
+        .execute(
+            &mut document,
+            "Offset ThroughPoint=4.5,0.5,0 Corner=Chamfer",
+        )
+        .unwrap();
+    let Geometry::Polyline(output) = document.selected_objects().next().unwrap().geometry() else {
+        panic!("chamfer")
+    };
+    assert_eq!(output.vertices()[1], point(4.0, 1.0, 0.0));
+    assert_eq!(output.vertices()[2], point(5.0, 0.0, 0.0));
+}
+
+#[test]
 fn collapsing_polyline_offset_rolls_back_other_selected_results() {
     let mut document = Document::default();
     let line = document

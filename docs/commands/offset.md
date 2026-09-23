@@ -8,6 +8,14 @@ distance must be positive. `Offset distance BothSides=Yes` creates one curve on
 each side without a point. The selected originals remain in the document, and
 the new curves become selected.
 
+`Offset ThroughPoint=x,y,z` derives a distance independently for every selected
+curve. The picked point must lie in each curve's offset plane and on the
+resulting finite curve within document tolerance. Polyline offsets try the
+nearest source segment; round and chamfer corners also solve from the nearest
+vertex when the point lies on a corner join.
+If no supported offset passes through the point, the command leaves every
+selected source unchanged. `BothSides` is unavailable with `ThroughPoint`.
+
 Lines offset to the left or right of their direction in the current
 construction plane. Circles and arcs offset radially in their own planes.
 Planar polylines use `Corner=Sharp` by default, extending neighboring offset

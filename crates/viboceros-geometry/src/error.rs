@@ -11,6 +11,10 @@ pub enum GeometryError {
     AmbiguousCurveOffsetSide,
     #[error("offset distance must be nonzero and finite")]
     InvalidCurveOffsetDistance,
+    #[error("offset through-point lies outside the curve's offset plane")]
+    OffsetThroughPointOffPlane,
+    #[error("no supported offset passes through the picked point")]
+    OffsetThroughPointNoSolution,
     #[error("an open-gap offset may have multiple components; use try_offset_parts")]
     DisconnectedCurveOffset,
     #[error(transparent)]

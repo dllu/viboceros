@@ -219,6 +219,7 @@ Offset 2 0,5,0
 Offset 2 BothSides=Yes OutputLayer=Input
 Offset 1 1,2,0 Corner=Round
 Offset 1 1,2,0 Corner=None
+Offset ThroughPoint=2,2,0
 MergeAllEdges
 MergeEdge object-id edge-index [Edge|EdgeA|EdgeB|Both|All]
 SplitEdge object-id edge-index parameter [parameter ...]

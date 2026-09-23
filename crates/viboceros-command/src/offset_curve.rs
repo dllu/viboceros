@@ -5,7 +5,7 @@ use super::*;
 #[cfg(test)]
 mod tests;
 
-const USAGE: &str = "Offset distance side-point [BothSides=Yes|No] [Corner=Sharp|Chamfer|Round|None] [OutputLayer=Current|Input] | Offset distance BothSides=Yes [Corner=Sharp|Chamfer|Round|None] [OutputLayer=Current|Input]";
+const USAGE: &str = "Offset distance side-point [BothSides=Yes|No] [Corner=Sharp|Chamfer|Round|None] [OutputLayer=Current|Input] | Offset distance BothSides=Yes [Corner=Sharp|Chamfer|Round|None] [OutputLayer=Current|Input] | Offset ThroughPoint=point [Corner=Sharp|Chamfer|Round|None] [OutputLayer=Current|Input]";
 
 pub(super) struct OffsetCommand;
 
@@ -40,17 +40,6 @@ impl Command for OffsetCommand {
                 Geometry::Polyline(polyline) => Curve3::Polyline(polyline.clone()),
                 _ => return Err(CommandError::UnsupportedOffsetGeometry),
             };
-            let sign = if options.both_sides {
-                1.0
-            } else {
-                curve
-                    .offset_side(
-                        options.side.expect("validated side point"),
-                        normal,
-                        document.tolerance(),
-                    )
-                    .map_err(map_offset_error)?
-            };
             let output_attributes = if options.input_layer {
                 ObjectAttributes::on_layer(object.attributes().layer_id())
             } else {
@@ -58,22 +47,52 @@ impl Command for OffsetCommand {
             };
             // Offset creates fresh objects. A source's name and overrides are
             // not silently propagated along with its layer.
-            let distances = [sign * options.distance, -options.distance];
-            let count = 1 + usize::from(options.both_sides);
-            for &signed_distance in &distances[..count] {
-                let parts = curve
-                    .try_offset_parts(
-                        signed_distance,
-                        normal,
-                        document.tolerance(),
-                        options.corner,
-                    )
-                    .map_err(map_offset_error)?;
-                outputs.extend(
-                    parts
-                        .into_iter()
-                        .map(|part| (Geometry::from(part), output_attributes.clone())),
-                );
+            match options.mode {
+                OffsetMode::Distance(distance) => {
+                    let sign = if options.both_sides {
+                        1.0
+                    } else {
+                        curve
+                            .offset_side(
+                                options.side.expect("validated side point"),
+                                normal,
+                                document.tolerance(),
+                            )
+                            .map_err(map_offset_error)?
+                    };
+                    let distances = [sign * distance, -distance];
+                    let count = 1 + usize::from(options.both_sides);
+                    for &signed_distance in &distances[..count] {
+                        let parts = curve
+                            .try_offset_parts(
+                                signed_distance,
+                                normal,
+                                document.tolerance(),
+                                options.corner,
+                            )
+                            .map_err(map_offset_error)?;
+                        outputs.extend(
+                            parts
+                                .into_iter()
+                                .map(|part| (Geometry::from(part), output_attributes.clone())),
+                        );
+                    }
+                }
+                OffsetMode::ThroughPoint(point) => {
+                    let (_, parts) = curve
+                        .try_offset_through_point(
+                            point,
+                            normal,
+                            document.tolerance(),
+                            options.corner,
+                        )
+                        .map_err(map_offset_error)?;
+                    outputs.extend(
+                        parts
+                            .into_iter()
+                            .map(|part| (Geometry::from(part), output_attributes.clone())),
+                    );
+                }
             }
         }
         let count = outputs.len();
@@ -82,10 +101,15 @@ impl Command for OffsetCommand {
             ids.push(document.add_geometry_with_attributes(geometry, attributes)?);
         }
         document.select_objects_direct(ids, SelectionMode::Replace)?;
-        Ok(format!(
-            "Created {count} offset curve(s) at distance {}",
-            options.distance
-        ))
+        Ok(match options.mode {
+            OffsetMode::Distance(distance) => {
+                format!("Created {count} offset curve(s) at distance {distance}",)
+            }
+            OffsetMode::ThroughPoint(point) => format!(
+                "Created {count} offset curve(s) through {}",
+                format_point(point),
+            ),
+        })
     }
 }
 
@@ -99,20 +123,39 @@ fn map_offset_error(error: GeometryError) -> CommandError {
 
 #[derive(Clone, Copy)]
 struct Options {
-    distance: Real,
+    mode: OffsetMode,
     side: Option<Point3>,
     both_sides: bool,
     input_layer: bool,
     corner: CurveOffsetCornerStyle,
 }
 
+#[derive(Clone, Copy)]
+enum OffsetMode {
+    Distance(Real),
+    ThroughPoint(Point3),
+}
+
 fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
-    let distance = parse_finite_real(arguments.first().ok_or(CommandError::Usage(USAGE))?)?;
-    if distance <= 0.0 {
-        return Err(GeometryError::InvalidCurveOffsetDistance.into());
-    }
+    let first = *arguments.first().ok_or(CommandError::Usage(USAGE))?;
+    let (mode, first_consumed) = if first.eq_ignore_ascii_case("ThroughPoint") {
+        let (point, consumed) = parse_point(&arguments[1..])?;
+        (OffsetMode::ThroughPoint(point), 1 + consumed)
+    } else if let Some((name, value)) = first.split_once('=') {
+        if !name.eq_ignore_ascii_case("ThroughPoint") {
+            return Err(CommandError::Usage(USAGE));
+        }
+        let (point, _) = parse_point(&[value])?;
+        (OffsetMode::ThroughPoint(point), 1)
+    } else {
+        let distance = parse_finite_real(first)?;
+        if distance <= 0.0 {
+            return Err(GeometryError::InvalidCurveOffsetDistance.into());
+        }
+        (OffsetMode::Distance(distance), 1)
+    };
     let mut options = Options {
-        distance,
+        mode,
         side: None,
         both_sides: false,
         input_layer: false,
@@ -121,7 +164,7 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
     let mut both_seen = false;
     let mut layer_seen = false;
     let mut corner_seen = false;
-    let mut index = 1;
+    let mut index = first_consumed;
     while index < arguments.len() {
         let argument = arguments[index];
         let (name, value, consumed) = if let Some((name, value)) = argument.split_once('=') {
@@ -174,11 +217,14 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
         }
         index += consumed;
     }
-    if !options.both_sides && options.side.is_none() {
-        return Err(CommandError::Usage(USAGE));
-    }
-    if options.both_sides && options.side.is_some() {
-        return Err(CommandError::Usage(USAGE));
+    match options.mode {
+        OffsetMode::Distance(_) if options.both_sides == options.side.is_some() => {
+            return Err(CommandError::Usage(USAGE));
+        }
+        OffsetMode::ThroughPoint(_) if options.both_sides || options.side.is_some() => {
+            return Err(CommandError::Usage(USAGE));
+        }
+        _ => {}
     }
     Ok(options)
 }

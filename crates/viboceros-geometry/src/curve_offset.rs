@@ -126,6 +126,125 @@ impl Curve3 {
         )?])
     }
 
+    /// Find an offset that contains `through` within absolute model tolerance.
+    /// Planar polylines try the nearest segment's perpendicular distance and
+    /// the nearest corner's radius or chamfer construction when applicable.
+    pub fn try_offset_through_point(
+        &self,
+        through: Point3,
+        plane_normal: UnitVector3,
+        tolerance: Tolerance,
+        corner: CurveOffsetCornerStyle,
+    ) -> Result<(Real, Vec<Self>), GeometryError> {
+        let (origin, normal, candidates) = match self {
+            Self::Line(line) => {
+                let direction = line.direction(tolerance)?;
+                let left = plane_normal
+                    .as_vector()
+                    .cross(direction.as_vector())?
+                    .normalized(tolerance)?;
+                let offset_plane_normal = direction
+                    .as_vector()
+                    .cross(left.as_vector())?
+                    .normalized(tolerance)?;
+                (
+                    line.start(),
+                    offset_plane_normal,
+                    vec![line.start().vector_to(through)?.dot(left.as_vector())?],
+                )
+            }
+            Self::Circle(circle) => (
+                circle.center(),
+                circle.normal()?,
+                vec![
+                    circle.radius()
+                        - in_plane_radius(
+                            circle.center(),
+                            through,
+                            circle.x_axis(),
+                            circle.y_axis(),
+                        )?,
+                ],
+            ),
+            Self::Arc(arc) => (
+                arc.center(),
+                arc.normal()?,
+                vec![
+                    arc.radius()
+                        - in_plane_radius(arc.center(), through, arc.x_axis(), arc.y_axis())?,
+                ],
+            ),
+            Self::Polyline(polyline) => {
+                let normal = polyline_offset_normal(polyline, plane_normal, tolerance)?;
+                let mut nearest = None;
+                for segment in polyline.segments() {
+                    let closest = segment.closest_point(through, tolerance)?;
+                    let separation = closest.distance_to(through)?;
+                    if nearest.is_none_or(|(best, _)| separation < best) {
+                        let left = normal
+                            .as_vector()
+                            .cross(segment.direction(tolerance)?.as_vector())?;
+                        let signed = segment.start().vector_to(through)?.dot(left)?;
+                        nearest = Some((separation, signed));
+                    }
+                }
+                let signed = nearest.expect("a polyline has segments").1;
+                let mut candidates = vec![signed];
+                if matches!(
+                    corner,
+                    CurveOffsetCornerStyle::Round | CurveOffsetCornerStyle::Chamfer
+                ) {
+                    let vertex_count = if polyline.is_closed() {
+                        polyline.segment_count()
+                    } else {
+                        polyline.vertices().len()
+                    };
+                    let nearest_vertex =
+                        (0..vertex_count).try_fold((Real::INFINITY, 0), |best, index| {
+                            let distance = polyline.vertices()[index].distance_to(through)?;
+                            Ok::<_, GeometryError>(if distance < best.0 {
+                                (distance, index)
+                            } else {
+                                best
+                            })
+                        })?;
+                    if corner == CurveOffsetCornerStyle::Round && signed != 0.0 {
+                        candidates.push(signed.signum() * nearest_vertex.0);
+                    } else if corner == CurveOffsetCornerStyle::Chamfer
+                        && let Some(distance) = chamfer_distance_through_point(
+                            polyline,
+                            nearest_vertex.1,
+                            through,
+                            normal,
+                            tolerance,
+                        )?
+                    {
+                        candidates.push(distance);
+                    }
+                }
+                (polyline.vertices()[0], normal, candidates)
+            }
+            _ => return Err(GeometryError::UnsupportedCurveOffset),
+        };
+        if origin.vector_to(through)?.dot(normal.as_vector())?.abs() > tolerance.absolute() {
+            return Err(GeometryError::OffsetThroughPointOffPlane);
+        }
+        for distance in candidates {
+            if !distance.is_finite() || distance.abs() <= tolerance.absolute() {
+                continue;
+            }
+            if let Ok(parts) = self.try_offset_parts(distance, plane_normal, tolerance, corner)
+                && parts.iter().any(|part| {
+                    offset_curve_distance_to_point(part, through, tolerance)
+                        .is_ok_and(|separation| separation <= tolerance.absolute())
+                })
+            {
+                return Ok((distance, parts));
+            }
+        }
+        Err(GeometryError::OffsetThroughPointNoSolution)
+    }
+
     /// Returns which signed offset reaches `side` for this curve's oriented
     /// plane. A point on the supporting locus is ambiguous even if it lies
     /// beyond a finite line or arc endpoint.
@@ -173,6 +292,106 @@ impl Curve3 {
         }
         Ok(signed.signum())
     }
+}
+
+fn offset_curve_distance_to_point(
+    curve: &Curve3,
+    point: Point3,
+    tolerance: Tolerance,
+) -> Result<Real, GeometryError> {
+    match curve {
+        Curve3::Line(line) => line.closest_point(point, tolerance)?.distance_to(point),
+        Curve3::Circle(circle) => {
+            let radial = in_plane_radius(circle.center(), point, circle.x_axis(), circle.y_axis())?;
+            let height = circle
+                .center()
+                .vector_to(point)?
+                .dot(circle.normal()?.as_vector())?;
+            Ok((radial - circle.radius()).hypot(height))
+        }
+        Curve3::Arc(arc) => offset_arc_distance_to_point(*arc, point),
+        Curve3::Polyline(polyline) => polyline.closest_point(point, tolerance)?.distance_to(point),
+        Curve3::PolyCurve(polycurve) => {
+            polycurve
+                .segments()
+                .iter()
+                .try_fold(Real::INFINITY, |best, segment| {
+                    let distance = match segment {
+                        CurveSegment3::Line(line) => {
+                            line.closest_point(point, tolerance)?.distance_to(point)?
+                        }
+                        CurveSegment3::Arc(arc) => offset_arc_distance_to_point(*arc, point)?,
+                        CurveSegment3::Polyline(polyline) => polyline
+                            .closest_point(point, tolerance)?
+                            .distance_to(point)?,
+                        CurveSegment3::NurbsCurve(_) => {
+                            return Err(GeometryError::UnsupportedCurveOffset);
+                        }
+                    };
+                    Ok(best.min(distance))
+                })
+        }
+        _ => Err(GeometryError::UnsupportedCurveOffset),
+    }
+}
+
+fn offset_arc_distance_to_point(arc: CircularArc3, point: Point3) -> Result<Real, GeometryError> {
+    let radial = arc.center().vector_to(point)?;
+    let mut angle = radial
+        .dot(arc.y_axis().as_vector())?
+        .atan2(radial.dot(arc.x_axis().as_vector())?);
+    if angle < 0.0 {
+        angle += std::f64::consts::TAU;
+    }
+    if angle <= arc.sweep_radians() {
+        arc.point_at(angle / arc.sweep_radians())?
+            .distance_to(point)
+    } else {
+        Ok(arc
+            .point_at(0.0)?
+            .distance_to(point)?
+            .min(arc.point_at(1.0)?.distance_to(point)?))
+    }
+}
+
+fn chamfer_distance_through_point(
+    polyline: &Polyline3,
+    vertex_index: usize,
+    through: Point3,
+    normal: UnitVector3,
+    tolerance: Tolerance,
+) -> Result<Option<Real>, GeometryError> {
+    let segment_count = polyline.segment_count();
+    if !polyline.is_closed() && (vertex_index == 0 || vertex_index == segment_count) {
+        return Ok(None);
+    }
+    let previous = if vertex_index == 0 {
+        segment_count - 1
+    } else {
+        vertex_index - 1
+    };
+    let vertices = polyline.vertices();
+    let left_before = normal.as_vector().cross(
+        vertices[previous]
+            .direction_to(vertices[previous + 1])?
+            .as_vector(),
+    )?;
+    let left_after = normal.as_vector().cross(
+        vertices[vertex_index]
+            .direction_to(vertices[vertex_index + 1])?
+            .as_vector(),
+    )?;
+    let determinant = left_before.cross(left_after)?.dot(normal.as_vector())?;
+    if determinant.abs() <= tolerance.angular() {
+        return Ok(None);
+    }
+    let radial = vertices[vertex_index].vector_to(through)?;
+    let first = radial.cross(left_after)?.dot(normal.as_vector())? / determinant;
+    let second = left_before.cross(radial)?.dot(normal.as_vector())? / determinant;
+    if first * second < 0.0 {
+        return Ok(None);
+    }
+    Ok(Some(first + second))
 }
 
 fn polyline_offset_normal(
@@ -1219,6 +1438,172 @@ mod tests {
                 point(3.0, 1.0, 0.0),
                 point(3.0, 4.0, 0.0),
             ]
+        );
+    }
+
+    #[test]
+    fn through_point_offsets_analytic_curves_and_checks_actual_locus() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let line = Curve3::Line(
+            LineSegment::try_new(point(0.0, 0.0, 0.0), point(4.0, 0.0, 0.0), tol).unwrap(),
+        );
+        let (distance, parts) = line
+            .try_offset_through_point(
+                point(2.0, 2.0, 0.0),
+                normal,
+                tol,
+                CurveOffsetCornerStyle::Sharp,
+            )
+            .unwrap();
+        assert_eq!(distance, 2.0);
+        let [Curve3::Line(offset)] = parts.as_slice() else {
+            panic!("line offset")
+        };
+        assert_eq!(offset.start(), point(0.0, 2.0, 0.0));
+        assert_eq!(
+            line.try_offset_through_point(
+                point(5.0, 2.0, 0.0),
+                normal,
+                tol,
+                CurveOffsetCornerStyle::Sharp,
+            ),
+            Err(GeometryError::OffsetThroughPointNoSolution)
+        );
+        assert_eq!(
+            line.try_offset_through_point(
+                point(2.0, 2.0, 1.0),
+                normal,
+                tol,
+                CurveOffsetCornerStyle::Sharp,
+            ),
+            Err(GeometryError::OffsetThroughPointOffPlane)
+        );
+        let slope = Curve3::Line(
+            LineSegment::try_new(point(0.0, 0.0, 0.0), point(4.0, 0.0, 4.0), tol).unwrap(),
+        );
+        let (distance, parts) = slope
+            .try_offset_through_point(
+                point(2.0, 2.0, 2.0),
+                normal,
+                tol,
+                CurveOffsetCornerStyle::Sharp,
+            )
+            .unwrap();
+        assert_eq!(distance, 2.0);
+        assert!(matches!(parts.as_slice(), [Curve3::Line(_)]));
+        assert_eq!(
+            slope.try_offset_through_point(
+                point(2.0, 2.0, 3.0),
+                normal,
+                tol,
+                CurveOffsetCornerStyle::Sharp,
+            ),
+            Err(GeometryError::OffsetThroughPointOffPlane)
+        );
+
+        let x_axis = Vector3::try_new(1.0, 0.0, 0.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let circle =
+            Circle3::try_from_frame(point(0.0, 0.0, 0.0), 5.0, x_axis, normal, tol).unwrap();
+        let (distance, parts) = Curve3::Circle(circle)
+            .try_offset_through_point(
+                point(7.0, 0.0, 0.0),
+                normal,
+                tol,
+                CurveOffsetCornerStyle::Sharp,
+            )
+            .unwrap();
+        assert_eq!(distance, -2.0);
+        let [Curve3::Circle(offset)] = parts.as_slice() else {
+            panic!("circle offset")
+        };
+        assert_eq!(offset.radius(), 7.0);
+
+        let arc = CircularArc3::try_from_circle_sweep(circle, std::f64::consts::FRAC_PI_2).unwrap();
+        let (distance, parts) = Curve3::Arc(arc)
+            .try_offset_through_point(
+                point(0.0, 7.0, 0.0),
+                normal,
+                tol,
+                CurveOffsetCornerStyle::Sharp,
+            )
+            .unwrap();
+        assert_eq!(distance, -2.0);
+        assert!(matches!(parts.as_slice(), [Curve3::Arc(_)]));
+        assert_eq!(
+            Curve3::Arc(arc).try_offset_through_point(
+                point(-7.0, 0.0, 0.0),
+                normal,
+                tol,
+                CurveOffsetCornerStyle::Sharp,
+            ),
+            Err(GeometryError::OffsetThroughPointNoSolution)
+        );
+    }
+
+    #[test]
+    fn through_point_finds_line_and_round_polyline_offsets() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let source = Curve3::Polyline(
+            Polyline3::try_new(
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.0, -4.0, 0.0),
+                ],
+                tol,
+            )
+            .unwrap(),
+        );
+        let (distance, parts) = source
+            .try_offset_through_point(
+                point(2.0, 1.0, 0.0),
+                normal,
+                tol,
+                CurveOffsetCornerStyle::Sharp,
+            )
+            .unwrap();
+        assert_eq!(distance, 1.0);
+        assert!(matches!(parts.as_slice(), [Curve3::Polyline(_)]));
+        let root = 0.5_f64.sqrt();
+        let (distance, parts) = source
+            .try_offset_through_point(
+                point(4.0 + root, root, 0.0),
+                normal,
+                tol,
+                CurveOffsetCornerStyle::Round,
+            )
+            .unwrap();
+        assert!((distance - 1.0).abs() <= tol.absolute());
+        assert!(matches!(parts.as_slice(), [Curve3::PolyCurve(_)]));
+        let (distance, parts) = source
+            .try_offset_through_point(
+                point(4.5, 0.5, 0.0),
+                normal,
+                tol,
+                CurveOffsetCornerStyle::Chamfer,
+            )
+            .unwrap();
+        assert!((distance - 1.0).abs() <= tol.absolute());
+        assert!(matches!(parts.as_slice(), [Curve3::Polyline(_)]));
+        assert_eq!(
+            source.try_offset_through_point(
+                point(2.0, 1.0, 0.1),
+                normal,
+                tol,
+                CurveOffsetCornerStyle::Sharp,
+            ),
+            Err(GeometryError::OffsetThroughPointOffPlane)
         );
     }
 }
