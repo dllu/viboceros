@@ -140,6 +140,7 @@ pub enum ZoomTargetInput {
 pub struct ViewportInput<'a> {
     pub drafting: DraftingInput,
     pub zoom_window: bool,
+    pub forced_crossing: Option<bool>,
     pub zoom_target: Option<ZoomTargetInput>,
     pub object_filter: Option<ObjectSelectionFilter>,
     pub selection_preview: Option<ObjectSelectionFilter>,
@@ -178,6 +179,7 @@ impl Default for ViewportInput<'_> {
         Self {
             drafting: DraftingInput::default(),
             zoom_window: false,
+            forced_crossing: None,
             zoom_target: None,
             object_filter: Some(ObjectSelectionFilter::Any),
             selection_preview: None,
@@ -590,7 +592,9 @@ impl Viewport {
         let selection_window = if selecting && response.drag_stopped_by(PointerButton::Primary) {
             self.selection_drag_start.take().and_then(|start| {
                 let end = selection_pointer?;
-                let crossing = is_crossing_selection(start, end);
+                let crossing = input
+                    .forced_crossing
+                    .unwrap_or_else(|| is_crossing_selection(start, end));
                 let selection_rect = Rect::from_two_pos(start, end);
                 Some(SelectionWindow {
                     object_ids: self.objects_in_selection_matching_preview(
@@ -649,7 +653,10 @@ impl Viewport {
         {
             ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
         }
-        let selection_click = if selecting && response.clicked_by(PointerButton::Primary) {
+        let selection_click = if selecting
+            && input.forced_crossing.is_none()
+            && response.clicked_by(PointerButton::Primary)
+        {
             Some(SelectionClick {
                 object_id: response.interact_pointer_pos().and_then(|pointer| {
                     self.pick_object_matching_preview(
@@ -765,7 +772,7 @@ impl Viewport {
             self.paint_drafting(&painter, rect, zoom_drafting, cursor);
         }
         if let (Some(start), Some(end)) = (self.selection_drag_start, selection_pointer) {
-            self.paint_selection_window(&painter, start, end);
+            self.paint_selection_window(&painter, start, end, input.forced_crossing);
         }
         if let (Some(start), Some(end)) = (self.zoom_window_start, selection_pointer) {
             painter.rect_stroke(

@@ -111,6 +111,10 @@ right selects only fully enclosed objects, while right-to-left makes a crossing
 selection. Click geometry to replace the selection, Shift-click/drag to add,
 and Ctrl-click/drag or Command-click/drag to remove. Click empty space or press
 Esc to clear the selection; press Delete to remove selected objects.
+`SelWindow` (`W`) and `SelCrossing` (`C`) force enclosed or crossing selection
+for the next drag, regardless of drag direction. They also work during object
+selection prompts; Esc cancels the capture. The commands follow Rhino's
+[window and crossing selection](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelCrossing).
 
 Navigation ignores non-finite drag deltas, invalid zoom factors/pointers, and
 non-finite or empty zoom rectangles. Pan updates that overflow screen coordinates

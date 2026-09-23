@@ -109,6 +109,157 @@ fn zoom_target_frame(
     output
 }
 
+fn selection_capture_frame(
+    context: &egui::Context,
+    app: &mut VibocerosApp,
+    events: Vec<egui::Event>,
+) -> ViewportOutput {
+    let mut output = ViewportOutput::default();
+    context
+        .run_ui(
+            egui::RawInput {
+                screen_rect: Some(egui::Rect::from_min_size(
+                    egui::Pos2::ZERO,
+                    egui::vec2(800., 600.),
+                )),
+                events,
+                ..Default::default()
+            },
+            |ui| {
+                output = app.viewports[0].show(
+                    ui,
+                    &app.document,
+                    ViewportInput {
+                        object_filter: app.viewport_object_filter(),
+                        forced_crossing: app.selection_window_override,
+                        ..Default::default()
+                    },
+                    &[],
+                    0,
+                    true,
+                );
+            },
+        )
+        .drop_without_applying_deltas();
+    output
+}
+
+#[test]
+fn typed_window_commands_force_mode_for_one_drag_and_preserve_model_history() {
+    let mut app = test_app();
+    enter(&mut app, "Point 0,0,0");
+    enter(&mut app, "Line -5,0,0 5,0,0");
+    let ids = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    let undo = app.document.undo_label().map(str::to_owned);
+    let context = egui::Context::default();
+    let button = |pos, pressed| egui::Event::PointerButton {
+        pos,
+        pressed,
+        button: egui::PointerButton::Primary,
+        modifiers: egui::Modifiers::NONE,
+    };
+    for (command, start, end, crossing) in [
+        (
+            "SelCrossing",
+            egui::Pos2::new(390., 290.),
+            egui::Pos2::new(410., 310.),
+            true,
+        ),
+        (
+            "SelWindow",
+            egui::Pos2::new(410., 310.),
+            egui::Pos2::new(390., 290.),
+            false,
+        ),
+    ] {
+        app.document.clear_selection();
+        enter(&mut app, command);
+        assert_eq!(app.selection_window_override, Some(crossing));
+        selection_capture_frame(&context, &mut app, vec![]);
+        selection_capture_frame(
+            &context,
+            &mut app,
+            vec![egui::Event::PointerMoved(start), button(start, true)],
+        );
+        selection_capture_frame(&context, &mut app, vec![egui::Event::PointerMoved(end)]);
+        let output = selection_capture_frame(&context, &mut app, vec![button(end, false)]);
+        assert!(output.selection_click.is_none());
+        assert_eq!(output.selection_window.as_ref().unwrap().crossing, crossing);
+        assert!(app.handle_viewport_action(output));
+        assert_eq!(app.selection_window_override, None);
+        assert!(app.document.is_selected(ids[0]));
+        assert_eq!(app.document.is_selected(ids[1]), crossing);
+        assert_eq!(app.document.undo_label(), undo.as_deref());
+    }
+}
+
+#[test]
+fn typed_window_selection_can_feed_an_object_prompt() {
+    let mut app = test_app();
+    enter(&mut app, "Line -1,0,0 1,0,0");
+    let id = app.document.objects().next().unwrap().id();
+    enter(&mut app, "Flip");
+    assert!(app.object_prompt.is_some());
+    enter(&mut app, "W");
+    assert_eq!(app.selection_window_override, Some(false));
+    let context = egui::Context::default();
+    let start = egui::Pos2::new(300., 250.);
+    let end = egui::Pos2::new(500., 350.);
+    let button = |pos, pressed| egui::Event::PointerButton {
+        pos,
+        pressed,
+        button: egui::PointerButton::Primary,
+        modifiers: egui::Modifiers::NONE,
+    };
+    selection_capture_frame(&context, &mut app, vec![]);
+    selection_capture_frame(
+        &context,
+        &mut app,
+        vec![egui::Event::PointerMoved(start), button(start, true)],
+    );
+    selection_capture_frame(&context, &mut app, vec![egui::Event::PointerMoved(end)]);
+    let output = selection_capture_frame(&context, &mut app, vec![button(end, false)]);
+    assert!(app.handle_viewport_action(output));
+    assert!(app.document.is_selected(id));
+    enter(&mut app, "");
+    let Geometry::Line(line) = app.document.object(id).unwrap().geometry() else {
+        panic!("expected line")
+    };
+    assert_eq!(line.start(), point(1., 0., 0.));
+}
+
+#[test]
+fn empty_enter_cancels_typed_window_without_advancing_an_object_prompt() {
+    let mut app = test_app();
+    enter(&mut app, "Line -1,0,0 1,0,0");
+    enter(&mut app, "Flip");
+    let before = app.object_prompt.clone();
+    let undo = app.document.undo_label().map(str::to_owned);
+    enter(&mut app, "SelCrossing");
+    assert_eq!(app.selection_window_override, Some(true));
+    enter(&mut app, "");
+    assert_eq!(app.selection_window_override, None);
+    assert_eq!(app.object_prompt, before);
+    assert_eq!(app.document.undo_label(), undo.as_deref());
+}
+
+#[test]
+fn typed_window_is_rejected_during_point_input_without_consuming_the_prompt() {
+    for alias in ["W", "C"] {
+        let mut app = test_app();
+        enter(&mut app, "Line");
+        let pending = app.active_command;
+        enter(&mut app, alias);
+        assert_eq!(app.selection_window_override, None);
+        assert_eq!(app.active_command, pending);
+        assert_eq!(app.document.objects().count(), 0);
+    }
+}
+
 #[test]
 fn zoom_window_drag_preserves_an_unfinished_modeling_command() {
     let mut app = test_app();

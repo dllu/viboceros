@@ -207,6 +207,21 @@ fn zoom_extents_is_a_validated_host_action() {
     for input in ["Zoom Target", "'_Zoom _Target", "ZT", "zt"] {
         assert_eq!(parse(input), Some(Ok(InterfaceCommand::ZoomTarget)));
     }
+    for (input, expected) in [
+        ("SelWindow", InterfaceCommand::SelWindow),
+        ("W", InterfaceCommand::SelWindow),
+        ("'_SelCrossing", InterfaceCommand::SelCrossing),
+        ("c", InterfaceCommand::SelCrossing),
+    ] {
+        assert_eq!(parse(input), Some(Ok(expected)));
+        let mut current = state();
+        let original = current.clone();
+        current.apply(expected).unwrap();
+        assert_eq!(current, original);
+    }
+    for input in ["SelWindow extra", "SelCrossing extra", "W 1", "C 1"] {
+        assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
+    }
     for input in [
         "Zoom Extents extra",
         "ZE extra",

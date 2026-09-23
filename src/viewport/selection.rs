@@ -503,9 +503,15 @@ impl Viewport {
         nearest
     }
 
-    pub(super) fn paint_selection_window(&self, painter: &egui::Painter, start: Pos2, end: Pos2) {
+    pub(super) fn paint_selection_window(
+        &self,
+        painter: &egui::Painter,
+        start: Pos2,
+        end: Pos2,
+        forced_crossing: Option<bool>,
+    ) {
         let selection = Rect::from_two_pos(start, end);
-        let crossing = is_crossing_selection(start, end);
+        let crossing = forced_crossing.unwrap_or_else(|| is_crossing_selection(start, end));
         let color = if crossing {
             Color32::from_rgb(45, 145, 75)
         } else {

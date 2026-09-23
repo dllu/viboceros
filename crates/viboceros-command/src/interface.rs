@@ -151,6 +151,8 @@ pub enum InterfaceCommand {
     ZoomSelected,
     ZoomAllExtents,
     ZoomAllSelected,
+    SelWindow,
+    SelCrossing,
     UndoView,
     RedoView,
     Plan,
@@ -166,7 +168,7 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 18] = [
+pub const COMMAND_NAMES: [&str; 22] = [
     "Options",
     "SetZoomExtentsBorder",
     "SnapToMeshes",
@@ -185,9 +187,13 @@ pub const COMMAND_NAMES: [&str; 18] = [
     "RedoView",
     "SetView",
     "Plan",
+    "SelWindow",
+    "SelCrossing",
+    "W",
+    "C",
 ];
 
-pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor <positive number>; UndoView; RedoView; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor <positive number>; SelWindow (W); SelCrossing (C); UndoView; RedoView; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -273,6 +279,18 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
                 _ => Err(InterfaceError::Usage(
                     "Zoom [Window]|Target|[All] Extents|Selected | Zoom In|Out|Factor <positive number> | ZE | ZS | ZEA | ZSA | ZT",
                 )),
+            }
+        } else if name.eq_ignore_ascii_case("SelWindow") || name.eq_ignore_ascii_case("W") {
+            if args.is_empty() {
+                Ok(InterfaceCommand::SelWindow)
+            } else {
+                Err(InterfaceError::Usage("SelWindow"))
+            }
+        } else if name.eq_ignore_ascii_case("SelCrossing") || name.eq_ignore_ascii_case("C") {
+            if args.is_empty() {
+                Ok(InterfaceCommand::SelCrossing)
+            } else {
+                Err(InterfaceError::Usage("SelCrossing"))
             }
         } else if name.eq_ignore_ascii_case("Plan") {
             if args.is_empty() {
@@ -472,6 +490,8 @@ impl InterfaceState {
             InterfaceCommand::ZoomSelected => "Zoom selected requested (active viewport)".into(),
             InterfaceCommand::ZoomAllExtents => "Zoom extents requested (all viewports)".into(),
             InterfaceCommand::ZoomAllSelected => "Zoom selected requested (all viewports)".into(),
+            InterfaceCommand::SelWindow => "Window selection requested".into(),
+            InterfaceCommand::SelCrossing => "Crossing selection requested".into(),
             InterfaceCommand::UndoView => "Undo view requested (active viewport)".into(),
             InterfaceCommand::RedoView => "Redo view requested (active viewport)".into(),
             InterfaceCommand::Plan => "Plan view requested (active viewport)".into(),

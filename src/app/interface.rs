@@ -21,6 +21,29 @@ impl VibocerosApp {
         let mut state = self.interface_state();
         match state.apply(command) {
             Ok(message) => {
+                if matches!(
+                    command,
+                    InterfaceCommand::SelWindow | InterfaceCommand::SelCrossing
+                ) {
+                    if self.viewport_object_filter().is_none()
+                        || self.active_command.is_some()
+                        || self.plane_prompt.is_some()
+                        || self.group_prompt == Some(group_prompt::GroupPrompt::Target)
+                    {
+                        self.push_log("Selection window unavailable during this prompt".into());
+                        return;
+                    }
+                    let crossing = command == InterfaceCommand::SelCrossing;
+                    self.selection_window_override = Some(crossing);
+                    self.zoom_window_pending = false;
+                    self.zoom_target = None;
+                    self.push_log(format!(
+                        "Drag a {} selection in a viewport; Esc to cancel",
+                        if crossing { "crossing" } else { "window" }
+                    ));
+                    return;
+                }
+                self.selection_window_override = None;
                 if command == InterfaceCommand::ZoomWindow {
                     self.zoom_window_pending = true;
                     self.zoom_target = None;
@@ -204,6 +227,18 @@ impl VibocerosApp {
 
     pub(super) fn try_run_interface_command(&mut self, input: &str) -> bool {
         let mut tokens = input.split_whitespace();
+        if self.active_command.is_some()
+            && input.split_whitespace().next().is_some_and(|name| {
+                matches!(
+                    name.trim_start_matches(['\'', '_', '-'])
+                        .to_ascii_lowercase()
+                        .as_str(),
+                    "w" | "c"
+                )
+            })
+        {
+            return false;
+        }
         if tokens.next().is_some_and(|name| {
             name.trim_start_matches(['\'', '_', '-'])
                 .eq_ignore_ascii_case("Help")

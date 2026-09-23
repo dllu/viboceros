@@ -133,6 +133,8 @@ Layer Current Default
 ChangeLayer Construction
 CopyToLayer Default
 SelAll
+SelWindow
+SelCrossing
 SelLast
 SelPrev
 SelLast DeselectOthersBeforeSelect=No

@@ -1267,6 +1267,7 @@ pub struct VibocerosApp {
     zoom_scale: f64,
     zoom_extents_borders: ZoomExtentsBorders,
     zoom_window_pending: bool,
+    selection_window_override: Option<bool>,
     zoom_target: Option<ZoomTargetState>,
     command_focus_requested: bool,
     active_command: Option<InteractiveCommand>,
@@ -1315,6 +1316,7 @@ impl VibocerosApp {
             zoom_scale,
             zoom_extents_borders,
             zoom_window_pending: false,
+            selection_window_override: None,
             zoom_target: None,
             command_focus_requested: false,
             active_command: None,
@@ -1341,6 +1343,17 @@ impl VibocerosApp {
     fn run_command_input(&mut self) {
         let input = self.command_input.trim().to_owned();
         self.remember_command_input(&input);
+        if input.is_empty() && self.selection_window_override.take().is_some() {
+            self.push_log("Selection window canceled".into());
+            self.command_input.clear();
+            return;
+        }
+        if self.selection_window_override.is_some()
+            && !input.is_empty()
+            && viboceros_command::interface::parse(&input).is_none()
+        {
+            self.selection_window_override = None;
+        }
         if self.try_one_shot_snap(&input) {
             return;
         }
@@ -5142,6 +5155,7 @@ impl VibocerosApp {
     }
 
     fn apply_selection_window(&mut self, selection: SelectionWindow) {
+        self.selection_window_override = None;
         if self.picking_alignment_curve() {
             // This phase needs one target; a window must not change the sources.
             return;
@@ -5326,6 +5340,8 @@ impl eframe::App for VibocerosApp {
             } else if self.zoom_window_pending {
                 self.zoom_window_pending = false;
                 self.push_log("Zoom window canceled".into());
+            } else if self.selection_window_override.take().is_some() {
+                self.push_log("Selection window canceled".into());
             } else if self.answer_object_prompt_escape() {
                 // A command-owned warning consumed this Escape key.
             } else if self.plane_prompt.is_some() {
@@ -5392,6 +5408,7 @@ impl eframe::App for VibocerosApp {
             std::array::from_fn(|_| ViewportOutput::default());
         let active_viewport = self.active_viewport;
         let zoom_window_pending = self.zoom_window_pending;
+        let selection_window_override = self.selection_window_override;
         let zoom_target = self.zoom_target;
         let object_filter = self.viewport_object_filter();
         let selection_preview = self
@@ -5468,6 +5485,7 @@ impl eframe::App for VibocerosApp {
                                     ViewportInput {
                                         drafting,
                                         zoom_window: zoom_window_pending,
+                                        forced_crossing: selection_window_override,
                                         zoom_target: match zoom_target {
                                             Some(ZoomTargetState::PickTarget) => {
                                                 Some(ZoomTargetInput::PickTarget)
@@ -5623,6 +5641,7 @@ mod tests {
             zoom_scale: DEFAULT_ZOOM_SCALE,
             zoom_extents_borders: ZoomExtentsBorders::default(),
             zoom_window_pending: false,
+            selection_window_override: None,
             zoom_target: None,
             command_focus_requested: false,
             active_command: None,
