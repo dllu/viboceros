@@ -90,6 +90,7 @@ impl Document {
             self.objects.push(Object {
                 id,
                 geometry: original.geometry.clone(),
+                geometry_user_text: original.geometry_user_text.clone(),
                 attributes,
                 isolation: ObjectIsolation::None,
                 group_ids: Vec::new(),

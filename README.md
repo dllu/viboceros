@@ -3,7 +3,8 @@
 An open-source CAD application in Rust, working toward a clean reimplementation
 of Rhinoceros 3D. It has a modular geometry kernel, a command-driven egui/wgpu
 interface, four viewports, snapping, layers, groups, and undo/redo.
-Attribute user text can be edited and searched with commands and is retained in 3DM files.
+Attribute and geometry user text can be edited with commands and retained in 3DM
+files; attribute text can also be searched.
 
 This is an early implementation. It supports analytic and NURBS geometry,
 trimmed B-reps, polygon meshes, and an expanding command set. 3DM and STL

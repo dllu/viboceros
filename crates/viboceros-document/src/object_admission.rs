@@ -33,6 +33,26 @@ impl Document {
         geometry: Geometry,
         attributes: ObjectAttributes,
     ) -> Result<ObjectId, DocumentError> {
+        self.add_geometry_with_metadata(geometry, attributes, BTreeMap::new())
+    }
+
+    /// Inserts geometry with its geometry-attached user text in one history edit.
+    pub fn add_geometry_with_metadata(
+        &mut self,
+        geometry: Geometry,
+        attributes: ObjectAttributes,
+        geometry_user_text: BTreeMap<String, String>,
+    ) -> Result<ObjectId, DocumentError> {
+        let mut folded_keys = BTreeSet::new();
+        for (key, value) in &geometry_user_text {
+            validate_user_text(key, Some(value))?;
+            if value.is_empty() {
+                return Err(DocumentError::InvalidUserText("value is empty"));
+            }
+            if !folded_keys.insert(key.to_lowercase()) {
+                return Err(DocumentError::InvalidUserText("duplicate key"));
+            }
+        }
         let layer = self
             .layer(attributes.layer_id)
             .ok_or(DocumentError::LayerNotFound(attributes.layer_id))?;
@@ -45,6 +65,7 @@ impl Document {
         self.objects.push(Object {
             id,
             geometry: geometry.into(),
+            geometry_user_text,
             attributes,
             isolation: ObjectIsolation::None,
             group_ids: Vec::new(),

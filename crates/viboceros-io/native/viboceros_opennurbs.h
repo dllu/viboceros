@@ -93,6 +93,8 @@ typedef struct ViboWriteObject {
   size_t group_index_count;
   const ViboUserText* user_text;
   size_t user_text_count;
+  const ViboUserText* geometry_user_text;
+  size_t geometry_user_text_count;
 } ViboWriteObject;
 
 int32_t vibo_3dm_read(const char* path, ViboThreeDmModel** output,
@@ -124,6 +126,11 @@ size_t vibo_3dm_object_user_text_count(const ViboThreeDmModel* model,
 int32_t vibo_3dm_object_user_text(const ViboThreeDmModel* model,
                                   size_t index, size_t text_index,
                                   const char** key, const char** value);
+size_t vibo_3dm_object_geometry_user_text_count(const ViboThreeDmModel* model,
+                                                size_t index);
+int32_t vibo_3dm_object_geometry_user_text(const ViboThreeDmModel* model,
+                                           size_t index, size_t text_index,
+                                           const char** key, const char** value);
 
 int32_t vibo_3dm_write(const char* path, uint32_t unit_system,
                        double meters_per_unit, const char* unit_name,

@@ -14,6 +14,12 @@ fn attribute_user_text_survives_export_and_import_commands() {
     registry
         .execute(&mut source, "SetUserText \"Part Number\" \"α 12\"")
         .unwrap();
+    registry
+        .execute(
+            &mut source,
+            "SetUserText \"Part Number\" \"geometry\" AttachTo=Object",
+        )
+        .unwrap();
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("user text.3dm");
     registry
@@ -26,6 +32,10 @@ fn attribute_user_text_survives_export_and_import_commands() {
     assert_eq!(
         restored.objects().next().unwrap().attributes().user_text()["Part Number"],
         "α 12"
+    );
+    assert_eq!(
+        restored.objects().next().unwrap().geometry_user_text()["Part Number"],
+        "geometry"
     );
     assert_eq!(
         registry.execute(&mut restored, "SelValue \"α *\"").unwrap(),

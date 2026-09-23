@@ -164,25 +164,20 @@ impl ObjectAttributes {
         &self.user_text
     }
 
-    pub fn with_user_text(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
+    pub fn try_with_user_text(
+        mut self,
+        key: impl Into<String>,
+        value: impl Into<String>,
+    ) -> Result<Self, DocumentError> {
         let key = key.into();
         let value = value.into();
+        validate_user_text(&key, Some(&value))?;
         self.set_user_text(&key, Some(&value));
-        self
+        Ok(self)
     }
 
     fn set_user_text(&mut self, key: &str, value: Option<&str>) {
-        let existing = self
-            .user_text
-            .keys()
-            .find(|candidate| candidate.to_lowercase() == key.to_lowercase())
-            .cloned();
-        if let Some(value) = value.filter(|value| !value.is_empty()) {
-            self.user_text
-                .insert(existing.unwrap_or_else(|| key.to_owned()), value.to_owned());
-        } else if let Some(existing) = existing {
-            self.user_text.remove(&existing);
-        }
+        set_user_text_pair(&mut self.user_text, key, value);
     }
 
     pub fn with_name(mut self, name: impl Into<String>) -> Self {
@@ -268,10 +263,35 @@ impl ObjectAttributes {
     }
 }
 
+fn set_user_text_pair(map: &mut BTreeMap<String, String>, key: &str, value: Option<&str>) {
+    let existing = map
+        .keys()
+        .find(|candidate| candidate.to_lowercase() == key.to_lowercase())
+        .cloned();
+    if let Some(value) = value.filter(|value| !value.is_empty()) {
+        map.insert(existing.unwrap_or_else(|| key.to_owned()), value.to_owned());
+    } else if let Some(existing) = existing {
+        map.remove(&existing);
+    }
+}
+
+fn validate_user_text(key: &str, value: Option<&str>) -> Result<(), DocumentError> {
+    if key.is_empty() || key.contains('\0') {
+        return Err(DocumentError::InvalidUserText(
+            "key is empty or contains NUL",
+        ));
+    }
+    if value.is_some_and(|value| value.contains('\0')) {
+        return Err(DocumentError::InvalidUserText("value contains NUL"));
+    }
+    Ok(())
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct Object {
     id: ObjectId,
     geometry: GeometrySnapshot,
+    geometry_user_text: BTreeMap<String, String>,
     attributes: ObjectAttributes,
     isolation: ObjectIsolation,
     group_ids: Vec<GroupId>,
@@ -299,6 +319,10 @@ impl Object {
 
     pub fn geometry(&self) -> &Geometry {
         &self.geometry
+    }
+
+    pub fn geometry_user_text(&self) -> &BTreeMap<String, String> {
+        &self.geometry_user_text
     }
 
     /// Retain a cheap immutable snapshot for caches or background readers.
@@ -1178,8 +1202,22 @@ impl Document {
         key: &str,
         value: Option<&str>,
     ) -> Result<usize, DocumentError> {
+        validate_user_text(key, value)?;
         self.change_editable_objects(ids, "Set user text", |object| {
             object.attributes.set_user_text(key, value);
+        })
+    }
+
+    /// Sets or removes text attached to the geometry of editable objects.
+    pub fn set_object_geometry_user_text(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        key: &str,
+        value: Option<&str>,
+    ) -> Result<usize, DocumentError> {
+        validate_user_text(key, value)?;
+        self.change_editable_objects(ids, "Set geometry user text", |object| {
+            set_user_text_pair(&mut object.geometry_user_text, key, value);
         })
     }
 
@@ -1313,6 +1351,7 @@ impl Document {
             "Transform objects",
             "Transform object",
             ReplacementHistory::ChangesOnly,
+            true,
         )
     }
 
@@ -1353,6 +1392,7 @@ impl Document {
             "Replace object geometry",
             "Replace object geometry",
             history,
+            false,
         )
     }
 
@@ -1370,6 +1410,7 @@ impl Document {
             "Replace object geometry",
             "Replace object geometry",
             ReplacementHistory::ChangesOnly,
+            true,
         )
     }
 
@@ -1651,6 +1692,9 @@ impl Default for Document {
 
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum DocumentError {
+    #[error("invalid user text: {0}")]
+    InvalidUserText(&'static str),
+
     #[error("layer name cannot be empty")]
     EmptyLayerName,
 

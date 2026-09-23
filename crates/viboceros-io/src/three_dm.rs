@@ -68,6 +68,7 @@ pub struct ThreeDmObject {
     pub layer_index: usize,
     pub name: Option<String>,
     pub user_text: BTreeMap<String, String>,
+    pub geometry_user_text: BTreeMap<String, String>,
     pub visible: bool,
     pub locked: bool,
     pub object_color: [u8; 3],
@@ -84,6 +85,7 @@ impl ThreeDmObject {
             layer_index,
             name: None,
             user_text: BTreeMap::new(),
+            geometry_user_text: BTreeMap::new(),
             visible: true,
             locked: false,
             object_color: [0, 0, 0],
@@ -323,6 +325,33 @@ pub fn write_3dm_file(
                 .collect::<Vec<_>>()
         })
         .collect::<Vec<_>>();
+    let geometry_user_text_strings = prepared
+        .iter()
+        .map(|(object, _)| {
+            object
+                .geometry_user_text
+                .iter()
+                .map(|(key, value)| {
+                    Ok((
+                        c_string(key, "geometry user text key")?,
+                        c_string(value, "geometry user text value")?,
+                    ))
+                })
+                .collect::<Result<Vec<_>, ThreeDmError>>()
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let geometry_user_text = geometry_user_text_strings
+        .iter()
+        .map(|pairs| {
+            pairs
+                .iter()
+                .map(|(key, value)| ffi::ViboUserText {
+                    key: key.as_ptr(),
+                    value: value.as_ptr(),
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
     let payloads = prepared
         .iter()
         .map(|(_, geometry)| ObjectPayload::from_geometry(geometry))
@@ -332,8 +361,9 @@ pub fn write_3dm_file(
         .zip(&object_names)
         .zip(&payloads)
         .zip(&user_text)
+        .zip(&geometry_user_text)
         .map(
-            |((((object, _), name), payload), text)| ffi::ViboWriteObject {
+            |(((((object, _), name), payload), text), geometry_text)| ffi::ViboWriteObject {
                 object_type: payload.object_type,
                 layer_index: object.layer_index,
                 name: name.as_ref().map_or(std::ptr::null(), |name| name.as_ptr()),
@@ -362,6 +392,8 @@ pub fn write_3dm_file(
                 group_index_count: object.group_indices.len(),
                 user_text: pointer_or_null(text),
                 user_text_count: text.len(),
+                geometry_user_text: pointer_or_null(geometry_text),
+                geometry_user_text_count: geometry_text.len(),
             },
         )
         .collect::<Vec<_>>();
@@ -602,6 +634,28 @@ fn decode_object(
         }
         user_text.insert(c_text(key)?, c_text(value)?);
     }
+    // SAFETY: the handle owns the bridge model and the index is in range.
+    let geometry_user_text_count =
+        unsafe { ffi::vibo_3dm_object_geometry_user_text_count(handle.0.as_ptr(), index) };
+    let mut geometry_user_text = BTreeMap::new();
+    for text_index in 0..geometry_user_text_count {
+        let mut key = std::ptr::null();
+        let mut value = std::ptr::null();
+        // SAFETY: output pointers are valid and the model remains live.
+        let success = unsafe {
+            ffi::vibo_3dm_object_geometry_user_text(
+                handle.0.as_ptr(),
+                index,
+                text_index,
+                &mut key,
+                &mut value,
+            )
+        };
+        if success == 0 || key.is_null() || value.is_null() {
+            return Err(ThreeDmError::MalformedBridge("invalid geometry user text"));
+        }
+        geometry_user_text.insert(c_text(key)?, c_text(value)?);
+    }
     let layer_index = layer_positions
         .get(&info.source_layer_index)
         .copied()
@@ -835,6 +889,7 @@ fn decode_object(
         layer_index,
         name,
         user_text,
+        geometry_user_text,
         visible: info.visible != 0,
         locked: info.locked != 0,
         object_color: [info.color_red, info.color_green, info.color_blue],
@@ -882,11 +937,18 @@ fn validate_model(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
     }
     for (index, object) in model.objects.iter().enumerate() {
         let mut user_text_keys = BTreeSet::new();
-        for (key, value) in &object.user_text {
-            if key.is_empty() || value.is_empty() || !user_text_keys.insert(key.to_lowercase()) {
-                return Err(ThreeDmError::InvalidModel(format!(
-                    "object {index} has an empty or duplicate user text entry"
-                )));
+        for (location, text) in [
+            ("attribute", &object.user_text),
+            ("geometry", &object.geometry_user_text),
+        ] {
+            user_text_keys.clear();
+            for (key, value) in text {
+                if key.is_empty() || value.is_empty() || !user_text_keys.insert(key.to_lowercase())
+                {
+                    return Err(ThreeDmError::InvalidModel(format!(
+                        "object {index} has an empty or duplicate {location} user text entry"
+                    )));
+                }
             }
         }
         if object.layer_index >= model.layers.len() {
@@ -1277,6 +1339,8 @@ mod ffi {
         pub group_index_count: usize,
         pub user_text: *const ViboUserText,
         pub user_text_count: usize,
+        pub geometry_user_text: *const ViboUserText,
+        pub geometry_user_text_count: usize,
     }
 
     unsafe extern "C" {
@@ -1330,6 +1394,17 @@ mod ffi {
             index: usize,
         ) -> usize;
         pub fn vibo_3dm_object_user_text(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            text_index: usize,
+            key: *mut *const c_char,
+            value: *mut *const c_char,
+        ) -> c_int;
+        pub fn vibo_3dm_object_geometry_user_text_count(
+            model: *const ViboThreeDmModel,
+            index: usize,
+        ) -> usize;
+        pub fn vibo_3dm_object_geometry_user_text(
             model: *const ViboThreeDmModel,
             index: usize,
             text_index: usize,
@@ -1553,6 +1628,7 @@ mod tests {
                     layer_index: 1,
                     name: Some("guide".to_owned()),
                     user_text: BTreeMap::new(),
+                    geometry_user_text: BTreeMap::new(),
                     visible: true,
                     locked: true,
                     object_color: [90, 80, 70],
@@ -1661,7 +1737,7 @@ mod tests {
     }
 
     #[test]
-    fn attribute_user_text_round_trips_through_opennurbs() {
+    fn attribute_and_geometry_user_text_round_trip_independently() {
         let path = temporary_path("user-text.3dm");
         let layer = ThreeDmLayer {
             name: "Default".to_owned(),
@@ -1679,10 +1755,17 @@ mod tests {
         object
             .user_text
             .insert(".hidden".to_owned(), "kept".to_owned());
+        object
+            .geometry_user_text
+            .insert("Part Number".to_owned(), "geometry value".to_owned());
         let model = ThreeDmModel::new(vec![layer], vec![], vec![object.clone()]);
         write_3dm_file(&path, &model).unwrap();
         let decoded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
         assert_eq!(decoded.objects[0].user_text, object.user_text);
+        assert_eq!(
+            decoded.objects[0].geometry_user_text,
+            object.geometry_user_text
+        );
         fs::remove_file(path).unwrap();
     }
 

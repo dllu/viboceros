@@ -7042,6 +7042,7 @@ fn three_dm_group_round_trip(
                 layer_index: 0,
                 name: Some(name.to_owned()),
                 user_text: BTreeMap::new(),
+                geometry_user_text: BTreeMap::new(),
                 visible: true,
                 locked: false,
                 object_color,

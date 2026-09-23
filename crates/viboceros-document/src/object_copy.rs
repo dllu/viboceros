@@ -190,6 +190,7 @@ impl Document {
             self.objects.push(Object {
                 id: copy_id,
                 geometry: geometry.into(),
+                geometry_user_text: BTreeMap::new(),
                 attributes,
                 isolation: ObjectIsolation::None,
                 group_ids: Vec::new(),
@@ -274,6 +275,7 @@ impl Document {
                 self.objects.push(Object {
                     id,
                     geometry: geometry.into(),
+                    geometry_user_text: source.geometry_user_text.clone(),
                     attributes,
                     isolation: ObjectIsolation::None,
                     group_ids: Vec::new(),

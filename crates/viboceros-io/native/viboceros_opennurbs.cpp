@@ -54,6 +54,7 @@ struct BridgeObject {
   std::vector<uint8_t> geometry_data;
   std::vector<int32_t> group_indices;
   std::vector<std::pair<std::string, std::string>> user_text;
+  std::vector<std::pair<std::string, std::string>> geometry_user_text;
 };
 
 std::once_flag g_open_nurbs_once;
@@ -66,6 +67,33 @@ std::string utf8(const ON_wString& value) {
   const ON_String converted(value);
   const char* text = static_cast<const char*>(converted);
   return text == nullptr ? std::string() : std::string(text);
+}
+
+void read_user_text(const ON_Object& source,
+                    std::vector<std::pair<std::string, std::string>>& output) {
+  ON_ClassArray<ON_wString> keys;
+  source.GetUserStringKeys(keys);
+  for (int index = 0; index < keys.Count(); ++index) {
+    ON_wString value;
+    if (source.GetUserString(keys[index], value)) {
+      output.emplace_back(utf8(keys[index]), utf8(value));
+    }
+  }
+}
+
+bool write_user_text(ON_Object& target, const ViboUserText* text, size_t count) {
+  if (count != 0 && text == nullptr) {
+    return false;
+  }
+  for (size_t index = 0; index < count; ++index) {
+    if (text[index].key == nullptr || text[index].key[0] == '\0' ||
+        text[index].value == nullptr ||
+        !target.SetUserString(ON_wString(text[index].key),
+                              ON_wString(text[index].value))) {
+      return false;
+    }
+  }
+  return true;
 }
 
 void set_error(char* destination, size_t capacity, const std::string& message) {
@@ -665,13 +693,9 @@ ON_3dmObjectAttributes* attributes_for(const ViboWriteObject& source,
   attributes->SetColorSource(
       static_cast<ON::object_color_source>(source.color_source));
   attributes->m_wire_density = source.wire_density;
-  for (size_t index = 0; index < source.user_text_count; ++index) {
-    const ViboUserText& text = source.user_text[index];
-    if (text.key == nullptr || text.key[0] == '\0' || text.value == nullptr ||
-        !attributes->SetUserString(ON_wString(text.key), ON_wString(text.value))) {
-      delete attributes;
-      return nullptr;
-    }
+  if (!write_user_text(*attributes, source.user_text, source.user_text_count)) {
+    delete attributes;
+    return nullptr;
   }
   return attributes;
 }
@@ -1504,6 +1528,7 @@ extern "C" int32_t vibo_3dm_read(const char* path,
       }
 
       BridgeObject object;
+      read_user_text(*geometry, object.geometry_user_text);
       if (const ON_3dmObjectAttributes* attributes =
               model_geometry->Attributes(nullptr)) {
         object.source_layer_index = attributes->m_layer_index;
@@ -1517,14 +1542,7 @@ extern "C" int32_t vibo_3dm_read(const char* path,
         object.color_green = static_cast<uint8_t>(attributes->m_color.Green());
         object.color_blue = static_cast<uint8_t>(attributes->m_color.Blue());
         object.wire_density = attributes->m_wire_density;
-        ON_ClassArray<ON_wString> keys;
-        attributes->GetUserStringKeys(keys);
-        for (int text_index = 0; text_index < keys.Count(); ++text_index) {
-          ON_wString value;
-          if (attributes->GetUserString(keys[text_index], value)) {
-            object.user_text.emplace_back(utf8(keys[text_index]), utf8(value));
-          }
-        }
+        read_user_text(*attributes, object.user_text);
         const int group_count = attributes->GroupCount();
         const int* group_list = attributes->GroupList();
         if (group_count > 0 && group_list == nullptr) {
@@ -1700,6 +1718,26 @@ extern "C" int32_t vibo_3dm_object_user_text(
   return 1;
 }
 
+extern "C" size_t vibo_3dm_object_geometry_user_text_count(
+    const ViboThreeDmModel* model, size_t index) {
+  return model == nullptr || index >= model->objects.size()
+             ? 0 : model->objects[index].geometry_user_text.size();
+}
+
+extern "C" int32_t vibo_3dm_object_geometry_user_text(
+    const ViboThreeDmModel* model, size_t index, size_t text_index,
+    const char** key, const char** value) {
+  if (model == nullptr || index >= model->objects.size() ||
+      text_index >= model->objects[index].geometry_user_text.size() ||
+      key == nullptr || value == nullptr) {
+    return 0;
+  }
+  const auto& pair = model->objects[index].geometry_user_text[text_index];
+  *key = pair.first.c_str();
+  *value = pair.second.c_str();
+  return 1;
+}
+
 extern "C" int32_t vibo_3dm_units(const ViboThreeDmModel* model,
     uint32_t* unit_system, double* meters_per_unit, const char** name) {
   if (model == nullptr || unit_system == nullptr || meters_per_unit == nullptr || name == nullptr) {
@@ -1852,6 +1890,12 @@ extern "C" int32_t vibo_3dm_write(
         set_error(error, error_capacity, "3DM object has a null user text array");
         return 0;
       }
+      if (source.geometry_user_text_count != 0 &&
+          source.geometry_user_text == nullptr) {
+        set_error(error, error_capacity,
+                  "3DM object has a null geometry user text array");
+        return 0;
+      }
       bool valid_groups = true;
       for (size_t group_position = 0;
            group_position < source.group_index_count; ++group_position) {
@@ -1870,6 +1914,14 @@ extern "C" int32_t vibo_3dm_write(
       if (geometry == nullptr) {
         set_error(error, error_capacity,
                   "object " + std::to_string(index) + ": " + geometry_error);
+        return 0;
+      }
+      if (!write_user_text(*geometry, source.geometry_user_text,
+                           source.geometry_user_text_count)) {
+        delete geometry;
+        set_error(error, error_capacity,
+                  "object " + std::to_string(index) +
+                      ": geometry user text is invalid");
         return 0;
       }
       ON_3dmObjectAttributes* attributes =

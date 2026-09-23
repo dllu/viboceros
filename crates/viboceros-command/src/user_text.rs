@@ -1,8 +1,9 @@
-//! Attribute user text commands.
+//! Attribute and geometry user text commands.
 
 use super::*;
 
-const SET_USAGE: &str = "SetUserText key value [AttachTo=Attributes]";
+const SET_USAGE: &str = "SetUserText key value [AttachTo=Attributes|Object]";
+const GET_USAGE: &str = "GetUserText [key] [AttachTo=Attributes|Object]";
 const KEY_VALUE_USAGE: &str = "SelKeyValue key-pattern value-pattern";
 
 fn arguments<'a>(input: &'a str, usage: &'static str) -> Result<Vec<&'a str>, CommandError> {
@@ -16,6 +17,39 @@ fn unquote(value: &str) -> &str {
         .unwrap_or(value)
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum TextLocation {
+    Attributes,
+    Object,
+}
+
+fn parse_text_arguments<'a>(
+    arguments: &[&'a str],
+    usage: &'static str,
+) -> Result<(Vec<&'a str>, TextLocation), CommandError> {
+    let mut values = Vec::new();
+    let mut location = TextLocation::Attributes;
+    let mut seen_location = false;
+    for &argument in arguments {
+        if let Some((option, value)) = argument.trim_start_matches('_').split_once('=')
+            && option.eq_ignore_ascii_case("AttachTo")
+        {
+            if seen_location {
+                return Err(CommandError::Usage(usage));
+            }
+            location = match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
+                "attributes" => TextLocation::Attributes,
+                "object" => TextLocation::Object,
+                _ => return Err(CommandError::Usage(usage)),
+            };
+            seen_location = true;
+        } else {
+            values.push(argument);
+        }
+    }
+    Ok((values, location))
+}
+
 pub(super) struct SetUserTextCommand;
 
 pub(super) struct GetUserTextCommand;
@@ -26,7 +60,7 @@ impl Command for GetUserTextCommand {
     }
 
     fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
-        arguments(input, "GetUserText [key]")
+        arguments(input, GET_USAGE)
     }
 
     fn records_history(&self) -> bool {
@@ -34,18 +68,19 @@ impl Command for GetUserTextCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (arguments, location) = parse_text_arguments(arguments, GET_USAGE)?;
         if arguments.len() > 1 {
-            return Err(CommandError::Usage("GetUserText [key]"));
+            return Err(CommandError::Usage(GET_USAGE));
         }
         let id = document
             .selected_object_ids()
             .next()
             .ok_or(CommandError::NoObjectsSelected)?;
-        let text = document
-            .object(id)
-            .expect("selected object exists")
-            .attributes()
-            .user_text();
+        let object = document.object(id).expect("selected object exists");
+        let text = match location {
+            TextLocation::Attributes => object.attributes().user_text(),
+            TextLocation::Object => object.geometry_user_text(),
+        };
         if let Some(key) = arguments.first() {
             let key = unquote(key);
             return Ok(text
@@ -71,11 +106,7 @@ impl Command for SetUserTextCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let arguments = arguments
-            .iter()
-            .copied()
-            .filter(|arg| !arg.eq_ignore_ascii_case("AttachTo=Attributes"))
-            .collect::<Vec<_>>();
+        let (arguments, location) = parse_text_arguments(arguments, SET_USAGE)?;
         let [key, value] = arguments.as_slice() else {
             return Err(CommandError::Usage(SET_USAGE));
         };
@@ -88,8 +119,16 @@ impl Command for SetUserTextCommand {
         if ids.is_empty() {
             return Err(CommandError::NoObjectsSelected);
         }
-        let count =
-            document.set_object_user_text(ids, key, (!value.is_empty()).then_some(value))?;
+        let count = match location {
+            TextLocation::Attributes => {
+                document.set_object_user_text(ids, key, (!value.is_empty()).then_some(value))?
+            }
+            TextLocation::Object => document.set_object_geometry_user_text(
+                ids,
+                key,
+                (!value.is_empty()).then_some(value),
+            )?,
+        };
         Ok(format!("Updated user text on {count} object(s)"))
     }
 }
@@ -155,11 +194,36 @@ mod tests {
         registry
             .execute(&mut document, "SetUserText \"Part Number\" \"A 12\"")
             .unwrap();
+        registry
+            .execute(
+                &mut document,
+                "SetUserText \"Part Number\" geometry AttachTo=Object",
+            )
+            .unwrap();
         assert_eq!(
             registry
                 .execute(&mut document, "GetUserText \"part number\"")
                 .unwrap(),
             "A 12"
+        );
+        assert_eq!(
+            registry
+                .execute(&mut document, "GetUserText \"Part Number\" AttachTo=Object")
+                .unwrap(),
+            "geometry"
+        );
+        assert_eq!(
+            document
+                .object(first)
+                .unwrap()
+                .attributes()
+                .user_text()
+                .len(),
+            1
+        );
+        assert_eq!(
+            document.object(first).unwrap().geometry_user_text().len(),
+            1
         );
         document
             .select_object(second, SelectionMode::Replace)

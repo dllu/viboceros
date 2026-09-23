@@ -40,6 +40,7 @@ impl Document {
         transaction_label: &'static str,
         edit_label: &'static str,
         history: ReplacementHistory,
+        preserve_geometry_user_text: bool,
     ) -> Result<usize, DocumentError> {
         if history == ReplacementHistory::ChangesOnly {
             staged.retain(|(index, geometry)| *self.objects[*index].geometry != *geometry);
@@ -57,6 +58,11 @@ impl Document {
             let after = Object {
                 id: source.id,
                 geometry: geometry.into(),
+                geometry_user_text: if preserve_geometry_user_text {
+                    source.geometry_user_text.clone()
+                } else {
+                    BTreeMap::new()
+                },
                 attributes: source.attributes.clone(),
                 isolation: source.isolation,
                 group_ids: source.group_ids.clone(),
@@ -84,6 +90,82 @@ impl Document {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn geometry_user_text_follows_transforms_and_copies_but_explicit_replacement_clears_it() {
+        let mut document = Document::default();
+        let id = document
+            .add_geometry(Geometry::Point(Point3::try_new(0., 0., 0.).unwrap()))
+            .unwrap();
+        let before_invalid = format!("{document:?}");
+        for (key, value) in [("", "x"), ("bad\0key", "x"), ("Code", "bad\0value")] {
+            assert!(matches!(
+                document.set_object_user_text([id], key, Some(value)),
+                Err(DocumentError::InvalidUserText(_))
+            ));
+            assert!(matches!(
+                document.set_object_geometry_user_text([id], key, Some(value)),
+                Err(DocumentError::InvalidUserText(_))
+            ));
+        }
+        let layer = document.current_layer_id();
+        assert!(matches!(
+            document.add_geometry_with_metadata(
+                Geometry::Point(Point3::try_new(0., 0., 0.).unwrap()),
+                ObjectAttributes::on_layer(layer),
+                BTreeMap::from([
+                    ("Code".to_owned(), "one".to_owned()),
+                    ("code".to_owned(), "two".to_owned()),
+                ]),
+            ),
+            Err(DocumentError::InvalidUserText("duplicate key"))
+        ));
+        assert_eq!(format!("{document:?}"), before_invalid);
+        document
+            .set_object_user_text([id], "Code", Some("attribute"))
+            .unwrap();
+        document
+            .set_object_geometry_user_text([id], "Code", Some("geometry"))
+            .unwrap();
+        let transform = AffineTransform3::from_translation(
+            viboceros_geometry::Vector3::try_new(1., 0., 0.).unwrap(),
+        );
+        document.transform_objects([id], transform).unwrap();
+        assert_eq!(
+            document.object(id).unwrap().geometry_user_text()["Code"],
+            "geometry"
+        );
+        let copy = document.copy_objects_transformed([id], transform).unwrap()[0];
+        assert_eq!(
+            document.object(copy).unwrap().geometry_user_text()["Code"],
+            "geometry"
+        );
+        document
+            .replace_object_geometries([(
+                id,
+                Geometry::Point(Point3::try_new(3., 0., 0.).unwrap()),
+            )])
+            .unwrap();
+        assert!(document.object(id).unwrap().geometry_user_text().is_empty());
+        assert_eq!(
+            document.object(id).unwrap().attributes().user_text()["Code"],
+            "attribute"
+        );
+        document.undo().unwrap();
+        assert_eq!(
+            document.object(id).unwrap().geometry_user_text()["Code"],
+            "geometry"
+        );
+        document
+            .set_object_geometry_user_text([id], "code", None)
+            .unwrap();
+        assert!(document.object(id).unwrap().geometry_user_text().is_empty());
+        document.undo().unwrap();
+        assert_eq!(
+            document.object(id).unwrap().geometry_user_text()["Code"],
+            "geometry"
+        );
+    }
 
     struct Scale(f64);
 

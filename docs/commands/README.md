@@ -201,8 +201,10 @@ AddToGroup Assembly
 RemoveFromGroup Copy=No
 SetObjectName "Fastener Part" AppendCounter=Yes
 SetUserText "Part Number" "A 12"
+SetUserText "Part Number" "On geometry" AttachTo=Object
 SetUserText "Part Number" ""
 GetUserText "Part Number"
+GetUserText "Part Number" AttachTo=Object
 SetObjectColor 12,34,56
 SetObjectColor ByLayer
 Ungroup

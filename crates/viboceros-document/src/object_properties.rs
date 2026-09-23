@@ -68,6 +68,7 @@ impl Document {
 pub(super) struct ObjectProperties {
     pub id: ObjectId,
     pub attributes: ObjectAttributes,
+    pub geometry_user_text: BTreeMap<String, String>,
     pub isolation: ObjectIsolation,
 }
 
@@ -76,6 +77,7 @@ impl From<&Object> for ObjectProperties {
         Self {
             id: object.id,
             attributes: object.attributes.clone(),
+            geometry_user_text: object.geometry_user_text.clone(),
             isolation: object.isolation,
         }
     }
@@ -85,6 +87,7 @@ impl ObjectProperties {
     pub fn apply_to(&self, object: &mut Object) {
         debug_assert_eq!(self.id, object.id);
         object.attributes = self.attributes.clone();
+        object.geometry_user_text = self.geometry_user_text.clone();
         object.isolation = self.isolation;
     }
 }
@@ -107,7 +110,10 @@ pub(super) fn replace(
         .ok_or(DocumentError::HistoryInvariant(
             "changed property object was missing",
         ))?;
-    if object.attributes != expected.attributes || object.isolation != expected.isolation {
+    if object.attributes != expected.attributes
+        || object.geometry_user_text != expected.geometry_user_text
+        || object.isolation != expected.isolation
+    {
         return Err(DocumentError::HistoryInvariant(
             "changed object properties did not match",
         ));

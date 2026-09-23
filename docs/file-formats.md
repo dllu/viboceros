@@ -45,6 +45,8 @@ object state are also preserved, including the raw RGB display color, its
 layer/object/material/parent source, and surface wire density. Named group
 definitions and ordered membership survive round trips, including overlapping
 and empty groups.
+3DM round trips also keep user text attached to object attributes and user text
+attached to geometry as separate collections, including identical keys in both.
 Low-level B-rep readers/writers preserve raw face sense. On admission to a
 document, `Import3dm` now globally reverses known inward solids, as measured in
 Rhino's file import; unsupported/unknown orientation and nonsolids remain as read.
