@@ -16674,8 +16674,16 @@ fn format_point(point: Point3) -> String {
 pub enum CommandError {
     #[error("PointCloud creation requires point or mesh sources")]
     PointCloudRequiresSources,
-    #[error("PointCloud Add/Remove editing is not implemented")]
-    PointCloudEditingUnsupported,
+    #[error("select one point cloud or specify Target=<id>")]
+    PointCloudTargetRequired,
+    #[error("a selected point cloud requires PointCloud Add or PointCloud Remove")]
+    PointCloudEditActionRequired,
+    #[error("multiple point clouds selected; specify Target=<id>")]
+    PointCloudTargetAmbiguous,
+    #[error("PointCloud Add requires selected point or point cloud sources")]
+    PointCloudRequiresAddSources,
+    #[error("PointCloud Remove index is outside the target cloud")]
+    PointCloudIndexOutOfRange,
     #[error("per-point colors are not implemented; use UsePointColors=No")]
     PointCloudColorsUnsupported,
     #[error("Curvature requires only curve or surface objects selected")]

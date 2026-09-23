@@ -169,3 +169,110 @@ fn single_point_is_a_noop_but_postselection_is_cleared() {
         assert_eq!(doc.undo_label(), Some("Add object"));
     }
 }
+
+#[test]
+fn add_points_and_another_cloud_preserves_target_and_undo() {
+    let mut doc = Document::default();
+    let target = doc
+        .add_geometry(Geometry::PointCloud(
+            PointCloud3::try_new(vec![p(1.0)]).unwrap(),
+        ))
+        .unwrap();
+    let point = doc.add_geometry(Geometry::Point(p(2.0))).unwrap();
+    let source = doc
+        .add_geometry(Geometry::PointCloud(
+            PointCloud3::try_new(vec![p(3.0), p(3.0)]).unwrap(),
+        ))
+        .unwrap();
+    let group = doc.add_group(Some("cloud".into()), [target]).unwrap();
+    doc.select_objects_direct([target, point, source], SelectionMode::Replace)
+        .unwrap();
+    let before = doc.objects().cloned().collect::<Vec<_>>();
+    let registry = CommandRegistry::with_builtins();
+    assert!(matches!(
+        registry.execute(&mut doc, "PointCloud Add"),
+        Err(CommandError::PointCloudTargetAmbiguous)
+    ));
+    registry
+        .execute(&mut doc, &format!("PointCloud Add Target={target}"))
+        .unwrap();
+    assert_eq!(doc.objects().len(), 1);
+    let object = doc.object(target).unwrap();
+    assert_eq!(object.group_ids(), [group]);
+    let Geometry::PointCloud(cloud) = object.geometry() else {
+        panic!()
+    };
+    assert_eq!(cloud.points(), [p(1.0), p(2.0), p(3.0), p(3.0)]);
+    assert!(doc.is_selected(target));
+    registry.execute(&mut doc, "Undo").unwrap();
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+    registry.execute(&mut doc, "Redo").unwrap();
+    assert_eq!(doc.objects().len(), 1);
+}
+
+#[test]
+fn remove_indices_preserves_order_and_is_atomic_on_invalid_index() {
+    for output in ["Points", "PointCloud"] {
+        let mut doc = Document::default();
+        let target = doc
+            .add_geometry(Geometry::PointCloud(
+                PointCloud3::try_new(vec![p(1.0), p(2.0), p(2.0), p(4.0)]).unwrap(),
+            ))
+            .unwrap();
+        doc.select_objects_direct([target], SelectionMode::Replace)
+            .unwrap();
+        let before = doc.objects().cloned().collect::<Vec<_>>();
+        let registry = CommandRegistry::with_builtins();
+        assert!(matches!(
+            registry.execute(&mut doc, "PointCloud Remove Indices=1,9"),
+            Err(CommandError::PointCloudIndexOutOfRange)
+        ));
+        assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+        registry
+            .execute(
+                &mut doc,
+                &format!("PointCloud Remove Indices=2,0,2 Output={output}"),
+            )
+            .unwrap();
+        let Geometry::PointCloud(cloud) = doc.object(target).unwrap().geometry() else {
+            panic!()
+        };
+        assert_eq!(cloud.points(), [p(2.0), p(4.0)]);
+        let outputs = doc
+            .objects()
+            .filter(|o| o.id() != target)
+            .collect::<Vec<_>>();
+        if output == "Points" {
+            assert_eq!(outputs.len(), 2);
+            assert!(matches!(outputs[0].geometry(), Geometry::Point(point) if *point == p(1.0)));
+            assert!(matches!(outputs[1].geometry(), Geometry::Point(point) if *point == p(2.0)));
+        } else {
+            assert_eq!(outputs.len(), 1);
+            let Geometry::PointCloud(cloud) = outputs[0].geometry() else {
+                panic!()
+            };
+            assert_eq!(cloud.points(), [p(1.0), p(2.0)]);
+        }
+        registry.execute(&mut doc, "Undo").unwrap();
+        assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+    }
+}
+
+#[test]
+fn removing_every_point_deletes_the_empty_source_cloud() {
+    let mut doc = Document::default();
+    let target = doc
+        .add_geometry(Geometry::PointCloud(
+            PointCloud3::try_new(vec![p(5.0)]).unwrap(),
+        ))
+        .unwrap();
+    doc.select_objects_direct([target], SelectionMode::Replace)
+        .unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut doc, "PointCloud Remove Indices=0")
+        .unwrap();
+    assert!(doc.object(target).is_none());
+    assert!(
+        matches!(doc.objects().next().unwrap().geometry(), Geometry::Point(point) if *point == p(5.0))
+    );
+}
