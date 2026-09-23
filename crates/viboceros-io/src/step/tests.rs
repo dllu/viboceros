@@ -370,6 +370,26 @@ fn native_step_imports_diagonal_pcurve_on_spline_patches() {
             ))),
             4,
         ),
+        (
+            Surface::BsplineSurface(BsplineSurface::new(
+                (
+                    KnotVector::from(vec![-2., -1., 0., 1., 2., 3.]),
+                    KnotVector::from(vec![-2., -1., 0., 1., 2., 3.]),
+                ),
+                (0..3)
+                    .map(|u| {
+                        (0..3)
+                            .map(|v| {
+                                let x = u as f64;
+                                let y = v as f64;
+                                TruckPoint3::new(x, y, x * x + x * y)
+                            })
+                            .collect::<Vec<_>>()
+                    })
+                    .collect(),
+            )),
+            4,
+        ),
     ] {
         let uv = [
             TruckPoint2::new(0., 0.),

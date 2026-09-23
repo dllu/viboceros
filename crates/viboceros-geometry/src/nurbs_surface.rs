@@ -1757,6 +1757,36 @@ impl NurbsSurface {
         Ok(result)
     }
 
+    /// Clamps both ends of the active domain in each direction without
+    /// changing the surface locus or parameter values. This also works for
+    /// unclamped surfaces that are not periodic.
+    pub fn try_clamped_to_active_domain(&self) -> Result<Self, GeometryError> {
+        let u = self.domain_u();
+        let v = self.domain_v();
+        let clamped_u = self.knots_u[..=self.degree_u]
+            .iter()
+            .all(|knot| *knot == *u.start())
+            && self.knots_u[self.knots_u.len() - self.degree_u - 1..]
+                .iter()
+                .all(|knot| *knot == *u.end());
+        let clamped_v = self.knots_v[..=self.degree_v]
+            .iter()
+            .all(|knot| *knot == *v.start())
+            && self.knots_v[self.knots_v.len() - self.degree_v - 1..]
+                .iter()
+                .all(|knot| *knot == *v.end());
+        let result = if clamped_u {
+            self.clone()
+        } else {
+            self.clamped_in_u()?
+        };
+        if clamped_v {
+            Ok(result)
+        } else {
+            result.clamped_in_v()
+        }
+    }
+
     /// Converts selected closed degree-two-or-higher directions to
     /// Rhino-compatible periodic form.
     ///
@@ -4731,6 +4761,46 @@ pub(crate) fn tessellation_triangle_is_nondegenerate(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn clamping_an_unclamped_rational_surface_preserves_its_active_locus() {
+        let surface = NurbsSurface::try_new_rational(
+            2,
+            2,
+            3,
+            3,
+            (0..3)
+                .flat_map(|v| {
+                    (0..3).map(move |u| {
+                        let x = u as f64;
+                        let y = v as f64;
+                        WeightedPoint3::try_new(point(x, y, x * y), 1. + 0.2 * x + 0.3 * y).unwrap()
+                    })
+                })
+                .collect(),
+            vec![0., 1., 2., 3., 4., 5.],
+            vec![-2., -1., 0., 1., 2., 3.],
+        )
+        .unwrap();
+        let clamped = surface.try_clamped_to_active_domain().unwrap();
+        assert_eq!(clamped.domain_u(), 2.0..=3.0);
+        assert_eq!(clamped.domain_v(), 0.0..=1.0);
+        assert_eq!(clamped.knots_u(), &[2., 2., 2., 3., 3., 3.]);
+        assert_eq!(clamped.knots_v(), &[0., 0., 0., 1., 1., 1.]);
+        assert_eq!(clamped.try_clamped_to_active_domain().unwrap(), clamped);
+        for u in [2., 2.17, 2.5, 2.83, 3.] {
+            for v in [0., 0.23, 0.5, 0.79, 1.] {
+                assert!(
+                    surface
+                        .evaluate(u, v)
+                        .unwrap()
+                        .distance_to(clamped.evaluate(u, v).unwrap())
+                        .unwrap()
+                        < 1e-12
+                );
+            }
+        }
+    }
 
     #[test]
     fn closest_point_is_invariant_under_independent_parameter_scale_changes() {

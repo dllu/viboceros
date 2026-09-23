@@ -937,7 +937,7 @@ fn multispan_pcurve_edge(
         return Ok(None);
     }
     let unsupported = |reason| StepError::UnsupportedNativeShell { shell: id, reason };
-    let surface = spline_surface_basis(basis, id)?;
+    let surface = spline_surface_basis(basis, id)?.try_clamped_to_active_domain()?;
     let u_domain = surface.domain_u();
     let v_domain = surface.domain_v();
     if !u_domain.contains(&uv0.x())
@@ -2208,6 +2208,47 @@ mod tests {
                 ..
             })
         ));
+    }
+
+    #[test]
+    fn unclamped_single_span_surface_diagonal_pcurve_clamps_without_changing_locus() {
+        let basis = Surface::BsplineSurface(BsplineSurface::new(
+            (
+                KnotVector::from(vec![0., 1., 2., 3., 4., 5.]),
+                KnotVector::from(vec![-2., -1., 0., 1., 2., 3.]),
+            ),
+            (0..3)
+                .map(|u| {
+                    (0..3)
+                        .map(|v| {
+                            let x = u as f64;
+                            let y = v as f64;
+                            TruckPoint3::new(x, y, x * x + x * y)
+                        })
+                        .collect::<Vec<_>>()
+                })
+                .collect(),
+        ));
+        for (a, b) in [([2., 0.], [3., 1.]), ([2.1, 0.2], [2.8, 0.9])] {
+            let source = Curve3D::ParameterCurve(StepParameterCurve::new(
+                Box::new(Curve2D::Line(Line(
+                    TruckPoint2::new(a[0], a[1]),
+                    TruckPoint2::new(b[0], b[1]),
+                ))),
+                Box::new(basis.clone()),
+            ));
+            let curve = edge_curve(&source, 1).unwrap();
+            assert_eq!(curve.degree(), 4);
+            for t in [0., 0.17, 0.5, 0.83, 1.] {
+                let u = a[0] * (1. - t) + b[0] * t;
+                let v = a[1] * (1. - t) + b[1] * t;
+                let expected = basis.evaluate(u, v);
+                let actual = curve.evaluate(t).unwrap();
+                assert!((actual.x() - expected.x).abs() < 1e-10);
+                assert!((actual.y() - expected.y).abs() < 1e-10);
+                assert!((actual.z() - expected.z).abs() < 1e-10);
+            }
+        }
     }
 
     #[test]

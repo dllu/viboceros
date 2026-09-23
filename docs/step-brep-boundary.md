@@ -166,7 +166,8 @@ event. Direct rational tests cover staggered, simultaneous, partial, and
 reversed crossings; serialized polynomial and rational triangles validate the
 joined edge against source-surface evaluation. Crossings too close to retain
 distinct binary64 parameters are rejected. Unclamped higher-degree single-span
-surfaces still require separate composition support.
+surfaces are clamped at their active domain before composition, preserving their
+surface locus and parameter values; a serialized triangle covers this case.
 
 The same degree-one isoparametric p-curves on linear extrusions of curved
 directrices lift exactly. Constant-height edges use the translated directrix;
