@@ -5,6 +5,80 @@ fn point(x: Real, y: Real) -> Point3 {
 }
 
 #[test]
+fn ellipse_multiple_offsets_preserve_smooth_closed_outputs() {
+    let mut document = Document::default();
+    let frame = CommandContext::default().construction_plane;
+    let ellipse = Ellipse3::try_new(
+        point(0.0, 0.0),
+        5.0,
+        3.0,
+        frame.x_axis(),
+        frame.y_axis(),
+        document.tolerance(),
+    )
+    .unwrap();
+    let id = document.add_geometry(Geometry::Ellipse(ellipse)).unwrap();
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "OffsetMultiple 0.5 8,0,0 OffsetCount=2")
+        .unwrap();
+    let starts = document
+        .selected_objects()
+        .map(|object| {
+            let Geometry::NurbsCurve(curve) = object.geometry() else {
+                panic!("smooth offset")
+            };
+            assert!(curve.is_closed().unwrap());
+            curve.evaluate(*curve.domain().start()).unwrap().x()
+        })
+        .collect::<Vec<_>>();
+    assert!((starts[0] - 5.5).abs() <= document.tolerance().absolute());
+    assert!((starts[1] - 6.0).abs() <= document.tolerance().absolute());
+}
+
+#[test]
+fn ellipse_container_reverses_nested_circle_island() {
+    let mut document = Document::default();
+    let frame = CommandContext::default().construction_plane;
+    let outer = document
+        .add_geometry(Geometry::Ellipse(
+            Ellipse3::try_new(
+                point(0.0, 0.0),
+                10.0,
+                6.0,
+                frame.x_axis(),
+                frame.y_axis(),
+                document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    let inner = document
+        .add_geometry(Geometry::Circle(
+            Circle3::try_new(point(0.0, 0.0), 2.0, frame.z_axis(), document.tolerance()).unwrap(),
+        ))
+        .unwrap();
+    document
+        .select_objects_direct([outer, inner], SelectionMode::Replace)
+        .unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "OffsetMultiple 0.5 4,0,0 OffsetCount=1")
+        .unwrap();
+    let mut outputs = document.selected_objects();
+    let Geometry::NurbsCurve(container) = outputs.next().unwrap().geometry() else {
+        panic!("ellipse offset")
+    };
+    assert!(
+        (container.evaluate(*container.domain().start()).unwrap().x() - 9.5).abs()
+            <= document.tolerance().absolute()
+    );
+    let Geometry::Circle(island) = outputs.next().unwrap().geometry() else {
+        panic!("circle island")
+    };
+    assert_eq!(island.radius(), 2.5);
+}
+
+#[test]
 fn open_curves_offset_toward_pick_with_requested_count() {
     let mut document = Document::default();
     let first = document

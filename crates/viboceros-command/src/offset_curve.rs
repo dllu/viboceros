@@ -1,4 +1,4 @@
-//! Exact analytic and planar polyline offsets with explicit corner and layer choices.
+//! Analytic, smooth, and planar polyline offsets with corner and layer choices.
 
 use super::*;
 
@@ -50,6 +50,7 @@ impl Command for OffsetMultipleCommand {
                     Geometry::Line(line) => Curve3::Line(*line),
                     Geometry::Circle(circle) => Curve3::Circle(*circle),
                     Geometry::Arc(arc) => Curve3::Arc(*arc),
+                    Geometry::Ellipse(ellipse) => Curve3::Ellipse(*ellipse),
                     Geometry::Polyline(polyline) => Curve3::Polyline(polyline.clone()),
                     _ => return Err(CommandError::UnsupportedOffsetGeometry),
                 };
@@ -285,6 +286,7 @@ impl Command for OffsetCommand {
                 Geometry::Line(line) => Curve3::Line(*line),
                 Geometry::Circle(circle) => Curve3::Circle(*circle),
                 Geometry::Arc(arc) => Curve3::Arc(*arc),
+                Geometry::Ellipse(ellipse) => Curve3::Ellipse(*ellipse),
                 Geometry::Polyline(polyline) => Curve3::Polyline(polyline.clone()),
                 _ => return Err(CommandError::UnsupportedOffsetGeometry),
             };

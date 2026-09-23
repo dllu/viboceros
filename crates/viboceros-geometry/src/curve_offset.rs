@@ -1,8 +1,13 @@
-//! Exact offsets of analytic curves in an oriented plane.
+//! Analytic offsets and tolerance-checked smooth approximations in oriented planes.
 
 use std::cmp::Ordering;
 
 use crate::exact_scalar::rational;
+
+mod ellipse;
+use ellipse::{
+    ellipse_offset_side, ellipse_region_contains, ellipse_through_distance, offset_ellipse,
+};
 
 use crate::{
     Circle3, CircularArc3, Curve3, CurveSegment3, GeometryError, LineSegment,
@@ -136,6 +141,9 @@ impl Curve3 {
             }
             return Ok(Some(radial < circle.radius()));
         }
+        if let Self::Ellipse(ellipse) = self {
+            return ellipse_region_contains(*ellipse, point, tolerance).map(Some);
+        }
         let Self::Polyline(polyline) = self else {
             return Ok(None);
         };
@@ -184,6 +192,7 @@ impl Curve3 {
         match self {
             Self::Circle(_) => return Ok(Some(1.0)),
             Self::Arc(arc) if arc.is_closed() => return Ok(Some(1.0)),
+            Self::Ellipse(_) => return Ok(Some(1.0)),
             Self::Polyline(polyline) if polyline.is_closed() => {
                 let normal = polyline_offset_normal(polyline, plane_normal, tolerance)?;
                 let origin = polyline.vertices()[0];
@@ -229,6 +238,7 @@ impl Curve3 {
         match self {
             Self::Circle(circle) => Ok(Some(circle.point_at_angle(0.0)?)),
             Self::Arc(arc) if arc.is_closed() => Ok(Some(arc.start()?)),
+            Self::Ellipse(ellipse) => Ok(Some(ellipse.point_at_angle(0.0)?)),
             Self::Polyline(polyline) if polyline.is_closed() => Ok(Some(polyline.vertices()[0])),
             _ => Ok(None),
         }
@@ -306,6 +316,7 @@ impl Curve3 {
                         .try_reparameterized(arc.domain())?,
                 ))
             }
+            Self::Ellipse(ellipse) => offset_ellipse(*ellipse, distance, tolerance),
             Self::Polyline(polyline) => {
                 offset_polyline(polyline, distance, plane_normal, tolerance, corner)
             }
@@ -391,6 +402,11 @@ impl Curve3 {
                     arc.radius()
                         - in_plane_radius(arc.center(), through, arc.x_axis(), arc.y_axis())?,
                 ],
+            ),
+            Self::Ellipse(ellipse) => (
+                ellipse.center(),
+                ellipse.normal()?,
+                vec![ellipse_through_distance(*ellipse, through, tolerance)?],
             ),
             Self::Polyline(polyline) => {
                 let normal = polyline_offset_normal(polyline, plane_normal, tolerance)?;
@@ -486,6 +502,9 @@ impl Curve3 {
             }
             Self::Arc(arc) => {
                 arc.radius() - in_plane_radius(arc.center(), side, arc.x_axis(), arc.y_axis())?
+            }
+            Self::Ellipse(ellipse) => {
+                return ellipse_offset_side(*ellipse, side, tolerance);
             }
             Self::Polyline(polyline) => {
                 let normal = polyline_offset_normal(polyline, plane_normal, tolerance)?;
@@ -629,6 +648,9 @@ fn offset_curve_distance_to_point(
             Ok((radial - circle.radius()).hypot(height))
         }
         Curve3::Arc(arc) => offset_arc_distance_to_point(*arc, point),
+        Curve3::NurbsCurve(curve) => curve
+            .evaluate(curve.closest_parameter(point, tolerance)?)?
+            .distance_to(point),
         Curve3::Polyline(polyline) => polyline.closest_point(point, tolerance)?.distance_to(point),
         Curve3::PolyCurve(polycurve) => {
             polycurve
@@ -1098,6 +1120,58 @@ mod tests {
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn ellipse_offsets_follow_analytic_normal_and_preserve_closed_domain() {
+        let tol = Tolerance::DEFAULT;
+        let x = Vector3::try_new(1.0, 0.0, 0.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let y = Vector3::try_new(0.0, 1.0, 0.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let ellipse = crate::Ellipse3::try_new(point(1.0, 2.0, 3.0), 5.0, 3.0, x, y, tol)
+            .unwrap()
+            .try_reparameterized(10.0..=20.0)
+            .unwrap();
+        let source = Curve3::Ellipse(ellipse);
+        assert_eq!(source.offset_side(point(1.0, 2.0, 3.0), x, tol), Ok(1.0));
+        assert_eq!(source.offset_side(point(9.0, 2.0, 3.0), x, tol), Ok(-1.0));
+        assert_eq!(
+            source.offset_side(point(6.0, 2.0, 3.0), x, tol),
+            Err(GeometryError::AmbiguousCurveOffsetSide)
+        );
+        let Curve3::NurbsCurve(offset) = source.try_offset(-0.8, x, tol).unwrap() else {
+            panic!("smooth offset")
+        };
+        assert!(offset.is_closed().unwrap());
+        assert_eq!(offset.domain(), 10.0..=20.0);
+        for index in 0..=256 {
+            let angle = std::f64::consts::TAU * index as Real / 256.0;
+            let (sine, cosine) = angle.sin_cos();
+            let speed = (5.0 * sine).hypot(3.0 * cosine);
+            let expected = point(
+                1.0 + 5.0 * cosine + 0.8 * 3.0 * cosine / speed,
+                2.0 + 3.0 * sine + 0.8 * 5.0 * sine / speed,
+                3.0,
+            );
+            let parameter = 10.0 + 10.0 * index as Real / 256.0;
+            assert!(
+                offset
+                    .evaluate(parameter)
+                    .unwrap()
+                    .distance_to(expected)
+                    .unwrap()
+                    <= tol.absolute()
+            );
+        }
+        assert!(matches!(
+            source.try_offset(1.8, x, tol),
+            Err(GeometryError::Degenerate { .. })
+        ));
     }
 
     #[test]

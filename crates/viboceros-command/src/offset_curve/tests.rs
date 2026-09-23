@@ -5,6 +5,55 @@ fn point(x: Real, y: Real, z: Real) -> Point3 {
 }
 
 #[test]
+fn offset_ellipse_creates_smooth_curve_and_through_point_reaches_pick() {
+    let mut document = Document::default();
+    let frame = CommandContext::default().construction_plane;
+    let ellipse = Ellipse3::try_new(
+        point(0.0, 0.0, 0.0),
+        5.0,
+        3.0,
+        frame.x_axis(),
+        frame.y_axis(),
+        document.tolerance(),
+    )
+    .unwrap();
+    let id = document.add_geometry(Geometry::Ellipse(ellipse)).unwrap();
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "Offset 0.8 8,0,0")
+        .unwrap();
+    let Geometry::NurbsCurve(outside) = document.selected_objects().next().unwrap().geometry()
+    else {
+        panic!("smooth offset")
+    };
+    assert!(outside.is_closed().unwrap());
+    assert!(
+        outside
+            .evaluate(*outside.domain().start())
+            .unwrap()
+            .distance_to(point(5.8, 0.0, 0.0))
+            .unwrap()
+            <= document.tolerance().absolute()
+    );
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "Offset ThroughPoint=5.8,0,0")
+        .unwrap();
+    let Geometry::NurbsCurve(through) = document.selected_objects().next().unwrap().geometry()
+    else {
+        panic!("smooth through offset")
+    };
+    assert!(
+        through
+            .evaluate(*through.domain().start())
+            .unwrap()
+            .distance_to(point(5.8, 0.0, 0.0))
+            .unwrap()
+            <= document.tolerance().absolute()
+    );
+}
+
+#[test]
 fn offset_line_uses_pick_side_and_selects_new_curve() {
     let mut document = Document::default();
     let source = document
