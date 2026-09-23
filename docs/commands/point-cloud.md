@@ -28,16 +28,18 @@ interleaving with unrelated picks and Rhino Undo pick-order parity are not promi
 
 ## Edit an existing cloud
 
-Select one target cloud and one or more point objects, then enter `PointCloud Add`.
-The selected points append in selection order. Source point objects are consumed.
-To merge another cloud, select both clouds and specify the target object's ID:
+Select one target cloud, enter `PointCloud Add`, pick point objects or other
+point clouds, then press Enter. Esc restores the selection from before the
+prompt. You can also preselect the target and point sources and run Add directly.
+The selected sources append in selection order and are consumed. If several
+clouds are preselected, specify the target object's ID:
 
 ```text
 PointCloud Add Target=<id>
 ```
 
-Source clouds are consumed; the target retains its ID, attributes, groups, and
-selection. Meshes are not Add sources. Add is one undo step.
+The target retains its ID, attributes, groups, and selection. Meshes are not Add
+sources. Add is one undo step.
 
 Remove uses zero-based stored point indices, separated by commas. Removed points
 keep their stored order, and duplicate indices count once:
@@ -56,8 +58,8 @@ step.
 ## Limits
 
 Per-point colors are not implemented; `UsePointColors=Yes` returns an error.
-Add and Remove currently use preselection and typed IDs/indices. Viewport point
-subobject picking and Rhino's interactive Add/Remove option loop are pending.
+Remove currently uses typed indices. Viewport point subobject picking and
+Rhino's interactive Remove option loop are pending.
 Bare `PointCloud` with a preselected cloud asks for an explicit edit action.
 Creation still ignores existing cloud inputs. Use `Explode` to extract individual
 points from a cloud, or `ExtractPt Output=PointCloud` for supported geometry
@@ -76,7 +78,8 @@ mixed input, output attributes, and selection. The
 replays against native command execution. Independent Python checks use explicit
 expected point lists and retained source indices. Native tests also cover
 undo/redo, group restoration, Add/Remove editing, and atomic rejection; UI tests
-cover filtered creation selection, pick order, cancellation, and unsupported colors.
+cover filtered creation selection, Add source picking and cancellation, pick
+order, and unsupported colors.
 The eight-case live comparison passed with zero coordinate difference and
 matching recorded document state. A [batch-deletion benchmark](../batch-deletion.md)
 tracks native conversion and history costs; Rhino performance parity remains unmeasured.

@@ -22,6 +22,7 @@ pub enum ObjectSelectionFilter {
     SurfaceComponents,
     Surfaces,
     PointCloudSources,
+    PointCloudAddSources,
     Area,
     Volume,
 }
@@ -47,6 +48,9 @@ impl ObjectSelectionFilter {
             Self::Any => true,
             Self::Grouped => !object.group_ids().is_empty(),
             Self::PointCloudSources => matches!(geometry, Geometry::Point(_) | Geometry::Mesh(_)),
+            Self::PointCloudAddSources => {
+                matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_))
+            }
             Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
             Self::Curves => geometry.curve_ref().is_some(),
             Self::Join => {

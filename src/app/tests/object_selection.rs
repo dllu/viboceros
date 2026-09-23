@@ -721,6 +721,123 @@ fn point_cloud_cancel_preserves_sources_and_rejects_unsupported_colors() {
     assert!(app.document.object(id).is_some());
 }
 
+#[test]
+fn point_cloud_add_picks_sources_after_preselected_target_and_undoes() {
+    let mut app = test_app();
+    let target = app
+        .document
+        .add_geometry(Geometry::PointCloud(
+            viboceros_geometry::PointCloud3::try_new(vec![point(1.0, 0.0, 0.0)]).unwrap(),
+        ))
+        .unwrap();
+    let source_point = app
+        .document
+        .add_geometry(Geometry::Point(point(2.0, 0.0, 0.0)))
+        .unwrap();
+    let source_cloud = app
+        .document
+        .add_geometry(Geometry::PointCloud(
+            viboceros_geometry::PointCloud3::try_new(vec![point(3.0, 0.0, 0.0)]).unwrap(),
+        ))
+        .unwrap();
+    app.document
+        .select_objects_direct([target], SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "PointCloud Add");
+    assert!(app.object_prompt.is_some());
+    enter(&mut app, "");
+    assert!(app.object_prompt.is_some());
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(target),
+        mode: SelectionMode::Replace,
+    });
+    assert_eq!(app.document.selected_object_count(), 1);
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(source_point),
+        mode: SelectionMode::Replace,
+    });
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(source_cloud),
+        mode: SelectionMode::Replace,
+    });
+    enter(&mut app, "");
+    assert!(app.object_prompt.is_none());
+    let Geometry::PointCloud(cloud) = app.document.object(target).unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(
+        cloud.points(),
+        [
+            point(1.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(3.0, 0.0, 0.0)
+        ]
+    );
+    assert!(app.document.object(source_point).is_none());
+    assert!(app.document.object(source_cloud).is_none());
+    enter(&mut app, "Undo");
+    assert!(app.document.object(source_point).is_some());
+    assert!(app.document.object(source_cloud).is_some());
+}
+
+#[test]
+fn point_cloud_add_cancel_restores_original_selection() {
+    let mut app = test_app();
+    let target = app
+        .document
+        .add_geometry(Geometry::PointCloud(
+            viboceros_geometry::PointCloud3::try_new(vec![point(1.0, 0.0, 0.0)]).unwrap(),
+        ))
+        .unwrap();
+    let source = app
+        .document
+        .add_geometry(Geometry::Point(point(2.0, 0.0, 0.0)))
+        .unwrap();
+    app.document
+        .select_objects_direct([target], SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "PointCloud Add");
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(source),
+        mode: SelectionMode::Replace,
+    });
+    app.cancel_interactive_command(false);
+    assert!(app.object_prompt.is_none());
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![target]
+    );
+    assert!(app.document.object(source).is_some());
+}
+
+#[test]
+fn point_cloud_add_accepts_explicit_unselected_target_after_picking() {
+    let mut app = test_app();
+    let target = app
+        .document
+        .add_geometry(Geometry::PointCloud(
+            viboceros_geometry::PointCloud3::try_new(vec![point(1.0, 0.0, 0.0)]).unwrap(),
+        ))
+        .unwrap();
+    let source = app
+        .document
+        .add_geometry(Geometry::Point(point(2.0, 0.0, 0.0)))
+        .unwrap();
+    enter(&mut app, &format!("PointCloud Add Target={target}"));
+    assert!(app.object_prompt.is_some());
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(source),
+        mode: SelectionMode::Replace,
+    });
+    enter(&mut app, "");
+    assert!(app.object_prompt.is_none());
+    let Geometry::PointCloud(cloud) = app.document.object(target).unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(cloud.points(), [point(1.0, 0.0, 0.0), point(2.0, 0.0, 0.0)]);
+    assert!(!app.document.is_selected(target));
+}
+
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
     app.run_command();

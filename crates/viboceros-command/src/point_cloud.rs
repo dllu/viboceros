@@ -39,12 +39,14 @@ impl Command for PointCloudCommand {
         &self,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        if !matches!(parse(arguments)?, Operation::Create) {
-            return Ok(None);
-        }
+        let filter = match parse(arguments)? {
+            Operation::Create => ObjectSelectionFilter::PointCloudSources,
+            Operation::Add { .. } => ObjectSelectionFilter::PointCloudAddSources,
+            Operation::Remove { .. } => return Ok(None),
+        };
         Ok(Some(ObjectSelectionPrompt {
             command: self.name(),
-            filter: ObjectSelectionFilter::PointCloudSources,
+            filter,
             workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
             options: vec![],
             menus: vec![],

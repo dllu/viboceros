@@ -1,7 +1,7 @@
 //! Object picking and confirmation are prompt phases, not model transactions.
 use super::*;
 use viboceros_command::{ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSelectionWorkflow};
-use viboceros_document::{ObjectId, SelectionMode};
+use viboceros_document::{Geometry, ObjectId, SelectionMode};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum ObjectPromptPhase {
@@ -18,6 +18,9 @@ pub(super) struct PendingObjectCommand {
     pub(super) postselected: bool,
     pub(super) subcurve_measurement: bool,
     pub(super) measurement_display_units: Option<&'static str>,
+    pub(super) command_override: Option<String>,
+    pub(super) excluded_object: Option<ObjectId>,
+    pub(super) selection_before: Option<Vec<ObjectId>>,
 }
 
 impl PendingObjectCommand {
@@ -140,6 +143,55 @@ impl VibocerosApp {
                     .flatten()
             })
             .flatten();
+        if description.filter == ObjectSelectionFilter::PointCloudAddSources {
+            let explicit_target = input
+                .split_whitespace()
+                .skip(2)
+                .filter_map(|argument| argument.split_once('='))
+                .find(|(name, _)| name.trim_start_matches('_').eq_ignore_ascii_case("Target"))
+                .and_then(|(_, value)| value.parse::<ObjectId>().ok());
+            let target = explicit_target.or_else(|| {
+                let mut clouds = self
+                    .document
+                    .selected_objects()
+                    .filter(|object| matches!(object.geometry(), Geometry::PointCloud(_)));
+                let first = clouds.next()?.id();
+                clouds.next().is_none().then_some(first)
+            });
+            let Some(target) = target else {
+                return false;
+            };
+            if self
+                .document
+                .object(target)
+                .is_none_or(|object| !matches!(object.geometry(), Geometry::PointCloud(_)))
+            {
+                return false;
+            }
+            if self
+                .document
+                .selected_objects()
+                .any(|object| object.id() != target && description.filter.accepts_object(object))
+            {
+                return false;
+            }
+            let selection_before = self.document.selected_object_ids().collect();
+            self.cancel_interactive_command(false);
+            self.object_prompt = Some(PendingObjectCommand {
+                description,
+                phase: ObjectPromptPhase::Selecting,
+                postselected: false,
+                subcurve_measurement: false,
+                measurement_display_units: None,
+                command_override: Some(format!("PointCloud Add Target={target}")),
+                excluded_object: Some(target),
+                selection_before: Some(selection_before),
+            });
+            self.command_input.clear();
+            self.push_log(format!("> {input}"));
+            self.log_object_prompt();
+            return true;
+        }
         let preselected = self
             .document
             .selected_objects()
@@ -172,6 +224,9 @@ impl VibocerosApp {
                         postselected: false,
                         subcurve_measurement,
                         measurement_display_units,
+                        command_override: None,
+                        excluded_object: None,
+                        selection_before: None,
                     });
                 }
                 Ok(None) => return false,
@@ -196,6 +251,9 @@ impl VibocerosApp {
                 postselected: true,
                 subcurve_measurement,
                 measurement_display_units,
+                command_override: None,
+                excluded_object: None,
+                selection_before: None,
             });
         }
         self.command_input.clear();
@@ -206,7 +264,11 @@ impl VibocerosApp {
 
     fn log_object_prompt(&mut self) {
         if let Some(pending) = &self.object_prompt {
-            let mut message = format!("{}. {}", pending.hint(), pending.description.command_line());
+            let command = pending
+                .command_override
+                .clone()
+                .unwrap_or_else(|| pending.description.command_line());
+            let mut message = format!("{}. {}", pending.hint(), command);
             for (index, choice) in pending.description.choices.iter().enumerate() {
                 if pending.phase == ObjectPromptPhase::Selecting
                     || matches!(pending.phase, ObjectPromptPhase::Choice(selected) if selected != index)
@@ -245,11 +307,10 @@ impl VibocerosApp {
                 return true;
             }
             if pending.phase == ObjectPromptPhase::Selecting {
-                if !self
-                    .document
-                    .selected_objects()
-                    .any(|o| pending.description.filter.accepts_object(o))
-                {
+                if !self.document.selected_objects().any(|o| {
+                    Some(o.id()) != pending.excluded_object
+                        && pending.description.filter.accepts_object(o)
+                }) {
                     if self
                         .commands
                         .cancel_empty_object_selection(&pending.description)
@@ -287,7 +348,10 @@ impl VibocerosApp {
                     }
                 }
             }
-            let mut command = pending.description.command_line();
+            let mut command = pending
+                .command_override
+                .clone()
+                .unwrap_or_else(|| pending.description.command_line());
             if pending.subcurve_measurement {
                 command.push_str(" SubCrv");
             }
@@ -384,7 +448,10 @@ impl VibocerosApp {
                 let ids = self
                     .document
                     .selectable_objects()
-                    .filter(|o| pending.description.filter.accepts_object(o))
+                    .filter(|o| {
+                        Some(o.id()) != pending.excluded_object
+                            && pending.description.filter.accepts_object(o)
+                    })
                     .map(|o| o.id())
                     .collect::<Vec<_>>();
                 self.select_prompt_objects(ids, SelectionMode::Add);
@@ -493,7 +560,14 @@ impl VibocerosApp {
 
     pub(super) fn cancel_object_prompt(&mut self, announce: bool) {
         if let Some(pending) = self.object_prompt.take() {
-            if pending.postselected {
+            if let Some(selection_before) = pending.selection_before {
+                if let Err(error) = self
+                    .document
+                    .select_objects_direct(selection_before, SelectionMode::Replace)
+                {
+                    self.push_log(format!("Error restoring selection: {error}"));
+                }
+            } else if pending.postselected {
                 self.document.clear_selection();
             }
             self.command_input.clear();
@@ -534,11 +608,16 @@ impl VibocerosApp {
         else {
             return;
         };
+        let excluded = self
+            .object_prompt
+            .as_ref()
+            .and_then(|prompt| prompt.excluded_object);
         let requested = ids.into_iter().collect::<std::collections::BTreeSet<_>>();
         let ids = self
             .document
             .selectable_objects()
             .filter(|object| requested.contains(&object.id()))
+            .filter(|object| Some(object.id()) != excluded)
             .filter(|object| filter.accepts_object(object))
             .map(|object| object.id())
             .collect::<Vec<_>>();
