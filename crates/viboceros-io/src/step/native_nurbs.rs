@@ -385,6 +385,9 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
                         return elementary_isocurve_edge(basis, uv0, uv1, uv.domain(), id);
                     }
                 }
+                if let Some(curve) = bilinear_pcurve_edge(basis, uv0, uv1, uv.domain(), id)? {
+                    return Ok(curve);
+                }
             }
             if !globally_affine && bounded_affine.is_none() {
                 return Err(unsupported("3D edge p-curve basis is not affine"));
@@ -624,6 +627,105 @@ fn elementary_isocurve_edge(
         )?);
     }
     circular_isocurve_edge(evaluate, from, to, domain, id)
+}
+
+/// Composes a straight UV segment with one degree-one tensor-product patch.
+/// Each homogeneous surface basis function is a product of two linear
+/// Bernstein polynomials along the segment, so its image is a rational
+/// quadratic Bézier curve even when the patch is warped or has varying weights.
+fn bilinear_pcurve_edge(
+    basis: &Surface,
+    uv0: Point2,
+    uv1: Point2,
+    domain: std::ops::RangeInclusive<f64>,
+    id: u64,
+) -> Result<Option<NurbsCurve>, StepError> {
+    let is_bilinear = match basis {
+        Surface::BsplineSurface(surface) => {
+            surface.udegree() == 1
+                && surface.vdegree() == 1
+                && surface.control_points().len() == 2
+                && surface.control_points().iter().all(|row| row.len() == 2)
+        }
+        Surface::NurbsSurface(surface) => {
+            surface.udegree() == 1
+                && surface.vdegree() == 1
+                && surface.control_points().len() == 2
+                && surface.control_points().iter().all(|row| row.len() == 2)
+        }
+        _ => false,
+    };
+    if !is_bilinear {
+        return Ok(None);
+    }
+    let unsupported = |reason| StepError::UnsupportedNativeShell { shell: id, reason };
+    let surface = spline_surface_basis(basis, id)?;
+    let u_domain = surface.domain_u();
+    let v_domain = surface.domain_v();
+    let inside = |point: Point2| u_domain.contains(&point.x()) && v_domain.contains(&point.y());
+    if !inside(uv0) || !inside(uv1) {
+        return Err(unsupported(
+            "3D edge p-curve leaves its bilinear surface domain",
+        ));
+    }
+    let sign = surface
+        .control_point(0, 0)
+        .unwrap()
+        .weight()
+        .is_sign_positive();
+    if surface
+        .control_points()
+        .iter()
+        .any(|control| control.weight().is_sign_positive() != sign)
+    {
+        return Err(unsupported("bilinear p-curve surface weights change sign"));
+    }
+    let u0 = (uv0.x() - u_domain.start()) / (u_domain.end() - u_domain.start());
+    let u1 = (uv1.x() - u_domain.start()) / (u_domain.end() - u_domain.start());
+    let v0 = (uv0.y() - v_domain.start()) / (v_domain.end() - v_domain.start());
+    let v1 = (uv1.y() - v_domain.start()) / (v_domain.end() - v_domain.start());
+    let u_basis = [[1. - u0, 1. - u1], [u0, u1]];
+    let v_basis = [[1. - v0, 1. - v1], [v0, v1]];
+    let mut homogeneous = [[0.; 4]; 3];
+    for (u, u_factors) in u_basis.iter().enumerate() {
+        for (v, v_factors) in v_basis.iter().enumerate() {
+            let control = surface.control_point(u, v).unwrap();
+            let weight = control.weight();
+            let point = control.point();
+            let source = [
+                point.x() * weight,
+                point.y() * weight,
+                point.z() * weight,
+                weight,
+            ];
+            let factors = [
+                u_factors[0] * v_factors[0],
+                (u_factors[0] * v_factors[1] + u_factors[1] * v_factors[0]) / 2.,
+                u_factors[1] * v_factors[1],
+            ];
+            for (target, factor) in homogeneous.iter_mut().zip(factors) {
+                for (coordinate, value) in target.iter_mut().zip(source) {
+                    *coordinate += factor * value;
+                }
+            }
+        }
+    }
+    let controls = homogeneous
+        .into_iter()
+        .map(|point| weighted3(point[0], point[1], point[2], point[3], id))
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(Some(NurbsCurve::try_new_rational(
+        2,
+        controls,
+        vec![
+            *domain.start(),
+            *domain.start(),
+            *domain.start(),
+            *domain.end(),
+            *domain.end(),
+            *domain.end(),
+        ],
+    )?))
 }
 
 fn rotate_revolution_point(
@@ -1406,6 +1508,150 @@ mod tests {
             edge_curve(&outside, 1),
             Err(StepError::UnsupportedNativeShell {
                 reason: "3D edge p-curve leaves its affine surface domain",
+                ..
+            })
+        ));
+    }
+
+    #[test]
+    fn bilinear_surface_diagonal_pcurves_compose_to_exact_quadratics() {
+        let knots = || {
+            (
+                KnotVector::from(vec![2., 2., 4., 4.]),
+                KnotVector::from(vec![-3., -3., 5., 5.]),
+            )
+        };
+        for (basis, rational) in [
+            (
+                Surface::BsplineSurface(BsplineSurface::new(
+                    knots(),
+                    vec![
+                        vec![TruckPoint3::new(0., 0., 0.), TruckPoint3::new(0., 2., 0.)],
+                        vec![TruckPoint3::new(2., 0., 0.), TruckPoint3::new(2., 2., 1.)],
+                    ],
+                )),
+                false,
+            ),
+            (
+                Surface::NurbsSurface(TruckNurbsSurface::new(BsplineSurface::new(
+                    knots(),
+                    vec![
+                        vec![Vector4::new(0., 0., 0., 1.), Vector4::new(0., 4., 0., 2.)],
+                        vec![Vector4::new(6., 0., 0., 3.), Vector4::new(8., 8., 4., 4.)],
+                    ],
+                ))),
+                true,
+            ),
+            (
+                Surface::BsplineSurface(BsplineSurface::new(
+                    (
+                        KnotVector::from(vec![0., 2., 4., 6.]),
+                        KnotVector::from(vec![-5., -3., 5., 7.]),
+                    ),
+                    vec![
+                        vec![TruckPoint3::new(0., 0., 0.), TruckPoint3::new(0., 2., 0.)],
+                        vec![TruckPoint3::new(2., 0., 0.), TruckPoint3::new(2., 2., 1.)],
+                    ],
+                )),
+                false,
+            ),
+        ] {
+            assert!(affine_bilinear_basis(&basis).is_none());
+            for (a, b) in [
+                ([2., -3.], [4., 5.]),
+                ([2.3, -1.], [3.7, 4.]),
+                ([3.7, 4.], [2.3, -1.]),
+            ] {
+                let uv0 = TruckPoint2::new(a[0], a[1]);
+                let uv1 = TruckPoint2::new(b[0], b[1]);
+                for (uv, domain) in [
+                    (Curve2D::Line(Line(uv0, uv1)), 0.0..=1.0),
+                    (
+                        Curve2D::BsplineCurve(BsplineCurve::new(
+                            KnotVector::from(vec![5., 5., 9., 9.]),
+                            vec![uv0, uv1],
+                        )),
+                        5.0..=9.0,
+                    ),
+                    (
+                        Curve2D::NurbsCurve(TruckNurbsCurve::new(BsplineCurve::new(
+                            KnotVector::from(vec![5., 5., 9., 9.]),
+                            vec![
+                                Vector3::new(2. * a[0], 2. * a[1], 2.),
+                                Vector3::new(2. * b[0], 2. * b[1], 2.),
+                            ],
+                        ))),
+                        5.0..=9.0,
+                    ),
+                ] {
+                    let source = Curve3D::ParameterCurve(StepParameterCurve::new(
+                        Box::new(uv),
+                        Box::new(basis.clone()),
+                    ));
+                    let curve = edge_curve(&source, 1).unwrap();
+                    assert_eq!(curve.degree(), 2);
+                    assert_eq!(curve.control_points().len(), 3);
+                    assert_eq!(curve.domain(), domain);
+                    for fraction in [0., 0.17, 0.5, 0.83, 1.] {
+                        let u = a[0] * (1. - fraction) + b[0] * fraction;
+                        let v = a[1] * (1. - fraction) + b[1] * fraction;
+                        let t = *domain.start() * (1. - fraction) + *domain.end() * fraction;
+                        let expected = basis.evaluate(u, v);
+                        let actual = curve.evaluate(t).unwrap();
+                        assert!((actual.x() - expected.x).abs() < 1e-11);
+                        assert!((actual.y() - expected.y).abs() < 1e-11);
+                        assert!((actual.z() - expected.z).abs() < 1e-11);
+                    }
+                    if a == [2., -3.] && rational {
+                        assert_eq!(
+                            curve
+                                .control_points()
+                                .iter()
+                                .map(|control| control.weight())
+                                .collect::<Vec<_>>(),
+                            vec![1., 2.5, 4.]
+                        );
+                    }
+                }
+            }
+
+            let outside = Curve3D::ParameterCurve(StepParameterCurve::new(
+                Box::new(Curve2D::Line(Line(
+                    TruckPoint2::new(1.9, -3.),
+                    TruckPoint2::new(4., 5.),
+                ))),
+                Box::new(basis),
+            ));
+            assert!(matches!(
+                edge_curve(&outside, 1),
+                Err(StepError::UnsupportedNativeShell {
+                    reason: "3D edge p-curve leaves its bilinear surface domain",
+                    ..
+                })
+            ));
+        }
+
+        let mixed_weights = Surface::NurbsSurface(TruckNurbsSurface::new(BsplineSurface::new(
+            knots(),
+            vec![
+                vec![Vector4::new(0., 0., 0., 1.), Vector4::new(0., 2., 0., 1.)],
+                vec![
+                    Vector4::new(2., 0., 0., 1.),
+                    Vector4::new(-2., -2., -1., -1.),
+                ],
+            ],
+        )));
+        let diagonal = Curve3D::ParameterCurve(StepParameterCurve::new(
+            Box::new(Curve2D::Line(Line(
+                TruckPoint2::new(2., -3.),
+                TruckPoint2::new(4., 5.),
+            ))),
+            Box::new(mixed_weights),
+        ));
+        assert!(matches!(
+            edge_curve(&diagonal, 1),
+            Err(StepError::UnsupportedNativeShell {
+                reason: "bilinear p-curve surface weights change sign",
                 ..
             })
         ));

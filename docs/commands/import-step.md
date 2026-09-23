@@ -22,6 +22,9 @@ lifts to an exact 3D NURBS curve. Degree-one, two-control-point isoparametric
 extrusions of curved directrices, supported surfaces of revolution, and
 cylindrical, conical, spherical, or toroidal faces retain exact trimmed
 isocurve geometry and their source parameter domain.
+Straight diagonal `PCURVE` edges on single degree-one 2-by-2 B-spline/NURBS
+patches compose to exact rational quadratic edges, including warped and
+varying-weight patches.
 Cylindrical and
 nonsingular conical faces with straight UV iso-trims spanning up to one turn
 convert to exact rational NURBS patches, including a full-turn wall with a paired

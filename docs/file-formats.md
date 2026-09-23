@@ -267,8 +267,10 @@ on curved B-spline/NURBS bases, linear extrusions of curved directrices,
 supported surfaces of revolution, and cylindrical, conical, spherical, or
 toroidal faces import as exact trimmed NURBS isocurves, keeping the source
 p-curve domain.
-Diagonal and unequal-weight p-curves on those bases remain unsupported unless
-the affine certificate applies.
+Straight diagonal p-curves on single degree-one 2-by-2 B-spline/NURBS patches
+also import as exact rational quadratic edges. Diagonal p-curves on higher-degree
+or multi-span non-affine surfaces and unequal-weight p-curves on non-affine
+bases remain unsupported.
 Other analytic surface types and
 periodic seam arrangements still fail native import.
 The native planar path supports straight-edged polygon holes, identifies the

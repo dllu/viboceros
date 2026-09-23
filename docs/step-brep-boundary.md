@@ -129,7 +129,7 @@ domain with same-sign weights. Polynomial and rational UV controls retain their
 degree, weights, and knots in 3D. Serialized polygon-hole cases check bent
 polyline edges on all supported basis types; rational quadratics check
 intermediate evaluation on planes and line extrusions. Other p-curve bases
-still require a separate exact composition adapter. Supported sweeps can also
+still require exact composition adapters. Supported sweeps can also
 use an affine-basis p-curve as their directrix.
 
 Degree-one, two-control-point U- or V-isoparametric `PCURVE` edges with equal
@@ -138,8 +138,17 @@ surface isocurve, trimmed to the source UV interval, oriented with the edge,
 and reparameterized to the source p-curve domain. This covers lines, two-point
 polylines, degree-one B-splines, and equal-weight rational NURBS. Polynomial
 and rational partial/reversed cases are checked against source-surface
-evaluation and serialized STEP import. Diagonal and unequal-weight p-curves on
-non-affine surfaces still need exact surface-curve composition.
+evaluation and serialized STEP import. Unequal-weight p-curves on non-affine
+surfaces still need exact surface-curve composition.
+
+A degree-one diagonal UV segment on a single 2-by-2 degree-one B-spline or
+NURBS patch composes to an exact rational quadratic in 3D. The converter
+multiplies the surface's homogeneous bilinear basis functions by the linear UV
+path, retains the source p-curve domain, and requires the UV segment to stay
+inside the patch with same-sign surface weights. Direct partial/reversed tests
+and serialized warped polynomial/rational triangle faces compare intermediate
+points against source-surface evaluation. Diagonal p-curves on higher-degree
+or multi-span non-affine surfaces remain unsupported.
 
 The same degree-one isoparametric p-curves on linear extrusions of curved
 directrices lift exactly. Constant-height edges use the translated directrix;
