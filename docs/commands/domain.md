@@ -57,6 +57,13 @@ intervals. The capture also records public-API domains and confirms the source
 geometry checksum is unchanged. It does not establish command-picking parity
 for multi-face or trimmed B-reps, or for `SubCrv`.
 
+The same fixture now includes forward, reversed, and closed-seam subcurve
+cases. The worker records the RhinoCommon extracted curve's domain, endpoints,
+and a `Domain` command report on that temporary curve. Those cases do not yet
+have a live Rhino capture: the September 2026 headless attempt exited during
+Wine startup in `dotnetstart` before the worker loaded. The native closed NURBS
+regression checks its directed domain and sampled positions across the seam.
+
 ```sh
 tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/domain-command.json --timeout 240
 ```

@@ -2651,10 +2651,34 @@ def _domain_command(operation):
                 _nurbs_surface_from_definition(operation["surface"]))
     owned = [geometry]
     source = System.Guid.Empty
+    subcurve_source = System.Guid.Empty
     try:
         result = ({"domain": [geometry.Domain.T0, geometry.Domain.T1]} if curve else
                   {"domain_u": [geometry.Domain(0).T0, geometry.Domain(0).T1],
                    "domain_v": [geometry.Domain(1).T0, geometry.Domain(1).T1]})
+        if "subcurve_parameters" in operation:
+            if not curve:
+                raise ValueError("domain subcurve needs a curve source")
+            parameters = operation["subcurve_parameters"]
+            if len(parameters) != 2:
+                raise ValueError("domain subcurve needs two parameters")
+            start, end = [_finite(value, "subcurve parameter") for value in parameters]
+            if start == end or not (geometry.Domain.T0 <= start <= geometry.Domain.T1 and
+                                    geometry.Domain.T0 <= end <= geometry.Domain.T1):
+                raise ValueError("domain subcurve parameters must be distinct and in range")
+            if start > end and not geometry.IsClosed:
+                subcurve = geometry.Trim(end, start)
+                if subcurve is not None and not subcurve.Reverse():
+                    subcurve.Dispose()
+                    raise ValueError("could not reverse domain subcurve")
+            else:
+                subcurve = geometry.Trim(Rhino.Geometry.Interval(start, end))
+            if subcurve is None:
+                raise ValueError("could not trim domain subcurve")
+            owned.append(subcurve)
+            result["subcurve_domain"] = [subcurve.Domain.T0, subcurve.Domain.T1]
+            result["subcurve_start"] = _xyz(subcurve.PointAtStart)
+            result["subcurve_end"] = _xyz(subcurve.PointAtEnd)
         as_brep = operation.get("as_brep", False)
         if as_brep:
             if curve:
@@ -2673,8 +2697,18 @@ def _domain_command(operation):
         report, _ = _measurement_history("Domain", "! _Domain")
         result.update(report)
         result["source_geometry_unchanged"] = document.Objects.FindId(source).Geometry.DataCRC(0) == checksum
+        if "subcurve_parameters" in operation:
+            document.Objects.UnselectAll()
+            subcurve_source = document.Objects.AddCurve(subcurve)
+            if subcurve_source == System.Guid.Empty:
+                raise ValueError("could not add domain subcurve")
+            document.Objects.Select(subcurve_source)
+            subcurve_report, _ = _measurement_history("Domain", "! _Domain")
+            result["subcurve_history"] = subcurve_report["history"]
         return result, 0
     finally:
+        if subcurve_source != System.Guid.Empty:
+            document.Objects.Delete(subcurve_source, True)
         if source != System.Guid.Empty:
             document.Objects.Delete(source, True)
         document.Objects.UnselectAll()

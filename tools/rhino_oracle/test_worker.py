@@ -377,6 +377,50 @@ class RhinoWorkerTests(unittest.TestCase):
                     with self.assertRaisesRegex(ValueError, "no measurement"):
                         self.worker._measurement_history("Domain", "macro")
 
+    def test_domain_subcurve_probe_preserves_source_and_disposes_both_document_objects(self):
+        point = lambda x: SimpleNamespace(X=x, Y=0., Z=0.)
+        for closed, parameters, reversed_expected in [
+            (False, [6., 0.], True), (True, [6., 0.], False)
+        ]:
+            with self.subTest(closed=closed):
+                geometry = Mock(Domain=SimpleNamespace(T0=-2., T1=8.), IsClosed=closed)
+                geometry.DataCRC.return_value = 42
+                subcurve = Mock(Domain=SimpleNamespace(T0=0., T1=6.),
+                                PointAtStart=point(6.), PointAtEnd=point(0.))
+                geometry.Trim.return_value = subcurve
+                subcurve.Reverse.return_value = True
+                table = Mock()
+                table.GetObjectList.return_value = [SimpleNamespace(Id="old", IsSelected=lambda _: True)]
+                table.AddCurve.side_effect = ["source", "subcurve"]
+                table.FindId.return_value = SimpleNamespace(Geometry=geometry)
+                rhino = SimpleNamespace(
+                    RhinoDoc=SimpleNamespace(ActiveDoc=SimpleNamespace(Objects=table)),
+                    DocObjects=SimpleNamespace(ObjectEnumeratorSettings=lambda: SimpleNamespace()),
+                    Geometry=SimpleNamespace(Interval=lambda a, b: (a, b)))
+                capture = Mock(side_effect=[({"history": "source"}, 0),
+                                            ({"history": "subcurve"}, 0)])
+                with patch.object(self.worker, "Rhino", rhino), \
+                     patch.object(self.worker, "System", SimpleNamespace(Guid=SimpleNamespace(Empty="empty"))), \
+                     patch.object(self.worker, "_nurbs_curve_from_definition", return_value=geometry), \
+                     patch.object(self.worker, "_measurement_history", capture):
+                    result, elapsed = self.worker._domain_command(
+                        {"curve": {}, "subcurve_parameters": parameters})
+                self.assertEqual(elapsed, 0)
+                self.assertEqual(result["subcurve_domain"], [0., 6.])
+                self.assertEqual(result["subcurve_history"], "subcurve")
+                self.assertTrue(result["source_geometry_unchanged"])
+                if reversed_expected:
+                    geometry.Trim.assert_called_once_with(0., 6.)
+                    subcurve.Reverse.assert_called_once_with()
+                else:
+                    geometry.Trim.assert_called_once_with((6., 0.))
+                    subcurve.Reverse.assert_not_called()
+                self.assertEqual(table.Delete.call_count, 2)
+                self.assertEqual(table.UnselectAll.call_count, 3)
+                self.assertEqual(capture.call_count, 2)
+                subcurve.Dispose.assert_called_once_with()
+                geometry.Dispose.assert_called_once_with()
+
     def test_radius_probe_disposes_source_and_restores_selection_on_failure(self):
         for failure in [None, "construction", "measurement"]:
             with self.subTest(failure=failure):

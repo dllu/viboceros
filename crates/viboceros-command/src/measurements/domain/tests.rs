@@ -2,7 +2,7 @@ use super::*;
 use crate::CommandRegistry;
 use viboceros_document::SelectionMode;
 use viboceros_geometry::{
-    Brep, Circle3, NurbsCurve, NurbsSurface, Point3, Vector3, WeightedPoint3,
+    Brep, Circle3, Curve3, NurbsCurve, NurbsSurface, Point3, Vector3, WeightedPoint3,
 };
 
 fn surface(z: f64) -> NurbsSurface {
@@ -146,6 +146,64 @@ fn domain_subcurve_reports_seam_crossing_interval() {
             .execute(&mut doc, "Domain SubCrv Parameter=5,1")
             .unwrap(),
         expected
+    );
+    assert_eq!(format!("{doc:?}"), before);
+}
+
+#[test]
+fn domain_subcurve_crosses_reparameterized_closed_nurbs_seam() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    let diagonal = std::f64::consts::FRAC_1_SQRT_2;
+    let controls = [
+        ([4., 0., 0.], 1.),
+        ([4., 4., 0.], diagonal),
+        ([0., 4., 0.], 1.),
+        ([-4., 4., 0.], diagonal),
+        ([-4., 0., 0.], 1.),
+        ([-4., -4., 0.], diagonal),
+        ([0., -4., 0.], 1.),
+        ([4., -4., 0.], diagonal),
+        ([4., 0., 0.], 1.),
+    ]
+    .into_iter()
+    .map(|(point, weight)| {
+        WeightedPoint3::try_new(Point3::try_from(point).unwrap(), weight).unwrap()
+    })
+    .collect();
+    let curve = NurbsCurve::try_new_rational(
+        2,
+        controls,
+        vec![0., 0., 0., 1., 1., 2., 2., 3., 3., 4., 4., 4.],
+    )
+    .unwrap();
+    let directed = Curve3::NurbsCurve(curve.clone())
+        .try_subcurve(3.2, 0.7)
+        .unwrap();
+    for parameter in [3.2, 3.5, 4.0, 4.2, 4.7] {
+        let source_parameter = if parameter > 4.0 {
+            parameter - 4.0
+        } else {
+            parameter
+        };
+        assert!(
+            directed
+                .as_ref()
+                .evaluate(parameter)
+                .unwrap()
+                .distance_to(curve.evaluate(source_parameter).unwrap())
+                .unwrap()
+                < 1e-10
+        );
+    }
+    let id = doc.add_geometry(Geometry::NurbsCurve(curve)).unwrap();
+    doc.select_object(id, SelectionMode::Replace).unwrap();
+    let before = format!("{doc:?}");
+    assert_eq!(
+        registry
+            .execute(&mut doc, "Domain SubCrv Parameter=3.2,0.7")
+            .unwrap(),
+        "Curve domain = [3.2,4.7]"
     );
     assert_eq!(format!("{doc:?}"), before);
 }
