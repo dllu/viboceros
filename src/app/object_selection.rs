@@ -16,6 +16,7 @@ pub(super) struct PendingObjectCommand {
     pub(super) description: ObjectSelectionPrompt,
     pub(super) phase: ObjectPromptPhase,
     pub(super) postselected: bool,
+    pub(super) domain_subcurve: bool,
 }
 
 impl PendingObjectCommand {
@@ -121,6 +122,12 @@ impl VibocerosApp {
                 return true;
             }
         };
+        let domain_subcurve = description.command == "Domain"
+            && input.split_whitespace().nth(1).is_some_and(|option| {
+                option
+                    .trim_start_matches('_')
+                    .eq_ignore_ascii_case("SubCrv")
+            });
         let preselected = self
             .document
             .selected_objects()
@@ -151,6 +158,7 @@ impl VibocerosApp {
                         description,
                         phase: ObjectPromptPhase::Options,
                         postselected: false,
+                        domain_subcurve,
                     });
                 }
                 Ok(None) => return false,
@@ -173,6 +181,7 @@ impl VibocerosApp {
                 description,
                 phase: ObjectPromptPhase::Selecting,
                 postselected: true,
+                domain_subcurve,
             });
         }
         self.command_input.clear();
@@ -265,6 +274,11 @@ impl VibocerosApp {
                 }
             }
             let command = pending.description.command_line();
+            if pending.domain_subcurve && self.domain_has_one_curve() {
+                self.object_prompt = None;
+                self.try_start_interactive_command("Domain SubCrv");
+                return true;
+            }
             if pending.description.command == "Align" {
                 self.object_prompt = None;
                 if self.try_start_interactive_command(&command) {

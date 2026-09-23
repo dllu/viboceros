@@ -1,9 +1,12 @@
 //! Native parameter domains; no evaluation-driven reparameterization.
 use super::*;
-use crate::{ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSelectionWorkflow, parse_point};
+use crate::{
+    ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSelectionWorkflow, orient_option,
+    parse_finite_real, parse_point,
+};
 
 pub(crate) struct DomainCommand;
-const USAGE: &str = "Domain [Face=index|point-on-selected-polysurface]";
+const USAGE: &str = "Domain [Face=index|point-on-selected-polysurface|SubCrv Parameter=start,end|SubCrv start_point end_point]";
 
 #[cfg(test)]
 mod tests;
@@ -19,14 +22,21 @@ impl Command for DomainCommand {
         &self,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        Ok(arguments.is_empty().then_some(ObjectSelectionPrompt {
-            command: "Domain",
-            filter: ObjectSelectionFilter::Parametric,
-            options: vec![],
-            menus: vec![],
-            choices: vec![],
-            workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
-        }))
+        let subcurve = matches!(arguments, [option] if crate::option_name_eq(option, "SubCrv"));
+        Ok(
+            (arguments.is_empty() || subcurve).then_some(ObjectSelectionPrompt {
+                command: "Domain",
+                filter: if subcurve {
+                    ObjectSelectionFilter::Curves
+                } else {
+                    ObjectSelectionFilter::Parametric
+                },
+                options: vec![],
+                menus: vec![],
+                choices: vec![],
+                workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
+            }),
+        )
     }
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let mut selected = document.selected_objects();
@@ -42,8 +52,46 @@ impl Command for DomainCommand {
             )
         };
         if let Some(curve) = geometry_curve_ref(object.geometry()) {
-            require_consumed(arguments, 0, "Domain")?;
-            return Ok(format!("Curve domain = {}", interval(curve.domain())));
+            let domain = if arguments
+                .first()
+                .is_some_and(|arg| crate::option_name_eq(arg, "SubCrv"))
+            {
+                let source = curve.to_owned();
+                let selection = &arguments[1..];
+                let Some(first) = selection.first() else {
+                    return Err(CommandError::Usage(USAGE));
+                };
+                let option = first.split_once('=').map_or(*first, |(name, _)| name);
+                let [start, end] = if crate::option_name_eq(option, "Parameter") {
+                    let (name, value, consumed) = orient_option(selection, 0, USAGE)?;
+                    if !crate::option_name_eq(name, "Parameter") {
+                        return Err(CommandError::Usage(USAGE));
+                    }
+                    require_consumed(selection, consumed, USAGE)?;
+                    let values = value.split(',').collect::<Vec<_>>();
+                    if values.len() != 2 || values.iter().any(|value| value.is_empty()) {
+                        return Err(CommandError::Usage(USAGE));
+                    }
+                    [parse_finite_real(values[0])?, parse_finite_real(values[1])?]
+                } else {
+                    let (start_point, consumed) = parse_point(selection)?;
+                    let (end_point, second_consumed) = parse_point(&selection[consumed..])?;
+                    require_consumed(selection, consumed + second_consumed, USAGE)?;
+                    [
+                        source
+                            .as_ref()
+                            .closest_parameter(start_point, document.tolerance())?,
+                        source
+                            .as_ref()
+                            .closest_parameter(end_point, document.tolerance())?,
+                    ]
+                };
+                source.try_subcurve(start, end)?.as_ref().domain()
+            } else {
+                require_consumed(arguments, 0, "Domain")?;
+                curve.domain()
+            };
+            return Ok(format!("Curve domain = {}", interval(domain)));
         }
         let (surface, face) = match object.geometry() {
             Geometry::NurbsSurface(surface) => {

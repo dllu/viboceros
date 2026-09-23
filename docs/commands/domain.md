@@ -26,17 +26,28 @@ Curve domain = [-2,8]
 Face 1: U domain = [5,6]; V domain = [-8,-3]
 ```
 
+For a selected curve, `Domain SubCrv Parameter=0,6` reports the domain of the
+directed interval from parameter 0 to 6. `Domain SubCrv 2,0,0 8,0,0` picks its
+ends by closest points on the curve. A decreasing interval on an open curve
+reverses the extracted segment, so its reported domain may differ from the
+original parameter values. A decreasing interval on a closed curve crosses
+the seam. Enter `Domain SubCrv` to pick the curve if needed and then pick its
+start and end in the viewport or type them at the point prompts. An invalid end
+leaves the prompt open for correction. These queries do not create an object or
+change the selection.
+
 The component-point phase preserves the accepted object selection. Esc cancels
 that phase without model edits; failed point evaluations stay open for correction.
 
 [Rhino's Domain command](https://docs.mcneel.com/rhino/8/help/en-us/commands/domain.htm)
-also supports `SubCrv`; that option is not implemented. `Face=index` is a native
-scripting convenience, not a claim of identical Rhino command syntax. Component
-lookup currently uses 3D nearest-face distance, not a screen-space hit aperture.
+also offers `SubCrv` picking. `Face=index` and the scripted `SubCrv` arguments are native scripting
+conveniences, not claims of identical Rhino command syntax. Component lookup
+currently uses 3D nearest-face distance, not a screen-space hit aperture.
 
 Native tests cover stored/reparameterized curve intervals, independently
 reparameterized component surfaces, explicit and picked faces, invalid selection,
-redo retention, and both preselected and postselected UI transitions.
+redo retention, directed subcurves, and both preselected and postselected UI
+transitions.
 
 A [live Rhino 8.32.26160.13001 reference](../domain-rhino-reference.json) captures
 actual `Domain` command output for a reparameterized line `[-2,8]`, a rational arc
@@ -44,7 +55,7 @@ actual `Domain` command output for a reparameterized line `[-2,8]`, a rational a
 B-rep with U `[5,6]` / V `[-8,-3]`. The native regressions agree with these
 intervals. The capture also records public-API domains and confirms the source
 geometry checksum is unchanged. It does not establish command-picking parity
-for multi-face or trimmed B-reps, or the unimplemented `SubCrv` option.
+for multi-face or trimmed B-reps, or for `SubCrv`.
 
 ```sh
 tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/domain-command.json --timeout 240

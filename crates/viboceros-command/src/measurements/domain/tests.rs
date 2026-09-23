@@ -1,7 +1,9 @@
 use super::*;
 use crate::CommandRegistry;
 use viboceros_document::SelectionMode;
-use viboceros_geometry::{Brep, NurbsCurve, NurbsSurface, Point3, WeightedPoint3};
+use viboceros_geometry::{
+    Brep, Circle3, NurbsCurve, NurbsSurface, Point3, Vector3, WeightedPoint3,
+};
 
 fn surface(z: f64) -> NurbsSurface {
     NurbsSurface::try_bilinear(
@@ -87,6 +89,65 @@ fn domain_reports_native_curve_intervals_and_preserves_redo() {
     assert_eq!(format!("{doc:?}"), before);
     registry.execute(&mut doc, "Redo").unwrap();
     assert_eq!(doc.objects().count(), 2);
+}
+
+#[test]
+fn domain_subcurve_reports_directed_native_intervals_without_edits() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    registry.execute(&mut doc, "Line 0,0,0 10,0,0").unwrap();
+    registry.execute(&mut doc, "SelAll").unwrap();
+    registry.execute(&mut doc, "Reparameterize -2,8").unwrap();
+    let before = format!("{doc:?}");
+    for (input, expected) in [
+        ("Domain SubCrv Parameter=0,6", "Curve domain = [0,6]"),
+        ("Domain SubCrv Parameter 6,0", "Curve domain = [-6,0]"),
+        ("Domain SubCrv 2,0,0 8,0,0", "Curve domain = [0,6]"),
+    ] {
+        assert_eq!(registry.execute(&mut doc, input).unwrap(), expected);
+        assert_eq!(format!("{doc:?}"), before);
+    }
+    for input in [
+        "Domain SubCrv",
+        "Domain SubCrv Parameter=0,0",
+        "Domain SubCrv Parameter=-3,6",
+        "Domain SubCrv Parameter=0,6 extra",
+        "Domain SubCrv 2,0,0",
+    ] {
+        assert!(registry.execute(&mut doc, input).is_err(), "{input}");
+        assert_eq!(format!("{doc:?}"), before);
+    }
+}
+
+#[test]
+fn domain_subcurve_reports_seam_crossing_interval() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    let normal = Vector3::try_new(0.0, 0.0, 1.0)
+        .unwrap()
+        .normalized(Tolerance::DEFAULT)
+        .unwrap();
+    let circle = Circle3::try_from_center_point(
+        Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+        Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+        normal,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let id = doc.add_geometry(Geometry::Circle(circle)).unwrap();
+    doc.select_object(id, SelectionMode::Replace).unwrap();
+    let before = format!("{doc:?}");
+    let expected = format!(
+        "Curve domain = [5,{}]",
+        format_measurement(1.0 + 4.0 * std::f64::consts::TAU)
+    );
+    assert_eq!(
+        registry
+            .execute(&mut doc, "Domain SubCrv Parameter=5,1")
+            .unwrap(),
+        expected
+    );
+    assert_eq!(format!("{doc:?}"), before);
 }
 
 #[test]
