@@ -235,7 +235,8 @@ assemble classified solids or insert document objects. Its `_in_units`
 counterpart converts placed geometry and assembly translations to target units
 while preserving UV trims, occurrence grouping, and diagnostics.
 `read_step_native_instances` and its `_in_units` counterpart extend that
-assembly path to NURBS/B-spline surfaces, edges, and UV trims. NURBS faces can
+assembly path to NURBS/B-spline surfaces, edges, and UV trims. Analytic circle
+and ellipse arcs on supported faces convert to exact rational NURBS. NURBS faces can
 have polygon holes with straight UV trims; curved UV loops currently require one
 outer boundary. Unsupported analytic surfaces and periodic
 seams still fail native import.

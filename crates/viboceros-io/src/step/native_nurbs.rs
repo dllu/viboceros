@@ -1,7 +1,10 @@
 //! Native conversion of STEP NURBS shell geometry and face-local p-curves.
 use super::{StepError, Table, native_planar, reported_trimmed_shell};
+use monstertruck::geometry::prelude::{ToSameGeometry, TryIntoHomogeneousBsplineCurve};
 use monstertruck::meshing::prelude::ParametricSurface;
-use monstertruck::step::load::step_geometry::{Curve2D, Curve3D, ElementarySurface, Surface};
+use monstertruck::step::load::step_geometry::{
+    Conic2D, Conic3D, Curve2D, Curve3D, ElementarySurface, Surface,
+};
 use viboceros_geometry::{
     Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex,
     NurbsCurve, NurbsCurve2, NurbsSurface, Point2, Point3, SurfaceIso, Tolerance, WeightedPoint2,
@@ -139,11 +142,28 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
     let unsupported = |reason| StepError::UnsupportedNativeShell { shell: id, reason };
     match curve {
         Curve3D::SurfaceCurve(surface_curve) => edge_curve(surface_curve.leader(), id),
+        Curve3D::IntersectionCurve(intersection_curve) => {
+            edge_curve(intersection_curve.leader(), id)
+        }
         Curve3D::Line(_) | Curve3D::Polyline(_) => native_planar::curves::linear_edge(curve, id)
             .map_err(|error| match error {
                 StepError::UnsupportedPlanarShell { reason, .. } => unsupported(reason),
                 other => other,
             }),
+        Curve3D::Conic(Conic3D::Ellipse(_)) => {
+            let converted = curve
+                .try_into_homogeneous_bspline_curve()
+                .ok_or_else(|| unsupported("ellipse edge could not be converted exactly"))?;
+            Ok(NurbsCurve::try_new_rational(
+                converted.degree(),
+                converted
+                    .control_points()
+                    .iter()
+                    .map(|p| weighted3(p.x, p.y, p.z, p.w, id))
+                    .collect::<Result<Vec<_>, _>>()?,
+                converted.knot_vector().iter().copied().collect(),
+            )?)
+        }
         Curve3D::BsplineCurve(curve) => Ok(NurbsCurve::try_new(
             curve.degree(),
             curve
@@ -175,6 +195,20 @@ fn trim_curve(curve: &Curve2D, id: u64) -> Result<NurbsCurve2, StepError> {
                 StepError::UnsupportedPlanarShell { reason, .. } => unsupported(reason),
                 other => other,
             }),
+        Curve2D::Conic(Conic2D::Ellipse(ellipse)) => {
+            let converted: monstertruck::modeling::NurbsCurve<monstertruck::modeling::Vector3> =
+                ellipse.to_same_geometry();
+            let controls = converted
+                .control_points()
+                .iter()
+                .map(|p| weighted2(p.x, p.y, p.z, id))
+                .collect::<Result<Vec<_>, _>>()?;
+            Ok(NurbsCurve2::try_new_rational(
+                converted.degree(),
+                controls,
+                converted.knot_vector().iter().copied().collect(),
+            )?)
+        }
         Curve2D::BsplineCurve(curve) => Ok(NurbsCurve2::try_new(
             curve.degree(),
             curve

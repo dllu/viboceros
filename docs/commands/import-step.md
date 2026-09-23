@@ -12,7 +12,9 @@ Quote filenames beginning with `Native=Yes` to treat that text as a filename.
 The `ImportStp` alias accepts the same syntax.
 
 Native mode supports straight-edged planar faces, including valid polygon holes,
-and NURBS/B-spline surfaces with matching curved 3D edges and UV trims. Faces
+and NURBS/B-spline surfaces with matching curved 3D edges and UV trims. Analytic
+circle and ellipse arcs on supported faces convert to exact rational NURBS edges
+and UV curves. Faces
 with multiple loops require straight UV polygon boundaries; the polygon
 constructor validates hole containment and intersections. Curved UV loops
 currently require a single outer boundary. Analytic cylinders, periodic seam edges,

@@ -703,6 +703,136 @@ fn native_step_imports_bspline_faces_with_polygon_holes() {
 }
 
 #[test]
+fn native_step_imports_analytic_circle_edge_and_uv_trim() {
+    use monstertruck::modeling::{Plane, builder};
+    use monstertruck::step::load::step_geometry::{
+        Conic2D, Conic3D, Curve2D, Curve3D, ElementarySurface, Surface,
+    };
+    use monstertruck::topology::{Edge, Face, Shell, Vertex, Wire};
+    let origin = Vertex::new(TruckPoint3::new(0., 0., 0.));
+    let east = Vertex::new(TruckPoint3::new(2., 0., 0.));
+    let north = Vertex::new(TruckPoint3::new(0., 2., 0.));
+    let arc_midpoint = std::f64::consts::SQRT_2;
+    let edges: Vec<Edge<TruckPoint3, Curve3D>> = vec![
+        builder::line(&origin, &east),
+        builder::circle_arc(
+            &east,
+            &north,
+            TruckPoint3::new(arc_midpoint, arc_midpoint, 0.),
+        ),
+        builder::line(&north, &origin),
+    ];
+    let wire = Wire::from(edges);
+    let surface = Surface::ElementarySurface(ElementarySurface::Plane(Plane::new(
+        TruckPoint3::new(0., 0., 0.),
+        TruckPoint3::new(1., 0., 0.),
+        TruckPoint3::new(0., 1., 0.),
+    )));
+    let face = Face::new(vec![wire], surface);
+    let shell = Shell::from(vec![face]).compress();
+    let text = CompleteStepDisplay::new(
+        TruckStepModel::from(&shell),
+        StepHeaderDescriptor::default(),
+    )
+    .to_string();
+    assert!(text.contains("CIRCLE("));
+    let table = Table::from_step(&text).unwrap();
+    assert_eq!(table.entity_report.total(), 0);
+    let shell_id = *table.shell.keys().next().unwrap();
+    let (decoded, report) = reported_trimmed_shell(&table, shell_id).unwrap();
+    assert_eq!(report.total_lost(), 0);
+    assert!(
+        decoded
+            .edges
+            .iter()
+            .any(|edge| matches!(&edge.curve, Curve3D::SurfaceCurve(curve) if matches!(curve.leader(), Curve3D::Conic(Conic3D::Ellipse(_)))))
+    );
+    assert!(decoded.faces[0].boundaries[0].iter().any(|edge| matches!(
+        edge.trim_curve.as_ref().map(|curve| curve.curve().as_ref()),
+        Some(Curve2D::Conic(Conic2D::Ellipse(_)))
+    )));
+    assert!(matches!(
+        read_step_planar_instances(Cursor::new(&text), Tolerance::DEFAULT),
+        Err(StepError::UnsupportedPlanarShell { .. })
+    ));
+    let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    assert_eq!(native.instances.len(), 1);
+    let brep = &native.instances[0].brep;
+    assert_eq!(
+        (
+            brep.vertices().len(),
+            brep.edges().len(),
+            brep.faces().len()
+        ),
+        (3, 3, 1)
+    );
+    assert!((brep.area(Tolerance::DEFAULT).unwrap() - std::f64::consts::PI).abs() < 1e-9);
+    let arc = brep
+        .edges()
+        .iter()
+        .find(|edge| edge.curve().degree() == 2)
+        .unwrap();
+    for t in [0., 0.25, 0.5, 0.75, 1.] {
+        let p = arc.curve().evaluate(t).unwrap();
+        assert!(((p.x() * p.x() + p.y() * p.y()).sqrt() - 2.).abs() < 1e-12);
+    }
+}
+
+#[test]
+fn native_step_imports_analytic_ellipse_arc() {
+    use monstertruck::modeling::{Plane, Transformed, builder};
+    use monstertruck::step::load::step_geometry::{Conic3D, Curve3D, ElementarySurface, Surface};
+    use monstertruck::topology::{Edge, Face, Shell, Vertex, Wire};
+    let origin = Vertex::new(TruckPoint3::new(0., 0., 0.));
+    let east = Vertex::new(TruckPoint3::new(2., 0., 0.));
+    let circular_north = Vertex::new(TruckPoint3::new(0., 2., 0.));
+    let elliptical_north = Vertex::new(TruckPoint3::new(0., 1., 0.));
+    let circular_arc: Edge<TruckPoint3, Curve3D> = builder::circle_arc(
+        &east,
+        &circular_north,
+        TruckPoint3::new(std::f64::consts::SQRT_2, std::f64::consts::SQRT_2, 0.),
+    );
+    let Curve3D::Conic(Conic3D::Ellipse(mut ellipse)) = circular_arc.oriented_curve().clone()
+    else {
+        panic!("builder did not produce an analytic circle")
+    };
+    ellipse.transform_by(Matrix4::from_nonuniform_scale(1., 0.5, 1.));
+    let edges: Vec<Edge<TruckPoint3, Curve3D>> = vec![
+        builder::line(&origin, &east),
+        Edge::new(
+            &east,
+            &elliptical_north,
+            Curve3D::Conic(Conic3D::Ellipse(ellipse)),
+        ),
+        builder::line(&elliptical_north, &origin),
+    ];
+    let surface = Surface::ElementarySurface(ElementarySurface::Plane(Plane::new(
+        TruckPoint3::new(0., 0., 0.),
+        TruckPoint3::new(1., 0., 0.),
+        TruckPoint3::new(0., 1., 0.),
+    )));
+    let shell = Shell::from(vec![Face::new(vec![Wire::from(edges)], surface)]).compress();
+    let text = CompleteStepDisplay::new(
+        TruckStepModel::from(&shell),
+        StepHeaderDescriptor::default(),
+    )
+    .to_string();
+    assert!(text.contains("ELLIPSE("));
+    let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    let brep = &native.instances[0].brep;
+    assert!((brep.area(Tolerance::DEFAULT).unwrap() - std::f64::consts::FRAC_PI_2).abs() < 1e-9);
+    let arc = brep
+        .edges()
+        .iter()
+        .find(|edge| edge.curve().degree() == 2)
+        .unwrap();
+    for t in [0., 0.25, 0.5, 0.75, 1.] {
+        let p = arc.curve().evaluate(t).unwrap();
+        assert!(((p.x() / 2.).powi(2) + p.y().powi(2) - 1.).abs() < 1e-12);
+    }
+}
+
+#[test]
 fn native_planar_step_retains_small_holes() {
     for size in [1e-4, 1e-6, 1e-8, 1e-10] {
         let text = polygon_face_step(
