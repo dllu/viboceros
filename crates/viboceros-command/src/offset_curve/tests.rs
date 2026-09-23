@@ -1,7 +1,55 @@
 use super::*;
+use viboceros_geometry::{CurveSegment3, PolyCurve3};
 
 fn point(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
+}
+
+#[test]
+fn offset_linear_polycurve_applies_corner_rule_and_through_point() {
+    let mut document = Document::default();
+    let first = LineSegment::try_new(
+        point(0.0, 0.0, 0.0),
+        point(4.0, 0.0, 0.0),
+        document.tolerance(),
+    )
+    .unwrap();
+    let second = LineSegment::try_new(
+        point(4.0, 0.0, 0.0),
+        point(4.0, 4.0, 0.0),
+        document.tolerance(),
+    )
+    .unwrap();
+    let source = PolyCurve3::try_with_segment_domains(
+        vec![CurveSegment3::Line(first), CurveSegment3::Line(second)],
+        vec![10.0, 12.0, 20.0],
+    )
+    .unwrap();
+    let id = document.add_geometry(Geometry::PolyCurve(source)).unwrap();
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "Offset 1 0,2,0")
+        .unwrap();
+    let Geometry::Polyline(out) = document.selected_objects().next().unwrap().geometry() else {
+        panic!("linear polycurve offset")
+    };
+    assert_eq!(
+        out.vertices(),
+        &[
+            point(0.0, 1.0, 0.0),
+            point(3.0, 1.0, 0.0),
+            point(3.0, 4.0, 0.0)
+        ]
+    );
+    assert_eq!(out.domain(), 10.0..=20.0);
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "Offset ThroughPoint=0,1,0")
+        .unwrap();
+    let Geometry::Polyline(out) = document.selected_objects().next().unwrap().geometry() else {
+        panic!("linear polycurve through-point offset")
+    };
+    assert_eq!(out.vertices()[0], point(0.0, 1.0, 0.0));
 }
 
 #[test]

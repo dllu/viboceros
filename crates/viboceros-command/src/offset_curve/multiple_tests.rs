@@ -1,7 +1,78 @@
 use super::*;
+use viboceros_geometry::{CurveSegment3, PolyCurve3};
 
 fn point(x: Real, y: Real) -> Point3 {
     Point3::try_new(x, y, 0.0).unwrap()
+}
+
+#[test]
+fn closed_linear_polycurve_offsets_as_region() {
+    let mut document = Document::default();
+    let vertices = [
+        point(0.0, 0.0),
+        point(4.0, 0.0),
+        point(4.0, 4.0),
+        point(0.0, 4.0),
+        point(0.0, 0.0),
+    ];
+    let segments = vertices
+        .windows(2)
+        .map(|edge| {
+            CurveSegment3::Line(
+                LineSegment::try_new(edge[0], edge[1], document.tolerance()).unwrap(),
+            )
+        })
+        .collect::<Vec<_>>();
+    let source = PolyCurve3::try_new(segments).unwrap();
+    let id = document.add_geometry(Geometry::PolyCurve(source)).unwrap();
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "OffsetMultiple 0.5 2,2,0 OffsetCount=1")
+        .unwrap();
+    let Geometry::Polyline(out) = document.selected_objects().next().unwrap().geometry() else {
+        panic!("closed polycurve offset")
+    };
+    assert!(out.is_closed());
+    assert_eq!(out.vertices()[0], point(0.5, 0.5));
+}
+
+#[test]
+fn closed_smooth_polycurve_offsets_as_region() {
+    let mut document = Document::default();
+    let normal = CommandContext::default().construction_plane.z_axis();
+    let circle = Circle3::try_new(point(0.0, 0.0), 5.0, normal, document.tolerance())
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+    let midpoint = circle.domain().start().midpoint(*circle.domain().end());
+    let (first, second) = circle.try_split(midpoint).unwrap();
+    let source = PolyCurve3::try_new(vec![
+        CurveSegment3::NurbsCurve(first),
+        CurveSegment3::NurbsCurve(second),
+    ])
+    .unwrap();
+    let id = document.add_geometry(Geometry::PolyCurve(source)).unwrap();
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "OffsetMultiple 0.5 0,0,0 OffsetCount=1")
+        .unwrap();
+    let Geometry::NurbsCurve(out) = document.selected_objects().next().unwrap().geometry() else {
+        panic!("smooth polycurve region offset")
+    };
+    assert!(out.is_closed().unwrap());
+    for index in 0..=64 {
+        let t = *out.domain().start()
+            + (*out.domain().end() - *out.domain().start()) * index as Real / 64.0;
+        assert!(
+            (out.evaluate(t)
+                .unwrap()
+                .distance_to(point(0.0, 0.0))
+                .unwrap()
+                - 4.5)
+                .abs()
+                <= document.tolerance().absolute()
+        );
+    }
 }
 
 #[test]

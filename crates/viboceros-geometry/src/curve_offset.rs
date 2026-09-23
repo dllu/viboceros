@@ -6,6 +6,7 @@ use crate::exact_scalar::rational;
 
 mod ellipse;
 mod nurbs;
+mod polycurve;
 use ellipse::{
     ellipse_offset_side, ellipse_region_contains, ellipse_through_distance, offset_ellipse,
 };
@@ -13,6 +14,7 @@ use nurbs::{
     nurbs_offset_side, nurbs_region_contains, nurbs_region_inward_sign, nurbs_through_distance,
     offset_nurbs,
 };
+use polycurve::offset_proxy;
 
 use crate::{
     Circle3, CircularArc3, Curve3, CurveSegment3, GeometryError, LineSegment,
@@ -156,6 +158,13 @@ impl Curve3 {
                 Ok(None)
             };
         }
+        if let Self::PolyCurve(curve) = self {
+            return offset_proxy(curve, tolerance)?.offset_region_contains(
+                point,
+                plane_normal,
+                tolerance,
+            );
+        }
         let Self::Polyline(polyline) = self else {
             return Ok(None);
         };
@@ -208,6 +217,10 @@ impl Curve3 {
             Self::NurbsCurve(curve) if curve.is_closed()? => {
                 return nurbs_region_inward_sign(curve, plane_normal, tolerance).map(Some);
             }
+            Self::PolyCurve(curve) => {
+                return offset_proxy(curve, tolerance)?
+                    .offset_region_inward_sign(plane_normal, tolerance);
+            }
             Self::Polyline(polyline) if polyline.is_closed() => {
                 let normal = polyline_offset_normal(polyline, plane_normal, tolerance)?;
                 let origin = polyline.vertices()[0];
@@ -257,6 +270,9 @@ impl Curve3 {
             Self::NurbsCurve(curve) if curve.is_closed()? => {
                 Ok(Some(curve.evaluate(*curve.domain().start())?))
             }
+            Self::PolyCurve(curve) if curve.is_closed()? => Ok(Some(
+                curve.segments()[0].evaluate(*curve.segments()[0].domain().start())?,
+            )),
             Self::Polyline(polyline) if polyline.is_closed() => Ok(Some(polyline.vertices()[0])),
             _ => Ok(None),
         }
@@ -344,7 +360,12 @@ impl Curve3 {
             Self::Polyline(polyline) => {
                 offset_polyline(polyline, distance, plane_normal, tolerance, corner)
             }
-            _ => Err(GeometryError::UnsupportedCurveOffset),
+            Self::PolyCurve(curve) => offset_proxy(curve, tolerance)?.try_offset_with_corner_style(
+                distance,
+                plane_normal,
+                tolerance,
+                corner,
+            ),
         }
     }
 
@@ -363,6 +384,14 @@ impl Curve3 {
             }
             if let Self::Polyline(polyline) = self {
                 return offset_polyline_open_gaps(polyline, distance, plane_normal, tolerance);
+            }
+            if let Self::PolyCurve(curve) = self {
+                return offset_proxy(curve, tolerance)?.try_offset_parts(
+                    distance,
+                    plane_normal,
+                    tolerance,
+                    corner,
+                );
             }
             return Ok(vec![self.try_offset_with_corner_style(
                 distance,
@@ -389,6 +418,14 @@ impl Curve3 {
         tolerance: Tolerance,
         corner: CurveOffsetCornerStyle,
     ) -> Result<(Real, Vec<Self>), GeometryError> {
+        if let Self::PolyCurve(curve) = self {
+            return offset_proxy(curve, tolerance)?.try_offset_through_point(
+                through,
+                plane_normal,
+                tolerance,
+                corner,
+            );
+        }
         let (origin, normal, candidates) = match self {
             Self::Line(line) => {
                 let direction = line.direction(tolerance)?;
@@ -522,6 +559,9 @@ impl Curve3 {
         plane_normal: UnitVector3,
         tolerance: Tolerance,
     ) -> Result<Real, GeometryError> {
+        if let Self::PolyCurve(curve) = self {
+            return offset_proxy(curve, tolerance)?.offset_side(side, plane_normal, tolerance);
+        }
         let signed = match self {
             Self::Line(line) => {
                 let left = plane_normal
@@ -1153,7 +1193,10 @@ fn offset_circle(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{ControlPointCurveClosure, LineSegment, NurbsCurve, Point3, Vector3};
+    use crate::{
+        ControlPointCurveClosure, CurveSegment3, LineSegment, NurbsCurve, Point3, PolyCurve3,
+        Vector3,
+    };
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
@@ -1428,6 +1471,138 @@ mod tests {
                     <= tol.absolute()
             );
         }
+    }
+
+    #[test]
+    fn linear_polycurve_offsets_use_polyline_corner_rules_and_outer_domain() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let first = LineSegment::try_new(point(0.0, 0.0, 0.0), point(4.0, 0.0, 0.0), tol).unwrap();
+        let second = LineSegment::try_new(point(4.0, 0.0, 0.0), point(4.0, 4.0, 0.0), tol).unwrap();
+        let source = Curve3::PolyCurve(
+            PolyCurve3::try_with_segment_domains(
+                vec![CurveSegment3::Line(first), CurveSegment3::Line(second)],
+                vec![10.0, 12.0, 20.0],
+            )
+            .unwrap(),
+        );
+        let Curve3::Polyline(offset) = source.try_offset(1.0, normal, tol).unwrap() else {
+            panic!("linear polycurve offset")
+        };
+        assert_eq!(
+            offset.vertices(),
+            &[
+                point(0.0, 1.0, 0.0),
+                point(3.0, 1.0, 0.0),
+                point(3.0, 4.0, 0.0)
+            ]
+        );
+        assert_eq!(offset.domain(), 10.0..=20.0);
+        let parts = source
+            .try_offset_parts(-1.0, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        assert_eq!(parts.len(), 2);
+        assert!(matches!(
+            source.try_offset_with_corner_style(-1.0, normal, tol, CurveOffsetCornerStyle::Round),
+            Ok(Curve3::PolyCurve(_))
+        ));
+        assert!(matches!(
+            source.try_offset_with_corner_style(-1.0, normal, tol, CurveOffsetCornerStyle::None),
+            Err(GeometryError::DisconnectedCurveOffset)
+        ));
+    }
+
+    #[test]
+    fn linear_polycurve_proxy_maps_leaf_vertex_parameters() {
+        let tol = Tolerance::DEFAULT;
+        let line = LineSegment::try_new(point(0.0, 0.0, 0.0), point(4.0, 0.0, 0.0), tol).unwrap();
+        let leaf = Polyline3::try_with_parameters(
+            vec![
+                point(4.0, 0.0, 0.0),
+                point(6.0, 0.0, 0.0),
+                point(6.0, 2.0, 0.0),
+            ],
+            vec![5.0, 7.0, 11.0],
+            tol,
+        )
+        .unwrap();
+        let curve = PolyCurve3::try_with_segment_domains(
+            vec![CurveSegment3::Line(line), CurveSegment3::Polyline(leaf)],
+            vec![10.0, 14.0, 26.0],
+        )
+        .unwrap();
+        let Curve3::Polyline(proxy) = offset_proxy(&curve, tol).unwrap() else {
+            panic!("linear proxy")
+        };
+        assert_eq!(
+            proxy.vertices(),
+            &[
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(6.0, 0.0, 0.0),
+                point(6.0, 2.0, 0.0)
+            ]
+        );
+        assert_eq!(proxy.parameters(), &[10.0, 14.0, 18.0, 26.0]);
+    }
+
+    #[test]
+    fn smooth_polycurve_offsets_follow_source_normal() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let parabola = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(4.0, 2.0, 0.0),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let (first, second) = parabola.try_split(0.5).unwrap();
+        let source = Curve3::PolyCurve(
+            PolyCurve3::try_with_segment_domains(
+                vec![
+                    CurveSegment3::NurbsCurve(first),
+                    CurveSegment3::NurbsCurve(second),
+                ],
+                vec![10.0, 20.0, 30.0],
+            )
+            .unwrap(),
+        );
+        let Curve3::NurbsCurve(offset) = source.try_offset(0.35, normal, tol).unwrap() else {
+            panic!("smooth polycurve offset")
+        };
+        assert_eq!(offset.domain(), 10.0..=30.0);
+        for index in 0..=128 {
+            let t = index as Real / 128.0;
+            let speed = 1.0_f64.hypot(t);
+            let expected = point(4.0 * t - 0.35 * t / speed, 2.0 * t * t + 0.35 / speed, 0.0);
+            assert!(
+                offset
+                    .evaluate(10.0 + 20.0 * t)
+                    .unwrap()
+                    .distance_to(expected)
+                    .unwrap()
+                    <= tol.absolute()
+            );
+        }
+        let (_, through) = source
+            .try_offset_through_point(
+                point(0.0, 0.35, 0.0),
+                normal,
+                tol,
+                CurveOffsetCornerStyle::Sharp,
+            )
+            .unwrap();
+        assert!(matches!(&through[0], Curve3::NurbsCurve(_)));
     }
 
     #[test]

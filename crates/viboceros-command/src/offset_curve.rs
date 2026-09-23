@@ -53,6 +53,7 @@ impl Command for OffsetMultipleCommand {
                     Geometry::Ellipse(ellipse) => Curve3::Ellipse(*ellipse),
                     Geometry::Polyline(polyline) => Curve3::Polyline(polyline.clone()),
                     Geometry::NurbsCurve(curve) => Curve3::NurbsCurve(curve.clone()),
+                    Geometry::PolyCurve(curve) => Curve3::PolyCurve(curve.clone()),
                     _ => return Err(CommandError::UnsupportedOffsetGeometry),
                 };
                 let attributes = ObjectAttributes::on_layer(if options.input_layer {
@@ -290,6 +291,7 @@ impl Command for OffsetCommand {
                 Geometry::Ellipse(ellipse) => Curve3::Ellipse(*ellipse),
                 Geometry::Polyline(polyline) => Curve3::Polyline(polyline.clone()),
                 Geometry::NurbsCurve(curve) => Curve3::NurbsCurve(curve.clone()),
+                Geometry::PolyCurve(curve) => Curve3::PolyCurve(curve.clone()),
                 _ => return Err(CommandError::UnsupportedOffsetGeometry),
             };
             let output_attributes = if options.input_layer {

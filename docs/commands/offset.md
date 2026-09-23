@@ -2,7 +2,8 @@
 
 [Command reference](README.md) · [Project overview](../../README.md)
 
-Select one or more lines, circles, circular arcs, ellipses, planar NURBS curves, or planar polylines, then enter
+Select one or more lines, circles, circular arcs, ellipses, planar NURBS curves,
+planar polylines, or supported polycurves, then enter
 `Offset distance side-point`. The point chooses the side of each curve; the
 distance must be positive. `Offset distance BothSides=Yes` creates one curve on
 each side without a point. The selected originals remain in the document, and
@@ -26,6 +27,10 @@ Planar NURBS offsets are likewise fitted with cubic spans from the source
 curve's position and derivatives, then checked at interior stations against
 the offset locus. Source kinks, stationary points, and offsets that develop a
 cusp are rejected. The output retains the source parameter interval.
+Polycurves made entirely of lines and polylines use the same corner rules as
+polylines and retain their outer parameter interval. Smooth mixed polycurves
+are converted to one NURBS curve before offset fitting. Curved junctions with
+sharp kinks remain unsupported.
 Planar polylines use `Corner=Sharp` by default, extending neighboring offset
 segments to their intersection. `Corner=Chamfer` bridges convex gaps with a
 straight segment; concave corners still meet at the segment intersection.
@@ -54,7 +59,8 @@ Open curves offset toward the picked side. Closed curves use a shared inward
 or outward choice: a point inside any selected closed region chooses inward.
 Each nested island reverses that direction, including successive nesting
 levels. Closed circles, full circular arcs, ellipses, simple planar polylines,
-and certified simple planar NURBS curves can form regions. Selected closed
+certified simple planar NURBS curves, and their supported polycurve equivalents
+can form regions. Selected closed
 boundaries that intersect or touch are rejected. Self-intersecting closed
 polylines and NURBS curves are rejected as ambiguous regions. NURBS region
 validation has an 8,192-piece resource cap.
@@ -65,8 +71,8 @@ staged before the document changes.
 `OutputLayer=Current` is the default; `OutputLayer=Input` uses each source's
 layer. Both choices create fresh object attributes. The command stages every
 result before changing the document, so an unsupported or degenerate selected
-curve leaves the document unchanged. NURBS offsets across sharp corners and
-polycurve offsets, as well as smooth corners,
+curve leaves the document unchanged. NURBS and mixed polycurve offsets across
+sharp corners, as well as smooth corners,
 trim, cap, and construction-plane overrides, remain
 to be implemented.
 
