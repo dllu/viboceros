@@ -173,7 +173,7 @@ impl Viewport {
                 ViewKind::Left => (-local.y, local.z),
                 ViewKind::Plan => {
                     let coordinates = plan_frame
-                        .coordinates_of(
+                        .projected_coordinates_of(
                             Point3::try_new(corner.x, corner.y, corner.z)
                                 .map_err(|_| "invalid model bounds")?,
                         )
