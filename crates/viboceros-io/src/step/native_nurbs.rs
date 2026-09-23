@@ -42,9 +42,16 @@ pub(super) fn convert_shell(
         })
         .collect::<Result<Vec<_>, StepError>>()?;
     let mut incidence = vec![0; edges.len()];
-    for face in &shell.faces {
+    let mut first_face = vec![None; edges.len()];
+    let mut repeated_on_face = vec![false; edges.len()];
+    for (face_index, face) in shell.faces.iter().enumerate() {
         for use_ in face.boundaries.iter().flatten() {
             incidence[use_.index] += 1;
+            match first_face[use_.index] {
+                Some(first) if first == face_index => repeated_on_face[use_.index] = true,
+                None => first_face[use_.index] = Some(face_index),
+                _ => {}
+            }
         }
     }
     if incidence.iter().any(|&count| count > 2) {
@@ -56,14 +63,25 @@ pub(super) fn convert_shell(
             return Err(unsupported("face has no boundary"));
         }
         let mut boundaries = Vec::with_capacity(face.boundaries.len());
+        let periodic_cylinder = matches!(
+            face.surface,
+            Surface::ElementarySurface(ElementarySurface::CylindricalSurface(_))
+        );
         for boundary in &face.boundaries {
             let mut trims = Vec::with_capacity(boundary.len());
+            let mut previous_end = None;
             for use_ in boundary {
                 let source = use_
                     .trim_curve
                     .as_ref()
                     .ok_or_else(|| unsupported("missing UV trim"))?;
-                let curve = trim_curve(source.curve().as_ref(), id)?;
+                let mut curve = trim_curve(source.curve().as_ref(), id)?;
+                if periodic_cylinder {
+                    if let Some(end) = previous_end {
+                        curve = align_cylinder_trim(curve, end, tolerance)?;
+                    }
+                    previous_end = Some(curve.end_point()?);
+                }
                 let endpoints = shell.edges[use_.index].vertices;
                 let vertices = if use_.orientation {
                     [endpoints.0, endpoints.1]
@@ -75,7 +93,9 @@ pub(super) fn convert_shell(
                     Some(use_.index),
                     !use_.orientation,
                     curve,
-                    if incidence[use_.index] == 2 {
+                    if incidence[use_.index] == 2 && repeated_on_face[use_.index] {
+                        BrepTrimType::Seam
+                    } else if incidence[use_.index] == 2 {
                         BrepTrimType::Mated
                     } else {
                         BrepTrimType::Boundary
@@ -108,6 +128,43 @@ pub(super) fn convert_shell(
         faces.push(native);
     }
     Ok(Brep::try_new(vertices, edges, faces, tolerance)?)
+}
+
+/// STEP readers may unwrap a circular 3D edge into a different full-turn UV
+/// interval from its explicit seam p-curves. Keep each p-curve's shape and
+/// align its periodic coordinate with the preceding trim in the loop.
+fn align_cylinder_trim(
+    curve: NurbsCurve2,
+    previous_end: Point2,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve2, StepError> {
+    let start = curve.start_point()?;
+    if (previous_end.y() - start.y()).abs() > tolerance.absolute() {
+        return Ok(curve);
+    }
+    let turns = ((previous_end.x() - start.x()) / std::f64::consts::TAU).round();
+    let offset = turns * std::f64::consts::TAU;
+    if !offset.is_finite()
+        || offset == 0.
+        || (previous_end.x() - start.x() - offset).abs() > tolerance.angular()
+    {
+        return Ok(curve);
+    }
+    let controls = curve
+        .control_points()
+        .iter()
+        .map(|control| {
+            WeightedPoint2::try_new(
+                Point2::try_new(control.point().x() + offset, control.point().y())?,
+                control.weight(),
+            )
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(NurbsCurve2::try_new_rational(
+        curve.degree(),
+        controls,
+        curve.knots().to_vec(),
+    )?)
 }
 
 fn point3(p: monstertruck::modeling::Point3) -> Result<Point3, StepError> {

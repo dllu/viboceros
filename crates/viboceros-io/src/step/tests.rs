@@ -962,6 +962,153 @@ fn native_step_imports_analytic_open_cylinder_patches() {
 }
 
 #[test]
+fn native_step_imports_periodic_cylinder_wall_seam() {
+    use monstertruck::modeling::{
+        Invertible, Line, Point2 as TruckPoint2, Processor, RevolutionSurface, Transformed,
+        TrimmedCurve, UnitCircle, Vector3,
+    };
+    use monstertruck::step::load::step_geometry::{
+        Conic3D, Curve2D, Curve3D, ElementarySurface, StepParameterCurve, Surface,
+    };
+    use monstertruck::step::save::StepModels;
+    use monstertruck::topology::compress::{
+        CompressedEdge, CompressedEdgeUse, CompressedTrimmedFace, CompressedTrimmedShell,
+    };
+    use viboceros_geometry::BrepTrimType;
+    let point = |x, y, z| TruckPoint3::new(x, y, z);
+    let make_circle = |height| {
+        let mut circle = Processor::new(TrimmedCurve::new(
+            UnitCircle::<TruckPoint3>::new(),
+            (0., std::f64::consts::TAU),
+        ));
+        circle.transform_by(
+            Matrix4::from_translation(Vector3::new(0., 0., height)) * Matrix4::from_scale(2.),
+        );
+        Curve3D::Conic(Conic3D::Ellipse(circle))
+    };
+    let mut cylinder = Processor::new(RevolutionSurface::by_revolution(
+        Line(point(2., 0., 0.), point(2., 0., 3.)),
+        point(0., 0., 0.),
+        Vector3::unit_z(),
+    ));
+    cylinder.invert();
+    let surface = Surface::ElementarySurface(ElementarySurface::CylindricalSurface(cylinder));
+    for uv_origin in [0., std::f64::consts::TAU] {
+        let uv = [
+            ([uv_origin, 0.], [uv_origin + std::f64::consts::TAU, 0.]),
+            (
+                [uv_origin + std::f64::consts::TAU, 0.],
+                [uv_origin + std::f64::consts::TAU, 3.],
+            ),
+            ([uv_origin + std::f64::consts::TAU, 3.], [uv_origin, 3.]),
+            ([uv_origin, 0.], [uv_origin, 3.]),
+        ];
+        let uses = [(0, true), (1, true), (2, false), (1, false)]
+            .into_iter()
+            .zip(uv)
+            .map(|((index, orientation), (start, end))| CompressedEdgeUse {
+                index,
+                orientation,
+                trim_curve: Some(StepParameterCurve::new(
+                    Box::new(Curve2D::Line(Line(
+                        TruckPoint2::new(start[0], start[1]),
+                        TruckPoint2::new(end[0], end[1]),
+                    ))),
+                    Box::new(surface.clone()),
+                )),
+            })
+            .collect();
+        let shell = CompressedTrimmedShell {
+            vertices: vec![point(2., 0., 0.), point(2., 0., 3.)],
+            edges: vec![
+                CompressedEdge {
+                    vertices: (0, 0),
+                    curve: make_circle(0.),
+                },
+                CompressedEdge {
+                    vertices: (0, 1),
+                    curve: Curve3D::Line(Line(point(2., 0., 0.), point(2., 0., 3.))),
+                },
+                CompressedEdge {
+                    vertices: (1, 1),
+                    curve: make_circle(3.),
+                },
+            ],
+            faces: vec![CompressedTrimmedFace {
+                boundaries: vec![uses],
+                orientation: true,
+                surface: surface.clone(),
+            }],
+        };
+        let mut models = StepModels::default();
+        models.push_trimmed_shell(&shell);
+        let text = CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
+        let mut seam_count = 0;
+        let lines = text.lines().collect::<Vec<_>>();
+        let text = lines
+            .iter()
+            .enumerate()
+            .map(|(index, line)| {
+                if line.contains(" = SURFACE_CURVE(")
+                    && lines
+                        .get(index + 1)
+                        .is_some_and(|next| next.contains(" = LINE("))
+                {
+                    seam_count += 1;
+                    line.replace(" = SURFACE_CURVE(", " = SEAM_CURVE(")
+                } else {
+                    (*line).to_owned()
+                }
+            })
+            .collect::<Vec<_>>()
+            .join("\n");
+        assert_eq!(seam_count, 1);
+        let table = Table::from_step(&text).unwrap();
+        assert_eq!(table.entity_report.total(), 0);
+        let shell_id = *table.shell.keys().next().unwrap();
+        let (decoded, report) = reported_trimmed_shell(&table, shell_id).unwrap();
+        assert_eq!(report.total_lost(), 0);
+        assert_eq!(
+            (
+                decoded.vertices.len(),
+                decoded.edges.len(),
+                decoded.faces.len()
+            ),
+            (2, 3, 1)
+        );
+        assert!(
+            decoded.faces[0].boundaries[0]
+                .iter()
+                .all(|edge| edge.trim_curve.is_some())
+        );
+        let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+        let brep = &native.instances[0].brep;
+        assert_eq!(
+            (
+                brep.vertices().len(),
+                brep.edges().len(),
+                brep.faces().len()
+            ),
+            (2, 3, 1)
+        );
+        assert_eq!(
+            brep.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .map(|trim| trim.trim_type())
+                .collect::<Vec<_>>(),
+            vec![
+                BrepTrimType::Boundary,
+                BrepTrimType::Seam,
+                BrepTrimType::Boundary,
+                BrepTrimType::Seam,
+            ]
+        );
+        assert!((brep.area(Tolerance::DEFAULT).unwrap() - 12. * std::f64::consts::PI).abs() < 1e-8);
+    }
+}
+
+#[test]
 fn native_planar_step_retains_small_holes() {
     for size in [1e-4, 1e-6, 1e-8, 1e-10] {
         let text = polygon_face_step(
