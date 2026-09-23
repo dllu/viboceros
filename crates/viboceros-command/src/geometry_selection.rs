@@ -60,6 +60,11 @@ pub(super) enum GeometrySelectionFilter {
     Point,
     PointCloud,
     Surface,
+    OpenSurface,
+    ClosedSurface,
+    PlanarSurface,
+    TrimmedSurface,
+    UntrimmedSurface,
     Polysurface,
     OpenPolysurface,
     ClosedPolysurface,
@@ -106,6 +111,33 @@ impl GeometrySelectionFilter {
                 Geometry::Brep(brep) => brep.faces().len() == 1,
                 _ => false,
             },
+            Self::OpenSurface | Self::ClosedSurface => {
+                let closed = match geometry {
+                    Geometry::NurbsSurface(surface) => {
+                        surface.natural_boundary_curve_loops()?.is_empty()
+                    }
+                    Geometry::Brep(brep) if brep.faces().len() == 1 => brep.is_closed(),
+                    _ => return Ok(false),
+                };
+                closed == matches!(self, Self::ClosedSurface)
+            }
+            Self::PlanarSurface => match geometry {
+                Geometry::NurbsSurface(surface) => surface.plane(tolerance)?.is_some(),
+                Geometry::Brep(brep) if brep.faces().len() == 1 => {
+                    brep.faces()[0].surface().plane(tolerance)?.is_some()
+                }
+                _ => false,
+            },
+            Self::TrimmedSurface | Self::UntrimmedSurface => {
+                let untrimmed = match geometry {
+                    Geometry::NurbsSurface(_) => true,
+                    Geometry::Brep(brep) if brep.faces().len() == 1 => {
+                        brep.faces()[0].is_untrimmed(tolerance)?
+                    }
+                    _ => return Ok(false),
+                };
+                untrimmed == matches!(self, Self::UntrimmedSurface)
+            }
             Self::Polysurface => match geometry {
                 Geometry::Brep(brep) => brep.faces().len() > 1,
                 _ => false,
@@ -314,6 +346,102 @@ mod tests {
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), original);
         assert_eq!(document.undo_label(), undo.as_deref());
         assert_eq!(document.redo_label(), redo.as_deref());
+    }
+
+    #[test]
+    fn surface_filters_use_borders_and_planarity_without_selecting_polysurfaces() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "SrfPt 0,0,0 4,0,0 4,3,0 0,3,0")
+            .unwrap();
+        let planar = document.objects().last().unwrap().id();
+        registry
+            .execute(&mut document, "SrfPt 0,0,0 4,0,0 4,3,2 0,3,0")
+            .unwrap();
+        let warped = document.objects().last().unwrap().id();
+        registry.execute(&mut document, "Sphere 0,0,0 2").unwrap();
+        let sphere = document.objects().last().unwrap().id();
+        let planar_brep = match document.object(planar).unwrap().geometry() {
+            Geometry::NurbsSurface(surface) => {
+                Brep::try_surface_face(surface.clone(), document.tolerance()).unwrap()
+            }
+            _ => unreachable!(),
+        };
+        let planar_brep = document.add_geometry(Geometry::Brep(planar_brep)).unwrap();
+        let sphere_brep = match document.object(sphere).unwrap().geometry() {
+            Geometry::NurbsSurface(surface) => {
+                Brep::try_surface_face(surface.clone(), document.tolerance()).unwrap()
+            }
+            _ => unreachable!(),
+        };
+        let sphere_brep = document.add_geometry(Geometry::Brep(sphere_brep)).unwrap();
+        let triangle = TriangleMesh::try_new(
+            [[0., 0., 0.], [3., 0., 0.], [0., 2., 0.]]
+                .map(|point| Point3::try_from(point).unwrap())
+                .to_vec(),
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let trimmed_brep = Brep::try_from_mesh(&triangle, true, document.tolerance()).unwrap();
+        assert!(
+            !trimmed_brep.faces()[0]
+                .is_untrimmed(document.tolerance())
+                .unwrap()
+        );
+        let trimmed_brep = document.add_geometry(Geometry::Brep(trimmed_brep)).unwrap();
+        registry
+            .execute(&mut document, "Box 0,0,0 2,2,0 2")
+            .unwrap();
+        let box_id = document.objects().last().unwrap().id();
+        assert!(matches!(
+            document.object(box_id).unwrap().geometry(),
+            Geometry::Brep(_)
+        ));
+        let point = document
+            .add_geometry(Geometry::Point(Point3::try_new(9., 9., 9.).unwrap()))
+            .unwrap();
+
+        let original = document.objects().cloned().collect::<Vec<_>>();
+        let undo = document.undo_label().map(str::to_owned);
+        for (command, expected) in [
+            (
+                "SelOpenSrf",
+                BTreeSet::from([planar, warped, planar_brep, trimmed_brep]),
+            ),
+            ("SelClosedSrf", BTreeSet::from([sphere, sphere_brep])),
+            (
+                "SelPlanarSrf",
+                BTreeSet::from([planar, planar_brep, trimmed_brep]),
+            ),
+            ("SelTrimmedSrf", BTreeSet::from([trimmed_brep])),
+            (
+                "SelUntrimmedSrf",
+                BTreeSet::from([planar, warped, sphere, planar_brep, sphere_brep]),
+            ),
+        ] {
+            document
+                .select_objects([point], SelectionMode::Replace)
+                .unwrap();
+            assert_eq!(
+                registry.execute(&mut document, command).unwrap(),
+                format!("Selected {} object(s)", expected.len() + 1)
+            );
+            let mut expected = expected;
+            expected.insert(point);
+            assert_eq!(
+                document.selected_object_ids().collect::<BTreeSet<_>>(),
+                expected
+            );
+            assert_eq!(document.objects().cloned().collect::<Vec<_>>(), original);
+            assert_eq!(document.undo_label(), undo.as_deref());
+            assert!(
+                registry
+                    .execute(&mut document, &format!("{command} extra"))
+                    .is_err()
+            );
+        }
     }
 
     #[test]

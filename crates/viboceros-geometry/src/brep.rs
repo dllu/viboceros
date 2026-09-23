@@ -411,6 +411,12 @@ impl BrepFace {
     ) -> Result<Option<[[Real; 2]; 2]>, GeometryError> {
         rectangular_face_trim_bounds(self, tolerance)
     }
+
+    /// Whether this face covers its complete underlying surface domain with
+    /// only the four natural boundary, seam, or singular trims.
+    pub fn is_untrimmed(&self, tolerance: Tolerance) -> Result<bool, GeometryError> {
+        face_covers_full_surface_domain(self, tolerance)
+    }
 }
 
 /// A validated boundary representation with shared model-space topology and

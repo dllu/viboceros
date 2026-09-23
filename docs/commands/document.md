@@ -25,6 +25,13 @@ trimmed B-reps while excluding multi-face B-reps. `SelPolysrf` (alias
 `SelPolysurface`) and its open/closed variants classify only multi-face B-reps
 by shared-edge topology.
 
+`SelOpenSrf` and `SelClosedSrf` classify single surfaces by their natural
+boundary or single-face B-rep topology. `SelPlanarSrf` tests the underlying
+surface against document tolerance. `SelTrimmedSrf` selects single-face B-reps
+whose trims do not cover the complete natural parameter domain;
+`SelUntrimmedSrf` selects standalone NURBS surfaces and full-domain B-rep faces.
+These filters follow the [Rhino surface selection commands](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelSrf).
+
 Geometry filters and `SelShortCrv` share a fallible preflight pass. Its candidate
 buffer retains only matching IDs, not placeholder entries for rejected objects.
 Hidden and locked objects are skipped before evaluating geometry predicates.

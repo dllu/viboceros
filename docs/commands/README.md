@@ -143,6 +143,11 @@ SelShortCrv 1.0
 SelPt
 SelPtCloud
 SelSrf
+SelOpenSrf
+SelClosedSrf
+SelPlanarSrf
+SelTrimmedSrf
+SelUntrimmedSrf
 SelPolysrf
 SelOpenPolysrf
 SelClosedPolysrf
