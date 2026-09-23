@@ -251,9 +251,29 @@ fn set_view_world_parses_all_standard_directions_without_mutating_model_state() 
     for input in [
         "SetView",
         "SetView World",
-        "SetView CPlane Top",
+        "SetView CPlane Perspective",
         "SetView World Isometric",
         "SetView World Top extra",
+    ] {
+        assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
+    }
+}
+
+#[test]
+fn set_view_cplane_parses_six_directions_and_preserves_interface_state() {
+    for direction in WorldPlane::ALL {
+        let input = format!("'_SetView _CPlane _{}", direction.label());
+        let action = InterfaceCommand::SetViewCPlane(direction);
+        assert_eq!(parse(&input), Some(Ok(action)));
+        let mut current = state();
+        let original = current.clone();
+        current.apply(action).unwrap();
+        assert_eq!(current, original);
+    }
+    for input in [
+        "SetView CPlane",
+        "SetView CPlane Perspective",
+        "SetView CPlane Top extra",
     ] {
         assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
     }

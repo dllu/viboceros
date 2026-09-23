@@ -1,7 +1,7 @@
 //! Shared camera projection, drafting rays, and checked navigation.
 
 use super::*;
-use nalgebra::Matrix4 as NaMatrix4;
+use nalgebra::{Matrix4 as NaMatrix4, Unit, UnitQuaternion};
 
 #[derive(Clone, Copy)]
 struct ParallelAxes {
@@ -378,9 +378,34 @@ impl Viewport {
                 }
             }
         } else if button == PointerButton::Secondary {
-            self.orbit_yaw -= Real::from(delta.x) * 0.01;
-            self.orbit_pitch = (self.orbit_pitch + Real::from(delta.y) * 0.01)
-                .clamp(-1.553_343_034_274_953_2, 1.553_343_034_274_953_2);
+            if let Some(frame) = self.perspective_frame {
+                let (right, up, _) = self.perspective_basis();
+                let yaw = UnitQuaternion::from_axis_angle(
+                    &Unit::new_normalize(up),
+                    -Real::from(delta.x) * 0.01,
+                );
+                let pitch = UnitQuaternion::from_axis_angle(
+                    &Unit::new_normalize(yaw.transform_vector(&right)),
+                    Real::from(delta.y) * 0.01,
+                );
+                let rotation = pitch * yaw;
+                let new_right = rotation.transform_vector(&right);
+                let new_up = rotation.transform_vector(&up);
+                if let Ok(camera_frame) = Frame3::try_from_directions(
+                    frame.origin(),
+                    Vector3::try_from([new_right.x, new_right.y, new_right.z])
+                        .expect("finite camera axis"),
+                    Vector3::try_from([new_up.x, new_up.y, new_up.z]).expect("finite camera axis"),
+                    Tolerance::DEFAULT,
+                ) {
+                    self.perspective_frame = Some(camera_frame);
+                    self.cplane_direction = None;
+                }
+            } else {
+                self.orbit_yaw -= Real::from(delta.x) * 0.01;
+                self.orbit_pitch = (self.orbit_pitch + Real::from(delta.y) * 0.01)
+                    .clamp(-1.553_343_034_274_953_2, 1.553_343_034_274_953_2);
+            }
         }
     }
 
@@ -486,6 +511,13 @@ impl Viewport {
     }
 
     pub(super) fn perspective_basis(&self) -> (NaVector3<Real>, NaVector3<Real>, NaVector3<Real>) {
+        if let Some(frame) = self.perspective_frame {
+            return (
+                NaVector3::from(frame.x_axis().as_vector().to_array()),
+                NaVector3::from(frame.y_axis().as_vector().to_array()),
+                -NaVector3::from(frame.z_axis().as_vector().to_array()),
+            );
+        }
         let outward = NaVector3::new(
             self.orbit_pitch.cos() * self.orbit_yaw.cos(),
             self.orbit_pitch.cos() * self.orbit_yaw.sin(),

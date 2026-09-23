@@ -1,4 +1,4 @@
-# SetView World and Plan
+# SetView World, SetView CPlane, and Plan
 
 [Interface commands](interface.md) · [Viewport controls](../interface.md)
 
@@ -16,10 +16,18 @@ projection; construction-plane history remains independent. Switching through
 the viewport menu preserves the current camera target and zoom while changing
 the view direction and construction plane.
 
-`SetView World` preserves the model, selection, model undo/redo, and any
-unfinished modeling prompt. `SetView CPlane`, named views, two-point
-perspective, and Rhino's configurable named-view projection/CPlane policy are
-still pending. See [Rhino's SetView documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/setview.htm).
+`SetView CPlane Top|Bottom|Front|Back|Right|Left` points the active camera along
+one of the six standard directions of the current construction plane. It centers
+the camera on the CPlane origin and resets pan and zoom. The construction plane
+and viewport projection remain unchanged: a parallel viewport stays parallel,
+and a perspective viewport keeps its field of view. The camera captures the
+plane orientation, so later CPlane edits do not rotate it. View history restores
+the captured orientation, and perspective orbit continues from it.
+
+Both SetView forms preserve the model, selection, model undo/redo, and any
+unfinished modeling prompt. Named views, two-point perspective, and Rhino's
+configurable named-view projection/CPlane policy remain pending. See
+[Rhino's SetView documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/setview.htm).
 
 `Plan` changes the active viewport to a parallel view looking down the current
 construction plane at its origin. Its camera keeps the plane axes captured at
@@ -28,4 +36,4 @@ itself is unchanged. Projection, drawing, picking, snapping, Zoom Extents, and
 UndoView/RedoView use this orientation. Rotated Plan views use the cloud's shared
 tree with lazy three-dimensional subtree bounds for picking and snapping. The
 command preserves unfinished modeling prompts and document undo/redo. A live
-Rhino camera comparison remains pending.
+Rhino camera comparison for these commands remains pending.

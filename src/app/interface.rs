@@ -49,6 +49,16 @@ impl VibocerosApp {
                     self.push_log(format!("World {} view (active viewport)", view.label()));
                     return;
                 }
+                if let InterfaceCommand::SetViewCPlane(direction) = command {
+                    self.zoom_window_pending = false;
+                    self.zoom_target = None;
+                    self.viewports[self.active_viewport].set_cplane_view(direction);
+                    self.push_log(format!(
+                        "CPlane {} view (active viewport)",
+                        direction.label()
+                    ));
+                    return;
+                }
                 if command == InterfaceCommand::Plan {
                     self.zoom_window_pending = false;
                     self.zoom_target = None;

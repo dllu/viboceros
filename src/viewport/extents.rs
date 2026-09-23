@@ -215,6 +215,7 @@ impl Viewport {
         }
         let mut staged = Viewport::new(self.kind);
         staged.plan_frame = self.plan_frame;
+        staged.perspective_frame = self.perspective_frame;
         staged.target = target;
         staged.orbit_yaw = self.orbit_yaw;
         staged.orbit_pitch = self.orbit_pitch;

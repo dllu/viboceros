@@ -398,6 +398,47 @@ fn set_view_world_resets_each_standard_camera_and_keeps_model_history() {
 }
 
 #[test]
+fn set_view_cplane_keeps_projection_plane_prompt_and_model_redo() {
+    use viboceros_command::construction_plane::WorldPlane;
+
+    let mut app = test_app();
+    for command in ["Point 1,2,3", "Undo", "Line", "0"] {
+        enter(&mut app, command);
+    }
+    let pending = app.active_command;
+    let redo = app.document.redo_label().map(str::to_owned);
+    for (index, original_kind) in [(0, ViewKind::Top), (1, ViewKind::Perspective)] {
+        app.active_viewport = index;
+        app.viewports[index].plane.set(WorldPlane::Right.frame());
+        let original_camera = app.viewports[index].camera_snapshot();
+        enter(&mut app, "'_SetView _CPlane _Back");
+        assert_eq!(
+            app.viewports[index].construction_plane(),
+            WorldPlane::Right.frame()
+        );
+        assert!(app.viewports[index].view_label().contains("CPlane Back"));
+        assert_eq!(
+            app.viewports[index].kind(),
+            if original_kind == ViewKind::Perspective {
+                ViewKind::Perspective
+            } else {
+                ViewKind::Plan
+            }
+        );
+        assert_eq!(app.active_command, pending);
+        assert_eq!(app.document.redo_label(), redo.as_deref());
+        enter(&mut app, "UndoView");
+        assert_eq!(app.viewports[index].camera_snapshot(), original_camera);
+        assert_eq!(
+            app.viewports[index].construction_plane(),
+            WorldPlane::Right.frame()
+        );
+        enter(&mut app, "RedoView");
+        assert!(app.viewports[index].view_label().contains("CPlane Back"));
+    }
+}
+
+#[test]
 fn plan_uses_active_cplane_without_consuming_model_prompt_or_redo() {
     use viboceros_command::construction_plane::WorldPlane;
 

@@ -68,6 +68,8 @@ const VIEW_HISTORY_LIMIT: usize = 50;
 pub(crate) struct CameraSnapshot {
     kind: ViewKind,
     plan_frame: Frame3,
+    perspective_frame: Option<Frame3>,
+    cplane_direction: Option<WorldPlane>,
     pixels_per_unit: f32,
     pan: Vec2,
     orbit_yaw: Real,
@@ -205,6 +207,8 @@ pub struct Viewport {
     edge_snap_queries: std::cell::Cell<usize>,
     kind: ViewKind,
     plan_frame: Frame3,
+    perspective_frame: Option<Frame3>,
+    cplane_direction: Option<WorldPlane>,
     pub(crate) plane: ConstructionPlaneState,
     pub display_mode: DisplayMode,
     pixels_per_unit: f32,
@@ -238,6 +242,8 @@ impl Viewport {
             edge_snap_queries: Default::default(),
             kind,
             plan_frame: WorldPlane::Top.frame(),
+            perspective_frame: None,
+            cplane_direction: None,
             plane: ConstructionPlaneState::new(Self::default_plane(kind)),
             display_mode: DisplayMode::Wireframe,
             pixels_per_unit: 40.0,
@@ -259,6 +265,8 @@ impl Viewport {
         CameraSnapshot {
             kind: self.kind,
             plan_frame: self.plan_frame,
+            perspective_frame: self.perspective_frame,
+            cplane_direction: self.cplane_direction,
             pixels_per_unit: self.pixels_per_unit,
             pan: self.pan,
             orbit_yaw: self.orbit_yaw,
@@ -271,6 +279,8 @@ impl Viewport {
     fn restore_camera(&mut self, camera: CameraSnapshot) {
         self.kind = camera.kind;
         self.plan_frame = camera.plan_frame;
+        self.perspective_frame = camera.perspective_frame;
+        self.cplane_direction = camera.cplane_direction;
         self.pixels_per_unit = camera.pixels_per_unit;
         self.pan = camera.pan;
         self.orbit_yaw = camera.orbit_yaw;
@@ -332,11 +342,31 @@ impl Viewport {
         self.kind
     }
 
+    pub(crate) fn view_label(&self) -> &'static str {
+        match (self.kind, self.cplane_direction) {
+            (ViewKind::Plan, Some(WorldPlane::Top)) => "CPlane Top",
+            (ViewKind::Plan, Some(WorldPlane::Bottom)) => "CPlane Bottom",
+            (ViewKind::Plan, Some(WorldPlane::Front)) => "CPlane Front",
+            (ViewKind::Plan, Some(WorldPlane::Back)) => "CPlane Back",
+            (ViewKind::Plan, Some(WorldPlane::Right)) => "CPlane Right",
+            (ViewKind::Plan, Some(WorldPlane::Left)) => "CPlane Left",
+            (ViewKind::Perspective, Some(WorldPlane::Top)) => "CPlane Top (Perspective)",
+            (ViewKind::Perspective, Some(WorldPlane::Bottom)) => "CPlane Bottom (Perspective)",
+            (ViewKind::Perspective, Some(WorldPlane::Front)) => "CPlane Front (Perspective)",
+            (ViewKind::Perspective, Some(WorldPlane::Back)) => "CPlane Back (Perspective)",
+            (ViewKind::Perspective, Some(WorldPlane::Right)) => "CPlane Right (Perspective)",
+            (ViewKind::Perspective, Some(WorldPlane::Left)) => "CPlane Left (Perspective)",
+            _ => self.kind.label(),
+        }
+    }
+
     /// The preset menu resets the plane explicitly. CPlane edits never change
     /// camera projection, navigation, or geometry display.
     pub(crate) fn set_view_kind(&mut self, kind: ViewKind) {
         let previous = self.camera_snapshot();
         self.kind = kind;
+        self.perspective_frame = None;
+        self.cplane_direction = None;
         self.plane.set(Self::default_plane(kind));
         self.record_camera_change(previous);
     }
@@ -344,6 +374,8 @@ impl Viewport {
     pub(crate) fn set_world_view(&mut self, kind: ViewKind) {
         let previous = self.camera_snapshot();
         self.kind = kind;
+        self.perspective_frame = None;
+        self.cplane_direction = None;
         self.target = NaVector3::zeros();
         self.pan = Vec2::ZERO;
         self.pixels_per_unit = 40.0;
@@ -360,9 +392,39 @@ impl Viewport {
         let previous = self.camera_snapshot();
         self.plan_frame = self.construction_plane();
         self.kind = ViewKind::Plan;
+        self.perspective_frame = None;
+        self.cplane_direction = None;
         self.target = NaVector3::from(self.plan_frame.origin().to_array());
         self.pan = Vec2::ZERO;
         self.pixels_per_unit = 40.0;
+        self.record_camera_change(previous);
+    }
+
+    pub(crate) fn set_cplane_view(&mut self, direction: WorldPlane) {
+        let previous = self.camera_snapshot();
+        let plane = self.construction_plane();
+        let local = direction.frame();
+        let right = plane
+            .vector_at(local.x_axis().as_vector().to_array())
+            .expect("finite CPlane axis");
+        let up = plane
+            .vector_at(local.y_axis().as_vector().to_array())
+            .expect("finite CPlane axis");
+        let camera_frame =
+            Frame3::try_from_directions(plane.origin(), right, up, Tolerance::DEFAULT)
+                .expect("orthonormal CPlane camera frame");
+        self.plan_frame = camera_frame;
+        self.cplane_direction = Some(direction);
+        if self.kind == ViewKind::Perspective {
+            self.perspective_frame = Some(camera_frame);
+        } else {
+            self.kind = ViewKind::Plan;
+            self.perspective_frame = None;
+        }
+        self.target = NaVector3::from(plane.origin().to_array());
+        self.pan = Vec2::ZERO;
+        self.pixels_per_unit = 40.0;
+        self.perspective_camera_distance = DEFAULT_PERSPECTIVE_CAMERA_DISTANCE;
         self.record_camera_change(previous);
     }
 
@@ -653,7 +715,7 @@ impl Viewport {
             Align2::LEFT_TOP,
             format!(
                 "{} · {} · {} object(s) · {} selected",
-                self.kind.label(),
+                self.view_label(),
                 self.display_mode.label(),
                 document.objects().len(),
                 document.selected_object_count(),
@@ -2453,6 +2515,142 @@ mod tests {
         assert!(view.redo_view());
         assert_eq!(view.kind(), ViewKind::Plan);
         assert_eq!(view.project(model, rect), Some(screen));
+    }
+
+    #[test]
+    fn set_view_cplane_preserves_projection_and_plane_in_all_six_directions() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let plane = Frame3::try_from_directions(
+            point(10.0, 20.0, 30.0),
+            Vector3::try_new(1.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 1.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for direction in WorldPlane::ALL {
+            let local_camera_point = direction.frame().point_at([2.0, 3.0, 4.0]).unwrap();
+            let model = plane.point_at(local_camera_point.to_array()).unwrap();
+            for starting_kind in [ViewKind::Top, ViewKind::Perspective] {
+                let mut view = Viewport::new(starting_kind);
+                view.plane.set(plane);
+                let previous = view.camera_snapshot();
+                view.set_cplane_view(direction);
+                assert_eq!(view.construction_plane(), plane);
+                assert!(view.view_label().contains(direction.label()));
+                assert_eq!(
+                    view.kind(),
+                    if starting_kind == ViewKind::Perspective {
+                        ViewKind::Perspective
+                    } else {
+                        ViewKind::Plan
+                    }
+                );
+                let expected = if starting_kind == ViewKind::Perspective {
+                    let focal = view.perspective_focal_length_pixels(rect) as f32;
+                    let depth = (DEFAULT_PERSPECTIVE_CAMERA_DISTANCE - 4.0) as f32;
+                    Pos2::new(400.0 + 2.0 * focal / depth, 300.0 - 3.0 * focal / depth)
+                } else {
+                    Pos2::new(480.0, 180.0)
+                };
+                let screen = view.project(model, rect).unwrap();
+                assert!(
+                    (screen - expected).length() < 1.0e-3,
+                    "{starting_kind:?} {direction:?}"
+                );
+                let depth = view.view_depth(model);
+                let (gpu, gpu_depth) =
+                    gpu_project(&view, rect, model, (depth - 10.0, depth + 10.0));
+                assert!(
+                    (gpu - screen).length() < 1.0e-3,
+                    "{starting_kind:?} {direction:?}"
+                );
+                assert!((0.0..=1.0).contains(&gpu_depth));
+
+                view.plane.set(WorldPlane::Left.frame());
+                assert_eq!(view.project(model, rect), Some(screen));
+                assert!(view.undo_view());
+                assert_eq!(view.camera_snapshot(), previous);
+                assert_eq!(view.construction_plane(), WorldPlane::Left.frame());
+                assert!(view.redo_view());
+                assert_eq!(view.project(model, rect), Some(screen));
+            }
+        }
+    }
+
+    #[test]
+    fn perspective_cplane_view_orbits_without_losing_its_camera_roll() {
+        let plane = Frame3::try_from_directions(
+            point(10.0, 20.0, 30.0),
+            Vector3::try_new(1.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 1.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut view = Viewport::new(ViewKind::Perspective);
+        view.plane.set(plane);
+        view.set_cplane_view(WorldPlane::Front);
+        let before = view.perspective_basis();
+        view.apply_navigation_drag(
+            PointerButton::Secondary,
+            egui::Modifiers::default(),
+            Vec2::new(20.0, 10.0),
+        );
+        let after = view.perspective_basis();
+        assert_ne!(after, before);
+        assert_eq!(view.view_label(), "Perspective");
+        assert_eq!(view.construction_plane(), plane);
+        assert!((after.0.norm() - 1.0).abs() < 1.0e-12);
+        assert!((after.1.norm() - 1.0).abs() < 1.0e-12);
+        assert!(after.0.dot(&after.1).abs() < 1.0e-12);
+        view.set_world_view(ViewKind::Perspective);
+        assert!(view.perspective_frame.is_none());
+        assert_eq!(view.view_label(), "Perspective");
+        assert_eq!(view.construction_plane(), plane);
+    }
+
+    #[test]
+    fn cplane_perspective_view_fits_scene_and_captures_cloud_members() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let plane = Frame3::try_from_directions(
+            point(10.0, 20.0, 30.0),
+            Vector3::try_new(1.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 1.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut view = Viewport::new(ViewKind::Perspective);
+        view.plane.set(plane);
+        view.set_cplane_view(WorldPlane::Front);
+        view.last_rect = Some(rect);
+        let first = view.plan_frame.point_at([2.0, 3.0, 0.0]).unwrap();
+        let second = view.plan_frame.point_at([-2.0, -3.0, 0.0]).unwrap();
+        let mut document = Document::default();
+        let cloud_id = document
+            .add_geometry(Geometry::PointCloud(
+                viboceros_geometry::PointCloud3::try_new(vec![first, second]).unwrap(),
+            ))
+            .unwrap();
+        let pointer = view.project(first, rect).unwrap();
+        assert_eq!(view.pick_object(pointer, rect, &document), Some(cloud_id));
+        assert_eq!(
+            view.object_snap(
+                pointer,
+                rect,
+                &document,
+                viboceros_drafting::ObjectSnapModes::ALL
+            )
+            .unwrap()
+            .point(),
+            first
+        );
+        assert_eq!(
+            view.zoom_extents(&document, ZoomExtentsBorders::default()),
+            Ok(true)
+        );
+        assert!(rect.contains(view.project(first, rect).unwrap()));
+        assert!(rect.contains(view.project(second, rect).unwrap()));
+        assert_eq!(view.kind(), ViewKind::Perspective);
+        assert_eq!(view.construction_plane(), plane);
     }
 
     #[test]

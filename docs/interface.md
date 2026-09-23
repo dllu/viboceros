@@ -137,7 +137,8 @@ separate from model undo and construction-plane undo.
 
 The view-preset menu offers Top, Bottom, Front, Back, Right, Left, and
 Perspective. `SetView World <direction>` resets the active camera to that
-standard view. See [standard world views](commands/set-view.md).
+standard view. `SetView CPlane <direction>` uses the active construction plane
+without changing its projection. See [view commands](commands/set-view.md).
 
 `MeshToNURB` also supports [command-first object picking](object-selection.md).
 During that prompt, clicks and selection windows add only selectable meshes;

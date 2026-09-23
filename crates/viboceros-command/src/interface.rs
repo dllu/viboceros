@@ -3,6 +3,8 @@
 //! Parsing is side-effect free. Applying an action never touches model geometry,
 //! selection, undo history, or a caller's unfinished modeling command.
 
+use crate::construction_plane::WorldPlane;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum DisplayMode {
     Wireframe,
@@ -153,6 +155,7 @@ pub enum InterfaceCommand {
     RedoView,
     Plan,
     SetViewWorld(WorldView),
+    SetViewCPlane(WorldPlane),
     SetSnap(SwitchAction),
     SetOsnap(SwitchAction),
     SnapToMeshes(SwitchAction),
@@ -184,7 +187,7 @@ pub const COMMAND_NAMES: [&str; 18] = [
     "Plan",
 ];
 
-pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor <positive number>; UndoView; RedoView; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor <positive number>; UndoView; RedoView; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -284,8 +287,15 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
                     .ok_or(InterfaceError::Usage(
                         "SetView World Top|Bottom|Front|Back|Right|Left|Perspective",
                     )),
+                [cplane, view] if keyword(cplane, "CPlane") => WorldPlane::ALL
+                    .into_iter()
+                    .find(|direction| keyword(view, direction.label()))
+                    .map(InterfaceCommand::SetViewCPlane)
+                    .ok_or(InterfaceError::Usage(
+                        "SetView CPlane Top|Bottom|Front|Back|Right|Left",
+                    )),
                 _ => Err(InterfaceError::Usage(
-                    "SetView World Top|Bottom|Front|Back|Right|Left|Perspective",
+                    "SetView World Top|Bottom|Front|Back|Right|Left|Perspective | SetView CPlane Top|Bottom|Front|Back|Right|Left",
                 )),
             }
         } else if name.eq_ignore_ascii_case("UndoView") {
@@ -468,6 +478,10 @@ impl InterfaceState {
             InterfaceCommand::SetViewWorld(view) => format!(
                 "Set world {} view requested (active viewport)",
                 view.label()
+            ),
+            InterfaceCommand::SetViewCPlane(direction) => format!(
+                "Set CPlane {} view requested (active viewport)",
+                direction.label()
             ),
             InterfaceCommand::SetSnap(action) => {
                 self.grid_snap = action.apply(self.grid_snap);
