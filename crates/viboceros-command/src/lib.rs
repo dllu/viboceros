@@ -109,6 +109,7 @@ use flip::FlipCommand;
 mod curve_edit;
 mod merge_edge;
 mod merge_edges;
+mod offset_curve;
 mod split_edge;
 use cap::CapCommand;
 pub use merge_edge::{MergeEdgeChoice, MergeEdgeSelection};
@@ -122,6 +123,7 @@ use curve_cut::{
     CurveCutterInput, TrimCurveCommand, selected_curve_cutter_inputs, split_curve_with_cutters,
 };
 use curve_edit::CloseCrvCommand;
+use offset_curve::OffsetCommand;
 mod join;
 use join::JoinCommand;
 mod curvature;
@@ -723,6 +725,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(CloseCrvCommand)
+            .expect("unique built-in command");
+        registry
+            .register(OffsetCommand)
             .expect("unique built-in command");
         registry
             .register(CapCommand::default())
@@ -17334,6 +17339,9 @@ pub enum CommandError {
 
     #[error("CloseCrv requires curve geometry")]
     UnsupportedCloseCurveGeometry,
+
+    #[error("Offset requires selected line, circle, or circular arc curves")]
+    UnsupportedOffsetGeometry,
 
     #[error("ToNURBS requires a curve, surface, B-rep, or mesh")]
     UnsupportedToNurbsGeometry,

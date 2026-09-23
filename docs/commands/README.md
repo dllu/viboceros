@@ -5,6 +5,7 @@ commands. These pages describe implemented behavior and known limitations;
 Rhino's complete command set is still a work in progress.
 
 - [Curve creation and editing](curves.md)
+- [Analytic curve offsets](offset.md)
 - [Single and repeated point placement](points.md)
 - [Rectangular point grids](point-grid.md)
 - [Point-cloud creation](point-cloud.md)
@@ -214,6 +215,8 @@ Ungroup Assembly
 Join
 Join JoinDisjointMeshes=Yes
 JoinCopy
+Offset 2 0,5,0
+Offset 2 BothSides=Yes OutputLayer=Input
 MergeAllEdges
 MergeEdge object-id edge-index [Edge|EdgeA|EdgeB|Both|All]
 SplitEdge object-id edge-index parameter [parameter ...]

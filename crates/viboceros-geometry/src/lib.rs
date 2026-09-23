@@ -22,6 +22,7 @@ mod curve_evaluate;
 mod curve_fit;
 mod curve_frame;
 mod curve_join;
+mod curve_offset;
 mod curve_parameter_map;
 mod curve_rebuild;
 mod curve_segment;
