@@ -201,8 +201,8 @@ fn nurbs_brep_step_export_keeps_curved_edges_and_surface_shape() {
 }
 
 #[test]
-fn nurbs_brep_step_export_rejects_periodic_seam_atomically() {
-    use viboceros_geometry::{Brep, Frame3, NurbsSurface, Vector3};
+fn nurbs_brep_step_export_roundtrips_periodic_seam() {
+    use viboceros_geometry::{Brep, BrepTrimType, Frame3, NurbsSurface, Vector3};
     let frame = Frame3::try_from_directions(
         Point3::try_new(0., 0., 0.).unwrap(),
         Vector3::try_new(1., 0., 0.).unwrap(),
@@ -215,24 +215,64 @@ fn nurbs_brep_step_export_rejects_periodic_seam_atomically() {
     assert_eq!(source.faces().len(), 1);
     assert!(source.faces()[0].loops()[0].trims().len() > source.edges().len());
     let mut output = Vec::new();
-    assert!(matches!(
-        write_step_nurbs_breps(&mut output, [&source]),
-        Err(StepError::UnsupportedNativeBrep { .. })
-    ));
-    assert!(output.is_empty());
+    write_step_nurbs_breps(&mut output, [&source]).unwrap();
+    let text = String::from_utf8(output).unwrap();
+    assert_eq!(text.matches("SEAM_CURVE(").count(), 1);
+    let table = Table::from_step(&text).unwrap();
+    assert_eq!(table.entity_report.total(), 0);
+    let shell_id = *table.shell.keys().next().unwrap();
+    let (shell, report) = reported_trimmed_shell(&table, shell_id).unwrap();
+    assert_eq!(report.total_lost(), 0);
+    assert_eq!(
+        (shell.vertices.len(), shell.edges.len(), shell.faces.len()),
+        (2, 3, 1)
+    );
+    let imported = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    let result = &imported.instances[0].brep;
+    assert_eq!(
+        (
+            result.vertices().len(),
+            result.edges().len(),
+            result.faces().len()
+        ),
+        (2, 3, 1)
+    );
+    assert_eq!(
+        result.faces()[0].loops()[0]
+            .trims()
+            .iter()
+            .filter(|trim| trim.trim_type() == BrepTrimType::Seam)
+            .count(),
+        2
+    );
+    assert!((result.area(Tolerance::DEFAULT).unwrap() - 12. * std::f64::consts::PI).abs() < 1e-8);
+    for u in [
+        0.,
+        std::f64::consts::FRAC_PI_4,
+        std::f64::consts::PI,
+        std::f64::consts::TAU,
+    ] {
+        for v in [0., 1.5, 3.] {
+            let expected = source.faces()[0].surface().evaluate(u, v).unwrap();
+            let actual = result.faces()[0].surface().evaluate(u, v).unwrap();
+            assert!(expected.distance_to(actual).unwrap() < 1e-10);
+        }
+    }
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("existing.step");
     std::fs::write(&path, b"old STEP bytes").unwrap();
-    assert!(matches!(
-        write_step_native_breps_file_in_units(
-            &path,
-            [&source],
-            &LengthUnitSystem::Millimeters,
-            Tolerance::DEFAULT,
-        ),
-        Err(StepError::UnsupportedNativeBrep { .. })
-    ));
-    assert_eq!(std::fs::read(&path).unwrap(), b"old STEP bytes");
+    write_step_native_breps_file_in_units(
+        &path,
+        [&source],
+        &LengthUnitSystem::Millimeters,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    assert!(
+        std::fs::read_to_string(&path)
+            .unwrap()
+            .contains("SEAM_CURVE(")
+    );
 }
 
 #[test]
@@ -1000,7 +1040,7 @@ fn native_step_imports_periodic_cylinder_wall_seam() {
                 [uv_origin + std::f64::consts::TAU, 0.],
                 [uv_origin + std::f64::consts::TAU, 3.],
             ),
-            ([uv_origin + std::f64::consts::TAU, 3.], [uv_origin, 3.]),
+            ([uv_origin, 3.], [uv_origin + std::f64::consts::TAU, 3.]),
             ([uv_origin, 0.], [uv_origin, 3.]),
         ];
         let uses = [(0, true), (1, true), (2, false), (1, false)]
@@ -1043,26 +1083,7 @@ fn native_step_imports_periodic_cylinder_wall_seam() {
         let mut models = StepModels::default();
         models.push_trimmed_shell(&shell);
         let text = CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
-        let mut seam_count = 0;
-        let lines = text.lines().collect::<Vec<_>>();
-        let text = lines
-            .iter()
-            .enumerate()
-            .map(|(index, line)| {
-                if line.contains(" = SURFACE_CURVE(")
-                    && lines
-                        .get(index + 1)
-                        .is_some_and(|next| next.contains(" = LINE("))
-                {
-                    seam_count += 1;
-                    line.replace(" = SURFACE_CURVE(", " = SEAM_CURVE(")
-                } else {
-                    (*line).to_owned()
-                }
-            })
-            .collect::<Vec<_>>()
-            .join("\n");
-        assert_eq!(seam_count, 1);
+        assert_eq!(text.matches("SEAM_CURVE(").count(), 1);
         let table = Table::from_step(&text).unwrap();
         assert_eq!(table.entity_report.total(), 0);
         let shell_id = *table.shell.keys().next().unwrap();

@@ -211,8 +211,9 @@ their `_in_units` counterparts accept explicit source units and tolerance.
 Planar straight-edged inputs use plane and line entities; curved or nonplanar
 inputs use rational B-splines where needed and explicit UV p-curves on curved
 faces. It preserves face/edge incidence and converts coordinates to millimetres
-without rebuilding the source B-rep's UV trims. Singular trims, closed or
-repeated seam edges, mixed-sign NURBS weights, and non-B-rep document objects
+without rebuilding the source B-rep's UV trims. Full-turn cylinder walls with
+paired `SEAM_CURVE` uses round trip as editable faces. Singular trims, mixed-sign
+NURBS weights, and non-B-rep document objects
 produce an explicit error; staged file replacement leaves an existing
 destination intact. Certified convex planar polyhedra become STEP solids;
 strictly contained, disjoint inward convex cavities remain one solid shape.

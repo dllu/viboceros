@@ -1811,8 +1811,6 @@ dependencies = [
 [[package]]
 name = "monstertruck-io"
 version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ea6b9d9284cbd2c874246a230662877e03357da6b1f8ee5fe7d424d0c4c5c20a"
 dependencies = [
  "chrono",
  "derive_more",

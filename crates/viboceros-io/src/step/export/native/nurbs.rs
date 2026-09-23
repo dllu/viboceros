@@ -1,5 +1,5 @@
 //! Native STEP serialization of curved B-reps with explicit face-local p-curves.
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 use std::io::Write;
 
 use monstertruck::modeling::{
@@ -188,27 +188,6 @@ fn shell(
     let mut output_faces = Vec::new();
     let mut vertex_map = BTreeMap::new();
     let mut edge_map = BTreeMap::new();
-    for &face_index in faces {
-        let mut used = BTreeSet::new();
-        for trim in brep.faces()[face_index]
-            .loops()
-            .iter()
-            .flat_map(|loop_| loop_.trims())
-        {
-            let edge_index = trim
-                .edge()
-                .ok_or_else(|| unsupported("singular UV trim has no STEP edge"))?;
-            let edge = &brep.edges()[edge_index];
-            let [first, second] = edge.vertices();
-            if !used.insert(edge_index)
-                || brep.vertices()[first].point() == brep.vertices()[second].point()
-            {
-                return Err(unsupported(
-                    "closed or repeated seam edge needs STEP seam-curve support",
-                ));
-            }
-        }
-    }
     let surfaces = faces
         .iter()
         .map(|&face_index| {
@@ -287,10 +266,17 @@ fn shell(
                     orientation: !trim.is_reversed_3d(),
                     trim_curve: match &surface {
                         Surface3::Plane(_) => None,
-                        Surface3::Nurbs(_) => Some(ParameterCurve::new(
-                            curve2(trim.curve(), index)?,
-                            surface.clone(),
-                        )),
+                        Surface3::Nurbs(_) => {
+                            let reversed = trim
+                                .is_reversed_3d()
+                                .then(|| trim.curve().reversed())
+                                .transpose()?;
+                            let oriented = reversed.as_ref().unwrap_or_else(|| trim.curve());
+                            Some(ParameterCurve::new(
+                                curve2(oriented, index)?,
+                                surface.clone(),
+                            ))
+                        }
                     },
                 });
             }

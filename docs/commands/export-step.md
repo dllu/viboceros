@@ -13,8 +13,9 @@ shared edge topology and face orientation without mesh tessellation.
 The `ExportStp` alias accepts the same option. Quote a filename beginning with
 `Native=Yes` to use that text as a path.
 
-Native export requires every document object to be a B-rep. Singular trims,
-closed or repeated seam edges, and NURBS weight configurations with poles are
+Native export requires every document object to be a B-rep. Open cylindrical
+walls with closed circular edges and a paired periodic seam round trip as
+editable STEP faces. Singular trims and NURBS weight configurations with poles are
 errors, with no mesh fallback. STEP coordinates and the declared distance
 accuracy are converted from document
 units to millimetres. Export reads the document without changing objects or

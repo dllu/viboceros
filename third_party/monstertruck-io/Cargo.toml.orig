@@ -1,0 +1,87 @@
+[package]
+name = "monstertruck-io"
+version = "0.4.0"
+authors = [
+    "Yoshinori Tanimura <tanimura@ricos.co.jp>",
+    "Moritz Moeller <virtualritz@protonmail.com>",
+]
+edition = "2024"
+description = "Read and write CAD exchange formats as monstertruck B-rep"
+homepage = "https://github.com/virtualritz/monstertruck"
+repository = "https://github.com/virtualritz/monstertruck"
+readme = "README.md"
+keywords = ["cad", "step", "iges", "brep", "truck"]
+categories = ["graphics", "science", "parser-implementations"]
+license = "Apache-2.0"
+
+# One feature per format, so a consumer that wants STEP does not compile an IGES
+# reader. `step` is on by default because it is the format monstertruck reads and
+# writes natively and the one nearly every caller means.
+[features]
+default = ["step"]
+# Reading and writing ISO 10303-21 (STEP). `load` and `derive` mirror the feature
+# names the retired `monstertruck-step` crate used, so a consumer's feature list
+# ports across unchanged.
+step = ["load", "derive"]
+load = [
+    "derive",
+    "derive_more",
+    "step-p21",
+    "serde",
+    "monstertruck-traits",
+]
+derive = ["monstertruck-derive"]
+# The cadmpeg intermediate representation, its converter, and the cadmpeg-backed
+# readers. STEP is deliberately available through BOTH this and the `step`
+# feature above: ours is the measurement baseline the boolean kernel is
+# characterised against, and swapping it out is not a decision to make without
+# evidence. Enabling both lets the two be run over the same corpus and diffed.
+cadmpeg = ["cadmpeg-ir", "cadmpeg-core", "cadmpeg-codec-step"]
+# Reading IGES 5.3. monstertruck has no IGES reader of its own, so this one has
+# no alternative to sit alongside.
+iges = ["cadmpeg", "cadmpeg-codec-iges"]
+
+[dependencies]
+monstertruck-core = { workspace = true }
+monstertruck-geometry = { workspace = true }
+monstertruck-modeling = { workspace = true }
+monstertruck-topology = { workspace = true }
+thiserror = { workspace = true }
+
+# STEP. `web_time::Instant` is `std::time::Instant` on native and falls back to
+# `performance.now()` on wasm32-unknown-unknown (where `std::time::*` panics).
+web-time = { workspace = true }
+chrono = { workspace = true }
+derive_more = { workspace = true, optional = true }
+step-p21 = { workspace = true, optional = true }
+serde = { workspace = true, optional = true }
+monstertruck-assembly = { workspace = true }
+monstertruck-derive = { workspace = true, optional = true }
+monstertruck-traits = { workspace = true, optional = true }
+monstertruck-mesh = { workspace = true }
+
+# IGES. The cadmpeg codecs all decode into ONE intermediate representation, which
+# is why this crate holds a single converter rather than one per format.
+cadmpeg-ir = { version = "0.4", optional = true }
+cadmpeg-codec-iges = { version = "0.4", optional = true }
+cadmpeg-codec-step = { version = "0.4", optional = true }
+# `ReadSeek` lives here, not in cadmpeg-ir. Renamed from `cadmpeg-codec-core`
+# at 0.4; depending on both would give two incompatible `ReadSeek` traits.
+cadmpeg-core = { version = "0.4", optional = true }
+
+[dev-dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true }
+image = { workspace = true }
+itertools = { workspace = true }
+proptest = { workspace = true }
+serde_json = { workspace = true }
+# The `vtk` feature pulls in `vtkio` so the `step-to-mesh` example can emit
+# `.vtu`. Dev-only -- downstream users on the default (non-`vtk`) feature set
+# never see `vtkio` -> `lz4_flex` (RUSTSEC-2026-0041).
+monstertruck-meshing = { workspace = true, features = ["vtk"] }
+monstertruck-modeling = { workspace = true, features = ["fillet"] }
+# The published shape-healing crate: the solidify tests heal boolean output
+# through its public `extract_healed_trimmed_solid`.
+monstertruck-healing = { workspace = true }
+vtkio = { workspace = true }
