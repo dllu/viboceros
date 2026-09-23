@@ -3,7 +3,7 @@ use super::*;
 
 impl TriangleMesh {
     /// Concatenates meshes in input order, retaining unused and coincident raw
-    /// vertices, polygon winding, and each source's internal vertex sharing.
+    /// vertices, polygon winding, n-gons, and each source's internal vertex sharing.
     /// This is not a Boolean union, welding operation, or tolerance-based join.
     pub fn try_append(meshes: &[&Self]) -> Result<Self, GeometryError> {
         if meshes.is_empty() {
@@ -17,6 +17,7 @@ impl TriangleMesh {
         let mut vertices = Vec::new();
         let mut faces = Vec::new();
         let mut triangles = Vec::new();
+        let mut ngons = Vec::new();
         vertices
             .try_reserve_exact(vertex_count)
             .map_err(|_| GeometryError::TooManyMeshVertices)?;
@@ -29,6 +30,17 @@ impl TriangleMesh {
         for mesh in meshes {
             let offset =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
+            let face_offset = if mesh.ngons.is_empty() {
+                0
+            } else {
+                faces
+                    .len()
+                    .checked_add(mesh.faces.len())
+                    .and_then(|count| count.checked_sub(1))
+                    .filter(|&last| u32::try_from(last).is_ok())
+                    .ok_or(GeometryError::TooManyMeshFaces)?;
+                u32::try_from(faces.len()).map_err(|_| GeometryError::TooManyMeshFaces)?
+            };
             vertices.extend_from_slice(&mesh.vertices);
             faces.extend(mesh.faces.iter().map(|face| face.remapped(|i| i + offset)));
             triangles.extend(
@@ -36,11 +48,22 @@ impl TriangleMesh {
                     .iter()
                     .map(|triangle| triangle.map(|i| i + offset)),
             );
+            ngons.extend(mesh.ngons.iter().map(|ngon| {
+                MeshNgon {
+                    vertices: ngon.vertices.iter().map(|&index| index + offset).collect(),
+                    faces: ngon
+                        .faces
+                        .iter()
+                        .map(|&index| index + face_offset)
+                        .collect(),
+                }
+            }));
         }
         Ok(Self {
             vertices,
             faces,
             triangles,
+            ngons,
         })
     }
 }

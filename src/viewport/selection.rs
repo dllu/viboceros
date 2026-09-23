@@ -391,7 +391,7 @@ impl Viewport {
         for point in mesh.vertices() {
             projected.add_point(self.project(*point, rect));
         }
-        if let Ok(lines) = mesh.wireframe_lines(tolerance) {
+        if let Ok(lines) = mesh.visible_wireframe_lines(tolerance) {
             for line in lines {
                 if let Some([start, end]) = self.project_segment(line.start(), line.end(), rect) {
                     projected.add_segment(Some(start), Some(end));

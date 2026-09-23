@@ -101,6 +101,10 @@ memory. Mesh connectivity, polygon normals, edge collapse, and edge splitting
 have separate kernel modules. They preserve raw-vertex seam distinctions while
 sharing exact-location topology. See [mesh topology and editing](mesh-topology.md)
 for allocation policy, numerical boundaries, and independent/Rhino regression coverage.
+The kernel's `mesh/ngon` module validates logical face groups over triangle/quad
+storage; the 3DM bridge's `mesh_ngon` payload preserves their boundary and member
+indices. Viewport display uses visible n-gon edges while editing selectors keep
+the complete topology edge order.
 The `split_disjoint_mesh` command module owns staged component results, fresh
 piece insertion, source deletion policy, attribute/group propagation, and selection.
 The separate `explode` command module owns multi-geometry decomposition staging,

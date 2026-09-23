@@ -35,8 +35,9 @@ Invalid option input is atomic. Failed preselected commands do not accept choice
 failed prompted conversion retains choices already accepted at the prompt.
 Native bootstrap choices are Yes/Yes.
 Factory defaults and restart persistence are not established by these probes.
-`UseNgons` is stored but does not affect current triangle/quad-only meshes.
-Rhino n-gon regions and their conversion are not yet implemented or verified.
+`UseNgons` is stored, but conversion currently expands n-gon overlays through
+their underlying triangle/quad faces in either setting. Rhino n-gon-region
+conversion is not yet implemented or verified.
 
 ## Selection path and oracle
 

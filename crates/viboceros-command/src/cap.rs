@@ -5,12 +5,13 @@ use viboceros_geometry::BrepSolidOrientation;
 #[cfg(test)]
 mod tests;
 
-const MESH_CAP_USAGE: &str = "Cap [DeleteInput=Yes|No] [Crease=Yes|No]";
+const MESH_CAP_USAGE: &str = "Cap [DeleteInput=Yes|No] [Crease=Yes|No] [Triangles=Yes|No]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 struct MeshCapOptions {
     delete_input: bool,
     crease: bool,
+    triangles: bool,
 }
 
 impl Default for MeshCapOptions {
@@ -18,6 +19,7 @@ impl Default for MeshCapOptions {
         Self {
             delete_input: true,
             crease: true,
+            triangles: false,
         }
     }
 }
@@ -37,7 +39,8 @@ impl Default for CapCommand {
 impl CapCommand {
     fn parse(&self, arguments: &[&str]) -> Result<MeshCapOptions, CommandError> {
         let mut options = self.options.get();
-        let (mut delete_seen, mut crease_seen, mut index) = (false, false, 0);
+        let (mut delete_seen, mut crease_seen, mut triangles_seen, mut index) =
+            (false, false, false, 0);
         while index < arguments.len() {
             if arguments.len() == 1
                 && let Some(value) = parse_yes_no(arguments[index])
@@ -53,6 +56,9 @@ impl CapCommand {
             } else if option_name_eq(name, "Crease") && !crease_seen {
                 options.crease = value;
                 crease_seen = true;
+            } else if option_name_eq(name, "Triangles") && !triangles_seen {
+                options.triangles = value;
+                triangles_seen = true;
             } else {
                 return Err(CommandError::Usage(MESH_CAP_USAGE));
             }
@@ -86,6 +92,11 @@ impl Command for CapCommand {
                     value: options.crease,
                     aliases: &[],
                 },
+                BooleanSelectionOption {
+                    name: "Triangles",
+                    value: options.triangles,
+                    aliases: &[],
+                },
             ],
             menus: vec![],
             choices: vec![],
@@ -111,8 +122,11 @@ impl Command for CapCommand {
         for object in document.selected_objects() {
             if let Geometry::Mesh(mesh) = object.geometry() {
                 selected_mesh = true;
-                let (capped, count) =
-                    mesh.cap_planar_holes_with_crease(document.tolerance(), options.crease)?;
+                let (capped, count) = mesh.cap_planar_holes_with_options(
+                    document.tolerance(),
+                    options.crease,
+                    options.triangles,
+                )?;
                 if count > 0 {
                     face_count += capped.face_count() - mesh.face_count();
                     if options.delete_input {

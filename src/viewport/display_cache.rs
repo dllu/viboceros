@@ -116,7 +116,7 @@ impl DisplayGeometry {
                     }
                 }
                 Geometry::Mesh(mesh) => {
-                    if let Ok(edges) = mesh.wireframe_lines(self.tolerance) {
+                    if let Ok(edges) = mesh.visible_wireframe_lines(self.tolerance) {
                         for edge in edges {
                             visit(edge.start(), edge.end());
                         }

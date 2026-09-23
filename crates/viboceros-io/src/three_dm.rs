@@ -14,6 +14,8 @@ use viboceros_geometry::{
 use crate::LengthUnitSystem;
 use crate::three_dm_geometry::{self, GeometryCodecError};
 
+mod mesh_ngon;
+
 const ERROR_CAPACITY: usize = 4096;
 const OBJECT_POINT: c_int = 1;
 const OBJECT_LINE: c_int = 2;
@@ -821,8 +823,7 @@ fn decode_object(
                 && !indices.is_empty()
                 && indices.len() % 4 == 0
                 && knots_u.is_empty()
-                && knots_v.is_empty()
-                && geometry_data.is_empty() =>
+                && knots_v.is_empty() =>
         {
             let vertices = coordinates
                 .chunks_exact(3)
@@ -838,11 +839,10 @@ fn decode_object(
                     }
                 })
                 .collect();
-            ThreeDmGeometry::Mesh(TriangleMesh::try_new_faces(
-                vertices,
-                faces,
-                Tolerance::MESH_VALIDATION,
-            )?)
+            ThreeDmGeometry::Mesh(
+                TriangleMesh::try_new_faces(vertices, faces, Tolerance::MESH_VALIDATION)?
+                    .try_with_ngons(mesh_ngon::decode(geometry_data)?)?,
+            )
         }
         OBJECT_BREP | OBJECT_POLYCURVE | OBJECT_ARC
             if info.degree_u == 0
@@ -1181,7 +1181,7 @@ impl ObjectPayload {
                         MeshFace::Quad(indices) => indices,
                     })
                     .collect(),
-                geometry_data: Vec::new(),
+                geometry_data: mesh_ngon::encode(mesh.ngons())?,
             },
         })
     }
@@ -1443,7 +1443,7 @@ mod tests {
     use std::time::{SystemTime, UNIX_EPOCH};
 
     use super::*;
-    use viboceros_geometry::{Frame3, Polyline3, Vector3};
+    use viboceros_geometry::{Frame3, MeshNgon, Polyline3, Vector3};
 
     fn sample_model() -> ThreeDmModel {
         let point = Point3::try_new(1.0, 2.0, 3.0).unwrap();
@@ -1835,6 +1835,56 @@ mod tests {
         }
         decoded_object.geometry = source.geometry.clone();
         assert_eq!(decoded_object, source);
+        fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn open_nurbs_round_trip_preserves_mesh_ngon_face_groups() {
+        let path = temporary_path("mesh-ngon.3dm");
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0., 0., 0.).unwrap(),
+                Point3::try_new(2., 0., 0.).unwrap(),
+                Point3::try_new(2., 2., 0.).unwrap(),
+                Point3::try_new(0., 2., 0.).unwrap(),
+            ],
+            vec![[0, 1, 2], [0, 2, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .try_with_ngons(vec![MeshNgon::from_parts(vec![0, 1, 2, 3], vec![0, 1])])
+        .unwrap();
+        let triangle = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0., 0., 1.).unwrap(),
+                Point3::try_new(1., 0., 1.).unwrap(),
+                Point3::try_new(0., 1., 1.).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .try_with_ngons(vec![MeshNgon::from_parts(vec![0, 1, 2], vec![0])])
+        .unwrap();
+        let model = ThreeDmModel::new(
+            vec![ThreeDmLayer {
+                name: "Default".to_owned(),
+                color: [255, 255, 255],
+                visible: true,
+                locked: false,
+            }],
+            Vec::new(),
+            vec![
+                ThreeDmObject::new(ThreeDmGeometry::Mesh(mesh.clone()), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Mesh(triangle.clone()), 0),
+            ],
+        );
+        write_3dm_file(&path, &model).unwrap();
+        let loaded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(loaded.unsupported_object_count(), 0);
+        assert_eq!(loaded.objects.len(), 2);
+        assert_eq!(loaded.objects[0].geometry, ThreeDmGeometry::Mesh(mesh));
+        assert_eq!(loaded.objects[1].geometry, ThreeDmGeometry::Mesh(triangle));
         fs::remove_file(path).unwrap();
     }
 

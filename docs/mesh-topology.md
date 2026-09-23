@@ -5,6 +5,14 @@
 The kernel distinguishes stored raw vertices from exact-location topology
 vertices. Coincident raw vertices can remain separate across unwelded seams.
 Stored faces are triangles or quads; triangulated facets are a separate view.
+N-gons are validated overlays over connected face groups, with an oriented raw
+vertex boundary. They preserve the underlying triangles and quads for geometry
+calculations and 3DM interchange. Affine transforms, reversal, mesh
+concatenation, unused-vertex culling, quad triangulation, and face-orientation repair retain n-gon
+membership. Other editing operations that change face or vertex tables do not
+yet all update n-gon overlays. Wireframe display and
+wireframe object picking hide internal n-gon edges while topology queries keep
+them available for editing.
 [`mesh/union_find`](../crates/viboceros-geometry/src/mesh/union_find.rs) shares
 iterative path compression across face grouping and raw-vertex merging. Face
 unions use rank; raw-vertex unions explicitly retain the earliest or latest index.

@@ -120,7 +120,7 @@ impl Viewport {
     ) -> PickHit {
         if self.display_mode == DisplayMode::Wireframe {
             let distance = mesh
-                .wireframe_lines(tolerance)
+                .visible_wireframe_lines(tolerance)
                 .map(|lines| {
                     lines
                         .into_iter()

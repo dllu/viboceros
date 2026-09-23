@@ -121,6 +121,8 @@ constexpr uint8_t kBrepMagic[8] = {'V', 'I', 'B', 'O', 'B', 'R', 'P', 0};
 constexpr uint32_t kBrepVersion = 1;
 constexpr uint8_t kPolyCurveMagic[8] = {'V', 'I', 'B', 'O', 'P', 'L', 'Y', 0};
 constexpr uint32_t kPolyCurveVersion = 2;
+constexpr uint8_t kNgonMagic[8] = {'V', 'I', 'B', 'O', 'N', 'G', 'O', 'N'};
+constexpr uint32_t kNgonVersion = 1;
 constexpr size_t kMaxPolyCurveSegments = 65536;
 constexpr uint64_t kNoEdge = std::numeric_limits<uint64_t>::max();
 
@@ -657,6 +659,40 @@ bool append_mesh(const ON_Mesh& mesh, BridgeObject& output) {
                            static_cast<uint32_t>(face.vi[1]),
                            static_cast<uint32_t>(face.vi[2]),
                            static_cast<uint32_t>(face.vi[3])});
+  }
+  uint32_t ngon_count = 0;
+  for (uint32_t index = 0; index < mesh.NgonUnsignedCount(); ++index) {
+    ngon_count += mesh.Ngon(index) != nullptr ? 1U : 0U;
+  }
+  if (ngon_count != 0) {
+    ByteWriter writer(output.geometry_data);
+    writer.Bytes(kNgonMagic, sizeof(kNgonMagic));
+    writer.U32(kNgonVersion);
+    writer.U32(ngon_count);
+    for (uint32_t index = 0; index < mesh.NgonUnsignedCount(); ++index) {
+      const ON_MeshNgon* ngon = mesh.Ngon(index);
+      if (ngon == nullptr) {
+        continue;
+      }
+      if (ngon->m_Vcount < 3 || ngon->m_Fcount == 0 ||
+          ngon->m_vi == nullptr || ngon->m_fi == nullptr) {
+        return false;
+      }
+      writer.U32(ngon->m_Vcount);
+      writer.U32(ngon->m_Fcount);
+      for (uint32_t corner = 0; corner < ngon->m_Vcount; ++corner) {
+        if (ngon->m_vi[corner] >= static_cast<uint32_t>(mesh.VertexCount())) {
+          return false;
+        }
+        writer.U32(ngon->m_vi[corner]);
+      }
+      for (uint32_t face = 0; face < ngon->m_Fcount; ++face) {
+        if (ngon->m_fi[face] >= static_cast<uint32_t>(mesh.FaceCount())) {
+          return false;
+        }
+        writer.U32(ngon->m_fi[face]);
+      }
+    }
   }
   return true;
 }
@@ -1418,6 +1454,63 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
         if (!face_set) {
           delete mesh;
           error = "polygon mesh has an invalid face";
+          return nullptr;
+        }
+      }
+      if (source.geometry_data_count != 0) {
+        if (source.geometry_data == nullptr) {
+          delete mesh;
+          error = "polygon mesh n-gon payload is missing";
+          return nullptr;
+        }
+        ByteReader reader(source.geometry_data, source.geometry_data_count);
+        uint32_t version = 0;
+        uint32_t ngon_count = 0;
+        if (!reader.Bytes(kNgonMagic, sizeof(kNgonMagic)) ||
+            !reader.U32(version) || version != kNgonVersion ||
+            !reader.U32(ngon_count) || ngon_count > reader.Remaining() / 8) {
+          delete mesh;
+          error = "polygon mesh n-gon payload is invalid";
+          return nullptr;
+        }
+        for (uint32_t index = 0; index < ngon_count; ++index) {
+          uint32_t corner_count = 0;
+          uint32_t member_count = 0;
+          if (!reader.U32(corner_count) || !reader.U32(member_count) ||
+              corner_count < 3 || member_count == 0 ||
+              corner_count > vertex_count || member_count > face_count ||
+              static_cast<uint64_t>(corner_count) + member_count >
+                  reader.Remaining() / 4) {
+            delete mesh;
+            error = "polygon mesh n-gon counts are invalid";
+            return nullptr;
+          }
+          std::vector<unsigned int> corners(corner_count);
+          std::vector<unsigned int> members(member_count);
+          for (uint32_t& corner : corners) {
+            if (!reader.U32(corner)) {
+              delete mesh;
+              error = "polygon mesh n-gon corners are truncated";
+              return nullptr;
+            }
+          }
+          for (uint32_t& member : members) {
+            if (!reader.U32(member)) {
+              delete mesh;
+              error = "polygon mesh n-gon members are truncated";
+              return nullptr;
+            }
+          }
+          if (mesh->AddNgon(corner_count, corners.data(), member_count,
+                            members.data()) < 0) {
+            delete mesh;
+            error = "polygon mesh n-gon is invalid in OpenNURBS";
+            return nullptr;
+          }
+        }
+        if (!reader.Finished()) {
+          delete mesh;
+          error = "polygon mesh n-gon payload has trailing bytes";
           return nullptr;
         }
       }

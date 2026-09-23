@@ -12,6 +12,7 @@ mod edge_split;
 #[cfg(test)]
 mod edge_unweld_tests;
 mod edge_weld;
+mod ngon;
 mod normals;
 mod planar_cap;
 mod radial;
@@ -375,11 +376,38 @@ impl MeshFace {
 /// quadrilateral faces remain first-class so topology and 3DM interchange do
 /// not invent diagonal edges. [`Self::triangles`] provides a deterministic
 /// `0-2` triangulation for algorithms and formats that require triangles.
+/// N-gons group existing faces without changing that underlying face table.
 #[derive(Clone, Debug, PartialEq)]
 pub struct TriangleMesh {
     vertices: Vec<Point3>,
     faces: Vec<MeshFace>,
     triangles: Vec<[u32; 3]>,
+    ngons: Vec<MeshNgon>,
+}
+
+/// One logical polygon over a connected set of triangle or quad mesh faces.
+/// The oriented boundary uses raw mesh vertex indices and excludes its repeated
+/// closing vertex. Its face indices refer to the underlying face table.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct MeshNgon {
+    vertices: Vec<u32>,
+    faces: Vec<u32>,
+}
+
+impl MeshNgon {
+    /// Builds an unattached record; [`TriangleMesh::try_with_ngons`] validates
+    /// its indices and boundary against the mesh's face table.
+    pub fn from_parts(vertices: Vec<u32>, faces: Vec<u32>) -> Self {
+        Self { vertices, faces }
+    }
+
+    pub fn vertices(&self) -> &[u32] {
+        &self.vertices
+    }
+
+    pub fn faces(&self) -> &[u32] {
+        &self.faces
+    }
 }
 
 impl TriangleMesh {
@@ -436,6 +464,7 @@ impl TriangleMesh {
             vertices,
             faces,
             triangles,
+            ngons: Vec::new(),
         })
     }
 
@@ -1879,6 +1908,7 @@ impl TriangleMesh {
             vertices,
             faces,
             triangles,
+            ngons: Vec::new(),
         }
     }
 
@@ -1904,10 +1934,20 @@ impl TriangleMesh {
 
     /// Reverses every face winding without changing mesh vertex or face order.
     pub fn reversed(&self) -> Self {
-        Self::from_validated_parts(
+        let mut reversed = Self::from_validated_parts(
             self.vertices.clone(),
             self.faces.iter().copied().map(MeshFace::reversed).collect(),
-        )
+        );
+        reversed.ngons = self
+            .ngons
+            .iter()
+            .cloned()
+            .map(|mut ngon| {
+                ngon.vertices[1..].reverse();
+                ngon
+            })
+            .collect();
+        reversed
     }
 
     /// Splits every quadrilateral along its shortest three-dimensional
@@ -1926,18 +1966,42 @@ impl TriangleMesh {
         faces
             .try_reserve(quad_count)
             .map_err(|_| GeometryError::TooManyMeshFaces)?;
+        let mut appended_by_source = if self.ngons.is_empty() {
+            Vec::new()
+        } else {
+            vec![None; self.faces.len()]
+        };
         for face_index in 0..self.faces.len() {
             let MeshFace::Quad([a, b, c, d]) = self.faces[face_index] else {
                 continue;
             };
             let [first, second] = mass_triangles::split(&self.vertices, [a, b, c, d]);
             faces[face_index] = MeshFace::Triangle(first);
+            if !self.ngons.is_empty() {
+                appended_by_source[face_index] =
+                    Some(u32::try_from(faces.len()).map_err(|_| GeometryError::TooManyMeshFaces)?);
+            }
             faces.push(MeshFace::Triangle(second));
         }
-        Ok((
-            Self::try_new_faces(self.vertices.clone(), faces, tolerance)?,
-            quad_count,
-        ))
+        let mut triangulated = Self::try_new_faces(self.vertices.clone(), faces, tolerance)?;
+        if !self.ngons.is_empty() {
+            let ngons = self
+                .ngons
+                .iter()
+                .map(|ngon| {
+                    let faces = ngon
+                        .faces
+                        .iter()
+                        .flat_map(|&face| {
+                            std::iter::once(face).chain(appended_by_source[face as usize])
+                        })
+                        .collect();
+                    MeshNgon::from_parts(ngon.vertices.clone(), faces)
+                })
+                .collect();
+            triangulated = triangulated.try_with_ngons(ngons)?;
+        }
+        Ok((triangulated, quad_count))
     }
 
     /// Replaces one welded interior triangle edge with the opposite diagonal.
@@ -2243,8 +2307,21 @@ impl TriangleMesh {
         tolerance: Tolerance,
         crease: bool,
     ) -> Result<(Self, usize), GeometryError> {
+        self.cap_planar_holes_with_options(tolerance, crease, true)
+    }
+
+    /// When `triangles` is false, each simply connected planar cap receives
+    /// one logical n-gon over its triangle faces. Caps with inner boundaries
+    /// retain separate triangles.
+    pub fn cap_planar_holes_with_options(
+        &self,
+        tolerance: Tolerance,
+        crease: bool,
+        triangles: bool,
+    ) -> Result<(Self, usize), GeometryError> {
         let mut capped = self.clone();
         let mut count = 0_usize;
+        let mut simple_cap_face_ranges = Vec::new();
         loop {
             let data = capped.topology_data();
             if let Some((next, filled_boundaries)) =
@@ -2283,6 +2360,7 @@ impl TriangleMesh {
                 break;
             };
             next.vertices.pop();
+            simple_cap_face_ranges.push(capped.faces.len()..next.faces.len());
             capped = Self::from_validated_parts(next.vertices, next.faces);
             count = count
                 .checked_add(1)
@@ -2290,6 +2368,34 @@ impl TriangleMesh {
         }
         if !crease && count > 0 {
             capped = planar_cap::weld_cap_boundary(self, capped, tolerance)?;
+        }
+        if count > 0 && (!self.ngons.is_empty() || !triangles) {
+            let mut ngons = Vec::with_capacity(self.ngons.len() + simple_cap_face_ranges.len());
+            for original in &self.ngons {
+                let ngon = if crease {
+                    original.clone()
+                } else {
+                    capped
+                        .ngon_from_faces(original.faces.clone())
+                        .ok_or(GeometryError::InvalidMeshNgon { ngon: ngons.len() })?
+                };
+                ngons.push(ngon);
+            }
+            if !triangles {
+                for range in simple_cap_face_ranges {
+                    let faces = range
+                        .map(|index| {
+                            u32::try_from(index).map_err(|_| GeometryError::TooManyMeshFaces)
+                        })
+                        .collect::<Result<Vec<_>, _>>()?;
+                    ngons.push(
+                        capped
+                            .ngon_from_faces(faces)
+                            .ok_or(GeometryError::InvalidMeshNgon { ngon: ngons.len() })?,
+                    );
+                }
+            }
+            capped = capped.try_with_ngons(ngons)?;
         }
         Ok((capped, count))
     }
@@ -2418,15 +2524,50 @@ impl TriangleMesh {
     }
 
     /// Returns every exact-location-welded topology edge exactly once.
-    ///
-    /// This is the curve set Rhino displays and extracts for a triangle mesh:
-    /// shared face edges are not duplicated, while naked and non-manifold
-    /// edges remain represented.
+    /// Shared face edges are not duplicated; naked and non-manifold edges
+    /// remain represented. Edge indices in mesh editing commands follow this
+    /// complete set, including edges internal to an n-gon.
     pub fn wireframe_lines(&self, tolerance: Tolerance) -> Result<Vec<LineSegment>, GeometryError> {
         let data = self.topology_data();
         data.edges
             .keys()
             .map(|&(first, second)| {
+                LineSegment::try_new(
+                    data.topological_points[first],
+                    data.topological_points[second],
+                    tolerance,
+                )
+            })
+            .collect()
+    }
+
+    /// Returns edges visible in a mesh wireframe. N-gon interior edges stay
+    /// in the topology table but are hidden from this display and picking set.
+    pub fn visible_wireframe_lines(
+        &self,
+        tolerance: Tolerance,
+    ) -> Result<Vec<LineSegment>, GeometryError> {
+        if self.ngons.is_empty() {
+            return self.wireframe_lines(tolerance);
+        }
+        let data = self.topology_data();
+        let mut owners = vec![None; self.faces.len()];
+        for (index, ngon) in self.ngons.iter().enumerate() {
+            for &face in &ngon.faces {
+                owners[face as usize] = Some(index);
+            }
+        }
+        data.edges
+            .iter()
+            .filter(|(_, incidence)| {
+                if incidence.count != 2 {
+                    return true;
+                }
+                let first = incidence.first_use.expect("two uses have a first face");
+                let second = incidence.second_use.expect("two uses have a second face");
+                owners[first.face].is_none() || owners[first.face] != owners[second.face]
+            })
+            .map(|(&(first, second), _)| {
                 LineSegment::try_new(
                     data.topological_points[first],
                     data.topological_points[second],
@@ -2750,8 +2891,12 @@ impl TriangleMesh {
                 flipped_face_count += 1;
             }
         }
+        if flipped_face_count == 0 {
+            return Ok((self.clone(), 0));
+        }
         Ok((
-            Self::from_validated_parts(self.vertices.clone(), faces),
+            Self::from_validated_parts(self.vertices.clone(), faces)
+                .rebuild_ngons_for_same_faces(&self.ngons)?,
             flipped_face_count,
         ))
     }
@@ -3475,10 +3620,20 @@ impl TriangleMesh {
             .copied()
             .map(|face| face.remapped(|vertex| vertex_remap[vertex as usize]))
             .collect();
-        (
-            Self::from_validated_parts(vertices, faces),
-            removed_vertex_count,
-        )
+        let mut culled = Self::from_validated_parts(vertices, faces);
+        culled.ngons = self
+            .ngons
+            .iter()
+            .map(|ngon| MeshNgon {
+                vertices: ngon
+                    .vertices
+                    .iter()
+                    .map(|&vertex| vertex_remap[vertex as usize])
+                    .collect(),
+                faces: ngon.faces.clone(),
+            })
+            .collect();
+        (culled, removed_vertex_count)
     }
 
     fn subset_preserving_vertex_order(&self, faces: &[usize]) -> Self {
@@ -3660,7 +3815,9 @@ impl TriangleMesh {
             .iter()
             .map(|point| transform.transform_point(*point))
             .collect::<Result<_, _>>()?;
-        Self::try_new_faces(vertices, self.faces.clone(), tolerance)
+        let mut transformed = Self::try_new_faces(vertices, self.faces.clone(), tolerance)?;
+        transformed.ngons = self.ngons.clone();
+        Ok(transformed)
     }
 }
 
@@ -6735,6 +6892,52 @@ mod tests {
     }
 
     #[test]
+    fn planar_cap_groups_simple_triangles_into_one_ngon() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0., 0., 0.),
+                point(4., 0., 0.),
+                point(4., 4., 0.),
+                point(0., 4., 0.),
+                point(2., 2., 4.),
+            ],
+            vec![[0, 1, 4], [1, 2, 4], [2, 3, 4], [3, 0, 4]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for crease in [true, false] {
+            let (capped, count) = mesh
+                .cap_planar_holes_with_options(Tolerance::DEFAULT, crease, false)
+                .unwrap();
+            assert_eq!(count, 1);
+            assert_eq!(capped.face_count(), 6);
+            assert_eq!(capped.ngons().len(), 1);
+            assert_eq!(capped.ngons()[0].faces(), &[4, 5]);
+            assert_eq!(capped.ngons()[0].vertices().len(), 4);
+            assert_eq!(capped.vertices().len(), if crease { 9 } else { 5 });
+            assert!(capped.topology().is_solid());
+            assert_eq!(capped.reversed().reversed(), capped);
+            assert!(
+                capped
+                    .clone()
+                    .try_with_ngons(capped.ngons().to_vec())
+                    .is_ok()
+            );
+        }
+        let source_ngon = mesh
+            .try_with_ngons(vec![MeshNgon::from_parts(vec![0, 1, 2, 4], vec![0, 1])])
+            .unwrap();
+        for crease in [true, false] {
+            let (capped, _) = source_ngon
+                .cap_planar_holes_with_options(Tolerance::DEFAULT, crease, false)
+                .unwrap();
+            assert_eq!(capped.ngons().len(), 2);
+            assert_eq!(capped.ngons()[0].faces(), &[0, 1]);
+            assert_eq!(capped.ngons()[1].faces(), &[4, 5]);
+        }
+    }
+
+    #[test]
     fn welded_cap_reuses_seamed_boundary_vertices_without_welding_remote_seams() {
         let positions = [
             point(0., 0., 0.),
@@ -6980,6 +7183,10 @@ mod tests {
                 .is_empty()
         );
         assert!((welded.signed_volume().unwrap() - 24.).abs() < 1e-12);
+        let (ngon_mode, _) = wall
+            .cap_planar_holes_with_options(Tolerance::DEFAULT, true, false)
+            .unwrap();
+        assert!(ngon_mode.ngons().is_empty());
 
         let rotation = AffineTransform3::try_rotation(
             point(0., 0., 0.),

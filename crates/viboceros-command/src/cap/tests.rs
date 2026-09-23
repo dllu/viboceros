@@ -125,7 +125,7 @@ fn planar_sheet_noop_preserves_surface_representation_and_creates_no_history() {
     assert!(prompt.filter.accepts_object(doc.object(id).unwrap()));
     assert!(
         CapCommand::default()
-            .object_selection_prompt(&["Triangles=Yes"])
+            .object_selection_prompt(&["Triangles=Maybe"])
             .is_err()
     );
 }
@@ -318,6 +318,61 @@ fn cap_mesh_crease_no_welds_boundary_and_remembers_choice() {
 }
 
 #[test]
+fn cap_mesh_triangles_option_controls_ngon_and_is_remembered() {
+    let registry = CommandRegistry::with_builtins();
+    assert!(
+        !registry
+            .object_selection_prompt("Cap")
+            .unwrap()
+            .unwrap()
+            .options[2]
+            .value
+    );
+    for (option, expected_ngons) in [("Yes", 0), ("No", 1)] {
+        let mut doc = Document::default();
+        let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0., 0., 0.),
+                point(4., 0., 0.),
+                point(4., 4., 0.),
+                point(0., 4., 0.),
+                point(2., 2., 4.),
+            ],
+            vec![[0, 1, 4], [1, 2, 4], [2, 3, 4], [3, 0, 4]],
+            doc.tolerance(),
+        )
+        .unwrap();
+        let id = doc.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        doc.select_object(id, SelectionMode::Replace).unwrap();
+        let before = doc.object(id).unwrap().clone();
+        registry
+            .execute(&mut doc, &format!("Cap Triangles={option}"))
+            .unwrap();
+        let after = doc.object(id).unwrap().clone();
+        let Geometry::Mesh(capped) = after.geometry() else {
+            panic!("expected mesh")
+        };
+        assert_eq!(capped.ngons().len(), expected_ngons);
+        assert_eq!(capped.face_count(), 6);
+        assert!(capped.topology().is_solid());
+        assert_eq!(
+            registry
+                .object_selection_prompt("Cap")
+                .unwrap()
+                .unwrap()
+                .options[2]
+                .value,
+            option == "Yes"
+        );
+        registry.execute(&mut doc, "Undo").unwrap();
+        assert_eq!(doc.object(id), Some(&before));
+        registry.execute(&mut doc, "Redo").unwrap();
+        assert_eq!(doc.object(id), Some(&after));
+    }
+}
+
+#[test]
 fn cap_mixed_sources_copy_mesh_and_replace_brep_in_one_transaction() {
     let mut doc = Document::default();
     let brep_id = source(&mut doc);
@@ -353,6 +408,8 @@ fn cap_mixed_sources_copy_mesh_and_replace_brep_in_one_transaction() {
         "Cap DeleteInput=No DeleteInput=Yes",
         "Cap Crease=Maybe",
         "Cap Crease=Yes Crease=No",
+        "Cap Triangles=Maybe",
+        "Cap Triangles=No Triangles=Yes",
     ] {
         let unchanged = format!("{doc:?}");
         assert!(registry.execute(&mut doc, invalid).is_err());

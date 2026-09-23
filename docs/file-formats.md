@@ -36,8 +36,8 @@ storage; this does not impose a file-size or line-length limit.
 
 Both ASCII and binary STL are supported. 3DM import/export uses McNeel's
 OpenNURBS toolkit and preserves points, point-cloud locations, lines, circular arcs, NURBS
-curves, parameterized polylines, exact piecewise polycurves, untrimmed NURBS surfaces, mixed triangle/quad meshes, and editable
-rational NURBS B-reps. Mesh faces retain their arity in 3DM round trips. B-rep
+curves, parameterized polylines, exact piecewise polycurves, untrimmed NURBS surfaces, mixed triangle/quad meshes with connected, single-boundary n-gon face groups, and editable
+rational NURBS B-reps. Mesh faces retain their arity, and supported n-gon boundary and member-face tables survive 3DM round trips. B-rep
 interchange retains shared vertices and edges, exact edge and
 parameter-space trim curves, face surfaces and orientation, outer and inner
 loops, boundary/mated/seam/singular trims, and modelling tolerances. Layer and

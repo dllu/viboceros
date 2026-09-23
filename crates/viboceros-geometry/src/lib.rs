@@ -124,7 +124,7 @@ pub use mesh::{
     MAX_MESH_ICO_SPHERE_SUBDIVISIONS, MAX_MESH_PLANE_FACES, MAX_MESH_QUAD_SPHERE_SUBDIVISIONS,
     MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MeshCapFaceStyle,
     MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshEllipsoidOptions, MeshFace,
-    MeshFaceExtraction, MeshHoleFill, MeshJoinComponent, MeshJoinOptions,
+    MeshFaceExtraction, MeshHoleFill, MeshJoinComponent, MeshJoinOptions, MeshNgon,
     MeshSubdivisionSphereOptions, MeshTopology, MeshTorusOptions, MeshTruncatedConeOptions,
     MeshUvSphereOptions, TriangleMesh, join_meshes,
 };

@@ -4,14 +4,16 @@
 
 `Cap` fills planar naked-edge loops on selected NURBS surfaces, B-reps, and meshes.
 Enter it before selecting objects, or select objects first. For meshes,
-`Cap [DeleteInput=Yes|No] [Crease=Yes|No]` controls whether the capped result
+`Cap [DeleteInput=Yes|No] [Crease=Yes|No] [Triangles=Yes|No]` controls whether the capped result
 replaces the source (the default) or is added as a copy, and whether cap boundary
 vertices remain separate (`Crease=Yes`, the default) or are welded to the source
-(`Crease=No`). Both options are remembered. A copy
+(`Crease=No`). `Triangles=No` (the default) groups each simple cap's underlying
+triangles into one n-gon; `Triangles=Yes` leaves them as separate faces. All three
+options are remembered. A copy
 inherits the source's attributes and groups, while geometry-attached user text
 is cleared because its geometry changed. Mixed selections still cap B-reps and
-NURBS surfaces in place. Mesh caps are triangulated; `Triangles=No` n-gon caps
-and SubD capping are unavailable. For nonplanar mesh holes, see
+NURBS surfaces in place. Caps with inner boundaries remain triangulated in both
+triangle modes. SubD capping is unavailable. For nonplanar mesh holes, see
 [meshes](meshes.md).
 
 Caps retain the spatial boundary geometry. The command subdivides newly capped
@@ -28,6 +30,9 @@ Disjoint nested loops on the same plane form a triangulated cap with one or more
 inner openings. A coplanar source face in the cap bounds prevents a duplicate
 sheet. Intersecting, touching, and otherwise ambiguous coplanar loops remain
 open.
+N-gons retain their triangle face table for mass properties and export. The 3DM
+path preserves their boundary and member-face indices; STL and faceted STEP
+exports use the underlying triangles.
 `Crease=No` reuses source raw vertices at the new cap boundaries and welds
 coincident source boundary vertices there. Raw seams away from capped boundaries
 are preserved. Exact-location topology closes in either crease mode.

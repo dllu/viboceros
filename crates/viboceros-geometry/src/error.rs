@@ -620,6 +620,8 @@ pub enum GeometryError {
     InvalidMeshUnweldAngle,
     #[error("a planar mesh cap vertex has no source boundary vertex to weld")]
     MeshCapWeldSourceMissing,
+    #[error("mesh n-gon {ngon} has invalid vertices, faces, or boundary topology")]
+    InvalidMeshNgon { ngon: usize },
 
     #[error("mesh topology edge index {edge} is outside the edge count {edge_count}")]
     MeshTopologyEdgeIndexOutOfRange { edge: usize, edge_count: usize },
