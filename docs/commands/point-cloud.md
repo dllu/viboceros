@@ -28,6 +28,10 @@ interleaving with unrelated picks and Rhino Undo pick-order parity are not promi
 
 ## Edit an existing cloud
 
+With exactly one cloud preselected, `PointCloud` asks for `Add` or `Remove`.
+The selected cloud stays selected while choosing. Esc cancels the
+choice without changing the model or selection.
+
 Select one target cloud, enter `PointCloud Add`, pick point objects or other
 point clouds, then press Enter. Esc restores the selection from before the
 prompt. You can also preselect the target and point sources and run Add directly.
@@ -65,9 +69,8 @@ step.
 ## Limits
 
 Per-point colors are not implemented; `UsePointColors=Yes` returns an error.
-Rhino's full interactive Add/Remove option loop is pending. Remove currently
-selects cloud members by click, window, or typed indices.
-Bare `PointCloud` with a preselected cloud asks for an explicit edit action.
+The Add and Remove pickers run as separate prompts after the initial action
+choice. Remove selects cloud members by click, window, or typed indices.
 Creation still ignores existing cloud inputs. Use `Explode` to extract individual
 points from a cloud, or `ExtractPt Output=PointCloud` for supported geometry
 extraction workflows. `PointGrid` creates rectangular clouds.
@@ -85,8 +88,9 @@ mixed input, output attributes, and selection. The
 replays against native command execution. Independent Python checks use explicit
 expected point lists and retained source indices. Native tests also cover
 undo/redo, group restoration, Add/Remove editing, and atomic rejection; UI tests
-cover filtered creation selection, Add source picking, Remove member picking
-in four view types, cancellation, pick order, and unsupported colors.
+cover filtered creation selection, the preselected cloud action choice, Add
+source picking, Remove member picking in four view types, cancellation, pick
+order, and unsupported colors.
 The eight-case live comparison passed with zero coordinate difference and
 matching recorded document state. A [batch-deletion benchmark](../batch-deletion.md)
 tracks native conversion and history costs; Rhino performance parity remains unmeasured.

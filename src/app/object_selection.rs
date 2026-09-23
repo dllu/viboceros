@@ -23,6 +23,7 @@ pub(super) struct PendingObjectCommand {
     pub(super) excluded_object: Option<ObjectId>,
     pub(super) selection_before: Option<Vec<ObjectId>>,
     pub(super) cloud_removal: Option<PendingCloudRemoval>,
+    pub(super) cloud_action_target: Option<ObjectId>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -34,8 +35,10 @@ pub(super) struct PendingCloudRemoval {
 
 impl PendingObjectCommand {
     pub(super) fn selection_filter(&self) -> Option<ObjectSelectionFilter> {
-        (self.phase == ObjectPromptPhase::Selecting && self.cloud_removal.is_none())
-            .then_some(self.description.filter)
+        (self.phase == ObjectPromptPhase::Selecting
+            && self.cloud_removal.is_none()
+            && self.cloud_action_target.is_none())
+        .then_some(self.description.filter)
     }
 
     pub(super) fn label(&self) -> &'static str {
@@ -47,6 +50,9 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if self.cloud_action_target.is_some() {
+            return "Selected point cloud: type Add or Remove; Esc cancels";
+        }
         if self.cloud_removal.is_some() {
             return "Pick cloud points or drag a window; Output=Points|PointCloud; Enter removes, Esc cancels";
         }
@@ -177,6 +183,34 @@ impl VibocerosApp {
                     .flatten()
             })
             .flatten();
+        let sole_selected_cloud = (self.document.selected_object_count() == 1)
+            .then(|| {
+                self.document.selected_objects().next().and_then(|object| {
+                    matches!(object.geometry(), Geometry::PointCloud(_)).then_some(object.id())
+                })
+            })
+            .flatten();
+        if description.filter == ObjectSelectionFilter::PointCloudSources
+            && let Some(target) = sole_selected_cloud
+        {
+            self.cancel_interactive_command(false);
+            self.object_prompt = Some(PendingObjectCommand {
+                description,
+                phase: ObjectPromptPhase::Options,
+                postselected: false,
+                subcurve_measurement: false,
+                measurement_display_units: None,
+                command_override: None,
+                excluded_object: None,
+                selection_before: None,
+                cloud_removal: None,
+                cloud_action_target: Some(target),
+            });
+            self.command_input.clear();
+            self.push_log(format!("> {input}"));
+            self.log_object_prompt();
+            return true;
+        }
         if description.filter == ObjectSelectionFilter::PointCloudAddSources {
             let Some(target) = self.point_cloud_prompt_target(input) else {
                 return false;
@@ -200,6 +234,7 @@ impl VibocerosApp {
                 excluded_object: Some(target),
                 selection_before: Some(selection_before),
                 cloud_removal: None,
+                cloud_action_target: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -234,6 +269,7 @@ impl VibocerosApp {
                     indices: BTreeSet::new(),
                     output_cloud,
                 }),
+                cloud_action_target: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -276,6 +312,7 @@ impl VibocerosApp {
                         excluded_object: None,
                         selection_before: None,
                         cloud_removal: None,
+                        cloud_action_target: None,
                     });
                 }
                 Ok(None) => return false,
@@ -304,6 +341,7 @@ impl VibocerosApp {
                 excluded_object: None,
                 selection_before: None,
                 cloud_removal: None,
+                cloud_action_target: None,
             });
         }
         self.command_input.clear();
@@ -341,6 +379,9 @@ impl VibocerosApp {
         let Some(mut pending) = self.object_prompt.clone() else {
             return false;
         };
+        if let Some(target) = pending.cloud_action_target {
+            return self.continue_cloud_action(input, target);
+        }
         if pending.cloud_removal.is_some() {
             return self.continue_cloud_removal(input, pending);
         }
@@ -608,6 +649,30 @@ impl VibocerosApp {
             }
             Err(error) => self.push_log(format!("Error: {error}")),
         }
+        true
+    }
+
+    fn continue_cloud_action(&mut self, input: &str, target: ObjectId) -> bool {
+        let action = input.trim_start_matches(['_', '-']);
+        if action.eq_ignore_ascii_case("Add") || action.eq_ignore_ascii_case("Remove") {
+            self.object_prompt = None;
+            let command = format!("PointCloud {action} Target={target}");
+            if !self.try_start_object_prompt(&command) {
+                self.push_log("Error: the selected point cloud is no longer available".into());
+            }
+            self.command_input.clear();
+            return true;
+        }
+        if input
+            .split_whitespace()
+            .next()
+            .is_some_and(|name| self.commands.recognizes(name))
+        {
+            self.cancel_object_prompt(true);
+            return false;
+        }
+        self.push_log("Type Add or Remove; Esc cancels".into());
+        self.command_input.clear();
         true
     }
 
