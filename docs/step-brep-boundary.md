@@ -120,14 +120,17 @@ also retains its bend and face area. The strict planar adapter still accepts
 only two-point polylines; it rejects longer polylines instead of collapsing
 them to an endpoint chord.
 
-Native edge geometry expressed solely as a `PCURVE` on a STEP plane or on a
-linear extrusion of a line is lifted through that basis's affine parameter map.
-Polynomial and rational UV controls retain their degree, weights, and knots in
-3D. Serialized polygon-hole cases check bent polyline edges on both basis
-types; rational quadratics check intermediate evaluation against each source
-surface and p-curve. Other p-curve bases still require a separate exact
-composition adapter. Supported sweeps can also use an affine-basis p-curve as
-their directrix.
+Native edge geometry expressed solely as a `PCURVE` on a STEP plane, a linear
+extrusion of a line, or a certified affine 2-by-2 B-spline/NURBS surface is
+lifted through that basis's affine parameter map. The B-spline certificate
+requires a clamped degree-one patch, uniform rational weights, and an exactly
+parallelogram-shaped homogeneous control net; UV controls must stay inside its
+domain with same-sign weights. Polynomial and rational UV controls retain their
+degree, weights, and knots in 3D. Serialized polygon-hole cases check bent
+polyline edges on all supported basis types; rational quadratics check
+intermediate evaluation on planes and line extrusions. Other p-curve bases
+still require a separate exact composition adapter. Supported sweeps can also
+use an affine-basis p-curve as their directrix.
 
 Degree-one, two-control-point rational 3D edges and UV trims are also supported
 when their weights are finite and positive. Homogeneous source controls are

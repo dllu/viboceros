@@ -862,7 +862,10 @@ fn native_step_imports_bspline_faces_with_polygon_holes() {
 #[test]
 fn native_step_imports_multispan_polyline_and_affine_pcurve_edges_with_holes() {
     use monstertruck::meshing::prelude::{BoundedCurve, ParametricCurve};
-    use monstertruck::modeling::{Line, Point2 as TruckPoint2, PolylineCurve, Vector3};
+    use monstertruck::modeling::{
+        BsplineSurface, KnotVector, Line, NurbsSurface as TruckNurbsSurface, Point2 as TruckPoint2,
+        PolylineCurve, Vector3, Vector4,
+    };
     use monstertruck::step::load::step_geometry::{
         Curve2D, Curve3D, StepExtrusionSurface, StepParameterCurve, Surface, SweepSurface,
     };
@@ -873,7 +876,7 @@ fn native_step_imports_multispan_polyline_and_affine_pcurve_edges_with_holes() {
     let text = polygon_face_step(&[hole, outer], false);
     let table = Table::from_step(&text).unwrap();
     let shell_id = *table.shell.keys().next().unwrap();
-    for edge_basis in 0..3 {
+    for edge_basis in 0..5 {
         let (mut shell, report) = reported_trimmed_shell(&table, shell_id).unwrap();
         assert_eq!(report.total_lost(), 0);
         let (boundary_index, use_index) = shell.faces[0]
@@ -909,7 +912,7 @@ fn native_step_imports_multispan_polyline_and_affine_pcurve_edges_with_holes() {
                     ],
                     shell.faces[0].surface.clone(),
                 )
-            } else {
+            } else if edge_basis == 2 {
                 (
                     vec![
                         TruckPoint2::new(p0.x / 10., 0.),
@@ -925,6 +928,39 @@ fn native_step_imports_multispan_polyline_and_affine_pcurve_edges_with_holes() {
                             Vector3::new(0., 10., 0.),
                         ),
                     )),
+                )
+            } else {
+                let knots = || (KnotVector::bezier_knot(1), KnotVector::bezier_knot(1));
+                let basis = if edge_basis == 3 {
+                    Surface::BsplineSurface(BsplineSurface::new(
+                        knots(),
+                        vec![
+                            vec![TruckPoint3::new(0., 0., 0.), TruckPoint3::new(0., 10., 0.)],
+                            vec![
+                                TruckPoint3::new(10., 0., 0.),
+                                TruckPoint3::new(10., 10., 0.),
+                            ],
+                        ],
+                    ))
+                } else {
+                    Surface::NurbsSurface(TruckNurbsSurface::new(BsplineSurface::new(
+                        knots(),
+                        vec![
+                            vec![Vector4::new(0., 0., 0., 2.), Vector4::new(0., 20., 0., 2.)],
+                            vec![
+                                Vector4::new(20., 0., 0., 2.),
+                                Vector4::new(20., 20., 0., 2.),
+                            ],
+                        ],
+                    )))
+                };
+                (
+                    vec![
+                        TruckPoint2::new(p0.x / 10., 0.),
+                        TruckPoint2::new((p0.x + p1.x) / 20., 0.1),
+                        TruckPoint2::new(p1.x / 10., 0.),
+                    ],
+                    basis,
                 )
             };
             Curve3D::ParameterCurve(StepParameterCurve::new(
@@ -964,6 +1000,10 @@ fn native_step_imports_multispan_polyline_and_affine_pcurve_edges_with_holes() {
             assert!(text.contains("PCURVE("));
             if edge_basis == 2 {
                 assert!(text.contains("SURFACE_OF_LINEAR_EXTRUSION("));
+            } else if edge_basis == 3 {
+                assert!(text.contains("B_SPLINE_SURFACE_WITH_KNOTS("));
+            } else if edge_basis == 4 {
+                assert!(text.contains("RATIONAL_B_SPLINE_SURFACE("));
             }
         }
         let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();

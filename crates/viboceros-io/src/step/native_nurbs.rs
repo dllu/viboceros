@@ -5,6 +5,7 @@ use monstertruck::meshing::prelude::{BoundedCurve, ParametricCurve, ParametricSu
 use monstertruck::step::load::step_geometry::{
     Conic2D, Conic3D, Curve2D, Curve3D, ElementarySurface, Surface, SweepSurface,
 };
+use num_rational::BigRational;
 use viboceros_geometry::{
     Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex,
     NurbsCurve, NurbsCurve2, NurbsSurface, Point2, Point3, SurfaceIso, Tolerance, WeightedPoint2,
@@ -221,17 +222,34 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
         }
         Curve3D::ParameterCurve(parameter_curve) => {
             let basis = parameter_curve.surface().as_ref();
-            if !matches!(
+            let globally_affine = matches!(
                 basis,
                 Surface::ElementarySurface(ElementarySurface::Plane(_))
-            ) && !matches!(
+            ) || matches!(
                 basis,
                 Surface::SweepSurface(SweepSurface::ExtrusionSurface(extrusion))
                     if matches!(extrusion.entity_curve(), Curve3D::Line(_))
-            ) {
+            );
+            let bounded_affine = affine_bilinear_basis(basis);
+            if !globally_affine && bounded_affine.is_none() {
                 return Err(unsupported("3D edge p-curve basis is not affine"));
             }
             let uv = trim_curve(parameter_curve.curve().as_ref(), id)?;
+            if let Some(([u0, u1], [v0, v1])) = bounded_affine {
+                let sign = uv.control_points()[0].weight().is_sign_positive();
+                if uv.control_points().iter().any(|control| {
+                    let point = control.point();
+                    point.x() < u0
+                        || point.x() > u1
+                        || point.y() < v0
+                        || point.y() > v1
+                        || control.weight().is_sign_positive() != sign
+                }) {
+                    return Err(unsupported(
+                        "3D edge p-curve leaves its affine surface domain",
+                    ));
+                }
+            }
             let controls = uv
                 .control_points()
                 .iter()
@@ -285,6 +303,71 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
             curve.knot_vector().iter().copied().collect(),
         )?),
     }
+}
+
+/// A single bilinear patch is affine precisely when its homogeneous controls
+/// have one weight and form a parallelogram. Compare the stored binary64 values
+/// as exact rationals so rounding in a cross sum cannot certify a warped patch.
+fn affine_bilinear_basis(basis: &Surface) -> Option<([f64; 2], [f64; 2])> {
+    let (controls, ku, kv) = match basis {
+        Surface::BsplineSurface(surface)
+            if surface.udegree() == 1
+                && surface.vdegree() == 1
+                && surface.control_points().len() == 2
+                && surface.control_points().iter().all(|row| row.len() == 2) =>
+        {
+            let rows = surface.control_points();
+            let p = |u: usize, v: usize| {
+                let p = rows[u][v];
+                [p.x, p.y, p.z, 1.]
+            };
+            (
+                [p(0, 0), p(1, 0), p(0, 1), p(1, 1)],
+                surface.knot_vector_u(),
+                surface.knot_vector_v(),
+            )
+        }
+        Surface::NurbsSurface(surface)
+            if surface.udegree() == 1
+                && surface.vdegree() == 1
+                && surface.control_points().len() == 2
+                && surface.control_points().iter().all(|row| row.len() == 2) =>
+        {
+            let rows = surface.control_points();
+            let p = |u: usize, v: usize| {
+                let p = rows[u][v];
+                [p.x, p.y, p.z, p.w]
+            };
+            (
+                [p(0, 0), p(1, 0), p(0, 1), p(1, 1)],
+                surface.knot_vector_u(),
+                surface.knot_vector_v(),
+            )
+        }
+        _ => return None,
+    };
+    if ku.len() != 4
+        || kv.len() != 4
+        || ku[0] != ku[1]
+        || ku[1] >= ku[2]
+        || ku[2] != ku[3]
+        || kv[0] != kv[1]
+        || kv[1] >= kv[2]
+        || kv[2] != kv[3]
+        || !ku.iter().chain(kv.iter()).all(|knot| knot.is_finite())
+        || !controls.iter().flatten().all(|value| value.is_finite())
+        || controls[0][3] == 0.
+        || controls.iter().any(|point| point[3] != controls[0][3])
+    {
+        return None;
+    }
+    if !(0..3).all(|axis| {
+        let value = |index: usize| BigRational::from_float(controls[index][axis]).unwrap();
+        value(0) + value(3) == value(1) + value(2)
+    }) {
+        return None;
+    }
+    Some(([ku[1], ku[2]], [kv[1], kv[2]]))
 }
 
 fn sweep_directrix(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
@@ -842,12 +925,20 @@ mod tests {
     use super::*;
     use monstertruck::core::cgmath64::Vector3;
     use monstertruck::modeling::{
-        BsplineCurve, KnotVector, Line, NurbsCurve as TruckNurbsCurve, Plane, Point3 as TruckPoint3,
+        BsplineCurve, BsplineSurface, KnotVector, Line, NurbsCurve as TruckNurbsCurve,
+        NurbsSurface as TruckNurbsSurface, Plane, Point2 as TruckPoint2, Point3 as TruckPoint3,
+        PolylineCurve, Vector4,
     };
     use monstertruck::step::load::step_geometry::{StepExtrusionSurface, StepParameterCurve};
 
     #[test]
     fn planar_pcurve_edge_lifts_rational_controls_without_losing_weights() {
+        let knots = || {
+            (
+                KnotVector::from(vec![0., 0., 2., 2.]),
+                KnotVector::bezier_knot(1),
+            )
+        };
         for basis in [
             Surface::ElementarySurface(ElementarySurface::Plane(Plane::new(
                 TruckPoint3::new(10., 20., 30.),
@@ -863,6 +954,32 @@ mod tests {
                     Vector3::new(0., 3., 0.),
                 ),
             )),
+            Surface::BsplineSurface(BsplineSurface::new(
+                knots(),
+                vec![
+                    vec![
+                        TruckPoint3::new(10., 20., 30.),
+                        TruckPoint3::new(10., 23., 30.),
+                    ],
+                    vec![
+                        TruckPoint3::new(14., 20., 30.),
+                        TruckPoint3::new(14., 23., 30.),
+                    ],
+                ],
+            )),
+            Surface::NurbsSurface(TruckNurbsSurface::new(BsplineSurface::new(
+                knots(),
+                vec![
+                    vec![
+                        Vector4::new(20., 40., 60., 2.),
+                        Vector4::new(20., 46., 60., 2.),
+                    ],
+                    vec![
+                        Vector4::new(28., 40., 60., 2.),
+                        Vector4::new(28., 46., 60., 2.),
+                    ],
+                ],
+            ))),
         ] {
             let parameter = StepParameterCurve::new(
                 Box::new(Curve2D::NurbsCurve(TruckNurbsCurve::new(
@@ -897,5 +1014,58 @@ mod tests {
                 assert!((actual.z() - expected.z).abs() < 1e-12);
             }
         }
+    }
+
+    #[test]
+    fn affine_surface_certificate_rejects_warp_and_unequal_weights() {
+        let knots = || (KnotVector::bezier_knot(1), KnotVector::bezier_knot(1));
+        let warped = Surface::BsplineSurface(BsplineSurface::new(
+            knots(),
+            vec![
+                vec![TruckPoint3::new(0., 0., 0.), TruckPoint3::new(0., 10., 0.)],
+                vec![
+                    TruckPoint3::new(10., 0., 0.),
+                    TruckPoint3::new(10., 10., f64::from_bits(1)),
+                ],
+            ],
+        ));
+        assert!(affine_bilinear_basis(&warped).is_none());
+
+        let unequal = Surface::NurbsSurface(TruckNurbsSurface::new(BsplineSurface::new(
+            knots(),
+            vec![
+                vec![Vector4::new(0., 0., 0., 1.), Vector4::new(0., 10., 0., 1.)],
+                vec![
+                    Vector4::new(10., 0., 0., 1.),
+                    Vector4::new(10., 10., 0., 2.),
+                ],
+            ],
+        )));
+        assert!(affine_bilinear_basis(&unequal).is_none());
+
+        let affine = Surface::BsplineSurface(BsplineSurface::new(
+            knots(),
+            vec![
+                vec![TruckPoint3::new(0., 0., 0.), TruckPoint3::new(0., 10., 0.)],
+                vec![
+                    TruckPoint3::new(10., 0., 0.),
+                    TruckPoint3::new(10., 10., 0.),
+                ],
+            ],
+        ));
+        let outside = Curve3D::ParameterCurve(StepParameterCurve::new(
+            Box::new(Curve2D::Polyline(PolylineCurve(vec![
+                TruckPoint2::new(-0.1, 0.),
+                TruckPoint2::new(1., 0.),
+            ]))),
+            Box::new(affine),
+        ));
+        assert!(matches!(
+            edge_curve(&outside, 1),
+            Err(StepError::UnsupportedNativeShell {
+                reason: "3D edge p-curve leaves its affine surface domain",
+                ..
+            })
+        ));
     }
 }

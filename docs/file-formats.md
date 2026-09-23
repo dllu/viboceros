@@ -258,9 +258,10 @@ holes can also use a closed Bézier-span NURBS trim under a strict convex
 containment certificate. Certified curved outer loops can contain holes
 strictly inside their convex endpoint polygon. Other curved multi-loop regions
 remain unsupported.
-`PCURVE` edge geometry on a STEP plane or line extrusion lifts exactly to 3D
-NURBS while retaining degree, knots, and rational weights. Other p-curve bases
-still need exact surface-curve composition.
+`PCURVE` edge geometry on a STEP plane, line extrusion, or certified affine
+2-by-2 B-spline/NURBS patch lifts exactly to 3D NURBS while retaining degree,
+knots, and rational weights. Other p-curve bases still need exact surface-curve
+composition.
 Other analytic surface types and
 periodic seam arrangements still fail native import.
 The native planar path supports straight-edged polygon holes, identifies the
