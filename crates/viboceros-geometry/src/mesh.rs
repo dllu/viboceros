@@ -2068,10 +2068,10 @@ impl TriangleMesh {
         let mut faces = self.faces.clone();
         faces[backward.face] = MeshFace::Triangle(backward_replacement);
         faces[forward.face] = MeshFace::Triangle(forward_replacement);
-        Ok(Some(Self::from_validated_parts(
-            self.vertices.clone(),
-            faces,
-        )))
+        Ok(Some(
+            Self::from_validated_parts(self.vertices.clone(), faces)
+                .retain_valid_ngons_for_same_faces(&self.ngons),
+        ))
     }
 
     /// Fills the closed naked boundary containing one topology edge.
@@ -3086,7 +3086,11 @@ impl TriangleMesh {
                 })
             })
             .collect();
-        (Self::from_validated_parts(vertices, faces), removed)
+        (
+            Self::from_validated_parts(vertices, faces)
+                .retain_valid_ngons_for_same_faces(&self.ngons),
+            removed,
+        )
     }
 
     /// Welds coincident edge endpoints whose incident face normals fall
@@ -3584,7 +3588,11 @@ impl TriangleMesh {
                     .expect("a compacted mesh cannot have more vertices than its source")
             });
         }
-        (Self::from_validated_parts(vertices, faces), removed)
+        (
+            Self::from_validated_parts(vertices, faces)
+                .retain_valid_ngons_for_same_faces(&self.ngons),
+            removed,
+        )
     }
 
     /// Removes vertices that are not referenced by any face. Referenced
@@ -3657,7 +3665,38 @@ impl TriangleMesh {
             .iter()
             .map(|&face| self.faces[face].remapped(|vertex| vertex_remap[vertex as usize]))
             .collect();
-        Self::from_validated_parts(vertices, retained_faces)
+        let mut subset = Self::from_validated_parts(vertices, retained_faces);
+        if !self.ngons.is_empty() {
+            let mut face_remap = vec![None; self.faces.len()];
+            for (local, &source) in faces.iter().enumerate() {
+                face_remap[source] = Some(
+                    u32::try_from(local)
+                        .expect("a mesh subset cannot have more faces than its source"),
+                );
+            }
+            subset.ngons = self
+                .ngons
+                .iter()
+                .filter(|ngon| {
+                    ngon.faces
+                        .iter()
+                        .all(|&face| face_remap[face as usize].is_some())
+                })
+                .map(|ngon| {
+                    MeshNgon::from_parts(
+                        ngon.vertices
+                            .iter()
+                            .map(|&vertex| vertex_remap[vertex as usize])
+                            .collect(),
+                        ngon.faces
+                            .iter()
+                            .map(|&face| face_remap[face as usize].unwrap())
+                            .collect(),
+                    )
+                })
+                .collect();
+        }
+        subset
     }
 
     fn topology_data(&self) -> MeshTopologyData {

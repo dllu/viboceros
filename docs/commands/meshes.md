@@ -117,6 +117,8 @@ viewport workflow. A partial edit keeps the unselected source object's
 identity, attributes, groups, and surviving source face order. Mesh results
 compact unused vertices in source order; deleting every face removes the
 object. SubD input awaits a native SubD geometry type.
+Mesh extraction and deletion preserve n-gon overlays in any result containing
+every member face of the n-gon. A partial face group has no retained overlay.
 
 `TriangulateMesh` splits every quad on selected meshes along its shortest 3D
 diagonal, choosing A-C on exact ties. First triangles replace their source
@@ -247,6 +249,10 @@ face order, and winding.
 `CullUnusedMeshVertices` removes raw vertices not referenced by any face while
 preserving the source order and identity of every referenced vertex, including
 coincident vertices, as well as object metadata, face order, and winding.
+
+These vertex and edge rewrites retain n-gon overlays when their member faces
+still form one valid raw-edge-connected region. An unweld that separates an
+n-gon's internal edge removes that overlay.
 
 `SplitDisjointMesh` separates exact-location edge-connected components (a lone
 shared vertex does not connect them), creating fresh IDs for every piece and

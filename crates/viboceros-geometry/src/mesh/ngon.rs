@@ -83,6 +83,19 @@ impl TriangleMesh {
         self.try_with_ngons(ngons)
     }
 
+    /// Keeps overlays whose unchanged face memberships still form one valid
+    /// raw-edge-connected boundary after a vertex or face rewrite.
+    pub(super) fn retain_valid_ngons_for_same_faces(mut self, source: &[MeshNgon]) -> Self {
+        if source.is_empty() {
+            return self;
+        }
+        self.ngons = source
+            .iter()
+            .filter_map(|ngon| self.ngon_from_faces(ngon.faces.clone()))
+            .collect();
+        self
+    }
+
     fn ngon_boundary(&self, faces: &[u32]) -> Option<Vec<u32>> {
         if faces.is_empty() || faces.iter().copied().collect::<BTreeSet<_>>().len() != faces.len() {
             return None;
@@ -299,5 +312,125 @@ mod tests {
                 .try_with_ngons(culled.ngons().to_vec())
                 .is_ok()
         );
+    }
+
+    #[test]
+    fn vertex_rewrites_keep_only_ngons_whose_raw_face_region_survives() {
+        let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+        let points = vec![
+            point(0., 0., 0.),
+            point(2., 0., 0.),
+            point(2., 2., 0.),
+            point(0., 2., 0.),
+            point(3., 1., 1.),
+            point(2., 0., 0.),
+            point(2., 2., 0.),
+        ];
+        let ngon = MeshNgon::from_parts(vec![0, 1, 2, 3], vec![0, 1]);
+        let welded_source = TriangleMesh::try_new(
+            points.clone(),
+            vec![[0, 1, 2], [0, 2, 3], [1, 2, 4]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .try_with_ngons(vec![ngon.clone()])
+        .unwrap();
+        let (combined, removed) = welded_source.combined_identical_vertices();
+        assert_eq!(removed, 2);
+        assert_eq!(combined.ngons().len(), 1);
+        assert!(
+            combined
+                .clone()
+                .try_with_ngons(combined.ngons().to_vec())
+                .is_ok()
+        );
+
+        let diagonal = welded_source
+            .topology_edge_points()
+            .iter()
+            .position(|edge| {
+                edge.contains(&welded_source.vertices()[0])
+                    && edge.contains(&welded_source.vertices()[2])
+            })
+            .unwrap();
+        let swapped = welded_source
+            .swap_topology_edge(diagonal, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert_eq!(swapped.ngons().len(), 1);
+        assert!(
+            swapped
+                .clone()
+                .try_with_ngons(swapped.ngons().to_vec())
+                .is_ok()
+        );
+
+        let (sharp_unwelded, sharp_count) = welded_source.unwelded_vertices(0.5).unwrap();
+        assert!(sharp_count > 0);
+        assert_eq!(sharp_unwelded.ngons().len(), 1);
+        assert!(
+            sharp_unwelded
+                .clone()
+                .try_with_ngons(sharp_unwelded.ngons().to_vec())
+                .is_ok()
+        );
+        let (fully_unwelded, count) = welded_source.unwelded_vertices(0.0).unwrap();
+        assert!(count > sharp_count);
+        assert!(fully_unwelded.ngons().is_empty());
+
+        let seam_source = TriangleMesh::try_new(
+            points,
+            vec![[0, 1, 2], [0, 2, 3], [5, 6, 4]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .try_with_ngons(vec![ngon])
+        .unwrap();
+        let (seam_welded, removed) = seam_source.welded_vertices(std::f64::consts::PI).unwrap();
+        assert_eq!(removed, 2);
+        assert_eq!(seam_welded.ngons().len(), 1);
+        assert!(
+            seam_welded
+                .clone()
+                .try_with_ngons(seam_welded.ngons().to_vec())
+                .is_ok()
+        );
+    }
+
+    #[test]
+    fn face_extraction_and_deletion_preserve_complete_ngons_only() {
+        let point = |x, y| Point3::try_new(x, y, 0.).unwrap();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0., 0.),
+                point(2., 0.),
+                point(2., 2.),
+                point(0., 2.),
+                point(4., 0.),
+            ],
+            vec![[0, 1, 2], [0, 2, 3], [1, 4, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .try_with_ngons(vec![MeshNgon::from_parts(vec![0, 1, 2, 3], vec![0, 1])])
+        .unwrap();
+
+        let extraction = mesh.extract_faces(&[1, 0]).unwrap();
+        assert_eq!(extraction.extracted().ngons().len(), 1);
+        assert_eq!(extraction.extracted().ngons()[0].faces(), &[1, 0]);
+        assert!(extraction.remainder().unwrap().ngons().is_empty());
+        assert!(
+            extraction
+                .extracted()
+                .clone()
+                .try_with_ngons(extraction.extracted().ngons().to_vec())
+                .is_ok()
+        );
+
+        let partial = mesh.extract_faces(&[0]).unwrap();
+        assert!(partial.extracted().ngons().is_empty());
+        assert!(partial.remainder().unwrap().ngons().is_empty());
+        assert_eq!(mesh.delete_faces(&[2]).unwrap().unwrap().ngons().len(), 1);
+        assert!(mesh.delete_faces(&[0]).unwrap().unwrap().ngons().is_empty());
     }
 }

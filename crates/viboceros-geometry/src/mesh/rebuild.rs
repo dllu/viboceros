@@ -122,6 +122,7 @@ impl TriangleMesh {
                     })
                 }),
         );
-        Ok(Self::from_validated_parts(vertices, faces))
+        Ok(Self::from_validated_parts(vertices, faces)
+            .retain_valid_ngons_for_same_faces(&self.ngons))
     }
 }
