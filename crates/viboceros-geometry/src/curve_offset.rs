@@ -20,6 +20,92 @@ pub enum CurveOffsetCornerStyle {
 }
 
 impl Curve3 {
+    /// Classify two closed offset boundaries without curve intersection when
+    /// their boxes are separate or their supporting circles are parallel.
+    /// `None` asks the caller to use the general curve intersection solver.
+    pub fn offset_region_boundary_relation(
+        &self,
+        other: &Self,
+        tolerance: Tolerance,
+    ) -> Result<Option<bool>, GeometryError> {
+        let a = self.as_ref().tight_bounds(tolerance)?;
+        let b = other.as_ref().tight_bounds(tolerance)?;
+        let coordinate_scale = [a.min(), a.max(), b.min(), b.max()]
+            .into_iter()
+            .flat_map(Point3::to_array)
+            .fold(1.0_f64, |scale, value| scale.max(value.abs()));
+        // Circle NURBS controls can extend beyond attained bounds. Leave a
+        // margin relative to the coordinate scale used by the fallback solver.
+        let threshold = tolerance
+            .absolute()
+            .max(4.0 * tolerance.relative() * coordinate_scale);
+        let a_min = a.min().to_array();
+        let a_max = a.max().to_array();
+        let b_min = b.min().to_array();
+        let b_max = b.max().to_array();
+        if (0..3).any(|axis| {
+            a_max[axis] < b_min[axis] && b_min[axis] - a_max[axis] > threshold
+                || b_max[axis] < a_min[axis] && a_min[axis] - b_max[axis] > threshold
+        }) {
+            return Ok(Some(false));
+        }
+        let circle = |curve: &Curve3| -> Result<Option<Circle3>, GeometryError> {
+            match curve {
+                Curve3::Circle(circle) => Ok(Some(*circle)),
+                Curve3::Arc(arc) if arc.is_closed() => Ok(Some(Circle3::try_from_frame(
+                    arc.center(),
+                    arc.radius(),
+                    arc.x_axis(),
+                    arc.normal()?,
+                    tolerance,
+                )?)),
+                _ => Ok(None),
+            }
+        };
+        let (Some(first), Some(second)) = (circle(self)?, circle(other)?) else {
+            return Ok(None);
+        };
+        let first_normal = first.normal()?;
+        let second_normal = second.normal()?;
+        // Exact parallelism keeps the planar radial test from excluding an
+        // intersection between slightly tilted, very large circles.
+        if first_normal
+            .as_vector()
+            .cross(second_normal.as_vector())?
+            .length()?
+            != 0.0
+        {
+            return Ok(None);
+        }
+        let between = first.center().vector_to(second.center())?;
+        if between.dot(first_normal.as_vector())?.abs() > threshold {
+            return Ok(Some(false));
+        }
+        let distance = in_plane_radius(
+            first.center(),
+            second.center(),
+            first.x_axis(),
+            first.y_axis(),
+        )?;
+        let sum = first.radius() + second.radius();
+        let difference = (first.radius() - second.radius()).abs();
+        if !sum.is_finite() {
+            return Ok(None);
+        }
+        if distance > sum && distance - sum > threshold
+            || distance < difference && difference - distance > threshold
+        {
+            return Ok(Some(false));
+        }
+        if distance == sum
+            || distance == difference
+            || distance > difference + threshold && distance + threshold < sum
+        {
+            return Ok(Some(true));
+        }
+        Ok(None)
+    }
+
     /// Whether a point is strictly inside a supported closed offset region.
     /// Open curves return `None`; a point on the boundary is ambiguous.
     pub fn offset_region_contains(
@@ -1077,6 +1163,51 @@ mod tests {
         let below = [2.0, 2.0 * tiny - perturbation];
         assert_eq!(offset_region_orient2(a, b, above), Ordering::Greater);
         assert_eq!(offset_region_orient2(a, b, below), Ordering::Less);
+    }
+
+    #[test]
+    fn circular_region_boundary_relation_handles_nesting_crossing_and_tangency() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let circle = |x, radius| {
+            Curve3::Circle(Circle3::try_new(point(x, 0.0, 0.0), radius, normal, tol).unwrap())
+        };
+        let outer = circle(0.0, 10.0);
+        assert_eq!(
+            outer.offset_region_boundary_relation(&circle(0.0, 3.0), tol),
+            Ok(Some(false))
+        );
+        assert_eq!(
+            circle(0.0, 4.0).offset_region_boundary_relation(&circle(4.0, 4.0), tol),
+            Ok(Some(true))
+        );
+        assert_eq!(
+            circle(0.0, 4.0).offset_region_boundary_relation(&circle(8.0, 4.0), tol),
+            Ok(Some(true))
+        );
+        assert_eq!(
+            circle(0.0, 4.0).offset_region_boundary_relation(&circle(20.0, 4.0), tol),
+            Ok(Some(false))
+        );
+        let tilted = Curve3::Circle(
+            Circle3::try_new(
+                point(0.0, 0.0, 0.0),
+                3.0,
+                Vector3::try_new(0.0, 1.0, 1.0)
+                    .unwrap()
+                    .normalized(tol)
+                    .unwrap(),
+                tol,
+            )
+            .unwrap(),
+        );
+        assert_eq!(
+            outer.offset_region_boundary_relation(&tilted, tol),
+            Ok(None)
+        );
     }
 
     #[test]

@@ -76,16 +76,32 @@ impl Command for OffsetMultipleCommand {
             .collect::<Vec<_>>();
         // Region nesting has an unambiguous depth only when selected boundaries
         // do not cross or touch. Check this before creating any document objects.
-        let nurbs = closed
-            .iter()
-            .map(|&i| sources[i].0.as_ref().to_nurbs().map_err(map_offset_error))
-            .collect::<Result<Vec<_>, _>>()?;
+        let mut nurbs: Vec<Option<NurbsCurve>> = vec![None; closed.len()];
         for i in 0..closed.len() {
             for j in i + 1..closed.len() {
-                if !nurbs[i]
-                    .intersection_events_with_curve(&nurbs[j], tolerance)?
-                    .is_empty()
+                let first = &sources[closed[i]].0;
+                let second = &sources[closed[j]].0;
+                let intersects = if let Some(intersects) =
+                    first.offset_region_boundary_relation(second, tolerance)?
                 {
+                    intersects
+                } else {
+                    if nurbs[i].is_none() {
+                        nurbs[i] = Some(first.as_ref().to_nurbs().map_err(map_offset_error)?);
+                    }
+                    if nurbs[j].is_none() {
+                        nurbs[j] = Some(second.as_ref().to_nurbs().map_err(map_offset_error)?);
+                    }
+                    !nurbs[i]
+                        .as_ref()
+                        .expect("cached first curve")
+                        .intersection_events_with_curve(
+                            nurbs[j].as_ref().expect("cached second curve"),
+                            tolerance,
+                        )?
+                        .is_empty()
+                };
+                if intersects {
                     return Err(GeometryError::IntersectingOffsetRegions.into());
                 }
             }
