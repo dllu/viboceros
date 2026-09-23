@@ -89,6 +89,7 @@ fn point_position_key(point: Point3) -> [u64; 3] {
 struct DisplayObject {
     geometry: Rc<DisplayGeometry>,
     color: Color32,
+    point_colors_enabled: bool,
     width: f32,
     point_radius: f32,
 }
@@ -97,6 +98,7 @@ impl PartialEq for DisplayObject {
     fn eq(&self, other: &Self) -> bool {
         Rc::ptr_eq(&self.geometry, &other.geometry)
             && self.color == other.color
+            && self.point_colors_enabled == other.point_colors_enabled
             && self.width == other.width
             && self.point_radius == other.point_radius
     }
@@ -271,6 +273,7 @@ impl Viewport {
             objects.push(DisplayObject {
                 geometry: cache.get(object, document.tolerance()),
                 color,
+                point_colors_enabled: !selected && !attributes.is_locked() && !layer.is_locked(),
                 width,
                 point_radius: if selected { 3.5 } else { 2.5 },
             });
@@ -302,14 +305,26 @@ impl Viewport {
                     self.add_gpu_point(&mut scene, rect, *point, 4.5, object.color)
                 }
                 Geometry::PointCloud(cloud) => {
-                    for point in cloud.points() {
-                        self.add_gpu_point(
-                            &mut scene,
-                            rect,
-                            *point,
-                            object.point_radius,
-                            object.color,
-                        );
+                    for (index, point) in cloud.points().iter().enumerate() {
+                        let color = if object.point_colors_enabled {
+                            cloud.colors().map_or(object.color, |colors| {
+                                let [red, green, blue, transparency] = colors[index];
+                                let color = Color32::from_rgba_unmultiplied(
+                                    red,
+                                    green,
+                                    blue,
+                                    255 - transparency,
+                                );
+                                if self.display_mode == DisplayMode::Ghosted {
+                                    color_with_alpha(color, 110)
+                                } else {
+                                    color
+                                }
+                            })
+                        } else {
+                            object.color
+                        };
+                        self.add_gpu_point(&mut scene, rect, *point, object.point_radius, color);
                     }
                 }
                 _ => {
@@ -589,5 +604,51 @@ mod tests {
                 Color32::from_rgb(78, 90, 123)
             );
         }
+    }
+
+    #[test]
+    fn point_cloud_member_colors_reach_the_gpu_scene() {
+        let mut document = Document::default();
+        let cloud = PointCloud3::try_with_colors(
+            vec![point(-1.0, 0.0, 0.0), point(1.0, 0.0, 0.0)],
+            Some(vec![[200, 20, 30, 0], [40, 50, 220, 128]]),
+        )
+        .unwrap();
+        let id = document.add_geometry(Geometry::PointCloud(cloud)).unwrap();
+        let view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let scene = view.object_scene(rect, &document);
+        assert_eq!(scene.points.len(), 2);
+        let expected = [
+            [200.0 / 255.0, 20.0 / 255.0, 30.0 / 255.0, 1.0],
+            [40.0 / 255.0, 50.0 / 255.0, 220.0 / 255.0, 127.0 / 255.0],
+        ];
+        for color in expected {
+            assert!(
+                scene.points.iter().any(|point| {
+                    point
+                        .color
+                        .iter()
+                        .zip(color)
+                        .all(|(actual, expected)| (actual - expected).abs() <= 1.1 / 255.0)
+                }),
+                "expected {color:?}, got {:?}",
+                scene
+                    .points
+                    .iter()
+                    .map(|point| point.color)
+                    .collect::<Vec<_>>()
+            );
+        }
+        document
+            .select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        let selected = view.object_scene(rect, &document);
+        assert!(
+            selected
+                .points
+                .iter()
+                .all(|point| point.color == color_to_gpu(SELECTED_COLOR))
+        );
     }
 }

@@ -6,6 +6,27 @@ fn point(x: Real, y: Real, z: Real) -> Point3 {
 }
 
 #[test]
+fn optional_point_colors_validate_and_survive_transforms() {
+    let points = vec![point(1.0, 2.0, 3.0), point(4.0, 5.0, 6.0)];
+    let colors = vec![[10, 20, 30, 0], [40, 50, 60, 128]];
+    assert!(matches!(
+        PointCloud3::try_with_colors(points.clone(), Some(vec![colors[0]])),
+        Err(GeometryError::InvalidPointCloudColorCount)
+    ));
+    let plain = PointCloud3::try_new(points.clone()).unwrap();
+    let cloud = PointCloud3::try_with_colors(points, Some(colors.clone())).unwrap();
+    assert_ne!(cloud, plain);
+    assert_eq!(cloud.colors(), Some(colors.as_slice()));
+    let moved = cloud
+        .transformed(AffineTransform3::from_translation(
+            Vector3::try_new(3.0, 0.0, 0.0).unwrap(),
+        ))
+        .unwrap();
+    assert_eq!(moved.colors(), Some(colors.as_slice()));
+    assert_eq!(moved.points(), [point(4.0, 2.0, 3.0), point(7.0, 5.0, 6.0)]);
+}
+
+#[test]
 fn square_indexes_match_exhaustive_queries_in_each_plane() {
     for translation in [0., 2.0_f64.powi(52), -2.0_f64.powi(52)] {
         let origin = point(translation, translation, translation);

@@ -705,20 +705,59 @@ fn point_cloud_command_first_filters_clouds_and_curves_and_preserves_pick_order(
 }
 
 #[test]
-fn point_cloud_cancel_preserves_sources_and_rejects_unsupported_colors() {
+fn point_cloud_cancel_preserves_sources_and_accepts_color_option() {
     let mut app = test_app();
     let id = app
         .document
         .add_geometry(Geometry::Point(point(1.0, 0.0, 0.0)))
         .unwrap();
     enter(&mut app, "PointCloud UsePointColors=Yes");
-    assert!(app.object_prompt.is_none());
+    assert!(app.object_prompt.as_ref().unwrap().description.options[0].value);
+    app.cancel_interactive_command(false);
     assert!(app.document.object(id).is_some());
     enter(&mut app, "PointCloud");
     assert!(app.object_prompt.is_some());
     app.cancel_interactive_command(false);
     assert!(app.object_prompt.is_none());
     assert!(app.document.object(id).is_some());
+}
+
+#[test]
+fn point_cloud_command_first_keeps_use_point_colors_choice() {
+    let mut app = test_app();
+    let layer = app.document.current_layer_id();
+    let first = app
+        .document
+        .add_geometry_with_attributes(
+            Geometry::Point(point(1.0, 0.0, 0.0)),
+            viboceros_document::ObjectAttributes::on_layer(layer)
+                .with_object_color(viboceros_document::ColorRgb::new(210, 20, 30)),
+        )
+        .unwrap();
+    let second = app
+        .document
+        .add_geometry_with_attributes(
+            Geometry::Point(point(2.0, 0.0, 0.0)),
+            viboceros_document::ObjectAttributes::on_layer(layer)
+                .with_object_color(viboceros_document::ColorRgb::new(15, 40, 220)),
+        )
+        .unwrap();
+    enter(&mut app, "PointCloud UsePointColors=Yes");
+    for id in [second, first] {
+        app.apply_selection_click(SelectionClick {
+            object_id: Some(id),
+            mode: SelectionMode::Replace,
+        });
+    }
+    enter(&mut app, "");
+    assert!(app.object_prompt.is_none());
+    let Geometry::PointCloud(cloud) = app.document.objects().next().unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(
+        cloud.colors().unwrap(),
+        [[15, 40, 220, 0], [210, 20, 30, 0]]
+    );
 }
 
 #[test]

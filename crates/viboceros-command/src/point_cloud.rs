@@ -4,7 +4,9 @@ use super::*;
 const USAGE: &str = "PointCloud [UsePointColors=No] | PointCloud Add [Target=<id>] | PointCloud Remove Indices=<zero-based-list> [Target=<id>] [Output=Points|PointCloud]";
 
 enum Operation {
-    Create,
+    Create {
+        use_colors: bool,
+    },
     Add {
         target: Option<ObjectId>,
     },
@@ -39,11 +41,13 @@ impl Command for PointCloudCommand {
         &self,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        let filter = match parse(arguments)? {
-            Operation::Create => ObjectSelectionFilter::PointCloudSources,
-            Operation::Add { .. } => ObjectSelectionFilter::PointCloudAddSources,
+        let (filter, use_colors) = match parse(arguments)? {
+            Operation::Create { use_colors } => {
+                (ObjectSelectionFilter::PointCloudSources, use_colors)
+            }
+            Operation::Add { .. } => (ObjectSelectionFilter::PointCloudAddSources, false),
             Operation::Remove { indices: None, .. } => {
-                ObjectSelectionFilter::PointCloudRemoveTarget
+                (ObjectSelectionFilter::PointCloudRemoveTarget, false)
             }
             Operation::Remove {
                 indices: Some(_), ..
@@ -53,7 +57,15 @@ impl Command for PointCloudCommand {
             command: self.name(),
             filter,
             workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
-            options: vec![],
+            options: if filter == ObjectSelectionFilter::PointCloudSources {
+                vec![BooleanSelectionOption {
+                    name: "UsePointColors",
+                    value: use_colors,
+                    aliases: &[],
+                }]
+            } else {
+                vec![]
+            },
             menus: vec![],
             choices: vec![],
         }))
@@ -62,7 +74,7 @@ impl Command for PointCloudCommand {
 
 fn parse(arguments: &[&str]) -> Result<Operation, CommandError> {
     if arguments.is_empty() {
-        return Ok(Operation::Create);
+        return Ok(Operation::Create { use_colors: false });
     }
     let action = arguments[0].trim_start_matches('_');
     if action.eq_ignore_ascii_case("Add") || action.eq_ignore_ascii_case("Remove") {
@@ -117,8 +129,7 @@ fn parse(arguments: &[&str]) -> Result<Operation, CommandError> {
         return Err(CommandError::Usage(USAGE));
     }
     match parse_yes_no(value) {
-        Some(false) => Ok(Operation::Create),
-        Some(true) => Err(CommandError::PointCloudColorsUnsupported),
+        Some(use_colors) => Ok(Operation::Create { use_colors }),
         None => Err(CommandError::Usage(USAGE)),
     }
 }
@@ -129,7 +140,7 @@ fn execute(
     postselected: bool,
 ) -> Result<String, CommandError> {
     match parse(arguments)? {
-        Operation::Create => convert(document, postselected),
+        Operation::Create { use_colors } => convert(document, postselected, use_colors),
         Operation::Add { target } => add(document, target),
         Operation::Remove {
             target,
@@ -167,6 +178,18 @@ fn selected_target(
     Ok(target)
 }
 
+fn source_display_color(
+    document: &Document,
+    object: &viboceros_document::Object,
+) -> Result<[u8; 4], CommandError> {
+    let layer_id = object.attributes().layer_id();
+    let layer = document
+        .layer(layer_id)
+        .ok_or(DocumentError::LayerNotFound(layer_id))?;
+    let color = object.attributes().display_color(layer.color());
+    Ok([color.red, color.green, color.blue, 0])
+}
+
 fn add(document: &mut Document, explicit: Option<ObjectId>) -> Result<String, CommandError> {
     let target = selected_target(document, explicit)?;
     let Geometry::PointCloud(cloud) = document.object(target).unwrap().geometry() else {
@@ -174,6 +197,20 @@ fn add(document: &mut Document, explicit: Option<ObjectId>) -> Result<String, Co
     };
     let mut points = cloud.points().to_vec();
     let old_count = points.len();
+    let use_colors = cloud.colors().is_some()
+        || document.selected_objects().any(|object| {
+            object.id() != target
+                && matches!(object.geometry(), Geometry::PointCloud(source) if source.colors().is_some())
+        });
+    let mut colors = if use_colors {
+        Some(if let Some(colors) = cloud.colors() {
+            colors.to_vec()
+        } else {
+            vec![source_display_color(document, document.object(target).unwrap())?; old_count]
+        })
+    } else {
+        None
+    };
     let mut consumed = Vec::new();
     for object in document.selected_objects() {
         if object.id() == target {
@@ -182,10 +219,23 @@ fn add(document: &mut Document, explicit: Option<ObjectId>) -> Result<String, Co
         match object.geometry() {
             Geometry::Point(point) => {
                 points.push(*point);
+                if let Some(colors) = &mut colors {
+                    colors.push(source_display_color(document, object)?);
+                }
                 consumed.push(object.id());
             }
             Geometry::PointCloud(source) => {
                 points.extend_from_slice(source.points());
+                if let Some(colors) = &mut colors {
+                    if let Some(source_colors) = source.colors() {
+                        colors.extend_from_slice(source_colors);
+                    } else {
+                        colors.extend(std::iter::repeat_n(
+                            source_display_color(document, object)?,
+                            source.points().len(),
+                        ));
+                    }
+                }
                 consumed.push(object.id());
             }
             _ => {}
@@ -197,7 +247,7 @@ fn add(document: &mut Document, explicit: Option<ObjectId>) -> Result<String, Co
     let added = points.len() - old_count;
     document.replace_object_geometries([(
         target,
-        Geometry::PointCloud(PointCloud3::try_new(points)?),
+        Geometry::PointCloud(PointCloud3::try_with_colors(points, colors)?),
     )])?;
     document.delete_objects(consumed)?;
     Ok(format!("Added {added} points to point cloud"))
@@ -223,11 +273,21 @@ fn remove(
     let attributes = object.attributes().clone();
     let mut removed = Vec::with_capacity(indices.len());
     let mut retained = Vec::with_capacity(cloud.points().len() - indices.len());
+    let mut removed_colors = cloud.colors().map(|_| Vec::with_capacity(indices.len()));
+    let mut retained_colors = cloud
+        .colors()
+        .map(|_| Vec::with_capacity(cloud.points().len() - indices.len()));
     for (index, point) in cloud.points().iter().copied().enumerate() {
         if indices.contains(&index) {
             removed.push(point);
+            if let Some(colors) = &mut removed_colors {
+                colors.push(cloud.colors().unwrap()[index]);
+            }
         } else {
             retained.push(point);
+            if let Some(colors) = &mut retained_colors {
+                colors.push(cloud.colors().unwrap()[index]);
+            }
         }
     }
     if retained.is_empty() {
@@ -235,23 +295,33 @@ fn remove(
     } else {
         document.replace_object_geometries([(
             target,
-            Geometry::PointCloud(PointCloud3::try_new(retained)?),
+            Geometry::PointCloud(PointCloud3::try_with_colors(retained, retained_colors)?),
         )])?;
     }
     if output_cloud {
         document.add_geometry_with_attributes(
-            Geometry::PointCloud(PointCloud3::try_new(removed)?),
+            Geometry::PointCloud(PointCloud3::try_with_colors(removed, removed_colors)?),
             attributes,
         )?;
     } else {
-        for point in removed {
-            document.add_geometry_with_attributes(Geometry::Point(point), attributes.clone())?;
+        for (index, point) in removed.into_iter().enumerate() {
+            let mut output_attributes = attributes.clone();
+            if let Some(colors) = &removed_colors {
+                let [red, green, blue, _] = colors[index];
+                output_attributes = output_attributes
+                    .with_object_color(viboceros_document::ColorRgb::new(red, green, blue));
+            }
+            document.add_geometry_with_attributes(Geometry::Point(point), output_attributes)?;
         }
     }
     Ok(format!("Removed {} points from point cloud", indices.len()))
 }
 
-fn convert(document: &mut Document, postselected: bool) -> Result<String, CommandError> {
+fn convert(
+    document: &mut Document,
+    postselected: bool,
+    use_colors: bool,
+) -> Result<String, CommandError> {
     if document.selected_object_count() == 0 {
         return Err(CommandError::NoObjectsSelected);
     }
@@ -288,19 +358,31 @@ fn convert(document: &mut Document, postselected: bool) -> Result<String, Comman
         return Ok("No point cloud created from a single point".into());
     }
     let mut points = Vec::new();
+    let mut colors = Vec::new();
     let mut consumed = Vec::new();
     for object in inputs {
         match object.geometry() {
             Geometry::Point(p) => {
                 points.push(*p);
+                if use_colors {
+                    colors.push(source_display_color(document, object)?);
+                }
                 consumed.push(object.id());
             }
-            Geometry::Mesh(m) => points.extend_from_slice(m.vertices()),
+            Geometry::Mesh(m) => {
+                points.extend_from_slice(m.vertices());
+                if use_colors {
+                    colors.extend(std::iter::repeat_n(
+                        source_display_color(document, object)?,
+                        m.vertices().len(),
+                    ));
+                }
+            }
             _ => unreachable!("source filter excludes non-point-bearing geometry"),
         }
     }
     let count = points.len();
-    let cloud = PointCloud3::try_new(points)?;
+    let cloud = PointCloud3::try_with_colors(points, use_colors.then_some(colors))?;
     document.add_geometry(Geometry::PointCloud(cloud))?;
     document.delete_objects(consumed)?;
     if postselected {

@@ -38,6 +38,8 @@ pub struct PointCloud3 {
 #[derive(Debug)]
 struct PointCloudData {
     points: Vec<Point3>,
+    /// OpenNURBS RGBA bytes; alpha is transparency (0 is opaque).
+    colors: Option<Vec<[u8; 4]>>,
     bounds: BoundingBox3,
     xy: ProjectedIndex,
     xz: OnceLock<ProjectedIndex>,
@@ -50,11 +52,27 @@ impl PointCloud3 {
     /// Empty point clouds are rejected because OpenNURBS considers them
     /// invalid and they have no finite bounding box.
     pub fn try_new(points: Vec<Point3>) -> Result<Self, GeometryError> {
+        Self::try_with_colors(points, None)
+    }
+
+    /// Creates a cloud with optional per-point OpenNURBS colors. Alpha is
+    /// transparency: zero is opaque and 255 is fully transparent.
+    pub fn try_with_colors(
+        points: Vec<Point3>,
+        colors: Option<Vec<[u8; 4]>>,
+    ) -> Result<Self, GeometryError> {
+        if colors
+            .as_ref()
+            .is_some_and(|colors| colors.len() != points.len())
+        {
+            return Err(GeometryError::InvalidPointCloudColorCount);
+        }
         let bounds = BoundingBox3::from_points(points.iter().copied())?;
         let xy = ProjectedIndex::new(&points, PointCloudProjection::Xy);
         Ok(Self {
             data: Arc::new(PointCloudData {
                 points,
+                colors,
                 bounds,
                 xy,
                 xz: OnceLock::new(),
@@ -70,17 +88,23 @@ impl PointCloud3 {
     }
 
     #[inline]
+    pub fn colors(&self) -> Option<&[[u8; 4]]> {
+        self.data.colors.as_deref()
+    }
+
+    #[inline]
     pub fn bounds(&self) -> BoundingBox3 {
         self.data.bounds
     }
 
     pub fn transformed(&self, transform: AffineTransform3) -> Result<Self, GeometryError> {
-        Self::try_new(
+        Self::try_with_colors(
             self.data
                 .points
                 .iter()
                 .map(|point| transform.transform_point(*point))
                 .collect::<Result<Vec<_>, _>>()?,
+            self.data.colors.clone(),
         )
     }
 
@@ -235,7 +259,8 @@ impl PointCloud3 {
 
 impl PartialEq for PointCloud3 {
     fn eq(&self, other: &Self) -> bool {
-        Arc::ptr_eq(&self.data, &other.data) || self.data.points == other.data.points
+        Arc::ptr_eq(&self.data, &other.data)
+            || (self.data.points == other.data.points && self.data.colors == other.data.colors)
     }
 }
 

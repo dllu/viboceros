@@ -722,13 +722,21 @@ fn decode_object(
                 && knots_u.is_empty()
                 && knots_v.is_empty()
                 && indices.is_empty()
-                && geometry_data.is_empty() =>
+                && (geometry_data.is_empty()
+                    || geometry_data.len() == coordinates.len() / 3 * 4) =>
         {
-            ThreeDmGeometry::PointCloud(PointCloud3::try_new(
+            let colors = (!geometry_data.is_empty()).then(|| {
+                geometry_data
+                    .chunks_exact(4)
+                    .map(|rgba| [rgba[0], rgba[1], rgba[2], rgba[3]])
+                    .collect()
+            });
+            ThreeDmGeometry::PointCloud(PointCloud3::try_with_colors(
                 coordinates
                     .chunks_exact(3)
                     .map(point)
                     .collect::<Result<Vec<_>, _>>()?,
+                colors,
             )?)
         }
         OBJECT_POLYLINE
@@ -1039,7 +1047,10 @@ impl ObjectPayload {
                 knots_u: Vec::new(),
                 knots_v: Vec::new(),
                 indices: Vec::new(),
-                geometry_data: Vec::new(),
+                geometry_data: cloud
+                    .colors()
+                    .map(|colors| colors.iter().flat_map(|rgba| *rgba).collect())
+                    .unwrap_or_default(),
             },
             ThreeDmGeometry::Polyline(curve) => Self {
                 object_type: OBJECT_POLYLINE,
@@ -1922,6 +1933,40 @@ mod tests {
     }
 
     #[test]
+    fn point_cloud_colors_round_trip_through_opennurbs() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("colored-cloud.3dm");
+        let cloud = PointCloud3::try_with_colors(
+            vec![
+                Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+                Point3::try_new(4.0, 5.0, 6.0).unwrap(),
+            ],
+            Some(vec![[12, 34, 56, 0], [78, 90, 123, 128]]),
+        )
+        .unwrap();
+        let model = ThreeDmModel::new(
+            vec![ThreeDmLayer {
+                name: "Default".into(),
+                color: [0, 0, 0],
+                visible: true,
+                locked: false,
+            }],
+            vec![],
+            vec![ThreeDmObject::new(
+                ThreeDmGeometry::PointCloud(cloud.clone()),
+                0,
+            )],
+        );
+        write_3dm_file(&path, &model).unwrap();
+        let loaded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(loaded.unsupported_object_count(), 0);
+        assert_eq!(
+            loaded.objects[0].geometry,
+            ThreeDmGeometry::PointCloud(cloud)
+        );
+    }
+
+    #[test]
     fn model_tolerance_boundary_values_round_trip_without_normalization() {
         let directory = tempfile::tempdir().unwrap();
         let path = directory.path().join("tolerance boundaries.3dm");
@@ -2536,17 +2581,33 @@ mod tests {
 
     fn assert_brep_near(actual: &Brep, expected: &Brep) {
         const EPSILON: f64 = 2.0e-12;
+        // Outward rounding preserves a positive subnormal tolerance when a
+        // unit scale would underflow it; reversing the scale may add one ulp.
+        let tolerance_matches = |actual: f64, expected: f64| {
+            actual == expected
+                || (expected.is_subnormal() && expected > 0.0 && actual == expected.next_up())
+        };
         assert_eq!(actual.vertices().len(), expected.vertices().len());
         assert_eq!(actual.edges().len(), expected.edges().len());
         assert_eq!(actual.faces().len(), expected.faces().len());
         assert_eq!(actual.is_solid(), expected.is_solid());
         for (actual, expected) in actual.vertices().iter().zip(expected.vertices()) {
             assert!(actual.point().distance_to(expected.point()).unwrap() <= EPSILON);
-            assert_eq!(actual.tolerance(), expected.tolerance());
+            assert!(
+                tolerance_matches(actual.tolerance(), expected.tolerance()),
+                "vertex tolerance: actual={}, expected={}",
+                actual.tolerance(),
+                expected.tolerance()
+            );
         }
         for (actual, expected) in actual.edges().iter().zip(expected.edges()) {
             assert_eq!(actual.vertices(), expected.vertices());
-            assert_eq!(actual.tolerance(), expected.tolerance());
+            assert!(
+                tolerance_matches(actual.tolerance(), expected.tolerance()),
+                "edge tolerance: actual={}, expected={}",
+                actual.tolerance(),
+                expected.tolerance()
+            );
             assert_curve_near(actual.curve(), expected.curve(), EPSILON);
         }
         for (actual, expected) in actual.faces().iter().zip(expected.faces()) {

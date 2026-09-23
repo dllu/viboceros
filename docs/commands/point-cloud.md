@@ -4,6 +4,11 @@
 
 `PointCloud [UsePointColors=No]` creates one point cloud from selected point
 objects and mesh vertices. It does not accept a typed list of coordinates.
+`UsePointColors=Yes` stores each point object's display color; mesh vertices
+currently inherit the mesh object's display color. The colors display in the
+viewport and survive 3DM import, export, transforms, Add, and Remove when the
+removed output is another cloud. Removed point objects retain the RGB color;
+their attributes cannot represent per-point transparency.
 
 ```text
 Point 1,2,3
@@ -68,7 +73,10 @@ step.
 
 ## Limits
 
-Per-point colors are not implemented; `UsePointColors=Yes` returns an error.
+Mesh vertex colors are not yet represented in the native mesh geometry, so
+`UsePointColors=Yes` cannot inherit distinct colors from individual mesh
+vertices. Point cloud normals, scalar values, and hidden members in 3DM also
+remain unsupported.
 The Add and Remove pickers run as separate prompts after the initial action
 choice. Remove selects cloud members by click, window, or typed indices.
 Creation still ignores existing cloud inputs. Use `Explode` to extract individual
@@ -90,7 +98,8 @@ expected point lists and retained source indices. Native tests also cover
 undo/redo, group restoration, Add/Remove editing, and atomic rejection; UI tests
 cover filtered creation selection, the preselected cloud action choice, Add
 source picking, Remove member picking in four view types, cancellation, pick
-order, and unsupported colors.
+order, and color option routing. Native tests cover point colors through the
+geometry kernel, document edits, GPU scene, and 3DM OpenNURBS round trips.
 The eight-case live comparison passed with zero coordinate difference and
 matching recorded document state. A [batch-deletion benchmark](../batch-deletion.md)
 tracks native conversion and history costs; Rhino performance parity remains unmeasured.

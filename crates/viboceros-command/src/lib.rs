@@ -16684,8 +16684,6 @@ pub enum CommandError {
     PointCloudRequiresAddSources,
     #[error("PointCloud Remove index is outside the target cloud")]
     PointCloudIndexOutOfRange,
-    #[error("per-point colors are not implemented; use UsePointColors=No")]
-    PointCloudColorsUnsupported,
     #[error("Curvature requires only curve or surface objects selected")]
     CurvatureRequiresCurveOrSurface,
     #[error("the curvature location is outside the selected trimmed faces")]

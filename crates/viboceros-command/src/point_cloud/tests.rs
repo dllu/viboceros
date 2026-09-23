@@ -117,7 +117,7 @@ fn mesh_keeps_unused_duplicate_vertices_and_source_object() {
 }
 
 #[test]
-fn unsupported_inputs_and_colors_preserve_geometry_selection_and_redo() {
+fn unsupported_inputs_preserve_geometry_selection_and_redo() {
     let mut doc = Document::default();
     let id = doc
         .add_geometry(Geometry::PointCloud(
@@ -134,7 +134,6 @@ fn unsupported_inputs_and_colors_preserve_geometry_selection_and_redo() {
         "PointCloud",
         "PointCloud Add",
         "PointCloud Remove",
-        "PointCloud UsePointColors=Yes",
         "PointCloud UsePointColors=No UsePointColors=No",
         "PointCloud 0,0,0",
     ] {
@@ -274,5 +273,123 @@ fn removing_every_point_deletes_the_empty_source_cloud() {
     assert!(doc.object(target).is_none());
     assert!(
         matches!(doc.objects().next().unwrap().geometry(), Geometry::Point(point) if *point == p(5.0))
+    );
+}
+
+#[test]
+fn creation_inherits_source_display_colors_and_undoes() {
+    let mut doc = Document::default();
+    let red = ColorRgb::new(220, 20, 30);
+    let blue = ColorRgb::new(15, 40, 230);
+    let layer = doc.add_layer("Source", red).unwrap();
+    let first = doc
+        .add_geometry_with_attributes(Geometry::Point(p(1.0)), ObjectAttributes::on_layer(layer))
+        .unwrap();
+    let second = doc
+        .add_geometry_with_attributes(
+            Geometry::Point(p(2.0)),
+            ObjectAttributes::on_layer(layer).with_object_color(blue),
+        )
+        .unwrap();
+    let mesh = TriangleMesh::try_new(
+        vec![p(3.0), p(4.0), Point3::try_new(3.0, 1.0, 0.0).unwrap()],
+        vec![[0, 1, 2]],
+        doc.tolerance(),
+    )
+    .unwrap();
+    let mesh_id = doc
+        .add_geometry_with_attributes(Geometry::Mesh(mesh), ObjectAttributes::on_layer(layer))
+        .unwrap();
+    doc.select_objects_direct([first, second, mesh_id], SelectionMode::Replace)
+        .unwrap();
+    let before = doc.objects().cloned().collect::<Vec<_>>();
+    let registry = CommandRegistry::with_builtins();
+    registry
+        .execute(&mut doc, "PointCloud UsePointColors=Yes")
+        .unwrap();
+    let cloud = doc
+        .objects()
+        .find_map(|object| match object.geometry() {
+            Geometry::PointCloud(cloud) => Some(cloud),
+            _ => None,
+        })
+        .unwrap();
+    assert_eq!(
+        cloud.colors(),
+        Some(
+            &[
+                [220, 20, 30, 0],
+                [15, 40, 230, 0],
+                [220, 20, 30, 0],
+                [220, 20, 30, 0],
+                [220, 20, 30, 0],
+            ][..]
+        )
+    );
+    assert!(doc.object(mesh_id).is_some());
+    registry.execute(&mut doc, "Undo").unwrap();
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+}
+
+#[test]
+fn cloud_edits_keep_member_colors_aligned_with_stored_points() {
+    let mut doc = Document::default();
+    let target = doc
+        .add_geometry(Geometry::PointCloud(
+            PointCloud3::try_with_colors(
+                vec![p(1.0), p(2.0)],
+                Some(vec![[10, 20, 30, 0], [40, 50, 60, 128]]),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    let added = doc.add_geometry(Geometry::Point(p(3.0))).unwrap();
+    doc.select_objects_direct([target, added], SelectionMode::Replace)
+        .unwrap();
+    let registry = CommandRegistry::with_builtins();
+    registry.execute(&mut doc, "PointCloud Add").unwrap();
+    let Geometry::PointCloud(cloud) = doc.object(target).unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(
+        cloud.colors().unwrap()[..2],
+        [[10, 20, 30, 0], [40, 50, 60, 128]]
+    );
+    let added_color = cloud.colors().unwrap()[2];
+    registry
+        .execute(&mut doc, "PointCloud Remove Indices=1 Output=PointCloud")
+        .unwrap();
+    let Geometry::PointCloud(retained) = doc.object(target).unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(retained.points(), [p(1.0), p(3.0)]);
+    assert_eq!(retained.colors().unwrap(), [[10, 20, 30, 0], added_color]);
+    let removed = doc
+        .objects()
+        .find_map(|object| {
+            if object.id() != target
+                && let Geometry::PointCloud(cloud) = object.geometry()
+            {
+                return Some(cloud);
+            }
+            None
+        })
+        .unwrap();
+    assert_eq!(removed.points(), [p(2.0)]);
+    assert_eq!(removed.colors().unwrap(), [[40, 50, 60, 128]]);
+    registry
+        .execute(&mut doc, "PointCloud Remove Indices=0 Output=Points")
+        .unwrap();
+    let output_point = doc
+        .objects()
+        .find(|object| matches!(object.geometry(), Geometry::Point(_)))
+        .unwrap();
+    assert_eq!(
+        output_point.attributes().object_color(),
+        ColorRgb::new(10, 20, 30)
+    );
+    assert_eq!(
+        output_point.attributes().color_source(),
+        viboceros_document::ObjectColorSource::Object
     );
 }

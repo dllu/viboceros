@@ -265,6 +265,17 @@ bool append_point_cloud(const ON_PointCloud& cloud, BridgeObject& output) {
     output.coordinates.insert(output.coordinates.end(),
                               {point.x, point.y, point.z});
   }
+  if (cloud.HasPointColors()) {
+    output.geometry_data.reserve(static_cast<size_t>(cloud.PointCount()) * 4);
+    for (int index = 0; index < cloud.PointCount(); ++index) {
+      const ON_Color color = cloud.m_C[index];
+      output.geometry_data.insert(output.geometry_data.end(),
+                                  {static_cast<uint8_t>(color.Red()),
+                                   static_cast<uint8_t>(color.Green()),
+                                   static_cast<uint8_t>(color.Blue()),
+                                   static_cast<uint8_t>(color.Alpha())});
+    }
+  }
   return true;
 }
 
@@ -1234,7 +1245,10 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
     case VIBO_OBJECT_POINT_CLOUD: {
       if (source.coordinate_count == 0 || source.coordinate_count % 3 != 0 ||
           source.coordinate_count / 3 >
-              static_cast<size_t>(std::numeric_limits<int>::max())) {
+              static_cast<size_t>(std::numeric_limits<int>::max()) ||
+          (source.geometry_data_count != 0 &&
+           (source.geometry_data == nullptr ||
+            source.geometry_data_count != source.coordinate_count / 3 * 4))) {
         error = "point cloud dimensions are inconsistent";
         return nullptr;
       }
@@ -1243,6 +1257,10 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
       for (size_t index = 0; index < point_count; ++index) {
         const double* point = source.coordinates + index * 3;
         cloud->AppendPoint(ON_3dPoint(point[0], point[1], point[2]));
+        if (source.geometry_data_count != 0) {
+          const uint8_t* rgba = source.geometry_data + index * 4;
+          cloud->m_C.Append(ON_Color(rgba[0], rgba[1], rgba[2], rgba[3]));
+        }
       }
       if (!cloud->IsValid()) {
         delete cloud;
