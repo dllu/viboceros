@@ -1949,6 +1949,89 @@ mod tests {
     }
 
     #[test]
+    fn closed_cubic_with_one_concave_seam_trims_its_own_offset() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let source = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                3,
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(0.0, 4.0, 0.0),
+                    point(0.0, 0.0, 0.0),
+                ],
+                vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
+            )
+            .unwrap(),
+        );
+        let inward = source
+            .try_offset_parts(0.2, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        let [Curve3::NurbsCurve(inner)] = inward.as_slice() else {
+            panic!("one closed trimmed offset")
+        };
+        assert!(inner.is_closed().unwrap());
+        assert!(*inner.domain().start() > 0.0);
+        assert!(*inner.domain().end() < 1.0);
+        let outward = source
+            .try_offset_parts(-0.2, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        let [Curve3::NurbsCurve(outer)] = outward.as_slice() else {
+            panic!("one open outward offset")
+        };
+        assert!(!outer.is_closed().unwrap());
+        let Curve3::NurbsCurve(loop_curve) = source else {
+            unreachable!()
+        };
+        let relocated = Curve3::NurbsCurve(
+            loop_curve
+                .try_split_at_parameters(&[0.5])
+                .unwrap()
+                .remove(0),
+        );
+        let relocated_inward = relocated
+            .try_offset_parts(0.2, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        let [Curve3::NurbsCurve(relocated_inner)] = relocated_inward.as_slice() else {
+            panic!("one trimmed offset with a smooth seam")
+        };
+        assert!(relocated_inner.is_closed().unwrap());
+        assert!(*relocated_inner.domain().start() > 1.0);
+        assert!(*relocated_inner.domain().end() < 2.0);
+    }
+
+    #[test]
+    fn two_span_closed_nurbs_region_rejects_extra_crossing() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let crossed = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                2,
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(0.0, 2.0, 0.0),
+                    point(2.0, 0.0, 0.0),
+                    point(2.0, 2.0, 0.0),
+                    point(0.0, 0.0, 0.0),
+                ],
+                vec![0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+            )
+            .unwrap(),
+        );
+        assert_eq!(
+            crossed.offset_region_inward_sign(normal, tol),
+            Err(GeometryError::SelfIntersectingOffsetRegion)
+        );
+    }
+
+    #[test]
     fn straight_tilted_nurbs_uses_construction_normal_projection() {
         let tol = Tolerance::DEFAULT;
         let normal = Vector3::try_new(0.0, 0.0, 1.0)

@@ -166,6 +166,46 @@ fn closed_quadratic_nurbs_none_joins_inward_and_opens_outward() {
 }
 
 #[test]
+fn single_corner_closed_nurbs_none_self_trims_inward() {
+    let mut document = Document::default();
+    let source = NurbsCurve::try_new(
+        3,
+        vec![
+            point(0.0, 0.0),
+            point(4.0, 0.0),
+            point(0.0, 4.0),
+            point(0.0, 0.0),
+        ],
+        vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
+    )
+    .unwrap();
+    let id = document.add_geometry(Geometry::NurbsCurve(source)).unwrap();
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    let registry = CommandRegistry::with_builtins();
+    registry
+        .execute(
+            &mut document,
+            "OffsetMultiple 0.2 0.5,0.5,0 Corner=None OffsetCount=1",
+        )
+        .unwrap();
+    let Geometry::NurbsCurve(inner) = document.selected_objects().next().unwrap().geometry() else {
+        panic!("single-corner inward offset")
+    };
+    assert!(inner.is_closed().unwrap());
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    registry
+        .execute(
+            &mut document,
+            "OffsetMultiple 0.2 -1,-1,0 Corner=None OffsetCount=1",
+        )
+        .unwrap();
+    let Geometry::NurbsCurve(outer) = document.selected_objects().next().unwrap().geometry() else {
+        panic!("single-corner outward offset")
+    };
+    assert!(!outer.is_closed().unwrap());
+}
+
+#[test]
 fn open_nurbs_multiple_offsets_follow_pick_side() {
     let mut document = Document::default();
     let source = NurbsCurve::try_new(

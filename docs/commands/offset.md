@@ -29,8 +29,8 @@ the offset locus. Stationary points and offsets that develop a cusp are
 rejected. The output retains the source parameter interval. `Corner=None`
 returns separate smooth pieces at convex source kinks and trims adjacent
 offset pieces to their nearest transverse intersection at concave kinks,
-including cyclic joins on closed higher-degree NURBS curves. Closed curves
-with only one concave kink are rejected until self-trimming is supported.
+including cyclic joins on closed higher-degree NURBS curves. A closed curve
+with one concave kink trims its offset at the nearest transverse self-crossing.
 Uniform-weight degree-one NURBS with multiple spans use their exact polyline
 representation, retaining each knot parameter and supporting all four corner
 styles, including closed inward and outward offsets.
@@ -81,7 +81,7 @@ staged before the document changes.
 layer. Both choices create fresh object attributes. The command stages every
 result before changing the document, so an unsupported or degenerate selected
 curve leaves the document unchanged. Connected corner styles at curved NURBS
-kinks, single-corner closed NURBS self-trimming, smooth corners,
+kinks, smooth corners,
 trim, cap, and construction-plane overrides, remain
 to be implemented.
 

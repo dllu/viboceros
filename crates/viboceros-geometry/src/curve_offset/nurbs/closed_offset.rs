@@ -40,14 +40,18 @@ pub(super) fn offset_nurbs_closed_gaps(
         .iter()
         .map(|offset| [*offset.domain().start(), *offset.domain().end()])
         .collect::<Vec<_>>();
+    if sources.len() == 1 && junctions == [false] {
+        return Ok(vec![Curve3::NurbsCurve(trim_single_concave_loop(
+            &sources[0],
+            &offsets[0],
+            distance,
+            normal,
+            tolerance,
+        )?)]);
+    }
     for (index, &convex) in junctions.iter().enumerate() {
         if convex {
             continue;
-        }
-        if sources.len() == 1 {
-            return Err(GeometryError::Degenerate {
-                context: "single concave closed NURBS corner requires self-trimming",
-            });
         }
         let next = (index + 1) % sources.len();
         let corner = sources[index].evaluate(*sources[index].domain().end())?;
@@ -117,6 +121,72 @@ pub(super) fn offset_nurbs_closed_gaps(
     }
     debug_assert!(group.is_empty());
     Ok(results)
+}
+
+fn trim_single_concave_loop(
+    source: &NurbsCurve,
+    offset: &NurbsCurve,
+    distance: Real,
+    normal: UnitVector3,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, GeometryError> {
+    let domain = offset.domain();
+    let middle = (*domain.start() + *domain.end()) * 0.5;
+    let (early, late) = offset.try_split(middle)?;
+    let corner = source.evaluate(*source.domain().start())?;
+    let mut best = None;
+    for event in early.intersection_events_with_curve(&late, tolerance)? {
+        let CurveCurveIntersectionEvent::Point(hit) = event else {
+            return Err(GeometryError::Degenerate {
+                context: "overlapping single-corner NURBS offset",
+            });
+        };
+        let (first, second) = (hit.first_parameter(), hit.second_parameter());
+        if first <= *domain.start()
+            || first >= middle
+            || second <= middle
+            || second >= *domain.end()
+        {
+            continue;
+        }
+        let first_tangent = offset.derivative_at(first)?.normalized_nonzero()?;
+        let second_tangent = offset.derivative_at(second)?.normalized_nonzero()?;
+        let crossing = first_tangent
+            .as_vector()
+            .cross(second_tangent.as_vector())?
+            .dot(normal.as_vector())?
+            .abs();
+        if crossing <= tolerance.angular() {
+            continue;
+        }
+        let proximity = hit.point().distance_to(corner)?;
+        if best.is_none_or(|(previous, _, _)| proximity < previous) {
+            best = Some((proximity, first, second));
+        }
+    }
+    let Some((_, first, second)) = best else {
+        return Err(GeometryError::Degenerate {
+            context: "single concave closed NURBS offset has no transverse self-trim",
+        });
+    };
+    let trimmed = offset.try_trimmed(first..=second)?;
+    let a = trimmed.evaluate(first)?;
+    let b = trimmed.evaluate(second)?;
+    if a.distance_to(b)? > tolerance.absolute() * 0.1 {
+        return Err(GeometryError::NurbsOffsetFitLimit);
+    }
+    let mut controls = trimmed.control_points().to_vec();
+    let shared = a.midpoint(b)?;
+    let last = controls.len() - 1;
+    controls[0] = WeightedPoint3::try_new(shared, controls[0].weight())?;
+    controls[last] = WeightedPoint3::try_new(shared, controls[last].weight())?;
+    let closed =
+        NurbsCurve::try_new_rational(trimmed.degree(), controls, trimmed.knots().to_vec())?;
+    validate_trimmed_offset(source, &closed, distance, normal, tolerance)?;
+    if !closed.is_closed()? {
+        return Err(GeometryError::NurbsOffsetFitLimit);
+    }
+    Ok(closed)
 }
 
 #[allow(clippy::too_many_arguments)]

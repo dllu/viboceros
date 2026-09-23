@@ -700,15 +700,34 @@ fn simple_region_pieces(
                 return Err(GeometryError::SelfIntersectingOffsetRegion);
             }
             if adjacent {
-                let shared = if j == i + 1 {
-                    endpoints[i].1
+                if pieces.len() == 2 {
+                    let [
+                        crate::CurveCurveIntersectionEvent::Point(first),
+                        crate::CurveCurveIntersectionEvent::Point(second),
+                    ] = events.as_slice()
+                    else {
+                        return Err(GeometryError::SelfIntersectingOffsetRegion);
+                    };
+                    let seam = endpoints[0].0;
+                    let middle = endpoints[0].1;
+                    let direct = first.point().distance_to(seam)? <= tolerance.absolute()
+                        && second.point().distance_to(middle)? <= tolerance.absolute();
+                    let reverse = first.point().distance_to(middle)? <= tolerance.absolute()
+                        && second.point().distance_to(seam)? <= tolerance.absolute();
+                    if !direct && !reverse {
+                        return Err(GeometryError::SelfIntersectingOffsetRegion);
+                    }
                 } else {
-                    endpoints[i].0
-                };
-                if events.len() != 1
-                    || !matches!(events[0], crate::CurveCurveIntersectionEvent::Point(event) if event.point().distance_to(shared)? <= tolerance.absolute())
-                {
-                    return Err(GeometryError::SelfIntersectingOffsetRegion);
+                    let shared = if j == i + 1 {
+                        endpoints[i].1
+                    } else {
+                        endpoints[i].0
+                    };
+                    if events.len() != 1
+                        || !matches!(events[0], crate::CurveCurveIntersectionEvent::Point(event) if event.point().distance_to(shared)? <= tolerance.absolute())
+                    {
+                        return Err(GeometryError::SelfIntersectingOffsetRegion);
+                    }
                 }
             }
         }
