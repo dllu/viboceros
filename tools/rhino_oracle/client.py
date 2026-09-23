@@ -282,6 +282,9 @@ class OracleClient:
             if any(op.get("op") == "border_command" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("border_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
+            if any(op.get("op") == "mesh_cap_command" for op in request.get("operations", [])):
+                helper = Path(__file__).with_name("mesh_cap_probe.py")
+                shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") in ("join_command", "cap_command", "merge_edges_command", "merge_edge_command", "split_edge_command", "area_centroid_command", "volume_centroid_command", "volume_command") for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("join_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)

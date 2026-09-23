@@ -33,7 +33,7 @@ use spade::{
 use crate::vector::product_three;
 use crate::{
     AffineTransform3, BoundingBox3, Frame3, GeometryError, LineSegment, NurbsSurface, Point3,
-    Polyline3, Real, Tolerance, UnitVector3, require_finite,
+    PointProjection3, Polyline3, Real, Tolerance, UnitVector3, require_finite,
 };
 
 /// Resource ceiling for one generated mesh-plane grid.
@@ -2024,6 +2024,15 @@ impl TriangleMesh {
         tolerance: Tolerance,
     ) -> Result<Option<MeshHoleFill>, GeometryError> {
         let data = self.topology_data();
+        self.fill_topology_hole_with_data(edge_index, tolerance, &data)
+    }
+
+    fn fill_topology_hole_with_data(
+        &self,
+        edge_index: usize,
+        tolerance: Tolerance,
+        data: &MeshTopologyData,
+    ) -> Result<Option<MeshHoleFill>, GeometryError> {
         let edge_count = data.edges.len();
         let Some((&selected_edge, selected_incidence)) = data.edges.iter().nth(edge_index) else {
             return Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
@@ -2173,10 +2182,17 @@ impl TriangleMesh {
         let mut filled = self.clone();
         let mut filled_hole_count = 0_usize;
         loop {
-            let edge_count = filled.topology().edge_count();
+            let data = filled.topology_data();
             let mut next = None;
-            for edge_index in 0..edge_count {
-                if let Some(fill) = filled.fill_topology_hole(edge_index, tolerance)? {
+            for (edge_index, _) in data
+                .edges
+                .iter()
+                .enumerate()
+                .filter(|(_, (_, incidence))| incidence.count == 1)
+            {
+                if let Some(fill) =
+                    filled.fill_topology_hole_with_data(edge_index, tolerance, &data)?
+                {
                     next = Some(fill.filled);
                     break;
                 }
@@ -2206,6 +2222,50 @@ impl TriangleMesh {
                 .ok_or(GeometryError::TooManyMeshFaces)?;
         }
         Ok((filled, filled_hole_count))
+    }
+
+    /// Caps closed, unambiguous naked boundaries whose vertices lie within the
+    /// absolute modelling tolerance of a common plane. Other openings remain
+    /// untouched. Each cap uses the mesh hole filler's existing winding and
+    /// constrained triangulation, and unused closing vertices are removed.
+    pub fn cap_planar_holes(&self, tolerance: Tolerance) -> Result<(Self, usize), GeometryError> {
+        let mut capped = self.clone();
+        let mut count = 0_usize;
+        loop {
+            let data = capped.topology_data();
+            let mut next = None;
+            for (edge, _) in data
+                .edges
+                .iter()
+                .enumerate()
+                .filter(|(_, (_, incidence))| incidence.count == 1)
+            {
+                let Some(fill) = capped.fill_topology_hole_with_data(edge, tolerance, &data)?
+                else {
+                    continue;
+                };
+                let boundary = fill.patch.vertices();
+                let plane = PointProjection3::onto_best_fit_plane(boundary)?;
+                let planar = boundary.iter().copied().try_fold(true, |planar, point| {
+                    Ok::<_, GeometryError>(
+                        planar && point.distance_to(plane.project(point)?)? <= tolerance.absolute(),
+                    )
+                })?;
+                if planar && !coplanar_mesh_boundary_overlaps(&data, boundary, &plane, tolerance)? {
+                    next = Some(fill.filled);
+                    break;
+                }
+            }
+            let Some(mut next) = next else {
+                break;
+            };
+            next.vertices.pop();
+            capped = Self::from_validated_parts(next.vertices, next.faces);
+            count = count
+                .checked_add(1)
+                .ok_or(GeometryError::TooManyMeshFaces)?;
+        }
+        Ok((capped, count))
     }
 
     pub fn triangle_points(&self, index: usize) -> Option<[Point3; 3]> {
@@ -3662,6 +3722,68 @@ fn triangulate_projected_mesh_hole(
         return Ok(None);
     }
     Ok(Some(triangles))
+}
+
+/// Independent coplanar loops with overlapping bounds may enclose one another.
+/// Filling either as a disk would overlap the other cap or the existing mesh.
+/// Until mesh caps can triangulate multiple loops together, leave both open.
+fn coplanar_mesh_boundary_overlaps(
+    data: &MeshTopologyData,
+    boundary: &[Point3],
+    plane: &PointProjection3,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    let naked = data
+        .edges
+        .iter()
+        .filter(|(_, incidence)| incidence.count == 1)
+        .map(|(&edge, _)| edge)
+        .collect::<Vec<_>>();
+    if naked.len() == boundary.len() {
+        return Ok(false);
+    }
+    let mut parents = (0..data.topological_vertex_count).collect::<Vec<_>>();
+    let mut naked_vertices = BTreeSet::new();
+    for (first, second) in naked {
+        union_indices_keep_earlier(&mut parents, first, second);
+        naked_vertices.insert(first);
+        naked_vertices.insert(second);
+    }
+    let source_vertex = data
+        .topological_points
+        .iter()
+        .position(|point| *point == boundary[0])
+        .expect("a filled boundary uses mesh topology vertices");
+    let source_root = index_root(&mut parents, source_vertex);
+    let mut other_components = BTreeMap::<usize, Vec<Point3>>::new();
+    for vertex in naked_vertices {
+        let root = index_root(&mut parents, vertex);
+        if root != source_root {
+            other_components
+                .entry(root)
+                .or_default()
+                .push(data.topological_points[vertex]);
+        }
+    }
+    let source_bounds = BoundingBox3::from_points(boundary.iter().copied())?;
+    let source_min = source_bounds.min().to_array();
+    let source_max = source_bounds.max().to_array();
+    for other in other_components.values() {
+        let bounds = BoundingBox3::from_points(other.iter().copied())?;
+        let other_min = bounds.min().to_array();
+        let other_max = bounds.max().to_array();
+        if (0..3)
+            .all(|axis| source_min[axis] <= other_max[axis] && other_min[axis] <= source_max[axis])
+            && other.iter().copied().try_fold(true, |coplanar, point| {
+                Ok::<_, GeometryError>(
+                    coplanar && point.distance_to(plane.project(point)?)? <= tolerance.absolute(),
+                )
+            })?
+        {
+            return Ok(true);
+        }
+    }
+    Ok(false)
 }
 
 fn project_mesh_hole_boundary(points: &[Point3]) -> Result<Option<Vec<[Real; 2]>>, GeometryError> {
@@ -6452,6 +6574,73 @@ mod tests {
         let (unchanged, hole_count) = filled.fill_holes(Tolerance::DEFAULT).unwrap();
         assert_eq!(hole_count, 0);
         assert_eq!(unchanged, filled);
+    }
+
+    #[test]
+    fn planar_cap_leaves_nonplanar_boundary_open() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0., 0., 0.),
+                point(2., 0., 0.),
+                point(2., 2., 0.5),
+                point(0., 2., 0.),
+                point(1., 1., -2.),
+                point(10., 0., 0.),
+                point(12., 0., 0.),
+                point(10., 2., 0.),
+                point(10., 0., -2.),
+            ],
+            vec![
+                [0, 1, 4],
+                [1, 2, 4],
+                [2, 3, 4],
+                [3, 0, 4],
+                [5, 6, 8],
+                [6, 7, 8],
+                [7, 5, 8],
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (capped, count) = mesh.cap_planar_holes(Tolerance::DEFAULT).unwrap();
+        assert_eq!(count, 1);
+        assert_eq!(capped.face_count(), mesh.face_count() + 1);
+        assert_eq!(capped.topology().boundary_edge_count(), 4);
+        assert_eq!(capped.cap_planar_holes(Tolerance::DEFAULT).unwrap().1, 0);
+        assert_eq!(mesh.fill_holes(Tolerance::DEFAULT).unwrap().1, 2);
+    }
+
+    #[test]
+    fn planar_cap_does_not_fill_nested_ring_boundaries_as_overlapping_disks() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0., 0., 0.),
+                point(4., 0., 0.),
+                point(4., 4., 0.),
+                point(0., 4., 0.),
+                point(1., 1., 0.),
+                point(3., 1., 0.),
+                point(3., 3., 0.),
+                point(1., 3., 0.),
+            ],
+            vec![
+                [0, 1, 5],
+                [0, 5, 4],
+                [1, 2, 6],
+                [1, 6, 5],
+                [2, 3, 7],
+                [2, 7, 6],
+                [3, 0, 4],
+                [3, 4, 7],
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(mesh.topology().boundary_edge_count(), 8);
+        assert_eq!(
+            mesh.cap_planar_holes(Tolerance::DEFAULT).unwrap(),
+            (mesh.clone(), 0)
+        );
     }
 
     #[test]

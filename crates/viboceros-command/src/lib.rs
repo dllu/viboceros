@@ -17014,9 +17014,7 @@ pub enum CommandError {
         "Join requires one object family: curves, meshes, or surfaces/polysurfaces; mixed-family joining is not implemented"
     )]
     UnsupportedJoinGeometry,
-    #[error(
-        "Cap currently supports only surfaces and B-reps; mesh and SubD capping are not implemented"
-    )]
+    #[error("Cap supports selected surfaces, B-reps, and meshes")]
     UnsupportedCapGeometry,
 
     #[error("MergeAllEdges requires selected surfaces or polysurfaces")]

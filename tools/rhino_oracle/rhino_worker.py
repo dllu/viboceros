@@ -5042,6 +5042,9 @@ def _execute(operation, iterations, tolerance):
     if operation["op"] == "cap_command":
         import cap_probe
         return cap_probe.run(operation, tolerance, globals())
+    if operation["op"] == "mesh_cap_command":
+        import mesh_cap_probe
+        return mesh_cap_probe.run(operation, tolerance, globals())
     if operation["op"] in ("merge_edges_command", "merge_edge_command"):
         import merge_edges_probe
         return merge_edges_probe.run(operation, tolerance, globals())

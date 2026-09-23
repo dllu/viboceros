@@ -114,7 +114,7 @@ fn planar_sheet_noop_preserves_surface_representation_and_creates_no_history() {
     assert!(!doc.is_selected(id));
     assert_eq!(doc.undo_label(), history.as_deref());
     let prompt = CapCommand.object_selection_prompt(&[]).unwrap().unwrap();
-    assert_eq!(prompt.filter, ObjectSelectionFilter::SurfaceComponents);
+    assert_eq!(prompt.filter, ObjectSelectionFilter::Cap);
     assert_eq!(
         prompt.workflow,
         ObjectSelectionWorkflow::OptionsDuringSelection
@@ -125,6 +125,62 @@ fn planar_sheet_noop_preserves_surface_representation_and_creates_no_history() {
             .object_selection_prompt(&["Triangles=Yes"])
             .is_err()
     );
+}
+
+#[test]
+fn cap_mesh_fills_only_planar_openings_and_preserves_object_history() {
+    let mut doc = Document::default();
+    let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+    let mesh = TriangleMesh::try_new(
+        vec![
+            point(0., 0., 0.),
+            point(2., 0., 0.),
+            point(2., 2., 0.5),
+            point(0., 2., 0.),
+            point(1., 1., -2.),
+            point(10., 0., 0.),
+            point(12., 0., 0.),
+            point(10., 2., 0.),
+            point(10., 0., -2.),
+        ],
+        vec![
+            [0, 1, 4],
+            [1, 2, 4],
+            [2, 3, 4],
+            [3, 0, 4],
+            [5, 6, 8],
+            [6, 7, 8],
+            [7, 5, 8],
+        ],
+        doc.tolerance(),
+    )
+    .unwrap();
+    let id = doc.add_geometry(Geometry::Mesh(mesh)).unwrap();
+    doc.select_object(id, SelectionMode::Replace).unwrap();
+    let before = doc.object(id).unwrap().clone();
+    let registry = CommandRegistry::with_builtins();
+    assert!(
+        CapCommand
+            .object_selection_prompt(&[])
+            .unwrap()
+            .unwrap()
+            .filter
+            .accepts_object(&before)
+    );
+    registry.execute(&mut doc, "Cap").unwrap();
+    let after = doc.object(id).unwrap().clone();
+    let Geometry::Mesh(result) = after.geometry() else {
+        panic!("expected mesh")
+    };
+    assert_eq!(result.face_count(), 8);
+    assert_eq!(result.topology().boundary_edge_count(), 4);
+    assert_eq!(after.attributes(), before.attributes());
+    assert!(doc.is_selected(id));
+    assert_eq!(doc.undo_label(), Some("Cap"));
+    registry.execute(&mut doc, "Undo").unwrap();
+    assert_eq!(doc.object(id), Some(&before));
+    registry.execute(&mut doc, "Redo").unwrap();
+    assert_eq!(doc.object(id), Some(&after));
 }
 
 #[test]

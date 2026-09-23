@@ -1,4 +1,4 @@
-//! In-place planar surface/B-rep hole capping.
+//! In-place planar surface, B-rep, and mesh hole capping.
 use super::*;
 use viboceros_geometry::BrepSolidOrientation;
 
@@ -19,7 +19,7 @@ impl Command for CapCommand {
         require_consumed(arguments, 0, "Cap")?;
         Ok(Some(ObjectSelectionPrompt {
             command: "Cap",
-            filter: ObjectSelectionFilter::SurfaceComponents,
+            filter: ObjectSelectionFilter::Cap,
             options: vec![],
             menus: vec![],
             choices: vec![],
@@ -36,6 +36,14 @@ impl Command for CapCommand {
         let mut face_count = 0;
         let mut unresolved_compounds = 0;
         for object in document.selected_objects() {
+            if let Geometry::Mesh(mesh) = object.geometry() {
+                let (capped, count) = mesh.cap_planar_holes(document.tolerance())?;
+                if count > 0 {
+                    face_count += capped.face_count() - mesh.face_count();
+                    replacements.push((object.id(), Geometry::Mesh(capped)));
+                }
+                continue;
+            }
             let converted;
             let brep = match object.geometry() {
                 Geometry::Brep(brep) => brep,

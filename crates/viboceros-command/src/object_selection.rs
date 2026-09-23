@@ -18,6 +18,7 @@ pub enum ObjectSelectionFilter {
     ToNurbs,
     Beziers,
     Parametric,
+    Cap,
     SurfaceComponents,
     Surfaces,
     PointCloudSources,
@@ -56,6 +57,10 @@ impl ObjectSelectionFilter {
                     )
             }
             Self::ToNurbs => !matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_)),
+            Self::Cap => matches!(
+                geometry,
+                Geometry::Mesh(_) | Geometry::NurbsSurface(_) | Geometry::Brep(_)
+            ),
             Self::Parametric => {
                 geometry.curve_ref().is_some()
                     || matches!(geometry, Geometry::NurbsSurface(_) | Geometry::Brep(_))

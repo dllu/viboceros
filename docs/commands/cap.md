@@ -2,10 +2,11 @@
 
 [Command reference](README.md) · [Surfaces and solids](surfaces.md)
 
-`Cap` fills planar naked-edge loops on selected NURBS surfaces and B-reps.
+`Cap` fills planar naked-edge loops on selected NURBS surfaces, B-reps, and meshes.
 Enter it before selecting objects, or select objects first. There are currently
-no options. Mesh and SubD Cap are not implemented; for existing mesh hole
-operations see [meshes](meshes.md).
+no options. Mesh caps are triangulated in place; Rhino's mesh `DeleteInput`,
+`Crease`, and `Triangles` options and SubD capping are still unavailable. For
+nonplanar mesh holes, see [meshes](meshes.md).
 
 Caps retain the spatial boundary geometry. The command subdivides newly capped
 edges at C0 knot joins with tangent breaks of at least 1°, independently of
@@ -14,6 +15,11 @@ intervals; collinear joins remain inside a single edge. Every incident trim is
 updated, including both uses of a seam. Nested loops form annular faces rather
 than overlapping disks.
 Planar openings can be capped while other nonplanar openings remain open.
+For meshes, each unbranched boundary is tested against a best-fit plane using
+the document's absolute tolerance. Existing mesh winding is preserved around
+the generated triangles. Nonplanar and ambiguous boundaries remain open.
+Coplanar mesh boundaries with overlapping bounding boxes are left open to
+avoid overlapping disks; annular caps with inner boundaries are not yet built.
 
 Objects retain their IDs, names, layers, colors, and group memberships.
 Preselection is retained; command-first selection is cleared on success,
@@ -150,4 +156,7 @@ tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/cap_edge_
 ```
 
 McNeel's [Cap reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/cap.htm)
-also documents mesh and SubD options outside this implementation's scope.
+documents the remaining mesh and SubD options.
+The [mesh Cap probe](../../tools/rhino_oracle/fixtures/mesh_cap_command.json)
+is prepared for command-level comparison. The first run could not execute:
+the local Rhino process exited during .NET startup with an access violation.
