@@ -275,7 +275,7 @@ impl SnapMetric for AxisAlignedSnapMetric {
 
     fn nearest_point_cloud(&self, cloud: &PointCloud3) -> Result<Option<Point3>, GeometryError> {
         Ok(cloud
-            .nearest_projected_in_box_relative(
+            .nearest_visible_projected_in_box_relative(
                 self.projection,
                 self.origin,
                 self.cursor_offset,
@@ -319,7 +319,7 @@ impl SnapMetric for FrameSnapMetric {
 
     fn nearest_point_cloud(&self, cloud: &PointCloud3) -> Result<Option<Point3>, GeometryError> {
         Ok(cloud
-            .nearest_projected_in_frame_box_relative(
+            .nearest_visible_projected_in_frame_box_relative(
                 self.frame,
                 self.cursor_offset,
                 self.capture_radius,
@@ -352,10 +352,11 @@ where
         Ok(cloud
             .points()
             .iter()
-            .copied()
-            .filter_map(|point| {
-                self.captured_distance(point)
-                    .map(|distance| (distance, point))
+            .enumerate()
+            .filter(|(index, _)| !cloud.is_hidden(*index))
+            .filter_map(|(_, point)| {
+                self.captured_distance(*point)
+                    .map(|distance| (distance, *point))
             })
             .min_by(|(first, _), (second, _)| first.total_cmp(second))
             .map(|(_, point)| point))

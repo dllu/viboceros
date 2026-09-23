@@ -13,9 +13,8 @@ index's construction or node-storage cost.
 Cloning a cloud shares one immutable `Arc` data block instead of copying points
 and index nodes. Lazy indexes initialized through any clone are available to all
 clones of that data. Equality has a constant-time shared-storage fast path and
-otherwise compares ordered points. Transformations create fresh data and fresh
-indexes, leaving the original and its snapshots unchanged. The borrowed point
-slice API and interchange representation are unchanged.
+otherwise compares ordered points and channels. Transformations create fresh
+data and fresh indexes, leaving the original and its snapshots unchanged.
 
 `point_cloud.rs` owns the public type, shared storage, and cache lifecycle.
 `point_cloud/index.rs` owns k-d tree construction, deterministic ordering, and
@@ -27,14 +26,16 @@ concurrency, and opt-in timing checks.
 local cursor offset separate, evaluate distances in the selected model-space
 plane, and preserve the earliest stored point on exact-distance ties. Radius
 and offset validation happens before initializing an index. Existing XY APIs
-delegate to the same implementation. Cloud equality depends on ordered points,
-not cache state; transformed clouds rebuild their indexes from transformed data.
+delegate to the same implementation. Cloud equality depends on ordered points
+and channels, not cache state; transformed clouds rebuild their indexes from
+transformed data.
 
-Object snapping uses `nearest_projected_in_box_relative`: an inclusive square
+Object snapping uses `nearest_visible_projected_in_box_relative`: an inclusive square
 aperture with Euclidean ranking, sharing the same indexes and local-origin
 precision. A closer point outside the square cannot mask an admitted corner.
-An admitted but unrepresentable nearest distance returns an error. Existing
-circular queries and click-selection behavior are unchanged. See the
+An admitted but unrepresentable nearest distance returns an error. Runtime-hidden
+members are skipped by axis-aligned, oblique-frame, and projective snapping; the
+indexed queries keep searching for a visible member behind a hidden hit. See the
 [square-aperture calibration](snap-capture-box.md).
 
 Each index node also stores its subtree's earliest source index (one additional

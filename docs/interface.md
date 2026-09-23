@@ -68,6 +68,7 @@ Edit to review current values. Deleting a layer closes its editor.
 
 Osnap captures visible Point, End, Mid, Center, Quad, and opt-in Near features, including
 indexed members of point clouds and features on locked objects and layers.
+Runtime-hidden point-cloud members are excluded from Osnap.
 The [capture aperture is square](snap-capture-box.md); admitted candidates retain
 Euclidean distance scoring. Curve-hover targets can lie outside the aperture.
 Mid uses half arc length on NURBS, individual polycurve segments and surface

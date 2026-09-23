@@ -291,6 +291,91 @@ fn snaps_to_the_nearest_point_cloud_member_in_xy() {
 }
 
 #[test]
+fn hidden_cloud_members_are_excluded_from_all_snap_projections() {
+    let mut document = Document::default();
+    let hidden_point = point(0.0, 0.0, 0.0);
+    let visible_point = point(0.1, 0.0, 0.0);
+    let cloud = PointCloud3::try_new(vec![hidden_point, visible_point])
+        .unwrap()
+        .with_hidden(vec![true, false])
+        .unwrap();
+    let id = document
+        .add_geometry(Geometry::PointCloud(cloud.clone()))
+        .unwrap();
+    let frame = Frame3::try_from_directions(
+        hidden_point,
+        Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+        Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let options = ObjectSnapOptions::from(ObjectSnapModes::only(ObjectSnapKind::Point));
+    let mut cache = ObjectSnapCache::default();
+    assert_eq!(
+        nearest_object_snap_relative(&document, hidden_point, [0.0, 0.0], 0.2)
+            .unwrap()
+            .unwrap()
+            .point(),
+        visible_point
+    );
+    for projection in [
+        viboceros_geometry::PointCloudProjection::Xy,
+        viboceros_geometry::PointCloudProjection::Xz,
+        viboceros_geometry::PointCloudProjection::Yz,
+    ] {
+        assert_eq!(
+            nearest_object_snap_axis_aligned(&document, projection, hidden_point, [0.0, 0.0], 0.2)
+                .unwrap()
+                .unwrap()
+                .point(),
+            visible_point
+        );
+    }
+    assert_eq!(
+        cache
+            .nearest_in_frame_with_options(&document, frame, [0.0, 0.0], 0.2, options)
+            .unwrap()
+            .unwrap()
+            .point(),
+        visible_point
+    );
+    assert_eq!(
+        nearest_object_snap_projected(&document, [0.0, 0.0], 0.2, |point| {
+            Some([point.x(), point.y()])
+        })
+        .unwrap()
+        .unwrap()
+        .point(),
+        visible_point
+    );
+
+    document
+        .replace_object_geometries([(
+            id,
+            Geometry::PointCloud(cloud.with_hidden(vec![true, true]).unwrap()),
+        )])
+        .unwrap();
+    assert!(
+        nearest_object_snap_relative(&document, hidden_point, [0.0, 0.0], 0.2)
+            .unwrap()
+            .is_none()
+    );
+    assert!(
+        cache
+            .nearest_in_frame_with_options(&document, frame, [0.0, 0.0], 0.2, options)
+            .unwrap()
+            .is_none()
+    );
+    assert!(
+        nearest_object_snap_projected(&document, [0.0, 0.0], 0.2, |point| {
+            Some([point.x(), point.y()])
+        })
+        .unwrap()
+        .is_none()
+    );
+}
+
+#[test]
 fn projected_snapping_uses_the_requested_view_plane() {
     let mut document = Document::default();
     document

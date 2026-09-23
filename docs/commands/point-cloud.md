@@ -85,8 +85,8 @@ PointCloud Hide Indices=0,3 Target=<id>
 PointCloud Show Indices=3 Target=<id>
 ```
 
-Hidden members are excluded from display and viewport picking, including window
-selection. Remove can still address them by stored index. An invalid index
+Hidden members are excluded from display, viewport picking, and Osnap, including
+window selection. Remove can still address them by stored index. An invalid index
 leaves the document unchanged.
 
 ## Reduce a cloud

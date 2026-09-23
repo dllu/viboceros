@@ -65,6 +65,19 @@ fn hidden_members_keep_indices_and_visible_queries_skip_them() {
             .0,
         1
     );
+    assert_eq!(
+        cloud
+            .nearest_visible_projected_in_box_relative(
+                PointCloudProjection::Xy,
+                points[0],
+                [0.0, 0.0],
+                0.0,
+            )
+            .unwrap()
+            .unwrap()
+            .0,
+        1
+    );
     let frame = Frame3::try_from_directions(
         points[0],
         Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
@@ -75,6 +88,14 @@ fn hidden_members_keep_indices_and_visible_queries_skip_them() {
     assert_eq!(
         cloud
             .nearest_visible_projected_frame_relative(frame, [0.0, 0.0], 1.0)
+            .unwrap()
+            .unwrap()
+            .0,
+        1
+    );
+    assert_eq!(
+        cloud
+            .nearest_visible_projected_in_frame_box_relative(frame, [0.0, 0.0], 0.0)
             .unwrap()
             .unwrap()
             .0,

@@ -378,6 +378,23 @@ impl PointCloud3 {
         )
     }
 
+    /// Nearest visible member inside an inclusive projected square.
+    pub fn nearest_visible_projected_in_box_relative(
+        &self,
+        projection: PointCloudProjection,
+        origin: Point3,
+        offset: [Real; 2],
+        half_width: Real,
+    ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
+        self.nearest_in_region(
+            projection,
+            origin,
+            offset,
+            SearchRegion::Square(half_width),
+            self.hidden(),
+        )
+    }
+
     /// Nearest member in an arbitrary orthonormal frame's XY projection.
     /// The frame origin and local `offset` remain separate for distant models.
     /// A lazy 3D bound cache lets the shared point tree prune projected queries.
@@ -413,6 +430,21 @@ impl PointCloud3 {
         half_width: Real,
     ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
         self.nearest_in_frame_region(frame, offset, SearchRegion::Square(half_width), None)
+    }
+
+    /// Nearest visible member inside an inclusive frame-projected square.
+    pub fn nearest_visible_projected_in_frame_box_relative(
+        &self,
+        frame: Frame3,
+        offset: [Real; 2],
+        half_width: Real,
+    ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
+        self.nearest_in_frame_region(
+            frame,
+            offset,
+            SearchRegion::Square(half_width),
+            self.hidden(),
+        )
     }
 
     fn nearest_in_frame_region(
