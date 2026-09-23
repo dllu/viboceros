@@ -45,8 +45,9 @@ magnification by 1/0.9; Out multiplies it by 0.9. Set another finite positive
 scale with `Options View Zoom ScaleFactor=<number>` or the View options menu.
 Values above 1 reverse the apparent direction of In and Out, as in Rhino.
 The setting applies across all viewports, shares Factor's camera limits, and
-preserves unfinished modeling prompts and model history. It currently resets
-when the application closes. Rhino documents the
+preserves unfinished modeling prompts and model history. It is saved in the
+per-user application settings and restored after restarting Viboceros; invalid
+saved values fall back to 0.9. Rhino documents the
 [View zoom setting](https://docs.mcneel.com/rhino/8/help/en-us/options/view.htm),
 and the [McNeel forum explanation](https://discourse.mcneel.com/t/navigation-controls-customization/18619/12)
 ties the command options to that setting. A live Rhino camera comparison remains

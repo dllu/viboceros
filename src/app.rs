@@ -48,6 +48,7 @@ mod plane_primitives;
 mod point_grid;
 mod point_input;
 mod points;
+mod preferences;
 mod radius;
 mod snapping;
 mod toolbar;
@@ -1259,6 +1260,7 @@ impl VibocerosApp {
         if let Some(error) = history_error {
             command_log.push_back(error);
         }
+        let zoom_scale = preferences::load_zoom_scale(creation_context.storage);
         Self {
             command_line,
             document: Document::default(),
@@ -1271,7 +1273,7 @@ impl VibocerosApp {
             snaps: snapping::SnapControls::default(),
             smart_track: true,
             grid_snap: true,
-            zoom_scale: DEFAULT_ZOOM_SCALE,
+            zoom_scale,
             command_focus_requested: false,
             active_command: None,
             last_point: None,
@@ -5194,6 +5196,10 @@ impl VibocerosApp {
 }
 
 impl eframe::App for VibocerosApp {
+    fn save(&mut self, storage: &mut dyn eframe::Storage) {
+        preferences::save_zoom_scale(storage, self.zoom_scale);
+    }
+
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.handle_interface_shortcuts(ui);
         if ui.input(|input| input.key_pressed(egui::Key::Escape)) {

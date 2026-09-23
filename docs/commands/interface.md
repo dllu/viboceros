@@ -84,7 +84,8 @@ from Rhino; see the [competition diagnostics](../mesh-snap-order.md).
 14 retained mesh-switch states match Rhino exactly. Other feature kinds remain
 incomplete. Grid spacing is one unit; SmartTrack is
 reference-axis tracking, not Rhino's complete inference system. SnapSize, custom
-display modes, UI-setting persistence, and full command macro interpretation
+display modes, persistence for snap and display controls, and full command macro
+interpretation
 remain unimplemented. The supported controls follow McNeel's documentation for
 [Snap/SetSnap](https://docs.mcneel.com/rhino/8mac/help/en-us/commands/snap.htm),
 [object snaps](https://docs.mcneel.com/rhino/8/help/en-us/user_interface/object_snaps.htm),
