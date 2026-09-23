@@ -28,10 +28,12 @@ paired seams; pole trims still require singular-topology support. Linear
 extrusions of line and B-spline/NURBS directrices convert to exact tensor-product
 NURBS surfaces. Revolutions of those directrices with straight UV iso-trims also
 convert to exact rational patches over angles up to one turn, including paired
-seams on a full turn. Faces with multiple loops require UV trims whose straight
-segment images are certified, including collinear higher-degree NURBS trims. The
-polygon constructor validates hole containment and intersections. Curved UV
-loops currently require a single outer boundary. Other periodic seam arrangements,
+seams on a full turn. Faces with multiple loops support certified straight
+segment UV trims, including collinear higher-degree NURBS trims. The polygon
+constructor validates hole containment and intersections. Curved UV
+holes with one closed four-span quadratic NURBS trim are supported inside convex
+polygonal outer loops when control sectors certify a simple, separate hole.
+Other curved UV loops require a single outer boundary. Periodic seam arrangements,
 missing trims, and invalid topology fail the import; there is no automatic mesh
 fallback. Assembly and representation warnings
 follow the existing STEP importer and are counted in the result message.

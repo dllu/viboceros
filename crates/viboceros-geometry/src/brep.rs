@@ -17,6 +17,7 @@ mod borders;
 mod cap;
 mod combine;
 mod components;
+mod curved_boundaries;
 mod edge_split;
 mod face_split;
 mod incidence;

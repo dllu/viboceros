@@ -129,16 +129,7 @@ pub(super) fn convert_shell(
                 )?],
             )?
         } else {
-            if boundaries
-                .iter()
-                .flatten()
-                .any(|trim| !trim.curve().is_straight_segment())
-            {
-                return Err(unsupported(
-                    "multiple loops require certified straight UV boundaries",
-                ));
-            }
-            BrepFace::try_from_polygon_boundaries(surface, !face.orientation, boundaries)?
+            BrepFace::try_from_certified_boundaries(surface, !face.orientation, boundaries)?
         };
         faces.push(native);
     }

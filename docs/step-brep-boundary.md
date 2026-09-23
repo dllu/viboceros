@@ -181,7 +181,7 @@ faces with area 96, preserving face sense. A two-hole fixture additionally check
 
 `BrepFace::try_from_polygon_boundaries` classifies the unique counterclockwise
 outer boundary and moves it to the front without modifying any source trim.
-It verifies degree-one, single-span UV curves, closure, nonzero sides and area,
+It verifies certified straight-segment UV curves, closure, nonzero sides and area,
 absence of backtracking and self-intersections, strict hole containment, and
 absence of hole intersections or nesting. Touching and numerically unresolved
 regions are conservatively rejected. Normalized UV coordinates prevent raw
@@ -205,8 +205,14 @@ General native
 `Brep::try_new` validation currently verifies trim continuity, endpoint/surface
 agreement, edge-use types, and winding, but does not establish those planar
 region conditions; the polygon constructor establishes them before the native
-STEP reader performs full model-space validation. This does not extend region
-validation to arbitrary curved trims or change other B-rep constructors.
+STEP reader performs full model-space validation.
+
+`BrepFace::try_from_certified_boundaries` also accepts closed rational quadratic
+holes with four Bézier spans when their endpoint quadrilateral and control
+sectors certify a simple clockwise loop. Exact control-hull checks place each
+hole strictly inside a convex polygonal outer boundary; disjoint control bounds
+separate it from other holes. Other curved loops remain unsupported. This does
+not change other B-rep constructors.
 
 Native loop-winding validation also uses the range-safe UV normalization.
 Single degree-one trims with same-sign weights contribute only their endpoints:
@@ -261,7 +267,8 @@ iso-trims use exact rational patches over angles up to one turn, including paire
 full-turn seams. Polar singular trims remain unsupported. The path
 validates shared topology in `Brep::try_new`. NURBS faces with multiple loops of
 certified straight-segment UV trims use strict polygon boundary validation.
-Curved UV loops currently require one outer boundary.
+Four-span quadratic NURBS UV holes are accepted under the convex containment and
+sector certificates above. Other curved UV loops require one outer boundary.
 Other surface types, periodic seam arrangements, and missing UV curves still
 need representation adapters or explicit topology handling. The default mesh import
 remains available for display of such files.

@@ -787,6 +787,105 @@ fn native_step_imports_bspline_faces_with_polygon_holes() {
 }
 
 #[test]
+fn native_step_imports_certified_quadratic_hole_on_bspline_face() {
+    use viboceros_geometry::{
+        Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex,
+        NurbsCurve, NurbsCurve2, NurbsSurface, Point2, SurfaceIso, WeightedPoint2, WeightedPoint3,
+    };
+    let outer = vec![[0., 0.], [10., 0.], [10., 10.], [0., 10.]];
+    let planar = polygon_face_step(&[outer], false);
+    let imported = read_step_planar_instances(Cursor::new(planar), Tolerance::DEFAULT).unwrap();
+    let source = &imported.instances[0].brep;
+    let surface = NurbsSurface::try_new(
+        2,
+        1,
+        3,
+        2,
+        [
+            [0., 0.],
+            [5., 0.],
+            [10., 0.],
+            [0., 10.],
+            [5., 10.],
+            [10., 10.],
+        ]
+        .into_iter()
+        .map(|[x, y]| Point3::try_new(x, y, 0.).unwrap())
+        .collect(),
+        vec![0., 0., 0., 10., 10., 10.],
+        vec![0., 0., 10., 10.],
+    )
+    .unwrap();
+    let points = [
+        (6., 5.),
+        (6., 4.),
+        (5., 4.),
+        (4., 4.),
+        (4., 5.),
+        (4., 6.),
+        (5., 6.),
+        (6., 6.),
+        (6., 5.),
+    ];
+    let knots = vec![0., 0., 0., 1., 1., 2., 2., 3., 3., 4., 4., 4.];
+    let uv_controls = points
+        .iter()
+        .enumerate()
+        .map(|(i, &(x, y))| {
+            WeightedPoint2::try_new(
+                Point2::try_new(x, y).unwrap(),
+                if i % 2 == 0 { 1. } else { 0.75 },
+            )
+            .unwrap()
+        })
+        .collect();
+    let edge_controls = points
+        .iter()
+        .enumerate()
+        .map(|(i, &(x, y))| {
+            WeightedPoint3::try_new(
+                Point3::try_new(x, y, 0.).unwrap(),
+                if i % 2 == 0 { 1. } else { 0.75 },
+            )
+            .unwrap()
+        })
+        .collect();
+    let curve = NurbsCurve::try_new_rational(2, edge_controls, knots.clone()).unwrap();
+    let trim_curve = NurbsCurve2::try_new_rational(2, uv_controls, knots).unwrap();
+    let mut vertices = source.vertices().to_vec();
+    let vertex = vertices.len();
+    vertices.push(BrepVertex::try_new(Point3::try_new(6., 5., 0.).unwrap(), 1e-9).unwrap());
+    let mut edges = source.edges().to_vec();
+    let edge = edges.len();
+    edges.push(BrepEdge::try_new([vertex, vertex], curve, 1e-9).unwrap());
+    let trim = BrepTrim::try_new(
+        [vertex, vertex],
+        Some(edge),
+        false,
+        trim_curve,
+        BrepTrimType::Boundary,
+        SurfaceIso::NotIso,
+        [0.; 2],
+    )
+    .unwrap();
+    let mut loops = source.faces()[0].loops().to_vec();
+    loops.push(BrepLoop::try_new(BrepLoopType::Inner, vec![trim]).unwrap());
+    let face = BrepFace::try_new(surface, false, loops).unwrap();
+    let source = Brep::try_new(vertices, edges, vec![face], Tolerance::DEFAULT).unwrap();
+    let expected_area = source.area(Tolerance::DEFAULT).unwrap();
+    let mut output = Vec::new();
+    write_step_nurbs_breps(&mut output, [&source]).unwrap();
+    let text = String::from_utf8(output).unwrap();
+    assert!(text.contains("B_SPLINE_SURFACE_WITH_KNOTS("));
+    assert!(text.contains("RATIONAL_B_SPLINE_CURVE("));
+    let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    let brep = &native.instances[0].brep;
+    assert_eq!(brep.faces()[0].loops().len(), 2);
+    assert_eq!(brep.faces()[0].loops()[1].trims()[0].curve().degree(), 2);
+    assert!((brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
+}
+
+#[test]
 fn native_step_imports_exact_parabola_and_hyperbola_trims() {
     use monstertruck::meshing::prelude::ParametricCurve;
     use monstertruck::modeling::{
