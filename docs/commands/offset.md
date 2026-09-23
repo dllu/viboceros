@@ -40,6 +40,17 @@ Offsets retain their source parameter intervals. An inward
 offset that would collapse a circle or arc is rejected. A side point on the
 supporting line or circle is ambiguous and rejected.
 
+`OffsetMultiple distance side-point OffsetCount=n` creates `n` offsets per
+selected curve at successive multiples of the distance (default `n=2`).
+Open curves offset toward the picked side. Closed curves use a shared inward
+or outward choice: a point inside any selected closed region chooses inward.
+Each nested island reverses that direction, including successive nesting
+levels. Closed circles, full circular arcs, and simple planar polylines can
+form regions. Selected closed boundaries that intersect or touch are rejected.
+The command supports the same `Corner` and `OutputLayer` options as `Offset`;
+at most 100,000 source/count combinations can be requested. All outputs are
+staged before the document changes.
+
 `OutputLayer=Current` is the default; `OutputLayer=Input` uses each source's
 layer. Both choices create fresh object attributes. The command stages every
 result before changing the document, so an unsupported or degenerate selected

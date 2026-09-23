@@ -16,6 +16,132 @@ pub enum CurveOffsetCornerStyle {
 }
 
 impl Curve3 {
+    /// Whether a point is strictly inside a supported closed offset region.
+    /// Open curves return `None`; a point on the boundary is ambiguous.
+    pub fn offset_region_contains(
+        &self,
+        point: Point3,
+        plane_normal: UnitVector3,
+        tolerance: Tolerance,
+    ) -> Result<Option<bool>, GeometryError> {
+        let circle = match self {
+            Self::Circle(circle) => Some(*circle),
+            Self::Arc(arc) if arc.is_closed() => Some(Circle3::try_from_frame(
+                arc.center(),
+                arc.radius(),
+                arc.x_axis(),
+                arc.normal()?,
+                tolerance,
+            )?),
+            _ => None,
+        };
+        if let Some(circle) = circle {
+            let relative = circle.center().vector_to(point)?;
+            if relative.dot(circle.normal()?.as_vector())?.abs() > tolerance.absolute() {
+                return Ok(Some(false));
+            }
+            let radial = in_plane_radius(circle.center(), point, circle.x_axis(), circle.y_axis())?;
+            if (radial - circle.radius()).abs() <= tolerance.absolute() {
+                return Err(GeometryError::AmbiguousCurveOffsetSide);
+            }
+            return Ok(Some(radial < circle.radius()));
+        }
+        let Self::Polyline(polyline) = self else {
+            return Ok(None);
+        };
+        if !polyline.is_closed() {
+            return Ok(None);
+        }
+        let normal = polyline_offset_normal(polyline, plane_normal, tolerance)?;
+        let origin = polyline.vertices()[0];
+        if origin.vector_to(point)?.dot(normal.as_vector())?.abs() > tolerance.absolute() {
+            return Ok(Some(false));
+        }
+        if polyline
+            .closest_point(point, tolerance)?
+            .distance_to(point)?
+            <= tolerance.absolute()
+        {
+            return Err(GeometryError::AmbiguousCurveOffsetSide);
+        }
+        let x_axis = polyline.vertices()[0].direction_to(polyline.vertices()[1])?;
+        let y_axis = normal
+            .as_vector()
+            .cross(x_axis.as_vector())?
+            .normalized_nonzero()?;
+        let relative = origin.vector_to(point)?;
+        let px = relative.dot(x_axis.as_vector())?;
+        let py = relative.dot(y_axis.as_vector())?;
+        let mut inside = false;
+        for edge in polyline.vertices().windows(2) {
+            let a = origin.vector_to(edge[0])?;
+            let b = origin.vector_to(edge[1])?;
+            let (ax, ay) = (a.dot(x_axis.as_vector())?, a.dot(y_axis.as_vector())?);
+            let (bx, by) = (b.dot(x_axis.as_vector())?, b.dot(y_axis.as_vector())?);
+            if (ay > py) != (by > py) && px < ax + (py - ay) * (bx - ax) / (by - ay) {
+                inside = !inside;
+            }
+        }
+        Ok(Some(inside))
+    }
+
+    /// Signed offset direction toward the interior of a closed region.
+    pub fn offset_region_inward_sign(
+        &self,
+        plane_normal: UnitVector3,
+        tolerance: Tolerance,
+    ) -> Result<Option<Real>, GeometryError> {
+        match self {
+            Self::Circle(_) => return Ok(Some(1.0)),
+            Self::Arc(arc) if arc.is_closed() => return Ok(Some(1.0)),
+            Self::Polyline(polyline) if polyline.is_closed() => {
+                let normal = polyline_offset_normal(polyline, plane_normal, tolerance)?;
+                let origin = polyline.vertices()[0];
+                let x_axis = origin.direction_to(polyline.vertices()[1])?;
+                let y_axis = normal
+                    .as_vector()
+                    .cross(x_axis.as_vector())?
+                    .normalized_nonzero()?;
+                let scale = polyline
+                    .vertices()
+                    .iter()
+                    .try_fold(0.0_f64, |largest, point| {
+                        Ok::<_, GeometryError>(largest.max(origin.distance_to(*point)?))
+                    })?;
+                let mut area2 = 0.0;
+                for edge in polyline.vertices().windows(2) {
+                    let a = origin.vector_to(edge[0])?;
+                    let b = origin.vector_to(edge[1])?;
+                    let (ax, ay) = (
+                        a.dot(x_axis.as_vector())? / scale,
+                        a.dot(y_axis.as_vector())? / scale,
+                    );
+                    let (bx, by) = (
+                        b.dot(x_axis.as_vector())? / scale,
+                        b.dot(y_axis.as_vector())? / scale,
+                    );
+                    area2 += ax.mul_add(by, -(ay * bx));
+                }
+                if area2.abs() <= tolerance.relative() {
+                    return Err(GeometryError::DegenerateOffsetRegion);
+                }
+                return Ok(Some(area2.signum()));
+            }
+            _ => {}
+        }
+        Ok(None)
+    }
+
+    /// A point on a supported closed region's boundary for nesting tests.
+    pub fn offset_region_boundary_point(&self) -> Result<Option<Point3>, GeometryError> {
+        match self {
+            Self::Circle(circle) => Ok(Some(circle.point_at_angle(0.0)?)),
+            Self::Arc(arc) if arc.is_closed() => Ok(Some(arc.start()?)),
+            Self::Polyline(polyline) if polyline.is_closed() => Ok(Some(polyline.vertices()[0])),
+            _ => Ok(None),
+        }
+    }
+
     /// Offset left of the curve direction for positive `distance`. Lines use
     /// `plane_normal`; circular curves use their own oriented supporting plane.
     /// Native parameter intervals and analytic representations are retained.

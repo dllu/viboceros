@@ -123,7 +123,7 @@ use curve_cut::{
     CurveCutterInput, TrimCurveCommand, selected_curve_cutter_inputs, split_curve_with_cutters,
 };
 use curve_edit::CloseCrvCommand;
-use offset_curve::OffsetCommand;
+use offset_curve::{OffsetCommand, OffsetMultipleCommand};
 mod join;
 use join::JoinCommand;
 mod curvature;
@@ -728,6 +728,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(OffsetCommand)
+            .expect("unique built-in command");
+        registry
+            .register(OffsetMultipleCommand)
             .expect("unique built-in command");
         registry
             .register(CapCommand::default())

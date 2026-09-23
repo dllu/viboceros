@@ -9,6 +9,10 @@ pub enum GeometryError {
     UnsupportedCurveOffset,
     #[error("offset side point lies on the curve's supporting locus")]
     AmbiguousCurveOffsetSide,
+    #[error("selected closed offset regions intersect or touch")]
+    IntersectingOffsetRegions,
+    #[error("closed offset region has zero signed area")]
+    DegenerateOffsetRegion,
     #[error("offset distance must be nonzero and finite")]
     InvalidCurveOffsetDistance,
     #[error("offset through-point lies outside the curve's offset plane")]
