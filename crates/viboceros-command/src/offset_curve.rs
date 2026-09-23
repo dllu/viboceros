@@ -1,11 +1,11 @@
-//! Exact analytic and sharp polyline offsets with explicit side and layer choices.
+//! Exact analytic and planar polyline offsets with explicit corner and layer choices.
 
 use super::*;
 
 #[cfg(test)]
 mod tests;
 
-const USAGE: &str = "Offset distance side-point [BothSides=Yes|No] [OutputLayer=Current|Input] | Offset distance BothSides=Yes [OutputLayer=Current|Input]";
+const USAGE: &str = "Offset distance side-point [BothSides=Yes|No] [Corner=Sharp|Chamfer] [OutputLayer=Current|Input] | Offset distance BothSides=Yes [Corner=Sharp|Chamfer] [OutputLayer=Current|Input]";
 
 pub(super) struct OffsetCommand;
 
@@ -62,7 +62,12 @@ impl Command for OffsetCommand {
             let count = 1 + usize::from(options.both_sides);
             for &signed_distance in &distances[..count] {
                 let offset = curve
-                    .try_offset(signed_distance, normal, document.tolerance())
+                    .try_offset_with_corner_style(
+                        signed_distance,
+                        normal,
+                        document.tolerance(),
+                        options.corner,
+                    )
                     .map_err(map_offset_error)?;
                 outputs.push((Geometry::from(offset), output_attributes.clone()));
             }
@@ -94,6 +99,7 @@ struct Options {
     side: Option<Point3>,
     both_sides: bool,
     input_layer: bool,
+    corner: CurveOffsetCornerStyle,
 }
 
 fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
@@ -106,9 +112,11 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
         side: None,
         both_sides: false,
         input_layer: false,
+        corner: CurveOffsetCornerStyle::Sharp,
     };
     let mut both_seen = false;
     let mut layer_seen = false;
+    let mut corner_seen = false;
     let mut index = 1;
     while index < arguments.len() {
         let argument = arguments[index];
@@ -116,6 +124,7 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
             (name, value, 1)
         } else if argument.eq_ignore_ascii_case("BothSides")
             || argument.eq_ignore_ascii_case("OutputLayer")
+            || argument.eq_ignore_ascii_case("Corner")
         {
             (
                 argument,
@@ -143,6 +152,15 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
                 return Err(CommandError::Usage(USAGE));
             };
             layer_seen = true;
+        } else if name.eq_ignore_ascii_case("Corner") && !corner_seen {
+            options.corner = if value.eq_ignore_ascii_case("Sharp") {
+                CurveOffsetCornerStyle::Sharp
+            } else if value.eq_ignore_ascii_case("Chamfer") {
+                CurveOffsetCornerStyle::Chamfer
+            } else {
+                return Err(CommandError::Usage(USAGE));
+            };
+            corner_seen = true;
         } else {
             return Err(CommandError::Usage(USAGE));
         }

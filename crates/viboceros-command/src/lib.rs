@@ -153,7 +153,7 @@ use viboceros_geometry::{
     ControlPointCurveClosure, Curve3, CurveBrepIntersectionEvent, CurveClosure,
     CurveCurveIntersectionEvent, CurveExtensionBoundary as GeometryCurveExtensionBoundary,
     CurveExtensionSide, CurveExtensionStyle as GeometryCurveExtensionStyle, CurveJoinOptions,
-    CurveKnotSpacing, CurveRef, CurveSample, CurveSurfaceIntersectionEvent,
+    CurveKnotSpacing, CurveOffsetCornerStyle, CurveRef, CurveSample, CurveSurfaceIntersectionEvent,
     CurveThroughConstruction, CurveTweenMatchMethod, DEFAULT_CATENARY_POINT_COUNT,
     DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN, Ellipse3, Frame3, GeometryError, LineSegment,
     MAX_CATENARY_POINT_COUNT, MAX_CURVE_DIVISION_POINTS, MAX_CURVE_FIT_DEGREE,

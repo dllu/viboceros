@@ -121,6 +121,46 @@ fn offset_open_polyline_keeps_sharp_corner_and_vertex_parameters() {
 }
 
 #[test]
+fn chamfer_option_adds_straight_bridge_at_convex_corner() {
+    let mut document = Document::default();
+    let source = document
+        .add_geometry(Geometry::Polyline(
+            viboceros_geometry::Polyline3::try_new(
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.0, -4.0, 0.0),
+                ],
+                document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    document
+        .select_object(source, SelectionMode::Replace)
+        .unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "Offset 1 1,2,0 Corner=Chamfer")
+        .unwrap();
+    let Geometry::Polyline(output) = document.selected_objects().next().unwrap().geometry() else {
+        panic!("offset polyline")
+    };
+    assert_eq!(
+        output.vertices(),
+        &[
+            point(0.0, 1.0, 0.0),
+            point(4.0, 1.0, 0.0),
+            point(5.0, 0.0, 0.0),
+            point(5.0, -4.0, 0.0),
+        ]
+    );
+    assert!(matches!(
+        parse(&["1", "1,2,0", "Corner=Round"]),
+        Err(CommandError::Usage(_))
+    ));
+}
+
+#[test]
 fn collapsing_polyline_offset_rolls_back_other_selected_results() {
     let mut document = Document::default();
     let line = document

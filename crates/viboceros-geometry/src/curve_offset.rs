@@ -5,6 +5,14 @@ use crate::{
     Vector3,
 };
 
+/// How an offset polyline joins neighboring segments at a convex corner.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum CurveOffsetCornerStyle {
+    #[default]
+    Sharp,
+    Chamfer,
+}
+
 impl Curve3 {
     /// Offset left of the curve direction for positive `distance`. Lines use
     /// `plane_normal`; circular curves use their own oriented supporting plane.
@@ -14,6 +22,23 @@ impl Curve3 {
         distance: Real,
         plane_normal: UnitVector3,
         tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        self.try_offset_with_corner_style(
+            distance,
+            plane_normal,
+            tolerance,
+            CurveOffsetCornerStyle::Sharp,
+        )
+    }
+
+    /// Offset with the requested corner treatment for planar polylines.
+    /// Analytic curve families have no polyline corners and ignore `corner`.
+    pub fn try_offset_with_corner_style(
+        &self,
+        distance: Real,
+        plane_normal: UnitVector3,
+        tolerance: Tolerance,
+        corner: CurveOffsetCornerStyle,
     ) -> Result<Self, GeometryError> {
         if !distance.is_finite() || distance == 0.0 {
             return Err(GeometryError::InvalidCurveOffsetDistance);
@@ -58,6 +83,7 @@ impl Curve3 {
                 distance,
                 plane_normal,
                 tolerance,
+                corner,
             )?)),
             _ => Err(GeometryError::UnsupportedCurveOffset),
         }
@@ -160,6 +186,7 @@ fn offset_polyline(
     distance: Real,
     fallback: UnitVector3,
     tolerance: Tolerance,
+    corner_style: CurveOffsetCornerStyle,
 ) -> Result<Polyline3, GeometryError> {
     let normal = polyline_offset_normal(polyline, fallback, tolerance)?;
     let vertices = polyline.vertices();
@@ -173,55 +200,103 @@ fn offset_polyline(
         .iter()
         .map(|direction| normal.as_vector().cross(*direction))
         .collect::<Result<Vec<_>, _>>()?;
-    let mut result = Vec::with_capacity(vertices.len());
+    let mut corners = Vec::with_capacity(vertices.len());
     let unique_count = if closed {
         segment_count
     } else {
         vertices.len()
     };
     for index in 0..unique_count {
-        let point = if !closed && index == 0 {
-            vertices[0].translated(lefts[0].scaled(distance)?)?
+        let corner = if !closed && index == 0 {
+            let point = vertices[0].translated(lefts[0].scaled(distance)?)?;
+            (point, point)
         } else if !closed && index == segment_count {
-            vertices[index].translated(lefts[segment_count - 1].scaled(distance)?)?
+            let point = vertices[index].translated(lefts[segment_count - 1].scaled(distance)?)?;
+            (point, point)
         } else {
             let previous = if index == 0 {
                 segment_count - 1
             } else {
                 index - 1
             };
-            sharp_offset_corner(
-                vertices[index],
-                directions[previous],
-                directions[index],
-                lefts[previous],
-                lefts[index],
-                normal,
-                distance,
-                tolerance,
-            )?
+            let turn = directions[previous]
+                .cross(directions[index])?
+                .dot(normal.as_vector())?;
+            if corner_style == CurveOffsetCornerStyle::Chamfer
+                && turn * distance < -tolerance.angular() * distance.abs()
+            {
+                let pair = (
+                    vertices[index].translated(lefts[previous].scaled(distance)?)?,
+                    vertices[index].translated(lefts[index].scaled(distance)?)?,
+                );
+                if pair.0 == pair.1 {
+                    return Err(GeometryError::Degenerate {
+                        context: "offset chamfer under model precision",
+                    });
+                }
+                pair
+            } else {
+                let point = sharp_offset_corner(
+                    vertices[index],
+                    directions[previous],
+                    directions[index],
+                    lefts[previous],
+                    lefts[index],
+                    normal,
+                    distance,
+                    tolerance,
+                )?;
+                (point, point)
+            }
         };
-        if point == vertices[index] {
+        if corner.0 == vertices[index] || corner.1 == vertices[index] {
             return Err(GeometryError::Degenerate {
                 context: "offset polyline under model precision",
             });
         }
-        result.push(point);
+        corners.push(corner);
+    }
+    let mut result = Vec::with_capacity(vertices.len() + corners.len());
+    for &(incoming, outgoing) in &corners {
+        result.push(incoming);
+        if incoming != outgoing {
+            result.push(outgoing);
+        }
     }
     if closed {
         result.push(result[0]);
     }
-    for (index, pair) in result.windows(2).enumerate() {
+    for index in 0..segment_count {
+        let start = corners[index].1;
+        let end = corners[(index + 1) % corners.len()].0;
         let advance = vertices[index]
             .vector_to(vertices[index + 1])?
-            .dot(pair[0].vector_to(pair[1])?)?;
+            .dot(start.vector_to(end)?)?;
         if advance <= 0.0 {
             return Err(GeometryError::Degenerate {
                 context: "collapsed offset polyline segment",
             });
         }
     }
-    Polyline3::try_with_parameters(result, polyline.parameters().to_vec(), tolerance)
+    let parameters = if result.len() == vertices.len() {
+        polyline.parameters().to_vec()
+    } else {
+        let source = polyline.parameters();
+        let start = source[0];
+        let end = source[source.len() - 1];
+        let span = end - start;
+        let last = result.len() - 1;
+        (0..=last)
+            .map(|index| {
+                if index == last {
+                    end
+                } else {
+                    start + span * (index as Real / last as Real)
+                }
+            })
+            .collect()
+    };
+    Polyline3::try_with_parameters(result, parameters, tolerance)
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -575,6 +650,113 @@ mod tests {
                 point(3.0, 0.0, -2.0),
                 point(1.0, 0.0, -2.0),
                 point(1.0, 0.0, -1.0),
+            ]
+        );
+    }
+
+    #[test]
+    fn chamfer_bridges_convex_gaps_and_preserves_source_domain() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let open = Curve3::Polyline(
+            Polyline3::try_with_parameters(
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.0, -4.0, 0.0),
+                ],
+                vec![2.0, 5.0, 9.0],
+                tol,
+            )
+            .unwrap(),
+        );
+        let Curve3::Polyline(chamfer) = open
+            .try_offset_with_corner_style(1.0, normal, tol, CurveOffsetCornerStyle::Chamfer)
+            .unwrap()
+        else {
+            panic!("chamfer polyline")
+        };
+        assert_eq!(
+            chamfer.vertices(),
+            &[
+                point(0.0, 1.0, 0.0),
+                point(4.0, 1.0, 0.0),
+                point(5.0, 0.0, 0.0),
+                point(5.0, -4.0, 0.0),
+            ]
+        );
+        assert_eq!(chamfer.domain(), 2.0..=9.0);
+
+        let inner = Curve3::Polyline(
+            Polyline3::try_new(
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.0, 4.0, 0.0),
+                ],
+                tol,
+            )
+            .unwrap(),
+        );
+        let Curve3::Polyline(offset) = inner
+            .try_offset_with_corner_style(1.0, normal, tol, CurveOffsetCornerStyle::Chamfer)
+            .unwrap()
+        else {
+            panic!("inner polyline")
+        };
+        assert_eq!(
+            offset.vertices(),
+            &[
+                point(0.0, 1.0, 0.0),
+                point(3.0, 1.0, 0.0),
+                point(3.0, 4.0, 0.0),
+            ]
+        );
+    }
+
+    #[test]
+    fn closed_outward_chamfer_joins_all_corners() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let source = Curve3::Polyline(
+            Polyline3::try_new(
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.0, 3.0, 0.0),
+                    point(0.0, 3.0, 0.0),
+                    point(0.0, 0.0, 0.0),
+                ],
+                tol,
+            )
+            .unwrap(),
+        );
+        let Curve3::Polyline(offset) = source
+            .try_offset_with_corner_style(-1.0, normal, tol, CurveOffsetCornerStyle::Chamfer)
+            .unwrap()
+        else {
+            panic!("closed polyline")
+        };
+        assert!(offset.is_closed());
+        assert_eq!(offset.domain(), 0.0..=4.0);
+        assert_eq!(
+            offset.vertices(),
+            &[
+                point(-1.0, 0.0, 0.0),
+                point(0.0, -1.0, 0.0),
+                point(4.0, -1.0, 0.0),
+                point(5.0, 0.0, 0.0),
+                point(5.0, 3.0, 0.0),
+                point(4.0, 4.0, 0.0),
+                point(0.0, 4.0, 0.0),
+                point(-1.0, 3.0, 0.0),
+                point(-1.0, 0.0, 0.0),
             ]
         );
     }
