@@ -253,10 +253,11 @@ exact rational patches, including paired `SEAM_CURVE` uses on a full-turn wall;
 angular parameters within each arc are reparameterized consistently with their
 trims. Ring-torus patches and spherical bands away from the poles with straight
 UV iso-trims use exact rational biquadratic patches, including full-angle seam
-strips. Polar singular trims remain unsupported. The path validates
-shared topology in `Brep::try_new`. NURBS faces with
-multiple straight UV polygon loops use the kernel's strict polygon
-boundary validation. Curved UV loops currently require one outer boundary.
+strips. Linear extrusions of line and B-spline/NURBS directrices use exact
+tensor-product NURBS patches. Polar singular trims remain unsupported. The path
+validates shared topology in `Brep::try_new`. NURBS faces with multiple straight
+UV polygon loops use the kernel's strict polygon boundary validation. Curved UV
+loops currently require one outer boundary.
 Other surface types, periodic seam arrangements, and missing UV curves still
 need representation adapters or explicit topology handling. The default mesh import
 remains available for display of such files.

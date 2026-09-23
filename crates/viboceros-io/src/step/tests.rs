@@ -1434,6 +1434,140 @@ fn native_step_imports_full_turn_toroidal_strip_seam() {
 }
 
 #[test]
+fn native_step_imports_exact_line_bspline_and_nurbs_extrusions() {
+    use monstertruck::meshing::prelude::ParametricSurface;
+    use monstertruck::modeling::{
+        BsplineCurve, KnotVector, Line, NurbsCurve, Point2 as TruckPoint2, Vector3, Vector4,
+    };
+    use monstertruck::step::load::step_geometry::{
+        Curve2D, Curve3D, StepExtrusionSurface, StepParameterCurve, Surface, SweepSurface,
+    };
+    use monstertruck::step::save::StepModels;
+    use monstertruck::topology::compress::{
+        CompressedEdge, CompressedEdgeUse, CompressedTrimmedFace, CompressedTrimmedShell,
+    };
+    for variant in 0..3 {
+        let rational = variant == 2;
+        let make_curve = |y: f64| {
+            if variant == 0 {
+                Curve3D::Line(Line(
+                    TruckPoint3::new(0., y, 0.),
+                    TruckPoint3::new(2., y, 0.),
+                ))
+            } else if rational {
+                Curve3D::NurbsCurve(NurbsCurve::new(BsplineCurve::new(
+                    KnotVector::bezier_knot(2),
+                    vec![
+                        Vector4::new(0., y, 0., 1.),
+                        Vector4::new(0.5, y * 0.5, 0.5, 0.5),
+                        Vector4::new(2., y, 0., 1.),
+                    ],
+                )))
+            } else {
+                Curve3D::BsplineCurve(BsplineCurve::new(
+                    KnotVector::bezier_knot(2),
+                    vec![
+                        TruckPoint3::new(0., y, 0.),
+                        TruckPoint3::new(1., y, 1.),
+                        TruckPoint3::new(2., y, 0.),
+                    ],
+                ))
+            }
+        };
+        let directrix = make_curve(0.);
+        let upper = make_curve(3.);
+        let surface = Surface::SweepSurface(SweepSurface::ExtrusionSurface(
+            StepExtrusionSurface::by_extrusion(directrix.clone(), Vector3::new(0., 3., 0.)),
+        ));
+        let vertices = vec![
+            TruckPoint3::new(0., 0., 0.),
+            TruckPoint3::new(2., 0., 0.),
+            TruckPoint3::new(2., 3., 0.),
+            TruckPoint3::new(0., 3., 0.),
+        ];
+        let edges = vec![
+            CompressedEdge {
+                vertices: (0, 1),
+                curve: directrix,
+            },
+            CompressedEdge {
+                vertices: (1, 2),
+                curve: Curve3D::Line(Line(vertices[1], vertices[2])),
+            },
+            CompressedEdge {
+                vertices: (3, 2),
+                curve: upper,
+            },
+            CompressedEdge {
+                vertices: (0, 3),
+                curve: Curve3D::Line(Line(vertices[0], vertices[3])),
+            },
+        ];
+        let uv = [
+            ([0., 0.], [1., 0.]),
+            ([1., 0.], [1., 1.]),
+            ([0., 1.], [1., 1.]),
+            ([0., 0.], [0., 1.]),
+        ];
+        let uses = uv
+            .into_iter()
+            .enumerate()
+            .map(|(index, (start, end))| CompressedEdgeUse {
+                index,
+                orientation: index < 2,
+                trim_curve: Some(StepParameterCurve::new(
+                    Box::new(Curve2D::Line(Line(
+                        TruckPoint2::new(start[0], start[1]),
+                        TruckPoint2::new(end[0], end[1]),
+                    ))),
+                    Box::new(surface.clone()),
+                )),
+            })
+            .collect();
+        let shell = CompressedTrimmedShell {
+            vertices,
+            edges,
+            faces: vec![CompressedTrimmedFace {
+                boundaries: vec![uses],
+                orientation: true,
+                surface: surface.clone(),
+            }],
+        };
+        let mut models = StepModels::default();
+        models.push_trimmed_shell(&shell);
+        let text = CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
+        assert!(text.contains("SURFACE_OF_LINEAR_EXTRUSION("));
+        if rational {
+            assert!(text.contains("RATIONAL_B_SPLINE_CURVE("));
+        }
+        let table = Table::from_step(&text).unwrap();
+        assert_eq!(table.entity_report.total(), 0);
+        let shell_id = *table.shell.keys().next().unwrap();
+        let (_, report) = reported_trimmed_shell(&table, shell_id).unwrap();
+        assert_eq!(report.total_lost(), 0);
+        let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+        let brep = &native.instances[0].brep;
+        assert_eq!(
+            (
+                brep.vertices().len(),
+                brep.edges().len(),
+                brep.faces().len()
+            ),
+            (4, 4, 1)
+        );
+        for u in [0., 0.17, 0.5, 0.83, 1.] {
+            for v in [0., 0.25, 0.75, 1.] {
+                let expected = surface.evaluate(u, v);
+                let point = brep.faces()[0].surface().evaluate(u, v).unwrap();
+                assert!((point.x() - expected.x).abs() < 1e-10);
+                assert!((point.y() - expected.y).abs() < 1e-10);
+                assert!((point.z() - expected.z).abs() < 1e-10);
+            }
+        }
+    }
+}
+
+#[test]
 fn native_step_imports_exact_spherical_bands() {
     use monstertruck::meshing::prelude::ParametricSurface;
     use monstertruck::modeling::{

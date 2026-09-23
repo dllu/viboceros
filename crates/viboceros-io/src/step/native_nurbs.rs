@@ -2,7 +2,7 @@
 use super::{StepError, Table, native_planar, reported_trimmed_shell};
 use monstertruck::meshing::prelude::{BoundedCurve, ParametricCurve, ParametricSurface};
 use monstertruck::step::load::step_geometry::{
-    Conic2D, Conic3D, Curve2D, Curve3D, ElementarySurface, Surface,
+    Conic2D, Conic3D, Curve2D, Curve3D, ElementarySurface, Surface, SweepSurface,
 };
 use viboceros_geometry::{
     Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex,
@@ -449,6 +449,54 @@ fn surface(
                 vec![min[1], min[1], max[1], max[1]],
             )?)
         }
+        Surface::SweepSurface(SweepSurface::ExtrusionSurface(extrusion)) => {
+            let directrix = extrusion.entity_curve();
+            if !matches!(
+                directrix,
+                Curve3D::Line(_) | Curve3D::BsplineCurve(_) | Curve3D::NurbsCurve(_)
+            ) {
+                return Err(unsupported(
+                    "extrusion directrix is not a line or B-spline curve",
+                ));
+            }
+            let directrix = edge_curve(directrix, id)?;
+            let mut v0 = f64::INFINITY;
+            let mut v1 = f64::NEG_INFINITY;
+            for trim in boundaries.iter().flatten() {
+                for control in trim.curve().control_points() {
+                    v0 = v0.min(control.point().y());
+                    v1 = v1.max(control.point().y());
+                }
+            }
+            if !v0.is_finite() || !v1.is_finite() || v0 >= v1 {
+                return Err(unsupported("extrusion axial trim range is degenerate"));
+            }
+            let vector = extrusion.extruding_vector();
+            let controls = [v0, v1]
+                .into_iter()
+                .flat_map(|v| {
+                    directrix.control_points().iter().map(move |control| {
+                        WeightedPoint3::try_new(
+                            Point3::try_new(
+                                control.point().x() + v * vector.x,
+                                control.point().y() + v * vector.y,
+                                control.point().z() + v * vector.z,
+                            )?,
+                            control.weight(),
+                        )
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            Ok(NurbsSurface::try_new_rational(
+                directrix.degree(),
+                1,
+                directrix.control_points().len(),
+                2,
+                controls,
+                directrix.knots().to_vec(),
+                vec![v0, v0, v1, v1],
+            )?)
+        }
         Surface::ElementarySurface(
             ElementarySurface::CylindricalSurface(revolution)
             | ElementarySurface::ConicalSurface(revolution),
@@ -621,7 +669,7 @@ fn surface(
             )?)
         }
         _ => Err(unsupported(
-            "surface is not a supported plane, revolved line, torus, sphere, or B-spline",
+            "surface is not a supported plane, extrusion, revolved line, torus, sphere, or B-spline",
         )),
     }
 }
