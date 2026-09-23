@@ -63,12 +63,14 @@ pub(super) fn uniform_meters_per_unit(data: &DataSection) -> Result<f64, StepErr
         .collect::<Vec<_>>();
     let mut result = None;
     let mut non_radian_angle = false;
+    let needs_angular_units = !is_angle_independent_geometry(data);
     for context in contexts {
         let args = list(&context.parameter)?;
         if args.len() != 1 {
             return Err(invalid("invalid global unit assignment"));
         }
         let mut length = None;
+        let mut has_angle = false;
         for unit in list(&args[0])? {
             let id = reference(unit)?;
             let records = resolver
@@ -76,6 +78,7 @@ pub(super) fn uniform_meters_per_unit(data: &DataSection) -> Result<f64, StepErr
                 .get(&id)
                 .ok_or_else(|| invalid("missing assigned unit"))?;
             if component(records, "PLANE_ANGLE_UNIT").is_some() {
+                has_angle = true;
                 non_radian_angle |= resolver.angle_scale_and_base(id)?.0 != 1.0;
             }
             if component(records, "LENGTH_UNIT").is_some() {
@@ -85,13 +88,16 @@ pub(super) fn uniform_meters_per_unit(data: &DataSection) -> Result<f64, StepErr
                 length = Some(resolver.length_scale(id)?);
             }
         }
+        if needs_angular_units && !has_angle {
+            return Err(invalid("angular geometry context has no plane-angle unit"));
+        }
         let length = length.ok_or_else(|| invalid("context has no supported length unit"))?;
         if result.is_some_and(|previous| previous != length) {
             return Err(invalid("mixed length-unit contexts are not yet supported"));
         }
         result = Some(length);
     }
-    if non_radian_angle && !is_angle_independent_geometry(data) {
+    if non_radian_angle && needs_angular_units {
         return Err(invalid(
             "non-radian angular contexts cannot be used with angular geometry parameters",
         ));

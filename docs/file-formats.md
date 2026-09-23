@@ -310,11 +310,13 @@ before document edits. Conversion-based plane-angle units, including degrees,
 are accepted for geometry without stored angular parameters, including planar
 solids with straight, circular, or elliptical edges and NURBS surfaces with
 parameter-space trims. Those conic arcs are bounded by endpoint vertices.
-Cylinder and cone faces with 2D line, polyline,
-and B-spline trims convert angular coordinates and cone semi-angles to radians
-before import, including diagonal trims. Explicit angular curve trims, conic
-p-curves on angular surfaces, and other angular surfaces remain unsupported in
-non-radian contexts and are rejected before import. Mixed-unit assembly
+Cylinder, cone, sphere, and torus faces with 2D line, polyline, and B-spline
+trims convert their angular UV coordinates to radians before import, including
+diagonal trims and patches spanning more than half a turn. Cone semi-angles are
+converted too. Explicit angular curve trims, conic p-curves on angular
+surfaces, and other angular surfaces remain unsupported in non-radian contexts
+and are rejected before import. Angular surfaces also require an assigned
+plane-angle unit. Mixed-unit assembly
 conversion remains unimplemented. The low-level `read_step` and
 `read_step_file` APIs retain raw file coordinates; their `_in_units`
 counterparts perform checked conversion.

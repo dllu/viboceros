@@ -168,3 +168,16 @@ fn conversion_based_angles_are_accepted_only_without_angular_geometry() {
         .is_err()
     );
 }
+
+#[test]
+fn angular_surfaces_require_an_assigned_plane_angle_unit() {
+    let records = "#1 = GLOBAL_UNIT_ASSIGNED_CONTEXT((#2));
+        #2 = (LENGTH_UNIT() NAMED_UNIT(*) SI_UNIT(.MILLI.,.METRE.));
+        #3 = SPHERICAL_SURFACE('',#4,2.);";
+    assert!(
+        scale(records)
+            .unwrap_err()
+            .to_string()
+            .contains("no plane-angle unit")
+    );
+}

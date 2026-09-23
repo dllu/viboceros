@@ -2664,6 +2664,22 @@ fn native_step_imports_exact_toroidal_patches() {
         );
         let expected_area = u_end * (3. * v_end + v_end.sin());
         assert!((brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
+        let degrees = with_degree_angular_uv(&text);
+        let degree_native = read_step_native_instances_in_units(
+            Cursor::new(&degrees),
+            &LengthUnitSystem::Millimeters,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let degree_brep = &degree_native.instances[0].brep;
+        assert_eq!(degree_brep.edges().len(), brep.edges().len());
+        assert!((degree_brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
+        for (actual, expected) in degree_brep.vertices().iter().zip(brep.vertices()) {
+            assert!(actual.point().distance_to(expected.point()).unwrap() < 1e-9);
+        }
+        if u_end < std::f64::consts::PI {
+            assert_degree_step_mesh_matches(&text, &degrees);
+        }
         for u in [0., 0.137 * u_end, u_end / 2., 0.733 * u_end, u_end] {
             for v in [0., 0.391 * v_end, v_end / 2., 0.817 * v_end, v_end] {
                 let p = brep.faces()[0].surface().evaluate(u, v).unwrap();
@@ -3656,6 +3672,22 @@ fn native_step_imports_exact_spherical_bands() {
         );
         let expected_area = 4. * u_span * (v1.sin() - v0.sin());
         assert!((brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
+        let degrees = with_degree_angular_uv(&text);
+        let degree_native = read_step_native_instances_in_units(
+            Cursor::new(&degrees),
+            &LengthUnitSystem::Millimeters,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let degree_brep = &degree_native.instances[0].brep;
+        assert_eq!(degree_brep.edges().len(), brep.edges().len());
+        assert!((degree_brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
+        for (actual, expected) in degree_brep.vertices().iter().zip(brep.vertices()) {
+            assert!(actual.point().distance_to(expected.point()).unwrap() < 1e-9);
+        }
+        if u_span == std::f64::consts::FRAC_PI_3 {
+            assert_degree_step_mesh_matches(&text, &degrees);
+        }
         if u_span == std::f64::consts::FRAC_PI_3 {
             let mut spline_shell = decoded;
             let spline_surface = spline_shell.faces[0].surface.clone();
@@ -3677,7 +3709,7 @@ fn native_step_imports_exact_spherical_bands() {
                 CompleteStepDisplay::new(spline_models, StepHeaderDescriptor::default())
                     .to_string();
             let spline_native =
-                read_step_native_instances(Cursor::new(spline_text), Tolerance::DEFAULT).unwrap();
+                read_step_native_instances(Cursor::new(&spline_text), Tolerance::DEFAULT).unwrap();
             let spline_brep = &spline_native.instances[0].brep;
             assert_eq!(
                 spline_brep.faces()[0].loops()[0].trims()[0]
@@ -3686,6 +3718,20 @@ fn native_step_imports_exact_spherical_bands() {
                 2
             );
             assert!((spline_brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
+            let degree_spline = read_step_native_instances_in_units(
+                Cursor::new(with_degree_angular_uv(&spline_text)),
+                &LengthUnitSystem::Millimeters,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            let degree_brep = &degree_spline.instances[0].brep;
+            assert_eq!(
+                degree_brep.faces()[0].loops()[0].trims()[0]
+                    .curve()
+                    .degree(),
+                2
+            );
+            assert!((degree_brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
         }
         for u in [u0, u0 + (u1 - u0) * 0.23, (u0 + u1) / 2., u1] {
             for v in [v0, v0 + 0.39 * (v1 - v0), v0 + 0.81 * (v1 - v0), v1] {
@@ -4646,6 +4692,119 @@ fn with_degree_angle_units(source: &str) -> String {
         "#900001 = MEASURE_WITH_UNIT(PLANE_ANGLE_MEASURE(0.017453292519943295),#900003);\n#900002 = DIMENSIONAL_EXPONENTS(0.,0.,0.,0.,0.,0.,0.);\n#900003 = ( NAMED_UNIT(*) PLANE_ANGLE_UNIT() SI_UNIT($,.RADIAN.) );\n",
     );
     degrees
+}
+
+fn with_degree_angular_uv(source: &str) -> String {
+    use monstertruck::step::load::step_p21::ast::{EntityInstance, Parameter};
+    let data = read_data_section(Cursor::new(source)).unwrap();
+    let mut directions_2d = std::collections::BTreeSet::new();
+    let mut replacements = std::collections::BTreeMap::new();
+    let degree_per_radian = 180. / std::f64::consts::PI;
+    for entity in &data.entities {
+        let EntityInstance::Simple { id, record } = entity else {
+            continue;
+        };
+        let Parameter::List(args) = &record.parameter else {
+            continue;
+        };
+        if record.name == "DIRECTION"
+            && matches!(&args[1], Parameter::List(coordinates) if coordinates.len() == 2)
+        {
+            directions_2d.insert(*id);
+        }
+        if record.name == "CARTESIAN_POINT" {
+            let Parameter::List(coordinates) = &args[1] else {
+                continue;
+            };
+            if coordinates.len() != 2 {
+                continue;
+            }
+            let value = |axis| match &coordinates[axis] {
+                Parameter::Real(value) => *value,
+                Parameter::Integer(value) => *value as f64,
+                _ => panic!("non-numeric fixture coordinate"),
+            };
+            replacements.insert(
+                *id,
+                format!(
+                    "#{id} = CARTESIAN_POINT('', ({:?}, {:?}));",
+                    value(0) * degree_per_radian,
+                    value(1) * degree_per_radian
+                ),
+            );
+        }
+    }
+    for entity in &data.entities {
+        let EntityInstance::Simple { id, record } = entity else {
+            continue;
+        };
+        if record.name != "VECTOR" {
+            continue;
+        }
+        let Parameter::List(args) = &record.parameter else {
+            continue;
+        };
+        let Parameter::Ref(Name::Entity(direction)) = &args[1] else {
+            continue;
+        };
+        if !directions_2d.contains(direction) {
+            continue;
+        }
+        let magnitude = match args[2] {
+            Parameter::Real(value) => value,
+            Parameter::Integer(value) => value as f64,
+            _ => panic!("non-numeric fixture vector"),
+        };
+        replacements.insert(
+            *id,
+            format!(
+                "#{id} = VECTOR('', #{direction}, {:?});",
+                magnitude * degree_per_radian
+            ),
+        );
+    }
+    assert!(!replacements.is_empty());
+    let degrees = with_degree_angle_units(source);
+    degrees
+        .lines()
+        .map(|line| {
+            let id = line
+                .trim_start()
+                .strip_prefix('#')
+                .and_then(|rest| rest.split_once(" ="))
+                .and_then(|(id, _)| id.parse::<u64>().ok());
+            id.and_then(|id| replacements.get(&id))
+                .map_or_else(|| line.to_owned(), Clone::clone)
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+fn assert_degree_step_mesh_matches(radians: &str, degrees: &str) {
+    let target = LengthUnitSystem::Millimeters;
+    let expected = read_step_in_units(Cursor::new(radians), &target, Tolerance::DEFAULT).unwrap();
+    let actual = read_step_in_units(Cursor::new(degrees), &target, Tolerance::DEFAULT).unwrap();
+    assert_eq!(actual.objects.len(), expected.objects.len());
+    for (actual, expected) in actual.objects.iter().zip(expected.objects.iter()) {
+        assert_eq!(
+            actual.mesh.triangles().len(),
+            expected.mesh.triangles().len()
+        );
+        assert!(
+            actual
+                .mesh
+                .bounds()
+                .min()
+                .is_near(expected.mesh.bounds().min(), Tolerance::DEFAULT)
+        );
+        assert!(
+            actual
+                .mesh
+                .bounds()
+                .max()
+                .is_near(expected.mesh.bounds().max(), Tolerance::DEFAULT)
+        );
+    }
 }
 
 #[test]
