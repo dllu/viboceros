@@ -262,9 +262,10 @@ remain unsupported.
 2-by-2 B-spline/NURBS patch lifts exactly to 3D NURBS while retaining degree,
 knots, and rational weights. Other p-curve bases still need exact surface-curve
 composition.
-Straight isoparametric `PCURVE` edges on curved B-spline/NURBS bases import as
-exact trimmed NURBS isocurves. Diagonal p-curves on those bases remain
-unsupported unless the affine certificate applies.
+Degree-one, two-control-point isoparametric `PCURVE` edges with equal weights
+on curved B-spline/NURBS bases import as exact trimmed NURBS isocurves, keeping
+the source p-curve domain. Diagonal and unequal-weight p-curves on those bases
+remain unsupported unless the affine certificate applies.
 Other analytic surface types and
 periodic seam arrangements still fail native import.
 The native planar path supports straight-edged polygon holes, identifies the

@@ -222,17 +222,31 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
         }
         Curve3D::ParameterCurve(parameter_curve) => {
             let basis = parameter_curve.surface().as_ref();
-            if matches!(basis, Surface::NurbsSurface(_) | Surface::BsplineSurface(_))
-                && let Curve2D::Line(line) = parameter_curve.curve().as_ref()
+            let uv = trim_curve(parameter_curve.curve().as_ref(), id)?;
+            let globally_affine = matches!(
+                basis,
+                Surface::ElementarySurface(ElementarySurface::Plane(_))
+            ) || matches!(
+                basis,
+                Surface::SweepSurface(SweepSurface::ExtrusionSurface(extrusion))
+                    if matches!(extrusion.entity_curve(), Curve3D::Line(_))
+            );
+            let bounded_affine = affine_bilinear_basis(basis);
+            if !globally_affine
+                && bounded_affine.is_none()
+                && matches!(basis, Surface::NurbsSurface(_) | Surface::BsplineSurface(_))
+                && uv.degree() == 1
+                && uv.control_points().len() == 2
+                && uv.control_points()[0].weight() == uv.control_points()[1].weight()
             {
-                let uv0 = line.0;
-                let uv1 = line.1;
-                if uv0.y == uv1.y || uv0.x == uv1.x {
+                let uv0 = uv.control_points()[0].point();
+                let uv1 = uv.control_points()[1].point();
+                if uv0.y() == uv1.y() || uv0.x() == uv1.x() {
                     let surface = spline_surface_basis(basis, id)?;
-                    let (varying_start, varying_end, mut curve) = if uv0.y == uv1.y {
-                        (uv0.x, uv1.x, surface.isocurve_u(uv0.y)?)
+                    let (varying_start, varying_end, mut curve) = if uv0.y() == uv1.y() {
+                        (uv0.x(), uv1.x(), surface.isocurve_u(uv0.y())?)
                     } else {
-                        (uv0.y, uv1.y, surface.isocurve_v(uv0.x)?)
+                        (uv0.y(), uv1.y(), surface.isocurve_v(uv0.x())?)
                     };
                     if varying_start == varying_end {
                         return Err(unsupported("3D edge p-curve is degenerate"));
@@ -243,22 +257,12 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
                     if varying_start > varying_end {
                         curve = curve.reversed()?;
                     }
-                    return Ok(curve.try_reparameterized(0.0..=1.0)?);
+                    return Ok(curve.try_reparameterized(uv.domain())?);
                 }
             }
-            let globally_affine = matches!(
-                basis,
-                Surface::ElementarySurface(ElementarySurface::Plane(_))
-            ) || matches!(
-                basis,
-                Surface::SweepSurface(SweepSurface::ExtrusionSurface(extrusion))
-                    if matches!(extrusion.entity_curve(), Curve3D::Line(_))
-            );
-            let bounded_affine = affine_bilinear_basis(basis);
             if !globally_affine && bounded_affine.is_none() {
                 return Err(unsupported("3D edge p-curve basis is not affine"));
             }
-            let uv = trim_curve(parameter_curve.curve().as_ref(), id)?;
             if let Some(([u0, u1], [v0, v1])) = bounded_affine {
                 let sign = uv.control_points()[0].weight().is_sign_positive();
                 if uv.control_points().iter().any(|control| {
@@ -1104,7 +1108,7 @@ mod tests {
     }
 
     #[test]
-    fn curved_surface_pcurve_edges_preserve_partial_and_reversed_iso_lines() {
+    fn curved_surface_pcurve_edges_preserve_partial_and_reversed_iso_segments() {
         let knots = || (KnotVector::bezier_knot(2), KnotVector::bezier_knot(1));
         for basis in [
             Surface::BsplineSurface(BsplineSurface::new(
@@ -1132,26 +1136,64 @@ mod tests {
                 ([0.8, 0.25], [0.2, 0.25], 2),
                 ([0.5, 0.9], [0.5, 0.1], 1),
             ] {
-                let source = Curve3D::ParameterCurve(StepParameterCurve::new(
-                    Box::new(Curve2D::Line(Line(
-                        TruckPoint2::new(a[0], a[1]),
-                        TruckPoint2::new(b[0], b[1]),
-                    ))),
-                    Box::new(basis.clone()),
-                ));
-                let curve = edge_curve(&source, 1).unwrap();
-                assert_eq!(curve.degree(), degree);
-                assert_eq!(curve.domain(), 0.0..=1.0);
-                for t in [0., 0.17, 0.5, 0.83, 1.] {
-                    let u = a[0] * (1. - t) + b[0] * t;
-                    let v = a[1] * (1. - t) + b[1] * t;
-                    let expected = basis.evaluate(u, v);
-                    let actual = curve.evaluate(t).unwrap();
-                    assert!((actual.x() - expected.x).abs() < 1e-11);
-                    assert!((actual.y() - expected.y).abs() < 1e-11);
-                    assert!((actual.z() - expected.z).abs() < 1e-11);
+                let uv0 = TruckPoint2::new(a[0], a[1]);
+                let uv1 = TruckPoint2::new(b[0], b[1]);
+                let knots = || KnotVector::from(vec![5., 5., 9., 9.]);
+                let cases = [
+                    (Curve2D::Line(Line(uv0, uv1)), 0.0..=1.0),
+                    (Curve2D::Polyline(PolylineCurve(vec![uv0, uv1])), 0.0..=1.0),
+                    (
+                        Curve2D::BsplineCurve(BsplineCurve::new(knots(), vec![uv0, uv1])),
+                        5.0..=9.0,
+                    ),
+                    (
+                        Curve2D::NurbsCurve(TruckNurbsCurve::new(BsplineCurve::new(
+                            knots(),
+                            vec![
+                                Vector3::new(2. * a[0], 2. * a[1], 2.),
+                                Vector3::new(2. * b[0], 2. * b[1], 2.),
+                            ],
+                        ))),
+                        5.0..=9.0,
+                    ),
+                ];
+                for (uv, domain) in cases {
+                    let source = Curve3D::ParameterCurve(StepParameterCurve::new(
+                        Box::new(uv),
+                        Box::new(basis.clone()),
+                    ));
+                    let curve = edge_curve(&source, 1).unwrap();
+                    assert_eq!(curve.degree(), degree);
+                    assert_eq!(curve.domain(), domain);
+                    for fraction in [0., 0.17, 0.5, 0.83, 1.] {
+                        let u = a[0] * (1. - fraction) + b[0] * fraction;
+                        let v = a[1] * (1. - fraction) + b[1] * fraction;
+                        let t = *domain.start() * (1. - fraction) + *domain.end() * fraction;
+                        let expected = basis.evaluate(u, v);
+                        let actual = curve.evaluate(t).unwrap();
+                        assert!((actual.x() - expected.x).abs() < 1e-11);
+                        assert!((actual.y() - expected.y).abs() < 1e-11);
+                        assert!((actual.z() - expected.z).abs() < 1e-11);
+                    }
                 }
             }
+
+            let unequal_weight_iso = Curve3D::ParameterCurve(StepParameterCurve::new(
+                Box::new(Curve2D::NurbsCurve(TruckNurbsCurve::new(
+                    BsplineCurve::new(
+                        KnotVector::bezier_knot(1),
+                        vec![Vector3::new(0.2, 0.25, 1.), Vector3::new(1.6, 0.5, 2.)],
+                    ),
+                ))),
+                Box::new(basis.clone()),
+            ));
+            assert!(matches!(
+                edge_curve(&unequal_weight_iso, 1),
+                Err(StepError::UnsupportedNativeShell {
+                    reason: "3D edge p-curve basis is not affine",
+                    ..
+                })
+            ));
 
             let diagonal = Curve3D::ParameterCurve(StepParameterCurve::new(
                 Box::new(Curve2D::Line(Line(
