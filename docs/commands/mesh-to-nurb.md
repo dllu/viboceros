@@ -35,10 +35,10 @@ Invalid option input is atomic. Failed preselected commands do not accept choice
 failed prompted conversion retains choices already accepted at the prompt.
 Native bootstrap choices are Yes/Yes.
 Factory defaults and restart persistence are not established by these probes.
-`UseNgons=Yes` converts a planar n-gon overlay into one trimmed planar face;
-`No` converts its underlying triangle/quad faces individually. Nonplanar
-n-gons currently use the underlying faces in either setting. Rhino's conversion
-of separate planar regions within a nonplanar n-gon remains to be implemented.
+`UseNgons=Yes` converts each connected planar region of an n-gon overlay into
+one trimmed planar face; `No` converts its underlying triangle/quad faces
+individually. Regions with more than one boundary loop currently retain their
+underlying faces.
 
 ## Selection path and oracle
 

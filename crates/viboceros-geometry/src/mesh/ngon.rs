@@ -60,7 +60,7 @@ impl TriangleMesh {
         Ok(self)
     }
 
-    pub(super) fn ngon_from_faces(&self, faces: Vec<u32>) -> Option<MeshNgon> {
+    pub(crate) fn ngon_from_faces(&self, faces: Vec<u32>) -> Option<MeshNgon> {
         let vertices = self.ngon_boundary(&faces)?;
         Some(MeshNgon { vertices, faces })
     }

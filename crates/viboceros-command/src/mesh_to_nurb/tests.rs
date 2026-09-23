@@ -142,6 +142,41 @@ fn planar_ngon_cap_keeps_closed_brep_topology() {
 }
 
 #[test]
+fn nonplanar_ngon_splits_into_connected_planar_regions() {
+    let folded = TriangleMesh::try_new(
+        vec![
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Point3::try_new(1., 0., 0.).unwrap(),
+            Point3::try_new(2., 0., 1.).unwrap(),
+            Point3::try_new(2., 1., 1.).unwrap(),
+            Point3::try_new(1., 1., 0.).unwrap(),
+            Point3::try_new(0., 1., 0.).unwrap(),
+        ],
+        vec![[0, 1, 4], [0, 4, 5], [1, 2, 3], [1, 3, 4]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap()
+    .try_with_ngons(vec![viboceros_geometry::MeshNgon::from_parts(
+        vec![0, 1, 2, 3, 4, 5],
+        vec![0, 1, 2, 3],
+    )])
+    .unwrap();
+    for trim_triangles in [false, true] {
+        let merged =
+            Brep::try_from_mesh_with_ngons(&folded, trim_triangles, true, Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(merged.faces().len(), 2);
+        assert_eq!(merged.edges().len(), 7);
+        assert_eq!(merged.faces()[0].loops()[0].trims().len(), 4);
+        assert_eq!(merged.faces()[1].loops()[0].trims().len(), 4);
+        let expanded =
+            Brep::try_from_mesh_with_ngons(&folded, trim_triangles, false, Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(expanded.faces().len(), 4);
+    }
+}
+
+#[test]
 fn options_survive_undo_and_partial_updates_but_errors_do_not_accept_them() {
     let command = MeshToNurbCommand::default();
     let (mut d, _) = selected_triangle();

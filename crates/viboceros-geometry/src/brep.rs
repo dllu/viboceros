@@ -1460,8 +1460,9 @@ impl Brep {
         Self::try_from_mesh_with_ngons(mesh, trim_triangular_faces, false, tolerance)
     }
 
-    /// Converts planar mesh n-gons into one trimmed planar face when requested.
-    /// Nonplanar n-gons retain their underlying triangle and quad regions.
+    /// Converts each simply connected planar region of an n-gon into one
+    /// trimmed planar face when requested. Faces outside those regions retain
+    /// their underlying triangle and quad surfaces.
     pub fn try_from_mesh_with_ngons(
         mesh: &TriangleMesh,
         trim_triangular_faces: bool,
@@ -1476,14 +1477,13 @@ impl Brep {
         };
         if use_ngons {
             for ngon in mesh.ngons() {
-                if let Some(planar) = planar_mesh_ngon(mesh, ngon, tolerance) {
-                    let first = *ngon
-                        .faces()
+                for (region_faces, planar) in planar_mesh_ngon_regions(mesh, ngon, tolerance) {
+                    let first = *region_faces
                         .iter()
                         .min()
-                        .expect("validated n-gon has faces");
+                        .expect("a planar region has faces");
                     planar_by_first_face.insert(first as usize, planar);
-                    for &face in ngon.faces() {
+                    for face in region_faces {
                         covered_faces[face as usize] = true;
                     }
                 }
@@ -7003,6 +7003,87 @@ fn cap_trim_iso(
     } else {
         SurfaceIso::NotIso
     }
+}
+
+fn planar_mesh_ngon_regions(
+    mesh: &TriangleMesh,
+    ngon: &MeshNgon,
+    tolerance: Tolerance,
+) -> Vec<(Vec<u32>, PlanarMeshNgon)> {
+    if let Some(planar) = planar_mesh_ngon(mesh, ngon, tolerance) {
+        return vec![(ngon.faces().to_vec(), planar)];
+    }
+
+    // A validated n-gon has opposite edge uses on every internal edge. Build
+    // only those face adjacencies, then grow regions against the seed plane.
+    // Keeping the seed fixed prevents a tolerance-sized fold at each edge
+    // from accumulating into an arbitrarily nonplanar merged face.
+    let mut edge_faces = BTreeMap::<(u32, u32), Vec<u32>>::new();
+    for &face in ngon.faces() {
+        let indices = mesh.faces()[face as usize].indices();
+        for side in 0..indices.len() {
+            let a = indices[side];
+            let b = indices[(side + 1) % indices.len()];
+            edge_faces
+                .entry((a.min(b), a.max(b)))
+                .or_default()
+                .push(face);
+        }
+    }
+    let mut neighbors = BTreeMap::<u32, Vec<u32>>::new();
+    for faces in edge_faces.values() {
+        if let [a, b] = faces.as_slice() {
+            neighbors.entry(*a).or_default().push(*b);
+            neighbors.entry(*b).or_default().push(*a);
+        }
+    }
+    let mut visited = BTreeSet::new();
+    let mut regions = Vec::new();
+    for &seed in ngon.faces() {
+        if !visited.insert(seed) {
+            continue;
+        }
+        let seed_indices = mesh.faces()[seed as usize].indices();
+        let [origin, along_x, in_xy] = [seed_indices[0], seed_indices[1], seed_indices[2]]
+            .map(|raw| mesh.vertices()[raw as usize]);
+        let Ok(frame) = Frame3::try_from_points(origin, along_x, in_xy, tolerance) else {
+            continue;
+        };
+        if !mesh_face_on_plane(mesh, seed, frame, tolerance) {
+            continue;
+        }
+        let mut queue = VecDeque::from([seed]);
+        let mut faces = vec![seed];
+        while let Some(face) = queue.pop_front() {
+            for &neighbor in neighbors.get(&face).into_iter().flatten() {
+                if !visited.contains(&neighbor)
+                    && mesh_face_on_plane(mesh, neighbor, frame, tolerance)
+                {
+                    visited.insert(neighbor);
+                    queue.push_back(neighbor);
+                    faces.push(neighbor);
+                }
+            }
+        }
+        if faces.len() < 2 {
+            continue;
+        }
+        faces.sort_unstable();
+        if let Some(region_ngon) = mesh.ngon_from_faces(faces.clone())
+            && let Some(planar) = planar_mesh_ngon(mesh, &region_ngon, tolerance)
+        {
+            regions.push((faces, planar));
+        }
+    }
+    regions
+}
+
+fn mesh_face_on_plane(mesh: &TriangleMesh, face: u32, frame: Frame3, tolerance: Tolerance) -> bool {
+    mesh.faces()[face as usize].indices().iter().all(|&raw| {
+        frame
+            .coordinates_of(mesh.vertices()[raw as usize])
+            .is_ok_and(|coordinates| coordinates[2].abs() <= tolerance.absolute())
+    })
 }
 
 fn planar_mesh_ngon(
