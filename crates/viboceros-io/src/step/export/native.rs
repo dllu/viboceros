@@ -25,7 +25,7 @@ enum NativeModel {
 }
 
 /// Writes straight-edged planar B-reps as editable STEP shell models in millimetres.
-/// Certified axis boxes and their contained cavities retain solid structure.
+/// Certified convex planar polyhedra and their contained cavities retain solid structure.
 /// Other edge-disconnected shells are emitted separately. Curved edges,
 /// singular trims, and nonplanar faces are rejected before writing output.
 pub fn write_step_planar_breps<'a, W: Write>(
@@ -51,7 +51,9 @@ fn write_with_accuracy<'a, W: Write>(
     let mut items = Vec::new();
     for (index, brep) in breps.into_iter().enumerate() {
         let shells = components::partition(brep_to_shell(brep, index, tolerance, scale)?);
-        if let Some(order) = boxes::solid_shell_order(brep)
+        if let Some(order) = brep
+            .certified_convex_solid_shell_order()
+            .or_else(|| boxes::solid_shell_order(brep))
             && order.len() == shells.len()
         {
             let mut slots = shells.into_iter().map(Some).collect::<Vec<_>>();

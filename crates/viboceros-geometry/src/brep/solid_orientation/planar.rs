@@ -8,12 +8,12 @@ mod ray;
 #[cfg(test)]
 mod tests;
 
-type ExactPoint = [Rational; 3];
+pub(super) type ExactPoint = [Rational; 3];
 
-struct PolygonFace {
-    loops: Vec<Vec<ExactPoint>>,
-    normal: ExactPoint,
-    reversed: bool,
+pub(super) struct PolygonFace {
+    pub(super) loops: Vec<Vec<ExactPoint>>,
+    pub(super) normal: ExactPoint,
+    pub(super) reversed: bool,
     bounds: [[Rational; 2]; 3],
 }
 
@@ -46,19 +46,23 @@ pub(super) fn classify(brep: &Brep, remaining: &mut usize) -> Option<BrepSolidOr
     })
 }
 
-fn point(p: Point3) -> ExactPoint {
+pub(super) fn extract_face(face: &BrepFace, remaining: &mut usize) -> Option<PolygonFace> {
+    face::extract(face, remaining)
+}
+
+pub(super) fn point(p: Point3) -> ExactPoint {
     p.to_array().map(rational)
 }
-fn sub(a: &ExactPoint, b: &ExactPoint) -> ExactPoint {
+pub(super) fn sub(a: &ExactPoint, b: &ExactPoint) -> ExactPoint {
     std::array::from_fn(|i| &a[i] - &b[i])
 }
-fn cross(a: &ExactPoint, b: &ExactPoint) -> ExactPoint {
+pub(super) fn cross(a: &ExactPoint, b: &ExactPoint) -> ExactPoint {
     std::array::from_fn(|i| &a[(i + 1) % 3] * &b[(i + 2) % 3] - &a[(i + 2) % 3] * &b[(i + 1) % 3])
 }
-fn dot(a: &ExactPoint, b: &ExactPoint) -> Rational {
+pub(super) fn dot(a: &ExactPoint, b: &ExactPoint) -> Rational {
     (0..3).map(|i| &a[i] * &b[i]).sum()
 }
-fn zero(p: &ExactPoint) -> bool {
+pub(super) fn zero(p: &ExactPoint) -> bool {
     p.iter().all(Zero::is_zero)
 }
 

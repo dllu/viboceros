@@ -1,5 +1,6 @@
 //! Conservative spatial orientation witnesses; never a signed-volume heuristic.
 use super::*;
+mod convex;
 mod planar;
 mod rectangle;
 mod trim;
@@ -23,6 +24,15 @@ pub enum BrepSolidOrientation {
 const EXACT_WORK_LIMIT: usize = 262_144;
 
 impl Brep {
+    /// Orders a certified convex planar outer shell and its strictly enclosed,
+    /// pairwise disjoint inward cavities for STEP solid export.
+    ///
+    /// Returns `None` for unsupported or ambiguous embeddings. All predicates
+    /// use the exact rational values of the stored binary64 coordinates.
+    pub fn certified_convex_solid_shell_order(&self) -> Option<Vec<usize>> {
+        convex::shell_order(self)
+    }
+
     /// Classifies spatial sense using exact outside-boundary witnesses.
     ///
     /// Unlike `is_solid`, this query considers embedding; unlike signed volume,

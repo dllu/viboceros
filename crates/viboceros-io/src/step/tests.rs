@@ -1143,6 +1143,111 @@ fn planar_brep_step_export_keeps_cube_faces_edges_and_volume_editable() {
 }
 
 #[test]
+fn planar_brep_step_export_certifies_tetrahedron_and_sheared_box() {
+    use viboceros_geometry::{AffineTransform3, Brep, Frame3, TriangleMesh, Vector3};
+    let tolerance = Tolerance::DEFAULT;
+    let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+    let tetra = TriangleMesh::try_new(
+        vec![
+            point(0., 0., 0.),
+            point(4., 0., 0.),
+            point(0., 4., 0.),
+            point(0., 0., 4.),
+        ],
+        vec![[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3]],
+        tolerance,
+    )
+    .unwrap();
+    let tetra = Brep::try_from_mesh(&tetra, true, tolerance).unwrap();
+    let frame = Frame3::try_from_directions(
+        point(0., 0., 0.),
+        Vector3::try_new(1., 0., 0.).unwrap(),
+        Vector3::try_new(0., 1., 0.).unwrap(),
+        tolerance,
+    )
+    .unwrap();
+    let box_brep = Brep::try_box(frame, [[0., 2.]; 3], tolerance).unwrap();
+    let shear = AffineTransform3::try_shear(
+        point(0., 0., 0.),
+        frame.y_axis(),
+        frame.x_axis(),
+        0.5,
+        tolerance,
+    )
+    .unwrap();
+    let sheared = box_brep.transformed(shear, tolerance).unwrap();
+    for source in [&tetra, &sheared] {
+        assert_eq!(source.certified_convex_solid_shell_order(), Some(vec![0]));
+        let mut output = Vec::new();
+        write_step_planar_breps(&mut output, [source]).unwrap();
+        let text = String::from_utf8(output).unwrap();
+        assert_eq!(text.matches("MANIFOLD_SOLID_BREP(").count(), 1);
+        let restored = read_step_planar_instances(Cursor::new(text), tolerance).unwrap();
+        assert_eq!(restored.instances.len(), 1);
+        assert_eq!(
+            restored.instances[0].brep.faces().len(),
+            source.faces().len()
+        );
+        assert!(
+            (restored.instances[0].brep.signed_volume(tolerance).unwrap()
+                - source.signed_volume(tolerance).unwrap())
+            .abs()
+                < 1e-9
+        );
+    }
+    let outer = Brep::try_box(frame, [[-5., 5.]; 3], tolerance).unwrap();
+    for cavity in [&tetra, &sheared] {
+        let source =
+            Brep::try_combine(vec![cavity.clone().reversed(), outer.clone()], tolerance).unwrap();
+        assert_eq!(
+            source.certified_convex_solid_shell_order(),
+            Some(vec![1, 0])
+        );
+        let mut output = Vec::new();
+        write_step_planar_breps(&mut output, [&source]).unwrap();
+        let text = String::from_utf8(output).unwrap();
+        assert_eq!(text.matches("BREP_WITH_VOIDS(").count(), 1);
+        assert_eq!(text.matches("ORIENTED_CLOSED_SHELL(").count(), 1);
+        let restored = read_step_planar_instances(Cursor::new(text), tolerance).unwrap();
+        assert_eq!(restored.instances.len(), 2);
+        assert_eq!(
+            restored.instances[0].source_shape_id,
+            restored.instances[1].source_shape_id
+        );
+    }
+    let large_outer = Brep::try_box(frame, [[-10., 10.]; 3], tolerance).unwrap();
+    for (offset, separated) in [(1., false), (2., false), (4., true)] {
+        let neighbor = sheared
+            .transformed(
+                AffineTransform3::from_translation(Vector3::try_new(offset, 0., 0.).unwrap()),
+                tolerance,
+            )
+            .unwrap();
+        let source = Brep::try_combine(
+            vec![
+                sheared.clone().reversed(),
+                neighbor.reversed(),
+                large_outer.clone(),
+            ],
+            tolerance,
+        )
+        .unwrap();
+        assert_eq!(
+            source.certified_convex_solid_shell_order(),
+            separated.then_some(vec![2, 0, 1])
+        );
+        let mut output = Vec::new();
+        write_step_planar_breps(&mut output, [&source]).unwrap();
+        let text = String::from_utf8(output).unwrap();
+        assert_eq!(
+            text.matches("SHELL_BASED_SURFACE_MODEL(").count(),
+            if separated { 0 } else { 3 }
+        );
+        assert_eq!(text.contains("BREP_WITH_VOIDS("), separated);
+    }
+}
+
+#[test]
 fn planar_brep_step_export_retains_certified_box_cavity_as_one_solid() {
     use viboceros_geometry::{Brep, Frame3, Vector3};
     let frame = Frame3::try_from_directions(
