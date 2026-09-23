@@ -513,7 +513,8 @@ fn curve_brep_intersection_events_with_transform(
 ///
 /// The current exact path handles transverse planar surfaces, including
 /// multiple clipped components and isolated boundary contacts, plus
-/// coincident nonsingular convex non-rational four-sided bilinear patches. Coincident
+/// coincident nonsingular convex four-sided bilinear patches with same-sign
+/// rational weights. Coincident
 /// patches return their area-overlap perimeter or shared edge; a lone shared
 /// corner produces no event, matching Rhino. Parallel disjoint planes return
 /// no events. Non-planar and more general coincident inputs are reported
@@ -1084,16 +1085,20 @@ fn coincident_planar_surface_intersection_events(
     distance_tolerance: Real,
 ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
     let unsupported = || GeometryError::UnsupportedSurfaceSurfaceIntersection {
-        context: "coincident planar surfaces other than nonsingular convex non-rational four-sided bilinear patches",
+        context: "coincident planar surfaces other than nonsingular convex bilinear patches with weights of one sign",
     };
     if !is_four_sided_bilinear_patch(first)
         || !is_four_sided_bilinear_patch(second)
-        || first.is_rational()
-        || second.is_rational()
+        || !weights_have_common_sign(first.control_points().iter().map(|point| point.weight()))
+        || !weights_have_common_sign(second.control_points().iter().map(|point| point.weight()))
     {
         return Err(unsupported());
     }
 
+    // At fixed U, a same-sign-weight rational bilinear patch traces a
+    // straight segment between two monotonically traversed opposite edges.
+    // With a convex corner quad those segments partition the quad, so the
+    // Euclidean corner polygon is the complete surface image.
     let mut first_polygon = bilinear_patch_polygon(first);
     let mut second_polygon = bilinear_patch_polygon(second);
     if !orient_and_validate_convex_polygon(&mut first_polygon, plane.normal(), distance_tolerance)?
@@ -3420,7 +3425,7 @@ mod tests {
                 Tolerance::DEFAULT,
             ),
             Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-                context: "coincident planar surfaces other than nonsingular convex non-rational four-sided bilinear patches",
+                context: "coincident planar surfaces other than nonsingular convex bilinear patches with weights of one sign",
             })
         );
 
@@ -3444,9 +3449,87 @@ mod tests {
         assert_eq!(
             surface_surface_intersection_events(&horizontal, &quadratic, Tolerance::DEFAULT,),
             Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-                context: "coincident planar surfaces other than nonsingular convex non-rational four-sided bilinear patches",
+                context: "coincident planar surfaces other than nonsingular convex bilinear patches with weights of one sign",
             })
         );
+    }
+
+    #[test]
+    fn coincident_rational_bilinear_patches_use_their_convex_corner_region() {
+        let weighted = |sign: Real| {
+            NurbsSurface::try_new_rational(
+                1,
+                1,
+                2,
+                2,
+                [
+                    (point(0.0, 0.0, 0.0), 1.0),
+                    (point(0.0, 10.0, 0.0), 2.0),
+                    (point(10.0, 0.0, 0.0), 5.0),
+                    (point(10.0, 10.0, 0.0), 11.0),
+                ]
+                .into_iter()
+                .map(|(point, weight)| crate::WeightedPoint3::try_new(point, sign * weight))
+                .collect::<Result<Vec<_>, _>>()
+                .unwrap(),
+                vec![0.0, 0.0, 10.0, 10.0],
+                vec![0.0, 0.0, 10.0, 10.0],
+            )
+            .unwrap()
+        };
+        let shifted = horizontal_rectangle(5.0, 15.0, 0.0, 10.0, 0.0);
+        for sign in [1.0, -1.0] {
+            let rational = weighted(sign);
+            let events =
+                surface_surface_intersection_events(&rational, &shifted, Tolerance::DEFAULT)
+                    .unwrap();
+            let [SurfaceSurfaceIntersectionEvent::Curve(overlap)] = events.as_slice() else {
+                panic!("expected one rational overlap perimeter, got {events:#?}");
+            };
+            assert!(overlap.is_closed().unwrap());
+            assert!((overlap.length(Tolerance::DEFAULT).unwrap() - 30.0).abs() < 1e-9);
+            let actual = overlap
+                .control_points()
+                .iter()
+                .map(|point| point.point())
+                .collect::<Vec<_>>();
+            for corner in [
+                point(5.0, 0.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                point(10.0, 10.0, 0.0),
+                point(5.0, 10.0, 0.0),
+            ] {
+                assert!(
+                    actual
+                        .iter()
+                        .any(|point| point.is_near(corner, Tolerance::DEFAULT))
+                );
+            }
+            let reversed =
+                surface_surface_intersection_events(&shifted, &rational, Tolerance::DEFAULT)
+                    .unwrap();
+            assert_eq!(reversed.len(), 1);
+            let first_brep = Brep::try_surface_face(rational.clone(), Tolerance::DEFAULT).unwrap();
+            let second_brep = Brep::try_surface_face(shifted.clone(), Tolerance::DEFAULT).unwrap();
+            let brep_events =
+                brep_brep_intersection_events(&first_brep, &second_brep, Tolerance::DEFAULT)
+                    .unwrap();
+            let [BrepBrepIntersectionEvent::Curve(brep_overlap)] = brep_events.as_slice() else {
+                panic!("expected one rational B-rep overlap perimeter, got {brep_events:#?}");
+            };
+            assert!(brep_overlap.is_closed().unwrap());
+            assert!((brep_overlap.length(Tolerance::DEFAULT).unwrap() - 30.0).abs() < 1e-9);
+            let edge = surface_surface_intersection_events(
+                &rational,
+                &horizontal_rectangle(10.0, 20.0, 0.0, 10.0, 0.0),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            let [SurfaceSurfaceIntersectionEvent::Curve(edge)] = edge.as_slice() else {
+                panic!("expected a rational shared edge, got {edge:#?}");
+            };
+            assert!((edge.length(Tolerance::DEFAULT).unwrap() - 10.0).abs() < 1e-9);
+        }
     }
 
     fn box_brep() -> Brep {

@@ -26497,6 +26497,61 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_coincident_rational_patch_boundary() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let point = |x, y| Point3::try_new(x, y, 0.0).unwrap();
+        let rational = NurbsSurface::try_new_rational(
+            1,
+            1,
+            2,
+            2,
+            [
+                (point(0.0, 0.0), 1.0),
+                (point(0.0, 10.0), 2.0),
+                (point(10.0, 0.0), 5.0),
+                (point(10.0, 10.0), 11.0),
+            ]
+            .into_iter()
+            .map(|(point, weight)| viboceros_geometry::WeightedPoint3::try_new(point, weight))
+            .collect::<Result<Vec<_>, _>>()
+            .unwrap(),
+            vec![0.0, 0.0, 10.0, 10.0],
+            vec![0.0, 0.0, 10.0, 10.0],
+        )
+        .unwrap();
+        let shifted = NurbsSurface::try_bilinear([
+            point(5.0, 0.0),
+            point(15.0, 0.0),
+            point(15.0, 10.0),
+            point(5.0, 10.0),
+        ])
+        .unwrap();
+        let inputs = [
+            document
+                .add_geometry(Geometry::NurbsSurface(rational))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(shifted))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(inputs, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 1 intersection object(s) from 1 object pair(s)"
+        );
+        let Geometry::NurbsCurve(boundary) = document.selected_objects().next().unwrap().geometry()
+        else {
+            panic!("rational patch intersection must create an overlap boundary")
+        };
+        assert!(boundary.is_closed().unwrap());
+        assert!((boundary.length(Tolerance::DEFAULT).unwrap() - 30.0).abs() < 1e-9);
+        assert!(inputs.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
     fn intersect_joins_planar_surface_brep_sections() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
