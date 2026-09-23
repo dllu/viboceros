@@ -20,6 +20,50 @@ fn options(disjoint: bool, tolerance: f64) -> MeshJoinOptions {
 }
 
 #[test]
+fn joining_preserves_ngons_through_alignment_and_vertex_compaction() {
+    let first = TriangleMesh::try_new(
+        [
+            [-10., 0., 0.],
+            [0., 0., 0.],
+            [2., 0., 0.],
+            [2., 2., 0.],
+            [0., 2., 0.],
+        ]
+        .into_iter()
+        .map(|p| Point3::try_from(p).unwrap())
+        .collect(),
+        vec![[1, 2, 3], [1, 3, 4]],
+        Tolerance::MESH_VALIDATION,
+    )
+    .unwrap()
+    .try_with_ngons(vec![MeshNgon::from_parts(vec![1, 2, 3, 4], vec![0, 1])])
+    .unwrap();
+    let second = quad(2.);
+    for disjoint in [false, true] {
+        let joined = join_meshes(&[&first, &second], options(disjoint, 0.))
+            .unwrap()
+            .remove(0)
+            .mesh;
+        assert_eq!(joined.ngons().len(), 1);
+        assert_eq!(joined.ngons()[0].faces(), &[0, 1]);
+        assert_eq!(
+            joined.ngons()[0].vertices(),
+            if disjoint {
+                &[1, 2, 3, 4]
+            } else {
+                &[0, 1, 2, 3]
+            }
+        );
+        assert!(
+            joined
+                .clone()
+                .try_with_ngons(joined.ngons().to_vec())
+                .is_ok()
+        );
+    }
+}
+
+#[test]
 fn direct_anchor_matches_do_not_take_transitive_closure_or_exceed_tolerance() {
     let meshes = [quad(0.), quad(0.125), quad(0.25), quad(0.375)];
     let references = meshes.iter().collect::<Vec<_>>();

@@ -120,9 +120,10 @@ impl MeshToNurbCommand {
             }
             for piece in mesh.disjoint_pieces() {
                 outputs.push((
-                    Geometry::Brep(Brep::try_from_mesh(
+                    Geometry::Brep(Brep::try_from_mesh_with_ngons(
                         &piece,
                         options.trim_triangular_faces,
+                        options.use_ngons,
                         document.tolerance(),
                     )?),
                     object.attributes().clone(),
@@ -154,8 +155,6 @@ fn parse(arguments: &[&str], mut options: Options) -> Result<Options, CommandErr
             options.trim_triangular_faces = value;
             trim_seen = true;
         } else if option_name_eq(name, "UseNgons") && !ngons_seen {
-            // Triangles and quads have no n-gon regions; both choices are
-            // equivalent for the currently representable input geometry.
             options.use_ngons = value;
             ngons_seen = true;
         } else {

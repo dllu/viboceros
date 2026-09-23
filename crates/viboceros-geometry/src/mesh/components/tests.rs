@@ -320,3 +320,41 @@ fn component_remapping_preserves_quads_duplicate_raw_vertices_and_face_order() {
         assert_eq!(mesh.try_disjoint_pieces(maximum).unwrap(), pieces);
     }
 }
+
+#[test]
+fn component_remapping_preserves_ngon_boundaries_and_member_faces() {
+    let mesh = TriangleMesh::try_new(
+        vec![
+            p(10., 0., 0.),
+            p(11., 0., 0.),
+            p(10., 1., 0.),
+            p(0., 0., 0.),
+            p(1., 0., 0.),
+            p(1., 1., 0.),
+            p(0., 1., 0.),
+        ],
+        vec![[0, 1, 2], [3, 4, 5], [3, 5, 6]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap()
+    .try_with_ngons(vec![MeshNgon::from_parts(vec![3, 4, 5, 6], vec![1, 2])])
+    .unwrap();
+    for pieces in [mesh.disjoint_pieces(), mesh.explode_pieces()] {
+        assert_eq!(pieces.len(), 2);
+        assert!(pieces[0].ngons().is_empty());
+        assert_eq!(
+            pieces[1].faces(),
+            &[MeshFace::Triangle([0, 1, 2]), MeshFace::Triangle([0, 2, 3])]
+        );
+        assert_eq!(
+            pieces[1].ngons(),
+            &[MeshNgon::from_parts(vec![0, 1, 2, 3], vec![0, 1])]
+        );
+        assert!(
+            pieces[1]
+                .clone()
+                .try_with_ngons(pieces[1].ngons().to_vec())
+                .is_ok()
+        );
+    }
+}

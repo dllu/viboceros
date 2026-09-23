@@ -154,7 +154,23 @@ fn compact(mesh: &TriangleMesh) -> TriangleMesh {
             })
         })
         .collect();
-    TriangleMesh::from_validated_parts(vertices, faces)
+    let mut compacted = TriangleMesh::from_validated_parts(vertices, faces);
+    compacted.ngons = mesh
+        .ngons
+        .iter()
+        .map(|ngon| {
+            MeshNgon::from_parts(
+                ngon.vertices
+                    .iter()
+                    .map(|&vertex| {
+                        mapping[vertex as usize].expect("n-gon vertices belong to faces")
+                    })
+                    .collect(),
+                ngon.faces.clone(),
+            )
+        })
+        .collect();
+    compacted
 }
 
 fn point_connected(mesh: &TriangleMesh) -> bool {
@@ -312,7 +328,8 @@ fn align(
                     *vertex = points[targets[index]];
                 }
             }
-            TriangleMesh::try_new_faces(vertices, mesh.faces.clone(), Tolerance::MESH_VALIDATION)
+            TriangleMesh::try_new_faces(vertices, mesh.faces.clone(), Tolerance::MESH_VALIDATION)?
+                .try_with_ngons(mesh.ngons.clone())
         })
         .collect()
 }

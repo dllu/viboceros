@@ -115,13 +115,41 @@ impl TriangleMesh {
     /// per piece costs O(vertices * pieces) even for isolated triangles.
     fn pieces_from_faces(&self, components: Vec<Vec<usize>>) -> Vec<Self> {
         let mut vertex_remap = vec![None; self.vertices.len()];
+        let mut face_remap = if self.ngons.is_empty() {
+            Vec::new()
+        } else {
+            vec![None; self.faces.len()]
+        };
+        let mut ngon_by_face = if self.ngons.is_empty() {
+            Vec::new()
+        } else {
+            vec![None; self.faces.len()]
+        };
+        for (ngon_index, ngon) in self.ngons.iter().enumerate() {
+            for &face in &ngon.faces {
+                ngon_by_face[face as usize] = Some(ngon_index);
+            }
+        }
+        let mut ngon_seen = vec![false; self.ngons.len()];
         components
             .into_iter()
             .map(|faces| {
-                let piece = self.piece_from_faces(&faces, &mut vertex_remap);
+                let piece = self.piece_from_faces(
+                    &faces,
+                    &mut vertex_remap,
+                    &mut face_remap,
+                    &ngon_by_face,
+                    &mut ngon_seen,
+                );
                 // A vertex can belong to multiple edge-disconnected components.
                 // Clear exactly the referenced entries, not the entire source map.
                 for &face in &faces {
+                    if let Some(remapped) = face_remap.get_mut(face) {
+                        *remapped = None;
+                    }
+                    if let Some(ngon) = ngon_by_face.get(face).copied().flatten() {
+                        ngon_seen[ngon] = false;
+                    }
                     for &vertex in self.faces[face].indices() {
                         vertex_remap[vertex as usize] = None;
                     }
@@ -131,10 +159,24 @@ impl TriangleMesh {
             .collect()
     }
 
-    fn piece_from_faces(&self, faces: &[usize], vertex_remap: &mut [Option<u32>]) -> Self {
+    fn piece_from_faces(
+        &self,
+        faces: &[usize],
+        vertex_remap: &mut [Option<u32>],
+        face_remap: &mut [Option<u32>],
+        ngon_by_face: &[Option<usize>],
+        ngon_seen: &mut [bool],
+    ) -> Self {
         let mut vertices = Vec::new();
         let mut retained_faces = Vec::with_capacity(faces.len());
+        let mut ngons = Vec::new();
         for &face in faces {
+            if let Some(remapped) = face_remap.get_mut(face) {
+                *remapped = Some(
+                    u32::try_from(retained_faces.len())
+                        .expect("a mesh component cannot have more faces than its source"),
+                );
+            }
             let retained_face = self.faces[face].remapped(|source| {
                 let source = source as usize;
                 *vertex_remap[source].get_or_insert_with(|| {
@@ -145,7 +187,40 @@ impl TriangleMesh {
                 })
             });
             retained_faces.push(retained_face);
+            if let Some(ngon) = ngon_by_face.get(face).copied().flatten()
+                && !ngon_seen[ngon]
+            {
+                ngon_seen[ngon] = true;
+                ngons.push(ngon);
+            }
         }
-        Self::from_validated_parts(vertices, retained_faces)
+        ngons.sort_unstable();
+        let ngons = ngons
+            .into_iter()
+            .map(|index| {
+                let source = &self.ngons[index];
+                MeshNgon::from_parts(
+                    source
+                        .vertices
+                        .iter()
+                        .map(|&vertex| {
+                            vertex_remap[vertex as usize]
+                                .expect("an n-gon boundary vertex belongs to its face component")
+                        })
+                        .collect(),
+                    source
+                        .faces
+                        .iter()
+                        .map(|&face| {
+                            face_remap[face as usize]
+                                .expect("all n-gon faces belong to one edge component")
+                        })
+                        .collect(),
+                )
+            })
+            .collect();
+        let mut piece = Self::from_validated_parts(vertices, retained_faces);
+        piece.ngons = ngons;
+        piece
     }
 }
