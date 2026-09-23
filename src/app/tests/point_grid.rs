@@ -38,18 +38,102 @@ fn picked_grid_matches_typed_command_and_is_one_undo_step() {
 }
 
 #[test]
-fn typed_diagonal_does_not_enter_the_ordinary_height_picker() {
+fn diagonal_grid_finishes_on_a_spatial_second_corner() {
     let mut app = test_app();
-    assert!(!app.try_start_interactive_command("PointGrid Diagonal XCount=3"));
-    assert!(app.active_command.is_none());
-    enter(
-        &mut app,
-        "PointGrid Diagonal 10,20,3 8,24,-1 XCount=3 YCount=2 ZCount=2",
+    enter(&mut app, "PointGrid Diagonal XCount=3 YCount=2 ZCount=2");
+    assert!(
+        app.active_command
+            .unwrap()
+            .prompt()
+            .contains("first base corner")
     );
+    assert!(app.accept_drafting_point(point(10.0, 20.0, 3.0)));
+    assert!(
+        app.active_command
+            .unwrap()
+            .prompt()
+            .contains("diagonal corner")
+    );
+    assert!(app.accept_drafting_point(point(8.0, 24.0, -1.0)));
     assert!(app.active_command.is_none());
-    assert_eq!(cloud(&app.document).len(), 12);
-    assert_eq!(cloud(&app.document)[0], point(10.0, 20.0, 3.0));
-    assert_eq!(cloud(&app.document)[11], point(8.0, 24.0, -1.0));
+    let mut expected = Document::default();
+    CommandRegistry::with_builtins()
+        .execute(
+            &mut expected,
+            "PointGrid Diagonal 10,20,3 8,24,-1 XCount=3 YCount=2 ZCount=2",
+        )
+        .unwrap();
+    assert_eq!(cloud(&app.document), cloud(&expected));
+    assert_eq!(app.document.undo_label(), Some("PointGrid"));
+}
+
+#[test]
+fn coplanar_diagonal_waits_for_height_point_and_uses_first_view_plane() {
+    let mut app = test_app();
+    app.active_viewport = 2;
+    let plane = app.viewports[2].construction_plane();
+    let base = point(10.0, 20.0, 30.0);
+    let based = plane.with_origin(base);
+    let opposite = based.point_at([13.0, 24.0, 0.0]).unwrap();
+    let height_point = based.point_at([5.0, 6.0, 7.0]).unwrap();
+    enter(&mut app, "PointGrid Diagonal XCount=3 YCount=2 ZCount=2");
+    assert!(app.accept_drafting_point(base));
+    app.active_viewport = 0;
+    assert!(app.accept_drafting_point(opposite));
+    assert!(
+        app.active_command
+            .unwrap()
+            .prompt()
+            .contains("height point")
+    );
+    enter(&mut app, "");
+    assert!(app.active_command.is_some());
+    assert!(!app.accept_drafting_point(based.point_at([1.0, 2.0, 0.0]).unwrap()));
+    assert_eq!(app.document.objects().count(), 0);
+    assert!(app.accept_drafting_point(height_point));
+    assert!(app.active_command.is_none());
+    let mut expected = Document::default();
+    CommandRegistry::with_builtins()
+        .execute_in_context(
+            &mut expected,
+            &format!(
+                "PointGrid Diagonal {} {} {} XCount=3 YCount=2 ZCount=2",
+                format_model_point(base),
+                format_model_point(opposite),
+                format_model_point(height_point)
+            ),
+            viboceros_command::CommandContext {
+                construction_plane: plane,
+            },
+        )
+        .unwrap();
+    assert_eq!(cloud(&app.document), cloud(&expected));
+}
+
+#[test]
+fn failed_automatic_diagonal_completion_keeps_the_second_corner_prompt() {
+    let mut app = test_app();
+    enter(&mut app, "PointGrid Diagonal XCount=200000");
+    assert!(app.accept_drafting_point(point(0.0, 0.0, 0.0)));
+    let plane = app.drafting_plane;
+    assert!(!app.accept_drafting_point(point(2.0, 3.0, 4.0)));
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::PointGrid {
+            base: Some(_),
+            opposite: None,
+            third: None,
+            ..
+        })
+    ));
+    assert!(
+        app.active_command
+            .unwrap()
+            .prompt()
+            .contains("diagonal corner")
+    );
+    assert_eq!(app.drafting_plane, plane);
+    assert_eq!(app.document.objects().count(), 0);
 }
 
 #[test]

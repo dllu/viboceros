@@ -641,6 +641,13 @@ impl InteractiveCommand {
                 options,
                 ..
             } if options.centered() => "PointGrid: pick a base corner (Esc to cancel)",
+            Self::PointGrid {
+                opposite: None,
+                options,
+                ..
+            } if options.diagonal() => {
+                "PointGrid: pick the opposite diagonal corner (Esc to cancel)"
+            }
             Self::PointGrid { opposite: None, .. } => {
                 "PointGrid: pick the opposite base corner (Esc to cancel)"
             }
@@ -650,6 +657,9 @@ impl InteractiveCommand {
                 ..
             } if options.three_point() => {
                 "PointGrid: pick a point on the opposite side (Esc to cancel)"
+            }
+            Self::PointGrid { options, .. } if options.diagonal() => {
+                "PointGrid: pick a height point (Esc to cancel)"
             }
             Self::PointGrid { .. } => {
                 "PointGrid: pick or enter height; Enter uses base width (Esc to cancel)"
@@ -1431,11 +1441,6 @@ impl VibocerosApp {
             let Ok(options) = viboceros_command::PointGridOptions::parse(&arguments) else {
                 return false;
             };
-            // Typed Diagonal construction is available; do not route it through
-            // the ordinary grid's different height/default-height prompts.
-            if options.diagonal() {
-                return false;
-            }
             InteractiveCommand::PointGrid {
                 base: None,
                 opposite: None,

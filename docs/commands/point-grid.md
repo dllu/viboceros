@@ -73,7 +73,7 @@ calculation when all output points remain finite. An explicit finite height can
 therefore support such a wide base. An unrepresentable default height or output
 coordinate is still rejected before adding geometry.
 
-## Typed diagonal grids
+## Diagonal grids
 
 `PointGrid Diagonal first-corner opposite-corner [height-point]` uses all three
 CPlane components of the diagonal. Each axis runs from the first corner toward
@@ -82,8 +82,12 @@ computed normal displacement is exactly zero, an explicit height point is
 required, and only its normal component relative to the first corner is used.
 Otherwise the second corner supplies the height and extra height input is rejected.
 
-This mode currently requires a complete typed command. Interactive Diagonal
-picking, numeric-only height, and default height are not supported. The native
+Enter `PointGrid Diagonal` with optional counts to pick the two corners. A
+second corner with nonzero normal displacement completes the grid. Coplanar
+corners prompt for a height point; an invalid height point leaves the prompt
+active for another pick. The first pick's construction plane is retained when
+subsequent picks come from another viewport. Numeric-only height and default
+height are not supported. The native
 exact-zero rule does not claim parity with Rhino's unmeasured near-coplanar prompt
 threshold. Diagonal cannot be combined with Center or 3Point.
 
@@ -94,7 +98,7 @@ positive height (increases for negative height), then Z advances from the base
 to the requested height. The result is a point cloud, not a polygon mesh.
 Existing Explode and point-cloud picking operations apply.
 
-This implementation accepts two-corner, three-point, center-based, and typed
+This implementation accepts two-corner, three-point, center-based, and
 diagonal input. Rhino's Vertical workflow is not yet implemented.
 The [Diagonal investigation](../point-grid-diagonal.md) records measured behavior
 and the remaining prompt uncertainties.
@@ -149,7 +153,9 @@ order within `4.5e-16`; the axis-aligned cases matched exactly. Their
 [raw measurements](../../tools/rhino_oracle/observations/point_matrix_diagonal_planes.json)
 replay in native ordered tests and independent Python world-coordinate formulas
 at `1e-12`. This is sampled plane coverage, not a guarantee at arbitrary scales
-or near the unmeasured coplanarity threshold.
+or near the unmeasured coplanarity threshold. UI tests cover both diagonal
+completion paths, a viewport switch, invalid height picks, and failed automatic
+completion without losing the active draft.
 
 ```sh
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_command.json --timeout 300

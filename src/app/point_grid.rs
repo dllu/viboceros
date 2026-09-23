@@ -10,7 +10,7 @@ impl VibocerosApp {
                 opposite: Some(_),
                 third,
                 options,
-            }) if !options.three_point() || third.is_some()
+            }) if !options.diagonal() && (!options.three_point() || third.is_some())
         ) {
             return false;
         }
@@ -48,15 +48,17 @@ impl VibocerosApp {
                 options,
             },
             (Some(base), None) => {
+                let local = self
+                    .drafting_plane
+                    .unwrap_or(plane)
+                    .with_origin(base)
+                    .coordinates_of(point);
                 let valid = if options.three_point() {
                     base.vector_to(point)
                         .and_then(|v| v.normalized(self.document.tolerance()))
                         .is_ok()
                 } else {
-                    plane
-                        .with_origin(base)
-                        .coordinates_of(point)
-                        .is_ok_and(|[x, y, _]| x != 0.0 && y != 0.0)
+                    local.as_ref().is_ok_and(|[x, y, _]| *x != 0.0 && *y != 0.0)
                 };
                 if !valid {
                     self.push_log(
@@ -68,6 +70,15 @@ impl VibocerosApp {
                         .to_owned(),
                     );
                     return false;
+                }
+                if options.diagonal() && local.is_ok_and(|[_, _, z]| z != 0.0) {
+                    self.active_command = Some(InteractiveCommand::PointGrid {
+                        base: Some(base),
+                        opposite: Some(point),
+                        third: None,
+                        options,
+                    });
+                    return self.finish_point_grid(None);
                 }
                 InteractiveCommand::PointGrid {
                     base: Some(base),
@@ -89,6 +100,22 @@ impl VibocerosApp {
                     third: Some(point),
                     options,
                 }
+            }
+            (Some(base), Some(second)) if options.diagonal() => {
+                let frame = self.drafting_plane.unwrap_or(plane).with_origin(base);
+                if !frame.coordinates_of(point).is_ok_and(|[_, _, z]| z != 0.0) {
+                    self.push_log(
+                        "Error: point grid height point must leave the base plane".to_owned(),
+                    );
+                    return false;
+                }
+                self.active_command = Some(InteractiveCommand::PointGrid {
+                    base: Some(base),
+                    opposite: Some(second),
+                    third: Some(point),
+                    options,
+                });
+                return self.finish_point_grid(None);
             }
             (Some(base), Some(second)) => {
                 let frame = if let Some(third) = third {
@@ -122,6 +149,7 @@ impl VibocerosApp {
             return false;
         };
         let plane = self.drafting_plane;
+        let has_third = third.is_some();
         let height = height.map_or_else(String::new, |height| format!(" {height}"));
         let third = third.map_or_else(String::new, |point| {
             format!(" {}", format_model_point(point))
@@ -138,7 +166,18 @@ impl VibocerosApp {
             self.command_input.clear();
             true
         } else {
-            self.active_command = Some(command);
+            self.active_command = Some(if options.diagonal() && !has_third {
+                // A failed automatic finish still needs a replacement second
+                // corner, not a third point that typed Diagonal would reject.
+                InteractiveCommand::PointGrid {
+                    base: Some(base),
+                    opposite: None,
+                    third: None,
+                    options,
+                }
+            } else {
+                command
+            });
             self.drafting_plane = plane;
             false
         }
