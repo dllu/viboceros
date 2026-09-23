@@ -1,0 +1,15 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "view_camera_probe",
+      "id": "oblique-cplane-six-directions",
+      "origin": [10, 20, 30],
+      "x_axis": [1, 1, 0],
+      "y_axis": [-1, 1, 1],
+      "projections": ["Top", "Perspective"],
+      "directions": ["Top", "Bottom", "Front", "Back", "Right", "Left"]
+    }
+  ]
+}

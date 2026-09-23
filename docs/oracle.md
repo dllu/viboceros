@@ -1017,6 +1017,34 @@ has an owned-window fallback that requires `wmctrl` and `xdotool` and never
 targets a pre-existing Rhino process. Set `VIBOCEROS_RHINO_UI_FALLBACK=0` to
 disable it. The `viboceros` and `rhino` modes run either side independently.
 
+### SetView CPlane camera probe
+
+The bounded `view_camera_probe` operation uses public RhinoCommon viewport
+properties to record camera direction, up vector, location, target, projection,
+and construction plane after all six `SetView CPlane` directions in parallel and
+perspective viewports. It restores the original view projection, target, name,
+CPlane, and model aid settings. Run the Rhino side with:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/view_camera_cplane.json --timeout 300
+```
+
+Save the JSON response and compare its camera and CPlane values with the current
+Viboceros camera rule:
+
+```sh
+python3 -m tools.rhino_oracle.view_camera_probe tools/rhino_oracle/fixtures/view_camera_cplane.json rhino-camera-response.json
+```
+
+The comparator checks the six orientations, CPlane axes and origin, camera
+target, projection, and perspective distance. Parallel camera location is
+diagnostic because Viboceros has no finite parallel camera location. The camera
+probe has no native oracle operation yet, so `compare` is unavailable for this
+fixture. The current Wine launcher crashed during .NET startup before the
+worker ran; no live camera observation was saved or used to claim numeric
+agreement. The independent Rust viewport tests cover all six directions in
+both projections while a live comparison remains pending.
+
 ## Timing interpretation
 
 The comparison report's `rhino_to_viboceros_ratio` is a ratio of raw harness

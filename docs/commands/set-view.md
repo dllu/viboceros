@@ -37,3 +37,5 @@ UndoView/RedoView use this orientation. Rotated Plan views use the cloud's share
 tree with lazy three-dimensional subtree bounds for picking and snapping. The
 command preserves unfinished modeling prompts and document undo/redo. A live
 Rhino camera comparison for these commands remains pending.
+The [camera oracle fixture](../oracle.md#setview-cplane-camera-probe) is ready to
+record the corresponding public Rhino viewport properties when Rhino starts.
