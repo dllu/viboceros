@@ -56,10 +56,15 @@ const MAX_CONSTRAINED_TRIM_VERTICES: usize = 131_072;
 const MAX_TRIM_ROOT_DEPTH: usize = 64;
 
 struct PlanarMeshNgon {
-    vertices: Vec<u32>,
+    loops: Vec<PlanarMeshNgonLoop>,
     frame: Frame3,
-    parameters: Vec<Point2>,
     bounds: [[Real; 2]; 2],
+}
+
+struct PlanarMeshNgonLoop {
+    vertices: Vec<u32>,
+    parameters: Vec<Point2>,
+    loop_type: BrepLoopType,
 }
 
 enum MeshConversionRegion {
@@ -68,10 +73,18 @@ enum MeshConversionRegion {
 }
 
 impl MeshConversionRegion {
-    fn raw_vertices(&self) -> &[u32] {
+    fn loop_count(&self) -> usize {
         match self {
-            Self::Face(face) => face.indices(),
-            Self::Ngon(ngon) => &ngon.vertices,
+            Self::Face(_) => 1,
+            Self::Ngon(ngon) => ngon.loops.len(),
+        }
+    }
+
+    fn raw_loop(&self, index: usize) -> &[u32] {
+        match self {
+            Self::Face(face) if index == 0 => face.indices(),
+            Self::Ngon(ngon) => &ngon.loops[index].vertices,
+            Self::Face(_) => unreachable!("a mesh face has one boundary loop"),
         }
     }
 }
@@ -1460,9 +1473,9 @@ impl Brep {
         Self::try_from_mesh_with_ngons(mesh, trim_triangular_faces, false, tolerance)
     }
 
-    /// Converts each simply connected planar region of an n-gon into one
-    /// trimmed planar face when requested. Faces outside those regions retain
-    /// their underlying triangle and quad surfaces.
+    /// Converts each planar region of an n-gon into one trimmed planar face
+    /// when requested. Faces outside those regions retain their underlying
+    /// triangle and quad surfaces.
     pub fn try_from_mesh_with_ngons(
         mesh: &TriangleMesh,
         trim_triangular_faces: bool,
@@ -1519,8 +1532,10 @@ impl Brep {
         // location referenced again later.
         let mut used_vertices = vec![false; vertices.len()];
         for region in &regions {
-            for &raw in region.raw_vertices() {
-                used_vertices[raw_to_brep[raw as usize]] = true;
+            for loop_index in 0..region.loop_count() {
+                for &raw in region.raw_loop(loop_index) {
+                    used_vertices[raw_to_brep[raw as usize]] = true;
+                }
             }
         }
         let mut vertex_remap = vec![usize::MAX; vertices.len()];
@@ -1539,13 +1554,15 @@ impl Brep {
 
         let mut edge_use_counts = BTreeMap::<(usize, usize), usize>::new();
         for region in &regions {
-            let indices = region.raw_vertices();
-            for side in 0..indices.len() {
-                let start = raw_to_brep[indices[side] as usize];
-                let end = raw_to_brep[indices[(side + 1) % indices.len()] as usize];
-                let key = ordered_pair(start, end);
-                let uses = edge_use_counts.entry(key).or_default();
-                *uses = uses.checked_add(1).ok_or(GeometryError::TooManyMeshFaces)?;
+            for loop_index in 0..region.loop_count() {
+                let indices = region.raw_loop(loop_index);
+                for side in 0..indices.len() {
+                    let start = raw_to_brep[indices[side] as usize];
+                    let end = raw_to_brep[indices[(side + 1) % indices.len()] as usize];
+                    let key = ordered_pair(start, end);
+                    let uses = edge_use_counts.entry(key).or_default();
+                    *uses = uses.checked_add(1).ok_or(GeometryError::TooManyMeshFaces)?;
+                }
             }
         }
         let edge_keys = edge_use_counts.keys().copied().collect::<Vec<_>>();
@@ -1572,51 +1589,59 @@ impl Brep {
 
         let mut faces = Vec::with_capacity(regions.len());
         for region in &regions {
-            let face_vertices = region
-                .raw_vertices()
-                .iter()
-                .map(|&raw| raw_to_brep[raw as usize])
-                .collect::<Vec<_>>();
             if let MeshConversionRegion::Ngon(ngon) = region {
                 let surface =
                     planar_cap_surface(ngon.frame, Vector3::try_new(0.0, 0.0, 0.0)?, ngon.bounds)?;
-                let mut trims = Vec::with_capacity(face_vertices.len());
-                for side in 0..face_vertices.len() {
-                    let next = (side + 1) % face_vertices.len();
-                    let start = face_vertices[side];
-                    let end = face_vertices[next];
-                    let edge_key = ordered_pair(start, end);
-                    let edge = edge_indices[&edge_key];
-                    let trim_type = if edge_use_counts[&edge_key] == 1 {
-                        BrepTrimType::Boundary
-                    } else {
-                        BrepTrimType::Mated
-                    };
-                    trims.push(BrepTrim::try_new(
-                        [start, end],
-                        Some(edge),
-                        [start, end] != edges[edge].vertices,
-                        NurbsCurve2::try_line(ngon.parameters[side], ngon.parameters[next])?,
-                        trim_type,
-                        cap_trim_iso(
-                            ngon.parameters[side],
-                            ngon.parameters[next],
-                            ngon.bounds,
-                            tolerance,
-                        ),
-                        [0.0, 0.0],
-                    )?);
+                let mut loops = Vec::with_capacity(ngon.loops.len());
+                for boundary in &ngon.loops {
+                    let face_vertices = boundary
+                        .vertices
+                        .iter()
+                        .map(|&raw| raw_to_brep[raw as usize])
+                        .collect::<Vec<_>>();
+                    let mut trims = Vec::with_capacity(face_vertices.len());
+                    for side in 0..face_vertices.len() {
+                        let next = (side + 1) % face_vertices.len();
+                        let start = face_vertices[side];
+                        let end = face_vertices[next];
+                        let edge_key = ordered_pair(start, end);
+                        let edge = edge_indices[&edge_key];
+                        let trim_type = if edge_use_counts[&edge_key] == 1 {
+                            BrepTrimType::Boundary
+                        } else {
+                            BrepTrimType::Mated
+                        };
+                        trims.push(BrepTrim::try_new(
+                            [start, end],
+                            Some(edge),
+                            [start, end] != edges[edge].vertices,
+                            NurbsCurve2::try_line(
+                                boundary.parameters[side],
+                                boundary.parameters[next],
+                            )?,
+                            trim_type,
+                            cap_trim_iso(
+                                boundary.parameters[side],
+                                boundary.parameters[next],
+                                ngon.bounds,
+                                tolerance,
+                            ),
+                            [0.0, 0.0],
+                        )?);
+                    }
+                    loops.push(BrepLoop::try_new(boundary.loop_type, trims)?);
                 }
-                faces.push(BrepFace::try_new(
-                    surface,
-                    false,
-                    vec![BrepLoop::try_new(BrepLoopType::Outer, trims)?],
-                )?);
+                faces.push(BrepFace::try_new(surface, false, loops)?);
                 continue;
             }
             let MeshConversionRegion::Face(face) = region else {
                 unreachable!()
             };
+            let face_vertices = face
+                .indices()
+                .iter()
+                .map(|&raw| raw_to_brep[raw as usize])
+                .collect::<Vec<_>>();
             let face_points = face_vertices
                 .iter()
                 .map(|&vertex| vertices[vertex].point)
@@ -7069,9 +7094,11 @@ fn planar_mesh_ngon_regions(
             continue;
         }
         faces.sort_unstable();
-        if let Some(region_ngon) = mesh.ngon_from_faces(faces.clone())
-            && let Some(planar) = planar_mesh_ngon(mesh, &region_ngon, tolerance)
-        {
+        let planar = mesh
+            .ngon_from_faces(faces.clone())
+            .and_then(|region| planar_mesh_ngon(mesh, &region, tolerance))
+            .or_else(|| planar_mesh_region_with_holes(mesh, &faces, frame, tolerance));
+        if let Some(planar) = planar {
             regions.push((faces, planar));
         }
     }
@@ -7149,9 +7176,169 @@ fn planar_mesh_ngon(
         return None;
     }
     Some(PlanarMeshNgon {
-        vertices: boundary.to_vec(),
+        loops: vec![PlanarMeshNgonLoop {
+            vertices: boundary.to_vec(),
+            parameters,
+            loop_type: BrepLoopType::Outer,
+        }],
         frame,
-        parameters,
+        bounds,
+    })
+}
+
+fn planar_mesh_region_with_holes(
+    mesh: &TriangleMesh,
+    faces: &[u32],
+    mut frame: Frame3,
+    tolerance: Tolerance,
+) -> Option<PlanarMeshNgon> {
+    if faces
+        .iter()
+        .any(|&face| !mesh_face_on_plane(mesh, face, frame, tolerance))
+    {
+        return None;
+    }
+    let mut edge_uses = BTreeMap::<(u32, u32), Vec<(u32, u32)>>::new();
+    for &face in faces {
+        let indices = mesh.faces()[face as usize].indices();
+        for side in 0..indices.len() {
+            let from = indices[side];
+            let to = indices[(side + 1) % indices.len()];
+            edge_uses
+                .entry((from.min(to), from.max(to)))
+                .or_default()
+                .push((from, to));
+        }
+    }
+    let mut next = BTreeMap::<u32, u32>::new();
+    let mut incoming = BTreeSet::new();
+    for uses in edge_uses.values() {
+        match uses.as_slice() {
+            [(from, to)] => {
+                if next.insert(*from, *to).is_some() || !incoming.insert(*to) {
+                    return None;
+                }
+            }
+            [(a, b), (c, d)] if *a == *d && *b == *c => {}
+            _ => return None,
+        }
+    }
+    if next.len() < 6 || next.len() != incoming.len() {
+        return None;
+    }
+    let mut boundaries = Vec::new();
+    while let Some((&start, _)) = next.first_key_value() {
+        let mut boundary = Vec::new();
+        let mut current = start;
+        loop {
+            boundary.push(current);
+            let following = next.remove(&current)?;
+            if following == start {
+                break;
+            }
+            current = following;
+        }
+        if boundary.len() < 3 {
+            return None;
+        }
+        boundaries.push(boundary);
+    }
+    if boundaries.len() < 2 {
+        return None;
+    }
+    let project = |frame: Frame3, boundary: &[u32]| {
+        boundary
+            .iter()
+            .map(|&raw| {
+                let [x, y] = frame
+                    .projected_coordinates_of(mesh.vertices()[raw as usize])
+                    .ok()?;
+                Point2::try_new(x, y).ok()
+            })
+            .collect::<Option<Vec<_>>>()
+    };
+    let mut projected = boundaries
+        .iter()
+        .map(|boundary| project(frame, boundary))
+        .collect::<Option<Vec<_>>>()?;
+    let signed_area = |points: &[Point2]| {
+        points
+            .iter()
+            .zip(points.iter().cycle().skip(1))
+            .map(|(a, b)| a.x().mul_add(b.y(), -b.x() * a.y()))
+            .sum::<Real>()
+    };
+    let areas = projected
+        .iter()
+        .map(|points| signed_area(points))
+        .collect::<Vec<_>>();
+    if areas.iter().any(|area| !area.is_finite() || *area == 0.0) {
+        return None;
+    }
+    let outer = (0..areas.len()).max_by(|&a, &b| areas[a].abs().total_cmp(&areas[b].abs()))?;
+    if areas[outer] < 0.0 {
+        frame = Frame3::try_from_x_and_normal(
+            frame.origin(),
+            frame.x_axis().as_vector(),
+            frame.z_axis().as_vector().scaled(-1.0).ok()?,
+            tolerance,
+        )
+        .ok()?;
+        projected = boundaries
+            .iter()
+            .map(|boundary| project(frame, boundary))
+            .collect::<Option<Vec<_>>>()?;
+    }
+    if projected.iter().enumerate().any(|(index, points)| {
+        let area = signed_area(points);
+        if index == outer {
+            area <= 0.0
+        } else {
+            area >= 0.0
+        }
+    }) {
+        return None;
+    }
+    let mut loops = boundaries
+        .into_iter()
+        .zip(projected)
+        .enumerate()
+        .map(|(index, (vertices, parameters))| PlanarMeshNgonLoop {
+            vertices,
+            parameters,
+            loop_type: if index == outer {
+                BrepLoopType::Outer
+            } else {
+                BrepLoopType::Inner
+            },
+        })
+        .collect::<Vec<_>>();
+    loops.swap(0, outer);
+    let mut bounds = [[Real::INFINITY, Real::NEG_INFINITY]; 2];
+    let mut parameters = Vec::new();
+    let mut loop_lengths = Vec::with_capacity(loops.len());
+    for boundary in &loops {
+        loop_lengths.push(boundary.parameters.len());
+        for &point in &boundary.parameters {
+            bounds[0][0] = bounds[0][0].min(point.x());
+            bounds[0][1] = bounds[0][1].max(point.x());
+            bounds[1][0] = bounds[1][0].min(point.y());
+            bounds[1][1] = bounds[1][1].max(point.y());
+            parameters.push(point);
+        }
+    }
+    if bounds.iter().any(|axis| {
+        !axis[0].is_finite() || !axis[1].is_finite() || axis[1] - axis[0] <= tolerance.absolute()
+    }) || triangulate_trim_region(&parameters, &loop_lengths)
+        .ok()
+        .flatten()
+        .is_none()
+    {
+        return None;
+    }
+    Some(PlanarMeshNgon {
+        loops,
+        frame,
         bounds,
     })
 }

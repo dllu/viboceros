@@ -37,8 +37,8 @@ Native bootstrap choices are Yes/Yes.
 Factory defaults and restart persistence are not established by these probes.
 `UseNgons=Yes` converts each connected planar region of an n-gon overlay into
 one trimmed planar face; `No` converts its underlying triangle/quad faces
-individually. Regions with more than one boundary loop currently retain their
-underlying faces.
+individually. Planar regions surrounding raised islands retain their inner
+boundary loops and shared B-rep edges.
 
 ## Selection path and oracle
 

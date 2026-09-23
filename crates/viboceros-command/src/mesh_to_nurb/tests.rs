@@ -177,6 +177,79 @@ fn nonplanar_ngon_splits_into_connected_planar_regions() {
 }
 
 #[test]
+fn planar_ngon_region_with_an_inner_loop_surrounds_a_raised_island() {
+    let mesh = TriangleMesh::try_new_faces(
+        vec![
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Point3::try_new(4., 0., 0.).unwrap(),
+            Point3::try_new(4., 4., 0.).unwrap(),
+            Point3::try_new(0., 4., 0.).unwrap(),
+            Point3::try_new(1., 1., 0.).unwrap(),
+            Point3::try_new(3., 1., 0.).unwrap(),
+            Point3::try_new(3., 3., 0.).unwrap(),
+            Point3::try_new(1., 3., 0.).unwrap(),
+            Point3::try_new(2., 2., 1.).unwrap(),
+        ],
+        vec![
+            viboceros_geometry::MeshFace::Quad([0, 1, 5, 4]),
+            viboceros_geometry::MeshFace::Quad([1, 2, 6, 5]),
+            viboceros_geometry::MeshFace::Quad([2, 3, 7, 6]),
+            viboceros_geometry::MeshFace::Quad([3, 0, 4, 7]),
+            viboceros_geometry::MeshFace::Triangle([4, 5, 8]),
+            viboceros_geometry::MeshFace::Triangle([5, 6, 8]),
+            viboceros_geometry::MeshFace::Triangle([6, 7, 8]),
+            viboceros_geometry::MeshFace::Triangle([7, 4, 8]),
+        ],
+        Tolerance::DEFAULT,
+    )
+    .unwrap()
+    .try_with_ngons(vec![viboceros_geometry::MeshNgon::from_parts(
+        vec![0, 1, 2, 3],
+        (0..8).collect(),
+    )])
+    .unwrap();
+    let merged = Brep::try_from_mesh_with_ngons(&mesh, true, true, Tolerance::DEFAULT).unwrap();
+    assert_eq!(merged.faces().len(), 5);
+    assert_eq!(merged.edges().len(), 12);
+    assert_eq!(merged.faces()[0].loops().len(), 2);
+    assert_eq!(merged.faces()[0].loops()[0].trims().len(), 4);
+    assert_eq!(merged.faces()[0].loops()[1].trims().len(), 4);
+    assert_eq!(
+        merged.faces()[0].loops()[0].loop_type(),
+        viboceros_geometry::BrepLoopType::Outer
+    );
+    assert_eq!(
+        merged.faces()[0].loops()[1].loop_type(),
+        viboceros_geometry::BrepLoopType::Inner
+    );
+    assert!(
+        merged.faces()[0].loops()[1]
+            .trims()
+            .iter()
+            .all(|trim| trim.trim_type() == viboceros_geometry::BrepTrimType::Mated)
+    );
+    let expanded = Brep::try_from_mesh_with_ngons(&mesh, true, false, Tolerance::DEFAULT).unwrap();
+    assert_eq!(expanded.faces().len(), 8);
+    assert!(
+        (merged.area(Tolerance::DEFAULT).unwrap() - expanded.area(Tolerance::DEFAULT).unwrap())
+            .abs()
+            < 1e-8
+    );
+
+    let reversed = mesh.reversed();
+    let reversed_output =
+        Brep::try_from_mesh_with_ngons(&reversed, true, true, Tolerance::DEFAULT).unwrap();
+    assert_eq!(reversed_output.faces().len(), 5);
+    assert_eq!(reversed_output.faces()[0].loops().len(), 2);
+    assert!(
+        (reversed_output.area(Tolerance::DEFAULT).unwrap()
+            - merged.area(Tolerance::DEFAULT).unwrap())
+        .abs()
+            < 1e-8
+    );
+}
+
+#[test]
 fn options_survive_undo_and_partial_updates_but_errors_do_not_accept_them() {
     let command = MeshToNurbCommand::default();
     let (mut d, _) = selected_triangle();
