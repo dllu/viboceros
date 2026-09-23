@@ -23,7 +23,14 @@ impl VibocerosApp {
             Ok(message) => {
                 if command == InterfaceCommand::ZoomWindow {
                     self.zoom_window_pending = true;
+                    self.zoom_target = None;
                     self.push_log("Drag a window in a viewport to zoom; Esc to cancel".into());
+                    return;
+                }
+                if command == InterfaceCommand::ZoomTarget {
+                    self.zoom_window_pending = false;
+                    self.zoom_target = Some(ZoomTargetState::PickTarget);
+                    self.push_log("Zoom Target: pick or type the view center".into());
                     return;
                 }
                 if matches!(
@@ -31,6 +38,7 @@ impl VibocerosApp {
                     InterfaceCommand::UndoView | InterfaceCommand::RedoView
                 ) {
                     self.zoom_window_pending = false;
+                    self.zoom_target = None;
                     let changed = if command == InterfaceCommand::UndoView {
                         self.viewports[self.active_viewport].undo_view()
                     } else {
@@ -75,6 +83,7 @@ impl VibocerosApp {
                 | InterfaceCommand::ZoomOut = command
                 {
                     self.zoom_window_pending = false;
+                    self.zoom_target = None;
                     let (factor, result) = match command {
                         InterfaceCommand::ZoomFactor(factor) => (
                             factor.value(),
@@ -108,6 +117,7 @@ impl VibocerosApp {
                         | InterfaceCommand::ZoomAllSelected
                 ) {
                     self.zoom_window_pending = false;
+                    self.zoom_target = None;
                     let selected = matches!(
                         command,
                         InterfaceCommand::ZoomSelected | InterfaceCommand::ZoomAllSelected

@@ -70,6 +70,45 @@ fn zoom_window_frame(
     output
 }
 
+fn zoom_target_frame(
+    context: &egui::Context,
+    app: &mut VibocerosApp,
+    mode: ZoomTargetInput,
+    events: Vec<egui::Event>,
+) -> ViewportOutput {
+    let mut output = ViewportOutput::default();
+    context
+        .run_ui(
+            egui::RawInput {
+                screen_rect: Some(egui::Rect::from_min_size(
+                    egui::Pos2::ZERO,
+                    egui::vec2(800.0, 600.0),
+                )),
+                events,
+                ..Default::default()
+            },
+            |ui| {
+                output = app.viewports[0].show(
+                    ui,
+                    &app.document,
+                    ViewportInput {
+                        zoom_target: Some(mode),
+                        drafting: DraftingInput {
+                            active: true,
+                            ..Default::default()
+                        },
+                        ..Default::default()
+                    },
+                    &[],
+                    0,
+                    true,
+                );
+            },
+        )
+        .drop_without_applying_deltas();
+    output
+}
+
 #[test]
 fn zoom_window_drag_preserves_an_unfinished_modeling_command() {
     let mut app = test_app();
@@ -131,6 +170,119 @@ fn zoom_window_drag_preserves_an_unfinished_modeling_command() {
     enter(&mut app, "ZE");
     assert!(!app.zoom_window_pending);
     assert_eq!(app.active_command, pending);
+}
+
+#[test]
+fn zoom_target_two_clicks_preserve_the_modeling_prompt_and_redo() {
+    let mut app = test_app();
+    for command in ["Point 2,3,4", "Undo", "Line", "0"] {
+        enter(&mut app, command);
+    }
+    let pending = app.active_command;
+    let redo = app.document.redo_label().map(str::to_owned);
+    let context = egui::Context::default();
+    enter(&mut app, "ZT");
+    let initial = app.viewports[0].camera_snapshot();
+    zoom_target_frame(&context, &mut app, ZoomTargetInput::PickTarget, vec![]);
+    let click = |pos, pressed| egui::Event::PointerButton {
+        pos,
+        pressed,
+        button: egui::PointerButton::Primary,
+        modifiers: egui::Modifiers::NONE,
+    };
+    let center = egui::Pos2::new(400.0, 300.0);
+    zoom_target_frame(
+        &context,
+        &mut app,
+        ZoomTargetInput::PickTarget,
+        vec![egui::Event::PointerMoved(center), click(center, true)],
+    );
+    let output = zoom_target_frame(
+        &context,
+        &mut app,
+        ZoomTargetInput::PickTarget,
+        vec![click(center, false)],
+    );
+    let (target, viewport) = output.zoom_target_pick.unwrap();
+    assert_eq!(viewport, 0);
+    assert!(output.picked_point.is_none() && output.selection_click.is_none());
+    assert!(app.handle_viewport_action(output));
+    assert!(matches!(
+        app.zoom_target,
+        Some(ZoomTargetState::PickWindow { .. })
+    ));
+    let corner = egui::Pos2::new(500.0, 375.0);
+    zoom_target_frame(
+        &context,
+        &mut app,
+        ZoomTargetInput::PickWindow(target),
+        vec![egui::Event::PointerMoved(corner), click(corner, true)],
+    );
+    let output = zoom_target_frame(
+        &context,
+        &mut app,
+        ZoomTargetInput::PickWindow(target),
+        vec![click(corner, false)],
+    );
+    assert_eq!(output.zoom_target_result, Some(Ok(true)));
+    assert!(output.picked_point.is_none() && output.selection_click.is_none());
+    assert!(app.handle_viewport_action(output));
+    assert!(app.zoom_target.is_none());
+    assert_ne!(app.viewports[0].camera_snapshot(), initial);
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.document.redo_label(), redo.as_deref());
+    enter(&mut app, "UndoView");
+    assert_eq!(app.viewports[0].camera_snapshot(), initial);
+
+    enter(&mut app, "ZT");
+    let right = |pressed| egui::Event::PointerButton {
+        pos: center,
+        pressed,
+        button: egui::PointerButton::Secondary,
+        modifiers: egui::Modifiers::NONE,
+    };
+    zoom_target_frame(
+        &context,
+        &mut app,
+        ZoomTargetInput::PickTarget,
+        vec![right(true)],
+    );
+    let output = zoom_target_frame(
+        &context,
+        &mut app,
+        ZoomTargetInput::PickTarget,
+        vec![right(false)],
+    );
+    assert!(output.zoom_target_cancelled);
+    assert!(!output.enter_pressed);
+    assert!(app.handle_viewport_action(output));
+    assert!(app.zoom_target.is_none());
+    assert_eq!(app.active_command, pending);
+}
+
+#[test]
+fn zoom_target_accepts_typed_points_without_consuming_model_input() {
+    let mut app = test_app();
+    let context = egui::Context::default();
+    layout_viewports(&context, &mut app);
+    for command in ["Line", "0"] {
+        enter(&mut app, command);
+    }
+    let pending = app.active_command;
+    enter(&mut app, "Zoom Target");
+    enter(&mut app, "w2,1,0");
+    assert!(matches!(
+        app.zoom_target,
+        Some(ZoomTargetState::PickWindow { .. })
+    ));
+    enter(&mut app, "w2,1,0");
+    assert!(app.command_log.back().unwrap().starts_with("Error:"));
+    assert!(app.zoom_target.is_some());
+    enter(&mut app, "w3,2,0");
+    assert!(app.zoom_target.is_none());
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.document.objects().len(), 0);
+    assert!(app.viewports[0].undo_view());
 }
 
 #[test]

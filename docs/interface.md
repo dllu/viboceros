@@ -129,6 +129,8 @@ option, or use `ZEA`/`ZSA`, to fit all four viewports together. See
 `Zoom` or `Zoom Window` lets you drag a rectangle in any viewport to enlarge
 that area; Ctrl/Cmd+W starts it, and Esc or right-click cancels it. The drag
 does not consume an unfinished modeling prompt.
+`Zoom Target` or `ZT` picks a new camera target, then a corner of the centered
+zoom window. Both points can also be typed.
 `UndoView` and `RedoView` move through camera changes in the active viewport;
 Home and End do the same when a text field is not focused. View history is
 separate from model undo and construction-plane undo.

@@ -51,6 +51,19 @@ depth plane and change camera distance while retaining the lens and orientation.
 Camera limits may prevent an exact fit. The live Rhino camera comparison remains
 pending because recent Wine launches crashed or timed out.
 
+`Zoom Target` or `ZT` first accepts a world/CPlane point for the new view center,
+then a second point or viewport click to size a centered window. During mouse
+input, object snaps and grid snapping apply to the center pick. The second
+point defines a window corner; the fitted window keeps the viewport aspect
+ratio. The chosen point becomes the camera rotation target and appears at the
+center of the view. Perspective uses its original camera depth at that point
+to calculate the new distance, preserving the view orientation and lens.
+Parallel views change scale and clear screen pan. Both phases preserve an
+unfinished modeling command and model undo/redo. Esc, Enter, or a right-click
+cancels the target prompt; a tiny window leaves it open for another corner.
+This follows [Rhino's Target option](https://docs.mcneel.com/rhino/8/help/en-us/commands/zoom.htm),
+but the live Rhino camera comparison remains pending.
+
 `Zoom In` and `Zoom Out` take one center-focused step in the active viewport.
 The initial View zoom scale factor is 0.9: In multiplies target-plane
 magnification by 1/0.9; Out multiplies it by 0.9. Set another finite positive
@@ -123,7 +136,7 @@ No live Rhino camera comparison has been performed for this implementation.
 separately from document undo and construction-plane undo. Home and End trigger
 them when no text field is focused. The typed commands remain available while a
 modeling prompt is unfinished. Each successful Zoom Factor, In/Out, Window,
-Extents, or Selected action records one camera step; All records one step in
+Target, Extents, or Selected action records one camera step; All records one step in
 each affected viewport. Wheel zoom records each scroll update, while a mouse
 pan or orbit drag records one step when released. Invalid or unchanged actions
 leave history alone, and a new camera action after UndoView discards the redo

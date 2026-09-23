@@ -118,9 +118,17 @@ impl DraftingInput {
 }
 
 #[derive(Clone, Copy, Debug)]
+pub enum ZoomTargetInput {
+    PickTarget,
+    PickWindow(Point3),
+    Waiting,
+}
+
+#[derive(Clone, Copy, Debug)]
 pub struct ViewportInput<'a> {
     pub drafting: DraftingInput,
     pub zoom_window: bool,
+    pub zoom_target: Option<ZoomTargetInput>,
     pub object_filter: Option<ObjectSelectionFilter>,
     pub preview_curve: Option<&'a NurbsCurve>,
     pub edge_pick: bool,
@@ -136,6 +144,7 @@ impl Default for ViewportInput<'_> {
         Self {
             drafting: DraftingInput::default(),
             zoom_window: false,
+            zoom_target: None,
             object_filter: Some(ObjectSelectionFilter::Any),
             preview_curve: None,
             edge_pick: false,
@@ -152,6 +161,9 @@ impl Default for ViewportInput<'_> {
 pub struct ViewportOutput {
     pub zoom_window_result: Option<Result<bool, &'static str>>,
     pub zoom_window_cancelled: bool,
+    pub zoom_target_pick: Option<(Point3, usize)>,
+    pub zoom_target_result: Option<Result<bool, &'static str>>,
+    pub zoom_target_cancelled: bool,
     pub edge_click: Option<Vec<EdgePick>>,
     pub edge_parameter: Option<Real>,
     pub picked_point: Option<Point3>,
@@ -366,6 +378,7 @@ impl Viewport {
             self.edge_snap_cache.borrow_mut().take();
         }
         let selecting = !input.zoom_window
+            && input.zoom_target.is_none()
             && !drafting.active
             && !component_input
             && input.object_filter.is_some();
@@ -394,6 +407,34 @@ impl Viewport {
             } else {
                 None
             };
+        let zoom_drafting = DraftingInput {
+            active: true,
+            anchor: None,
+            reference: None,
+            ..drafting
+        };
+        let zoom_target_cursor = if matches!(input.zoom_target, Some(ZoomTargetInput::PickTarget)) {
+            response
+                .hover_pos()
+                .and_then(|pointer| self.drafting_cursor(pointer, rect, document, zoom_drafting))
+        } else {
+            None
+        };
+        let zoom_target_pick = if response.clicked_by(PointerButton::Primary) {
+            zoom_target_cursor.map(|cursor| (cursor.point, viewport_index))
+        } else {
+            None
+        };
+        let zoom_target_result = if let Some(ZoomTargetInput::PickWindow(target)) =
+            input.zoom_target
+            && response.clicked_by(PointerButton::Primary)
+        {
+            response
+                .interact_pointer_pos()
+                .map(|corner| self.zoom_target(target, corner, rect))
+        } else {
+            None
+        };
         let selection_window = if selecting && response.drag_stopped_by(PointerButton::Primary) {
             self.selection_drag_start.take().and_then(|start| {
                 let end = selection_pointer?;
@@ -415,14 +456,20 @@ impl Viewport {
             None
         };
 
-        let drafting_cursor = if drafting.active && !component_input && !input.zoom_window {
+        let drafting_cursor = if drafting.active
+            && !component_input
+            && !input.zoom_window
+            && input.zoom_target.is_none()
+        {
             response
                 .hover_pos()
                 .and_then(|pointer| self.drafting_cursor(pointer, rect, document, drafting))
         } else {
             None
         };
-        if (drafting.active || input.zoom_window) && response.hovered() {
+        if (drafting.active || input.zoom_window || input.zoom_target.is_some())
+            && response.hovered()
+        {
             ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
         }
         let selection_click = if selecting && response.clicked_by(PointerButton::Primary) {
@@ -453,7 +500,7 @@ impl Viewport {
                 }
             }
         }
-        let edge_hover = if input.edge_pick && !input.zoom_window {
+        let edge_hover = if input.edge_pick && !input.zoom_window && input.zoom_target.is_none() {
             if response.hovered() {
                 ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
             }
@@ -467,7 +514,7 @@ impl Viewport {
         self.paint_edge_highlights(&painter, rect, document, &edge_hover);
         let edge_parameter = input
             .edge_curve
-            .filter(|_| !input.zoom_window)
+            .filter(|_| !input.zoom_window && input.zoom_target.is_none())
             .and_then(|curve| {
                 for &parameter in input.edge_parameters {
                     if let Ok(point) = curve.evaluate(parameter)
@@ -512,12 +559,26 @@ impl Viewport {
         if let Some(cursor) = drafting_cursor {
             self.paint_drafting(&painter, rect, drafting, cursor);
         }
+        if let Some(cursor) = zoom_target_cursor {
+            self.paint_drafting(&painter, rect, zoom_drafting, cursor);
+        }
         if let (Some(start), Some(end)) = (self.selection_drag_start, selection_pointer) {
             self.paint_selection_window(&painter, start, end);
         }
         if let (Some(start), Some(end)) = (self.zoom_window_start, selection_pointer) {
             painter.rect_stroke(
                 Rect::from_two_pos(start, end).intersect(rect),
+                0.0,
+                Stroke::new(1.5, Color32::from_rgb(35, 115, 210)),
+                egui::StrokeKind::Inside,
+            );
+        }
+        if let Some(ZoomTargetInput::PickWindow(target)) = input.zoom_target
+            && let Some(corner) = response.hover_pos()
+            && let Ok(window) = self.zoom_target_window_rect(target, corner, rect)
+        {
+            painter.rect_stroke(
+                window.intersect(rect),
                 0.0,
                 Stroke::new(1.5, Color32::from_rgb(35, 115, 210)),
                 egui::StrokeKind::Inside,
@@ -554,12 +615,17 @@ impl Viewport {
             zoom_window_result,
             zoom_window_cancelled: input.zoom_window
                 && response.clicked_by(PointerButton::Secondary),
+            zoom_target_pick,
+            zoom_target_result,
+            zoom_target_cancelled: input.zoom_target.is_some()
+                && response.clicked_by(PointerButton::Secondary),
             edge_parameter: response
                 .clicked_by(PointerButton::Primary)
                 .then_some(edge_parameter)
                 .flatten(),
             edge_click: (input.edge_pick
                 && !input.zoom_window
+                && input.zoom_target.is_none()
                 && response.clicked_by(PointerButton::Primary))
             .then(|| {
                 response
@@ -573,7 +639,9 @@ impl Viewport {
                 .flatten(),
             selection_click,
             selection_window,
-            enter_pressed: !input.zoom_window && response.clicked_by(PointerButton::Secondary),
+            enter_pressed: !input.zoom_window
+                && input.zoom_target.is_none()
+                && response.clicked_by(PointerButton::Secondary),
             activated: response.clicked_by(PointerButton::Primary)
                 || response.clicked_by(PointerButton::Secondary)
                 || response.clicked_by(PointerButton::Middle)

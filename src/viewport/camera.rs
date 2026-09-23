@@ -509,6 +509,84 @@ impl Viewport {
         Ok(changed)
     }
 
+    pub(super) fn zoom_target_window_rect(
+        &self,
+        target: Point3,
+        corner: Pos2,
+        rect: Rect,
+    ) -> Result<Rect, &'static str> {
+        if !rect.is_finite() || !rect.is_positive() || !corner.is_finite() {
+            return Err("invalid target window coordinates");
+        }
+        let center = self
+            .project(target, rect)
+            .ok_or("target is outside the visible camera range")?;
+        let aspect = rect.width() / rect.height();
+        let horizontal = (corner.x - center.x).abs();
+        let vertical = (corner.y - center.y).abs();
+        let half_width = horizontal.max(vertical * aspect);
+        let half_height = half_width / aspect;
+        if !half_width.is_finite()
+            || !half_height.is_finite()
+            || (horizontal < 2.0 && vertical < 2.0)
+        {
+            return Err("target window must extend at least two pixels from its center");
+        }
+        let window = Rect::from_center_size(center, Vec2::new(2.0 * half_width, 2.0 * half_height));
+        if !window.is_finite() {
+            return Err("target window exceeds the screen-coordinate range");
+        }
+        Ok(window)
+    }
+
+    pub(crate) fn zoom_target_from_point(
+        &mut self,
+        target: Point3,
+        corner: Point3,
+    ) -> Result<bool, &'static str> {
+        let rect = self.last_rect.ok_or("viewport has not been laid out")?;
+        let pixel = self
+            .project(corner, rect)
+            .ok_or("window corner is outside the visible camera range")?;
+        self.zoom_target(target, pixel, rect)
+    }
+
+    pub(crate) fn zoom_target(
+        &mut self,
+        target: Point3,
+        corner: Pos2,
+        rect: Rect,
+    ) -> Result<bool, &'static str> {
+        let window = self.zoom_target_window_rect(target, corner, rect)?;
+        let factor = Real::from(rect.width()) / Real::from(window.width());
+        if !factor.is_finite() || factor <= 0.0 {
+            return Err("invalid target window scale");
+        }
+        let new_target = NaVector3::new(target.x(), target.y(), target.z());
+        let previous = self.camera_snapshot();
+        if self.kind == ViewKind::Perspective {
+            let depth = self.view_depth(target);
+            if !depth.is_finite() || depth <= self.perspective_near_floor() {
+                return Err("target is behind the perspective camera");
+            }
+            let distance = (depth / factor).clamp(
+                MIN_PERSPECTIVE_CAMERA_DISTANCE,
+                MAX_PERSPECTIVE_CAMERA_DISTANCE,
+            );
+            self.target = new_target;
+            self.perspective_camera_distance = distance;
+        } else {
+            let scale = (Real::from(self.pixels_per_unit) * factor)
+                .clamp(Real::from(f32::MIN_POSITIVE), 2_000.0) as f32;
+            self.target = new_target;
+            self.pan = Vec2::ZERO;
+            self.pixels_per_unit = scale;
+        }
+        let changed = self.camera_snapshot() != previous;
+        self.record_camera_change(previous);
+        Ok(changed)
+    }
+
     fn zoom_by_factor(
         &mut self,
         factor: Real,
@@ -816,6 +894,55 @@ mod tests {
         assert_eq!(view.camera_snapshot(), changed);
         assert!(view.undo_view());
         assert_eq!(view.camera_snapshot(), first);
+    }
+
+    #[test]
+    fn zoom_target_centers_the_picked_world_point_and_records_one_view_step() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let target = Point3::try_new(1.0, 2.0, 3.0).unwrap();
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let mut view = Viewport::new(kind);
+            let before = view.camera_snapshot();
+            let original_depth = view.view_depth(target);
+            let center = view.project(target, rect).unwrap();
+            let corner = center + Vec2::new(100.0, 75.0);
+            assert_eq!(view.zoom_target(target, corner, rect), Ok(true));
+            assert!((view.project(target, rect).unwrap() - rect.center()).length() < 0.01);
+            assert_eq!(view.target, NaVector3::new(1.0, 2.0, 3.0));
+            if kind == ViewKind::Perspective {
+                assert!((view.perspective_camera_distance - original_depth / 4.0).abs() < 1e-5);
+            } else {
+                assert!((view.pixels_per_unit - 160.0).abs() < 1e-5);
+                assert_eq!(view.pan, Vec2::ZERO);
+            }
+            let after = view.camera_snapshot();
+            assert!(view.undo_view());
+            assert_eq!(view.camera_snapshot(), before);
+            assert!(view.redo_view());
+            assert_eq!(view.camera_snapshot(), after);
+        }
+    }
+
+    #[test]
+    fn zoom_target_rejects_tiny_windows_without_changing_camera() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut view = Viewport::new(ViewKind::Perspective);
+        let target = Point3::try_new(0.0, 0.0, 0.0).unwrap();
+        let before = view.camera_snapshot();
+        assert!(view.zoom_target(target, rect.center(), rect).is_err());
+        assert_eq!(view.camera_snapshot(), before);
+        assert!(!view.undo_view());
+        let tall = Rect::from_min_size(Pos2::ZERO, Vec2::new(100.0, 800.0));
+        let mut parallel = Viewport::new(ViewKind::Top);
+        assert_eq!(
+            parallel.zoom_target(target, tall.center() + Vec2::new(0.0, 3.0), tall),
+            Ok(true)
+        );
     }
 
     #[test]

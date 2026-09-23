@@ -12,6 +12,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | --- | --- |
 | `Zoom Extents` / `ZE` | Fit visible geometry in the active viewport; [details and limits](zoom.md). |
 | `Zoom` / `Zoom Window` | Drag a viewport rectangle to zoom; Esc or right-click cancels. |
+| `Zoom Target` / `ZT` | Pick or type a view center, then pick or type a window corner; the center becomes the camera rotation target. |
 | `Zoom Selected` / `ZS` | Fit visible selected geometry without changing selection or model history. |
 | `Zoom Factor <number>` | Scale the active view about its center; positive factors above 1 zoom in and below 1 zoom out. |
 | `Zoom In` / `Zoom Out` | Take one step of the View zoom scale factor about the active viewport center. |

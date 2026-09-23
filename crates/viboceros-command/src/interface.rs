@@ -103,6 +103,7 @@ pub enum InterfaceCommand {
     ZoomIn,
     ZoomOut,
     ZoomWindow,
+    ZoomTarget,
     ZoomExtents,
     ZoomSelected,
     ZoomAllExtents,
@@ -119,7 +120,7 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 15] = [
+pub const COMMAND_NAMES: [&str; 16] = [
     "Options",
     "SetZoomExtentsBorder",
     "SnapToMeshes",
@@ -128,6 +129,7 @@ pub const COMMAND_NAMES: [&str; 15] = [
     "ZS",
     "ZEA",
     "ZSA",
+    "ZT",
     "DisableOsnap",
     "SetDisplayMode",
     "SetSnap",
@@ -137,7 +139,7 @@ pub const COMMAND_NAMES: [&str; 15] = [
     "RedoView",
 ];
 
-pub const HELP: &str = "Interface: Zoom [Window]|[All] Extents|Selected (ZE, ZS, ZEA, ZSA); Zoom In|Out|Factor <positive number>; UndoView; RedoView; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor <positive number>; UndoView; RedoView; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -167,6 +169,7 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
             || name.eq_ignore_ascii_case("ZS")
             || name.eq_ignore_ascii_case("ZEA")
             || name.eq_ignore_ascii_case("ZSA")
+            || name.eq_ignore_ascii_case("ZT")
         {
             match args.as_slice() {
                 [] if name.eq_ignore_ascii_case("Zoom") => Ok(InterfaceCommand::ZoomWindow),
@@ -174,6 +177,7 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
                 [] if name.eq_ignore_ascii_case("ZS") => Ok(InterfaceCommand::ZoomSelected),
                 [] if name.eq_ignore_ascii_case("ZEA") => Ok(InterfaceCommand::ZoomAllExtents),
                 [] if name.eq_ignore_ascii_case("ZSA") => Ok(InterfaceCommand::ZoomAllSelected),
+                [] if name.eq_ignore_ascii_case("ZT") => Ok(InterfaceCommand::ZoomTarget),
                 [option] if name.eq_ignore_ascii_case("Zoom") && keyword(option, "Extents") => {
                     Ok(InterfaceCommand::ZoomExtents)
                 }
@@ -188,6 +192,9 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
                 }
                 [option] if name.eq_ignore_ascii_case("Zoom") && keyword(option, "Window") => {
                     Ok(InterfaceCommand::ZoomWindow)
+                }
+                [option] if name.eq_ignore_ascii_case("Zoom") && keyword(option, "Target") => {
+                    Ok(InterfaceCommand::ZoomTarget)
                 }
                 [option, value]
                     if name.eq_ignore_ascii_case("Zoom") && keyword(option, "Factor") =>
@@ -216,7 +223,7 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
                     Ok(InterfaceCommand::ZoomAllSelected)
                 }
                 _ => Err(InterfaceError::Usage(
-                    "Zoom [Window]|[All] Extents|Selected | Zoom In|Out|Factor <positive number> | ZE | ZS | ZEA | ZSA",
+                    "Zoom [Window]|Target|[All] Extents|Selected | Zoom In|Out|Factor <positive number> | ZE | ZS | ZEA | ZSA | ZT",
                 )),
             }
         } else if name.eq_ignore_ascii_case("UndoView") {
@@ -388,6 +395,7 @@ impl InterfaceState {
             InterfaceCommand::ZoomIn => "Zoom in requested (active viewport)".into(),
             InterfaceCommand::ZoomOut => "Zoom out requested (active viewport)".into(),
             InterfaceCommand::ZoomWindow => "Zoom window requested".into(),
+            InterfaceCommand::ZoomTarget => "Zoom target requested".into(),
             InterfaceCommand::ZoomExtents => "Zoom extents requested (active viewport)".into(),
             InterfaceCommand::ZoomSelected => "Zoom selected requested (active viewport)".into(),
             InterfaceCommand::ZoomAllExtents => "Zoom extents requested (all viewports)".into(),

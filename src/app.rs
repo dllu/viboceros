@@ -22,11 +22,17 @@ use viboceros_geometry::{
 use crate::sidebar::{DocumentSidebar, SidebarAction};
 use crate::viewport::{
     DisplayMode, DraftingInput, SelectionClick, SelectionWindow, ViewKind, Viewport, ViewportInput,
-    ViewportOutput, ZoomExtentsBorders,
+    ViewportOutput, ZoomExtentsBorders, ZoomTargetInput,
 };
 
 const MAX_LOG_ENTRIES: usize = 100;
 const DEFAULT_ZOOM_SCALE: f64 = 0.9;
+
+#[derive(Clone, Copy, Debug)]
+enum ZoomTargetState {
+    PickTarget,
+    PickWindow { target: Point3, viewport: usize },
+}
 
 mod command_line;
 #[cfg(test)]
@@ -52,6 +58,7 @@ mod preferences;
 mod radius;
 mod snapping;
 mod toolbar;
+mod zoom_target;
 use point_input::{plane_radius_exceeds_tolerance, plane_rectangle_exceeds_tolerance};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -1233,6 +1240,7 @@ pub struct VibocerosApp {
     zoom_scale: f64,
     zoom_extents_borders: ZoomExtentsBorders,
     zoom_window_pending: bool,
+    zoom_target: Option<ZoomTargetState>,
     command_focus_requested: bool,
     active_command: Option<InteractiveCommand>,
     last_point: Option<Point3>,
@@ -1279,6 +1287,7 @@ impl VibocerosApp {
             zoom_scale,
             zoom_extents_borders,
             zoom_window_pending: false,
+            zoom_target: None,
             command_focus_requested: false,
             active_command: None,
             last_point: None,
@@ -1309,6 +1318,9 @@ impl VibocerosApp {
         if !input.is_empty()
             && (self.try_run_plane_command(&input) || self.try_run_interface_command(&input))
         {
+            return;
+        }
+        if self.try_continue_zoom_target(&input) {
             return;
         }
         if self.try_continue_plane_prompt(&input) {
@@ -5085,7 +5097,14 @@ impl VibocerosApp {
     }
 
     fn handle_viewport_action(&mut self, output: ViewportOutput) -> bool {
-        if output.zoom_window_cancelled {
+        if output.zoom_target_cancelled {
+            self.zoom_target = None;
+            self.push_log("Zoom Target canceled".into());
+        } else if let Some((target, viewport)) = output.zoom_target_pick {
+            self.accept_zoom_target_pick(target, viewport);
+        } else if let Some(result) = output.zoom_target_result {
+            self.finish_zoom_target(result);
+        } else if output.zoom_window_cancelled {
             self.zoom_window_pending = false;
             self.push_log("Zoom window canceled".into());
         } else if let Some(result) = output.zoom_window_result {
@@ -5219,7 +5238,9 @@ impl eframe::App for VibocerosApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.handle_interface_shortcuts(ui);
         if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
-            if self.zoom_window_pending {
+            if self.zoom_target.take().is_some() {
+                self.push_log("Zoom Target canceled".into());
+            } else if self.zoom_window_pending {
                 self.zoom_window_pending = false;
                 self.push_log("Zoom window canceled".into());
             } else if self.answer_object_prompt_escape() {
@@ -5286,6 +5307,7 @@ impl eframe::App for VibocerosApp {
             std::array::from_fn(|_| ViewportOutput::default());
         let active_viewport = self.active_viewport;
         let zoom_window_pending = self.zoom_window_pending;
+        let zoom_target = self.zoom_target;
         let object_filter = self.viewport_object_filter();
         let preview_curve = self.curve_draft_preview();
         let edge_pick = self
@@ -5342,6 +5364,21 @@ impl eframe::App for VibocerosApp {
                                     ViewportInput {
                                         drafting,
                                         zoom_window: zoom_window_pending,
+                                        zoom_target: match zoom_target {
+                                            Some(ZoomTargetState::PickTarget) => {
+                                                Some(ZoomTargetInput::PickTarget)
+                                            }
+                                            Some(ZoomTargetState::PickWindow {
+                                                target,
+                                                viewport,
+                                            }) if viewport == index => {
+                                                Some(ZoomTargetInput::PickWindow(target))
+                                            }
+                                            Some(ZoomTargetState::PickWindow { .. }) => {
+                                                Some(ZoomTargetInput::Waiting)
+                                            }
+                                            None => None,
+                                        },
                                         object_filter,
                                         preview_curve: preview_curve.as_deref(),
                                         edge_pick,
@@ -5475,6 +5512,7 @@ mod tests {
             zoom_scale: DEFAULT_ZOOM_SCALE,
             zoom_extents_borders: ZoomExtentsBorders::default(),
             zoom_window_pending: false,
+            zoom_target: None,
             command_focus_requested: false,
             active_command: None,
             last_point: None,
