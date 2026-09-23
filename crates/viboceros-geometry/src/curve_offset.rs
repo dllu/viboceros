@@ -1907,6 +1907,48 @@ mod tests {
     }
 
     #[test]
+    fn closed_curved_quadratic_nurbs_none_trims_all_corners() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let source = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                2,
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(2.0, -0.5, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.5, 2.0, 0.0),
+                    point(4.0, 4.0, 0.0),
+                    point(2.0, 4.5, 0.0),
+                    point(0.0, 4.0, 0.0),
+                    point(-0.5, 2.0, 0.0),
+                    point(0.0, 0.0, 0.0),
+                ],
+                vec![0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 4.0],
+            )
+            .unwrap(),
+        );
+        let inward = source
+            .try_offset_parts(0.4, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        let [Curve3::PolyCurve(inner)] = inward.as_slice() else {
+            panic!("closed curved inward trim")
+        };
+        assert!(inner.is_closed().unwrap());
+        assert_eq!(inner.segments().len(), 4);
+        assert_eq!(
+            source
+                .try_offset_parts(-0.4, normal, tol, CurveOffsetCornerStyle::None)
+                .unwrap()
+                .len(),
+            4
+        );
+    }
+
+    #[test]
     fn straight_tilted_nurbs_uses_construction_normal_projection() {
         let tol = Tolerance::DEFAULT;
         let normal = Vector3::try_new(0.0, 0.0, 1.0)
