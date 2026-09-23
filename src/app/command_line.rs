@@ -39,6 +39,7 @@ impl VibocerosApp {
         self.active_command.is_none()
             && self.object_prompt.is_none()
             && self.group_prompt.is_none()
+            && self.intersection_prompt.is_none()
             && self.edge_prompt.is_none()
             && self.plane_prompt.is_none()
     }
@@ -135,6 +136,8 @@ impl VibocerosApp {
                         prompt.label()
                     } else if self.group_prompt.is_some() {
                         "AddToGroup"
+                    } else if self.intersection_prompt.is_some() {
+                        "IntersectTwoSets"
                     } else if let Some(prompt) = &self.edge_prompt {
                         prompt.name()
                     } else {
@@ -191,6 +194,8 @@ impl VibocerosApp {
                             } else if let Some(prompt) = &self.object_prompt {
                                 prompt.hint()
                             } else if let Some(prompt) = &self.group_prompt {
+                                prompt.hint()
+                            } else if let Some(prompt) = &self.intersection_prompt {
                                 prompt.hint()
                             } else if let Some(prompt) = &self.edge_prompt {
                                 prompt.hint()

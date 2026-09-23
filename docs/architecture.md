@@ -133,6 +133,8 @@ before applying additive selection and leaves model history unchanged.
 `Intersect` and the separate `intersect_two_sets` command share one curve,
 surface, and B-rep pair evaluator. The two-set command admits only cross-set
 pairs and stages all outputs before editing the document.
+The app's two-set prompt snapshots the first picked set before clearing the
+transient selection for the second; both phases use the parametric-object filter.
 The geometry [shortness module](curve-shortness.md) keeps representation-dependent
 selection integration separate from accuracy-controlled arc-length measurement.
 The [`measurements` command module](commands/measurements.md) owns read-only

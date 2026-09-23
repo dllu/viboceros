@@ -153,6 +153,9 @@ across the two sets. Either set may be `Selected` to use the current selection.
 `OutputLayer=Current|FirstSet|SecondSet` places each result on the current
 layer or the corresponding member's layer. The command shares `Intersect`'s
 geometry calculations, output limits, selection, and undo behavior.
+Enter bare `IntersectTwoSets` in the app to pick the first set, press Enter,
+pick the second set, then press Enter again. An existing selection supplies
+the first set. `OutputLayer=...` may be entered before or during either phase.
 
 `Trim point` treats the selected curve nearest the point as the target and all
 other selected curves, untrimmed NURBS surfaces, and B-reps as cutters; omit the

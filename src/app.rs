@@ -49,6 +49,7 @@ mod evaluate_point;
 mod evaluate_uv;
 mod group_prompt;
 mod interface;
+mod intersect_two_sets;
 mod object_selection;
 mod plane_primitives;
 mod point_grid;
@@ -1248,6 +1249,7 @@ pub struct VibocerosApp {
     plane_prompt: Option<construction_plane::PlanePrompt>,
     object_prompt: Option<object_selection::PendingObjectCommand>,
     group_prompt: Option<group_prompt::GroupPrompt>,
+    intersection_prompt: Option<intersect_two_sets::TwoSetsPrompt>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
     curve_points: Vec<Point3>,
     points_session: Option<points::PointsSession>,
@@ -1295,6 +1297,7 @@ impl VibocerosApp {
             plane_prompt: None,
             object_prompt: None,
             group_prompt: None,
+            intersection_prompt: None,
             edge_prompt: None,
             curve_points: Vec::new(),
             points_session: None,
@@ -1332,6 +1335,9 @@ impl VibocerosApp {
         if self.try_continue_group_prompt(&input) {
             return;
         }
+        if self.try_continue_intersection_prompt(&input) {
+            return;
+        }
         if self.try_continue_edge_command(&input) {
             return;
         }
@@ -1363,6 +1369,7 @@ impl VibocerosApp {
         self.command_input.clear();
         if self.try_start_edge_command(&input)
             || self.try_start_group_prompt(&input)
+            || self.try_start_intersection_prompt(&input)
             || self.try_start_object_prompt(&input)
             || self.try_start_interactive_command(&input)
         {
@@ -3126,6 +3133,7 @@ impl VibocerosApp {
         self.finish_evaluate_uv_session();
         self.cancel_object_prompt(announce);
         self.cancel_group_prompt(announce);
+        self.cancel_intersection_prompt(announce);
         self.finish_edge_command(announce);
         let command = self.active_command.take();
         if matches!(
@@ -5048,6 +5056,10 @@ impl VibocerosApp {
             self.select_group_prompt_objects(click.object_id, click.mode);
             return;
         }
+        if self.intersection_prompt.is_some() {
+            self.select_intersection_prompt_objects(click.object_id, click.mode);
+            return;
+        }
         if self.object_prompt.is_some() {
             self.select_prompt_objects(click.object_id, click.mode);
             return;
@@ -5074,6 +5086,10 @@ impl VibocerosApp {
         }
         if self.group_prompt.is_some() {
             self.select_group_prompt_objects(selection.object_ids, selection.mode);
+            return;
+        }
+        if self.intersection_prompt.is_some() {
+            self.select_intersection_prompt_objects(selection.object_ids, selection.mode);
             return;
         }
         if self.object_prompt.is_some() {
@@ -5147,7 +5163,10 @@ impl VibocerosApp {
         // transaction. Finish accepted points before starting another action.
         // A sidebar edit also ends pending group input before changing sources
         // or target definitions beneath it.
-        if self.active_command == Some(InteractiveCommand::Points) || self.group_prompt.is_some() {
+        if self.active_command == Some(InteractiveCommand::Points)
+            || self.group_prompt.is_some()
+            || self.intersection_prompt.is_some()
+        {
             self.cancel_interactive_command(false);
         }
         match action {
@@ -5250,6 +5269,7 @@ impl eframe::App for VibocerosApp {
             } else if self.active_command.is_some()
                 || self.object_prompt.is_some()
                 || self.group_prompt.is_some()
+                || self.intersection_prompt.is_some()
                 || self.edge_prompt.is_some()
             {
                 self.cancel_interactive_command(true);
@@ -5268,6 +5288,7 @@ impl eframe::App for VibocerosApp {
         if self.active_command.is_none()
             && self.object_prompt.is_none()
             && self.group_prompt.is_none()
+            && self.intersection_prompt.is_none()
             && self.edge_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.document.selected_object_count() > 0
@@ -5480,6 +5501,7 @@ mod tests {
     mod evaluate_uv;
     mod group_prompt;
     mod interface;
+    mod intersect_two_sets;
     mod merge_edge;
     mod nurbs_selection;
     mod object_selection;
@@ -5521,6 +5543,7 @@ mod tests {
             object_prompt: None,
             curve_points: Vec::new(),
             group_prompt: None,
+            intersection_prompt: None,
             edge_prompt: None,
             points_session: None,
             evaluate_uv_session: None,

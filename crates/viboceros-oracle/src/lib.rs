@@ -7041,6 +7041,7 @@ fn three_dm_group_round_trip(
                 geometry: ThreeDmGeometry::Point(point(location)?),
                 layer_index: 0,
                 name: Some(name.to_owned()),
+                user_text: BTreeMap::new(),
                 visible: true,
                 locked: false,
                 object_color,

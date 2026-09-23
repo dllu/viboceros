@@ -11,6 +11,7 @@ impl VibocerosApp {
                     && self.plane_prompt.is_none()
                     && self.object_prompt.is_none()
                     && self.group_prompt.is_none()
+                    && self.intersection_prompt.is_none()
                     && self.edge_prompt.is_none();
                 if ui
                     .add_enabled(idle && self.document.can_undo(), egui::Button::new("Undo"))
