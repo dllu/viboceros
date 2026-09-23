@@ -1,0 +1,63 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {"absolute": 1e-8, "relative": 1e-12, "angular": 1e-10},
+  "operations": [
+    {
+      "op": "curve_offset_geometry", "id": "curved-offset-none",
+      "curve": {"type": "nurbs", "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0], "weight": 1},
+          {"point": [1, -0.5, 0], "weight": 1},
+          {"point": [2, 0, 0], "weight": 1},
+          {"point": [2.5, 1, 0], "weight": 1},
+          {"point": [2, 2, 0], "weight": 1}
+        ], "knots": [0, 0, 0, 1, 1, 2, 2, 2]},
+      "side": [1, -1, 0], "normal": [0, 0, 1], "distance": 0.2,
+      "corner": "None", "source_fractions": [0.05, 0.2, 0.4, 0.47, 0.53, 0.6, 0.8, 0.95],
+      "queries": [[2.25, -0.2, 0], [2.4, -0.1, 0], [1.5, -0.3, 0]]
+    },
+    {
+      "op": "curve_offset_geometry", "id": "curved-offset-sharp",
+      "curve": {"type": "nurbs", "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0], "weight": 1},
+          {"point": [1, -0.5, 0], "weight": 1},
+          {"point": [2, 0, 0], "weight": 1},
+          {"point": [2.5, 1, 0], "weight": 1},
+          {"point": [2, 2, 0], "weight": 1}
+        ], "knots": [0, 0, 0, 1, 1, 2, 2, 2]},
+      "side": [1, -1, 0], "normal": [0, 0, 1], "distance": 0.2,
+      "corner": "Sharp", "source_fractions": [0.05, 0.2, 0.4, 0.47, 0.53, 0.6, 0.8, 0.95],
+      "queries": [[2.25, -0.2, 0], [2.4, -0.1, 0], [1.5, -0.3, 0]]
+    },
+    {
+      "op": "curve_offset_geometry", "id": "curved-offset-chamfer",
+      "curve": {"type": "nurbs", "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0], "weight": 1},
+          {"point": [1, -0.5, 0], "weight": 1},
+          {"point": [2, 0, 0], "weight": 1},
+          {"point": [2.5, 1, 0], "weight": 1},
+          {"point": [2, 2, 0], "weight": 1}
+        ], "knots": [0, 0, 0, 1, 1, 2, 2, 2]},
+      "side": [1, -1, 0], "normal": [0, 0, 1], "distance": 0.2,
+      "corner": "Chamfer", "source_fractions": [0.05, 0.2, 0.4, 0.47, 0.53, 0.6, 0.8, 0.95],
+      "queries": [[2.25, -0.2, 0], [2.4, -0.1, 0], [1.5, -0.3, 0]]
+    },
+    {
+      "op": "curve_offset_geometry", "id": "curved-offset-round",
+      "curve": {"type": "nurbs", "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0], "weight": 1},
+          {"point": [1, -0.5, 0], "weight": 1},
+          {"point": [2, 0, 0], "weight": 1},
+          {"point": [2.5, 1, 0], "weight": 1},
+          {"point": [2, 2, 0], "weight": 1}
+        ], "knots": [0, 0, 0, 1, 1, 2, 2, 2]},
+      "side": [1, -1, 0], "normal": [0, 0, 1], "distance": 0.2,
+      "corner": "Round", "source_fractions": [0.05, 0.2, 0.4, 0.47, 0.53, 0.6, 0.8, 0.95],
+      "queries": [[2.25, -0.2, 0], [2.4, -0.1, 0], [1.5, -0.3, 0]]
+    }
+  ]
+}

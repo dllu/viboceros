@@ -104,3 +104,19 @@ tools/rhino_oracle/run_headless.sh compare \
 ```
 
 The native fixture passes. A Rhino observation is not recorded yet.
+
+## Curved corner oracle probe
+
+The [NURBS corner fixture](../../tools/rhino_oracle/fixtures/curve_offset_corners.json)
+samples the nearest offset points at source stations and around one curved
+convex corner for `None`, `Sharp`, `Chamfer`, and `Round`. It compares geometry
+without assuming that Rhino and Viboceros use the same output knots. Run:
+
+```sh
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_offset_corners.json \
+  --absolute-epsilon 1e-8 --relative-epsilon 1e-10 --timeout 360
+```
+
+The native fixture passes. A Rhino observation is pending because the current
+Wine launcher exits during .NET startup before the oracle worker runs.

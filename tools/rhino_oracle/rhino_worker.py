@@ -1345,6 +1345,50 @@ def _ellipse_offset_geometry(operation, iterations, tolerance):
         source.Dispose()
 
 
+def _curve_offset_geometry(operation, iterations, tolerance):
+    if operation["curve"]["type"] != "nurbs" or operation["distance"] <= 0:
+        raise ValueError("curve offset geometry probe requires a NURBS source and positive distance")
+    fractions = operation["source_fractions"]
+    queries = operation["queries"]
+    if not 1 <= len(fractions) <= 128 or len(queries) > 128 or any(not 0 <= float(f) <= 1 for f in fractions):
+        raise ValueError("invalid curve offset geometry sampling")
+    source = _join_close_input(operation["curve"])
+    try:
+        normal = Rhino.Geometry.Vector3d(*operation["normal"])
+        style = getattr(Rhino.Geometry.CurveOffsetCornerStyle, operation["corner"])
+
+        def compute():
+            outputs = source.Offset(_point(operation["side"]), normal,
+                                    float(operation["distance"]), float(tolerance["absolute"]), style)
+            if outputs is None or len(outputs) == 0:
+                raise ValueError("curve offset geometry probe failed")
+            try:
+                def nearest(query):
+                    best = None
+                    for output in outputs:
+                        success, parameter = output.ClosestPoint(query)
+                        if not success:
+                            raise ValueError("offset closest-point search failed")
+                        location = output.PointAt(parameter)
+                        distance = query.DistanceTo(location)
+                        if best is None or distance < best[0]:
+                            best = (distance, location)
+                    return _xyz(best[1])
+
+                return dict(
+                    closed=len(outputs) == 1 and bool(outputs[0].IsClosed),
+                    samples=[nearest(source.PointAt(source.Domain.ParameterAt(float(f)))) for f in fractions],
+                    queries=[nearest(_point(query)) for query in queries],
+                )
+            finally:
+                for output in outputs:
+                    output.Dispose()
+
+        return _measure(iterations, compute)
+    finally:
+        source.Dispose()
+
+
 def _curve_native(operation, iterations, tolerance):
     source = _join_close_input(operation["curve"])
     try:
@@ -5230,6 +5274,8 @@ def _execute(operation, iterations, tolerance):
         return _curve_area(operation, iterations)
     if kind == "ellipse_offset_geometry":
         return _ellipse_offset_geometry(operation, iterations, tolerance)
+    if kind == "curve_offset_geometry":
+        return _curve_offset_geometry(operation, iterations, tolerance)
     if kind in ("polycurve_geometry", "polycurve_document"):
         return _polycurve_geometry(operation, iterations, tolerance)
     if kind == "trimmed_surface_mass_properties":
