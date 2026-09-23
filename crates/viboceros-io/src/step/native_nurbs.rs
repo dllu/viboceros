@@ -513,10 +513,13 @@ fn surface(
             let directrix = extrusion.entity_curve();
             if !matches!(
                 directrix,
-                Curve3D::Line(_) | Curve3D::BsplineCurve(_) | Curve3D::NurbsCurve(_)
+                Curve3D::Line(_)
+                    | Curve3D::Polyline(_)
+                    | Curve3D::BsplineCurve(_)
+                    | Curve3D::NurbsCurve(_)
             ) {
                 return Err(unsupported(
-                    "extrusion directrix is not a line or B-spline curve",
+                    "extrusion directrix is not a line, polyline, or B-spline curve",
                 ));
             }
             let directrix = edge_curve(directrix, id)?;
@@ -566,10 +569,13 @@ fn surface(
             let directrix = revolution.entity().entity_curve();
             if !matches!(
                 directrix,
-                Curve3D::Line(_) | Curve3D::BsplineCurve(_) | Curve3D::NurbsCurve(_)
+                Curve3D::Line(_)
+                    | Curve3D::Polyline(_)
+                    | Curve3D::BsplineCurve(_)
+                    | Curve3D::NurbsCurve(_)
             ) {
                 return Err(unsupported(
-                    "revolution directrix is not a line or B-spline curve",
+                    "revolution directrix is not a line, polyline, or B-spline curve",
                 ));
             }
             let directrix = edge_curve(directrix, id)?;

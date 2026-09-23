@@ -267,7 +267,7 @@ angular parameters within each arc are reparameterized consistently with their
 trims. Straight UV iso-trims can be certified collinear higher-degree p-curves.
 Ring-torus patches and spherical bands away from the poles with straight
 UV iso-trims use exact rational biquadratic patches, including full-angle seam
-strips. Linear extrusions of line and B-spline/NURBS directrices use exact
+strips. Linear extrusions of line, polyline, and B-spline/NURBS directrices use exact
 tensor-product NURBS patches. Revolutions of those directrices with straight UV
 iso-trims use exact rational patches over angles up to one turn, including paired
 full-turn seams. Polar singular trims remain unsupported. The path

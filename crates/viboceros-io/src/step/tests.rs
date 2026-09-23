@@ -2186,11 +2186,11 @@ fn native_step_imports_full_turn_revolved_bspline_seam() {
 }
 
 #[test]
-fn native_step_imports_exact_revolved_bspline_and_nurbs_faces() {
+fn native_step_imports_exact_revolved_polyline_bspline_and_nurbs_faces() {
     use monstertruck::meshing::prelude::ParametricSurface;
     use monstertruck::modeling::{
-        BsplineCurve, Invertible, KnotVector, Line, NurbsCurve, Point2 as TruckPoint2, Processor,
-        RevolutionSurface, Vector3, Vector4, builder,
+        BsplineCurve, Invertible, KnotVector, Line, NurbsCurve, Point2 as TruckPoint2,
+        PolylineCurve, Processor, RevolutionSurface, Vector3, Vector4, builder,
     };
     use monstertruck::step::load::step_geometry::{
         Curve2D, Curve3D, StepParameterCurve, Surface, SweepSurface,
@@ -2200,7 +2200,9 @@ fn native_step_imports_exact_revolved_bspline_and_nurbs_faces() {
     use monstertruck::topology::compress::{
         CompressedEdge, CompressedEdgeUse, CompressedTrimmedFace, CompressedTrimmedShell,
     };
-    for rational in [false, true] {
+    for variant in 0..3 {
+        let rational = variant == 2;
+        let v_end = if variant == 1 { 2. } else { 1. };
         let u0: f64 = 0.2;
         let u1: f64 = 1.4;
         let profile = if rational {
@@ -2212,6 +2214,12 @@ fn native_step_imports_exact_revolved_bspline_and_nurbs_faces() {
                     Vector4::new(2., 0., 1., 1.),
                 ],
             )))
+        } else if variant == 1 {
+            Curve3D::Polyline(PolylineCurve(vec![
+                TruckPoint3::new(2., 0., -1.),
+                TruckPoint3::new(3., 0., 0.),
+                TruckPoint3::new(2., 0., 1.),
+            ]))
         } else {
             Curve3D::BsplineCurve(BsplineCurve::new(
                 KnotVector::bezier_knot(2),
@@ -2232,8 +2240,8 @@ fn native_step_imports_exact_revolved_bspline_and_nurbs_faces() {
         let vertices = vec![
             surface.evaluate(u0, 0.),
             surface.evaluate(u1, 0.),
-            surface.evaluate(u1, 1.),
-            surface.evaluate(u0, 1.),
+            surface.evaluate(u1, v_end),
+            surface.evaluate(u0, v_end),
         ];
         let meridian = |angle: f64| {
             if rational {
@@ -2245,6 +2253,12 @@ fn native_step_imports_exact_revolved_bspline_and_nurbs_faces() {
                         Vector4::new(2. * angle.cos(), 2. * angle.sin(), 1., 1.),
                     ],
                 )))
+            } else if variant == 1 {
+                Curve3D::Polyline(PolylineCurve(vec![
+                    TruckPoint3::new(2. * angle.cos(), 2. * angle.sin(), -1.),
+                    TruckPoint3::new(3. * angle.cos(), 3. * angle.sin(), 0.),
+                    TruckPoint3::new(2. * angle.cos(), 2. * angle.sin(), 1.),
+                ]))
             } else {
                 Curve3D::BsplineCurve(BsplineCurve::new(
                     KnotVector::bezier_knot(2),
@@ -2275,7 +2289,7 @@ fn native_step_imports_exact_revolved_bspline_and_nurbs_faces() {
             },
             CompressedEdge {
                 vertices: (3, 2),
-                curve: circle_edge(3, 2, 1.),
+                curve: circle_edge(3, 2, v_end),
             },
             CompressedEdge {
                 vertices: (0, 3),
@@ -2284,9 +2298,9 @@ fn native_step_imports_exact_revolved_bspline_and_nurbs_faces() {
         ];
         let uv = [
             ([u0, 0.], [u1, 0.]),
-            ([u1, 0.], [u1, 1.]),
-            ([u0, 1.], [u1, 1.]),
-            ([u0, 0.], [u0, 1.]),
+            ([u1, 0.], [u1, v_end]),
+            ([u0, v_end], [u1, v_end]),
+            ([u0, 0.], [u0, v_end]),
         ];
         let uses = uv
             .into_iter()
@@ -2318,6 +2332,8 @@ fn native_step_imports_exact_revolved_bspline_and_nurbs_faces() {
         assert!(text.contains("SURFACE_OF_REVOLUTION("));
         if rational {
             assert!(text.contains("RATIONAL_B_SPLINE_CURVE("));
+        } else if variant == 1 {
+            assert!(text.contains("POLYLINE("));
         }
         let table = Table::from_step(&text).unwrap();
         assert_eq!(table.entity_report.total(), 0);
@@ -2334,8 +2350,13 @@ fn native_step_imports_exact_revolved_bspline_and_nurbs_faces() {
             ),
             (4, 4, 1)
         );
+        if variant == 1 {
+            let patch = brep.faces()[0].surface();
+            assert_eq!(patch.degree_v(), 1);
+            assert_eq!(patch.knots_v(), &[0., 0., 1., 2., 2.]);
+        }
         for u in [u0, u0 + 0.23 * (u1 - u0), (u0 + u1) / 2., u1] {
-            for v in [0., 0.17, 0.5, 0.83, 1.] {
+            for v in [0., 0.17 * v_end, 0.5 * v_end, 0.83 * v_end, v_end] {
                 let profile_point = surface.evaluate(u0, v);
                 let point = brep.faces()[0].surface().evaluate(u, v).unwrap();
                 let radius = profile_point.x.hypot(profile_point.y);
@@ -2354,10 +2375,11 @@ fn native_step_imports_exact_revolved_bspline_and_nurbs_faces() {
 }
 
 #[test]
-fn native_step_imports_exact_line_bspline_and_nurbs_extrusions() {
+fn native_step_imports_exact_line_polyline_bspline_and_nurbs_extrusions() {
     use monstertruck::meshing::prelude::ParametricSurface;
     use monstertruck::modeling::{
-        BsplineCurve, KnotVector, Line, NurbsCurve, Point2 as TruckPoint2, Vector3, Vector4,
+        BsplineCurve, KnotVector, Line, NurbsCurve, Point2 as TruckPoint2, PolylineCurve, Vector3,
+        Vector4,
     };
     use monstertruck::step::load::step_geometry::{
         Curve2D, Curve3D, StepExtrusionSurface, StepParameterCurve, Surface, SweepSurface,
@@ -2366,14 +2388,21 @@ fn native_step_imports_exact_line_bspline_and_nurbs_extrusions() {
     use monstertruck::topology::compress::{
         CompressedEdge, CompressedEdgeUse, CompressedTrimmedFace, CompressedTrimmedShell,
     };
-    for variant in 0..3 {
-        let rational = variant == 2;
+    for variant in 0..4 {
+        let rational = variant == 3;
+        let u_end = if variant == 1 { 2. } else { 1. };
         let make_curve = |y: f64| {
             if variant == 0 {
                 Curve3D::Line(Line(
                     TruckPoint3::new(0., y, 0.),
                     TruckPoint3::new(2., y, 0.),
                 ))
+            } else if variant == 1 {
+                Curve3D::Polyline(PolylineCurve(vec![
+                    TruckPoint3::new(0., y, 0.),
+                    TruckPoint3::new(1., y, 1.),
+                    TruckPoint3::new(2., y, 0.),
+                ]))
             } else if rational {
                 Curve3D::NurbsCurve(NurbsCurve::new(BsplineCurve::new(
                     KnotVector::bezier_knot(2),
@@ -2424,9 +2453,9 @@ fn native_step_imports_exact_line_bspline_and_nurbs_extrusions() {
             },
         ];
         let uv = [
-            ([0., 0.], [1., 0.]),
-            ([1., 0.], [1., 1.]),
-            ([0., 1.], [1., 1.]),
+            ([0., 0.], [u_end, 0.]),
+            ([u_end, 0.], [u_end, 1.]),
+            ([0., 1.], [u_end, 1.]),
             ([0., 0.], [0., 1.]),
         ];
         let uses = uv
@@ -2459,6 +2488,8 @@ fn native_step_imports_exact_line_bspline_and_nurbs_extrusions() {
         assert!(text.contains("SURFACE_OF_LINEAR_EXTRUSION("));
         if rational {
             assert!(text.contains("RATIONAL_B_SPLINE_CURVE("));
+        } else if variant == 1 {
+            assert!(text.contains("POLYLINE("));
         }
         let table = Table::from_step(&text).unwrap();
         assert_eq!(table.entity_report.total(), 0);
@@ -2475,7 +2506,12 @@ fn native_step_imports_exact_line_bspline_and_nurbs_extrusions() {
             ),
             (4, 4, 1)
         );
-        for u in [0., 0.17, 0.5, 0.83, 1.] {
+        if variant == 1 {
+            let patch = brep.faces()[0].surface();
+            assert_eq!(patch.degree_u(), 1);
+            assert_eq!(patch.knots_u(), &[0., 0., 1., 2., 2.]);
+        }
+        for u in [0., 0.17 * u_end, 0.5 * u_end, 0.83 * u_end, u_end] {
             for v in [0., 0.25, 0.75, 1.] {
                 let expected = surface.evaluate(u, v);
                 let point = brep.faces()[0].surface().evaluate(u, v).unwrap();
