@@ -83,6 +83,7 @@ pub(super) fn uniform_meters_per_unit(data: &DataSection) -> Result<f64, StepErr
         .filter_map(|records| component(records, "GLOBAL_UNIT_ASSIGNED_CONTEXT"))
         .collect::<Vec<_>>();
     let mut result = None;
+    let mut non_radian_angle = false;
     for context in contexts {
         let args = list(&context.parameter)?;
         if args.len() != 1 {
@@ -96,13 +97,7 @@ pub(super) fn uniform_meters_per_unit(data: &DataSection) -> Result<f64, StepErr
                 .get(&id)
                 .ok_or_else(|| invalid("missing assigned unit"))?;
             if component(records, "PLANE_ANGLE_UNIT").is_some() {
-                let si = component(records, "SI_UNIT")
-                    .ok_or_else(|| invalid("non-radian angular contexts are not yet supported"))?;
-                let args = list(&si.parameter)?;
-                if !matches!(args, [Parameter::NotProvided, Parameter::Enumeration(name)] if name == "RADIAN")
-                {
-                    return Err(invalid("non-radian angular contexts are not yet supported"));
-                }
+                non_radian_angle |= !resolver.angle_is_radian(id)?;
             }
             if component(records, "LENGTH_UNIT").is_some() {
                 if length.is_some() {
@@ -117,7 +112,33 @@ pub(super) fn uniform_meters_per_unit(data: &DataSection) -> Result<f64, StepErr
         }
         result = Some(length);
     }
+    if non_radian_angle && !is_angle_independent_geometry(data) {
+        return Err(invalid(
+            "non-radian angular contexts cannot be used with angular geometry parameters",
+        ));
+    }
     result.ok_or_else(|| invalid("missing global length-unit assignment"))
+}
+
+// With no angular geometry parameters, a valid conversion-based angle unit
+// changes no coordinates. Angular STEP geometry must be normalized before table
+// conversion; Monstertruck otherwise interprets some parameters as radians.
+fn is_angle_independent_geometry(data: &DataSection) -> bool {
+    data.entities.iter().all(|entity| {
+        let records = match entity {
+            EntityInstance::Simple { record, .. } => std::slice::from_ref(record),
+            EntityInstance::Complex { subsuper, .. } => subsuper.0.as_slice(),
+        };
+        records.iter().all(|record| {
+            let name = record.name.as_str();
+            !(matches!(
+                name,
+                "CIRCLE" | "ELLIPSE" | "HYPERBOLA" | "PARABOLA" | "PCURVE" | "TRIMMED_CURVE"
+            ) || (name.ends_with("_SURFACE") && name != "PLANE")
+                || name.contains("REVOL")
+                || name.contains("CIRCULAR"))
+        })
+    })
 }
 
 #[cfg(test)]
@@ -129,6 +150,112 @@ struct Resolver<'a> {
     scales: BTreeMap<u64, f64>,
 }
 impl Resolver<'_> {
+    fn validate_angle_dimensions(&self, records: &[Record]) -> Result<(), StepError> {
+        let named = component(records, "NAMED_UNIT")
+            .ok_or_else(|| invalid("angular unit has no named-unit dimensions"))?;
+        let args = list(&named.parameter)?;
+        if args.len() != 1 {
+            return Err(invalid("invalid angular named-unit dimensions"));
+        }
+        if matches!(args[0], Parameter::Omitted) && component(records, "SI_UNIT").is_some() {
+            return Ok(());
+        }
+        let id = reference(&args[0])?;
+        let dimensions = self
+            .entities
+            .get(&id)
+            .and_then(|records| component(records, "DIMENSIONAL_EXPONENTS"))
+            .ok_or_else(|| invalid("missing angular dimensional exponents"))?;
+        let exponents = list(&dimensions.parameter)?;
+        if exponents.len() != 7
+            || exponents.iter().any(|exponent| {
+                !matches!(exponent, Parameter::Real(value) if *value == 0.0)
+                    && !matches!(exponent, Parameter::Integer(0))
+            })
+        {
+            return Err(invalid("angular unit dimensions are not dimensionless"));
+        }
+        Ok(())
+    }
+
+    fn angle_is_radian(&self, id: u64) -> Result<bool, StepError> {
+        let records = *self
+            .entities
+            .get(&id)
+            .ok_or_else(|| invalid("missing assigned angular unit"))?;
+        let angle = component(records, "PLANE_ANGLE_UNIT")
+            .ok_or_else(|| invalid("conversion references a non-angular unit"))?;
+        if !list(&angle.parameter)?.is_empty()
+            || component(records, "LENGTH_UNIT").is_some()
+            || component(records, "SOLID_ANGLE_UNIT").is_some()
+            || component(records, "CONVERSION_BASED_UNIT_WITH_OFFSET").is_some()
+        {
+            return Err(invalid("conflicting or malformed angular unit"));
+        }
+        self.validate_angle_dimensions(records)?;
+        if let Some(si) = component(records, "SI_UNIT") {
+            if component(records, "CONVERSION_BASED_UNIT").is_some()
+                || !matches!(list(&si.parameter)?, [Parameter::NotProvided, Parameter::Enumeration(name)] if name == "RADIAN")
+            {
+                return Err(invalid("unsupported SI angular unit"));
+            }
+            return Ok(true);
+        }
+        let conversion = component(records, "CONVERSION_BASED_UNIT")
+            .ok_or_else(|| invalid("unsupported angular unit representation"))?;
+        let args = list(&conversion.parameter)?;
+        if args.len() != 2 {
+            return Err(invalid("invalid conversion-based angular unit"));
+        }
+        let measure_id = reference(&args[1])?;
+        let measure_records = *self
+            .entities
+            .get(&measure_id)
+            .ok_or_else(|| invalid("missing angular conversion measure"))?;
+        let measure = component(measure_records, "MEASURE_WITH_UNIT")
+            .or_else(|| component(measure_records, "PLANE_ANGLE_MEASURE_WITH_UNIT"))
+            .ok_or_else(|| invalid("unsupported angular conversion measure"))?;
+        let args = list(&measure.parameter)?;
+        if args.len() != 2 {
+            return Err(invalid("invalid angular conversion measure"));
+        }
+        let Parameter::Typed { keyword, parameter } = &args[0] else {
+            return Err(invalid("conversion requires a typed angular measure"));
+        };
+        if keyword != "PLANE_ANGLE_MEASURE" {
+            return Err(invalid("conversion measure is not an angle"));
+        }
+        let factor = match parameter.as_ref() {
+            Parameter::Real(value) => *value,
+            Parameter::Integer(value) => *value as f64,
+            _ => return Err(invalid("invalid angular conversion factor")),
+        };
+        if !factor.is_finite() || factor <= 0.0 {
+            return Err(invalid(
+                "angular conversion factor must be finite and positive",
+            ));
+        }
+        let base = *self
+            .entities
+            .get(&reference(&args[1])?)
+            .ok_or_else(|| invalid("missing base angular unit"))?;
+        let si = component(base, "SI_UNIT")
+            .ok_or_else(|| invalid("angular conversion must be based on radians"))?;
+        let base_angle = component(base, "PLANE_ANGLE_UNIT")
+            .ok_or_else(|| invalid("angular conversion must be based on radians"))?;
+        if !list(&base_angle.parameter)?.is_empty()
+            || component(base, "LENGTH_UNIT").is_some()
+            || component(base, "SOLID_ANGLE_UNIT").is_some()
+            || component(base, "CONVERSION_BASED_UNIT").is_some()
+            || component(base, "CONVERSION_BASED_UNIT_WITH_OFFSET").is_some()
+            || !matches!(list(&si.parameter)?, [Parameter::NotProvided, Parameter::Enumeration(name)] if name == "RADIAN")
+        {
+            return Err(invalid("angular conversion must be based on radians"));
+        }
+        self.validate_angle_dimensions(base)?;
+        Ok(false)
+    }
+
     fn validate_length_dimensions(&self, records: &[Record]) -> Result<(), StepError> {
         let length = component(records, "LENGTH_UNIT")
             .ok_or_else(|| invalid("conversion references a non-length unit"))?;

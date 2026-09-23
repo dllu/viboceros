@@ -4917,6 +4917,35 @@ fn imports_conversion_based_length_units_by_factor_not_name() {
 }
 
 #[test]
+fn imports_planar_step_with_degree_angle_units_without_changing_coordinates() {
+    let source = cube_step();
+    let degrees = source.replace(
+        "#13 = ( NAMED_UNIT(*) PLANE_ANGLE_UNIT() SI_UNIT($,.RADIAN.) );",
+        "#13 = ( CONVERSION_BASED_UNIT('degree',#900001) NAMED_UNIT(#900002) PLANE_ANGLE_UNIT() );\n#900001 = MEASURE_WITH_UNIT(PLANE_ANGLE_MEASURE(0.017453292519943295),#900003);\n#900002 = DIMENSIONAL_EXPONENTS(0.,0.,0.,0.,0.,0.,0.);\n#900003 = ( NAMED_UNIT(*) PLANE_ANGLE_UNIT() SI_UNIT($,.RADIAN.) );",
+    );
+    assert_ne!(degrees, source, "the cube fixture's angular unit changed");
+    let target = LengthUnitSystem::Millimeters;
+    let expected =
+        read_step_planar_shells_in_units(Cursor::new(&source), &target, Tolerance::DEFAULT)
+            .unwrap();
+    let actual =
+        read_step_planar_shells_in_units(Cursor::new(&degrees), &target, Tolerance::DEFAULT)
+            .unwrap();
+    assert_eq!(actual, expected);
+    let expected_mesh =
+        read_step_in_units(Cursor::new(&source), &target, Tolerance::DEFAULT).unwrap();
+    let actual_mesh =
+        read_step_in_units(Cursor::new(&degrees), &target, Tolerance::DEFAULT).unwrap();
+    assert_eq!(actual_mesh, expected_mesh);
+    assert_eq!(
+        read_step_native_instances_in_units(Cursor::new(&degrees), &target, Tolerance::DEFAULT)
+            .unwrap(),
+        read_step_native_instances_in_units(Cursor::new(&source), &target, Tolerance::DEFAULT)
+            .unwrap(),
+    );
+}
+
+#[test]
 fn rejects_missing_mixed_and_cyclic_step_units() {
     let cube = cube_step();
     for text in [

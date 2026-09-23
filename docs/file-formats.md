@@ -305,9 +305,13 @@ transformations use numerical validity checks. Small finite faces are retained;
 genuine collapse remains an error. Export likewise preserves valid small meshes
 while converting the declared file accuracy separately. This
 currently requires a single data section with uniform length units across
-contexts. Missing, mixed, cyclic, or unsupported unit definitions and
-non-radian angular contexts are rejected before document edits. Mixed-unit
-assembly conversion remains unimplemented. The low-level `read_step` and
+contexts. Missing, mixed, cyclic, or unsupported unit definitions are rejected
+before document edits. Conversion-based plane-angle units, including degrees,
+are accepted for geometry without angular parameters, including straight-edged
+planar solids. Geometry with angular parameters, such as circles and cones,
+remains unsupported in non-radian contexts and is rejected before import.
+Mixed-unit assembly conversion
+remains unimplemented. The low-level `read_step` and
 `read_step_file` APIs retain raw file coordinates; their `_in_units`
 counterparts perform checked conversion.
 Both reader paths reject zero or multiple data sections explicitly rather

@@ -118,3 +118,46 @@ fn explicit_dimensions_require_exact_finite_length_exponents() {
         assert_eq!(scale(&records).is_ok(), valid, "{exponents}");
     }
 }
+
+#[test]
+fn conversion_based_angles_are_accepted_only_without_angular_geometry() {
+    let units = "#1 = GLOBAL_UNIT_ASSIGNED_CONTEXT((#2,#3));
+        #2 = (LENGTH_UNIT() NAMED_UNIT(*) SI_UNIT(.MILLI.,.METRE.));
+        #3 = (CONVERSION_BASED_UNIT('degree',#4) NAMED_UNIT(#6) PLANE_ANGLE_UNIT());
+        #4 = MEASURE_WITH_UNIT(PLANE_ANGLE_MEASURE(0.017453292519943295),#5);
+        #5 = (NAMED_UNIT(*) PLANE_ANGLE_UNIT() SI_UNIT($,.RADIAN.));
+        #6 = DIMENSIONAL_EXPONENTS(0.,0.,0.,0.,0.,0.,0.);";
+    assert_eq!(scale(&format!("{units} #7 = PLANE('flat',#8); #8 = AXIS2_PLACEMENT_3D('',#9,$,$); #9 = CARTESIAN_POINT('',(0.,0.,0.));")).unwrap(), 1e-3);
+    for geometry in [
+        "#7 = CIRCLE('',#8,1.);",
+        "#7 = CONICAL_SURFACE('',#8,1.,1.);",
+        "#7 = PCURVE('',#8,#9);",
+    ] {
+        assert!(
+            scale(&format!("{units} {geometry}"))
+                .unwrap_err()
+                .to_string()
+                .contains("angular geometry parameters")
+        );
+    }
+    for invalid_measure in [
+        "MEASURE_WITH_UNIT(LENGTH_MEASURE(0.017453292519943295),#5)",
+        "MEASURE_WITH_UNIT(PLANE_ANGLE_MEASURE(0.),#5)",
+        "MEASURE_WITH_UNIT(PLANE_ANGLE_MEASURE(0.017453292519943295),#2)",
+    ] {
+        assert!(
+            scale(&units.replace(
+                "MEASURE_WITH_UNIT(PLANE_ANGLE_MEASURE(0.017453292519943295),#5)",
+                invalid_measure
+            ))
+            .is_err()
+        );
+    }
+    assert!(
+        scale(&units.replace(
+            "DIMENSIONAL_EXPONENTS(0.,0.,0.,0.,0.,0.,0.)",
+            "DIMENSIONAL_EXPONENTS(1.,0.,0.,0.,0.,0.,0.)",
+        ))
+        .is_err()
+    );
+}
