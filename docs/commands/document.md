@@ -42,6 +42,9 @@ Basic, previous/last-action, attribute, and duplicate selectors live in the
 `selection_commands` module, separate from geometry predicates and interactive
 picking. Their shared regression checks unchanged geometry/history and replays
 redo and undo after the selection sequence to verify the retained edit history.
+`SelID object-id` adds the matching visible, unlocked UUID object directly,
+without expanding its group. An unknown valid ID leaves selection unchanged.
+This implements [Rhino's object-ID selector](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelID).
 
 `SelNonManifold` adds selectable meshes and B-reps with edges used by more than
 two faces. Open boundaries alone do not qualify. Geometry, visibility, locking,

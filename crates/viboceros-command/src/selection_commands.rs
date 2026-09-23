@@ -7,6 +7,73 @@ mod tests {
     use super::*;
 
     #[test]
+    fn sel_id_adds_only_the_selectable_target_without_expanding_its_group() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let ids = (0..5)
+            .map(|index| {
+                document
+                    .add_geometry(Geometry::Point(
+                        Point3::try_new(index as f64, 0., 0.).unwrap(),
+                    ))
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        document
+            .add_group(Some("Assembly".to_owned()), [ids[1], ids[2]])
+            .unwrap();
+        document.set_objects_visibility([ids[3]], false).unwrap();
+        document.set_objects_locked([ids[4]], true).unwrap();
+        registry.execute(&mut document, "Point 9,0,0").unwrap();
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_object(ids[0], SelectionMode::Replace)
+            .unwrap();
+        let original = document.objects().cloned().collect::<Vec<_>>();
+        let undo = document.undo_label().map(str::to_owned);
+        let redo = document.redo_label().map(str::to_owned);
+        assert!(undo.is_some() && redo.is_some());
+
+        assert_eq!(
+            registry
+                .execute(&mut document, &format!("SelID {}", ids[1]))
+                .unwrap(),
+            "Selected 2 object(s)"
+        );
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([ids[0], ids[1]])
+        );
+        for id in [ids[3], ids[4]] {
+            assert_eq!(
+                registry
+                    .execute(&mut document, &format!("SelID {id}"))
+                    .unwrap(),
+                "Selected 2 object(s)"
+            );
+        }
+        assert_eq!(
+            registry
+                .execute(&mut document, "SelID 00000000-0000-0000-0000-000000000000")
+                .unwrap(),
+            "Selected 2 object(s)"
+        );
+        for input in ["SelID", "SelID nonsense", "SelID 123 456"] {
+            assert!(matches!(
+                registry.execute(&mut document, input),
+                Err(CommandError::Usage("SelID object-id"))
+            ));
+        }
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), original);
+        assert_eq!(document.undo_label(), undo.as_deref());
+        assert_eq!(document.redo_label(), redo.as_deref());
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([ids[0], ids[1]])
+        );
+    }
+
+    #[test]
     fn attribute_selection_preserves_internal_name_whitespace() {
         let registry = CommandRegistry::with_builtins();
         for name in ["Part  A", "Part\tA", "部品\u{2003}A"] {
@@ -270,6 +337,34 @@ fn parse_action_selection_arguments(
 }
 
 pub(super) struct SelNameCommand;
+
+pub(super) struct SelIdCommand;
+
+impl Command for SelIdCommand {
+    fn name(&self) -> &'static str {
+        "SelID"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let [value] = arguments else {
+            return Err(CommandError::Usage("SelID object-id"));
+        };
+        let id = value
+            .parse::<ObjectId>()
+            .map_err(|_| CommandError::Usage("SelID object-id"))?;
+        if document.is_object_selectable(id) {
+            document.select_objects_direct([id], SelectionMode::Add)?;
+        }
+        Ok(format!(
+            "Selected {} object(s)",
+            document.selected_object_count()
+        ))
+    }
+}
 
 impl Command for SelNameCommand {
     fn name(&self) -> &'static str {
