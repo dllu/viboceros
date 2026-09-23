@@ -268,8 +268,9 @@ supported surfaces of revolution, and cylindrical, conical, spherical, or
 toroidal faces import as exact trimmed NURBS isocurves, keeping the source
 p-curve domain.
 Straight diagonal p-curves on single degree-one 2-by-2 B-spline/NURBS patches
-also import as exact rational quadratic edges. Diagonal p-curves on higher-degree
-or multi-span non-affine surfaces and unequal-weight p-curves on non-affine
+also import as exact rational quadratic edges. Clamped single-span higher-degree
+patches compose to exact rational Bézier edges up to degree 64. Multi-span or
+unclamped higher-degree surfaces and unequal-weight p-curves on non-affine
 bases remain unsupported.
 Other analytic surface types and
 periodic seam arrangements still fail native import.

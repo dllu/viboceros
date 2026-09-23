@@ -271,7 +271,7 @@ fn nurbs_brep_step_export_keeps_curved_edges_and_surface_shape() {
 }
 
 #[test]
-fn native_step_imports_diagonal_pcurve_on_bilinear_patch() {
+fn native_step_imports_diagonal_pcurve_on_bezier_patches() {
     use monstertruck::meshing::prelude::ParametricSurface;
     use monstertruck::modeling::{
         BsplineCurve, BsplineSurface, KnotVector, Line, NurbsSurface as TruckNurbsSurface,
@@ -283,21 +283,56 @@ fn native_step_imports_diagonal_pcurve_on_bilinear_patch() {
         CompressedEdge, CompressedEdgeUse, CompressedTrimmedFace, CompressedTrimmedShell,
     };
     let knots = || (KnotVector::bezier_knot(1), KnotVector::bezier_knot(1));
-    for surface in [
-        Surface::BsplineSurface(BsplineSurface::new(
-            knots(),
-            vec![
-                vec![TruckPoint3::new(0., 0., 0.), TruckPoint3::new(0., 2., 0.)],
-                vec![TruckPoint3::new(2., 0., 0.), TruckPoint3::new(2., 2., 1.)],
-            ],
-        )),
-        Surface::NurbsSurface(TruckNurbsSurface::new(BsplineSurface::new(
-            knots(),
-            vec![
-                vec![Vector4::new(0., 0., 0., 1.), Vector4::new(0., 4., 0., 2.)],
-                vec![Vector4::new(6., 0., 0., 3.), Vector4::new(8., 8., 4., 4.)],
-            ],
-        ))),
+    for (surface, diagonal_degree) in [
+        (
+            Surface::BsplineSurface(BsplineSurface::new(
+                knots(),
+                vec![
+                    vec![TruckPoint3::new(0., 0., 0.), TruckPoint3::new(0., 2., 0.)],
+                    vec![TruckPoint3::new(2., 0., 0.), TruckPoint3::new(2., 2., 1.)],
+                ],
+            )),
+            2,
+        ),
+        (
+            Surface::NurbsSurface(TruckNurbsSurface::new(BsplineSurface::new(
+                knots(),
+                vec![
+                    vec![Vector4::new(0., 0., 0., 1.), Vector4::new(0., 4., 0., 2.)],
+                    vec![Vector4::new(6., 0., 0., 3.), Vector4::new(8., 8., 4., 4.)],
+                ],
+            ))),
+            2,
+        ),
+        (
+            Surface::BsplineSurface(BsplineSurface::new(
+                (KnotVector::bezier_knot(2), KnotVector::bezier_knot(1)),
+                vec![
+                    vec![TruckPoint3::new(0., 0., 0.), TruckPoint3::new(0., 2., 0.)],
+                    vec![TruckPoint3::new(1., 0., 1.), TruckPoint3::new(1., 2., 2.)],
+                    vec![TruckPoint3::new(2., 0., 0.), TruckPoint3::new(2., 2., 1.)],
+                ],
+            )),
+            3,
+        ),
+        (
+            Surface::NurbsSurface(TruckNurbsSurface::new(BsplineSurface::new(
+                (KnotVector::bezier_knot(2), KnotVector::bezier_knot(2)),
+                (0..3)
+                    .map(|u| {
+                        (0..3)
+                            .map(|v| {
+                                let x = u as f64;
+                                let y = v as f64;
+                                let weight = 1. + x + y;
+                                Vector4::new(x * weight, y * weight, x * y * weight, weight)
+                            })
+                            .collect::<Vec<_>>()
+                    })
+                    .collect(),
+            ))),
+            4,
+        ),
     ] {
         let uv = [
             TruckPoint2::new(0., 0.),
@@ -364,7 +399,7 @@ fn native_step_imports_diagonal_pcurve_on_bilinear_patch() {
         assert_eq!(brep.edges().len(), 3);
         assert_eq!(brep.faces().len(), 1);
         let diagonal = brep.edges()[2].curve();
-        assert_eq!(diagonal.degree(), 2);
+        assert_eq!(diagonal.degree(), diagonal_degree);
         assert_eq!(diagonal.domain(), 5.0..=9.0);
         for fraction in [0., 0.17, 0.5, 0.83, 1.] {
             let actual = diagonal.evaluate(5. + 4. * fraction).unwrap();

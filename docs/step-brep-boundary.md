@@ -147,8 +147,16 @@ multiplies the surface's homogeneous bilinear basis functions by the linear UV
 path, retains the source p-curve domain, and requires the UV segment to stay
 inside the patch with same-sign surface weights. Direct partial/reversed tests
 and serialized warped polynomial/rational triangle faces compare intermediate
-points against source-surface evaluation. Diagonal p-curves on higher-degree
-or multi-span non-affine surfaces remain unsupported.
+points against source-surface evaluation.
+
+Straight diagonal p-curves on clamped single-span higher-degree B-spline/NURBS
+patches also compose exactly. The importer restricts the homogeneous Bézier
+control net to the traversed UV rectangle, then multiplies its two Bernstein
+bases along the diagonal. The result has degree `degree_u + degree_v` and keeps
+the source UV interval. Direct tests cover partial/reversed paths through
+quadratic-by-linear, quadratic-by-quadratic rational, and cubic-by-quadratic
+patches; serialized STEP triangles cover the first two. Multi-span and
+unclamped higher-degree surfaces still require separate composition support.
 
 The same degree-one isoparametric p-curves on linear extrusions of curved
 directrices lift exactly. Constant-height edges use the translated directrix;

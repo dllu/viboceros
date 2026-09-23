@@ -388,6 +388,9 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
                 if let Some(curve) = bilinear_pcurve_edge(basis, uv0, uv1, uv.domain(), id)? {
                     return Ok(curve);
                 }
+                if let Some(curve) = bezier_patch_pcurve_edge(basis, uv0, uv1, uv.domain(), id)? {
+                    return Ok(curve);
+                }
             }
             if !globally_affine && bounded_affine.is_none() {
                 return Err(unsupported("3D edge p-curve basis is not affine"));
@@ -726,6 +729,180 @@ fn bilinear_pcurve_edge(
             *domain.end(),
         ],
     )?))
+}
+
+/// A straight path across a clamped single-span tensor-product surface is a
+/// rational Bézier curve. Restrict the homogeneous patch to the UV rectangle
+/// traversed by the path, then multiply its two Bernstein bases along the
+/// rectangle's diagonal.
+fn bezier_patch_pcurve_edge(
+    basis: &Surface,
+    uv0: Point2,
+    uv1: Point2,
+    domain: std::ops::RangeInclusive<f64>,
+    id: u64,
+) -> Result<Option<NurbsCurve>, StepError> {
+    let (degree_u, degree_v, u_count, v_count) = match basis {
+        Surface::BsplineSurface(surface) => (
+            surface.udegree(),
+            surface.vdegree(),
+            surface.control_points().len(),
+            surface.control_points().first().map_or(0, Vec::len),
+        ),
+        Surface::NurbsSurface(surface) => (
+            surface.udegree(),
+            surface.vdegree(),
+            surface.control_points().len(),
+            surface.control_points().first().map_or(0, Vec::len),
+        ),
+        _ => return Ok(None),
+    };
+    if degree_u.checked_add(1) != Some(u_count) || degree_v.checked_add(1) != Some(v_count) {
+        return Ok(None);
+    }
+    let unsupported = |reason| StepError::UnsupportedNativeShell { shell: id, reason };
+    let degree = degree_u
+        .checked_add(degree_v)
+        .ok_or_else(|| unsupported("Bezier p-curve composition degree overflows"))?;
+    if degree > 64 {
+        return Err(unsupported("Bezier p-curve composition degree exceeds 64"));
+    }
+    let surface = spline_surface_basis(basis, id)?;
+    let u_domain = surface.domain_u();
+    let v_domain = surface.domain_v();
+    let clamped = |knots: &[f64], degree: usize, start: f64, end: f64| {
+        knots.len() == 2 * (degree + 1)
+            && knots[..=degree].iter().all(|knot| *knot == start)
+            && knots[degree + 1..].iter().all(|knot| *knot == end)
+    };
+    if !clamped(
+        surface.knots_u(),
+        degree_u,
+        *u_domain.start(),
+        *u_domain.end(),
+    ) || !clamped(
+        surface.knots_v(),
+        degree_v,
+        *v_domain.start(),
+        *v_domain.end(),
+    ) {
+        return Ok(None);
+    }
+    let inside = |point: Point2| u_domain.contains(&point.x()) && v_domain.contains(&point.y());
+    if !inside(uv0) || !inside(uv1) {
+        return Err(unsupported(
+            "3D edge p-curve leaves its Bezier surface domain",
+        ));
+    }
+    let sign = surface
+        .control_point(0, 0)
+        .unwrap()
+        .weight()
+        .is_sign_positive();
+    if surface
+        .control_points()
+        .iter()
+        .any(|control| control.weight().is_sign_positive() != sign)
+    {
+        return Err(unsupported("Bezier p-curve surface weights change sign"));
+    }
+    let u0 = (uv0.x() - u_domain.start()) / (u_domain.end() - u_domain.start());
+    let u1 = (uv1.x() - u_domain.start()) / (u_domain.end() - u_domain.start());
+    let v0 = (uv0.y() - v_domain.start()) / (v_domain.end() - v_domain.start());
+    let v1 = (uv1.y() - v_domain.start()) / (v_domain.end() - v_domain.start());
+    let mut u_restricted = Vec::with_capacity(v_count);
+    for v in 0..v_count {
+        let row = (0..u_count)
+            .map(|u| homogeneous_surface_control(surface.control_point(u, v).unwrap()))
+            .collect::<Vec<_>>();
+        u_restricted.push(restrict_bezier_homogeneous(&row, u0, u1));
+    }
+    let mut restricted = vec![vec![[0.; 4]; u_count]; v_count];
+    for u in 0..u_count {
+        let column = (0..v_count).map(|v| u_restricted[v][u]).collect::<Vec<_>>();
+        for (v, point) in restrict_bezier_homogeneous(&column, v0, v1)
+            .into_iter()
+            .enumerate()
+        {
+            restricted[v][u] = point;
+        }
+    }
+    let choose_u = (0..=degree_u)
+        .map(|index| binomial(degree_u, index))
+        .collect::<Vec<_>>();
+    let choose_v = (0..=degree_v)
+        .map(|index| binomial(degree_v, index))
+        .collect::<Vec<_>>();
+    let choose_curve = (0..=degree)
+        .map(|index| binomial(degree, index))
+        .collect::<Vec<_>>();
+    let mut controls = vec![[0.; 4]; degree + 1];
+    for (v, row) in restricted.iter().enumerate() {
+        for (u, point) in row.iter().enumerate() {
+            let index = u + v;
+            let factor = choose_u[u] * choose_v[v] / choose_curve[index];
+            for (target, value) in controls[index].iter_mut().zip(point) {
+                *target += factor * value;
+            }
+        }
+    }
+    let controls = controls
+        .into_iter()
+        .map(|point| weighted3(point[0], point[1], point[2], point[3], id))
+        .collect::<Result<Vec<_>, _>>()?;
+    let mut knots = vec![*domain.start(); degree + 1];
+    knots.extend(vec![*domain.end(); degree + 1]);
+    Ok(Some(NurbsCurve::try_new_rational(degree, controls, knots)?))
+}
+
+fn homogeneous_surface_control(control: WeightedPoint3) -> [f64; 4] {
+    let point = control.point();
+    let weight = control.weight();
+    [
+        point.x() * weight,
+        point.y() * weight,
+        point.z() * weight,
+        weight,
+    ]
+}
+
+fn restrict_bezier_homogeneous(controls: &[[f64; 4]], from: f64, to: f64) -> Vec<[f64; 4]> {
+    let start = from.min(to);
+    let end = from.max(to);
+    let (_, right) = split_bezier_homogeneous(controls, start);
+    let (mut segment, _) = split_bezier_homogeneous(&right, (end - start) / (1. - start));
+    if from > to {
+        segment.reverse();
+    }
+    segment
+}
+
+fn split_bezier_homogeneous(
+    controls: &[[f64; 4]],
+    parameter: f64,
+) -> (Vec<[f64; 4]>, Vec<[f64; 4]>) {
+    let degree = controls.len() - 1;
+    let mut stage = controls.to_vec();
+    let mut left = Vec::with_capacity(controls.len());
+    let mut right = vec![[0.; 4]; controls.len()];
+    for depth in 0..=degree {
+        left.push(stage[0]);
+        right[degree - depth] = stage[degree - depth];
+        for index in 0..degree - depth {
+            let next = stage[index + 1];
+            for (coordinate, following) in stage[index].iter_mut().zip(next) {
+                *coordinate = *coordinate * (1. - parameter) + following * parameter;
+            }
+        }
+    }
+    (left, right)
+}
+
+fn binomial(n: usize, k: usize) -> f64 {
+    let k = k.min(n - k);
+    (1..=k).fold(1., |value, index| {
+        value * (n - k + index) as f64 / index as f64
+    })
 }
 
 fn rotate_revolution_point(
@@ -1658,6 +1835,133 @@ mod tests {
     }
 
     #[test]
+    fn bezier_surface_diagonal_pcurves_compose_to_exact_rational_curves() {
+        let polynomial = Surface::BsplineSurface(BsplineSurface::new(
+            (
+                KnotVector::from(vec![2., 2., 2., 4., 4., 4.]),
+                KnotVector::from(vec![-3., -3., 5., 5.]),
+            ),
+            vec![
+                vec![TruckPoint3::new(0., 0., 0.), TruckPoint3::new(0., 2., 0.)],
+                vec![TruckPoint3::new(1., 0., 1.), TruckPoint3::new(1., 2., 2.)],
+                vec![TruckPoint3::new(2., 0., 0.), TruckPoint3::new(2., 2., 1.)],
+            ],
+        ));
+        let rational = Surface::NurbsSurface(TruckNurbsSurface::new(BsplineSurface::new(
+            (
+                KnotVector::from(vec![2., 2., 2., 4., 4., 4.]),
+                KnotVector::from(vec![-3., -3., -3., 5., 5., 5.]),
+            ),
+            (0..3)
+                .map(|u| {
+                    (0..3)
+                        .map(|v| {
+                            let x = u as f64;
+                            let y = v as f64;
+                            let weight = 1. + x + y;
+                            Vector4::new(x * weight, y * weight, x * y * weight, weight)
+                        })
+                        .collect::<Vec<_>>()
+                })
+                .collect(),
+        )));
+        let cubic_quadratic = Surface::BsplineSurface(BsplineSurface::new(
+            (
+                KnotVector::from(vec![2., 2., 2., 2., 4., 4., 4., 4.]),
+                KnotVector::from(vec![-3., -3., -3., 5., 5., 5.]),
+            ),
+            (0..4)
+                .map(|u| {
+                    (0..3)
+                        .map(|v| {
+                            let x = u as f64;
+                            let y = v as f64;
+                            TruckPoint3::new(x, y, x * x + x * y)
+                        })
+                        .collect::<Vec<_>>()
+                })
+                .collect(),
+        ));
+        for (basis, degree) in [(polynomial, 3), (rational, 4), (cubic_quadratic, 5)] {
+            for (a, b) in [
+                ([2., -3.], [4., 5.]),
+                ([2.3, -1.], [3.7, 4.]),
+                ([3.7, 4.], [2.3, -1.]),
+                ([2.3, 4.], [3.7, -1.]),
+            ] {
+                let uv0 = TruckPoint2::new(a[0], a[1]);
+                let uv1 = TruckPoint2::new(b[0], b[1]);
+                for (uv, domain) in [
+                    (Curve2D::Line(Line(uv0, uv1)), 0.0..=1.0),
+                    (
+                        Curve2D::BsplineCurve(BsplineCurve::new(
+                            KnotVector::from(vec![5., 5., 9., 9.]),
+                            vec![uv0, uv1],
+                        )),
+                        5.0..=9.0,
+                    ),
+                    (
+                        Curve2D::NurbsCurve(TruckNurbsCurve::new(BsplineCurve::new(
+                            KnotVector::from(vec![5., 5., 9., 9.]),
+                            vec![
+                                Vector3::new(2. * a[0], 2. * a[1], 2.),
+                                Vector3::new(2. * b[0], 2. * b[1], 2.),
+                            ],
+                        ))),
+                        5.0..=9.0,
+                    ),
+                ] {
+                    let source = Curve3D::ParameterCurve(StepParameterCurve::new(
+                        Box::new(uv),
+                        Box::new(basis.clone()),
+                    ));
+                    let curve = edge_curve(&source, 1).unwrap();
+                    assert_eq!(curve.degree(), degree);
+                    assert_eq!(curve.domain(), domain);
+                    for fraction in [0., 0.17, 0.5, 0.83, 1.] {
+                        let u = a[0] * (1. - fraction) + b[0] * fraction;
+                        let v = a[1] * (1. - fraction) + b[1] * fraction;
+                        let t = *domain.start() * (1. - fraction) + *domain.end() * fraction;
+                        let expected = basis.evaluate(u, v);
+                        let actual = curve.evaluate(t).unwrap();
+                        assert!((actual.x() - expected.x).abs() < 1e-10);
+                        assert!((actual.y() - expected.y).abs() < 1e-10);
+                        assert!((actual.z() - expected.z).abs() < 1e-10);
+                    }
+                }
+            }
+        }
+
+        let multispan = Surface::BsplineSurface(BsplineSurface::new(
+            (
+                KnotVector::from(vec![0., 0., 0., 0.5, 1., 1., 1.]),
+                KnotVector::bezier_knot(1),
+            ),
+            (0..4)
+                .map(|u| {
+                    (0..2)
+                        .map(|v| TruckPoint3::new(u as f64, v as f64, (u * v) as f64))
+                        .collect::<Vec<_>>()
+                })
+                .collect(),
+        ));
+        let diagonal = Curve3D::ParameterCurve(StepParameterCurve::new(
+            Box::new(Curve2D::Line(Line(
+                TruckPoint2::new(0., 0.),
+                TruckPoint2::new(1., 1.),
+            ))),
+            Box::new(multispan),
+        ));
+        assert!(matches!(
+            edge_curve(&diagonal, 1),
+            Err(StepError::UnsupportedNativeShell {
+                reason: "3D edge p-curve basis is not affine",
+                ..
+            })
+        ));
+    }
+
+    #[test]
     fn curved_surface_pcurve_edges_preserve_partial_and_reversed_iso_segments() {
         let knots = || (KnotVector::bezier_knot(2), KnotVector::bezier_knot(1));
         for basis in [
@@ -1750,15 +2054,17 @@ mod tests {
                     TruckPoint2::new(0., 0.),
                     TruckPoint2::new(1., 1.),
                 ))),
-                Box::new(basis),
+                Box::new(basis.clone()),
             ));
-            assert!(matches!(
-                edge_curve(&diagonal, 1),
-                Err(StepError::UnsupportedNativeShell {
-                    reason: "3D edge p-curve basis is not affine",
-                    ..
-                })
-            ));
+            let curve = edge_curve(&diagonal, 1).unwrap();
+            assert_eq!(curve.degree(), 3);
+            for t in [0., 0.17, 0.5, 0.83, 1.] {
+                let actual = curve.evaluate(t).unwrap();
+                let expected = basis.evaluate(t, t);
+                assert!((actual.x() - expected.x).abs() < 1e-11);
+                assert!((actual.y() - expected.y).abs() < 1e-11);
+                assert!((actual.z() - expected.z).abs() < 1e-11);
+            }
         }
     }
 
