@@ -3250,6 +3250,36 @@ impl NurbsSurface {
         }
     }
 
+    /// Certifies a nonsingular projective patch with weights of one sign and
+    /// returns its four Euclidean corners in boundary order. The complete
+    /// control net must be homogeneous affine at its Greville parameters.
+    /// The image of its parameter rectangle has straight sides; callers can
+    /// test the corners for convexity in the surface plane.
+    pub fn try_projective_patch_corners(
+        &self,
+        tolerance: Tolerance,
+    ) -> Result<[Point3; 4], GeometryError> {
+        let positive = self.control_points[0].weight().is_sign_positive();
+        if self
+            .control_points
+            .iter()
+            .any(|control| control.weight().is_sign_positive() != positive)
+        {
+            return Err(GeometryError::InvalidControlNet {
+                context: "projective patch requires weights of one sign",
+            });
+        }
+        let _frame = ProjectiveSurfaceFrame::try_from_surface(self, tolerance)?;
+        let domain_u = self.domain_u();
+        let domain_v = self.domain_v();
+        Ok([
+            self.evaluate(*domain_u.start(), *domain_v.start())?,
+            self.evaluate(*domain_u.end(), *domain_v.start())?,
+            self.evaluate(*domain_u.end(), *domain_v.end())?,
+            self.evaluate(*domain_u.start(), *domain_v.end())?,
+        ])
+    }
+
     /// Pulls a model-space NURBS curve back exactly through a projective
     /// tensor-product surface whose homogeneous control net is affine in both
     /// parameters.

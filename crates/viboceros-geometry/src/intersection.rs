@@ -514,7 +514,7 @@ fn curve_brep_intersection_events_with_transform(
 /// The current exact path handles transverse planar surfaces, including
 /// multiple clipped components and isolated boundary contacts, plus
 /// coincident nonsingular convex four-sided bilinear patches with weights of
-/// one sign, plus certified affine patches of any degree. Coincident
+/// one sign, plus certified affine and projective patches of any degree. Coincident
 /// patches return their area-overlap perimeter or shared edge; a lone shared
 /// corner produces no event, matching Rhino. Parallel disjoint planes return
 /// no events. Non-planar and more general coincident inputs are reported
@@ -1097,7 +1097,7 @@ fn coincident_planar_surface_intersection_events(
     distance_tolerance: Real,
 ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
     let unsupported = || GeometryError::UnsupportedSurfaceSurfaceIntersection {
-        context: "coincident planar surfaces outside certified convex bilinear or affine patches",
+        context: "coincident planar surfaces outside certified convex bilinear, affine, or projective patches",
     };
     let mut first_polygon =
         certified_coincident_patch_polygon(first, tolerance)?.ok_or_else(unsupported)?;
@@ -1228,6 +1228,11 @@ fn certified_coincident_patch_polygon(
         return Ok(Some(bilinear_patch_polygon(surface)));
     }
     match surface.try_affine_patch_corners(tolerance) {
+        Ok(corners) => return Ok(Some(corners.to_vec())),
+        Err(GeometryError::InvalidControlNet { .. } | GeometryError::Degenerate { .. }) => {}
+        Err(error) => return Err(error),
+    }
+    match surface.try_projective_patch_corners(tolerance) {
         Ok(corners) => Ok(Some(corners.to_vec())),
         Err(GeometryError::InvalidControlNet { .. } | GeometryError::Degenerate { .. }) => Ok(None),
         Err(error) => Err(error),
@@ -3447,7 +3452,7 @@ mod tests {
                 Tolerance::DEFAULT,
             ),
             Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-                context: "coincident planar surfaces outside certified convex bilinear or affine patches",
+                context: "coincident planar surfaces outside certified convex bilinear, affine, or projective patches",
             })
         );
 
@@ -3546,7 +3551,7 @@ mod tests {
         assert_eq!(
             surface_surface_intersection_events(&horizontal, &bent_boundary, Tolerance::DEFAULT,),
             Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-                context: "coincident planar surfaces outside certified convex bilinear or affine patches",
+                context: "coincident planar surfaces outside certified convex bilinear, affine, or projective patches",
             })
         );
     }
@@ -3627,6 +3632,154 @@ mod tests {
             };
             assert!((edge.length(Tolerance::DEFAULT).unwrap() - 10.0).abs() < 1e-9);
         }
+    }
+
+    #[test]
+    fn coincident_projective_patches_survive_degree_elevation_and_knot_refinement() {
+        let corners = [
+            point(0.0, 0.0, 0.0),
+            point(5.0, 0.0, 0.0),
+            point(4.0, 4.0, 0.0),
+            point(0.0, 20.0 / 3.0, 0.0),
+        ];
+        let perimeter = (0..4)
+            .map(|index| {
+                corners[index]
+                    .distance_to(corners[(index + 1) % 4])
+                    .unwrap()
+            })
+            .sum::<Real>();
+        let enclosing = horizontal_rectangle(-1.0, 8.0, -1.0, 8.0, 0.0);
+        for sign in [1.0, -1.0] {
+            let source = NurbsSurface::try_new_rational(
+                1,
+                1,
+                2,
+                2,
+                [
+                    (corners[0], 1.0),
+                    (corners[1], 2.0),
+                    (corners[3], 1.5),
+                    (corners[2], 2.5),
+                ]
+                .into_iter()
+                .map(|(point, weight)| crate::WeightedPoint3::try_new(point, sign * weight))
+                .collect::<Result<Vec<_>, _>>()
+                .unwrap(),
+                vec![0.0, 0.0, 1.0, 1.0],
+                vec![0.0, 0.0, 1.0, 1.0],
+            )
+            .unwrap();
+            let refined = source
+                .try_change_degree(3, 2, false)
+                .unwrap()
+                .try_insert_knot_u(0.4, 2)
+                .unwrap()
+                .try_insert_knot_v(0.65, 1)
+                .unwrap();
+            let certified = refined
+                .try_projective_patch_corners(Tolerance::DEFAULT)
+                .unwrap();
+            for (actual, expected) in certified.into_iter().zip(corners) {
+                assert!(actual.is_near(expected, Tolerance::DEFAULT));
+            }
+            let events =
+                surface_surface_intersection_events(&refined, &enclosing, Tolerance::DEFAULT)
+                    .unwrap();
+            let [SurfaceSurfaceIntersectionEvent::Curve(boundary)] = events.as_slice() else {
+                panic!("expected projective overlap perimeter, got {events:#?}");
+            };
+            assert!(boundary.is_closed().unwrap());
+            assert!((boundary.length(Tolerance::DEFAULT).unwrap() - perimeter).abs() < 1e-9);
+            for (actual, expected) in boundary.control_points().iter().zip(corners) {
+                assert!(actual.point().is_near(expected, Tolerance::DEFAULT));
+            }
+            let partial = surface_surface_intersection_events(
+                &refined,
+                &horizontal_rectangle(2.0, 8.0, -1.0, 8.0, 0.0),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            let [SurfaceSurfaceIntersectionEvent::Curve(partial)] = partial.as_slice() else {
+                panic!("expected projective partial overlap, got {partial:#?}");
+            };
+            let partial_corners = [
+                point(2.0, 0.0, 0.0),
+                corners[1],
+                corners[2],
+                point(2.0, 16.0 / 3.0, 0.0),
+            ];
+            let partial_perimeter = (0..4)
+                .map(|index| {
+                    partial_corners[index]
+                        .distance_to(partial_corners[(index + 1) % 4])
+                        .unwrap()
+                })
+                .sum::<Real>();
+            assert!(partial.is_closed().unwrap());
+            assert!((partial.length(Tolerance::DEFAULT).unwrap() - partial_perimeter).abs() < 1e-9);
+            for corner in partial_corners {
+                assert!(
+                    partial
+                        .control_points()
+                        .iter()
+                        .any(|control| control.point().is_near(corner, Tolerance::DEFAULT))
+                );
+            }
+            let edge = surface_surface_intersection_events(
+                &refined,
+                &horizontal_rectangle(0.0, 5.0, -5.0, 0.0, 0.0),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            let [SurfaceSurfaceIntersectionEvent::Curve(edge)] = edge.as_slice() else {
+                panic!("expected projective shared edge, got {edge:#?}");
+            };
+            assert!((edge.length(Tolerance::DEFAULT).unwrap() - 5.0).abs() < 1e-9);
+            let brep = Brep::try_surface_face(refined, Tolerance::DEFAULT).unwrap();
+            let surface_events =
+                surface_brep_intersection_events(&enclosing, &brep, Tolerance::DEFAULT).unwrap();
+            let [SurfaceBrepIntersectionEvent::Curve(surface_boundary)] = surface_events.as_slice()
+            else {
+                panic!("expected projective surface/B-rep perimeter, got {surface_events:#?}");
+            };
+            assert!(
+                (surface_boundary.length(Tolerance::DEFAULT).unwrap() - perimeter).abs() < 1e-9
+            );
+            let enclosing_brep =
+                Brep::try_surface_face(enclosing.clone(), Tolerance::DEFAULT).unwrap();
+            let brep_events =
+                brep_brep_intersection_events(&brep, &enclosing_brep, Tolerance::DEFAULT).unwrap();
+            let [BrepBrepIntersectionEvent::Curve(brep_boundary)] = brep_events.as_slice() else {
+                panic!("expected projective B-rep perimeter, got {brep_events:#?}");
+            };
+            assert!((brep_boundary.length(Tolerance::DEFAULT).unwrap() - perimeter).abs() < 1e-9);
+        }
+        let mixed = NurbsSurface::try_new_rational(
+            1,
+            1,
+            2,
+            2,
+            [
+                (corners[0], 1.0),
+                (corners[1], -2.0),
+                (corners[3], 1.5),
+                (corners[2], 2.5),
+            ]
+            .into_iter()
+            .map(|(point, weight)| crate::WeightedPoint3::try_new(point, weight))
+            .collect::<Result<Vec<_>, _>>()
+            .unwrap(),
+            vec![0.0, 0.0, 1.0, 1.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        assert_eq!(
+            mixed.try_projective_patch_corners(Tolerance::DEFAULT),
+            Err(GeometryError::InvalidControlNet {
+                context: "projective patch requires weights of one sign"
+            })
+        );
     }
 
     fn box_brep() -> Brep {
