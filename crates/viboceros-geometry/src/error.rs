@@ -11,8 +11,10 @@ pub enum GeometryError {
     AmbiguousCurveOffsetSide,
     #[error("selected closed offset regions intersect or touch")]
     IntersectingOffsetRegions,
-    #[error("closed offset region has zero signed area")]
+    #[error("closed offset region has negligible signed area")]
     DegenerateOffsetRegion,
+    #[error("closed polyline offset region crosses or touches itself")]
+    SelfIntersectingOffsetRegion,
     #[error("offset distance must be nonzero and finite")]
     InvalidCurveOffsetDistance,
     #[error("offset through-point lies outside the curve's offset plane")]

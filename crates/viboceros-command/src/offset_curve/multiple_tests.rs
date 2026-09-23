@@ -168,3 +168,32 @@ fn collapse_on_later_copy_is_atomic() {
     assert_eq!(document.objects().count(), 1);
     assert_eq!(document.selected_object_count(), 1);
 }
+
+#[test]
+fn self_crossing_closed_polyline_cannot_supply_an_island_region() {
+    let mut document = Document::default();
+    let polyline = viboceros_geometry::Polyline3::try_new(
+        vec![
+            point(0.0, 0.0),
+            point(4.0, 0.0),
+            point(4.0, 4.0),
+            point(0.0, 4.0),
+            point(2.0, -1.0),
+            point(0.0, 0.0),
+        ],
+        document.tolerance(),
+    )
+    .unwrap();
+    let id = document.add_geometry(Geometry::Polyline(polyline)).unwrap();
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    let result = CommandRegistry::with_builtins()
+        .execute(&mut document, "OffsetMultiple 0.25 2,2,0 OffsetCount=2");
+    assert!(matches!(
+        result,
+        Err(CommandError::Geometry(
+            GeometryError::SelfIntersectingOffsetRegion
+        ))
+    ));
+    assert_eq!(document.objects().count(), 1);
+    assert_eq!(document.selected_object_count(), 1);
+}

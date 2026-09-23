@@ -47,6 +47,7 @@ or outward choice: a point inside any selected closed region chooses inward.
 Each nested island reverses that direction, including successive nesting
 levels. Closed circles, full circular arcs, and simple planar polylines can
 form regions. Selected closed boundaries that intersect or touch are rejected.
+Self-intersecting closed polylines are also rejected as ambiguous regions.
 The command supports the same `Corner` and `OutputLayer` options as `Offset`;
 at most 100,000 source/count combinations can be requested. All outputs are
 staged before the document changes.

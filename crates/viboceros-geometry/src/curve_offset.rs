@@ -1,5 +1,9 @@
 //! Exact offsets of analytic curves in an oriented plane.
 
+use std::cmp::Ordering;
+
+use crate::exact_scalar::rational;
+
 use crate::{
     Circle3, CircularArc3, Curve3, CurveSegment3, GeometryError, LineSegment,
     MAX_POLYCURVE_SEGMENTS, Point3, PolyCurve3, Polyline3, Real, Tolerance, UnitVector3, Vector3,
@@ -108,19 +112,21 @@ impl Curve3 {
                     .try_fold(0.0_f64, |largest, point| {
                         Ok::<_, GeometryError>(largest.max(origin.distance_to(*point)?))
                     })?;
+                let projected = polyline
+                    .vertices()
+                    .iter()
+                    .map(|point| {
+                        let relative = origin.vector_to(*point)?;
+                        Ok::<_, GeometryError>([
+                            relative.dot(x_axis.as_vector())? / scale,
+                            relative.dot(y_axis.as_vector())? / scale,
+                        ])
+                    })
+                    .collect::<Result<Vec<_>, _>>()?;
+                validate_simple_offset_region(&projected)?;
                 let mut area2 = 0.0;
-                for edge in polyline.vertices().windows(2) {
-                    let a = origin.vector_to(edge[0])?;
-                    let b = origin.vector_to(edge[1])?;
-                    let (ax, ay) = (
-                        a.dot(x_axis.as_vector())? / scale,
-                        a.dot(y_axis.as_vector())? / scale,
-                    );
-                    let (bx, by) = (
-                        b.dot(x_axis.as_vector())? / scale,
-                        b.dot(y_axis.as_vector())? / scale,
-                    );
-                    area2 += ax.mul_add(by, -(ay * bx));
+                for edge in projected.windows(2) {
+                    area2 += edge[0][0].mul_add(edge[1][1], -(edge[0][1] * edge[1][0]));
                 }
                 if area2.abs() <= tolerance.relative() {
                     return Err(GeometryError::DegenerateOffsetRegion);
@@ -418,6 +424,107 @@ impl Curve3 {
         }
         Ok(signed.signum())
     }
+}
+
+#[derive(Clone, Copy)]
+struct OffsetRegionEdge2 {
+    a: [Real; 2],
+    b: [Real; 2],
+    min_x: Real,
+    max_x: Real,
+    min_y: Real,
+    max_y: Real,
+}
+
+/// Sweep by the first projected coordinate and test only overlapping edge
+/// boxes. Exact rational predicates resolve crossings and vertex contacts
+/// that a rounded cross product could miss near collinearity.
+fn validate_simple_offset_region(points: &[[Real; 2]]) -> Result<(), GeometryError> {
+    let edges = points
+        .windows(2)
+        .map(|pair| OffsetRegionEdge2 {
+            a: pair[0],
+            b: pair[1],
+            min_x: pair[0][0].min(pair[1][0]),
+            max_x: pair[0][0].max(pair[1][0]),
+            min_y: pair[0][1].min(pair[1][1]),
+            max_y: pair[0][1].max(pair[1][1]),
+        })
+        .collect::<Vec<_>>();
+    for index in 0..edges.len() {
+        let previous = points[(index + edges.len() - 1) % edges.len()];
+        let vertex = points[index];
+        let next = points[index + 1];
+        if offset_region_orient2(previous, vertex, next) == Ordering::Equal
+            && !(previous[0].min(next[0]) <= vertex[0]
+                && vertex[0] <= previous[0].max(next[0])
+                && previous[1].min(next[1]) <= vertex[1]
+                && vertex[1] <= previous[1].max(next[1]))
+        {
+            return Err(GeometryError::SelfIntersectingOffsetRegion);
+        }
+    }
+    let mut order = (0..edges.len()).collect::<Vec<_>>();
+    order.sort_unstable_by(|&a, &b| edges[a].min_x.total_cmp(&edges[b].min_x));
+    let mut active: Vec<usize> = Vec::new();
+    for index in order {
+        let edge = edges[index];
+        active.retain(|&other| edges[other].max_x >= edge.min_x);
+        for &other in &active {
+            if index.abs_diff(other) == 1 || index.abs_diff(other) + 1 == edges.len() {
+                continue;
+            }
+            let candidate = edges[other];
+            if candidate.max_y < edge.min_y || edge.max_y < candidate.min_y {
+                continue;
+            }
+            let signs = [
+                offset_region_orient2(edge.a, edge.b, candidate.a),
+                offset_region_orient2(edge.a, edge.b, candidate.b),
+                offset_region_orient2(candidate.a, candidate.b, edge.a),
+                offset_region_orient2(candidate.a, candidate.b, edge.b),
+            ];
+            if (signs.iter().all(|sign| *sign != Ordering::Equal)
+                && signs[0] != signs[1]
+                && signs[2] != signs[3])
+                || (signs[0] == Ordering::Equal && offset_region_on_segment(edge, candidate.a))
+                || (signs[1] == Ordering::Equal && offset_region_on_segment(edge, candidate.b))
+                || (signs[2] == Ordering::Equal && offset_region_on_segment(candidate, edge.a))
+                || (signs[3] == Ordering::Equal && offset_region_on_segment(candidate, edge.b))
+            {
+                return Err(GeometryError::SelfIntersectingOffsetRegion);
+            }
+        }
+        active.push(index);
+    }
+    Ok(())
+}
+
+fn offset_region_on_segment(edge: OffsetRegionEdge2, point: [Real; 2]) -> bool {
+    edge.min_x <= point[0]
+        && point[0] <= edge.max_x
+        && edge.min_y <= point[1]
+        && point[1] <= edge.max_y
+}
+
+fn offset_region_orient2(a: [Real; 2], b: [Real; 2], c: [Real; 2]) -> Ordering {
+    let abx = b[0] - a[0];
+    let aby = b[1] - a[1];
+    let acx = c[0] - a[0];
+    let acy = c[1] - a[1];
+    let positive = abx * acy;
+    let negative = aby * acx;
+    let determinant = positive - negative;
+    // Projected coordinates are scaled to unit size. Far from zero, this
+    // conservative error bound avoids rational arithmetic at ordinary corners.
+    let error = 64.0 * Real::EPSILON * (positive.abs() + negative.abs());
+    if determinant.abs() > error {
+        return determinant.total_cmp(&0.0);
+    }
+    let (ax, ay) = (rational(a[0]), rational(a[1]));
+    let (bx, by) = (rational(b[0]), rational(b[1]));
+    let (cx, cy) = (rational(c[0]), rational(c[1]));
+    ((bx - &ax) * (cy - &ay) - (by - &ay) * (cx - &ax)).cmp(&rational(0.0))
 }
 
 fn offset_curve_distance_to_point(
@@ -905,6 +1012,71 @@ mod tests {
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn closed_region_rejects_nonadjacent_crossings_and_touches() {
+        let crossing = [
+            [0.0, 0.0],
+            [4.0, 0.0],
+            [4.0, 4.0],
+            [0.0, 4.0],
+            [2.0, -1.0],
+            [0.0, 0.0],
+        ];
+        let touching = [
+            [0.0, 0.0],
+            [4.0, 0.0],
+            [4.0, 4.0],
+            [0.0, 4.0],
+            [2.0, 0.0],
+            [0.0, 0.0],
+        ];
+        let simple_concave = [
+            [0.0, 0.0],
+            [4.0, 0.0],
+            [4.0, 4.0],
+            [2.0, 2.0],
+            [0.0, 4.0],
+            [0.0, 0.0],
+        ];
+        let adjacent_collinear = [
+            [0.0, 0.0],
+            [2.0, 0.0],
+            [4.0, 0.0],
+            [4.0, 4.0],
+            [0.0, 4.0],
+            [0.0, 0.0],
+        ];
+        let adjacent_backtrack = [
+            [0.0, 0.0],
+            [4.0, 0.0],
+            [2.0, 0.0],
+            [4.0, 4.0],
+            [0.0, 4.0],
+            [0.0, 0.0],
+        ];
+        for boundary in [&crossing[..], &touching[..], &adjacent_backtrack[..]] {
+            assert_eq!(
+                validate_simple_offset_region(boundary),
+                Err(GeometryError::SelfIntersectingOffsetRegion)
+            );
+        }
+        for boundary in [&simple_concave[..], &adjacent_collinear[..]] {
+            assert_eq!(validate_simple_offset_region(boundary), Ok(()));
+        }
+    }
+
+    #[test]
+    fn offset_region_orientation_resolves_near_collinear_binary64_points() {
+        let tiny = 2.0_f64.powi(-50);
+        let perturbation = 2.0_f64.powi(-100);
+        let a = [0.0, 0.0];
+        let b = [1.0, tiny];
+        let above = [2.0, 2.0 * tiny + perturbation];
+        let below = [2.0, 2.0 * tiny - perturbation];
+        assert_eq!(offset_region_orient2(a, b, above), Ordering::Greater);
+        assert_eq!(offset_region_orient2(a, b, below), Ordering::Less);
     }
 
     #[test]
