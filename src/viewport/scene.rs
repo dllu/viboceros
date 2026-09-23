@@ -231,29 +231,50 @@ impl Viewport {
         rect: Rect,
         document: &Document,
         viewport_index: usize,
+        preview: Option<ObjectSelectionFilter>,
+        preview_ids: &[ObjectId],
     ) {
         crate::viewport_gpu::paint(
             painter,
             rect,
             viewport_index,
-            self.object_scene(rect, document),
+            self.object_scene_with_preview(rect, document, preview, preview_ids),
         );
     }
 
+    #[cfg(test)]
     pub(super) fn object_scene(&self, rect: Rect, document: &Document) -> Arc<GpuViewportScene> {
+        self.object_scene_with_preview(rect, document, None, &[])
+    }
+
+    pub(super) fn object_scene_with_preview(
+        &self,
+        rect: Rect,
+        document: &Document,
+        preview: Option<ObjectSelectionFilter>,
+        preview_ids: &[ObjectId],
+    ) -> Arc<GpuViewportScene> {
         let mut objects = Vec::new();
         let mut visible = HashSet::new();
+        let preview_ids = preview_ids.iter().copied().collect::<HashSet<_>>();
         let mut cache = self.display_cache.borrow_mut();
         for object in document.objects() {
             let attributes = object.attributes();
             let Some(layer) = document.layer(attributes.layer_id()) else {
                 continue;
             };
-            if !attributes.is_visible() || !layer.is_visible() {
+            if !layer.is_visible() || (preview.is_some() && layer.is_locked()) {
+                continue;
+            }
+            if let Some(filter) = preview {
+                if !filter.accepts_object(object) {
+                    continue;
+                }
+            } else if !attributes.is_visible() {
                 continue;
             }
             visible.insert(object.id());
-            let mut color = if attributes.is_locked() || layer.is_locked() {
+            let mut color = if preview.is_none() && (attributes.is_locked() || layer.is_locked()) {
                 LOCKED_COLOR
             } else {
                 resolved_display_color(attributes, layer.color())
@@ -261,7 +282,11 @@ impl Viewport {
             if self.display_mode == DisplayMode::Ghosted {
                 color = color_with_alpha(color, 110);
             }
-            let selected = document.is_selected(object.id());
+            let selected = if preview.is_some() {
+                preview_ids.contains(&object.id())
+            } else {
+                document.is_selected(object.id())
+            };
             if selected {
                 color = SELECTED_COLOR;
             }
@@ -273,7 +298,8 @@ impl Viewport {
             objects.push(DisplayObject {
                 geometry: cache.get(object, document.tolerance()),
                 color,
-                member_colors_enabled: !selected && !attributes.is_locked() && !layer.is_locked(),
+                member_colors_enabled: !selected
+                    && (preview.is_some() || (!attributes.is_locked() && !layer.is_locked())),
                 width,
                 point_radius: if selected { 3.5 } else { 2.5 },
             });
@@ -631,6 +657,43 @@ mod tests {
                 Color32::from_rgb(78, 90, 123)
             );
         }
+    }
+
+    #[test]
+    fn special_preview_draws_only_candidates_and_highlights_pending_picks() {
+        let mut document = Document::default();
+        let visible = document
+            .add_geometry(Geometry::Point(point(-2., 0., 0.)))
+            .unwrap();
+        let hidden = document
+            .add_geometry(Geometry::Point(point(0., 0., 0.)))
+            .unwrap();
+        let locked = document
+            .add_geometry(Geometry::Point(point(2., 0., 0.)))
+            .unwrap();
+        document.set_objects_visibility([hidden], false).unwrap();
+        document.set_objects_locked([locked], true).unwrap();
+        let view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        let normal = view.object_scene(rect, &document);
+        assert_eq!(normal.points.len(), 2);
+        let shown = view.object_scene_with_preview(
+            rect,
+            &document,
+            Some(ObjectSelectionFilter::HiddenObjects),
+            &[hidden],
+        );
+        assert_eq!(shown.points.len(), 1);
+        assert_eq!(shown.points[0].color, color_to_gpu(SELECTED_COLOR));
+        let unlocked = view.object_scene_with_preview(
+            rect,
+            &document,
+            Some(ObjectSelectionFilter::LockedObjects),
+            &[],
+        );
+        assert_eq!(unlocked.points.len(), 1);
+        assert_ne!(unlocked.points[0].color, color_to_gpu(LOCKED_COLOR));
+        assert!(document.object(visible).unwrap().attributes().is_visible());
     }
 
     #[test]

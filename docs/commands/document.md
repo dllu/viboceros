@@ -9,6 +9,15 @@ object with the corresponding object-level state. Hidden objects neither render
 nor snap. Locked objects render in gray and remain available to osnap, but
 cannot be selected or edited. Layer visibility and locking remain independent.
 
+`ShowSelected` and `UnlockSelected` open a temporary viewport view of hidden or
+locked objects on visible, unlocked layers. Pick objects or use `SelAll` and
+`SelNone`, then press Enter to change only those objects. Esc cancels without
+changing their state or the ordinary selection. Scripts can use
+`ShowSelected Ids=<id[,id...]>` and `UnlockSelected Ids=<id[,id...]>`.
+These follow Rhino's [ShowSelected](https://docs.mcneel.com/rhino/8/help/en-us/commands/hide.htm)
+and [UnlockSelected](https://docs.mcneel.com/rhino/8/help/en-us/commands/lock.htm)
+workflows.
+
 `HideSwap` exchanges normal and hidden object modes, while `LockSwap` exchanges
 normal and locked modes. Like Rhino, both swaps affect only objects on visible,
 unlocked layers and leave the third object mode unchanged.

@@ -24,6 +24,7 @@ pub(super) struct PendingObjectCommand {
     pub(super) selection_before: Option<Vec<ObjectId>>,
     pub(super) cloud_removal: Option<PendingCloudRemoval>,
     pub(super) cloud_action_target: Option<ObjectId>,
+    pub(super) special_selection: Option<BTreeSet<ObjectId>>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -50,6 +51,9 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if self.special_selection.is_some() {
+            return "Select objects; SelAll or SelNone adjusts selection; Enter finishes, Esc cancels";
+        }
         if self.description.command == "ReducePointCloud"
             && self.phase == ObjectPromptPhase::Options
         {
@@ -171,6 +175,29 @@ impl VibocerosApp {
                 return true;
             }
         };
+        if matches!(
+            description.filter,
+            ObjectSelectionFilter::HiddenObjects | ObjectSelectionFilter::LockedObjects
+        ) {
+            self.cancel_interactive_command(false);
+            self.object_prompt = Some(PendingObjectCommand {
+                description,
+                phase: ObjectPromptPhase::Selecting,
+                postselected: false,
+                subcurve_measurement: false,
+                measurement_display_units: None,
+                command_override: None,
+                excluded_object: None,
+                selection_before: None,
+                cloud_removal: None,
+                cloud_action_target: None,
+                special_selection: Some(BTreeSet::new()),
+            });
+            self.command_input.clear();
+            self.push_log(format!("> {input}"));
+            self.log_object_prompt();
+            return true;
+        }
         let subcurve_measurement = matches!(description.command, "Domain" | "Length")
             && input.split_whitespace().nth(1).is_some_and(|option| {
                 option
@@ -210,6 +237,7 @@ impl VibocerosApp {
                 selection_before: None,
                 cloud_removal: None,
                 cloud_action_target: Some(target),
+                special_selection: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -240,6 +268,7 @@ impl VibocerosApp {
                 selection_before: Some(selection_before),
                 cloud_removal: None,
                 cloud_action_target: None,
+                special_selection: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -275,6 +304,7 @@ impl VibocerosApp {
                     output_cloud,
                 }),
                 cloud_action_target: None,
+                special_selection: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -318,6 +348,7 @@ impl VibocerosApp {
                         selection_before: None,
                         cloud_removal: None,
                         cloud_action_target: None,
+                        special_selection: None,
                     });
                 }
                 Ok(None) => return false,
@@ -350,6 +381,7 @@ impl VibocerosApp {
                 selection_before: None,
                 cloud_removal: None,
                 cloud_action_target: None,
+                special_selection: None,
             });
         }
         self.command_input.clear();
@@ -387,6 +419,68 @@ impl VibocerosApp {
         let Some(mut pending) = self.object_prompt.clone() else {
             return false;
         };
+        if let Some(ids) = pending.special_selection.as_mut() {
+            let normalized = input.trim_start_matches(['_', '-']);
+            if input.is_empty() {
+                if ids.is_empty() {
+                    self.push_log("Select at least one eligible object; Esc cancels".into());
+                    return true;
+                }
+                let command = format!(
+                    "{} Ids={}",
+                    pending.description.command,
+                    ids.iter()
+                        .map(ToString::to_string)
+                        .collect::<Vec<_>>()
+                        .join(",")
+                );
+                match self.commands.execute(&mut self.document, &command) {
+                    Ok(message) => {
+                        self.object_prompt = None;
+                        self.push_log(format!("> {command}"));
+                        self.push_log(message);
+                    }
+                    Err(error) => self.push_log(format!("Error: {error}")),
+                }
+                self.command_input.clear();
+                return true;
+            }
+            if normalized.eq_ignore_ascii_case("SelNone") {
+                ids.clear();
+                self.object_prompt = Some(pending);
+                self.command_input.clear();
+                return true;
+            }
+            if normalized.eq_ignore_ascii_case("SelAll") {
+                let filter = pending.description.filter;
+                let all = self
+                    .document
+                    .objects()
+                    .filter(|object| filter.accepts_object(object))
+                    .filter(|object| {
+                        self.document
+                            .layer(object.attributes().layer_id())
+                            .is_some_and(|layer| layer.is_visible() && !layer.is_locked())
+                    })
+                    .map(|object| object.id())
+                    .collect::<Vec<_>>();
+                self.object_prompt = Some(pending);
+                self.select_prompt_objects(all, SelectionMode::Add);
+                self.command_input.clear();
+                return true;
+            }
+            if input
+                .split_whitespace()
+                .next()
+                .is_some_and(|name| self.commands.recognizes(name))
+            {
+                self.cancel_object_prompt(true);
+                return false;
+            }
+            self.push_log("Select objects; Enter finishes, Esc cancels".into());
+            self.command_input.clear();
+            return true;
+        }
         if let Some(target) = pending.cloud_action_target {
             return self.continue_cloud_action(input, target);
         }
@@ -870,6 +964,44 @@ impl VibocerosApp {
         else {
             return;
         };
+        if self
+            .object_prompt
+            .as_ref()
+            .is_some_and(|prompt| prompt.special_selection.is_some())
+        {
+            let requested = ids.into_iter().collect::<BTreeSet<_>>();
+            let eligible = self
+                .document
+                .objects()
+                .filter(|object| requested.contains(&object.id()) && filter.accepts_object(object))
+                .filter(|object| {
+                    self.document
+                        .layer(object.attributes().layer_id())
+                        .is_some_and(|layer| layer.is_visible() && !layer.is_locked())
+                })
+                .map(|object| object.id())
+                .collect::<Vec<_>>();
+            let pending = self.object_prompt.as_mut().unwrap();
+            let selected = pending.special_selection.as_mut().unwrap();
+            match mode {
+                SelectionMode::Replace | SelectionMode::Add => selected.extend(eligible),
+                SelectionMode::Remove => {
+                    for id in eligible {
+                        selected.remove(&id);
+                    }
+                }
+                SelectionMode::Toggle => {
+                    for id in eligible {
+                        if !selected.insert(id) {
+                            selected.remove(&id);
+                        }
+                    }
+                }
+            }
+            let count = selected.len();
+            self.push_log(format!("Selected {count} object(s); Enter continues"));
+            return;
+        }
         let excluded = self
             .object_prompt
             .as_ref()

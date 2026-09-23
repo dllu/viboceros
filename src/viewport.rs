@@ -142,6 +142,8 @@ pub struct ViewportInput<'a> {
     pub zoom_window: bool,
     pub zoom_target: Option<ZoomTargetInput>,
     pub object_filter: Option<ObjectSelectionFilter>,
+    pub selection_preview: Option<ObjectSelectionFilter>,
+    pub selection_preview_ids: &'a [ObjectId],
     pub point_cloud_remove_target: Option<ObjectId>,
     pub point_cloud_highlights: &'a [usize],
     pub preview_curve: Option<&'a NurbsCurve>,
@@ -153,6 +155,24 @@ pub struct ViewportInput<'a> {
     pub edge_distance_parameters: Option<&'a [Real]>,
 }
 
+fn selection_candidate(
+    document: &Document,
+    object: &viboceros_document::Object,
+    preview: Option<ObjectSelectionFilter>,
+) -> bool {
+    let attributes = object.attributes();
+    if !document
+        .layer(attributes.layer_id())
+        .is_some_and(|layer| layer.is_visible() && !layer.is_locked())
+    {
+        return false;
+    }
+    match preview {
+        Some(filter) => filter.accepts_object(object),
+        None => attributes.is_visible() && !attributes.is_locked(),
+    }
+}
+
 impl Default for ViewportInput<'_> {
     fn default() -> Self {
         Self {
@@ -160,6 +180,8 @@ impl Default for ViewportInput<'_> {
             zoom_window: false,
             zoom_target: None,
             object_filter: Some(ObjectSelectionFilter::Any),
+            selection_preview: None,
+            selection_preview_ids: &[],
             point_cloud_remove_target: None,
             point_cloud_highlights: &[],
             preview_curve: None,
@@ -571,12 +593,13 @@ impl Viewport {
                 let crossing = is_crossing_selection(start, end);
                 let selection_rect = Rect::from_two_pos(start, end);
                 Some(SelectionWindow {
-                    object_ids: self.objects_in_selection_matching(
+                    object_ids: self.objects_in_selection_matching_preview(
                         rect,
                         selection_rect,
                         crossing,
                         document,
                         object_filter,
+                        input.selection_preview,
                     ),
                     mode: selection_mode(modifiers),
                     crossing,
@@ -629,7 +652,13 @@ impl Viewport {
         let selection_click = if selecting && response.clicked_by(PointerButton::Primary) {
             Some(SelectionClick {
                 object_id: response.interact_pointer_pos().and_then(|pointer| {
-                    self.pick_object_matching(pointer, rect, document, object_filter)
+                    self.pick_object_matching_preview(
+                        pointer,
+                        rect,
+                        document,
+                        object_filter,
+                        input.selection_preview,
+                    )
                 }),
                 mode: selection_mode(modifiers),
             })
@@ -639,7 +668,14 @@ impl Viewport {
 
         painter.rect_filled(rect, 0.0, self.background_color());
         self.paint_grid(&painter, rect);
-        self.paint_objects(&painter, rect, document, viewport_index);
+        self.paint_objects(
+            &painter,
+            rect,
+            document,
+            viewport_index,
+            input.selection_preview,
+            input.selection_preview_ids,
+        );
         if let Some(target) = input.point_cloud_remove_target
             && let Some(object) = document.object(target)
             && let Geometry::PointCloud(cloud) = object.geometry()

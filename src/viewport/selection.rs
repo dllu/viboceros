@@ -144,6 +144,7 @@ impl Viewport {
         self.pick_object_matching(pointer, rect, document, ObjectSelectionFilter::Any)
     }
 
+    #[cfg(test)]
     pub(super) fn pick_object_matching(
         &self,
         pointer: Pos2,
@@ -151,9 +152,20 @@ impl Viewport {
         document: &Document,
         filter: ObjectSelectionFilter,
     ) -> Option<ObjectId> {
+        self.pick_object_matching_preview(pointer, rect, document, filter, None)
+    }
+
+    pub(super) fn pick_object_matching_preview(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        document: &Document,
+        filter: ObjectSelectionFilter,
+        preview: Option<ObjectSelectionFilter>,
+    ) -> Option<ObjectId> {
         let mut nearest: Option<(PickHit, ObjectId)> = None;
-        for object in document.selectable_objects() {
-            if !filter.accepts_object(object) {
+        for object in document.objects() {
+            if !filter.accepts_object(object) || !selection_candidate(document, object, preview) {
                 continue;
             }
             let hit = match object.geometry() {
@@ -223,6 +235,7 @@ impl Viewport {
         )
     }
 
+    #[cfg(test)]
     pub(super) fn objects_in_selection_matching(
         &self,
         viewport_rect: Rect,
@@ -231,9 +244,30 @@ impl Viewport {
         document: &Document,
         filter: ObjectSelectionFilter,
     ) -> Vec<ObjectId> {
+        self.objects_in_selection_matching_preview(
+            viewport_rect,
+            selection,
+            crossing,
+            document,
+            filter,
+            None,
+        )
+    }
+
+    pub(super) fn objects_in_selection_matching_preview(
+        &self,
+        viewport_rect: Rect,
+        selection: Rect,
+        crossing: bool,
+        document: &Document,
+        filter: ObjectSelectionFilter,
+        preview: Option<ObjectSelectionFilter>,
+    ) -> Vec<ObjectId> {
         document
-            .selectable_objects()
-            .filter(|object| filter.accepts_object(object))
+            .objects()
+            .filter(|object| {
+                filter.accepts_object(object) && selection_candidate(document, object, preview)
+            })
             .filter_map(|object| {
                 let display = self
                     .display_cache
@@ -657,6 +691,62 @@ mod tests {
         let start = std::time::Instant::now();
         assert_eq!(view.pick_object(rect.center(), rect, &document), first);
         eprintln!("20k overlapping points, click pick: {:?}", start.elapsed());
+    }
+
+    #[test]
+    fn hidden_and_locked_preview_pick_only_eligible_objects() {
+        let view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        let mut document = Document::default();
+        let point = Point3::try_new(0., 0., 0.).unwrap();
+        let visible = document.add_geometry(Geometry::Point(point)).unwrap();
+        let hidden = document.add_geometry(Geometry::Point(point)).unwrap();
+        let locked = document.add_geometry(Geometry::Point(point)).unwrap();
+        let hidden_on_hidden_layer = document.add_geometry(Geometry::Point(point)).unwrap();
+        let locked_on_locked_layer = document.add_geometry(Geometry::Point(point)).unwrap();
+        document.set_objects_visibility([hidden], false).unwrap();
+        document.set_objects_locked([locked], true).unwrap();
+        let invisible_layer = document.add_layer("invisible", ColorRgb::BLACK).unwrap();
+        document
+            .set_objects_layer([hidden_on_hidden_layer], invisible_layer)
+            .unwrap();
+        document
+            .set_objects_visibility([hidden_on_hidden_layer], false)
+            .unwrap();
+        document
+            .set_layer_visibility(invisible_layer, false)
+            .unwrap();
+        let locked_layer = document.add_layer("locked", ColorRgb::BLACK).unwrap();
+        document
+            .set_objects_layer([locked_on_locked_layer], locked_layer)
+            .unwrap();
+        document
+            .set_objects_locked([locked_on_locked_layer], true)
+            .unwrap();
+        document.set_layer_locked(locked_layer, true).unwrap();
+        let pointer = view.project(point, rect).unwrap();
+        let window = Rect::from_center_size(pointer, Vec2::splat(20.));
+        assert_eq!(view.pick_object(pointer, rect, &document), Some(visible));
+        for (filter, expected) in [
+            (ObjectSelectionFilter::HiddenObjects, hidden),
+            (ObjectSelectionFilter::LockedObjects, locked),
+        ] {
+            assert_eq!(
+                view.pick_object_matching_preview(pointer, rect, &document, filter, Some(filter)),
+                Some(expected)
+            );
+            assert_eq!(
+                view.objects_in_selection_matching_preview(
+                    rect,
+                    window,
+                    false,
+                    &document,
+                    filter,
+                    Some(filter)
+                ),
+                [expected]
+            );
+        }
     }
 
     #[test]

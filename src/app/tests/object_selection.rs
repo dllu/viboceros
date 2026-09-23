@@ -3,6 +3,151 @@ use crate::app::object_selection::ObjectPromptPhase;
 use viboceros_document::SelectionMode;
 
 #[test]
+fn show_selected_prompt_preserves_selection_and_supports_cancel_and_undo() {
+    let mut app = test_app();
+    for x in 0..3 {
+        enter(&mut app, &format!("Point {x},0,0"));
+    }
+    let ids = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    app.document
+        .set_objects_visibility([ids[0], ids[1]], false)
+        .unwrap();
+    app.document
+        .select_object(ids[2], SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "ShowSelected");
+    assert_eq!(
+        app.viewport_object_filter(),
+        Some(viboceros_command::ObjectSelectionFilter::HiddenObjects)
+    );
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(ids[0]),
+        mode: SelectionMode::Add,
+    });
+    assert!(app.document.is_selected(ids[2]));
+    assert!(
+        !app.document
+            .object(ids[0])
+            .unwrap()
+            .attributes()
+            .is_visible()
+    );
+    app.cancel_interactive_command(true);
+    assert!(app.document.is_selected(ids[2]));
+    assert!(
+        !app.document
+            .object(ids[0])
+            .unwrap()
+            .attributes()
+            .is_visible()
+    );
+    enter(&mut app, "ShowSelected");
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(ids[1]),
+        mode: SelectionMode::Add,
+    });
+    enter(&mut app, "");
+    assert!(app.object_prompt.is_none());
+    assert!(
+        app.document
+            .object(ids[1])
+            .unwrap()
+            .attributes()
+            .is_visible()
+    );
+    assert!(
+        !app.document
+            .object(ids[0])
+            .unwrap()
+            .attributes()
+            .is_visible()
+    );
+    assert!(app.document.is_selected(ids[2]));
+    enter(&mut app, "Undo");
+    assert!(
+        !app.document
+            .object(ids[1])
+            .unwrap()
+            .attributes()
+            .is_visible()
+    );
+}
+
+#[test]
+fn unlock_selected_prompt_filters_picks_and_supports_selall_selnone() {
+    let mut app = test_app();
+    for x in 0..3 {
+        enter(&mut app, &format!("Point {x},0,0"));
+    }
+    let ids = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    app.document
+        .set_objects_locked([ids[0], ids[1]], true)
+        .unwrap();
+    enter(&mut app, "UnlockSelected");
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(ids[2]),
+        mode: SelectionMode::Add,
+    });
+    assert!(
+        app.object_prompt
+            .as_ref()
+            .unwrap()
+            .special_selection
+            .as_ref()
+            .unwrap()
+            .is_empty()
+    );
+    enter(&mut app, "SelAll");
+    assert_eq!(
+        app.object_prompt
+            .as_ref()
+            .unwrap()
+            .special_selection
+            .as_ref()
+            .unwrap()
+            .len(),
+        2
+    );
+    enter(&mut app, "SelNone");
+    assert!(
+        app.object_prompt
+            .as_ref()
+            .unwrap()
+            .special_selection
+            .as_ref()
+            .unwrap()
+            .is_empty()
+    );
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(ids[0]),
+        mode: SelectionMode::Add,
+    });
+    enter(&mut app, "");
+    assert!(
+        !app.document
+            .object(ids[0])
+            .unwrap()
+            .attributes()
+            .is_locked()
+    );
+    assert!(
+        app.document
+            .object(ids[1])
+            .unwrap()
+            .attributes()
+            .is_locked()
+    );
+}
+
+#[test]
 fn flip_prompt_reverses_only_supported_group_members_and_releases_only_those_picks() {
     for preselected in [false, true] {
         let mut app = test_app();

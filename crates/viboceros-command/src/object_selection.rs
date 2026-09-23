@@ -25,6 +25,8 @@ pub enum ObjectSelectionFilter {
     PointCloudAddSources,
     PointCloudRemoveTarget,
     PointCloud,
+    HiddenObjects,
+    LockedObjects,
     Area,
     Volume,
 }
@@ -56,6 +58,8 @@ impl ObjectSelectionFilter {
             Self::PointCloudRemoveTarget | Self::PointCloud => {
                 matches!(geometry, Geometry::PointCloud(_))
             }
+            Self::HiddenObjects => !object.attributes().is_visible(),
+            Self::LockedObjects => object.attributes().is_locked(),
             Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
             Self::Curves => geometry.curve_ref().is_some(),
             Self::Join => {

@@ -5394,6 +5394,17 @@ impl eframe::App for VibocerosApp {
         let zoom_window_pending = self.zoom_window_pending;
         let zoom_target = self.zoom_target;
         let object_filter = self.viewport_object_filter();
+        let selection_preview = self
+            .object_prompt
+            .as_ref()
+            .filter(|prompt| prompt.special_selection.is_some())
+            .map(|prompt| prompt.description.filter);
+        let selection_preview_ids = self
+            .object_prompt
+            .as_ref()
+            .and_then(|prompt| prompt.special_selection.as_ref())
+            .map(|ids| ids.iter().copied().collect::<Vec<_>>())
+            .unwrap_or_default();
         let cloud_removal = self
             .object_prompt
             .as_ref()
@@ -5473,6 +5484,8 @@ impl eframe::App for VibocerosApp {
                                             None => None,
                                         },
                                         object_filter,
+                                        selection_preview,
+                                        selection_preview_ids: &selection_preview_ids,
                                         point_cloud_remove_target,
                                         point_cloud_highlights: &point_cloud_highlights,
                                         preview_curve: preview_curve.as_deref(),
