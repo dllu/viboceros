@@ -377,6 +377,36 @@ fn chamfer_option_adds_straight_bridge_at_convex_corner() {
 }
 
 #[test]
+fn chamfer_option_joins_curved_nurbs_corner() {
+    let mut document = Document::default();
+    let source = viboceros_geometry::NurbsCurve::try_new(
+        2,
+        vec![
+            point(0.0, 0.0, 0.0),
+            point(1.0, -0.5, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(2.5, 1.0, 0.0),
+            point(2.0, 2.0, 0.0),
+        ],
+        vec![0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+    )
+    .unwrap();
+    let id = document.add_geometry(Geometry::NurbsCurve(source)).unwrap();
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "Offset 0.2 1,-1,0 Corner=Chamfer")
+        .unwrap();
+    let Geometry::PolyCurve(output) = document.selected_objects().next().unwrap().geometry() else {
+        panic!("chamfered curved NURBS")
+    };
+    assert_eq!(output.segments().len(), 3);
+    assert!(matches!(
+        output.segments()[1],
+        viboceros_geometry::CurveSegment3::Line(_)
+    ));
+}
+
+#[test]
 fn round_option_creates_selected_tangent_polycurve() {
     let mut document = Document::default();
     let source = document

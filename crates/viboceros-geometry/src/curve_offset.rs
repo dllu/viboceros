@@ -12,7 +12,7 @@ use ellipse::{
 };
 use nurbs::{
     linear_nurbs_proxy, nurbs_offset_side, nurbs_region_contains, nurbs_region_inward_sign,
-    nurbs_through_distance, offset_nurbs, offset_nurbs_open_gaps,
+    nurbs_through_distance, offset_nurbs, offset_nurbs_chamfer, offset_nurbs_open_gaps,
 };
 use polycurve::offset_proxy;
 
@@ -372,6 +372,9 @@ impl Curve3 {
                         tolerance,
                         corner,
                     );
+                }
+                if corner == CurveOffsetCornerStyle::Chamfer {
+                    return offset_nurbs_chamfer(curve, distance, plane_normal, tolerance);
                 }
                 Ok(Self::NurbsCurve(offset_nurbs(
                     curve,
@@ -1575,6 +1578,58 @@ mod tests {
     }
 
     #[test]
+    fn curved_nurbs_chamfer_bridges_convex_gap() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let source = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                2,
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(1.0, -0.5, 0.0),
+                    point(2.0, 0.0, 0.0),
+                    point(2.5, 1.0, 0.0),
+                    point(2.0, 2.0, 0.0),
+                ],
+                vec![0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+            )
+            .unwrap(),
+        );
+        let parts = source
+            .try_offset_parts(-0.2, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        assert_eq!(parts.len(), 2);
+        let Curve3::PolyCurve(joined) = source
+            .try_offset_with_corner_style(-0.2, normal, tol, CurveOffsetCornerStyle::Chamfer)
+            .unwrap()
+        else {
+            panic!("curved NURBS chamfer")
+        };
+        assert_eq!(joined.domain(), 0.0..=2.0);
+        assert_eq!(joined.segments().len(), 3);
+        let CurveSegment3::Line(bridge) = &joined.segments()[1] else {
+            panic!("straight corner bridge")
+        };
+        assert!(
+            bridge
+                .start()
+                .distance_to(parts[0].as_ref().end_point().unwrap())
+                .unwrap()
+                <= tol.absolute()
+        );
+        assert!(
+            bridge
+                .end()
+                .distance_to(parts[1].as_ref().start_point().unwrap())
+                .unwrap()
+                <= tol.absolute()
+        );
+    }
+
+    #[test]
     fn curved_polycurve_kink_none_preserves_convex_gap() {
         let tol = Tolerance::DEFAULT;
         let normal = Vector3::try_new(0.0, 0.0, 1.0)
@@ -1593,6 +1648,14 @@ mod tests {
             .try_offset_parts(-0.2, normal, tol, CurveOffsetCornerStyle::None)
             .unwrap();
         assert_eq!(parts.len(), 2);
+        let Curve3::PolyCurve(chamfered) = source
+            .try_offset_with_corner_style(-0.2, normal, tol, CurveOffsetCornerStyle::Chamfer)
+            .unwrap()
+        else {
+            panic!("mixed polycurve chamfer")
+        };
+        assert_eq!(chamfered.segments().len(), 3);
+        assert!(matches!(chamfered.segments()[1], CurveSegment3::Line(_)));
         let [Curve3::NurbsCurve(first), Curve3::NurbsCurve(second)] = parts.as_slice() else {
             panic!("mixed polycurve pieces")
         };
@@ -1946,6 +2009,15 @@ mod tests {
                 .len(),
             4
         );
+        let Curve3::PolyCurve(chamfered) = source
+            .try_offset_with_corner_style(-0.4, normal, tol, CurveOffsetCornerStyle::Chamfer)
+            .unwrap()
+        else {
+            panic!("closed curved chamfer")
+        };
+        assert!(chamfered.is_closed().unwrap());
+        assert_eq!(chamfered.segments().len(), 8);
+        assert_eq!(chamfered.domain(), 0.0..=4.0);
     }
 
     #[test]

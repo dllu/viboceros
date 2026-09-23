@@ -31,6 +31,8 @@ returns separate smooth pieces at convex source kinks and trims adjacent
 offset pieces to their nearest transverse intersection at concave kinks,
 including cyclic joins on closed higher-degree NURBS curves. A closed curve
 with one concave kink trims its offset at the nearest transverse self-crossing.
+`Corner=Chamfer` connects convex gaps with straight segments after those
+concave trims, including on closed curves.
 Uniform-weight degree-one NURBS with multiple spans use their exact polyline
 representation, retaining each knot parameter and supporting all four corner
 styles, including closed inward and outward offsets.
@@ -80,8 +82,8 @@ staged before the document changes.
 `OutputLayer=Current` is the default; `OutputLayer=Input` uses each source's
 layer. Both choices create fresh object attributes. The command stages every
 result before changing the document, so an unsupported or degenerate selected
-curve leaves the document unchanged. Connected corner styles at curved NURBS
-kinks, smooth corners,
+curve leaves the document unchanged. Sharp and round corner styles at curved
+NURBS kinks, smooth corners,
 trim, cap, and construction-plane overrides, remain
 to be implemented.
 

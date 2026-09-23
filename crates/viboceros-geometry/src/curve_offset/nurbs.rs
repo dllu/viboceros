@@ -1,9 +1,9 @@
 //! Tolerance-checked cubic approximations of smooth planar NURBS offsets.
 
 use crate::{
-    Brep, Curve3, CurveCurveIntersectionEvent, CurveSegment3, GeometryError, NurbsCurve,
-    ParameterSide, Point3, PolyCurve3, Polyline3, Real, Tolerance, UnitVector3, Vector3,
-    WeightedPoint3, nurbs::curve_points_coincident,
+    Brep, Curve3, CurveCurveIntersectionEvent, CurveSegment3, GeometryError, LineSegment,
+    NurbsCurve, ParameterSide, Point3, PolyCurve3, Polyline3, Real, Tolerance, UnitVector3,
+    Vector3, WeightedPoint3, nurbs::curve_points_coincident,
 };
 
 const MAX_OFFSET_SPANS: usize = 8_192;
@@ -473,6 +473,56 @@ pub(super) fn offset_nurbs_open_gaps(
         group_start = index + 1;
     }
     Ok(results)
+}
+
+/// Join the certified smooth pieces with straight chords across convex gaps.
+/// The `None` result already contains every concave trim, in source order.
+pub(super) fn offset_nurbs_chamfer(
+    curve: &NurbsCurve,
+    distance: Real,
+    fallback: UnitVector3,
+    tolerance: Tolerance,
+) -> Result<Curve3, GeometryError> {
+    let mut pieces = offset_nurbs_open_gaps(curve, distance, fallback, tolerance)?;
+    let closed = curve.is_closed()?;
+    if pieces.len() == 1 && (!closed || pieces[0].as_ref().is_closed()?) {
+        return Ok(pieces.remove(0));
+    }
+    let starts = pieces
+        .iter()
+        .map(|piece| piece.as_ref().start_point())
+        .collect::<Result<Vec<_>, _>>()?;
+    let ends = pieces
+        .iter()
+        .map(|piece| piece.as_ref().end_point())
+        .collect::<Result<Vec<_>, _>>()?;
+    let start = if closed {
+        match &pieces[0] {
+            Curve3::NurbsCurve(part) => *part.domain().start(),
+            Curve3::PolyCurve(part) => *part.domain().start(),
+            _ => unreachable!("NURBS offset pieces are NURBS or polycurves"),
+        }
+    } else {
+        *curve.domain().start()
+    };
+    let span = *curve.domain().end() - *curve.domain().start();
+    let end = start + span;
+    crate::require_finite([end], "chamfered NURBS offset parameter")?;
+    let mut segments = Vec::new();
+    for (index, piece) in pieces.iter().enumerate() {
+        segments.extend(piece.to_polycurve()?.segments().iter().cloned());
+        if index + 1 < pieces.len() || closed {
+            let next = (index + 1) % pieces.len();
+            segments.push(CurveSegment3::Line(LineSegment::try_new(
+                ends[index],
+                starts[next],
+                tolerance,
+            )?));
+        }
+    }
+    Ok(Curve3::PolyCurve(
+        PolyCurve3::try_new(segments)?.try_reparameterized(start..=end)?,
+    ))
 }
 
 #[allow(clippy::too_many_arguments)]
