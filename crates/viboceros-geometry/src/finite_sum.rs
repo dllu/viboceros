@@ -67,6 +67,15 @@ impl FiniteSum {
         scalar(&(self.exact_total() * crate::exact_scalar::rational(scale)))
     }
 
+    /// Applies a squared length scale to an area sum before final rounding.
+    /// The intermediate scale square and unscaled area total need not fit in
+    /// binary64.
+    pub fn scaled_total_squared(&self, scale: Real) -> Result<Real, GeometryError> {
+        require_finite([scale], "area scale")?;
+        let scale = crate::exact_scalar::rational(scale);
+        scalar(&(self.exact_total() * &scale * &scale))
+    }
+
     /// Arithmetic mean with one final nearest-even rounding. The exact total
     /// need not fit in binary64. An empty accumulator has no mean. Unlike
     /// `total`, this final division uses temporary arbitrary-precision integers.
@@ -105,6 +114,15 @@ mod tests {
         sum.add(f64::MAX).unwrap();
         assert!(sum.total().is_err());
         assert_eq!(sum.scaled_total(0.25).unwrap(), f64::MAX * 0.5);
+        assert_eq!(sum.scaled_total_squared(0.5).unwrap(), f64::MAX * 0.5);
+
+        let mut tiny_area = FiniteSum::default();
+        tiny_area.add(1e-300).unwrap();
+        assert!((tiny_area.scaled_total_squared(1e200).unwrap() / 1e100 - 1.0).abs() < 1e-15);
+
+        let mut large_area = FiniteSum::default();
+        large_area.add(1e300).unwrap();
+        assert!((large_area.scaled_total_squared(1e-200).unwrap() / 1e-100 - 1.0).abs() < 1e-15);
     }
 
     #[test]

@@ -17,7 +17,7 @@ pub(super) struct PendingObjectCommand {
     pub(super) phase: ObjectPromptPhase,
     pub(super) postselected: bool,
     pub(super) subcurve_measurement: bool,
-    pub(super) length_display_units: Option<&'static str>,
+    pub(super) measurement_display_units: Option<&'static str>,
 }
 
 impl PendingObjectCommand {
@@ -129,7 +129,7 @@ impl VibocerosApp {
                     .trim_start_matches('_')
                     .eq_ignore_ascii_case("SubCrv")
             });
-        let length_display_units = (description.command == "Length")
+        let measurement_display_units = matches!(description.command, "Length" | "Area")
             .then(|| {
                 input
                     .split_whitespace()
@@ -171,7 +171,7 @@ impl VibocerosApp {
                         phase: ObjectPromptPhase::Options,
                         postselected: false,
                         subcurve_measurement,
-                        length_display_units,
+                        measurement_display_units,
                     });
                 }
                 Ok(None) => return false,
@@ -195,7 +195,7 @@ impl VibocerosApp {
                 phase: ObjectPromptPhase::Selecting,
                 postselected: true,
                 subcurve_measurement,
-                length_display_units,
+                measurement_display_units,
             });
         }
         self.command_input.clear();
@@ -291,7 +291,7 @@ impl VibocerosApp {
             if pending.subcurve_measurement {
                 command.push_str(" SubCrv");
             }
-            if let Some(units) = pending.length_display_units {
+            if let Some(units) = pending.measurement_display_units {
                 command.push_str(&format!(" Units={units}"));
             }
             if pending.subcurve_measurement && self.domain_has_one_curve() {
@@ -352,17 +352,19 @@ impl VibocerosApp {
             return true;
         }
         let normalized = input.trim_start_matches(['_', '-']).to_ascii_lowercase();
-        if pending.description.command == "Length"
+        if matches!(pending.description.command, "Length" | "Area")
             && pending.phase == ObjectPromptPhase::Selecting
             && let Some((name, value)) = normalized.split_once('=')
             && name.eq_ignore_ascii_case("units")
         {
             match viboceros_command::distance_display_units(value) {
                 Ok(units) => {
-                    pending.length_display_units = units;
+                    let name = pending.description.command;
+                    pending.measurement_display_units = units;
                     self.object_prompt = Some(pending);
                     self.push_log(format!(
-                        "Length display units: {}",
+                        "{} display units: {}",
+                        name,
                         units.unwrap_or("Model_Units")
                     ));
                 }

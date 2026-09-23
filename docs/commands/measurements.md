@@ -170,6 +170,18 @@ exactly before display scaling, so a converted total can be reported even if
 the unconverted total exceeds binary64's range. Rhino's `SelChain` and
 mesh/SubD edge length inputs remain pending.
 
+Enter `Area` without preselection to pick supported objects, then press Enter.
+`Area Units=Centimeters` reports square centimetres without changing model
+units; `Units=Model_Units` uses the model's units. The option can be set at
+command startup or during object selection. The source model must have physical
+units for conversion. Areas are accumulated exactly before the length-unit
+ratio is squared and rounded, so an overflowing intermediate square or model
+total can still yield a finite converted area. Unrepresentable display results
+are rejected. The report appends the target unit with a `²` suffix. Rhino
+documents Area's [Units option](https://docs.mcneel.com/rhino/8/help/en-us/commands/area.htm)
+for postselection; typed options with a preselected object are a native
+scripting convenience. Hatch, extrusion, and SubD inputs remain pending.
+
 Totals use round-trip decimal digits, rather than a fixed twelve decimal places.
 Nonzero magnitudes below `1e-6` or at least `1e12` use scientific notation; zero
 is displayed as `0`. Small valid measurements therefore remain visible, and

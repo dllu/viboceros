@@ -5553,6 +5553,7 @@ fn point_is_near_axis(
 mod tests {
     mod align;
     mod angle;
+    mod area;
     mod bezier_selection;
     mod command_line;
     mod construction_plane;

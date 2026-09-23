@@ -61,6 +61,45 @@ fn area_measures_selected_nurbs_and_polycurves_without_modifying_the_document() 
 }
 
 #[test]
+fn area_display_units_square_the_conversion_without_changing_the_model() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry
+        .execute(&mut document, "Units Meters Scale=No")
+        .unwrap();
+    registry
+        .execute(&mut document, "Rectangle 0,0 3,4")
+        .unwrap();
+    registry.execute(&mut document, "SelAll").unwrap();
+    let before = format!("{document:?}");
+    assert_eq!(
+        registry.execute(&mut document, "Area Units=cm").unwrap(),
+        "Measured 1 object(s): total area 120000 Centimetres²"
+    );
+    assert_eq!(
+        registry
+            .execute(&mut document, "Area Units=Model_Units")
+            .unwrap(),
+        "Measured 1 object(s): total area 12"
+    );
+    for input in [
+        "Area Units=Unset",
+        "Area Units=Unitless",
+        "Area Units=unknown",
+        "Area Units=cm Units=m",
+    ] {
+        assert!(registry.execute(&mut document, input).is_err(), "{input}");
+        assert_eq!(format!("{document:?}"), before);
+    }
+    registry
+        .execute(&mut document, "Units None Scale=No")
+        .unwrap();
+    let before = format!("{document:?}");
+    assert!(registry.execute(&mut document, "Area Units=cm").is_err());
+    assert_eq!(format!("{document:?}"), before);
+}
+
+#[test]
 fn measurement_output_preserves_small_nonzero_geometry() {
     let mut document = Document::new(Tolerance::try_new(1e-20, 1e-12, 1e-10).unwrap());
     let registry = CommandRegistry::with_builtins();

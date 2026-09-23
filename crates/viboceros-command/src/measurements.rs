@@ -41,19 +41,21 @@ pub(super) struct LengthCommand;
 const LENGTH_USAGE: &str =
     "Length [SubCrv Parameter=start,end|SubCrv start_point end_point] [Units=name]";
 
-fn length_display_option(argument: &str) -> Result<Option<LengthUnitSystem>, CommandError> {
-    let (name, value) = argument
-        .split_once('=')
-        .ok_or(CommandError::Usage(LENGTH_USAGE))?;
+fn measurement_display_option(
+    argument: &str,
+    usage: &'static str,
+) -> Result<Option<LengthUnitSystem>, CommandError> {
+    let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(usage))?;
     if !option_name_eq(name, "Units") {
-        return Err(CommandError::Usage(LENGTH_USAGE));
+        return Err(CommandError::Usage(usage));
     }
     Ok(distance_display_units(value)?.and_then(crate::model_units::parse_units))
 }
 
-fn length_display_scale(
+fn measurement_display_scale(
     document: &Document,
     target: Option<&LengthUnitSystem>,
+    source_units_error: &'static str,
 ) -> Result<Real, CommandError> {
     let Some(target) = target else {
         return Ok(1.0);
@@ -64,9 +66,7 @@ fn length_display_scale(
         .map_err(viboceros_document::DocumentError::from)?
         .is_none()
     {
-        return Err(CommandError::Usage(
-            "Length display conversion requires physical source units",
-        ));
+        return Err(CommandError::Usage(source_units_error));
     }
     Ok(document
         .units()
@@ -108,11 +108,11 @@ impl Command for LengthCommand {
             [] => true,
             [option] if subcurve => true,
             [option] => {
-                length_display_option(option)?;
+                measurement_display_option(option, LENGTH_USAGE)?;
                 true
             }
             [_, units] if subcurve => {
-                length_display_option(units)?;
+                measurement_display_option(units, LENGTH_USAGE)?;
                 true
             }
             _ => false,
@@ -136,12 +136,16 @@ impl Command for LengthCommand {
             {
                 (
                     &arguments[..arguments.len() - 1],
-                    length_display_option(last)?,
+                    measurement_display_option(last, LENGTH_USAGE)?,
                 )
             }
             _ => (arguments, None),
         };
-        let scale = length_display_scale(document, target.as_ref())?;
+        let scale = measurement_display_scale(
+            document,
+            target.as_ref(),
+            "Length display conversion requires physical source units",
+        )?;
         if arguments
             .first()
             .is_some_and(|argument| option_name_eq(argument, "SubCrv"))
@@ -192,6 +196,7 @@ impl Command for LengthCommand {
 }
 
 pub(super) struct AreaCommand;
+const AREA_USAGE: &str = "Area [Units=name]";
 
 impl Command for AreaCommand {
     fn name(&self) -> &'static str {
@@ -202,10 +207,41 @@ impl Command for AreaCommand {
         false
     }
 
+    fn object_selection_prompt(
+        &self,
+        arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        let eligible = match arguments {
+            [] => true,
+            [option] => {
+                measurement_display_option(option, AREA_USAGE)?;
+                true
+            }
+            _ => false,
+        };
+        Ok(eligible.then_some(ObjectSelectionPrompt {
+            command: "Area",
+            filter: ObjectSelectionFilter::Area,
+            workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
+            options: vec![],
+            menus: vec![],
+            choices: vec![],
+        }))
+    }
+
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        require_consumed(arguments, 0, "Area")?;
-        let (count, total) =
-            selected_measurement(document, |geometry, tolerance| match geometry {
+        let target = match arguments {
+            [] => None,
+            [option] => measurement_display_option(option, AREA_USAGE)?,
+            _ => return Err(CommandError::Usage(AREA_USAGE)),
+        };
+        let scale = measurement_display_scale(
+            document,
+            target.as_ref(),
+            "Area display conversion requires physical source units",
+        )?;
+        let (count, sum) =
+            accumulate_selected_measurement(document, |geometry, tolerance| match geometry {
                 Geometry::NurbsSurface(surface) => Ok(surface.area(tolerance)?),
                 Geometry::Brep(brep) => Ok(brep.area(tolerance)?),
                 Geometry::Mesh(mesh) => Ok(mesh.area()?),
@@ -214,11 +250,32 @@ impl Command for AreaCommand {
                     .planar_area(tolerance)
                     .map_err(CommandError::from),
             })?;
-        let total = format_measurement(total);
-        Ok(format!("Measured {count} object(s): total area {total}"))
+        let total = if scale == 1.0 {
+            sum.total()?
+        } else {
+            sum.scaled_total_squared(scale).map_err(|_| {
+                viboceros_document::DocumentError::from(
+                    viboceros_geometry::UnitError::UnrepresentableScale,
+                )
+            })?
+        };
+        if total == 0.0 && sum.total()? != 0.0 {
+            return Err(viboceros_document::DocumentError::from(
+                viboceros_geometry::UnitError::UnrepresentableScale,
+            )
+            .into());
+        }
+        Ok(format!(
+            "Measured {count} object(s): total area {}{}",
+            format_measurement(total),
+            target
+                .map(|unit| format!(" {}²", unit.name()))
+                .unwrap_or_default()
+        ))
     }
 }
 
+#[cfg(test)]
 fn selected_measurement(
     document: &Document,
     measure: impl FnMut(&Geometry, Tolerance) -> Result<Real, CommandError>,
