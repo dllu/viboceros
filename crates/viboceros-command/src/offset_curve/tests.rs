@@ -416,6 +416,14 @@ fn chamfer_option_joins_curved_nurbs_corner() {
         rounded.segments()[1],
         viboceros_geometry::CurveSegment3::Arc(_)
     ));
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "Offset 0.2 1,-1,0 Corner=Sharp")
+        .unwrap();
+    let Geometry::PolyCurve(sharp) = document.selected_objects().next().unwrap().geometry() else {
+        panic!("sharp curved NURBS")
+    };
+    assert_eq!(sharp.segments().len(), 2);
 }
 
 #[test]

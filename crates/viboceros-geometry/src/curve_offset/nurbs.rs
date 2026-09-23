@@ -11,7 +11,9 @@ const CHECKS_PER_SPAN: usize = 15;
 const MAX_REGION_PIECES: usize = 8_192;
 
 mod closed_offset;
+mod sharp_offset;
 use closed_offset::offset_nurbs_closed_gaps;
+pub(super) use sharp_offset::offset_nurbs_sharp;
 
 /// Degree-one, uniform-weight spans are exactly affine in their native knot
 /// intervals. Preserve every knot as a polyline vertex for corner handling.

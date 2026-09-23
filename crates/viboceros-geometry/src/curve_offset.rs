@@ -13,7 +13,7 @@ use ellipse::{
 use nurbs::{
     linear_nurbs_proxy, nurbs_offset_side, nurbs_region_contains, nurbs_region_inward_sign,
     nurbs_through_distance, offset_nurbs, offset_nurbs_chamfer, offset_nurbs_open_gaps,
-    offset_nurbs_round,
+    offset_nurbs_round, offset_nurbs_sharp,
 };
 use polycurve::offset_proxy;
 
@@ -379,6 +379,9 @@ impl Curve3 {
                 }
                 if corner == CurveOffsetCornerStyle::Round {
                     return offset_nurbs_round(curve, distance, plane_normal, tolerance);
+                }
+                if corner == CurveOffsetCornerStyle::Sharp {
+                    return offset_nurbs_sharp(curve, distance, plane_normal, tolerance);
                 }
                 Ok(Self::NurbsCurve(offset_nurbs(
                     curve,
@@ -1643,6 +1646,34 @@ mod tests {
         };
         assert!(arc.center().distance_to(point(2.0, 0.0, 0.0)).unwrap() <= tol.absolute());
         assert!((arc.radius() - 0.2).abs() <= tol.absolute());
+        let Curve3::PolyCurve(sharp) = source
+            .try_offset_with_corner_style(-0.2, normal, tol, CurveOffsetCornerStyle::Sharp)
+            .unwrap()
+        else {
+            panic!("curved NURBS sharp join")
+        };
+        assert_eq!(sharp.domain(), 0.0..=2.0);
+        assert_eq!(sharp.segments().len(), 2);
+        let tip = sharp.segments()[0]
+            .evaluate(*sharp.segments()[0].domain().end())
+            .unwrap();
+        assert!(
+            tip.distance_to(parts[0].as_ref().end_point().unwrap())
+                .unwrap()
+                > tol.absolute()
+        );
+        for (index, station) in [(0, 0.5), (1, 1.5)] {
+            let Curve3::NurbsCurve(original) = &parts[index] else {
+                unreachable!()
+            };
+            let extended = sharp.segments()[index].evaluate(station).unwrap();
+            assert!(
+                extended
+                    .distance_to(original.evaluate(station).unwrap())
+                    .unwrap()
+                    <= tol.absolute()
+            );
+        }
     }
 
     #[test]
@@ -1940,6 +1971,15 @@ mod tests {
         assert!(relocated_rounded.is_closed().unwrap());
         assert_eq!(relocated_rounded.domain(), 1.0..=5.0);
         assert_eq!(relocated_rounded.segments().len(), 8);
+        let Curve3::PolyCurve(relocated_sharp) = relocated
+            .try_offset_with_corner_style(-0.5, normal, tol, CurveOffsetCornerStyle::Sharp)
+            .unwrap()
+        else {
+            panic!("smooth seam sharp joins")
+        };
+        assert!(relocated_sharp.is_closed().unwrap());
+        assert_eq!(relocated_sharp.domain(), 1.0..=5.0);
+        assert_eq!(relocated_sharp.segments().len(), 4);
     }
 
     #[test]
@@ -1992,6 +2032,16 @@ mod tests {
                 .count(),
             1
         );
+        for distance in [0.2, -0.2] {
+            let Curve3::PolyCurve(sharp) = source
+                .try_offset_with_corner_style(distance, normal, tol, CurveOffsetCornerStyle::Sharp)
+                .unwrap()
+            else {
+                panic!("mixed corner sharp join")
+            };
+            assert!(sharp.is_closed().unwrap());
+            assert_eq!(sharp.segments().len(), 6);
+        }
     }
 
     #[test]
@@ -2059,6 +2109,14 @@ mod tests {
                 .count(),
             4
         );
+        let Curve3::PolyCurve(sharp) = source
+            .try_offset_with_corner_style(-0.4, normal, tol, CurveOffsetCornerStyle::Sharp)
+            .unwrap()
+        else {
+            panic!("closed curved sharp joins")
+        };
+        assert!(sharp.is_closed().unwrap());
+        assert_eq!(sharp.segments().len(), 4);
     }
 
     #[test]
@@ -2106,6 +2164,13 @@ mod tests {
         assert!(rounded_outer.is_closed().unwrap());
         assert_eq!(rounded_outer.segments().len(), 2);
         assert!(matches!(rounded_outer.segments()[1], CurveSegment3::Arc(_)));
+        let Curve3::PolyCurve(sharp_outer) = source
+            .try_offset_with_corner_style(-0.2, normal, tol, CurveOffsetCornerStyle::Sharp)
+            .unwrap()
+        else {
+            panic!("single-corner sharp closure")
+        };
+        assert!(sharp_outer.is_closed().unwrap());
         let Curve3::NurbsCurve(loop_curve) = source else {
             unreachable!()
         };
