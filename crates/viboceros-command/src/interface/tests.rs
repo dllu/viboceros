@@ -201,13 +201,15 @@ fn zoom_extents_is_a_validated_host_action() {
         current.apply(InterfaceCommand::ZoomSelected).unwrap();
         assert_eq!(current, original);
     }
+    for input in ["Zoom", "Zoom Window", "'_Zoom _Window"] {
+        assert_eq!(parse(input), Some(Ok(InterfaceCommand::ZoomWindow)));
+    }
     for input in [
-        "Zoom",
         "Zoom Extents extra",
         "ZE extra",
         "ZS extra",
         "Zoom Selected extra",
-        "Zoom Window",
+        "Zoom Window extra",
     ] {
         assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
     }

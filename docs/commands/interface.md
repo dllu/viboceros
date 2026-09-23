@@ -11,6 +11,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | Command | Behavior |
 | --- | --- |
 | `Zoom Extents` / `ZE` | Fit visible geometry in the active viewport; [details and limits](zoom.md). |
+| `Zoom` / `Zoom Window` | Drag a viewport rectangle to zoom; Esc or right-click cancels. |
 | `Zoom Selected` / `ZS` | Fit visible selected geometry without changing selection or model history. |
 | `Zoom Factor <number>` | Scale the active view about its center; positive factors above 1 zoom in and below 1 zoom out. |
 | `Zoom In` / `Zoom Out` | Take one step of the View zoom scale factor about the active viewport center. |
@@ -49,7 +50,8 @@ The line still starts at the accepted origin. Interface changes do not consume
 model undo steps or destroy redo history. `DisableOsnap` and `SnapToMeshes` use **Enable/Disable**,
 not On/Off; the toolbar's Osnap indicator is lit when snapping is enabled.
 
-F9 toggles grid snap; F4 toggles object snaps. Ctrl/Cmd+Alt+W, S, and G select
+F9 toggles grid snap; F4 toggles object snaps. Ctrl/Cmd+W starts Zoom Window.
+Ctrl/Cmd+Alt+W, S, and G select
 Wireframe, Shaded, and Ghosted in the active viewport. Ctrl/Cmd+Shift+E zooms to
 active-view extents; Ctrl/Cmd+Alt+E zooms all viewports to extents.
 These shortcuts work while

@@ -450,6 +450,62 @@ impl Viewport {
         self.zoom_factor(scale)
     }
 
+    /// Fit a screen-space rectangle while keeping its center on the target-depth
+    /// plane at the center of the viewport. Commit only after all values check.
+    pub(crate) fn zoom_window(&mut self, window: Rect, rect: Rect) -> Result<bool, &'static str> {
+        if !rect.is_finite()
+            || !rect.is_positive()
+            || !window.is_finite()
+            || window.width() < 2.0
+            || window.height() < 2.0
+            || !rect.contains_rect(window)
+        {
+            return Err("invalid zoom window or viewport coordinates");
+        }
+        let factor = (Real::from(rect.width()) / Real::from(window.width()))
+            .min(Real::from(rect.height()) / Real::from(window.height()));
+        if !factor.is_finite() || factor <= 0.0 {
+            return Err("invalid zoom window or viewport coordinates");
+        }
+        let center = window.center();
+        let viewport_center = rect.center();
+        if self.kind == ViewKind::Perspective {
+            let old_distance = self.perspective_camera_distance;
+            let new_distance = (old_distance / factor).clamp(
+                MIN_PERSPECTIVE_CAMERA_DISTANCE,
+                MAX_PERSPECTIVE_CAMERA_DISTANCE,
+            );
+            let focal = self.perspective_focal_length_pixels(rect);
+            let (right, up, _) = self.perspective_basis();
+            let horizontal = (Real::from(center.x) - Real::from(viewport_center.x)) / focal;
+            let vertical = (Real::from(viewport_center.y) - Real::from(center.y)) / focal;
+            let target = self.target + (right * horizontal + up * vertical) * old_distance;
+            if !target.iter().all(|value| value.is_finite()) {
+                return Err("zoom exceeds the model-coordinate range");
+            }
+            let changed = target != self.target || new_distance != old_distance;
+            self.target = target;
+            self.perspective_camera_distance = new_distance;
+            return Ok(changed);
+        }
+        let old_scale = self.pixels_per_unit;
+        let new_scale =
+            (Real::from(old_scale) * factor).clamp(Real::from(f32::MIN_POSITIVE), 2_000.0) as f32;
+        let actual_factor = Real::from(new_scale) / Real::from(old_scale);
+        let pan_x = (Real::from(viewport_center.x) + Real::from(self.pan.x) - Real::from(center.x))
+            * actual_factor;
+        let pan_y = (Real::from(viewport_center.y) + Real::from(self.pan.y) - Real::from(center.y))
+            * actual_factor;
+        let (Some(x), Some(y)) = (real_to_gpu(pan_x), real_to_gpu(pan_y)) else {
+            return Err("zoom exceeds the screen-coordinate range");
+        };
+        let pan = Vec2::new(x, y);
+        let changed = pan != self.pan || new_scale != old_scale;
+        self.pan = pan;
+        self.pixels_per_unit = new_scale;
+        Ok(changed)
+    }
+
     fn zoom_by_factor(
         &mut self,
         factor: Real,
@@ -664,6 +720,62 @@ fn matrix_to_gpu(matrix: NaMatrix4<Real>) -> [[f32; 4]; 4] {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn zoom_window_centers_the_chosen_region_in_each_view() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let window = Rect::from_min_max(Pos2::new(100.0, 100.0), Pos2::new(300.0, 300.0));
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let mut view = Viewport::new(kind);
+            let old_scale = view.pixels_per_unit;
+            let old_distance = view.perspective_camera_distance;
+            let point = if kind == ViewKind::Perspective {
+                let (right, up, _) = view.perspective_basis();
+                let focal = view.perspective_focal_length_pixels(rect);
+                let target = view.target
+                    + right
+                        * (Real::from(window.center().x - rect.center().x) / focal * old_distance)
+                    + up * (Real::from(rect.center().y - window.center().y) / focal * old_distance);
+                Point3::try_new(target.x, target.y, target.z).unwrap()
+            } else {
+                view.unproject(window.center(), rect, 0.0).unwrap()
+            };
+            let before = view.project(point, rect).unwrap();
+            assert!((before - window.center()).length() < 0.01);
+            assert_eq!(view.zoom_window(window, rect), Ok(true));
+            assert!((view.project(point, rect).unwrap() - rect.center()).length() < 0.01);
+            if kind == ViewKind::Perspective {
+                assert!((view.perspective_camera_distance - old_distance / 3.0).abs() < 1e-10);
+            } else {
+                assert!((view.pixels_per_unit - old_scale * 3.0).abs() < 1e-4);
+            }
+        }
+    }
+
+    #[test]
+    fn invalid_zoom_window_leaves_camera_unchanged() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut view = Viewport::new(ViewKind::Perspective);
+        let before = (view.target, view.perspective_camera_distance);
+        for window in [
+            Rect::from_min_max(Pos2::new(100.0, 100.0), Pos2::new(101.0, 200.0)),
+            Rect::from_min_max(Pos2::new(-10.0, 100.0), Pos2::new(300.0, 300.0)),
+        ] {
+            assert!(view.zoom_window(window, rect).is_err());
+            assert_eq!((view.target, view.perspective_camera_distance), before);
+        }
+        let mut parallel = Viewport::new(ViewKind::Top);
+        parallel.pan.x = f32::MAX;
+        let before = (parallel.pan, parallel.pixels_per_unit);
+        let window = Rect::from_min_max(Pos2::new(100.0, 100.0), Pos2::new(300.0, 300.0));
+        assert!(parallel.zoom_window(window, rect).is_err());
+        assert_eq!((parallel.pan, parallel.pixels_per_unit), before);
+    }
 
     #[test]
     fn parallel_depth_encoding_handles_singletons_subnormals_and_overflowing_spans() {

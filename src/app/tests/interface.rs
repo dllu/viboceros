@@ -32,6 +32,107 @@ fn layout_viewports(context: &egui::Context, app: &mut VibocerosApp) {
     }
 }
 
+fn zoom_window_frame(
+    context: &egui::Context,
+    app: &mut VibocerosApp,
+    events: Vec<egui::Event>,
+) -> ViewportOutput {
+    let mut output = ViewportOutput::default();
+    context
+        .run_ui(
+            egui::RawInput {
+                screen_rect: Some(egui::Rect::from_min_size(
+                    egui::Pos2::ZERO,
+                    egui::vec2(800.0, 600.0),
+                )),
+                events,
+                ..Default::default()
+            },
+            |ui| {
+                output = app.viewports[0].show(
+                    ui,
+                    &app.document,
+                    ViewportInput {
+                        zoom_window: true,
+                        drafting: DraftingInput {
+                            active: true,
+                            ..Default::default()
+                        },
+                        ..Default::default()
+                    },
+                    &[],
+                    0,
+                    true,
+                );
+            },
+        )
+        .drop_without_applying_deltas();
+    output
+}
+
+#[test]
+fn zoom_window_drag_preserves_an_unfinished_modeling_command() {
+    let mut app = test_app();
+    enter(&mut app, "Point 1,2,3");
+    enter(&mut app, "Point 4,5,6");
+    enter(&mut app, "Undo");
+    enter(&mut app, "Line");
+    enter(&mut app, "0");
+    let pending = app.active_command;
+    let objects = app.document.objects().cloned().collect::<Vec<_>>();
+    let redo = app.document.redo_label().map(str::to_owned);
+    enter(&mut app, "Zoom Window");
+    assert!(app.zoom_window_pending);
+    assert_eq!(app.active_command, pending);
+
+    let context = egui::Context::default();
+    let pointer_event = |pos, pressed| egui::Event::PointerButton {
+        pos,
+        pressed,
+        button: egui::PointerButton::Primary,
+        modifiers: egui::Modifiers::NONE,
+    };
+    zoom_window_frame(&context, &mut app, vec![]);
+    let start = egui::Pos2::new(200.0, 150.0);
+    let end = egui::Pos2::new(400.0, 350.0);
+    zoom_window_frame(
+        &context,
+        &mut app,
+        vec![egui::Event::PointerMoved(start), pointer_event(start, true)],
+    );
+    zoom_window_frame(&context, &mut app, vec![egui::Event::PointerMoved(end)]);
+    let output = zoom_window_frame(&context, &mut app, vec![pointer_event(end, false)]);
+    assert_eq!(output.zoom_window_result, Some(Ok(true)));
+    assert!(output.selection_window.is_none());
+    assert!(output.selection_click.is_none());
+    assert!(output.picked_point.is_none());
+    assert!(app.handle_viewport_action(output));
+    assert!(!app.zoom_window_pending);
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
+    assert_eq!(app.document.redo_label(), redo.as_deref());
+    enter(&mut app, "Zoom");
+    assert!(app.zoom_window_pending);
+    let right_event = |pressed| egui::Event::PointerButton {
+        pos: end,
+        pressed,
+        button: egui::PointerButton::Secondary,
+        modifiers: egui::Modifiers::NONE,
+    };
+    zoom_window_frame(&context, &mut app, vec![right_event(true)]);
+    let output = zoom_window_frame(&context, &mut app, vec![right_event(false)]);
+    assert!(output.zoom_window_cancelled);
+    assert!(!output.enter_pressed);
+    assert!(app.handle_viewport_action(output));
+    assert!(!app.zoom_window_pending);
+    assert_eq!(app.active_command, pending);
+    enter(&mut app, "Zoom");
+    assert!(app.zoom_window_pending);
+    enter(&mut app, "ZE");
+    assert!(!app.zoom_window_pending);
+    assert_eq!(app.active_command, pending);
+}
+
 #[test]
 fn zoom_extents_routes_to_the_active_view_without_cancelling_modeling_or_redo() {
     let mut app = test_app();
@@ -512,6 +613,30 @@ fn zoom_shortcuts_preserve_focused_modeling_input_and_consume_repeats() {
     .1
     .drop_without_applying_deltas();
     assert_eq!(app.command_log, log);
+
+    for platform in [egui::Modifiers::CTRL, egui::Modifiers::MAC_CMD] {
+        let modifiers = egui::Modifiers::COMMAND | platform;
+        frame(
+            &context,
+            &mut app,
+            1000.0,
+            vec![key(egui::Key::W, modifiers, true, false)],
+        )
+        .1
+        .drop_without_applying_deltas();
+        assert!(app.zoom_window_pending);
+        assert_eq!(app.command_input, "r1.5,");
+        assert_eq!(app.active_command, pending);
+        assert_eq!(context.memory(|memory| memory.focused()), focused);
+        frame(
+            &context,
+            &mut app,
+            1000.0,
+            vec![key(egui::Key::W, modifiers, false, false)],
+        )
+        .1
+        .drop_without_applying_deltas();
+    }
 }
 
 #[test]

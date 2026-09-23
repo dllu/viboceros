@@ -1232,6 +1232,7 @@ pub struct VibocerosApp {
     grid_snap: bool,
     zoom_scale: f64,
     zoom_extents_borders: ZoomExtentsBorders,
+    zoom_window_pending: bool,
     command_focus_requested: bool,
     active_command: Option<InteractiveCommand>,
     last_point: Option<Point3>,
@@ -1277,6 +1278,7 @@ impl VibocerosApp {
             grid_snap: true,
             zoom_scale,
             zoom_extents_borders,
+            zoom_window_pending: false,
             command_focus_requested: false,
             active_command: None,
             last_point: None,
@@ -5083,7 +5085,17 @@ impl VibocerosApp {
     }
 
     fn handle_viewport_action(&mut self, output: ViewportOutput) -> bool {
-        if output.enter_pressed {
+        if output.zoom_window_cancelled {
+            self.zoom_window_pending = false;
+            self.push_log("Zoom window canceled".into());
+        } else if let Some(result) = output.zoom_window_result {
+            self.zoom_window_pending = false;
+            self.push_log(match result {
+                Ok(true) => "Zoomed to window".into(),
+                Ok(false) => "Zoom window left view unchanged".into(),
+                Err(error) => format!("Error: {error}"),
+            });
+        } else if output.enter_pressed {
             self.run_command();
         } else if let Some(picks) = output.edge_click {
             self.accept_edge_click(picks);
@@ -5207,7 +5219,10 @@ impl eframe::App for VibocerosApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.handle_interface_shortcuts(ui);
         if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
-            if self.answer_object_prompt_escape() {
+            if self.zoom_window_pending {
+                self.zoom_window_pending = false;
+                self.push_log("Zoom window canceled".into());
+            } else if self.answer_object_prompt_escape() {
                 // A command-owned warning consumed this Escape key.
             } else if self.plane_prompt.is_some() {
                 self.cancel_plane_prompt();
@@ -5270,6 +5285,7 @@ impl eframe::App for VibocerosApp {
         let mut viewport_outputs: [ViewportOutput; 4] =
             std::array::from_fn(|_| ViewportOutput::default());
         let active_viewport = self.active_viewport;
+        let zoom_window_pending = self.zoom_window_pending;
         let object_filter = self.viewport_object_filter();
         let preview_curve = self.curve_draft_preview();
         let edge_pick = self
@@ -5325,6 +5341,7 @@ impl eframe::App for VibocerosApp {
                                     document,
                                     ViewportInput {
                                         drafting,
+                                        zoom_window: zoom_window_pending,
                                         object_filter,
                                         preview_curve: preview_curve.as_deref(),
                                         edge_pick,
@@ -5457,6 +5474,7 @@ mod tests {
             grid_snap: true,
             zoom_scale: DEFAULT_ZOOM_SCALE,
             zoom_extents_borders: ZoomExtentsBorders::default(),
+            zoom_window_pending: false,
             command_focus_requested: false,
             active_command: None,
             last_point: None,

@@ -21,6 +21,11 @@ impl VibocerosApp {
         let mut state = self.interface_state();
         match state.apply(command) {
             Ok(message) => {
+                if command == InterfaceCommand::ZoomWindow {
+                    self.zoom_window_pending = true;
+                    self.push_log("Drag a window in a viewport to zoom; Esc to cancel".into());
+                    return;
+                }
                 if let InterfaceCommand::SetZoomScale(scale) = command {
                     self.zoom_scale = scale.value();
                     self.push_log(format!("View zoom scale factor: {}", self.zoom_scale));
@@ -47,6 +52,7 @@ impl VibocerosApp {
                 | InterfaceCommand::ZoomIn
                 | InterfaceCommand::ZoomOut = command
                 {
+                    self.zoom_window_pending = false;
                     let (factor, result) = match command {
                         InterfaceCommand::ZoomFactor(factor) => (
                             factor.value(),
@@ -79,6 +85,7 @@ impl VibocerosApp {
                         | InterfaceCommand::ZoomAllExtents
                         | InterfaceCommand::ZoomAllSelected
                 ) {
+                    self.zoom_window_pending = false;
                     let selected = matches!(
                         command,
                         InterfaceCommand::ZoomSelected | InterfaceCommand::ZoomAllSelected
@@ -177,6 +184,11 @@ impl VibocerosApp {
         // These keys have no text-editing meaning. Text editors retain their
         // own undo history; document undo/redo is not intercepted here.
         let shortcuts = [
+            (
+                egui::Modifiers::COMMAND,
+                egui::Key::W,
+                InterfaceCommand::ZoomWindow,
+            ),
             (
                 egui::Modifiers::COMMAND | egui::Modifiers::SHIFT,
                 egui::Key::E,

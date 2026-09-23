@@ -39,6 +39,18 @@ the camera unchanged. Like the other Zoom actions, Factor preserves modeling
 prompts, selection, and undo/redo. It currently requires an inline factor; bare
 `Zoom Factor` does not open a numeric prompt, and `Zoom All Factor` is unsupported.
 
+`Zoom` or `Zoom Window` starts a viewport drag: press the left mouse button,
+draw a rectangle, and release. Ctrl/Cmd+W starts the same action. The chosen
+rectangle is centered and enlarged to fit within the viewport while preserving
+its aspect ratio. A drag shorter than two pixels in either direction leaves the
+mode active for another attempt. Esc or a right-click cancels it. Drawing the
+window temporarily takes precedence over point drafting and object selection;
+the unfinished modeling prompt, selection, and undo/redo history remain intact.
+Parallel views change scale and pan; perspective views move the target on its
+depth plane and change camera distance while retaining the lens and orientation.
+Camera limits may prevent an exact fit. The live Rhino camera comparison remains
+pending because recent Wine launches crashed or timed out.
+
 `Zoom In` and `Zoom Out` take one center-focused step in the active viewport.
 The initial View zoom scale factor is 0.9: In multiplies target-plane
 magnification by 1/0.9; Out multiplies it by 0.9. Set another finite positive
@@ -107,4 +119,4 @@ during an unfinished modeling prompt. Selection-fitting tests exercise all four 
 geometry, empty-selection no-ops, and retained selection/model history.
 No live Rhino camera comparison has been performed for this implementation.
 
-Other Zoom options, including Window and view history, remain unimplemented.
+Other Zoom options, including view history, remain unimplemented.
