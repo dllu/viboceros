@@ -168,12 +168,14 @@ joined edge against source-surface evaluation. Crossings too close to retain
 distinct binary64 parameters are rejected. Unclamped higher-degree single-span
 surfaces are clamped at their active domain before composition, preserving their
 surface locus and parameter values; a serialized triangle covers this case.
-Degree-one rational diagonal UV paths with unequal endpoint weights use their common
+Degree-one rational straight UV paths with unequal endpoint weights use their common
 linear denominator to reparameterize the composed rational Bézier curve. For
 multi-span surfaces, geometric knot-crossing fractions are mapped back to the
 source p-curve domain and become joined curve knots. Direct and serialized STEP
 tests cover polynomial and rational patches, staggered/simultaneous crossings,
-and reversed rational UV paths.
+and reversed rational UV paths. For isocurves, each crossed source curve span
+retains its own degree; the same rational reparameterization applies to its
+homogeneous controls before joining.
 
 The same degree-one isoparametric p-curves on linear extrusions of curved
 directrices lift exactly. Constant-height edges use the translated directrix;

@@ -433,14 +433,32 @@ fn native_step_imports_diagonal_pcurve_on_spline_patches() {
                 )))
             }
         };
+        let iso_weights = if diagonal_weights[0] == diagonal_weights[1] {
+            [1., 1.]
+        } else {
+            [1., 2.]
+        };
+        let iso_uv = |a: TruckPoint2, b: TruckPoint2| {
+            if iso_weights[0] == iso_weights[1] {
+                Curve2D::Line(Line(a, b))
+            } else {
+                Curve2D::NurbsCurve(TruckNurbsCurve::new(BsplineCurve::new(
+                    KnotVector::from(vec![5., 5., 9., 9.]),
+                    vec![
+                        Vector3::new(a.x * iso_weights[0], a.y * iso_weights[0], iso_weights[0]),
+                        Vector3::new(b.x * iso_weights[1], b.y * iso_weights[1], iso_weights[1]),
+                    ],
+                )))
+            }
+        };
         let edges = vec![
             CompressedEdge {
                 vertices: (0, 1),
-                curve: parameter_curve(Curve2D::Line(Line(uv[0], uv[1]))),
+                curve: parameter_curve(iso_uv(uv[0], uv[1])),
             },
             CompressedEdge {
                 vertices: (1, 2),
-                curve: parameter_curve(Curve2D::Line(Line(uv[1], uv[2]))),
+                curve: parameter_curve(iso_uv(uv[1], uv[2])),
             },
             CompressedEdge {
                 vertices: (0, 2),
@@ -460,6 +478,8 @@ fn native_step_imports_diagonal_pcurve_on_spline_patches() {
                 Box::new(
                     if index == 2 && diagonal_weights[0] != diagonal_weights[1] {
                         diagonal_uv()
+                    } else if index < 2 && iso_weights[0] != iso_weights[1] {
+                        iso_uv(a, b)
                     } else {
                         Curve2D::Line(Line(a, b))
                     },
@@ -485,6 +505,24 @@ fn native_step_imports_diagonal_pcurve_on_spline_patches() {
         let brep = &native.instances[0].brep;
         assert_eq!(brep.edges().len(), 3);
         assert_eq!(brep.faces().len(), 1);
+        if iso_weights[0] != iso_weights[1] {
+            for (index, a, b) in [(0, uv[0], uv[1]), (1, uv[1], uv[2])] {
+                let edge = brep.edges()[index].curve();
+                assert_eq!(edge.domain(), 5.0..=9.0);
+                for fraction in [0., 0.17, 0.5, 0.83, 1.] {
+                    let position = iso_weights[1] * fraction
+                        / (iso_weights[0] * (1. - fraction) + iso_weights[1] * fraction);
+                    let expected = surface.evaluate(
+                        a.x * (1. - position) + b.x * position,
+                        a.y * (1. - position) + b.y * position,
+                    );
+                    let actual = edge.evaluate(5. + 4. * fraction).unwrap();
+                    assert!((actual.x() - expected.x).abs() < 1e-11);
+                    assert!((actual.y() - expected.y).abs() < 1e-11);
+                    assert!((actual.z() - expected.z).abs() < 1e-11);
+                }
+            }
+        }
         let diagonal = brep.edges()[2].curve();
         assert_eq!(diagonal.degree(), diagonal_degree);
         assert_eq!(diagonal.domain(), 5.0..=9.0);

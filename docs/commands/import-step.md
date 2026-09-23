@@ -27,10 +27,10 @@ patches compose to exact rational quadratic edges, including warped and
 varying-weight patches. Higher-degree single-span patches, including unclamped
 ones, also compose to exact rational Bézier edges up to degree 64. Multi-span
 B-spline/NURBS patches compose piecewise at crossed knots when the crossings
-remain distinct in the source p-curve domain. Rational degree-one diagonal UV
+remain distinct in the source p-curve domain. Rational degree-one straight UV
 p-curves with unequal endpoint weights retain their source parameterization
-through both single-span and multi-span patches. Cylindrical and nonsingular
-conical faces with straight UV iso-trims spanning up to one turn
+through single-span and multi-span patches, including isocurves. Cylindrical and
+nonsingular conical faces with straight UV iso-trims spanning up to one turn
 convert to exact rational NURBS patches, including a full-turn wall with a paired
 `SEAM_CURVE`
 and explicit face-local
