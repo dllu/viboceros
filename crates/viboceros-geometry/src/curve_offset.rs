@@ -375,7 +375,7 @@ impl Curve3 {
     }
 
     /// Return every connected offset piece. `None` leaves convex polyline and
-    /// NURBS corner gaps open; connected corner styles return one input result.
+    /// NURBS corner gaps open and trims supported concave NURBS junctions.
     pub fn try_offset_parts(
         &self,
         distance: Real,
@@ -391,8 +391,7 @@ impl Curve3 {
                 return offset_polyline_open_gaps(polyline, distance, plane_normal, tolerance);
             }
             if let Self::NurbsCurve(curve) = self {
-                return offset_nurbs_open_gaps(curve, distance, plane_normal, tolerance)
-                    .map(|pieces| pieces.into_iter().map(Self::NurbsCurve).collect());
+                return offset_nurbs_open_gaps(curve, distance, plane_normal, tolerance);
             }
             if let Self::PolyCurve(curve) = self {
                 return offset_proxy(curve, tolerance)?.try_offset_parts(
@@ -751,9 +750,9 @@ fn offset_curve_distance_to_point(
                         CurveSegment3::Polyline(polyline) => polyline
                             .closest_point(point, tolerance)?
                             .distance_to(point)?,
-                        CurveSegment3::NurbsCurve(_) => {
-                            return Err(GeometryError::UnsupportedCurveOffset);
-                        }
+                        CurveSegment3::NurbsCurve(curve) => curve
+                            .evaluate(curve.closest_parameter(point, tolerance)?)?
+                            .distance_to(point)?,
                     };
                     Ok(best.min(distance))
                 })
@@ -1499,12 +1498,22 @@ mod tests {
             source.try_offset_with_corner_style(-0.2, normal, tol, CurveOffsetCornerStyle::None),
             Err(GeometryError::DisconnectedCurveOffset)
         );
-        assert!(matches!(
-            source.try_offset_parts(0.2, normal, tol, CurveOffsetCornerStyle::None),
-            Err(GeometryError::Degenerate {
-                context: "concave NURBS offset kink requires trimming"
-            })
-        ));
+        let joined = source
+            .try_offset_parts(0.2, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        let [Curve3::PolyCurve(joined)] = joined.as_slice() else {
+            panic!("concave NURBS trim")
+        };
+        assert_eq!(joined.domain(), 0.0..=2.0);
+        assert_eq!(joined.segments().len(), 2);
+        let first_end = joined.segments()[0]
+            .evaluate(*joined.segments()[0].domain().end())
+            .unwrap();
+        let second_start = joined.segments()[1]
+            .evaluate(*joined.segments()[1].domain().start())
+            .unwrap();
+        assert!(first_end.distance_to(point(0.8, 0.2, 0.0)).unwrap() <= tol.absolute());
+        assert!(first_end.distance_to(second_start).unwrap() <= tol.absolute());
     }
 
     #[test]
@@ -1545,6 +1554,121 @@ mod tests {
                 .unwrap()
                 <= tol.absolute()
         );
+        let joined = source
+            .try_offset_parts(0.2, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        let [Curve3::PolyCurve(joined)] = joined.as_slice() else {
+            panic!("curved concave trim")
+        };
+        assert_eq!(joined.segments().len(), 2);
+        let first_end = joined.segments()[0]
+            .evaluate(*joined.segments()[0].domain().end())
+            .unwrap();
+        let expected_x = 1.0 + (0.8_f64.powi(2) - 0.2_f64.powi(2)).sqrt();
+        assert!(first_end.distance_to(point(expected_x, 0.2, 0.0)).unwrap() <= tol.absolute());
+    }
+
+    #[test]
+    fn nurbs_none_combines_concave_joins_and_separates_convex_gaps() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let source = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                1,
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(2.0, 0.0, 0.0),
+                    point(2.0, 2.0, 0.0),
+                    point(4.0, 2.0, 0.0),
+                ],
+                vec![0.0, 0.0, 1.0, 2.0, 3.0, 3.0],
+            )
+            .unwrap(),
+        );
+        let outputs = source
+            .try_offset_parts(0.2, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        assert_eq!(outputs.len(), 2);
+        let [Curve3::PolyCurve(joined), Curve3::NurbsCurve(last)] = outputs.as_slice() else {
+            panic!("joined and open pieces")
+        };
+        assert_eq!(joined.domain(), 0.0..=2.0);
+        assert_eq!(joined.segments().len(), 2);
+        assert_eq!(last.domain(), 2.0..=3.0);
+        let source = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                1,
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(2.0, 0.0, 0.0),
+                    point(2.0, 2.0, 0.0),
+                    point(0.0, 2.0, 0.0),
+                ],
+                vec![0.0, 0.0, 1.0, 2.0, 3.0, 3.0],
+            )
+            .unwrap(),
+        );
+        let outputs = source
+            .try_offset_parts(0.2, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        let [Curve3::PolyCurve(joined)] = outputs.as_slice() else {
+            panic!("two concave joins")
+        };
+        assert_eq!(joined.segments().len(), 3);
+        let middle = &joined.segments()[1];
+        assert!(
+            middle
+                .evaluate(*middle.domain().start())
+                .unwrap()
+                .distance_to(point(1.8, 0.2, 0.0))
+                .unwrap()
+                <= tol.absolute()
+        );
+        assert!(
+            middle
+                .evaluate(*middle.domain().end())
+                .unwrap()
+                .distance_to(point(1.8, 1.8, 0.0))
+                .unwrap()
+                <= tol.absolute()
+        );
+    }
+
+    #[test]
+    fn quadratic_c0_knot_trims_without_full_order_split() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let source = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                2,
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(1.0, 0.0, 0.0),
+                    point(2.0, 0.0, 0.0),
+                    point(2.0, 1.0, 0.0),
+                    point(2.0, 2.0, 0.0),
+                ],
+                vec![0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+            )
+            .unwrap(),
+        );
+        let output = source
+            .try_offset_parts(0.2, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        let [Curve3::PolyCurve(joined)] = output.as_slice() else {
+            panic!("quadratic C0 trim")
+        };
+        assert_eq!(joined.segments().len(), 2);
+        let first_end = joined.segments()[0]
+            .evaluate(*joined.segments()[0].domain().end())
+            .unwrap();
+        assert!(first_end.distance_to(point(1.8, 0.2, 0.0)).unwrap() <= tol.absolute());
     }
 
     #[test]

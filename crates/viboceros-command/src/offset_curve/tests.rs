@@ -108,6 +108,23 @@ fn offset_curved_polycurve_none_selects_both_convex_gap_pieces() {
         .execute(&mut document, "Offset ThroughPoint=0,-0.2,0 Corner=None")
         .unwrap();
     assert_eq!(document.selected_object_count(), 2);
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "Offset 0.2 0,1,0 Corner=None")
+        .unwrap();
+    let Geometry::PolyCurve(joined) = document.selected_objects().next().unwrap().geometry() else {
+        panic!("trimmed concave offset")
+    };
+    assert_eq!(joined.segments().len(), 2);
+    assert_eq!(document.selected_object_count(), 1);
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "Offset ThroughPoint=0,0.2,0 Corner=None")
+        .unwrap();
+    assert!(matches!(
+        document.selected_objects().next().unwrap().geometry(),
+        Geometry::PolyCurve(_)
+    ));
 }
 
 #[test]

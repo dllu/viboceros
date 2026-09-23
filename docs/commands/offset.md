@@ -26,12 +26,13 @@ rejected. The fit uses the document absolute tolerance and an 8,192-span cap.
 Planar NURBS offsets are likewise fitted with cubic spans from the source
 curve's position and derivatives, then checked at interior stations against
 the offset locus. Stationary points and offsets that develop a cusp are
-rejected. The output retains the source parameter interval. Convex source
-kinks can use `Corner=None` to return separate smooth pieces.
+rejected. The output retains the source parameter interval. `Corner=None`
+returns separate smooth pieces at convex source kinks and trims adjacent
+offset pieces to their nearest transverse intersection at concave kinks.
 Polycurves made entirely of lines and polylines use the same corner rules as
 polylines and retain their outer parameter interval. Smooth mixed polycurves
-are converted to one NURBS curve before offset fitting. Convex sharp curved
-junctions also support `Corner=None` as separate pieces.
+are converted to one NURBS curve before offset fitting. Sharp curved junctions
+support `Corner=None`: convex gaps stay open and concave joins are trimmed.
 Planar polylines use `Corner=Sharp` by default, extending neighboring offset
 segments to their intersection. `Corner=Chamfer` bridges convex gaps with a
 straight segment; concave corners still meet at the segment intersection.
@@ -73,8 +74,8 @@ staged before the document changes.
 `OutputLayer=Current` is the default; `OutputLayer=Input` uses each source's
 layer. Both choices create fresh object attributes. The command stages every
 result before changing the document, so an unsupported or degenerate selected
-curve leaves the document unchanged. Concave NURBS and mixed polycurve kink
-trimming, connected corner styles at their kinks, smooth corners,
+curve leaves the document unchanged. Closed NURBS kink joining, connected
+corner styles at curved kinks, smooth corners,
 trim, cap, and construction-plane overrides, remain
 to be implemented.
 

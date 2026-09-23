@@ -1,7 +1,9 @@
 //! Tolerance-checked cubic approximations of smooth planar NURBS offsets.
 
 use crate::{
-    Brep, GeometryError, NurbsCurve, ParameterSide, Point3, Real, Tolerance, UnitVector3, Vector3,
+    Brep, Curve3, CurveCurveIntersectionEvent, CurveSegment3, GeometryError, NurbsCurve,
+    ParameterSide, Point3, PolyCurve3, Real, Tolerance, UnitVector3, Vector3, WeightedPoint3,
+    nurbs::curve_points_coincident,
 };
 
 const MAX_OFFSET_SPANS: usize = 8_192;
@@ -229,14 +231,14 @@ pub(super) fn offset_nurbs(
     Ok(result)
 }
 
-/// Keep open convex gaps as separate exact-domain offset pieces. A concave
-/// kink needs a curve-curve trim and is left to the connected corner solver.
+/// Keep convex gaps open and trim concave kinks at the nearest transverse
+/// intersection of the neighboring offset loci.
 pub(super) fn offset_nurbs_open_gaps(
     curve: &NurbsCurve,
     distance: Real,
     fallback: UnitVector3,
     tolerance: Tolerance,
-) -> Result<Vec<NurbsCurve>, GeometryError> {
+) -> Result<Vec<Curve3>, GeometryError> {
     let normal = offset_plane(curve, fallback, tolerance)?;
     let domain = curve.domain();
     let spans = curve.spans().collect::<Vec<_>>();
@@ -271,15 +273,17 @@ pub(super) fn offset_nurbs_open_gaps(
             .as_vector()
             .cross(right_velocity.normalized_nonzero()?.as_vector())?
             .dot(normal.as_vector())?;
-        if turn * distance >= -tolerance.angular() * distance.abs() {
+        if turn.abs() <= tolerance.angular() {
             return Err(GeometryError::Degenerate {
-                context: "concave NURBS offset kink requires trimming",
+                context: "NURBS offset backtracking kink",
             });
         }
-        cuts.push(parameter);
+        cuts.push((parameter, turn * distance < 0.0));
     }
     if cuts.is_empty() {
-        return Ok(vec![offset_nurbs(curve, distance, fallback, tolerance)?]);
+        return Ok(vec![Curve3::NurbsCurve(offset_nurbs(
+            curve, distance, fallback, tolerance,
+        )?)]);
     }
     if curve.is_closed()? {
         return Err(GeometryError::Degenerate {
@@ -288,13 +292,177 @@ pub(super) fn offset_nurbs_open_gaps(
     }
     debug_assert!(
         cuts.iter()
-            .all(|&parameter| parameter > *domain.start() && parameter < *domain.end())
+            .all(|&(parameter, _)| parameter > *domain.start() && parameter < *domain.end())
     );
-    curve
-        .try_split_at_parameters(&cuts)?
+    let parameters = cuts
+        .iter()
+        .map(|&(parameter, _)| parameter)
+        .collect::<Vec<_>>();
+    let sources = curve.try_split_at_parameters(&parameters)?;
+    let offsets = sources
         .iter()
         .map(|piece| offset_nurbs(piece, distance, fallback, tolerance))
-        .collect()
+        .collect::<Result<Vec<_>, _>>()?;
+    let mut trims = offsets
+        .iter()
+        .map(|piece| [*piece.domain().start(), *piece.domain().end()])
+        .collect::<Vec<_>>();
+    for (index, &(_, convex)) in cuts.iter().enumerate() {
+        if convex {
+            continue;
+        }
+        let corner = sources[index].evaluate(*sources[index].domain().end())?;
+        let mut best = None;
+        for event in
+            offsets[index].intersection_events_with_curve(&offsets[index + 1], tolerance)?
+        {
+            let CurveCurveIntersectionEvent::Point(hit) = event else {
+                return Err(GeometryError::Degenerate {
+                    context: "overlapping NURBS offset corner",
+                });
+            };
+            let first_parameter = hit.first_parameter();
+            let second_parameter = hit.second_parameter();
+            if first_parameter <= trims[index][0] || second_parameter >= trims[index + 1][1] {
+                continue;
+            }
+            let first_tangent = offsets[index]
+                .derivative_at(first_parameter)?
+                .normalized_nonzero()?;
+            let second_tangent = offsets[index + 1]
+                .derivative_at(second_parameter)?
+                .normalized_nonzero()?;
+            let crossing = first_tangent
+                .as_vector()
+                .cross(second_tangent.as_vector())?
+                .dot(normal.as_vector())?
+                .abs();
+            if crossing <= tolerance.angular() {
+                continue;
+            }
+            let distance_to_corner = hit.point().distance_to(corner)?;
+            if best.is_none_or(|(best_distance, _, _)| distance_to_corner < best_distance) {
+                best = Some((distance_to_corner, first_parameter, second_parameter));
+            }
+        }
+        let Some((_, first_parameter, second_parameter)) = best else {
+            return Err(GeometryError::Degenerate {
+                context: "concave NURBS offset corner has no transverse trim",
+            });
+        };
+        trims[index][1] = first_parameter;
+        trims[index + 1][0] = second_parameter;
+    }
+    let mut results = Vec::new();
+    let mut group_start = 0;
+    for (index, cut) in cuts
+        .iter()
+        .map(Some)
+        .chain(std::iter::once(None))
+        .enumerate()
+    {
+        if cut.is_some_and(|cut| !cut.1) {
+            continue;
+        }
+        let mut segments = Vec::with_capacity(index + 1 - group_start);
+        let mut breaks = vec![*sources[group_start].domain().start()];
+        for part in group_start..=index {
+            if trims[part][0] >= trims[part][1] {
+                return Err(GeometryError::Degenerate {
+                    context: "concave NURBS offset consumes a source segment",
+                });
+            }
+            segments.push(offsets[part].try_trimmed(trims[part][0]..=trims[part][1])?);
+            breaks.push(*sources[part].domain().end());
+        }
+        if segments.len() == 1 {
+            validate_trimmed_offset(
+                &sources[group_start],
+                &segments[0],
+                distance,
+                normal,
+                tolerance,
+            )?;
+            results.push(Curve3::NurbsCurve(segments.remove(0)));
+        } else {
+            for part in 0..segments.len() - 1 {
+                let (left, right) = segments.split_at_mut(part + 1);
+                align_trimmed_ends(&mut left[part], &mut right[0], tolerance)?;
+            }
+            for (part, segment) in segments.iter().enumerate() {
+                validate_trimmed_offset(
+                    &sources[group_start + part],
+                    segment,
+                    distance,
+                    normal,
+                    tolerance,
+                )?;
+            }
+            results.push(Curve3::PolyCurve(PolyCurve3::try_with_segment_domains(
+                segments
+                    .into_iter()
+                    .map(CurveSegment3::NurbsCurve)
+                    .collect::<Vec<_>>(),
+                breaks,
+            )?));
+        }
+        group_start = index + 1;
+    }
+    Ok(results)
+}
+
+fn validate_trimmed_offset(
+    source: &NurbsCurve,
+    result: &NurbsCurve,
+    distance: Real,
+    normal: UnitVector3,
+    tolerance: Tolerance,
+) -> Result<(), GeometryError> {
+    for (a, b) in result.spans() {
+        for check in 0..=CHECKS_PER_SPAN + 1 {
+            let fraction = check as Real / (CHECKS_PER_SPAN + 1) as Real;
+            let parameter = a.mul_add(1.0 - fraction, b * fraction);
+            let side = if check == CHECKS_PER_SPAN + 1 {
+                ParameterSide::Left
+            } else {
+                ParameterSide::Right
+            };
+            let expected = offset_sample(source, distance, normal, parameter, side)?.point;
+            if result
+                .evaluate_on_side(parameter, side)?
+                .distance_to(expected)?
+                > tolerance.absolute()
+            {
+                return Err(GeometryError::NurbsOffsetFitLimit);
+            }
+        }
+    }
+    Ok(())
+}
+
+fn align_trimmed_ends(
+    first: &mut NurbsCurve,
+    second: &mut NurbsCurve,
+    tolerance: Tolerance,
+) -> Result<(), GeometryError> {
+    let a = first.evaluate(*first.domain().end())?;
+    let b = second.evaluate(*second.domain().start())?;
+    if a.distance_to(b)? > tolerance.absolute() * 0.1 {
+        return Err(GeometryError::NurbsOffsetFitLimit);
+    }
+    if curve_points_coincident(a, b) {
+        return Ok(());
+    }
+    let shared = a.midpoint(b)?;
+    let mut first_controls = first.control_points().to_vec();
+    let mut second_controls = second.control_points().to_vec();
+    let last = first_controls.len() - 1;
+    first_controls[last] = WeightedPoint3::try_new(shared, first_controls[last].weight())?;
+    second_controls[0] = WeightedPoint3::try_new(shared, second_controls[0].weight())?;
+    *first = NurbsCurve::try_new_rational(first.degree(), first_controls, first.knots().to_vec())?;
+    *second =
+        NurbsCurve::try_new_rational(second.degree(), second_controls, second.knots().to_vec())?;
+    Ok(())
 }
 
 fn signed_distance(
