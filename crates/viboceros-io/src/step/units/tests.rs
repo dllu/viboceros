@@ -62,6 +62,10 @@ fn rejects_invalid_factors_and_missing_geometry_context_units() {
         #2 = (LENGTH_UNIT() NAMED_UNIT(*) SI_UNIT($,.METRE.));
         #3 = (GEOMETRIC_REPRESENTATION_CONTEXT(3) REPRESENTATION_CONTEXT('',''));";
     assert!(scale(records).is_err());
+    let records = "#1 = (GEOMETRIC_REPRESENTATION_CONTEXT(3) GLOBAL_UNIT_ASSIGNED_CONTEXT((#2)) REPRESENTATION_CONTEXT('',''));
+        #2 = (LENGTH_UNIT() NAMED_UNIT(*) SI_UNIT(.MILLI.,.METRE.));
+        #3 = (GEOMETRIC_REPRESENTATION_CONTEXT(2) PARAMETRIC_REPRESENTATION_CONTEXT() REPRESENTATION_CONTEXT('2D SPACE',''));";
+    assert_eq!(scale(records).unwrap(), 1e-3);
 }
 
 #[test]

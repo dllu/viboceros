@@ -2,7 +2,7 @@
 use super::{StepError, Table, read_data_section, reported_trimmed_shell};
 use monstertruck::meshing::prelude::ParametricSurface;
 use monstertruck::step::load::step_geometry::{ElementarySurface, Surface};
-mod curves;
+pub(super) mod curves;
 use std::io::Read;
 use viboceros_geometry::{
     AffineTransform3, Brep, BrepEdge, BrepFace, BrepTrim, BrepTrimType, BrepVertex,

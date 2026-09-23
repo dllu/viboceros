@@ -71,6 +71,7 @@ pub(super) fn uniform_meters_per_unit(data: &DataSection) -> Result<f64, StepErr
     if resolver.entities.values().any(|records| {
         component(records, "GEOMETRIC_REPRESENTATION_CONTEXT").is_some()
             && component(records, "GLOBAL_UNIT_ASSIGNED_CONTEXT").is_none()
+            && component(records, "PARAMETRIC_REPRESENTATION_CONTEXT").is_none()
     }) {
         return Err(invalid(
             "geometric representation context has no unit assignment",

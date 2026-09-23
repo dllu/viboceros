@@ -3,10 +3,12 @@
 [File-format support](file-formats.md) · [Native B-rep geometry](../crates/viboceros-geometry/src/brep.rs)
 
 The `ImportStep` command defaults to display meshes. `ImportStep Native=Yes`
-imports the supported planar subset as editable document B-reps. A low-level
+imports supported planar and NURBS shells as editable document B-reps. A low-level
 `read_step_planar_shells` API now produces validated native planar B-reps from
 source shell definitions; the command uses the assembly-aware unit-converting
-reader described below. See [ImportStep](commands/import-step.md).
+reader described below. The general native instance reader also accepts
+NURBS/B-spline surfaces and matching curved edges and UV trims. See
+[ImportStep](commands/import-step.md).
 The mesh route must not be relabeled as an exact B-rep import: tessellation
 discards the source surface definitions, shared curve identities, and UV trims.
 
@@ -69,7 +71,7 @@ Generated regressions check repeated and nested cube placements against every
 expected corner, area 286 and signed volume 315, and verify both senses of an
 oriented open-shell wrapper without changing UV loops. A hollow cube checks
 separate outer/void entries with signed volumes 1000 and -8. This is not yet
-evidence of general curved STEP or live Rhino assembly parity.
+evidence of live Rhino assembly parity.
 Unit-aware instance tests cover millimetres, centimetres, metres, kilometres,
 and microns, checking all placed vertices, quadratic area and cubic volume
 scaling, identical UV loops and metadata, and unitless/invalid-unit behavior.
@@ -100,8 +102,8 @@ kept distinct. Every result passes native `Brep::try_new` validation.
 
 Unsupported curves/surfaces, invalid polygon regions, missing trims, non-manifold edges,
 and reported source-shell topology losses fail the entire request. No mesh
-substitute is returned. General B-spline/NURBS surfaces and curved trims remain
-unimplemented in this path.
+substitute is returned. This strict planar API remains available separately from
+the general native instance reader.
 
 A generated STEP triangle with explicit `SURFACE_CURVE`/`PCURVE` records and
 degree-one B-spline parameter curves verifies loss-free loading, retained
@@ -127,7 +129,7 @@ preserving weights 1 and 4, `[-3,7]` intervals, and area 50. The source loader
 checks parameter correspondence before retaining explicit p-curves; an unmatched
 rational UV parameterization paired with a uniformly parameterized 3D line can
 instead produce a reconstructed line trim. This work does not establish general
-rational curved-edge or curved-surface import.
+rational curved-edge or curved-surface import through the strict planar API.
 
 The `native_planar/curves` module owns these 3D-edge and UV-trim adapters,
 including wrapper unwrapping and homogeneous-coordinate conversion. The shell
@@ -241,9 +243,11 @@ include elementary surfaces, sweeps, B-splines, and NURBS. Merely converting a
 surface's geometric locus is insufficient: its UV parameterization must match
 every trim, or trims must undergo the same verified parameter mapping.
 
-Beyond the implemented planar subset, conversion still needs representation adapters, trim
-parameter/orientation conversion, shared topology construction, and explicit
-handling of missing or unrepresentable data. Assembly transforms, unit conversion,
-import loss reporting, and document transactions must also cover the native path.
-The current mesh import remains available, but does not establish those remaining
-native-conversion requirements.
+The general native instance path reuses assembly placement, unit conversion,
+import diagnostics, and document transactions from the planar path. It maps
+supported B-spline/NURBS controls and knots without tessellation, including
+face-local UV curves, and validates shared topology in `Brep::try_new`. Curved
+faces currently require one outer boundary. Analytic cylinders and other
+unsupported surface types, periodic seams, and missing UV curves still need
+representation adapters or explicit topology handling. The default mesh import
+remains available for display of such files.

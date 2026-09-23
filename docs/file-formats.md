@@ -220,13 +220,13 @@ Other edge-disconnected shells become separate STEP surface models, so general
 compound B-rep object grouping, names, and materials are not yet preserved.
 See [command details](commands/export-step.md).
 
-General editable STEP B-rep interchange is not implemented yet. The low-level
+General editable STEP B-rep interchange remains partial. The low-level
 `read_step_planar_shells` API converts supported planar source shell definitions
 to validated native B-reps without tessellation; its `_in_units` counterpart
 converts uniform file units into explicit target units. Neither provides assembly
 placement or document integration themselves. `ImportStep` defaults to meshes;
-[`ImportStep Native=Yes`](commands/import-step.md) imports the supported planar
-subset as editable B-reps, combining each occurrence's outer/cavity shells into
+[`ImportStep Native=Yes`](commands/import-step.md) imports supported planar and
+NURBS shells as editable B-reps, combining each occurrence's outer/cavity shells into
 one document object while retaining topology and orientation.
 The separate `read_step_planar_instances` API applies assembly placements in
 file units, retains occurrence names and grouping indices, and expands oriented
@@ -234,6 +234,10 @@ outer/void and surface-model shells into native shell entries. It does not yet
 assemble classified solids or insert document objects. Its `_in_units`
 counterpart converts placed geometry and assembly translations to target units
 while preserving UV trims, occurrence grouping, and diagnostics.
+`read_step_native_instances` and its `_in_units` counterpart extend that
+assembly path to NURBS/B-spline surfaces, edges, and UV trims. Curved faces
+currently require one outer loop; unsupported analytic surfaces and periodic
+seams still fail native import.
 The native planar path supports straight-edged polygon holes, identifies the
 outer loop independently of source ordering, and rejects crossing, touching,
 outside, or nested hole boundaries before committing native topology.

@@ -71,6 +71,22 @@ fn nurbs_brep_step_export_retains_curved_surface_and_explicit_pcurves() {
         .unwrap();
     let restored = native_planar::convert_shell(&table, box_shell_id, Tolerance::DEFAULT).unwrap();
     assert!((restored.signed_volume(Tolerance::DEFAULT).unwrap() - 64.).abs() < 1e-9);
+    let native = read_step_native_instances(Cursor::new(mixed), Tolerance::DEFAULT).unwrap();
+    assert_eq!(native.instances.len(), 2);
+    assert!(
+        native
+            .instances
+            .iter()
+            .any(|instance| instance.brep.faces().len() == 6)
+    );
+    assert!(native.instances.iter().any(|instance| {
+        instance.brep.faces().len() == 1
+            && instance.brep.faces()[0]
+                .surface()
+                .plane(Tolerance::DEFAULT)
+                .unwrap()
+                .is_none()
+    }));
 }
 
 #[test]
@@ -146,6 +162,18 @@ fn nurbs_brep_step_export_keeps_curved_edges_and_surface_shape() {
             assert!((actual.y - expected.y()).abs() < 1e-12);
             assert!((actual.z - expected.z()).abs() < 1e-12);
         }
+    }
+
+    let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    assert_eq!(native.instances.len(), 1);
+    let restored = &native.instances[0].brep;
+    assert_eq!(restored.faces().len(), 1);
+    assert_eq!(restored.edges().len(), 4);
+    assert_eq!(restored.faces()[0].surface().degree_u(), 2);
+    for (u, v) in [(0.25, 0.25), (0.5, 0.5), (0.75, 0.8)] {
+        let expected = source.faces()[0].surface().evaluate(u, v).unwrap();
+        let actual = restored.faces()[0].surface().evaluate(u, v).unwrap();
+        assert!(actual.distance_to(expected).unwrap() < 1e-12);
     }
 
     let mut scaled_output = Vec::new();
@@ -255,6 +283,12 @@ fn nurbs_brep_step_export_keeps_open_rational_arc_surface() {
     assert!((actual.x - expected.x()).abs() < 1e-12);
     assert!((actual.y - expected.y()).abs() < 1e-12);
     assert!((actual.z - expected.z()).abs() < 1e-12);
+    let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    let restored = &native.instances[0].brep;
+    assert_eq!(restored.faces().len(), 1);
+    assert!(restored.faces()[0].surface().is_rational());
+    let restored_midpoint = restored.faces()[0].surface().evaluate(0.5, 0.5).unwrap();
+    assert!(restored_midpoint.distance_to(expected).unwrap() < 1e-12);
 }
 
 #[test]

@@ -5,14 +5,16 @@ ImportStep "part.step"
 ImportStep Native=Yes "part.step"
 ```
 
-The default imports display meshes. `Native=Yes` imports editable planar B-reps
+The default imports display meshes. `Native=Yes` imports supported editable B-reps
 without tessellation, with assembly placements, occurrence names, source units
 converted to document units, and objects assigned to the current layer.
 Quote filenames beginning with `Native=Yes` to treat that text as a filename.
 The `ImportStp` alias accepts the same syntax.
 
-Native mode supports straight-edged planar faces, including valid polygon holes.
-Unsupported shell curves/surfaces, missing trims, or invalid topology fail the
+Native mode supports straight-edged planar faces, including valid polygon holes,
+and NURBS/B-spline surfaces with matching curved 3D edges and UV trims. Curved
+faces currently require one outer loop. Analytic cylinders, periodic seam edges,
+missing trims, and invalid topology fail the
 import; there is no automatic mesh fallback. Assembly and representation warnings
 follow the existing STEP importer and are counted in the result message.
 

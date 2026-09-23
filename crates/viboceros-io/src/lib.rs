@@ -12,11 +12,13 @@ pub use viboceros_geometry::LengthUnitSystem;
 mod three_dm_rational_tests;
 
 pub use step::{
-    StepError, StepImport, StepImportReport, StepObject, StepPlanarImport, StepPlanarInstance,
-    StepPlanarShell, read_step, read_step_file, read_step_file_in_units, read_step_in_units,
-    read_step_planar_instances, read_step_planar_instances_in_units, read_step_planar_shells,
-    read_step_planar_shells_in_units, write_step, write_step_file, write_step_file_in_units,
-    write_step_in_units, write_step_native_breps_file_in_units, write_step_native_breps_in_units,
+    StepError, StepImport, StepImportReport, StepNativeImport, StepNativeInstance, StepObject,
+    StepPlanarImport, StepPlanarInstance, StepPlanarShell, read_step, read_step_file,
+    read_step_file_in_units, read_step_in_units, read_step_native_instances,
+    read_step_native_instances_in_units, read_step_planar_instances,
+    read_step_planar_instances_in_units, read_step_planar_shells, read_step_planar_shells_in_units,
+    write_step, write_step_file, write_step_file_in_units, write_step_in_units,
+    write_step_native_breps_file_in_units, write_step_native_breps_in_units,
     write_step_nurbs_breps, write_step_nurbs_breps_in_units, write_step_planar_breps,
     write_step_planar_breps_file, write_step_planar_breps_file_in_units,
     write_step_planar_breps_in_units,

@@ -3,7 +3,7 @@ use super::StepError;
 use monstertruck::step::load::step_geometry::{Curve2D, Curve3D, ElementarySurface, Surface};
 use viboceros_geometry::{NurbsCurve, NurbsCurve2, Point2, Point3, WeightedPoint2, WeightedPoint3};
 
-pub(super) fn linear_edge(curve: &Curve3D, shell: u64) -> Result<NurbsCurve, StepError> {
+pub(crate) fn linear_edge(curve: &Curve3D, shell: u64) -> Result<NurbsCurve, StepError> {
     let unsupported = |reason| StepError::UnsupportedPlanarShell { shell, reason };
     let mut curve = curve;
     loop {
@@ -68,7 +68,7 @@ pub(super) fn linear_edge(curve: &Curve3D, shell: u64) -> Result<NurbsCurve, Ste
     Ok(curve)
 }
 
-pub(super) fn linear_trim(curve: &Curve2D, shell: u64) -> Result<NurbsCurve2, StepError> {
+pub(crate) fn linear_trim(curve: &Curve2D, shell: u64) -> Result<NurbsCurve2, StepError> {
     match curve {
         Curve2D::Line(line) => Ok(NurbsCurve2::try_line(
             Point2::try_new(line.0.x, line.0.y)?,

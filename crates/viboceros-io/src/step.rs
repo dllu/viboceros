@@ -13,9 +13,11 @@ pub use export::native::{
 pub use export::{write_step, write_step_file, write_step_file_in_units, write_step_in_units};
 mod instance_plan;
 mod native_instances;
+mod native_nurbs;
 mod native_planar;
 pub use native_instances::{
-    StepPlanarImport, StepPlanarInstance, read_step_planar_instances,
+    StepNativeImport, StepNativeInstance, StepPlanarImport, StepPlanarInstance,
+    read_step_native_instances, read_step_native_instances_in_units, read_step_planar_instances,
     read_step_planar_instances_in_units,
 };
 mod units;
@@ -93,6 +95,8 @@ pub enum StepError {
     NativeExportRequiresBrep { object: usize },
     #[error("STEP shell #{shell} cannot be converted to a native planar B-rep: {reason}")]
     UnsupportedPlanarShell { shell: u64, reason: &'static str },
+    #[error("STEP shell #{shell} cannot be converted to a native B-rep: {reason}")]
+    UnsupportedNativeShell { shell: u64, reason: &'static str },
     #[error(transparent)]
     Io(#[from] std::io::Error),
 

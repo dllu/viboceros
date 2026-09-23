@@ -139,7 +139,7 @@ impl Command for ImportStepCommand {
 
 fn import_native_step(document: &mut Document, path: &str) -> Result<String, CommandError> {
     let reader = std::fs::File::open(path).map_err(viboceros_io::StepError::from)?;
-    let imported = viboceros_io::read_step_planar_instances_in_units(
+    let imported = viboceros_io::read_step_native_instances_in_units(
         reader,
         document.units(),
         document.tolerance(),
@@ -173,7 +173,7 @@ fn import_native_step(document: &mut Document, path: &str) -> Result<String, Com
         document.add_geometry_with_attributes(Geometry::Brep(brep), attributes)?;
     }
     Ok(format!(
-        "Imported {count} native planar STEP object(s) from '{path}' ({warnings} conversion warning(s))"
+        "Imported {count} native STEP object(s) from '{path}' ({warnings} conversion warning(s))"
     ))
 }
 

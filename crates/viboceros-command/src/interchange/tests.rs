@@ -75,7 +75,11 @@ fn native_step_export_keeps_curved_surface_geometry() {
     )
     .unwrap();
     let brep = Brep::try_surface_face(surface, Tolerance::DEFAULT).unwrap();
-    let mut document = Document::default();
+    let mut document = Document::with_units(
+        Tolerance::DEFAULT,
+        viboceros_io::LengthUnitSystem::Millimeters,
+    )
+    .unwrap();
     document.add_geometry(Geometry::Brep(brep)).unwrap();
     let before = format!("{document:?}");
     let directory = tempfile::tempdir().unwrap();
@@ -95,6 +99,24 @@ fn native_step_export_keeps_curved_surface_geometry() {
     let imported = viboceros_io::read_step_file(&path, Tolerance::DEFAULT).unwrap();
     assert_eq!(imported.objects.len(), 1);
     assert!(!imported.objects[0].mesh.triangles().is_empty());
+    let mut target = Document::with_units(
+        Tolerance::DEFAULT,
+        viboceros_io::LengthUnitSystem::Millimeters,
+    )
+    .unwrap();
+    CommandRegistry::with_builtins()
+        .execute(
+            &mut target,
+            &format!("ImportStep Native=Yes {}", path.display()),
+        )
+        .unwrap();
+    let Geometry::Brep(restored) = target.objects().next().unwrap().geometry() else {
+        panic!("native STEP import lost editable curved geometry")
+    };
+    assert_eq!(restored.faces().len(), 1);
+    assert_eq!(restored.faces()[0].surface().degree_u(), 2);
+    let actual = restored.faces()[0].surface().evaluate(0.5, 0.5).unwrap();
+    assert!(actual.distance_to(point(1., 0.5, 1.5)).unwrap() < 1e-12);
 }
 
 #[test]
@@ -380,7 +402,7 @@ fn native_step_import_converts_units_and_replays_as_editable_breps() {
             &format!("ImportStep Native=Yes \"{}\"", path.display()),
         )
         .unwrap();
-    assert!(message.contains("1 native planar STEP object"));
+    assert!(message.contains("1 native STEP object"));
     assert_eq!(target.undo_label(), Some("ImportStep"));
     let object = target.objects().next().unwrap();
     let Geometry::Brep(brep) = object.geometry() else {
@@ -462,7 +484,7 @@ fn mixed_native_step_import_rejects_unsupported_later_shell_without_partial_chan
     for command in ["ImportStep Native=Yes", "ImportStp native=yes"] {
         let result = registry.execute(&mut document, &format!("{command} \"{}\"", path.display()));
         assert!(
-            matches!(result, Err(CommandError::Step(viboceros_io::StepError::UnsupportedPlanarShell { shell, .. })) if shell == last_shell)
+            matches!(result, Err(CommandError::Step(viboceros_io::StepError::UnsupportedNativeShell { shell, .. })) if shell == last_shell)
         );
         assert_eq!(format!("{document:?}"), before);
     }
