@@ -185,15 +185,18 @@ check both iso directions and the source p-curve domain.
 
 On supported surfaces of revolution, constant-angle p-curves use a rotated
 copy of the converted directrix; constant-profile-parameter p-curves become
-exact rational circular arcs over at most one turn. The edge keeps the source
-p-curve domain, while the arc's interior angular parameterization follows the
-NURBS face. Serialized polynomial and rational profiles check both directions
-against face evaluation. A full-turn seam regression also checks a STEP loader
+exact rational circular arcs over at most one turn. Same-sign unequal UV
+weights reparameterize each NURBS span and map crossed knots into the source
+p-curve domain. Meridian composition is pointwise exact. Circular edges keep
+their exact locus and endpoints, while their interior angle follows the arc's
+NURBS parameterization. Serialized polynomial and rational profiles check both
+directions; a weighted half-turn cylinder p-curve checks its mapped internal
+knot after STEP loading. A full-turn seam regression also checks a STEP loader
 case where coincident edge vertices produce a collapsed 3D leader: the importer
 uses its unique, endpoint-matching associated p-curve on the same surface.
 
 Elementary cylindrical, conical, spherical, and toroidal faces also accept
-degree-one iso-parametric p-curve edges with equal weights. Circular directions
+degree-one iso-parametric p-curve edges with same-sign weights. Circular directions
 use exact rational arc spans; axial directions on cylinders and cones use exact
 lines. Serialized STEP checks cover both directions and full-turn seams on all
 four surface types, plus periodic sphere/torus trims.

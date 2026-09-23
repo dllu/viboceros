@@ -262,11 +262,13 @@ remain unsupported.
 2-by-2 B-spline/NURBS patch lifts exactly to 3D NURBS while retaining degree,
 knots, and rational weights. Other p-curve bases still need exact surface-curve
 composition.
-Degree-one, two-control-point isoparametric `PCURVE` edges with equal weights
+Degree-one, two-control-point isoparametric `PCURVE` edges with same-sign weights
 on curved B-spline/NURBS bases, linear extrusions of curved directrices,
 supported surfaces of revolution, and cylindrical, conical, spherical, or
 toroidal faces import as exact trimmed NURBS isocurves, keeping the source
-p-curve domain.
+p-curve domain. Circular directions keep the exact locus and map arc span
+crossings into that domain; their interior angle follows the rational arc
+parameterization.
 Straight diagonal p-curves on single degree-one 2-by-2 B-spline/NURBS patches
 also import as exact rational quadratic edges. Clamped single-span higher-degree
 patches compose to exact rational Bézier edges up to degree 64. Unclamped

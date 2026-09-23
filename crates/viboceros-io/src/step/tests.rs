@@ -1864,8 +1864,8 @@ fn native_step_imports_analytic_ellipse_arc() {
 #[test]
 fn native_step_imports_analytic_open_revolved_patches() {
     use monstertruck::modeling::{
-        BsplineCurve, Invertible, KnotVector, Line, Point2 as TruckPoint2, Processor,
-        RevolutionSurface, Vector3, builder,
+        BsplineCurve, Invertible, KnotVector, Line, NurbsCurve as TruckNurbsCurve,
+        Point2 as TruckPoint2, Processor, RevolutionSurface, Vector3, builder,
     };
     use monstertruck::step::load::step_geometry::{
         Curve2D, Curve3D, ElementarySurface, StepParameterCurve, Surface,
@@ -1992,6 +1992,44 @@ fn native_step_imports_analytic_open_revolved_patches() {
             assert_eq!(brep.faces().len(), 1);
             let expected_area = angle * (2. + top_radius) * 3_f64.hypot(top_radius - 2.) / 2.;
             assert!((brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
+            if slope == 0. && angle == std::f64::consts::PI {
+                let mut weighted = trimmed.clone();
+                let surface = weighted.faces[0].surface.clone();
+                let uv_curve = || {
+                    Curve2D::NurbsCurve(TruckNurbsCurve::new(BsplineCurve::new(
+                        KnotVector::from(vec![5., 5., 9., 9.]),
+                        vec![Vector3::new(0., 0., 1.), Vector3::new(2. * angle, 0., 2.)],
+                    )))
+                };
+                let index = weighted.faces[0].boundaries[0][0].index;
+                weighted.edges[index].curve = Curve3D::ParameterCurve(StepParameterCurve::new(
+                    Box::new(uv_curve()),
+                    Box::new(surface.clone()),
+                ));
+                weighted.faces[0].boundaries[0][0].trim_curve = Some(StepParameterCurve::new(
+                    Box::new(uv_curve()),
+                    Box::new(surface),
+                ));
+                let mut models = StepModels::default();
+                models.push_trimmed_shell(&weighted);
+                let text =
+                    CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
+                let imported =
+                    read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+                let edge = imported.instances[0].brep.edges()[index].curve();
+                assert_eq!(edge.degree(), 2);
+                assert_eq!(edge.domain(), 5.0..=9.0);
+                assert!(
+                    edge.knots()
+                        .iter()
+                        .any(|knot| (*knot - (5. + 4. / 3.)).abs() < 1e-12)
+                );
+                for t in [5., 5.17, 5. + 4. / 3., 7., 8.83, 9.] {
+                    let point = edge.evaluate(t).unwrap();
+                    assert!((point.x().hypot(point.y()) - 2.).abs() < 1e-10);
+                    assert!(point.z().abs() < 1e-10);
+                }
+            }
             if slope == 0. && angle == std::f64::consts::FRAC_PI_2 {
                 let mut spline_trimmed = decoded.clone();
                 let spline_surface = spline_trimmed.faces[0].surface.clone();

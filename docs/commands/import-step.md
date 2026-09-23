@@ -18,10 +18,11 @@ NURBS edges and UV curves. Bounded parabola and hyperbola edges and UV trims
 also convert to exact quadratic NURBS. Edge geometry given as a `PCURVE` on a
 STEP plane, line extrusion, or certified affine 2-by-2 B-spline/NURBS patch
 lifts to an exact 3D NURBS curve. Degree-one, two-control-point isoparametric
-`PCURVE` edges with equal weights on curved B-spline/NURBS surfaces, linear
-extrusions of curved directrices, supported surfaces of revolution, and
+`PCURVE` edges, including same-sign unequal UV weights, on curved B-spline/NURBS
+surfaces, linear extrusions of curved directrices, supported surfaces of revolution, and
 cylindrical, conical, spherical, or toroidal faces retain exact trimmed
-isocurve geometry and their source parameter domain.
+isocurve geometry and their source parameter domain. Circular directions retain
+their exact locus while using the rational arc's interior angular parameterization.
 Straight diagonal `PCURVE` edges on single degree-one 2-by-2 B-spline/NURBS
 patches compose to exact rational quadratic edges, including warped and
 varying-weight patches. Higher-degree single-span patches, including unclamped
