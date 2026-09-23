@@ -26,6 +26,23 @@ impl VibocerosApp {
                     self.push_log(format!("View zoom scale factor: {}", self.zoom_scale));
                     return;
                 }
+                if let InterfaceCommand::SetZoomExtentsBorder {
+                    parallel,
+                    perspective,
+                } = command
+                {
+                    if let Some(value) = parallel {
+                        self.zoom_extents_borders.parallel = value.value();
+                    }
+                    if let Some(value) = perspective {
+                        self.zoom_extents_borders.perspective = value.value();
+                    }
+                    self.push_log(format!(
+                        "Zoom extents border scale: ParallelView={} PerspectiveView={}",
+                        self.zoom_extents_borders.parallel, self.zoom_extents_borders.perspective
+                    ));
+                    return;
+                }
                 if let InterfaceCommand::ZoomFactor(_)
                 | InterfaceCommand::ZoomIn
                 | InterfaceCommand::ZoomOut = command
@@ -76,11 +93,18 @@ impl VibocerosApp {
                         "active viewport"
                     };
                     let result = if all {
-                        Viewport::zoom_all(&mut self.viewports, &self.document, selected)
+                        Viewport::zoom_all(
+                            &mut self.viewports,
+                            &self.document,
+                            selected,
+                            self.zoom_extents_borders,
+                        )
                     } else if selected {
-                        self.viewports[self.active_viewport].zoom_selected(&self.document)
+                        self.viewports[self.active_viewport]
+                            .zoom_selected(&self.document, self.zoom_extents_borders)
                     } else {
-                        self.viewports[self.active_viewport].zoom_extents(&self.document)
+                        self.viewports[self.active_viewport]
+                            .zoom_extents(&self.document, self.zoom_extents_borders)
                     };
                     self.push_log(match result {
                         Ok(true) if selected => {

@@ -31,6 +31,7 @@ use drafting::clip_drafting_line;
 use viboceros_drafting::TrackAxis;
 mod display_cache;
 mod extents;
+pub(crate) use extents::ZoomExtentsBorders;
 mod scene;
 #[cfg(test)]
 use scene::GpuSceneBuilder;
@@ -1408,6 +1409,115 @@ mod tests {
     }
 
     #[test]
+    fn zoom_extents_border_controls_fit_and_can_intentionally_crop() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let mut points = Vec::new();
+        let mut ids = Vec::new();
+        for x in [-10.0, 10.0] {
+            for y in [-5.0, 5.0] {
+                for z in [-2.0, 2.0] {
+                    let p = point(x, y, z);
+                    ids.push(document.add_geometry(Geometry::Point(p)).unwrap());
+                    points.push(p);
+                }
+            }
+        }
+        document
+            .select_objects(ids, SelectionMode::Replace)
+            .unwrap();
+        for kind in [ViewKind::Top, ViewKind::Perspective] {
+            let make_view = || {
+                let mut view = Viewport::new(kind);
+                view.last_rect = Some(rect);
+                view
+            };
+            let mut default = make_view();
+            let mut wide = make_view();
+            let mut cropped = make_view();
+            let mut selected = make_view();
+            let wide_border = ZoomExtentsBorders {
+                parallel: 1.5,
+                perspective: 1.5,
+            };
+            let crop_border = ZoomExtentsBorders {
+                parallel: 0.8,
+                perspective: 0.8,
+            };
+            assert_eq!(
+                default.zoom_extents(&document, ZoomExtentsBorders::default()),
+                Ok(true)
+            );
+            assert_eq!(wide.zoom_extents(&document, wide_border), Ok(true));
+            assert_eq!(cropped.zoom_extents(&document, crop_border), Ok(true));
+            assert_eq!(selected.zoom_selected(&document, crop_border), Ok(true));
+            assert_eq!(selected.target, cropped.target);
+            if kind.is_parallel() {
+                assert!(wide.pixels_per_unit < default.pixels_per_unit);
+                assert!(default.pixels_per_unit < cropped.pixels_per_unit);
+                assert!(
+                    (f64::from(default.pixels_per_unit / cropped.pixels_per_unit) - 0.8 / 1.1)
+                        .abs()
+                        < 1e-6
+                );
+                assert_eq!(selected.pixels_per_unit, cropped.pixels_per_unit);
+            } else {
+                assert!(wide.perspective_camera_distance > default.perspective_camera_distance);
+                assert!(default.perspective_camera_distance > cropped.perspective_camera_distance);
+                assert_eq!(
+                    selected.perspective_camera_distance,
+                    cropped.perspective_camera_distance
+                );
+            }
+            assert!(
+                points
+                    .iter()
+                    .any(|p| !rect.contains(cropped.project(*p, rect).unwrap()))
+            );
+        }
+        let mut views = [
+            Viewport::new(ViewKind::Top),
+            Viewport::new(ViewKind::Perspective),
+        ];
+        for view in &mut views {
+            view.last_rect = Some(rect);
+        }
+        let before = views
+            .iter()
+            .map(|view| {
+                (
+                    view.target,
+                    view.pixels_per_unit,
+                    view.perspective_camera_distance,
+                )
+            })
+            .collect::<Vec<_>>();
+        assert!(
+            Viewport::zoom_all(
+                &mut views,
+                &document,
+                false,
+                ZoomExtentsBorders {
+                    parallel: 0.0,
+                    perspective: 1.0
+                }
+            )
+            .is_err()
+        );
+        assert_eq!(
+            views
+                .iter()
+                .map(|view| (
+                    view.target,
+                    view.pixels_per_unit,
+                    view.perspective_camera_distance
+                ))
+                .collect::<Vec<_>>(),
+            before
+        );
+    }
+
+    #[test]
     fn zoom_extents_fits_translated_geometry_and_keeps_gpu_and_picking_aligned() {
         let rect = Rect::from_min_size(Pos2::new(10.0, 20.0), Vec2::new(800.0, 600.0));
         let mut document = Document::default();
@@ -1440,7 +1550,10 @@ mod tests {
             view.pan = Vec2::new(300.0, -200.0);
             let plane = view.construction_plane();
             let lens = view.perspective_focal_length_pixels(rect);
-            assert_eq!(view.zoom_extents(&document), Ok(true));
+            assert_eq!(
+                view.zoom_extents(&document, ZoomExtentsBorders::default()),
+                Ok(true)
+            );
             assert_eq!(view.target, NaVector3::new(100.0, 200.0, 300.0));
             assert_eq!(view.pan, Vec2::ZERO);
             assert_eq!(view.construction_plane(), plane);
@@ -1455,7 +1568,12 @@ mod tests {
             );
             for p in &points {
                 let screen = view.project(*p, rect).unwrap();
-                assert!(rect.shrink(20.0).contains(screen), "{kind:?}: {screen:?}");
+                let expected = if kind.is_parallel() {
+                    rect.shrink(20.0)
+                } else {
+                    rect.expand(1.0)
+                };
+                assert!(expected.contains(screen), "{kind:?}: {screen:?}");
                 let (gpu, depth) = gpu_project(&view, rect, *p, depth_range);
                 assert!(
                     (screen - gpu).length() < 0.02,
@@ -1503,7 +1621,12 @@ mod tests {
             viewport.pan = Vec2::new(index as f32 * 10.0, 50.0);
         }
         assert_eq!(
-            Viewport::zoom_all(&mut viewports, &document, true),
+            Viewport::zoom_all(
+                &mut viewports,
+                &document,
+                true,
+                ZoomExtentsBorders::default()
+            ),
             Ok(true)
         );
         for viewport in &viewports {
@@ -1529,22 +1652,51 @@ mod tests {
             .unwrap();
         let mut parallel = Viewport::new(ViewKind::Top);
         parallel.last_rect = viewports[0].last_rect;
-        assert_eq!(parallel.zoom_extents(&document), Ok(true));
+        assert_eq!(
+            parallel.zoom_extents(&document, ZoomExtentsBorders::default()),
+            Ok(true)
+        );
         // The last, perspective view exceeds its dolly limit. Earlier valid
         // parallel plans must not have been committed when this fails.
-        assert!(Viewport::zoom_all(&mut viewports, &document, false).is_err());
+        assert!(
+            Viewport::zoom_all(
+                &mut viewports,
+                &document,
+                false,
+                ZoomExtentsBorders::default()
+            )
+            .is_err()
+        );
         assert_eq!(camera_states(&viewports), fitted);
         assert_eq!(
-            Viewport::zoom_all(&mut viewports, &document, true),
+            Viewport::zoom_all(
+                &mut viewports,
+                &document,
+                true,
+                ZoomExtentsBorders::default()
+            ),
             Ok(true)
         );
         assert_eq!(camera_states(&viewports), fitted);
         viewports[3].last_rect = None;
-        assert!(Viewport::zoom_all(&mut viewports, &document, true).is_err());
+        assert!(
+            Viewport::zoom_all(
+                &mut viewports,
+                &document,
+                true,
+                ZoomExtentsBorders::default()
+            )
+            .is_err()
+        );
         assert_eq!(camera_states(&viewports), fitted);
         document.clear_selection();
         assert_eq!(
-            Viewport::zoom_all(&mut viewports, &document, true),
+            Viewport::zoom_all(
+                &mut viewports,
+                &document,
+                true,
+                ZoomExtentsBorders::default()
+            ),
             Ok(false)
         );
         assert_eq!(camera_states(&viewports), fitted);
@@ -1576,7 +1728,10 @@ mod tests {
         ] {
             let mut viewport = Viewport::new(kind);
             viewport.last_rect = Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0)));
-            assert_eq!(viewport.zoom_selected(&document), Ok(true));
+            assert_eq!(
+                viewport.zoom_selected(&document, ZoomExtentsBorders::default()),
+                Ok(true)
+            );
             assert_eq!(viewport.target, NaVector3::new(101.0, 201.0, 301.0));
             let state = |view: &Viewport| {
                 (
@@ -1587,11 +1742,18 @@ mod tests {
                 )
             };
             let fitted = state(&viewport);
-            assert!(viewport.zoom_extents(&document).is_err());
+            assert!(
+                viewport
+                    .zoom_extents(&document, ZoomExtentsBorders::default())
+                    .is_err()
+            );
             assert_eq!(state(&viewport), fitted);
             assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), selected);
             document.clear_selection();
-            assert_eq!(viewport.zoom_selected(&document), Ok(false));
+            assert_eq!(
+                viewport.zoom_selected(&document, ZoomExtentsBorders::default()),
+                Ok(false)
+            );
             assert_eq!(state(&viewport), fitted);
             document
                 .select_objects([first, second], SelectionMode::Replace)
@@ -1615,7 +1777,10 @@ mod tests {
             document.add_geometry(Geometry::Point(center)).unwrap();
             let mut view = Viewport::new(kind);
             view.last_rect = Some(rect);
-            assert_eq!(view.zoom_extents(&document), Ok(true));
+            assert_eq!(
+                view.zoom_extents(&document, ZoomExtentsBorders::default()),
+                Ok(true)
+            );
             let projected = view.project(center, rect).unwrap();
             assert!((projected - rect.center()).length() < 0.001);
             let depth = view.view_depth(center);
@@ -1628,12 +1793,20 @@ mod tests {
             ] {
                 document.add_geometry(Geometry::Point(p)).unwrap();
             }
-            assert_eq!(view.zoom_extents(&document), Ok(true));
+            assert_eq!(
+                view.zoom_extents(&document, ZoomExtentsBorders::default()),
+                Ok(true)
+            );
             for object in document.objects() {
                 let Geometry::Point(p) = object.geometry() else {
                     unreachable!()
                 };
-                assert!(rect.shrink(5.0).contains(view.project(*p, rect).unwrap()));
+                let expected = if kind.is_parallel() {
+                    rect.shrink(5.0)
+                } else {
+                    rect.expand(1.0)
+                };
+                assert!(expected.contains(view.project(*p, rect).unwrap()));
             }
             if kind.is_parallel() {
                 assert!(view.pixels_per_unit < 2.0);
@@ -1659,7 +1832,10 @@ mod tests {
             };
             let original = state(&view);
             let mut document = Document::default();
-            assert_eq!(view.zoom_extents(&document), Ok(false));
+            assert_eq!(
+                view.zoom_extents(&document, ZoomExtentsBorders::default()),
+                Ok(false)
+            );
             assert_eq!(state(&view), original);
             document
                 .add_geometry(Geometry::Point(point(0.0, 0.0, 0.0)))
@@ -1667,7 +1843,10 @@ mod tests {
             document
                 .add_geometry(Geometry::Point(point(Real::MAX, 0.0, 0.0)))
                 .unwrap();
-            assert!(view.zoom_extents(&document).is_err());
+            assert!(
+                view.zoom_extents(&document, ZoomExtentsBorders::default())
+                    .is_err()
+            );
             assert_eq!(state(&view), original);
         }
     }
@@ -1698,7 +1877,11 @@ mod tests {
             }
             let mut view = Viewport::new(kind);
             view.last_rect = Some(rect);
-            assert_eq!(view.zoom_extents(&document), Ok(true), "{kind:?}");
+            assert_eq!(
+                view.zoom_extents(&document, ZoomExtentsBorders::default()),
+                Ok(true),
+                "{kind:?}"
+            );
             for point in points {
                 assert!(view.gpu_position(point).is_some());
                 let (gpu, depth) = gpu_project(&view, rect, point, (-1.0, 1.0));
@@ -1718,7 +1901,10 @@ mod tests {
         ] {
             let mut view = Viewport::new(kind);
             view.last_rect = Some(rect);
-            assert_eq!(view.zoom_extents(&document), Ok(true));
+            assert_eq!(
+                view.zoom_extents(&document, ZoomExtentsBorders::default()),
+                Ok(true)
+            );
             assert_eq!(view.target, NaVector3::repeat(Real::MAX));
             assert_eq!(view.project(point, rect), Some(rect.center()));
             assert_eq!(view.gpu_position(point), Some([0.0; 3]));

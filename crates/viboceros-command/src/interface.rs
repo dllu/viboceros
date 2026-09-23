@@ -95,6 +95,10 @@ impl ZoomScale {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum InterfaceCommand {
     SetZoomScale(ZoomScale),
+    SetZoomExtentsBorder {
+        parallel: Option<ZoomScale>,
+        perspective: Option<ZoomScale>,
+    },
     ZoomFactor(ZoomFactor),
     ZoomIn,
     ZoomOut,
@@ -112,8 +116,9 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 12] = [
+pub const COMMAND_NAMES: [&str; 13] = [
     "Options",
+    "SetZoomExtentsBorder",
     "SnapToMeshes",
     "Zoom",
     "ZE",
@@ -127,7 +132,7 @@ pub const COMMAND_NAMES: [&str; 12] = [
     "Snap",
 ];
 
-pub const HELP: &str = "Interface: Zoom [All] Extents|Selected (ZE, ZS, ZEA, ZSA); Zoom In|Out|Factor <positive number>; Options View Zoom ScaleFactor=<positive number>; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [All] Extents|Selected (ZE, ZS, ZEA, ZSA); Zoom In|Out|Factor <positive number>; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -220,6 +225,8 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
                     "Options View Zoom ScaleFactor=<finite positive number>",
                 )),
             }
+        } else if name.eq_ignore_ascii_case("SetZoomExtentsBorder") {
+            parse_zoom_extents_border(&args)
         } else if name.eq_ignore_ascii_case("Snap") {
             if args.is_empty() {
                 Ok(InterfaceCommand::SetSnap(SwitchAction::Toggle))
@@ -262,6 +269,33 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
             return None;
         },
     )
+}
+
+fn parse_zoom_extents_border(args: &[&str]) -> Result<InterfaceCommand, InterfaceError> {
+    let usage = InterfaceError::Usage(
+        "SetZoomExtentsBorder [ParallelView=<finite positive number>] [PerspectiveView=<finite positive number>]",
+    );
+    let mut parallel = None;
+    let mut perspective = None;
+    for token in args {
+        let (name, value) = token.split_once('=').ok_or_else(|| usage.clone())?;
+        let value = value
+            .parse::<f64>()
+            .ok()
+            .and_then(ZoomScale::try_new)
+            .ok_or_else(|| usage.clone())?;
+        if keyword(name, "ParallelView") && parallel.is_none() {
+            parallel = Some(value);
+        } else if keyword(name, "PerspectiveView") && perspective.is_none() {
+            perspective = Some(value);
+        } else {
+            return Err(usage);
+        }
+    }
+    Ok(InterfaceCommand::SetZoomExtentsBorder {
+        parallel,
+        perspective,
+    })
 }
 
 fn parse_display_mode(args: &[&str]) -> Result<InterfaceCommand, InterfaceError> {
@@ -319,6 +353,14 @@ impl InterfaceState {
             InterfaceCommand::SetZoomScale(scale) => {
                 format!("View zoom scale factor {} requested", scale.value())
             }
+            InterfaceCommand::SetZoomExtentsBorder {
+                parallel,
+                perspective,
+            } => format!(
+                "Zoom extents border requested (parallel={}, perspective={})",
+                parallel.map_or_else(|| "unchanged".into(), |value| value.value().to_string()),
+                perspective.map_or_else(|| "unchanged".into(), |value| value.value().to_string())
+            ),
             InterfaceCommand::ZoomFactor(factor) => {
                 format!("Zoom factor {} requested (active viewport)", factor.value())
             }

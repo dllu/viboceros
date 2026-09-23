@@ -67,9 +67,18 @@ and large intermediate screen-coordinate differences.
 
 The camera target moves to the center of the combined visible-object bounds,
 pan resets, and the existing view orientation is retained. Parallel views change
-scale; Perspective changes camera distance without changing its lens. All eight
-box corners are fitted with a five-percent margin on each screen edge. Hidden
-objects/layers are excluded; visible locked geometry is included. Bounds use
+scale; Perspective changes camera distance without changing its lens. The default
+`SetZoomExtentsBorder` factors are `ParallelView=1.1` and `PerspectiveView=1`:
+the parallel factor leaves about 4.55% of the viewport's limiting dimension on
+each side,
+while perspective fits the bounding box up to the viewport edges. Set either
+factor independently with `SetZoomExtentsBorder ParallelView=<number>` or
+`PerspectiveView=<number>`, or use the View options menu. A value below 1 crops
+the fitted bounds. The settings apply to Extents and Selected in active and all
+viewports and persist between sessions. See [Rhino's border option](https://docs.mcneel.com/rhino/8/help/en-us/commands/zoom.htm#setzoomextentsborder)
+and [McNeel's default setting example](https://discourse.mcneel.com/t/zoom-problems-in-parallel-views-v7-src21/146152/13).
+
+Hidden objects/layers are excluded; visible locked geometry is included. Fits use
 the existing conservative display bounds, so NURBS control hulls can leave extra
 space. Degenerate/small bounds may leave more space because parallel scale is
 capped at 2,000 pixels per model unit and perspective distance is at least 0.01.
@@ -98,5 +107,4 @@ during an unfinished modeling prompt. Selection-fitting tests exercise all four 
 geometry, empty-selection no-ops, and retained selection/model history.
 No live Rhino camera comparison has been performed for this implementation.
 
-Other Zoom options (including Window and view history) and configurable extents
-borders remain unimplemented.
+Other Zoom options, including Window and view history, remain unimplemented.

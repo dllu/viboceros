@@ -22,7 +22,7 @@ use viboceros_geometry::{
 use crate::sidebar::{DocumentSidebar, SidebarAction};
 use crate::viewport::{
     DisplayMode, DraftingInput, SelectionClick, SelectionWindow, ViewKind, Viewport, ViewportInput,
-    ViewportOutput,
+    ViewportOutput, ZoomExtentsBorders,
 };
 
 const MAX_LOG_ENTRIES: usize = 100;
@@ -1231,6 +1231,7 @@ pub struct VibocerosApp {
     smart_track: bool,
     grid_snap: bool,
     zoom_scale: f64,
+    zoom_extents_borders: ZoomExtentsBorders,
     command_focus_requested: bool,
     active_command: Option<InteractiveCommand>,
     last_point: Option<Point3>,
@@ -1261,6 +1262,7 @@ impl VibocerosApp {
             command_log.push_back(error);
         }
         let zoom_scale = preferences::load_zoom_scale(creation_context.storage);
+        let zoom_extents_borders = preferences::load_zoom_extents_borders(creation_context.storage);
         Self {
             command_line,
             document: Document::default(),
@@ -1274,6 +1276,7 @@ impl VibocerosApp {
             smart_track: true,
             grid_snap: true,
             zoom_scale,
+            zoom_extents_borders,
             command_focus_requested: false,
             active_command: None,
             last_point: None,
@@ -5198,6 +5201,7 @@ impl VibocerosApp {
 impl eframe::App for VibocerosApp {
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
         preferences::save_zoom_scale(storage, self.zoom_scale);
+        preferences::save_zoom_extents_borders(storage, self.zoom_extents_borders);
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
@@ -5452,6 +5456,7 @@ mod tests {
             smart_track: true,
             grid_snap: true,
             zoom_scale: DEFAULT_ZOOM_SCALE,
+            zoom_extents_borders: ZoomExtentsBorders::default(),
             command_focus_requested: false,
             active_command: None,
             last_point: None,

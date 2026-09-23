@@ -3,6 +3,37 @@
 use super::*;
 use viboceros_geometry::BoundingBox3;
 
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub(crate) struct ZoomExtentsBorders {
+    pub parallel: Real,
+    pub perspective: Real,
+}
+
+impl Default for ZoomExtentsBorders {
+    fn default() -> Self {
+        Self {
+            parallel: 1.1,
+            perspective: 1.0,
+        }
+    }
+}
+
+impl ZoomExtentsBorders {
+    pub(crate) fn valid(self) -> bool {
+        [self.parallel, self.perspective]
+            .into_iter()
+            .all(|value| value.is_finite() && value > 0.0 && value.recip().is_finite())
+    }
+
+    fn for_kind(self, kind: ViewKind) -> Real {
+        if kind.is_parallel() {
+            self.parallel
+        } else {
+            self.perspective
+        }
+    }
+}
+
 struct CameraFit {
     target: NaVector3<Real>,
     scale: f32,
@@ -26,7 +57,11 @@ impl Viewport {
         viewports: &mut [Self],
         document: &Document,
         selected_only: bool,
+        borders: ZoomExtentsBorders,
     ) -> Result<bool, &'static str> {
+        if !borders.valid() {
+            return Err("invalid zoom extents border scale");
+        }
         let Some(bounds) = Self::zoom_bounds(document, selected_only) else {
             return Ok(false);
         };
@@ -34,7 +69,7 @@ impl Viewport {
             .iter()
             .map(|viewport| {
                 let rect = viewport.last_rect.ok_or("viewport has not been laid out")?;
-                viewport.fit_bounds(bounds, rect)
+                viewport.fit_bounds(bounds, rect, borders.for_kind(viewport.kind))
             })
             .collect::<Result<Vec<_>, _>>()?;
         for (viewport, fit) in viewports.iter_mut().zip(fits) {
@@ -43,24 +78,37 @@ impl Viewport {
         Ok(!viewports.is_empty())
     }
 
-    pub(crate) fn zoom_extents(&mut self, document: &Document) -> Result<bool, &'static str> {
-        self.zoom_objects(document, false)
+    pub(crate) fn zoom_extents(
+        &mut self,
+        document: &Document,
+        borders: ZoomExtentsBorders,
+    ) -> Result<bool, &'static str> {
+        self.zoom_objects(document, false, borders)
     }
 
-    pub(crate) fn zoom_selected(&mut self, document: &Document) -> Result<bool, &'static str> {
-        self.zoom_objects(document, true)
+    pub(crate) fn zoom_selected(
+        &mut self,
+        document: &Document,
+        borders: ZoomExtentsBorders,
+    ) -> Result<bool, &'static str> {
+        self.zoom_objects(document, true, borders)
     }
 
     fn zoom_objects(
         &mut self,
         document: &Document,
         selected_only: bool,
+        borders: ZoomExtentsBorders,
     ) -> Result<bool, &'static str> {
+        if !borders.valid() {
+            return Err("invalid zoom extents border scale");
+        }
         let rect = self.last_rect.ok_or("viewport has not been laid out")?;
         let Some(bounds) = Self::zoom_bounds(document, selected_only) else {
             return Ok(false);
         };
-        self.fit_bounds(bounds, rect)?.apply(self);
+        self.fit_bounds(bounds, rect, borders.for_kind(self.kind))?
+            .apply(self);
         Ok(true)
     }
 
@@ -78,7 +126,12 @@ impl Viewport {
             .reduce(|a, b| a.union(b).expect("finite bounds"))
     }
 
-    fn fit_bounds(&self, bounds: BoundingBox3, rect: Rect) -> Result<CameraFit, &'static str> {
+    fn fit_bounds(
+        &self,
+        bounds: BoundingBox3,
+        rect: Rect,
+        border: Real,
+    ) -> Result<CameraFit, &'static str> {
         if !rect.is_finite()
             || !rect.is_positive()
             || !rect.width().is_finite()
@@ -86,6 +139,10 @@ impl Viewport {
         {
             return Err("invalid viewport dimensions");
         }
+        if !border.is_finite() || border <= 0.0 || !border.recip().is_finite() {
+            return Err("invalid zoom extents border scale");
+        }
+        let available_half = 0.5 / border;
         let center = bounds.center().map_err(|_| "invalid model bounds")?;
         let target = NaVector3::from(center.to_array());
         let minimum = bounds.min().to_array();
@@ -113,8 +170,8 @@ impl Viewport {
                     let y = local.dot(&up);
                     let z = local.dot(&forward);
                     distance = distance.max(
-                        (x.abs() * focal / (Real::from(rect.width()) * 0.45))
-                            .max(y.abs() * focal / (Real::from(rect.height()) * 0.45))
+                        (x.abs() * focal / (Real::from(rect.width()) * available_half))
+                            .max(y.abs() * focal / (Real::from(rect.height()) * available_half))
                             - z,
                     );
                     distance = distance.max(-z + MIN_PERSPECTIVE_CAMERA_DISTANCE);
@@ -127,8 +184,8 @@ impl Viewport {
         if bounds.min() == bounds.max() {
             distance = DEFAULT_PERSPECTIVE_CAMERA_DISTANCE;
         }
-        let scale = (Real::from(rect.width()) * 0.45 / horizontal)
-            .min(Real::from(rect.height()) * 0.45 / vertical);
+        let scale = (Real::from(rect.width()) * available_half / horizontal)
+            .min(Real::from(rect.height()) * available_half / vertical);
         let scale = if scale.is_infinite() {
             40.0
         } else {
@@ -170,7 +227,7 @@ impl Viewport {
             }
             if !staged
                 .project(corner, rect)
-                .is_some_and(|point| rect.contains(point))
+                .is_some_and(|point| border < 1.0 || rect.expand(1.0).contains(point))
             {
                 return Err("model extents cannot be represented by this camera");
             }

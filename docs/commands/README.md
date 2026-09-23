@@ -41,7 +41,7 @@ Rhino's complete command set is still a work in progress.
 - [Model tolerances](../tolerances.md)
 - [Native planar STEP export](export-step.md)
 - [Display modes and drafting controls](interface.md)
-- [Zoom to extents and selection](zoom.md)
+- [Zoom, extents, and border settings](zoom.md)
 - [Construction-plane editing](../cplane.md)
 
 See [viewport controls](../interface.md) for picking and interactive input, and

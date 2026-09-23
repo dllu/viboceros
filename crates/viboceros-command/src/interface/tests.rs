@@ -118,6 +118,53 @@ fn view_zoom_scale_option_requires_a_finite_positive_reciprocal() {
 }
 
 #[test]
+fn zoom_extents_border_accepts_independent_scales_and_rejects_duplicates() {
+    let cases = [
+        (
+            "SetZoomExtentsBorder",
+            InterfaceCommand::SetZoomExtentsBorder {
+                parallel: None,
+                perspective: None,
+            },
+        ),
+        (
+            "'_SetZoomExtentsBorder _ParallelView=1.5",
+            InterfaceCommand::SetZoomExtentsBorder {
+                parallel: ZoomScale::try_new(1.5),
+                perspective: None,
+            },
+        ),
+        (
+            "SetZoomExtentsBorder PerspectiveView=0.8 ParallelView=1",
+            InterfaceCommand::SetZoomExtentsBorder {
+                parallel: ZoomScale::try_new(1.0),
+                perspective: ZoomScale::try_new(0.8),
+            },
+        ),
+    ];
+    for (input, expected) in cases {
+        assert_eq!(parse(input), Some(Ok(expected)));
+        let mut current = state();
+        let original = current.clone();
+        current.apply(expected).unwrap();
+        assert_eq!(current, original);
+    }
+    for input in [
+        "SetZoomExtentsBorder ParallelView",
+        "SetZoomExtentsBorder ParallelView=0",
+        "SetZoomExtentsBorder PerspectiveView=NaN",
+        "SetZoomExtentsBorder PerspectiveView=5e-324",
+        "SetZoomExtentsBorder ParallelView=1 ParallelView=2",
+        "SetZoomExtentsBorder Other=1",
+    ] {
+        assert!(
+            matches!(parse(input), Some(Err(InterfaceError::Usage(_)))),
+            "{input}"
+        );
+    }
+}
+
+#[test]
 fn zoom_extents_is_a_validated_host_action() {
     for (input, expected) in [
         ("Zoom All Extents", InterfaceCommand::ZoomAllExtents),

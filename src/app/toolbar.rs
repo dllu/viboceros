@@ -79,6 +79,32 @@ impl VibocerosApp {
                     {
                         self.apply_interface_command(InterfaceCommand::SetZoomScale(scale));
                     }
+                    ui.separator();
+                    for (label, current, parallel_view) in [
+                        (
+                            "Parallel extents ",
+                            self.zoom_extents_borders.parallel,
+                            true,
+                        ),
+                        (
+                            "Perspective extents ",
+                            self.zoom_extents_borders.perspective,
+                            false,
+                        ),
+                    ] {
+                        let mut value = current;
+                        if ui
+                            .add(egui::DragValue::new(&mut value).speed(0.01).prefix(label))
+                            .on_hover_text("Scale of the Zoom Extents fitting bounds")
+                            .changed()
+                            && let Some(value) = ZoomScale::try_new(value)
+                        {
+                            self.apply_interface_command(InterfaceCommand::SetZoomExtentsBorder {
+                                parallel: parallel_view.then_some(value),
+                                perspective: (!parallel_view).then_some(value),
+                            });
+                        }
+                    }
                 });
                 ui.separator();
                 for (enabled, label, hint, command) in [

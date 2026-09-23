@@ -36,7 +36,8 @@ fn imported_surfaces_produce_shaded_pixels() {
         let mut view = Viewport::new(ViewKind::Perspective);
         view.last_rect = Some(rect);
         view.display_mode = DisplayMode::Shaded;
-        view.zoom_extents(&isolated).unwrap();
+        view.zoom_extents(&isolated, ZoomExtentsBorders::default())
+            .unwrap();
         let mut scene = GpuSceneBuilder::new();
         view.add_gpu_mesh_faces(&mut scene, mesh, Color32::from_gray(180));
         let pixels = renderer.render(&scene.finish(&view, rect, false));

@@ -149,6 +149,48 @@ fn view_zoom_scale_options_apply_globally_without_editing_the_model() {
 }
 
 #[test]
+fn zoom_extents_border_command_preserves_prompt_and_updates_each_projection() {
+    let mut app = test_app();
+    let context = egui::Context::default();
+    layout_viewports(&context, &mut app);
+    enter(&mut app, "Point -10,-5,0");
+    enter(&mut app, "Point 10,5,0");
+    enter(&mut app, "Line");
+    enter(&mut app, "0");
+    let pending = app.active_command;
+    let objects = app.document.objects().cloned().collect::<Vec<_>>();
+    let initial = app.zoom_extents_borders;
+    assert_eq!(initial, ZoomExtentsBorders::default());
+    enter(&mut app, "SetZoomExtentsBorder");
+    assert!(
+        app.command_log
+            .back()
+            .unwrap()
+            .contains("ParallelView=1.1 PerspectiveView=1")
+    );
+    enter(
+        &mut app,
+        "SetZoomExtentsBorder ParallelView=1.5 PerspectiveView=0.8",
+    );
+    assert_eq!(app.zoom_extents_borders.parallel, 1.5);
+    assert_eq!(app.zoom_extents_borders.perspective, 0.8);
+    enter(&mut app, "ZE");
+    assert!(
+        app.command_log
+            .back()
+            .unwrap()
+            .starts_with("Zoomed to visible")
+    );
+    enter(&mut app, "ZEA");
+    assert!(app.command_log.back().unwrap().ends_with("(all viewports)"));
+    enter(&mut app, "SetZoomExtentsBorder PerspectiveView=0");
+    assert!(app.command_log.back().unwrap().starts_with("Error:"));
+    assert_eq!(app.zoom_extents_borders.perspective, 0.8);
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
+}
+
+#[test]
 fn tolerance_command_updates_settings_through_application_history() {
     let mut app = test_app();
     let initial = app.document.tolerance();
