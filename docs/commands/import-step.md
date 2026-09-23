@@ -21,8 +21,9 @@ NURBS patches,
 including a full-turn wall with a paired `SEAM_CURVE` and explicit face-local
 UV curves. This changes the angular parameterization within each arc while
 retaining the surface and trim geometry. Ring-torus patches and spherical bands
-away from the poles with straight UV iso-trims also convert to exact rational
-patches. Full major-angle torus strips and full-longitude sphere bands can use
+away from the poles with straight UV iso-trims, including certified collinear
+higher-degree p-curves, also convert to exact rational patches. Full major-angle
+torus strips and full-longitude sphere bands can use
 paired seams; pole trims still require singular-topology support. Linear
 extrusions of line and B-spline/NURBS directrices convert to exact tensor-product
 NURBS surfaces. Revolutions of those directrices with straight UV iso-trims also

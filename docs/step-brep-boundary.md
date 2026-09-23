@@ -252,7 +252,8 @@ hyperbolas use exact quadratic conversions for 3D edges and UV trims. Cylindrica
 and nonsingular conical faces with straight UV iso-trims spanning up to one turn use
 exact rational patches, including paired `SEAM_CURVE` uses on a full-turn wall;
 angular parameters within each arc are reparameterized consistently with their
-trims. Ring-torus patches and spherical bands away from the poles with straight
+trims. Straight UV iso-trims can be certified collinear higher-degree p-curves.
+Ring-torus patches and spherical bands away from the poles with straight
 UV iso-trims use exact rational biquadratic patches, including full-angle seam
 strips. Linear extrusions of line and B-spline/NURBS directrices use exact
 tensor-product NURBS patches. Revolutions of those directrices with straight UV

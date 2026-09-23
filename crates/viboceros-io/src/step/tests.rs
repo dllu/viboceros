@@ -1021,7 +1021,8 @@ fn native_step_imports_analytic_ellipse_arc() {
 #[test]
 fn native_step_imports_analytic_open_revolved_patches() {
     use monstertruck::modeling::{
-        Invertible, Line, Point2 as TruckPoint2, Processor, RevolutionSurface, Vector3, builder,
+        BsplineCurve, Invertible, KnotVector, Line, Point2 as TruckPoint2, Processor,
+        RevolutionSurface, Vector3, builder,
     };
     use monstertruck::step::load::step_geometry::{
         Curve2D, Curve3D, ElementarySurface, StepParameterCurve, Surface,
@@ -1148,6 +1149,39 @@ fn native_step_imports_analytic_open_revolved_patches() {
             assert_eq!(brep.faces().len(), 1);
             let expected_area = angle * (2. + top_radius) * 3_f64.hypot(top_radius - 2.) / 2.;
             assert!((brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
+            if slope == 0. && angle == std::f64::consts::FRAC_PI_2 {
+                let mut spline_trimmed = decoded.clone();
+                let spline_surface = spline_trimmed.faces[0].surface.clone();
+                let use_ = &mut spline_trimmed.faces[0].boundaries[0][0];
+                let p0 = TruckPoint2::new(0., 0.);
+                let p1 = TruckPoint2::new(angle, 0.);
+                use_.trim_curve = Some(StepParameterCurve::new(
+                    Box::new(Curve2D::BsplineCurve(BsplineCurve::new(
+                        KnotVector::bezier_knot(2),
+                        vec![p0, TruckPoint2::new(angle / 2., 0.), p1],
+                    ))),
+                    Box::new(spline_surface),
+                ));
+                let mut spline_models = StepModels::default();
+                spline_models.push_trimmed_shell(&spline_trimmed);
+                let spline_text =
+                    CompleteStepDisplay::new(spline_models, StepHeaderDescriptor::default())
+                        .to_string();
+                let spline_native =
+                    read_step_native_instances(Cursor::new(&spline_text), Tolerance::DEFAULT)
+                        .unwrap();
+                let spline_face = &spline_native.instances[0].brep.faces()[0];
+                assert_eq!(spline_face.loops()[0].trims()[0].curve().degree(), 2);
+                assert!(
+                    (spline_native.instances[0]
+                        .brep
+                        .area(Tolerance::DEFAULT)
+                        .unwrap()
+                        - expected_area)
+                        .abs()
+                        < 1e-8
+                );
+            }
             for u in [0., angle * 0.25, angle * 0.5, angle * 0.75, angle] {
                 for v in [0., 1.5, 3.] {
                     let point = brep.faces()[0].surface().evaluate(u, v).unwrap();
@@ -1578,7 +1612,7 @@ fn native_step_imports_full_turn_toroidal_strip_seam() {
 
 #[test]
 fn native_step_imports_full_turn_revolved_bspline_seam() {
-    use monstertruck::meshing::prelude::ParametricSurface;
+    use monstertruck::meshing::prelude::{BoundedCurve, ParametricCurve, ParametricSurface};
     use monstertruck::modeling::{
         BsplineCurve, Invertible, KnotVector, Line, Point2 as TruckPoint2, Processor,
         RevolutionSurface, Transformed, TrimmedCurve, UnitCircle, Vector3,
@@ -1695,6 +1729,39 @@ fn native_step_imports_full_turn_revolved_bspline_seam() {
         2
     );
     assert!(brep.area(Tolerance::DEFAULT).unwrap() > 8. * std::f64::consts::PI);
+
+    let mut spline_shell = shell.clone();
+    let spline_surface = spline_shell.faces[0].surface.clone();
+    let use_ = &mut spline_shell.faces[0].boundaries[0][0];
+    let original = use_.trim_curve.as_ref().unwrap().curve();
+    let (start, end) = original.range_tuple();
+    let p0 = original.evaluate(start);
+    let p1 = original.evaluate(end);
+    use_.trim_curve = Some(StepParameterCurve::new(
+        Box::new(Curve2D::BsplineCurve(BsplineCurve::new(
+            KnotVector::bezier_knot(2),
+            vec![p0, TruckPoint2::new((p0.x + p1.x) / 2., p0.y), p1],
+        ))),
+        Box::new(spline_surface),
+    ));
+    let mut spline_models = StepModels::default();
+    spline_models.push_trimmed_shell(&spline_shell);
+    let spline_text =
+        CompleteStepDisplay::new(spline_models, StepHeaderDescriptor::default()).to_string();
+    let spline_native =
+        read_step_native_instances(Cursor::new(spline_text), Tolerance::DEFAULT).unwrap();
+    let spline_brep = &spline_native.instances[0].brep;
+    assert_eq!(
+        spline_brep.faces()[0].loops()[0].trims()[0]
+            .curve()
+            .degree(),
+        2
+    );
+    assert!(
+        (spline_brep.area(Tolerance::DEFAULT).unwrap() - brep.area(Tolerance::DEFAULT).unwrap())
+            .abs()
+            < 1e-8
+    );
 }
 
 #[test]
@@ -2001,9 +2068,10 @@ fn native_step_imports_exact_line_bspline_and_nurbs_extrusions() {
 
 #[test]
 fn native_step_imports_exact_spherical_bands() {
-    use monstertruck::meshing::prelude::ParametricSurface;
+    use monstertruck::meshing::prelude::{BoundedCurve, ParametricCurve, ParametricSurface};
     use monstertruck::modeling::{
-        Line, Point2 as TruckPoint2, Processor, Sphere as TruckSphere, builder,
+        BsplineCurve, KnotVector, Line, Point2 as TruckPoint2, Processor, Sphere as TruckSphere,
+        builder,
     };
     use monstertruck::step::load::step_geometry::{
         Curve2D, Curve3D, ElementarySurface, Sphere as StepSphere, StepParameterCurve, Surface,
@@ -2104,6 +2172,37 @@ fn native_step_imports_exact_spherical_bands() {
         );
         let expected_area = 4. * u_span * (v1.sin() - v0.sin());
         assert!((brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
+        if u_span == std::f64::consts::FRAC_PI_3 {
+            let mut spline_shell = decoded;
+            let spline_surface = spline_shell.faces[0].surface.clone();
+            let use_ = &mut spline_shell.faces[0].boundaries[0][0];
+            let original = use_.trim_curve.as_ref().unwrap().curve();
+            let (start, end) = original.range_tuple();
+            let p0 = original.evaluate(start);
+            let p1 = original.evaluate(end);
+            use_.trim_curve = Some(StepParameterCurve::new(
+                Box::new(Curve2D::BsplineCurve(BsplineCurve::new(
+                    KnotVector::bezier_knot(2),
+                    vec![p0, TruckPoint2::new((p0.x + p1.x) / 2., p0.y), p1],
+                ))),
+                Box::new(spline_surface),
+            ));
+            let mut spline_models = StepModels::default();
+            spline_models.push_trimmed_shell(&spline_shell);
+            let spline_text =
+                CompleteStepDisplay::new(spline_models, StepHeaderDescriptor::default())
+                    .to_string();
+            let spline_native =
+                read_step_native_instances(Cursor::new(spline_text), Tolerance::DEFAULT).unwrap();
+            let spline_brep = &spline_native.instances[0].brep;
+            assert_eq!(
+                spline_brep.faces()[0].loops()[0].trims()[0]
+                    .curve()
+                    .degree(),
+                2
+            );
+            assert!((spline_brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
+        }
         for u in [u0, u0 + (u1 - u0) * 0.23, (u0 + u1) / 2., u1] {
             for v in [v0, v0 + 0.39 * (v1 - v0), v0 + 0.81 * (v1 - v0), v1] {
                 let p = brep.faces()[0].surface().evaluate(u, v).unwrap();

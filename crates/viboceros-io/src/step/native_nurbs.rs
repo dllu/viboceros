@@ -560,7 +560,7 @@ fn surface(
             let mut u0 = f64::INFINITY;
             let mut u1 = f64::NEG_INFINITY;
             for trim in boundaries.iter().flatten() {
-                if trim.curve().degree() != 1 || trim.curve().control_points().len() != 2 {
+                if !trim.curve().is_straight_segment() {
                     return Err(unsupported("revolution requires straight UV iso-trims"));
                 }
                 let start = trim.curve().start_point()?;
@@ -623,7 +623,7 @@ fn surface(
             let mut min = [f64::INFINITY; 2];
             let mut max = [f64::NEG_INFINITY; 2];
             for trim in boundaries.iter().flatten() {
-                if trim.curve().degree() != 1 || trim.curve().control_points().len() != 2 {
+                if !trim.curve().is_straight_segment() {
                     return Err(unsupported(
                         "revolved line surface requires straight UV iso-trims",
                     ));
@@ -687,7 +687,7 @@ fn surface(
             let mut min = [f64::INFINITY; 2];
             let mut max = [f64::NEG_INFINITY; 2];
             for trim in boundaries.iter().flatten() {
-                if trim.curve().degree() != 1 || trim.curve().control_points().len() != 2 {
+                if !trim.curve().is_straight_segment() {
                     return Err(unsupported(
                         "angular surface requires straight UV iso-trims",
                     ));
