@@ -8010,15 +8010,19 @@ fn trimmed_isocurve_intervals(
 
     let mut epsilon =
         trim_parameter_epsilon([*varying_domain.start(), *varying_domain.end()], tolerance);
+    let mut fixed_epsilon =
+        trim_parameter_epsilon([*fixed_domain.start(), *fixed_domain.end()], tolerance);
     let mut events = Vec::new();
     let mut overlaps = Vec::new();
     for trim in face.loops.iter().flat_map(|face_loop| &face_loop.trims) {
         epsilon = epsilon.max(trim.tolerance[varying_axis]);
+        fixed_epsilon = fixed_epsilon.max(trim.tolerance[fixed_axis]);
         collect_trim_scan_data(
             &trim.curve,
             fixed_axis,
             varying_axis,
             fixed_value,
+            fixed_epsilon,
             &mut events,
             &mut overlaps,
         )?;
@@ -8105,16 +8109,40 @@ fn collect_trim_scan_data(
     fixed_axis: usize,
     varying_axis: usize,
     fixed_value: Real,
+    fixed_epsilon: Real,
     events: &mut Vec<Real>,
     overlaps: &mut Vec<[Real; 2]>,
 ) -> Result<(), GeometryError> {
     let spans = scalar_bezier_spans(curve, fixed_axis, fixed_value)?;
+    // Scalar Bezier coefficients are coordinate differences divided by the
+    // largest coordinate, then weighted by each control's relative weight.
+    // A bound using the smallest positive weight proves the entire rational
+    // span lies inside the scan slab. This catches trim edges at a padded
+    // planar support surface's boundary without treating other spans as
+    // collinear.
+    let coordinate_scale = curve
+        .control_points()
+        .iter()
+        .map(|control| parameter_coordinate(control.point(), fixed_axis).abs())
+        .fold(fixed_value.abs(), Real::max)
+        .max(1.0);
+    let weight_min = curve
+        .control_points()
+        .iter()
+        .map(|control| control.weight())
+        .fold(Real::INFINITY, Real::min);
+    let weight_max = curve
+        .control_points()
+        .iter()
+        .map(|control| control.weight())
+        .fold(0.0, Real::max);
+    let near_zero = (fixed_epsilon / coordinate_scale) * (weight_min / weight_max);
     let mut roots = Vec::new();
     for span in spans {
         if span
             .coefficients
             .iter()
-            .all(|coefficient| *coefficient == 0.0)
+            .all(|coefficient| coefficient.abs() <= near_zero)
         {
             let start = curve.evaluate(span.parameter[0])?;
             let end = curve.evaluate(span.parameter[1])?;

@@ -59,6 +59,14 @@ impl FiniteSum {
         Ok(value)
     }
 
+    /// Applies a finite display scale before the final binary64 rounding.
+    /// This can represent a converted total even when the unscaled total
+    /// exceeds binary64's range.
+    pub fn scaled_total(&self, scale: Real) -> Result<Real, GeometryError> {
+        require_finite([scale], "sum scale")?;
+        scalar(&(self.exact_total() * crate::exact_scalar::rational(scale)))
+    }
+
     /// Arithmetic mean with one final nearest-even rounding. The exact total
     /// need not fit in binary64. An empty accumulator has no mean. Unlike
     /// `total`, this final division uses temporary arbitrary-precision integers.
@@ -89,6 +97,15 @@ impl FiniteSum {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn scaled_total_avoids_intermediate_sum_overflow() {
+        let mut sum = FiniteSum::default();
+        sum.add(f64::MAX).unwrap();
+        sum.add(f64::MAX).unwrap();
+        assert!(sum.total().is_err());
+        assert_eq!(sum.scaled_total(0.25).unwrap(), f64::MAX * 0.5);
+    }
 
     #[test]
     fn means_round_once_without_overflow_or_premature_subnormal_loss() {

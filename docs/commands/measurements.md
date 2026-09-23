@@ -159,7 +159,16 @@ leave the prompt open for correction. These queries preserve selection and
 undo/redo state. Rhino also documents `SubCrv` for
 [Length](https://docs.mcneel.com/rhino/8/help/en-us/commands/length.htm); the
 parameter and world-point argument forms are native scripting conveniences.
-Rhino's `Units`, `SelChain`, and mesh/SubD edge length inputs remain pending.
+Add `Units=Centimeters` (or another physical unit name or abbreviation) to a
+complete `Length` or `Length SubCrv` command to convert only the reported value.
+`Units=Model_Units` clears the override. With command-first selection, units can
+be specified at startup or during selection; partial-curve point prompts accept
+changes at either point. The source model must have physical units for a
+conversion, and overflowing or underflowing display results are rejected. The
+unit setting and geometry remain unchanged. Selected lengths are accumulated
+exactly before display scaling, so a converted total can be reported even if
+the unconverted total exceeds binary64's range. Rhino's `SelChain` and
+mesh/SubD edge length inputs remain pending.
 
 Totals use round-trip decimal digits, rather than a fixed twelve decimal places.
 Nonzero magnitudes below `1e-6` or at least `1e12` use scientific notation; zero

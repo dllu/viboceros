@@ -39,11 +39,15 @@ impl VibocerosApp {
         name: &'static str,
         start: Option<Point3>,
         point: Point3,
+        display_units: Option<&'static str>,
     ) -> bool {
         let Some(start) = start else {
             let next = match name {
                 "Domain" => InteractiveCommand::DomainSubCrv { start: Some(point) },
-                "Length" => InteractiveCommand::LengthSubCrv { start: Some(point) },
+                "Length" => InteractiveCommand::LengthSubCrv {
+                    start: Some(point),
+                    display_units,
+                },
                 _ => unreachable!("only supported subcurve measurements are dispatched"),
             };
             self.active_command = Some(next);
@@ -51,9 +55,12 @@ impl VibocerosApp {
             return true;
         };
         let input = format!(
-            "{name} SubCrv {} {}",
+            "{name} SubCrv {} {}{}",
             format_model_point(start),
-            format_model_point(point)
+            format_model_point(point),
+            display_units
+                .map(|units| format!(" Units={units}"))
+                .unwrap_or_default()
         );
         match self.commands.execute(&mut self.document, &input) {
             Ok(report) => {

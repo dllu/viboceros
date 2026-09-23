@@ -5,7 +5,7 @@ use super::{
     geometry_curve_ref, option_name_eq, require_consumed,
 };
 use viboceros_document::{Document, Geometry};
-use viboceros_geometry::{FiniteSum, GeometryError, Real, Tolerance};
+use viboceros_geometry::{FiniteSum, GeometryError, LengthUnitSystem, Real, Tolerance};
 
 mod angle;
 mod area_centroid;
@@ -38,7 +38,51 @@ fn format_measurement(value: Real) -> String {
 }
 
 pub(super) struct LengthCommand;
-const LENGTH_USAGE: &str = "Length [SubCrv Parameter=start,end|SubCrv start_point end_point]";
+const LENGTH_USAGE: &str =
+    "Length [SubCrv Parameter=start,end|SubCrv start_point end_point] [Units=name]";
+
+fn length_display_option(argument: &str) -> Result<Option<LengthUnitSystem>, CommandError> {
+    let (name, value) = argument
+        .split_once('=')
+        .ok_or(CommandError::Usage(LENGTH_USAGE))?;
+    if !option_name_eq(name, "Units") {
+        return Err(CommandError::Usage(LENGTH_USAGE));
+    }
+    Ok(distance_display_units(value)?.and_then(crate::model_units::parse_units))
+}
+
+fn length_display_scale(
+    document: &Document,
+    target: Option<&LengthUnitSystem>,
+) -> Result<Real, CommandError> {
+    let Some(target) = target else {
+        return Ok(1.0);
+    };
+    if document
+        .units()
+        .meters_per_unit()
+        .map_err(viboceros_document::DocumentError::from)?
+        .is_none()
+    {
+        return Err(CommandError::Usage(
+            "Length display conversion requires physical source units",
+        ));
+    }
+    Ok(document
+        .units()
+        .scale_to(target)
+        .map_err(viboceros_document::DocumentError::from)?)
+}
+
+fn length_report(count: usize, total: Real, target: Option<&LengthUnitSystem>) -> String {
+    format!(
+        "Measured {count} curve(s): total length {}{}",
+        format_measurement(total),
+        target
+            .map(|unit| format!(" {}", unit.name()))
+            .unwrap_or_default()
+    )
+}
 
 impl Command for LengthCommand {
     fn name(&self) -> &'static str {
@@ -57,20 +101,47 @@ impl Command for LengthCommand {
         &self,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        let subcurve = matches!(arguments, [option] if option_name_eq(option, "SubCrv"));
-        Ok(
-            (arguments.is_empty() || subcurve).then_some(ObjectSelectionPrompt {
-                command: "Length",
-                filter: ObjectSelectionFilter::Curves,
-                workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
-                options: vec![],
-                menus: vec![],
-                choices: vec![],
-            }),
-        )
+        let subcurve = arguments
+            .first()
+            .is_some_and(|option| option_name_eq(option, "SubCrv"));
+        let eligible = match arguments {
+            [] => true,
+            [option] if subcurve => true,
+            [option] => {
+                length_display_option(option)?;
+                true
+            }
+            [_, units] if subcurve => {
+                length_display_option(units)?;
+                true
+            }
+            _ => false,
+        };
+        Ok(eligible.then_some(ObjectSelectionPrompt {
+            command: "Length",
+            filter: ObjectSelectionFilter::Curves,
+            workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
+            options: vec![],
+            menus: vec![],
+            choices: vec![],
+        }))
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (arguments, target) = match arguments.last() {
+            Some(last)
+                if last
+                    .split_once('=')
+                    .is_some_and(|(name, _)| option_name_eq(name, "Units")) =>
+            {
+                (
+                    &arguments[..arguments.len() - 1],
+                    length_display_option(last)?,
+                )
+            }
+            _ => (arguments, None),
+        };
+        let scale = length_display_scale(document, target.as_ref())?;
         if arguments
             .first()
             .is_some_and(|argument| option_name_eq(argument, "SubCrv"))
@@ -91,20 +162,32 @@ impl Command for LengthCommand {
                 LENGTH_USAGE,
             )?;
             let total = part.as_ref().length(document.tolerance())?;
-            return Ok(format!(
-                "Measured 1 curve(s): total length {}",
-                format_measurement(total)
-            ));
+            let total = distance::display_value(total, scale)?;
+            return Ok(length_report(1, total, target.as_ref()));
         }
         require_consumed(arguments, 0, "Length")?;
-        let (count, total) = selected_measurement(document, |geometry, tolerance| {
+        let (count, sum) = accumulate_selected_measurement(document, |geometry, tolerance| {
             geometry_curve_ref(geometry)
                 .ok_or(CommandError::UnsupportedLengthGeometry)?
                 .length(tolerance)
                 .map_err(CommandError::from)
         })?;
-        let total = format_measurement(total);
-        Ok(format!("Measured {count} curve(s): total length {total}"))
+        let total = if scale == 1.0 {
+            sum.total()?
+        } else {
+            sum.scaled_total(scale).map_err(|_| {
+                viboceros_document::DocumentError::from(
+                    viboceros_geometry::UnitError::UnrepresentableScale,
+                )
+            })?
+        };
+        if total == 0.0 && sum.total()? != 0.0 {
+            return Err(viboceros_document::DocumentError::from(
+                viboceros_geometry::UnitError::UnrepresentableScale,
+            )
+            .into());
+        }
+        Ok(length_report(count, total, target.as_ref()))
     }
 }
 
@@ -138,8 +221,16 @@ impl Command for AreaCommand {
 
 fn selected_measurement(
     document: &Document,
-    mut measure: impl FnMut(&Geometry, Tolerance) -> Result<Real, CommandError>,
+    measure: impl FnMut(&Geometry, Tolerance) -> Result<Real, CommandError>,
 ) -> Result<(usize, Real), CommandError> {
+    let (count, sum) = accumulate_selected_measurement(document, measure)?;
+    Ok((count, sum.total()?))
+}
+
+fn accumulate_selected_measurement(
+    document: &Document,
+    mut measure: impl FnMut(&Geometry, Tolerance) -> Result<Real, CommandError>,
+) -> Result<(usize, FiniteSum), CommandError> {
     let mut count = 0;
     let mut sum = FiniteSum::default();
     for object in document.selected_objects() {
@@ -156,5 +247,5 @@ fn selected_measurement(
     if count == 0 {
         return Err(CommandError::NoObjectsSelected);
     }
-    Ok((count, sum.total()?))
+    Ok((count, sum))
 }

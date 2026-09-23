@@ -17,6 +17,7 @@ pub(super) struct PendingObjectCommand {
     pub(super) phase: ObjectPromptPhase,
     pub(super) postselected: bool,
     pub(super) subcurve_measurement: bool,
+    pub(super) length_display_units: Option<&'static str>,
 }
 
 impl PendingObjectCommand {
@@ -128,6 +129,17 @@ impl VibocerosApp {
                     .trim_start_matches('_')
                     .eq_ignore_ascii_case("SubCrv")
             });
+        let length_display_units = (description.command == "Length")
+            .then(|| {
+                input
+                    .split_whitespace()
+                    .skip(1)
+                    .filter_map(|argument| argument.split_once('='))
+                    .find(|(name, _)| name.trim_start_matches('_').eq_ignore_ascii_case("Units"))
+                    .and_then(|(_, value)| viboceros_command::distance_display_units(value).ok())
+                    .flatten()
+            })
+            .flatten();
         let preselected = self
             .document
             .selected_objects()
@@ -159,6 +171,7 @@ impl VibocerosApp {
                         phase: ObjectPromptPhase::Options,
                         postselected: false,
                         subcurve_measurement,
+                        length_display_units,
                     });
                 }
                 Ok(None) => return false,
@@ -182,6 +195,7 @@ impl VibocerosApp {
                 phase: ObjectPromptPhase::Selecting,
                 postselected: true,
                 subcurve_measurement,
+                length_display_units,
             });
         }
         self.command_input.clear();
@@ -273,13 +287,16 @@ impl VibocerosApp {
                     }
                 }
             }
-            let command = pending.description.command_line();
+            let mut command = pending.description.command_line();
+            if pending.subcurve_measurement {
+                command.push_str(" SubCrv");
+            }
+            if let Some(units) = pending.length_display_units {
+                command.push_str(&format!(" Units={units}"));
+            }
             if pending.subcurve_measurement && self.domain_has_one_curve() {
                 self.object_prompt = None;
-                self.try_start_interactive_command(&format!(
-                    "{} SubCrv",
-                    pending.description.command
-                ));
+                self.try_start_interactive_command(&command);
                 return true;
             }
             if pending.description.command == "Align" {
@@ -335,6 +352,25 @@ impl VibocerosApp {
             return true;
         }
         let normalized = input.trim_start_matches(['_', '-']).to_ascii_lowercase();
+        if pending.description.command == "Length"
+            && pending.phase == ObjectPromptPhase::Selecting
+            && let Some((name, value)) = normalized.split_once('=')
+            && name.eq_ignore_ascii_case("units")
+        {
+            match viboceros_command::distance_display_units(value) {
+                Ok(units) => {
+                    pending.length_display_units = units;
+                    self.object_prompt = Some(pending);
+                    self.push_log(format!(
+                        "Length display units: {}",
+                        units.unwrap_or("Model_Units")
+                    ));
+                }
+                Err(error) => self.push_log(format!("Error: {error}")),
+            }
+            self.command_input.clear();
+            return true;
+        }
         if normalized == "selall" || normalized == "selnone" {
             if pending.phase != ObjectPromptPhase::Selecting {
                 self.push_log("Selection is fixed; finish or cancel the command".into());

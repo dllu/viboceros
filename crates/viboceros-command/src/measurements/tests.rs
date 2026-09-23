@@ -326,6 +326,81 @@ fn length_subcurve_measures_closed_curve_across_its_seam() {
 }
 
 #[test]
+fn length_display_units_convert_only_the_reported_value() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry
+        .execute(&mut document, "Units Meters Scale=No")
+        .unwrap();
+    registry
+        .execute(&mut document, "Line 0,0,0 10,0,0")
+        .unwrap();
+    registry.execute(&mut document, "SelAll").unwrap();
+    let before = format!("{document:?}");
+    for (input, expected) in [
+        (
+            "Length Units=cm",
+            "Measured 1 curve(s): total length 1000 Centimetres",
+        ),
+        (
+            "Length SubCrv Parameter=2,8 Units=cm",
+            "Measured 1 curve(s): total length 600 Centimetres",
+        ),
+        (
+            "Length SubCrv Parameter=2,8 Units=Model_Units",
+            "Measured 1 curve(s): total length 6",
+        ),
+    ] {
+        assert_eq!(registry.execute(&mut document, input).unwrap(), expected);
+        assert_eq!(format!("{document:?}"), before);
+    }
+    for input in [
+        "Length Units=unknown",
+        "Length Units=Unset",
+        "Length Units=m Units=cm",
+        "Length SubCrv Parameter=2,8 Units=Angstroms extra",
+    ] {
+        assert!(registry.execute(&mut document, input).is_err(), "{input}");
+        assert_eq!(format!("{document:?}"), before);
+    }
+    registry
+        .execute(&mut document, "Units None Scale=No")
+        .unwrap();
+    let before = format!("{document:?}");
+    assert!(registry.execute(&mut document, "Length Units=cm").is_err());
+    assert_eq!(format!("{document:?}"), before);
+}
+
+#[test]
+fn length_display_conversion_can_represent_an_overflowing_model_unit_sum() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry
+        .execute(&mut document, "Units Meters Scale=No")
+        .unwrap();
+    for _ in 0..2 {
+        registry
+            .execute(&mut document, "Line 0,0,0 1e308,0,0")
+            .unwrap();
+    }
+    registry.execute(&mut document, "SelAll").unwrap();
+    let before = format!("{document:?}");
+    assert!(registry.execute(&mut document, "Length").is_err());
+    let report = registry
+        .execute(&mut document, "Length Units=Kilometers")
+        .unwrap();
+    let total = report
+        .split_whitespace()
+        .nth(5)
+        .unwrap()
+        .parse::<f64>()
+        .unwrap();
+    assert!((total / 2e305 - 1.0).abs() < 1e-15);
+    assert!(report.ends_with("Kilometres"));
+    assert_eq!(format!("{document:?}"), before);
+}
+
+#[test]
 fn length_and_area_measure_mixed_selected_geometry_without_history() {
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::default();
