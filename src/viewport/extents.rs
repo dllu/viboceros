@@ -147,6 +147,7 @@ impl Viewport {
         let available_half = 0.5 / border;
         let center = bounds.center().map_err(|_| "invalid model bounds")?;
         let target = NaVector3::from(center.to_array());
+        let plan_frame = self.plan_frame.with_origin(center);
         let minimum = bounds.min().to_array();
         let maximum = bounds.max().to_array();
         let mut horizontal = 0.0_f64;
@@ -170,6 +171,15 @@ impl Viewport {
                 ViewKind::Back => (-local.x, local.z),
                 ViewKind::Right => (local.y, local.z),
                 ViewKind::Left => (-local.y, local.z),
+                ViewKind::Plan => {
+                    let coordinates = plan_frame
+                        .coordinates_of(
+                            Point3::try_new(corner.x, corner.y, corner.z)
+                                .map_err(|_| "invalid model bounds")?,
+                        )
+                        .map_err(|_| "model extents exceed the supported camera range")?;
+                    (coordinates[0], coordinates[1])
+                }
                 ViewKind::Perspective => {
                     let x = local.dot(&right);
                     let y = local.dot(&up);
@@ -204,6 +214,7 @@ impl Viewport {
             return Err("model extents exceed the supported camera range");
         }
         let mut staged = Viewport::new(self.kind);
+        staged.plan_frame = self.plan_frame;
         staged.target = target;
         staged.orbit_yaw = self.orbit_yaw;
         staged.orbit_pitch = self.orbit_pitch;

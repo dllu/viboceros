@@ -49,6 +49,13 @@ impl VibocerosApp {
                     self.push_log(format!("World {} view (active viewport)", view.label()));
                     return;
                 }
+                if command == InterfaceCommand::Plan {
+                    self.zoom_window_pending = false;
+                    self.zoom_target = None;
+                    self.viewports[self.active_viewport].set_plan_view();
+                    self.push_log("Plan view aligned to current construction plane".into());
+                    return;
+                }
                 if matches!(
                     command,
                     InterfaceCommand::UndoView | InterfaceCommand::RedoView

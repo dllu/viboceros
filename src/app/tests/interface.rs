@@ -398,6 +398,34 @@ fn set_view_world_resets_each_standard_camera_and_keeps_model_history() {
 }
 
 #[test]
+fn plan_uses_active_cplane_without_consuming_model_prompt_or_redo() {
+    use viboceros_command::construction_plane::WorldPlane;
+
+    let mut app = test_app();
+    for command in ["Point 1,2,3", "Undo", "Line", "0"] {
+        enter(&mut app, command);
+    }
+    app.active_viewport = 1;
+    let pending = app.active_command;
+    let redo = app.document.redo_label().map(str::to_owned);
+    let untouched = app.viewports[0].camera_snapshot();
+    app.viewports[1].plane.set(WorldPlane::Right.frame());
+    enter(&mut app, "'_Plan");
+    assert_eq!(app.viewports[1].kind(), ViewKind::Plan);
+    assert_eq!(
+        app.viewports[1].construction_plane(),
+        WorldPlane::Right.frame()
+    );
+    assert_eq!(app.viewports[0].camera_snapshot(), untouched);
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.document.redo_label(), redo.as_deref());
+    enter(&mut app, "UndoView");
+    assert_eq!(app.viewports[1].kind(), ViewKind::Perspective);
+    enter(&mut app, "RedoView");
+    assert_eq!(app.viewports[1].kind(), ViewKind::Plan);
+}
+
+#[test]
 fn zoom_extents_routes_to_the_active_view_without_cancelling_modeling_or_redo() {
     let mut app = test_app();
     for command in ["Point 100,200,300", "Point 110,210,310", "Undo"] {

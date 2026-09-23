@@ -43,7 +43,7 @@ impl ViewKind {
                 up: (2, 1.0),
                 forward: (0, 1.0),
             },
-            Self::Perspective => return None,
+            Self::Plan | Self::Perspective => return None,
         };
         Some(axes)
     }
@@ -62,7 +62,7 @@ impl Viewport {
             ViewKind::Top | ViewKind::Bottom => Some(PointCloudProjection::Xy),
             ViewKind::Front | ViewKind::Back => Some(PointCloudProjection::Xz),
             ViewKind::Right | ViewKind::Left => Some(PointCloudProjection::Yz),
-            ViewKind::Perspective => None,
+            ViewKind::Plan | ViewKind::Perspective => None,
         }
     }
 
@@ -80,6 +80,15 @@ impl Viewport {
     /// views also apply their uniform model-to-pixel scale here so GPU matrix
     /// coefficients do not become subnormal merely because the model is large.
     pub(super) fn gpu_position(&self, point: Point3) -> Option<[f32; 3]> {
+        if self.kind == ViewKind::Plan {
+            let local = self.plan_target_frame()?.coordinates_of(point).ok()?;
+            let scale = Real::from(self.pixels_per_unit);
+            return Some([
+                real_to_gpu(local[0] * scale)?,
+                real_to_gpu(local[1] * scale)?,
+                0.0,
+            ]);
+        }
         let mut local = [
             point.x() - self.target.x,
             point.y() - self.target.y,
@@ -105,9 +114,19 @@ impl Viewport {
     }
 
     fn parallel_depth_axis(&self) -> Option<(usize, f32)> {
+        if self.kind == ViewKind::Plan {
+            return Some((2, -1.0));
+        }
         self.kind
             .parallel_axes()
             .map(|axes| (axes.forward.0, axes.forward.1 as f32))
+    }
+
+    fn plan_target_frame(&self) -> Option<Frame3> {
+        Some(
+            self.plan_frame
+                .with_origin(Point3::try_from([self.target.x, self.target.y, self.target.z]).ok()?),
+        )
     }
 
     pub(super) fn encode_gpu_depth(
@@ -269,10 +288,19 @@ impl Viewport {
             let scale = Real::from(self.pixels_per_unit);
             let horizontal = (Real::from(pointer.x) - Real::from(screen_origin.x)) / scale;
             let vertical = (Real::from(screen_origin.y) - Real::from(pointer.y)) / scale;
-            let axes = self.kind.parallel_axes().expect("parallel view");
-            let mut origin = [0.0; 3];
-            origin[axes.right.0] = horizontal * axes.right.1;
-            origin[axes.up.0] = vertical * axes.up.1;
+            let origin = if self.kind == ViewKind::Plan {
+                self.plan_frame
+                    .with_origin(Point3::try_new(0.0, 0.0, 0.0).ok()?)
+                    .point_at([horizontal, vertical, 0.0])
+                    .ok()?
+                    .to_array()
+            } else {
+                let axes = self.kind.parallel_axes().expect("parallel view");
+                let mut origin = [0.0; 3];
+                origin[axes.right.0] = horizontal * axes.right.1;
+                origin[axes.up.0] = vertical * axes.up.1;
+                origin
+            };
             (
                 Point3::try_from(origin).ok()?,
                 self.apparent_intersection_normal(),
@@ -364,13 +392,16 @@ impl Viewport {
     /// Keep model-point query minimization independent of egui's f32 raster coordinates.
     pub(super) fn project_precise(&self, point: Point3, rect: Rect) -> Option<[Real; 2]> {
         let origin = self.world_origin(rect);
-        let local = NaVector3::new(point.x(), point.y(), point.z()) - self.target;
-        let (horizontal_pixels, vertical_pixels) = match self.kind.parallel_axes() {
-            Some(axes) => (
-                local[axes.right.0] * axes.right.1 * f64::from(self.pixels_per_unit),
-                local[axes.up.0] * axes.up.1 * f64::from(self.pixels_per_unit),
-            ),
-            None => {
+        let (horizontal_pixels, vertical_pixels) = match self.kind {
+            ViewKind::Plan => {
+                let coordinates = self.plan_target_frame()?.coordinates_of(point).ok()?;
+                (
+                    coordinates[0] * f64::from(self.pixels_per_unit),
+                    coordinates[1] * f64::from(self.pixels_per_unit),
+                )
+            }
+            ViewKind::Perspective => {
+                let local = NaVector3::new(point.x(), point.y(), point.z()) - self.target;
                 let (right, up, forward) = self.perspective_basis();
                 let depth = local.dot(&forward) + self.perspective_camera_distance;
                 if !depth.is_finite() || depth <= 1.0e-6 {
@@ -380,6 +411,14 @@ impl Viewport {
                 (
                     local.dot(&right) / depth * focal_length,
                     local.dot(&up) / depth * focal_length,
+                )
+            }
+            _ => {
+                let local = NaVector3::new(point.x(), point.y(), point.z()) - self.target;
+                let axes = self.kind.parallel_axes().expect("parallel view");
+                (
+                    local[axes.right.0] * axes.right.1 * f64::from(self.pixels_per_unit),
+                    local[axes.up.0] * axes.up.1 * f64::from(self.pixels_per_unit),
                 )
             }
         };
@@ -400,6 +439,15 @@ impl Viewport {
     #[cfg(test)]
     pub(super) fn unproject(&self, position: Pos2, rect: Rect, elevation: Real) -> Option<Point3> {
         let origin = self.world_origin(rect);
+        if self.kind == ViewKind::Plan {
+            let scale = Real::from(self.pixels_per_unit);
+            let horizontal = (Real::from(position.x) - Real::from(origin.x)) / scale;
+            let vertical = (Real::from(origin.y) - Real::from(position.y)) / scale;
+            return self
+                .plan_target_frame()?
+                .point_at([horizontal, vertical, elevation])
+                .ok();
+        }
         match self.kind.parallel_axes() {
             Some(axes) => {
                 let scale = Real::from(self.pixels_per_unit);
@@ -745,6 +793,27 @@ impl Viewport {
                 );
                 projection * view
             }
+            ViewKind::Plan => {
+                // Plan vertices are already in camera-local coordinates.
+                NaMatrix4::new(
+                    2.0 / width,
+                    0.0,
+                    0.0,
+                    offset_x,
+                    0.0,
+                    2.0 / height,
+                    0.0,
+                    offset_y,
+                    0.0,
+                    0.0,
+                    -1.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                )
+            }
             _ => {
                 let axes = self.kind.parallel_axes().expect("parallel view");
                 let basis = |(axis, sign): (usize, Real)| {
@@ -789,6 +858,12 @@ impl Viewport {
     }
 
     pub(super) fn view_depth(&self, point: Point3) -> Real {
+        if self.kind == ViewKind::Plan {
+            return self
+                .plan_target_frame()
+                .and_then(|frame| frame.coordinates_of(point).ok())
+                .map_or(Real::NAN, |coordinates| -coordinates[2]);
+        }
         match self.kind.parallel_axes() {
             Some(axes) => {
                 (point.to_array()[axes.forward.0] - self.target[axes.forward.0]) * axes.forward.1

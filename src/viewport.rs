@@ -8,8 +8,8 @@ use viboceros_command::ObjectSelectionFilter;
 use viboceros_command::construction_plane::{ConstructionPlaneState, WorldPlane};
 use viboceros_document::{Document, Geometry, ObjectAttributes, ObjectId, SelectionMode};
 use viboceros_geometry::{
-    CircularArc3, CurveSegment3, GeometryError, NurbsCurve, Point3, Real, Tolerance, TriangleMesh,
-    Vector3,
+    CircularArc3, CurveSegment3, Frame3, GeometryError, NurbsCurve, Point3, Real, Tolerance,
+    TriangleMesh, Vector3,
 };
 
 use crate::viewport_gpu::{
@@ -67,6 +67,7 @@ const VIEW_HISTORY_LIMIT: usize = 50;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) struct CameraSnapshot {
     kind: ViewKind,
+    plan_frame: Frame3,
     pixels_per_unit: f32,
     pan: Vec2,
     orbit_yaw: Real,
@@ -79,6 +80,7 @@ pub(crate) struct CameraSnapshot {
 pub enum ViewKind {
     Top,
     Bottom,
+    Plan,
     Perspective,
     Front,
     Back,
@@ -91,6 +93,7 @@ impl ViewKind {
         match self {
             Self::Top => "Top",
             Self::Bottom => "Bottom",
+            Self::Plan => "Plan",
             Self::Perspective => "Perspective",
             Self::Front => "Front",
             Self::Back => "Back",
@@ -201,6 +204,7 @@ pub struct Viewport {
     #[cfg(test)]
     edge_snap_queries: std::cell::Cell<usize>,
     kind: ViewKind,
+    plan_frame: Frame3,
     pub(crate) plane: ConstructionPlaneState,
     pub display_mode: DisplayMode,
     pixels_per_unit: f32,
@@ -233,6 +237,7 @@ impl Viewport {
             #[cfg(test)]
             edge_snap_queries: Default::default(),
             kind,
+            plan_frame: WorldPlane::Top.frame(),
             plane: ConstructionPlaneState::new(Self::default_plane(kind)),
             display_mode: DisplayMode::Wireframe,
             pixels_per_unit: 40.0,
@@ -253,6 +258,7 @@ impl Viewport {
     pub(crate) fn camera_snapshot(&self) -> CameraSnapshot {
         CameraSnapshot {
             kind: self.kind,
+            plan_frame: self.plan_frame,
             pixels_per_unit: self.pixels_per_unit,
             pan: self.pan,
             orbit_yaw: self.orbit_yaw,
@@ -264,6 +270,7 @@ impl Viewport {
 
     fn restore_camera(&mut self, camera: CameraSnapshot) {
         self.kind = camera.kind;
+        self.plan_frame = camera.plan_frame;
         self.pixels_per_unit = camera.pixels_per_unit;
         self.pan = camera.pan;
         self.orbit_yaw = camera.orbit_yaw;
@@ -308,6 +315,7 @@ impl Viewport {
         let direction = match self.kind {
             ViewKind::Top => [0.0, 0.0, 1.0],
             ViewKind::Bottom => [0.0, 0.0, -1.0],
+            ViewKind::Plan => self.plan_frame.z_axis().as_vector().to_array(),
             ViewKind::Front => [0.0, 1.0, 0.0],
             ViewKind::Back => [0.0, -1.0, 0.0],
             ViewKind::Right => [1.0, 0.0, 0.0],
@@ -348,6 +356,16 @@ impl Viewport {
         self.record_camera_change(previous);
     }
 
+    pub(crate) fn set_plan_view(&mut self) {
+        let previous = self.camera_snapshot();
+        self.plan_frame = self.construction_plane();
+        self.kind = ViewKind::Plan;
+        self.target = NaVector3::from(self.plan_frame.origin().to_array());
+        self.pan = Vec2::ZERO;
+        self.pixels_per_unit = 40.0;
+        self.record_camera_change(previous);
+    }
+
     pub(crate) fn construction_plane(&self) -> viboceros_geometry::Frame3 {
         self.plane.frame()
     }
@@ -356,6 +374,7 @@ impl Viewport {
         match kind {
             ViewKind::Top | ViewKind::Perspective => WorldPlane::Top,
             ViewKind::Bottom => WorldPlane::Bottom,
+            ViewKind::Plan => WorldPlane::Top,
             ViewKind::Front => WorldPlane::Front,
             ViewKind::Back => WorldPlane::Back,
             ViewKind::Right => WorldPlane::Right,
@@ -1153,6 +1172,7 @@ mod tests {
                 ViewKind::Right => [0.0, 80.0, 120.0],
                 ViewKind::Left => [0.0, 80.0, 120.0],
                 ViewKind::Perspective => [1.0, 2.0, 3.0],
+                ViewKind::Plan => unreachable!("Plan uses a captured CPlane frame"),
             };
             assert_eq!(viewport.gpu_position(model), Some(expected));
             let depth = viewport.view_depth(model);
@@ -1285,6 +1305,7 @@ mod tests {
                 ViewKind::Top | ViewKind::Bottom | ViewKind::Perspective => model.z(),
                 ViewKind::Front | ViewKind::Back => model.y(),
                 ViewKind::Right | ViewKind::Left => model.x(),
+                ViewKind::Plan => unreachable!("Plan uses a captured CPlane frame"),
             };
             let round_trip = viewport.unproject(screen, rect, fixed_coordinate).unwrap();
             assert!((round_trip.x() - model.x()).abs() < 1.0e-5);
@@ -2365,6 +2386,7 @@ mod tests {
                 ViewKind::Back => (point(0.0, 5.0, 0.0), point(0.0, -5.0, 0.0)),
                 ViewKind::Right => (point(5.0, 0.0, 0.0), point(-5.0, 0.0, 0.0)),
                 ViewKind::Left => (point(-5.0, 0.0, 0.0), point(5.0, 0.0, 0.0)),
+                ViewKind::Plan => unreachable!("Plan uses a captured CPlane frame"),
                 ViewKind::Perspective => {
                     let (_, _, forward) = viewport.perspective_basis();
                     let camera = -forward * viewport.perspective_camera_distance;
@@ -2383,6 +2405,97 @@ mod tests {
                 "{kind:?}: near={near_gpu_depth}, far={far_gpu_depth}"
             );
         }
+    }
+
+    #[test]
+    fn plan_view_uses_captured_rotated_cplane_for_cpu_gpu_and_history() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let frame = Frame3::try_from_directions(
+            point(10.0, 20.0, 30.0),
+            Vector3::try_new(1.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 1.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut view = Viewport::new(ViewKind::Perspective);
+        view.plane.set(frame);
+        let before = view.camera_snapshot();
+        view.set_plan_view();
+        assert_eq!(view.kind(), ViewKind::Plan);
+        assert_eq!(view.construction_plane(), frame);
+        assert_eq!(view.target, NaVector3::from(frame.origin().to_array()));
+        let model = frame.point_at([2.0, 3.0, 4.0]).unwrap();
+        let screen = view.project(model, rect).unwrap();
+        assert!((screen - Pos2::new(480.0, 180.0)).length() < 1.0e-3);
+        let on_plane = view.unproject_drafting_plane(screen, rect, None).unwrap();
+        let expected_plane = frame.point_at([2.0, 3.0, 0.0]).unwrap();
+        assert!(
+            (NaVector3::from(on_plane.to_array()) - NaVector3::from(expected_plane.to_array()))
+                .norm()
+                < 1.0e-6
+        );
+        let round_trip = view.unproject(screen, rect, 4.0).unwrap();
+        assert!(
+            (NaVector3::from(round_trip.to_array()) - NaVector3::from(model.to_array())).norm()
+                < 1.0e-6
+        );
+        let depth = view.view_depth(model);
+        assert!((depth + 4.0).abs() < 1.0e-10);
+        let (gpu, gpu_depth) = gpu_project(&view, rect, model, (depth - 10.0, depth + 10.0));
+        assert!((gpu - screen).length() < 1.0e-3);
+        assert!((0.0..=1.0).contains(&gpu_depth));
+
+        view.plane.set(WorldPlane::Right.frame());
+        assert_eq!(view.project(model, rect), Some(screen));
+        assert!(view.undo_view());
+        assert_eq!(view.camera_snapshot(), before);
+        assert_eq!(view.construction_plane(), WorldPlane::Right.frame());
+        assert!(view.redo_view());
+        assert_eq!(view.kind(), ViewKind::Plan);
+        assert_eq!(view.project(model, rect), Some(screen));
+    }
+
+    #[test]
+    fn plan_view_fits_rotated_extents_and_picks_point_clouds() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let frame = Frame3::try_from_directions(
+            point(10.0, 20.0, 30.0),
+            Vector3::try_new(1.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 1.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let first = frame.point_at([2.0, 3.0, 0.0]).unwrap();
+        let second = frame.point_at([-2.0, -3.0, 0.0]).unwrap();
+        let mut view = Viewport::new(ViewKind::Top);
+        view.plane.set(frame);
+        view.set_plan_view();
+        view.last_rect = Some(rect);
+        let mut document = Document::default();
+        let cloud_id = document
+            .add_geometry(Geometry::PointCloud(
+                viboceros_geometry::PointCloud3::try_new(vec![first, second]).unwrap(),
+            ))
+            .unwrap();
+        let pointer = view.project(first, rect).unwrap();
+        assert_eq!(view.pick_object(pointer, rect, &document), Some(cloud_id));
+        assert_eq!(
+            view.object_snap(
+                pointer,
+                rect,
+                &document,
+                viboceros_drafting::ObjectSnapModes::ALL
+            )
+            .unwrap()
+            .point(),
+            first
+        );
+        assert_eq!(
+            view.zoom_extents(&document, ZoomExtentsBorders::default()),
+            Ok(true)
+        );
+        assert!(rect.contains(view.project(first, rect).unwrap()));
+        assert!(rect.contains(view.project(second, rect).unwrap()));
     }
 
     #[test]

@@ -259,6 +259,22 @@ fn set_view_world_parses_all_standard_directions_without_mutating_model_state() 
     }
 }
 
+#[test]
+fn plan_parses_as_a_transparent_interface_command() {
+    for input in ["Plan", "'_Plan", "plan"] {
+        let action = parse(input).unwrap().unwrap();
+        assert_eq!(action, InterfaceCommand::Plan);
+        let mut current = state();
+        let before = current.clone();
+        current.apply(action).unwrap();
+        assert_eq!(current, before);
+    }
+    assert!(matches!(
+        parse("Plan Top"),
+        Some(Err(InterfaceError::Usage("Plan")))
+    ));
+}
+
 fn state() -> InterfaceState {
     InterfaceState {
         grid_snap: true,

@@ -237,6 +237,7 @@ fn gpu_camera_relative_geometry_preserves_large_translation_pixels() {
                     ViewKind::Right => (NaVector3::y(), NaVector3::z(), -NaVector3::x()),
                     ViewKind::Left => (-NaVector3::y(), NaVector3::z(), NaVector3::x()),
                     ViewKind::Perspective => viewport.perspective_basis(),
+                    ViewKind::Plan => unreachable!("Plan uses an arbitrary CPlane frame"),
                 };
                 let point = |x: Real, y: Real, z: Real| {
                     let v = translation + right * x + up * y + forward * z;
@@ -317,6 +318,7 @@ fn face_click_selection_uses_depth_not_insertion_order() {
             ViewKind::Right => (NaVector3::y(), NaVector3::z(), -NaVector3::x()),
             ViewKind::Left => (-NaVector3::y(), NaVector3::z(), NaVector3::x()),
             ViewKind::Perspective => viewport.perspective_basis(),
+            ViewKind::Plan => unreachable!("Plan uses an arbitrary CPlane frame"),
         };
         let origin = if kind.is_parallel() {
             NaVector3::zeros()
@@ -401,6 +403,7 @@ fn gpu_depth_and_ghosted_compositing_ignore_object_insertion_order() {
                 ViewKind::Right => (NaVector3::y(), NaVector3::z(), -NaVector3::x()),
                 ViewKind::Left => (-NaVector3::y(), NaVector3::z(), NaVector3::x()),
                 ViewKind::Perspective => viewport.perspective_basis(),
+                ViewKind::Plan => unreachable!("Plan uses an arbitrary CPlane frame"),
             };
             let origin = if kind.is_parallel() {
                 NaVector3::zeros()
