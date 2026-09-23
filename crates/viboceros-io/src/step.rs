@@ -112,7 +112,7 @@ pub enum StepError {
     #[error("STEP export requires physical length units; the source is unitless")]
     UnitlessExport,
 
-    #[error("invalid or unsupported STEP length units: {0}")]
+    #[error("invalid or unsupported STEP units: {0}")]
     InvalidLengthUnits(String),
 
     #[error("STEP import requires exactly one data section; found {count}")]
@@ -188,8 +188,8 @@ pub fn read_step_in_units<R: Read>(
     target: &LengthUnitSystem,
     tolerance: Tolerance,
 ) -> Result<StepImport, StepError> {
-    let data = read_data_section(reader)?;
-    let (scale, source_tolerance) = units::conversion_to_target(&data, target, tolerance)?;
+    let mut data = read_data_section(reader)?;
+    let (scale, source_tolerance) = units::conversion_to_target(&mut data, target, tolerance)?;
     let table = Table::from_data_section(&data);
     // The table owns its geometry. Do not retain a second parsed copy of a
     // potentially large STEP file while tessellating its shapes.

@@ -1,4 +1,5 @@
 //! Resolve physical length units from Part 21 records before table conversion.
+mod angle;
 use super::StepError;
 use monstertruck::step::load::step_p21::ast::{
     DataSection, EntityInstance, Name, Parameter, Record,
@@ -7,10 +8,11 @@ use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use viboceros_geometry::{LengthUnitSystem, Tolerance};
 
 pub(super) fn conversion_to_target(
-    data: &DataSection,
+    data: &mut DataSection,
     target: &LengthUnitSystem,
     tolerance: Tolerance,
 ) -> Result<(f64, Tolerance), StepError> {
+    angle::normalize(data)?;
     let source = LengthUnitSystem::Custom {
         name: "STEP file units".into(),
         meters_per_unit: uniform_meters_per_unit(data)?,
@@ -44,30 +46,7 @@ fn component<'a>(records: &'a [Record], name: &str) -> Option<&'a Record> {
 }
 
 pub(super) fn uniform_meters_per_unit(data: &DataSection) -> Result<f64, StepError> {
-    let mut entities = HashMap::with_capacity(data.entities.len());
-    for entity in &data.entities {
-        let (id, records) = match entity {
-            EntityInstance::Simple { id, record } => (*id, std::slice::from_ref(record)),
-            EntityInstance::Complex { id, subsuper } => (*id, subsuper.0.as_slice()),
-        };
-        if records.len() > 1 {
-            let mut names = HashSet::with_capacity(records.len());
-            if records
-                .iter()
-                .any(|record| !names.insert(record.name.as_str()))
-            {
-                return Err(invalid("duplicate complex-entity component"));
-            }
-        }
-        if entities.insert(id, records).is_some() {
-            return Err(invalid("duplicate entity identifier"));
-        }
-    }
-    let mut resolver = Resolver {
-        entities,
-        active: BTreeSet::new(),
-        scales: BTreeMap::new(),
-    };
+    let mut resolver = resolver(data)?;
     if resolver.entities.values().any(|records| {
         component(records, "GEOMETRIC_REPRESENTATION_CONTEXT").is_some()
             && component(records, "GLOBAL_UNIT_ASSIGNED_CONTEXT").is_none()
@@ -97,7 +76,7 @@ pub(super) fn uniform_meters_per_unit(data: &DataSection) -> Result<f64, StepErr
                 .get(&id)
                 .ok_or_else(|| invalid("missing assigned unit"))?;
             if component(records, "PLANE_ANGLE_UNIT").is_some() {
-                non_radian_angle |= !resolver.angle_is_radian(id)?;
+                non_radian_angle |= resolver.angle_scale_and_base(id)?.0 != 1.0;
             }
             if component(records, "LENGTH_UNIT").is_some() {
                 if length.is_some() {
@@ -120,11 +99,53 @@ pub(super) fn uniform_meters_per_unit(data: &DataSection) -> Result<f64, StepErr
     result.ok_or_else(|| invalid("missing global length-unit assignment"))
 }
 
+fn resolver(data: &DataSection) -> Result<Resolver<'_>, StepError> {
+    let mut entities = HashMap::with_capacity(data.entities.len());
+    for entity in &data.entities {
+        let (id, records) = match entity {
+            EntityInstance::Simple { id, record } => (*id, std::slice::from_ref(record)),
+            EntityInstance::Complex { id, subsuper } => (*id, subsuper.0.as_slice()),
+        };
+        if records.len() > 1 {
+            let mut names = HashSet::with_capacity(records.len());
+            if records
+                .iter()
+                .any(|record| !names.insert(record.name.as_str()))
+            {
+                return Err(invalid("duplicate complex-entity component"));
+            }
+        }
+        if entities.insert(id, records).is_some() {
+            return Err(invalid("duplicate entity identifier"));
+        }
+    }
+    Ok(Resolver {
+        entities,
+        active: BTreeSet::new(),
+        scales: BTreeMap::new(),
+    })
+}
+
 // A conic edge without an explicit angular trim is bounded by its 3D vertices,
 // so its arc can be reconstructed in radians regardless of the declared angle
 // unit. PCURVEs on non-angular surfaces are similarly independent. Angular
 // surfaces and explicit parameter trims need normalization before table
 // conversion; Monstertruck otherwise interprets some values as radians.
+fn angle_independent_surface(name: &str) -> bool {
+    matches!(
+        name,
+        "PLANE"
+            | "SURFACE"
+            | "BOUNDED_SURFACE"
+            | "B_SPLINE_SURFACE"
+            | "B_SPLINE_SURFACE_WITH_KNOTS"
+            | "RATIONAL_B_SPLINE_SURFACE"
+            | "BEZIER_SURFACE"
+            | "QUASI_UNIFORM_SURFACE"
+            | "UNIFORM_SURFACE"
+    )
+}
+
 fn is_angle_independent_geometry(data: &DataSection) -> bool {
     data.entities.iter().all(|entity| {
         let records = match entity {
@@ -134,7 +155,7 @@ fn is_angle_independent_geometry(data: &DataSection) -> bool {
         records.iter().all(|record| {
             let name = record.name.as_str();
             !(matches!(name, "HYPERBOLA" | "PARABOLA" | "TRIMMED_CURVE")
-                || (name.ends_with("_SURFACE") && name != "PLANE")
+                || (name.ends_with("_SURFACE") && !angle_independent_surface(name))
                 || name.starts_with("SURFACE_OF_")
                 || name.contains("REVOL")
                 || name.contains("CIRCULAR"))
@@ -179,7 +200,7 @@ impl Resolver<'_> {
         Ok(())
     }
 
-    fn angle_is_radian(&self, id: u64) -> Result<bool, StepError> {
+    fn angle_scale_and_base(&self, id: u64) -> Result<(f64, u64), StepError> {
         let records = *self
             .entities
             .get(&id)
@@ -200,7 +221,7 @@ impl Resolver<'_> {
             {
                 return Err(invalid("unsupported SI angular unit"));
             }
-            return Ok(true);
+            return Ok((1.0, id));
         }
         let conversion = component(records, "CONVERSION_BASED_UNIT")
             .ok_or_else(|| invalid("unsupported angular unit representation"))?;
@@ -236,9 +257,10 @@ impl Resolver<'_> {
                 "angular conversion factor must be finite and positive",
             ));
         }
+        let base_id = reference(&args[1])?;
         let base = *self
             .entities
-            .get(&reference(&args[1])?)
+            .get(&base_id)
             .ok_or_else(|| invalid("missing base angular unit"))?;
         let si = component(base, "SI_UNIT")
             .ok_or_else(|| invalid("angular conversion must be based on radians"))?;
@@ -254,7 +276,7 @@ impl Resolver<'_> {
             return Err(invalid("angular conversion must be based on radians"));
         }
         self.validate_angle_dimensions(base)?;
-        Ok(false)
+        Ok((factor, base_id))
     }
 
     fn validate_length_dimensions(&self, records: &[Record]) -> Result<(), StepError> {

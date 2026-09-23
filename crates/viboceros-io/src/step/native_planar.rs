@@ -41,8 +41,9 @@ pub fn read_step_planar_shells_in_units<R: Read>(
     target: &LengthUnitSystem,
     tolerance: Tolerance,
 ) -> Result<Vec<StepPlanarShell>, StepError> {
-    let data = read_data_section(reader)?;
-    let (scale, source_tolerance) = super::units::conversion_to_target(&data, target, tolerance)?;
+    let mut data = read_data_section(reader)?;
+    let (scale, source_tolerance) =
+        super::units::conversion_to_target(&mut data, target, tolerance)?;
     let table = Table::from_data_section(&data);
     drop(data);
     let mut shells = convert_table(&table, source_tolerance)?;

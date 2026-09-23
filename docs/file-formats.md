@@ -308,12 +308,14 @@ currently requires a single data section with uniform length units across
 contexts. Missing, mixed, cyclic, or unsupported unit definitions are rejected
 before document edits. Conversion-based plane-angle units, including degrees,
 are accepted for geometry without stored angular parameters, including planar
-solids with straight, circular, or elliptical edges. Those conic arcs are
-bounded by endpoint vertices. Explicit angular trims and angular surfaces,
-such as cones and cylinders, remain unsupported in non-radian contexts and
-are rejected before import.
-Mixed-unit assembly conversion
-remains unimplemented. The low-level `read_step` and
+solids with straight, circular, or elliptical edges and NURBS surfaces with
+parameter-space trims. Those conic arcs are
+bounded by endpoint vertices. Cylinder and cone faces with axis-aligned 2D
+line trims convert angular coordinates and cone semi-angles to radians before
+import. Explicit angular curve trims, diagonal or spline trims on angular
+surfaces, and other angular surfaces remain unsupported in non-radian contexts
+and are rejected before import. Mixed-unit assembly conversion remains
+unimplemented. The low-level `read_step` and
 `read_step_file` APIs retain raw file coordinates; their `_in_units`
 counterparts perform checked conversion.
 Both reader paths reject zero or multiple data sections explicitly rather

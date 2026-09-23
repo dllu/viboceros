@@ -1282,6 +1282,13 @@ fn native_step_imports_bspline_faces_with_polygon_holes() {
         ));
         let native = read_step_native_instances(Cursor::new(&text), Tolerance::DEFAULT).unwrap();
         let brep = &native.instances[0].brep;
+        let degree_native = read_step_native_instances_in_units(
+            Cursor::new(with_degree_angle_units(&text)),
+            &LengthUnitSystem::Millimeters,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(degree_native.instances[0].brep, *brep);
         assert_eq!(brep.faces()[0].loops().len(), 2);
         assert_eq!(brep.faces()[0].is_reversed(), reversed);
         assert!((brep.area(Tolerance::DEFAULT).unwrap() - 96.).abs() < 1e-9);
@@ -2153,6 +2160,81 @@ fn native_step_imports_analytic_open_revolved_patches() {
             assert_eq!(brep.faces().len(), 1);
             let expected_area = angle * (2. + top_radius) * 3_f64.hypot(top_radius - 2.) / 2.;
             assert!((brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
+            if angle == std::f64::consts::FRAC_PI_3 {
+                let mut degrees = with_degree_angle_units(&text);
+                assert!(degrees.contains("1.0471975511965979"));
+                degrees = degrees.replace("1.0471975511965979", "60.0");
+                if slope != 0. {
+                    let (radians, degrees_value) = if slope > 0. {
+                        ("0.32175055439664235", "18.43494882292201")
+                    } else {
+                        ("-0.32175055439664213", "-18.43494882292201")
+                    };
+                    assert!(
+                        degrees.contains(radians),
+                        "{}",
+                        degrees
+                            .lines()
+                            .find(|line| line.contains("CONICAL_SURFACE("))
+                            .unwrap_or("missing cone")
+                    );
+                    degrees = degrees.replace(radians, degrees_value);
+                }
+                let converted = read_step_native_instances_in_units(
+                    Cursor::new(&degrees),
+                    &LengthUnitSystem::Millimeters,
+                    Tolerance::DEFAULT,
+                )
+                .unwrap_or_else(|error| panic!("degree cone/cylinder: {error:?}"));
+                let degree_brep = &converted.instances[0].brep;
+                assert_eq!(degree_brep.vertices().len(), brep.vertices().len());
+                assert_eq!(degree_brep.edges().len(), brep.edges().len());
+                assert!(
+                    (degree_brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8
+                );
+                for (degree_edge, reference_edge) in degree_brep.edges().iter().zip(brep.edges()) {
+                    for fraction in [0., 0.25, 0.5, 0.75, 1.] {
+                        let parameter = |curve: &viboceros_geometry::NurbsCurve| {
+                            let domain = curve.domain();
+                            *domain.start() * (1. - fraction) + *domain.end() * fraction
+                        };
+                        let actual = degree_edge
+                            .curve()
+                            .evaluate(parameter(degree_edge.curve()))
+                            .unwrap();
+                        let expected = reference_edge
+                            .curve()
+                            .evaluate(parameter(reference_edge.curve()))
+                            .unwrap();
+                        assert!(actual.distance_to(expected).unwrap() < 1e-8);
+                    }
+                }
+                let degree_mesh = read_step_in_units(
+                    Cursor::new(&degrees),
+                    &LengthUnitSystem::Millimeters,
+                    Tolerance::DEFAULT,
+                )
+                .unwrap();
+                let radian_mesh = read_step_in_units(
+                    Cursor::new(&text),
+                    &LengthUnitSystem::Millimeters,
+                    Tolerance::DEFAULT,
+                )
+                .unwrap();
+                assert_eq!(degree_mesh.objects.len(), radian_mesh.objects.len());
+                assert_eq!(
+                    degree_mesh.objects[0].mesh.triangles().len(),
+                    radian_mesh.objects[0].mesh.triangles().len()
+                );
+                assert!(degree_mesh.objects[0].mesh.bounds().min().is_near(
+                    radian_mesh.objects[0].mesh.bounds().min(),
+                    Tolerance::DEFAULT
+                ));
+                assert!(degree_mesh.objects[0].mesh.bounds().max().is_near(
+                    radian_mesh.objects[0].mesh.bounds().max(),
+                    Tolerance::DEFAULT
+                ));
+            }
             if slope == 0. && angle == std::f64::consts::PI {
                 let mut weighted = trimmed.clone();
                 let surface = weighted.faces[0].surface.clone();
