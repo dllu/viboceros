@@ -111,12 +111,14 @@ degree-one B-spline parameter curves verifies loss-free loading, retained
 evaluation stations on three intervals in both directions; curved and multispan
 B-spline trims remain explicitly unsupported.
 
-Two-point `POLYLINE` records are accepted for both 3D edges and UV trims, retaining
-their source `[0,1]` parameterization. The generated triangle regression covers
-explicit polyline surface curves and p-curves with no reported loading losses
-and area 50. Direct tests check both directions at nine stations and reject
-empty, one-point, and multi-segment polylines; longer polylines are not silently
-collapsed to their endpoint chord.
+Native STEP import preserves `POLYLINE` records with two or more points as
+degree-one NURBS for both 3D edges and UV trims. Their knots retain the source
+`[0,n-1]` parameterization and each source segment exactly. The generated
+triangle regression covers two-point surface curves and p-curves with no
+reported loading losses and area 50. A multi-segment outer edge with a hole
+also retains its bend and face area. The strict planar adapter still accepts
+only two-point polylines; it rejects longer polylines instead of collapsing
+them to an endpoint chord.
 
 Degree-one, two-control-point rational 3D edges and UV trims are also supported
 when their weights are finite and positive. Homogeneous source controls are
@@ -181,7 +183,8 @@ faces with area 96, preserving face sense. A two-hole fixture additionally check
 
 `BrepFace::try_from_polygon_boundaries` classifies the unique counterclockwise
 outer boundary and moves it to the front without modifying any source trim.
-It verifies certified straight-segment UV curves, closure, nonzero sides and area,
+It verifies certified straight-segment and degree-one polyline UV curves,
+closure, nonzero sides and area,
 absence of backtracking and self-intersections, strict hole containment, and
 absence of hole intersections or nesting. Touching and numerically unresolved
 regions are conservatively rejected. Normalized UV coordinates prevent raw
@@ -269,7 +272,8 @@ tensor-product NURBS patches. Revolutions of those directrices with straight UV
 iso-trims use exact rational patches over angles up to one turn, including paired
 full-turn seams. Polar singular trims remain unsupported. The path
 validates shared topology in `Brep::try_new`. NURBS faces with multiple loops of
-certified straight-segment UV trims use strict polygon boundary validation.
+certified straight-segment or degree-one polyline UV trims use strict polygon
+boundary validation, including loops represented by one closed polyline trim.
 Certified Bézier-span NURBS UV holes and outer loops are accepted under the
 containment and sector certificates above. Other curved multi-loop regions
 remain unsupported.

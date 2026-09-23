@@ -250,7 +250,9 @@ Linear extrusions of line and B-spline/NURBS directrices convert to exact
 tensor-product NURBS surfaces. Revolutions of those directrices with straight UV
 iso-trims convert to exact rational patches over angles up to one turn, including
 paired full-turn seams. NURBS faces can have polygon holes with certified
-straight-segment UV trims, including higher-degree collinear NURBS. Curved UV
+straight-segment or degree-one polyline UV trims, including higher-degree
+collinear NURBS straight segments. Multi-point STEP polylines are retained as
+exact degree-one NURBS edges and trims. Curved UV
 holes can also use a closed Bézier-span NURBS trim under a strict convex
 containment certificate. Certified curved outer loops can contain holes
 strictly inside their convex endpoint polygon. Other curved multi-loop regions

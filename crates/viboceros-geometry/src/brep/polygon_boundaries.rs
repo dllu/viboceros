@@ -3,8 +3,8 @@ use super::*;
 impl BrepFace {
     /// Constructs a face from unordered, simple polygon boundaries in surface UV.
     ///
-    /// Each trim must have a certified straight-segment image.
-    /// Exactly one boundary must
+    /// Each trim must have a certified straight-segment or degree-one control
+    /// polygon image. Exactly one boundary must
     /// wind counterclockwise; all others must be clockwise, strictly inside it,
     /// mutually disjoint and unnested. Touching and numerically unresolved
     /// boundaries are rejected. Source curves, edge references and winding are
@@ -19,15 +19,13 @@ impl BrepFace {
         let mut points = Vec::new();
         let mut ranges = Vec::new();
         for boundary in &boundaries {
-            if boundary.len() < 3 {
+            if boundary.is_empty() {
                 return Err(invalid());
             }
             let start = points.len();
-            for trim in boundary {
-                if !trim.curve.is_straight_segment() {
-                    return Err(invalid());
-                }
-                points.push(trim.curve.start_point()?);
+            points.extend(polygon_points(boundary)?);
+            if points.len() - start < 3 {
+                return Err(invalid());
             }
             ranges.push(start..points.len());
         }
@@ -62,14 +60,19 @@ impl BrepFace {
             let mut area = 0.0;
             let mut correction = 0.0;
             for (i, trim) in boundary.iter().enumerate() {
-                let j = (i + 1) % polygon.len();
+                let next = &boundary[(i + 1) % boundary.len()];
                 let end = normalization.normalize(trim.curve.end_point()?)?;
-                if trim.vertices[1] != boundary[j].vertices[0]
-                    || (end[0] - polygon[j][0]).abs() > epsilon
-                    || (end[1] - polygon[j][1]).abs() > epsilon
-                    || (polygon[i][0] - polygon[j][0]).hypot(polygon[i][1] - polygon[j][1])
-                        <= epsilon
+                let next_start = normalization.normalize(next.curve.start_point()?)?;
+                if trim.vertices[1] != next.vertices[0]
+                    || (end[0] - next_start[0]).abs() > epsilon
+                    || (end[1] - next_start[1]).abs() > epsilon
                 {
+                    return Err(invalid());
+                }
+            }
+            for i in 0..polygon.len() {
+                let j = (i + 1) % polygon.len();
+                if (polygon[i][0] - polygon[j][0]).hypot(polygon[i][1] - polygon[j][1]) <= epsilon {
                     return Err(invalid());
                 }
                 neumaier_add(
@@ -163,6 +166,43 @@ impl BrepFace {
         loops.insert(0, outer);
         Self::try_new(surface, reversed, loops)
     }
+}
+
+pub(super) fn polygon_points(boundary: &[BrepTrim]) -> Result<Vec<Point2>, GeometryError> {
+    let mut points = Vec::new();
+    for trim in boundary {
+        if trim.curve.is_straight_segment() {
+            points.push(trim.curve.start_point()?);
+        } else if has_control_polygon_image(&trim.curve) {
+            points.extend(
+                trim.curve
+                    .control_points()
+                    .iter()
+                    .take(trim.curve.control_points().len() - 1)
+                    .map(|control| control.point()),
+            );
+        } else {
+            return Err(GeometryError::InvalidPlanarFaceBoundary);
+        }
+    }
+    Ok(points)
+}
+
+pub(super) fn has_control_polygon_image(curve: &NurbsCurve2) -> bool {
+    if curve.degree() != 1 {
+        return false;
+    }
+    let controls = curve.control_points();
+    let knots = curve.knots();
+    let sign = controls[0].weight().is_sign_positive();
+    knots[0] == knots[1]
+        && knots[controls.len()] == *knots.last().unwrap()
+        && knots[1..=controls.len()]
+            .windows(2)
+            .all(|pair| pair[0] < pair[1])
+        && controls
+            .iter()
+            .all(|control| control.weight().is_sign_positive() == sign)
 }
 
 fn sides_touch(a: [Real; 2], b: [Real; 2], c: [Real; 2], d: [Real; 2], epsilon: Real) -> bool {
@@ -310,6 +350,78 @@ mod tests {
     }
 
     #[test]
+    fn accepts_degree_one_polyline_trims_and_closed_single_trim_loops() {
+        let mut outer = outer();
+        outer[0].curve = NurbsCurve2::try_new(
+            1,
+            vec![point(0., 0.), point(5., -1.), point(10., 0.)],
+            vec![0., 0., 1., 2., 2.],
+        )
+        .unwrap();
+        let hole = boundary(&[[2., 2.], [2., 4.], [4., 4.], [4., 2.]]);
+        let built = face(vec![hole.clone(), outer.clone()]).unwrap();
+        assert_eq!(built.loops[0].trims, outer);
+        assert_eq!(built.loops[1].trims, hole);
+
+        let mut inward = outer.clone();
+        inward[0].curve = NurbsCurve2::try_new(
+            1,
+            vec![point(0., 0.), point(5., 1.), point(10., 0.)],
+            vec![0., 0., 0.5, 1., 1.],
+        )
+        .unwrap();
+        assert!(face(vec![inward]).is_ok());
+
+        let closed = BrepTrim::try_new(
+            [0, 0],
+            Some(0),
+            false,
+            NurbsCurve2::try_new(
+                1,
+                vec![
+                    point(0., 0.),
+                    point(10., 0.),
+                    point(10., 10.),
+                    point(0., 10.),
+                    point(0., 0.),
+                ],
+                vec![0., 0., 1., 2., 3., 4., 4.],
+            )
+            .unwrap(),
+            BrepTrimType::Boundary,
+            SurfaceIso::NotIso,
+            [0.; 2],
+        )
+        .unwrap();
+        let built = face(vec![vec![closed.clone()]]).unwrap();
+        assert_eq!(built.loops[0].trims, vec![closed]);
+    }
+
+    #[test]
+    fn rejects_crossing_or_discontinuous_polyline_trims() {
+        let mut outer = outer();
+        outer[0].curve = NurbsCurve2::try_new(
+            1,
+            vec![point(0., 0.), point(10., 10.), point(10., 0.)],
+            vec![0., 0., 1., 2., 2.],
+        )
+        .unwrap();
+        assert!(face(vec![outer.clone()]).is_err());
+        outer[0].curve = NurbsCurve2::try_new(
+            1,
+            vec![
+                point(0., 0.),
+                point(5., -1.),
+                point(5., -1.),
+                point(10., 0.),
+            ],
+            vec![0., 0., 1., 1., 2., 2.],
+        )
+        .unwrap();
+        assert!(face(vec![outer]).is_err());
+    }
+
+    #[test]
     fn orders_outer_without_modifying_source_trims() {
         let a = boundary(&[[1., 1.], [1., 2.], [2., 2.], [2., 1.]]);
         let b = boundary(&[[5., 5.], [5., 7.], [7., 7.], [7., 5.]]);
@@ -428,11 +540,10 @@ mod tests {
     }
 
     #[test]
-    fn rejects_curved_multispan_and_pole_trims() {
+    fn rejects_curved_and_pole_trims() {
         let points = [[0., 0.], [5., 1.], [10., 0.]].map(|p| Point2::try_new(p[0], p[1]).unwrap());
         for curve in [
             NurbsCurve2::try_new(2, points.to_vec(), vec![0., 0., 0., 1., 1., 1.]).unwrap(),
-            NurbsCurve2::try_new(1, points.to_vec(), vec![0., 0., 0.5, 1., 1.]).unwrap(),
             NurbsCurve2::try_new_rational(
                 1,
                 vec![

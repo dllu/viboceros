@@ -860,6 +860,86 @@ fn native_step_imports_bspline_faces_with_polygon_holes() {
 }
 
 #[test]
+fn native_step_imports_multispan_polyline_edges_and_trims_with_holes() {
+    use monstertruck::meshing::prelude::{BoundedCurve, ParametricCurve};
+    use monstertruck::modeling::{Point2 as TruckPoint2, PolylineCurve};
+    use monstertruck::step::load::step_geometry::{Curve2D, Curve3D, StepParameterCurve};
+    use monstertruck::step::save::StepModels;
+
+    let outer = vec![[0., 0.], [10., 0.], [10., 10.], [0., 10.]];
+    let hole = vec![[2., 2.], [2., 4.], [4., 4.], [4., 2.]];
+    let text = polygon_face_step(&[hole, outer], false);
+    let table = Table::from_step(&text).unwrap();
+    let shell_id = *table.shell.keys().next().unwrap();
+    let (mut shell, report) = reported_trimmed_shell(&table, shell_id).unwrap();
+    assert_eq!(report.total_lost(), 0);
+    let (boundary_index, use_index) = shell.faces[0]
+        .boundaries
+        .iter()
+        .enumerate()
+        .flat_map(|(boundary_index, boundary)| {
+            boundary
+                .iter()
+                .enumerate()
+                .map(move |(use_index, edge_use)| (boundary_index, use_index, edge_use.index))
+        })
+        .find(|&(_, _, edge_index)| {
+            let edge = &shell.edges[edge_index];
+            let a = shell.vertices[edge.vertices.0];
+            let b = shell.vertices[edge.vertices.1];
+            a.y == 0. && b.y == 0.
+        })
+        .map(|(boundary_index, use_index, _)| (boundary_index, use_index))
+        .unwrap();
+    let edge_index = shell.faces[0].boundaries[boundary_index][use_index].index;
+    let original_edge = &shell.edges[edge_index].curve;
+    let (start, end) = original_edge.range_tuple();
+    let p0 = original_edge.evaluate(start);
+    let p1 = original_edge.evaluate(end);
+    shell.edges[edge_index].curve = Curve3D::Polyline(PolylineCurve(vec![
+        p0,
+        TruckPoint3::new((p0.x + p1.x) / 2., 1., 0.),
+        p1,
+    ]));
+    let original_trim = shell.faces[0].boundaries[boundary_index][use_index]
+        .trim_curve
+        .as_ref()
+        .unwrap()
+        .curve();
+    let (start, end) = original_trim.range_tuple();
+    let uv0 = original_trim.evaluate(start);
+    let uv1 = original_trim.evaluate(end);
+    let step_surface = shell.faces[0].surface.clone();
+    shell.faces[0].boundaries[boundary_index][use_index].trim_curve =
+        Some(StepParameterCurve::new(
+            Box::new(Curve2D::Polyline(PolylineCurve(vec![
+                uv0,
+                TruckPoint2::new((uv0.x + uv1.x) / 2., 1.),
+                uv1,
+            ]))),
+            Box::new(step_surface),
+        ));
+    let mut models = StepModels::default();
+    models.push_trimmed_shell(&shell);
+    let text = CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
+    assert!(text.contains("POLYLINE("));
+    let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    let brep = &native.instances[0].brep;
+    assert_eq!(brep.faces()[0].loops().len(), 2);
+    assert_eq!(brep.edges()[edge_index].curve().degree(), 1);
+    assert_eq!(brep.edges()[edge_index].curve().control_points().len(), 3);
+    assert_eq!(
+        brep.edges()[edge_index].curve().knots(),
+        &[0., 0., 1., 2., 2.]
+    );
+    let trim = &brep.faces()[0].loops()[0].trims()[use_index];
+    assert_eq!(trim.curve().degree(), 1);
+    assert_eq!(trim.curve().control_points().len(), 3);
+    assert_eq!(trim.curve().knots(), &[0., 0., 1., 2., 2.]);
+    assert!((brep.area(Tolerance::DEFAULT).unwrap() - 91.).abs() < 1e-9);
+}
+
+#[test]
 fn native_step_imports_certified_quadratic_hole_on_bspline_face() {
     use monstertruck::core::cgmath64::{Matrix3, Vector2, Vector3};
     use monstertruck::meshing::prelude::{BoundedCurve, ParametricCurve};

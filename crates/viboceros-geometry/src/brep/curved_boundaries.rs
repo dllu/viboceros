@@ -34,7 +34,10 @@ impl BrepFace {
         let mut polygons = Vec::new();
         let mut curved = Vec::new();
         for (id, boundary) in boundaries.into_iter().enumerate() {
-            if boundary.iter().all(|trim| trim.curve.is_straight_segment()) {
+            if boundary.iter().all(|trim| {
+                trim.curve.is_straight_segment()
+                    || polygon_boundaries::has_control_polygon_image(&trim.curve)
+            }) {
                 polygon_ids.push(id);
                 polygons.push(boundary);
             } else if boundary.len() == 1 {
@@ -76,10 +79,10 @@ impl BrepFace {
             return Ok(face);
         }
         let outer = &face.loops[0].trims;
-        let outer_points = outer
-            .iter()
-            .map(|trim| trim.curve.start_point().map(exact_point))
-            .collect::<Result<Vec<_>, _>>()?;
+        let outer_points = polygon_boundaries::polygon_points(outer)?
+            .into_iter()
+            .map(exact_point)
+            .collect::<Vec<_>>();
         let zero = rational(0.);
         if (0..outer_points.len()).any(|i| {
             cross(
@@ -510,6 +513,25 @@ mod tests {
         assert!(face(vec![outer(), crossing]).is_err());
         let concave = polygon(&[[0., 0.], [10., 0.], [10., 10.], [5., 5.], [0., 10.]]);
         assert!(face(vec![concave, hole(5., 3., 1.)]).is_err());
+    }
+
+    #[test]
+    fn curved_holes_use_every_segment_of_a_polyline_outer() {
+        let mut outer = outer();
+        outer[0].curve = NurbsCurve2::try_new(
+            1,
+            vec![point(0., 0.), point(5., -1.), point(10., 0.)],
+            vec![0., 0., 1., 2., 2.],
+        )
+        .unwrap();
+        assert!(face(vec![outer.clone(), hole(5., 3., 0.4)]).is_ok());
+        outer[0].curve = NurbsCurve2::try_new(
+            1,
+            vec![point(0., 0.), point(5., 6.), point(10., 0.)],
+            vec![0., 0., 1., 2., 2.],
+        )
+        .unwrap();
+        assert!(face(vec![outer, hole(5., 3., 0.4)]).is_err());
     }
 
     #[test]

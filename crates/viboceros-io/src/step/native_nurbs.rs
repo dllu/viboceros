@@ -219,6 +219,15 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
         Curve3D::IntersectionCurve(intersection_curve) => {
             edge_curve(intersection_curve.leader(), id)
         }
+        Curve3D::Polyline(curve) if curve.len() >= 2 => Ok(NurbsCurve::try_new(
+            1,
+            curve
+                .iter()
+                .copied()
+                .map(point3)
+                .collect::<Result<Vec<_>, _>>()?,
+            polyline_knots(curve.len()),
+        )?),
         Curve3D::Line(_) | Curve3D::Polyline(_) => native_planar::curves::linear_edge(curve, id)
             .map_err(|error| match error {
                 StepError::UnsupportedPlanarShell { reason, .. } => unsupported(reason),
@@ -251,6 +260,14 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
 fn trim_curve(curve: &Curve2D, id: u64) -> Result<NurbsCurve2, StepError> {
     let unsupported = |reason| StepError::UnsupportedNativeShell { shell: id, reason };
     match curve {
+        Curve2D::Polyline(curve) if curve.len() >= 2 => Ok(NurbsCurve2::try_new(
+            1,
+            curve
+                .iter()
+                .map(|p| Point2::try_new(p.x, p.y))
+                .collect::<Result<Vec<_>, _>>()?,
+            polyline_knots(curve.len()),
+        )?),
         Curve2D::Line(_) | Curve2D::Polyline(_) => native_planar::curves::linear_trim(curve, id)
             .map_err(|error| match error {
                 StepError::UnsupportedPlanarShell { reason, .. } => unsupported(reason),
@@ -276,6 +293,14 @@ fn trim_curve(curve: &Curve2D, id: u64) -> Result<NurbsCurve2, StepError> {
             curve.knot_vector().iter().copied().collect(),
         )?),
     }
+}
+
+fn polyline_knots(points: usize) -> Vec<f64> {
+    let mut knots = Vec::with_capacity(points + 2);
+    knots.push(0.);
+    knots.extend((0..points).map(|index| index as f64));
+    knots.push((points - 1) as f64);
+    knots
 }
 
 fn arc_span_count(angle: f64, id: u64) -> Result<usize, StepError> {

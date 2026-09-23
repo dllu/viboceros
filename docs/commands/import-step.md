@@ -29,7 +29,9 @@ extrusions of line and B-spline/NURBS directrices convert to exact tensor-produc
 NURBS surfaces. Revolutions of those directrices with straight UV iso-trims also
 convert to exact rational patches over angles up to one turn, including paired
 seams on a full turn. Faces with multiple loops support certified straight
-segment UV trims, including collinear higher-degree NURBS trims. The polygon
+segment and degree-one polyline UV trims, including collinear higher-degree
+NURBS trims. Multi-point STEP polylines retain their exact segments as
+degree-one NURBS edges and trims. The polygon
 constructor validates hole containment and intersections. Curved UV holes with
 one closed NURBS trim made of at least three Bézier spans are supported inside
 convex polygonal outer loops when control sectors and chord progress certify a
