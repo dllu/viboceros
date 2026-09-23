@@ -219,6 +219,31 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
         Curve3D::IntersectionCurve(intersection_curve) => {
             edge_curve(intersection_curve.leader(), id)
         }
+        Curve3D::ParameterCurve(parameter_curve) => {
+            let Surface::ElementarySurface(ElementarySurface::Plane(plane)) =
+                parameter_curve.surface().as_ref()
+            else {
+                return Err(unsupported("3D edge p-curve basis is not a plane"));
+            };
+            let uv = trim_curve(parameter_curve.curve().as_ref(), id)?;
+            let controls = uv
+                .control_points()
+                .iter()
+                .map(|control| {
+                    let point = control.point();
+                    WeightedPoint3::try_new(
+                        point3(plane.evaluate(point.x(), point.y()))?,
+                        control.weight(),
+                    )
+                    .map_err(StepError::from)
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            Ok(NurbsCurve::try_new_rational(
+                uv.degree(),
+                controls,
+                uv.knots().to_vec(),
+            )?)
+        }
         Curve3D::Polyline(curve) if curve.len() >= 2 => Ok(NurbsCurve::try_new(
             1,
             curve
@@ -253,7 +278,6 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
                 .collect::<Result<Vec<_>, _>>()?,
             curve.knot_vector().iter().copied().collect(),
         )?),
-        _ => Err(unsupported("3D edge curve is not a supported B-spline")),
     }
 }
 
@@ -265,14 +289,14 @@ fn sweep_directrix(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
         | Curve3D::Polyline(_)
         | Curve3D::BsplineCurve(_)
         | Curve3D::NurbsCurve(_) => edge_curve(curve, id),
+        Curve3D::ParameterCurve(parameter_curve) => {
+            let (start, end) = parameter_curve.range_tuple();
+            Ok(edge_curve(curve, id)?.try_reparameterized(start..=end)?)
+        }
         Curve3D::Conic(conic) => {
             let (start, end) = conic.range_tuple();
             Ok(conic_edge(conic, id)?.try_reparameterized(start..=end)?)
         }
-        _ => Err(StepError::UnsupportedNativeShell {
-            shell: id,
-            reason: "sweep directrix is not a line, polyline, conic, or B-spline curve",
-        }),
     }
 }
 
@@ -803,6 +827,57 @@ fn surface(
                 arc_knots(u0, u1, u_spans),
                 arc_knots(v0, v1, v_spans),
             )?)
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use monstertruck::core::cgmath64::Vector3;
+    use monstertruck::modeling::{
+        BsplineCurve, KnotVector, NurbsCurve as TruckNurbsCurve, Plane, Point3 as TruckPoint3,
+    };
+    use monstertruck::step::load::step_geometry::StepParameterCurve;
+
+    #[test]
+    fn planar_pcurve_edge_lifts_rational_controls_without_losing_weights() {
+        let plane = Surface::ElementarySurface(ElementarySurface::Plane(Plane::new(
+            TruckPoint3::new(10., 20., 30.),
+            TruckPoint3::new(12., 20., 30.),
+            TruckPoint3::new(10., 23., 30.),
+        )));
+        let parameter = StepParameterCurve::new(
+            Box::new(Curve2D::NurbsCurve(TruckNurbsCurve::new(
+                BsplineCurve::new(
+                    KnotVector::bezier_knot(2),
+                    vec![
+                        Vector3::new(0., 0., 1.),
+                        Vector3::new(0.5, 0.5, 0.5),
+                        Vector3::new(2., 0., 1.),
+                    ],
+                ),
+            ))),
+            Box::new(plane),
+        );
+        let lifted = edge_curve(&Curve3D::ParameterCurve(parameter.clone()), 1).unwrap();
+        assert_eq!(lifted.degree(), 2);
+        assert_eq!(lifted.knots(), &[0., 0., 0., 1., 1., 1.]);
+        assert_eq!(
+            lifted
+                .control_points()
+                .iter()
+                .map(|control| control.weight())
+                .collect::<Vec<_>>(),
+            vec![1., 0.5, 1.]
+        );
+        for t in [0., 0.17, 0.5, 0.83, 1.] {
+            let uv = parameter.curve().evaluate(t);
+            let expected = parameter.surface().evaluate(uv.x, uv.y);
+            let actual = lifted.evaluate(t).unwrap();
+            assert!((actual.x() - expected.x).abs() < 1e-12);
+            assert!((actual.y() - expected.y).abs() < 1e-12);
+            assert!((actual.z() - expected.z).abs() < 1e-12);
         }
     }
 }
