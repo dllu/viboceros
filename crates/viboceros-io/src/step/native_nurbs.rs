@@ -257,6 +257,23 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
     }
 }
 
+fn sweep_directrix(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
+    match curve {
+        Curve3D::Line(_)
+        | Curve3D::Polyline(_)
+        | Curve3D::BsplineCurve(_)
+        | Curve3D::NurbsCurve(_) => edge_curve(curve, id),
+        Curve3D::Conic(conic) => {
+            let (start, end) = conic.range_tuple();
+            Ok(conic_edge(conic, id)?.try_reparameterized(start..=end)?)
+        }
+        _ => Err(StepError::UnsupportedNativeShell {
+            shell: id,
+            reason: "sweep directrix is not a line, polyline, conic, or B-spline curve",
+        }),
+    }
+}
+
 fn trim_curve(curve: &Curve2D, id: u64) -> Result<NurbsCurve2, StepError> {
     let unsupported = |reason| StepError::UnsupportedNativeShell { shell: id, reason };
     match curve {
@@ -510,19 +527,7 @@ fn surface(
             )?)
         }
         Surface::SweepSurface(SweepSurface::ExtrusionSurface(extrusion)) => {
-            let directrix = extrusion.entity_curve();
-            if !matches!(
-                directrix,
-                Curve3D::Line(_)
-                    | Curve3D::Polyline(_)
-                    | Curve3D::BsplineCurve(_)
-                    | Curve3D::NurbsCurve(_)
-            ) {
-                return Err(unsupported(
-                    "extrusion directrix is not a line, polyline, or B-spline curve",
-                ));
-            }
-            let directrix = edge_curve(directrix, id)?;
+            let directrix = sweep_directrix(extrusion.entity_curve(), id)?;
             let mut v0 = f64::INFINITY;
             let mut v1 = f64::NEG_INFINITY;
             for trim in boundaries.iter().flatten() {
@@ -566,19 +571,7 @@ fn surface(
                     "STEP revolution parameters are not angle-first",
                 ));
             }
-            let directrix = revolution.entity().entity_curve();
-            if !matches!(
-                directrix,
-                Curve3D::Line(_)
-                    | Curve3D::Polyline(_)
-                    | Curve3D::BsplineCurve(_)
-                    | Curve3D::NurbsCurve(_)
-            ) {
-                return Err(unsupported(
-                    "revolution directrix is not a line, polyline, or B-spline curve",
-                ));
-            }
-            let directrix = edge_curve(directrix, id)?;
+            let directrix = sweep_directrix(revolution.entity().entity_curve(), id)?;
             let mut u0 = f64::INFINITY;
             let mut u1 = f64::NEG_INFINITY;
             for trim in boundaries.iter().flatten() {

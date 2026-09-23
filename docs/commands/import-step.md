@@ -25,8 +25,9 @@ away from the poles with straight UV iso-trims, including certified collinear
 higher-degree p-curves, also convert to exact rational patches. Full major-angle
 torus strips and full-longitude sphere bands can use
 paired seams; pole trims still require singular-topology support. Linear
-extrusions of line, polyline, and B-spline/NURBS directrices convert to exact tensor-product
-NURBS surfaces. Revolutions of those directrices with straight UV iso-trims also
+extrusions of line, polyline, bounded conic, and B-spline/NURBS directrices
+convert to exact tensor-product NURBS surfaces. Revolutions of those directrices
+with straight UV iso-trims also
 convert to exact rational patches over angles up to one turn, including paired
 seams on a full turn. Faces with multiple loops support certified straight
 segment and degree-one polyline UV trims, including collinear higher-degree
