@@ -277,8 +277,9 @@ composition. Rational degree-one straight UV p-curves with unequal endpoint
 weights retain their source parameterization through curved B-spline/NURBS
 patches, including multi-span isocurves.
 Higher-degree polynomial and rational UV Bézier spans compose on non-affine
-B-spline/NURBS bases when each span's control hull fits one surface knot
-rectangle. A span crossing a surface knot internally remains unsupported.
+B-spline/NURBS bases. Interior surface-knot crossings are isolated with exact
+binary-rational Bernstein subdivision, then split at representable curve
+parameters. Numerically inseparable crossings fail native import.
 Straight diagonals across multi-span B-spline/NURBS surfaces also import as
 joined rational spans when their knot crossings have
 distinct representable parameters; numerically inseparable crossings fail

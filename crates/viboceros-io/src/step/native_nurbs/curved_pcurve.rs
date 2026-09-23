@@ -1,4 +1,5 @@
-//! Exact Bernstein composition for curved UV spans contained in one surface knot rectangle.
+//! Bernstein composition of curved UV spans across spline surface knot rectangles.
+mod crossings;
 use super::{StepError, binomial, join_rational_spans, spline_surface_basis, weighted3};
 use monstertruck::step::load::step_geometry::Surface;
 use viboceros_geometry::{NurbsCurve, NurbsCurve2, NurbsSurface, Point3, WeightedPoint3};
@@ -39,42 +40,150 @@ pub(super) fn compose(
     let v_rectangles = surface.spans_v().collect::<Vec<_>>();
     let mut spans = Vec::new();
     for uv_span in lifted.try_bezier_spans()? {
-        let bounds = uv_span.control_points().iter().fold(
-            [
-                f64::INFINITY,
-                f64::NEG_INFINITY,
-                f64::INFINITY,
-                f64::NEG_INFINITY,
-            ],
-            |mut bounds, control| {
-                let point = control.point();
-                bounds[0] = bounds[0].min(point.x());
-                bounds[1] = bounds[1].max(point.x());
-                bounds[2] = bounds[2].min(point.y());
-                bounds[3] = bounds[3].max(point.y());
-                bounds
-            },
-        );
-        // At a path confined to an interior knot line, evaluation uses the
-        // following span. Prefer it if both adjacent rectangles contain the
-        // complete UV control hull.
-        let u = u_rectangles
-            .iter()
-            .copied()
-            .rfind(|(from, to)| *from <= bounds[0] && bounds[1] <= *to);
-        let v = v_rectangles
-            .iter()
-            .copied()
-            .rfind(|(from, to)| *from <= bounds[2] && bounds[3] <= *to);
-        let (Some((u0, u1)), Some((v0, v1))) = (u, v) else {
-            return Err(unsupported(
-                "curved p-curve crosses a surface knot within a UV span",
-            ));
-        };
-        let patch = surface.try_trimmed(u0..=u1, v0..=v1)?;
-        spans.push(compose_span(&patch, &uv_span, id)?);
+        compose_piece(
+            &surface,
+            &u_rectangles,
+            &v_rectangles,
+            uv_span,
+            0,
+            &mut spans,
+            id,
+        )?;
     }
     Ok(Some(join_rational_spans(&spans, uv.domain(), id)?))
+}
+
+fn compose_piece(
+    surface: &NurbsSurface,
+    u_rectangles: &[(f64, f64)],
+    v_rectangles: &[(f64, f64)],
+    uv: NurbsCurve,
+    depth: usize,
+    output: &mut Vec<NurbsCurve>,
+    id: u64,
+) -> Result<(), StepError> {
+    let unsupported = |reason| StepError::UnsupportedNativeShell { shell: id, reason };
+    if depth >= 32 || output.len() >= 512 {
+        return Err(unsupported(
+            "curved p-curve surface-knot subdivision exceeded its limit",
+        ));
+    }
+    let bounds = uv.control_points().iter().fold(
+        [
+            f64::INFINITY,
+            f64::NEG_INFINITY,
+            f64::INFINITY,
+            f64::NEG_INFINITY,
+        ],
+        |mut bounds, control| {
+            let point = control.point();
+            bounds[0] = bounds[0].min(point.x());
+            bounds[1] = bounds[1].max(point.x());
+            bounds[2] = bounds[2].min(point.y());
+            bounds[3] = bounds[3].max(point.y());
+            bounds
+        },
+    );
+    // Evaluation at an interior knot uses the following span. Prefer it if
+    // adjacent rectangles both contain a path on the knot line.
+    let u = u_rectangles
+        .iter()
+        .copied()
+        .rfind(|(from, to)| *from <= bounds[0] && bounds[1] <= *to);
+    let v = v_rectangles
+        .iter()
+        .copied()
+        .rfind(|(from, to)| *from <= bounds[2] && bounds[3] <= *to);
+    if let (Some((u0, u1)), Some((v0, v1))) = (u, v) {
+        let patch = surface.try_trimmed(u0..=u1, v0..=v1)?;
+        output.push(compose_span(&patch, &uv, id)?);
+        return Ok(());
+    }
+    let crossings = crossings::isolate(&uv, u_rectangles, v_rectangles, id)?;
+    if !crossings.is_empty() {
+        let parameters = crossings
+            .iter()
+            .map(|crossing| crossing.parameter)
+            .collect::<Vec<_>>();
+        let mut pieces = uv.try_split_at_parameters(&parameters)?;
+        for (index, crossing) in crossings.iter().enumerate() {
+            pieces[index] = snap_endpoint(&pieces[index], *crossing, false, id)?;
+            pieces[index + 1] = snap_endpoint(&pieces[index + 1], *crossing, true, id)?;
+        }
+        for piece in pieces {
+            compose_piece(
+                surface,
+                u_rectangles,
+                v_rectangles,
+                piece,
+                depth + 1,
+                output,
+                id,
+            )?;
+        }
+    } else {
+        let domain = uv.domain();
+        let middle = 0.5 * *domain.start() + 0.5 * *domain.end();
+        if middle <= *domain.start() || middle >= *domain.end() {
+            return Err(unsupported(
+                "curved p-curve cannot be subdivided at a surface knot",
+            ));
+        }
+        let (left, right) = uv.try_split(middle)?;
+        compose_piece(
+            surface,
+            u_rectangles,
+            v_rectangles,
+            left,
+            depth + 1,
+            output,
+            id,
+        )?;
+        compose_piece(
+            surface,
+            u_rectangles,
+            v_rectangles,
+            right,
+            depth + 1,
+            output,
+            id,
+        )?;
+    }
+    Ok(())
+}
+
+fn snap_endpoint(
+    curve: &NurbsCurve,
+    crossing: crossings::Crossing,
+    first: bool,
+    id: u64,
+) -> Result<NurbsCurve, StepError> {
+    let unsupported = |reason| StepError::UnsupportedNativeShell { shell: id, reason };
+    let mut controls = curve.control_points().to_vec();
+    let index = if first { 0 } else { controls.len() - 1 };
+    let old = controls[index];
+    let point = old.point();
+    let mut coordinates = [point.x(), point.y()];
+    for (axis, knot) in [(0, crossing.u), (1, crossing.v)] {
+        if let Some(knot) = knot {
+            let scale = coordinates[axis].abs().max(knot.abs()).max(1.);
+            if (coordinates[axis] - knot).abs() > 1e-11 * scale {
+                return Err(unsupported(
+                    "curved p-curve knot crossing moves its UV locus",
+                ));
+            }
+            coordinates[axis] = knot;
+        }
+    }
+    controls[index] = WeightedPoint3::try_new(
+        Point3::try_new(coordinates[0], coordinates[1], point.z())?,
+        old.weight(),
+    )?;
+    Ok(NurbsCurve::try_new_rational(
+        curve.degree(),
+        controls,
+        curve.knots().to_vec(),
+    )?)
 }
 
 fn compose_span(patch: &NurbsSurface, uv: &NurbsCurve, id: u64) -> Result<NurbsCurve, StepError> {
@@ -351,13 +460,20 @@ mod tests {
             &[([0.1, 0.1], 1.), ([0.5, 0.4], 1.), ([0.9, 0.9], 1.)],
             vec![0., 0., 0., 1., 1., 1.],
         );
-        assert!(matches!(
-            compose(&basis, &crossing, 1),
-            Err(StepError::UnsupportedNativeShell {
-                reason: "curved p-curve crosses a surface knot within a UV span",
-                ..
-            })
-        ));
+        let composed = compose(&basis, &crossing, 1).unwrap().unwrap();
+        assert_eq!(composed.degree(), 6);
+        assert_eq!(
+            composed.knots().iter().filter(|knot| **knot == 0.5).count(),
+            6
+        );
+        for t in [0., 0.17, 0.5 - 1e-6, 0.5, 0.5 + 1e-6, 0.83, 1.] {
+            let point = crossing.evaluate(t).unwrap();
+            let expected = basis.evaluate(point.x(), point.y());
+            let actual = composed.evaluate(t).unwrap();
+            assert!((actual.x() - expected.x).abs() < 1e-9);
+            assert!((actual.y() - expected.y).abs() < 1e-9);
+            assert!((actual.z() - expected.z).abs() < 1e-9);
+        }
     }
 
     #[test]
@@ -385,6 +501,172 @@ mod tests {
             assert!((actual.x() - expected.x).abs() < 1e-10);
             assert!((actual.y() - expected.y).abs() < 1e-10);
             assert!((actual.z() - expected.z).abs() < 1e-10);
+        }
+    }
+
+    #[test]
+    fn curved_rational_uv_path_crosses_surface_knot_at_irrational_parameter() {
+        let basis = Surface::BsplineSurface(BsplineSurface::new(
+            (
+                KnotVector::from(vec![0., 0., 0., 0.3, 1., 1., 1.]),
+                KnotVector::bezier_knot(1),
+            ),
+            (0..4)
+                .map(|u| {
+                    (0..2)
+                        .map(|v| TruckPoint3::new(u as f64, v as f64, (u * v) as f64))
+                        .collect::<Vec<_>>()
+                })
+                .collect(),
+        ));
+        let uv = uv_curve(
+            2,
+            &[([0., 0.1], 1.), ([0.2, 0.8], 0.7), ([1., 0.9], 2.)],
+            vec![5., 5., 5., 9., 9., 9.],
+        );
+        let curve = compose(&basis, &uv, 1).unwrap().unwrap();
+        assert_eq!(curve.degree(), 6);
+        let crossing = *curve
+            .knots()
+            .iter()
+            .find(|knot| **knot > 5. && **knot < 9.)
+            .unwrap();
+        for t in [
+            5.,
+            5.17,
+            6.,
+            crossing - 1e-7,
+            crossing,
+            crossing + 1e-7,
+            8.83,
+            9.,
+        ] {
+            let point = uv.evaluate(t).unwrap();
+            let expected = basis.evaluate(point.x(), point.y());
+            let actual = curve.evaluate(t).unwrap();
+            assert!((actual.x() - expected.x).abs() < 1e-8);
+            assert!((actual.y() - expected.y).abs() < 1e-8);
+            assert!((actual.z() - expected.z).abs() < 1e-8);
+        }
+    }
+
+    #[test]
+    fn curved_uv_knot_tangency_and_simultaneous_crossings_compose() {
+        let tangent_surface = Surface::BsplineSurface(BsplineSurface::new(
+            (
+                KnotVector::from(vec![0., 0., 0., 0.25, 1., 1., 1.]),
+                KnotVector::bezier_knot(1),
+            ),
+            (0..4)
+                .map(|u| {
+                    (0..2)
+                        .map(|v| TruckPoint3::new(u as f64, v as f64, (u * v) as f64))
+                        .collect::<Vec<_>>()
+                })
+                .collect(),
+        ));
+        let tangent = uv_curve(
+            2,
+            &[([0.375, 0.1], 1.), ([0.125, 0.5], 1.), ([0.375, 0.9], 1.)],
+            vec![0., 0., 0., 1., 1., 1.],
+        );
+        let tangent_curve = compose(&tangent_surface, &tangent, 1).unwrap().unwrap();
+        assert_eq!(tangent_curve.degree(), 6);
+        for t in [0., 0.17, 0.5 - 1e-6, 0.5, 0.5 + 1e-6, 0.83, 1.] {
+            let point = tangent.evaluate(t).unwrap();
+            let expected = tangent_surface.evaluate(point.x(), point.y());
+            let actual = tangent_curve.evaluate(t).unwrap();
+            assert!((actual.x() - expected.x).abs() < 1e-9);
+            assert!((actual.y() - expected.y).abs() < 1e-9);
+            assert!((actual.z() - expected.z).abs() < 1e-9);
+        }
+
+        let crossed_surface = Surface::BsplineSurface(BsplineSurface::new(
+            (
+                KnotVector::from(vec![0., 0., 0., 0.25, 1., 1., 1.]),
+                KnotVector::from(vec![0., 0., 0., 0.75, 1., 1., 1.]),
+            ),
+            (0..4)
+                .map(|u| {
+                    (0..4)
+                        .map(|v| {
+                            let x = u as f64;
+                            let y = v as f64;
+                            TruckPoint3::new(x, y, x * y)
+                        })
+                        .collect::<Vec<_>>()
+                })
+                .collect(),
+        ));
+        let simultaneous = uv_curve(
+            2,
+            &[([0., 0.5], 1.), ([0.25, 0.75], 1.), ([0.5, 1.], 1.)],
+            vec![0., 0., 0., 1., 1., 1.],
+        );
+        let curve = compose(&crossed_surface, &simultaneous, 1)
+            .unwrap()
+            .unwrap();
+        assert_eq!(curve.degree(), 8);
+        assert_eq!(curve.knots().iter().filter(|knot| **knot == 0.5).count(), 8);
+        for t in [0., 0.17, 0.5 - 1e-6, 0.5, 0.5 + 1e-6, 0.83, 1.] {
+            let point = simultaneous.evaluate(t).unwrap();
+            let expected = crossed_surface.evaluate(point.x(), point.y());
+            let actual = curve.evaluate(t).unwrap();
+            assert!((actual.x() - expected.x).abs() < 1e-9);
+            assert!((actual.y() - expected.y).abs() < 1e-9);
+            assert!((actual.z() - expected.z).abs() < 1e-9);
+        }
+    }
+
+    #[test]
+    fn curved_uv_path_can_cross_the_same_surface_knot_twice() {
+        let basis = Surface::BsplineSurface(BsplineSurface::new(
+            (
+                KnotVector::from(vec![0., 0., 0., 0.3, 1., 1., 1.]),
+                KnotVector::bezier_knot(1),
+            ),
+            (0..4)
+                .map(|u| {
+                    (0..2)
+                        .map(|v| TruckPoint3::new(u as f64, v as f64, (u * v) as f64))
+                        .collect::<Vec<_>>()
+                })
+                .collect(),
+        ));
+        for controls in [
+            [([0.1, 0.1], 1.), ([0.9, 0.5], 1.), ([0.1, 0.9], 1.)],
+            [([0.1, 0.9], 2.), ([0.9, 0.5], 0.7), ([0.1, 0.1], 1.)],
+        ] {
+            let uv = uv_curve(2, &controls, vec![5., 5., 5., 9., 9., 9.]);
+            let curve = compose(&basis, &uv, 1).unwrap().unwrap();
+            assert_eq!(curve.degree(), 6);
+            let breaks = curve
+                .knots()
+                .iter()
+                .copied()
+                .filter(|knot| *knot > 5. && *knot < 9.)
+                .collect::<Vec<_>>();
+            assert_eq!(breaks.len(), 12);
+            for t in [
+                5.,
+                5.17,
+                breaks[0] - 1e-7,
+                breaks[0],
+                breaks[0] + 1e-7,
+                7.,
+                breaks[6] - 1e-7,
+                breaks[6],
+                breaks[6] + 1e-7,
+                8.83,
+                9.,
+            ] {
+                let point = uv.evaluate(t).unwrap();
+                let expected = basis.evaluate(point.x(), point.y());
+                let actual = curve.evaluate(t).unwrap();
+                assert!((actual.x() - expected.x).abs() < 1e-8);
+                assert!((actual.y() - expected.y).abs() < 1e-8);
+                assert!((actual.z() - expected.z).abs() < 1e-8);
+            }
         }
     }
 }

@@ -185,9 +185,12 @@ surface V degree)`, with the original UV interval and break values when spans ar
 joined. Direct tests compare rational UV curves on polynomial and rational
 patches against independent surface evaluation, including UV spans aligned
 with surface knots and a path on a discontinuous knot line. A serialized STEP
-triangle checks the parser and B-rep validator. A UV span that crosses a
-surface knot in its interior remains unsupported because its exact crossing
-parameter has not been isolated.
+triangle checks the parser and B-rep validator on single- and multi-span
+surfaces. Interior surface-knot crossings are isolated using exact
+binary-rational Bernstein subdivision; the UV span is split at representable
+source parameters and endpoints are snapped only within a tight UV tolerance.
+Tests cover irrational, tangent, simultaneous, and repeated crossings.
+Crossings too close to separate at floating-point precision remain unsupported.
 
 The same degree-one isoparametric p-curves on linear extrusions of curved
 directrices lift exactly. Constant-height edges use the translated directrix;
