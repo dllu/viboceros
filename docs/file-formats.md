@@ -244,7 +244,9 @@ on a full-turn wall are supported. Ring-torus patches and spherical bands away
 from the poles with straight UV iso-trims convert to exact rational patches,
 including full-angle seam strips. Polar singular trims remain unsupported.
 Linear extrusions of line and B-spline/NURBS directrices convert to exact
-tensor-product NURBS surfaces. NURBS faces can have polygon holes with
+tensor-product NURBS surfaces. Revolutions of those directrices with straight UV
+iso-trims convert to exact rational patches over angles up to one turn, including
+paired full-turn seams. NURBS faces can have polygon holes with
 straight UV trims; curved UV loops currently require one outer boundary. Other
 analytic surface types and periodic seam arrangements still fail native import.
 The native planar path supports straight-edged polygon holes, identifies the

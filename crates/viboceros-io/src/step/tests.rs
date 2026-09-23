@@ -1434,6 +1434,295 @@ fn native_step_imports_full_turn_toroidal_strip_seam() {
 }
 
 #[test]
+fn native_step_imports_full_turn_revolved_bspline_seam() {
+    use monstertruck::meshing::prelude::ParametricSurface;
+    use monstertruck::modeling::{
+        BsplineCurve, Invertible, KnotVector, Line, Point2 as TruckPoint2, Processor,
+        RevolutionSurface, Transformed, TrimmedCurve, UnitCircle, Vector3,
+    };
+    use monstertruck::step::load::step_geometry::{
+        Conic3D, Curve2D, Curve3D, StepParameterCurve, Surface, SweepSurface,
+    };
+    use monstertruck::step::save::StepModels;
+    use monstertruck::topology::compress::{
+        CompressedEdge, CompressedEdgeUse, CompressedTrimmedFace, CompressedTrimmedShell,
+    };
+    use viboceros_geometry::BrepTrimType;
+    let profile = Curve3D::BsplineCurve(BsplineCurve::new(
+        KnotVector::bezier_knot(2),
+        vec![
+            TruckPoint3::new(2., 0., -1.),
+            TruckPoint3::new(3., 0., 0.),
+            TruckPoint3::new(2., 0., 1.),
+        ],
+    ));
+    let mut revolution = Processor::new(RevolutionSurface::by_revolution(
+        profile.clone(),
+        TruckPoint3::new(0., 0., 0.),
+        Vector3::new(0., 0., 1.),
+    ));
+    revolution.invert();
+    let surface = Surface::SweepSurface(SweepSurface::RevolutionSurface(revolution));
+    let bottom = surface.evaluate(0., 0.);
+    let top = surface.evaluate(0., 1.);
+    let make_circle = |height| {
+        let mut circle = Processor::new(TrimmedCurve::new(
+            UnitCircle::<TruckPoint3>::new(),
+            (0., std::f64::consts::TAU),
+        ));
+        circle.transform_by(
+            Matrix4::from_translation(Vector3::new(0., 0., height)) * Matrix4::from_scale(2.),
+        );
+        Curve3D::Conic(Conic3D::Ellipse(circle))
+    };
+    let uv = [
+        ([0., 0.], [std::f64::consts::TAU, 0.]),
+        ([std::f64::consts::TAU, 0.], [std::f64::consts::TAU, 1.]),
+        ([0., 1.], [std::f64::consts::TAU, 1.]),
+        ([0., 0.], [0., 1.]),
+    ];
+    let uses = [(0, true), (1, true), (2, false), (1, false)]
+        .into_iter()
+        .zip(uv)
+        .map(|((index, orientation), (start, end))| CompressedEdgeUse {
+            index,
+            orientation,
+            trim_curve: Some(StepParameterCurve::new(
+                Box::new(Curve2D::Line(Line(
+                    TruckPoint2::new(start[0], start[1]),
+                    TruckPoint2::new(end[0], end[1]),
+                ))),
+                Box::new(surface.clone()),
+            )),
+        })
+        .collect();
+    let shell = CompressedTrimmedShell {
+        vertices: vec![bottom, top],
+        edges: vec![
+            CompressedEdge {
+                vertices: (0, 0),
+                curve: make_circle(-1.),
+            },
+            CompressedEdge {
+                vertices: (0, 1),
+                curve: profile,
+            },
+            CompressedEdge {
+                vertices: (1, 1),
+                curve: make_circle(1.),
+            },
+        ],
+        faces: vec![CompressedTrimmedFace {
+            boundaries: vec![uses],
+            orientation: true,
+            surface,
+        }],
+    };
+    let mut models = StepModels::default();
+    models.push_trimmed_shell(&shell);
+    let text = CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
+    assert!(text.contains("SURFACE_OF_REVOLUTION("));
+    assert_eq!(text.matches("SEAM_CURVE(").count(), 1);
+    let table = Table::from_step(&text).unwrap();
+    assert_eq!(table.entity_report.total(), 0);
+    let shell_id = *table.shell.keys().next().unwrap();
+    let (decoded, report) = reported_trimmed_shell(&table, shell_id).unwrap();
+    assert_eq!(report.total_lost(), 0);
+    assert!(
+        decoded.faces[0].boundaries[0]
+            .iter()
+            .all(|edge| edge.trim_curve.is_some())
+    );
+    let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    let brep = &native.instances[0].brep;
+    assert_eq!(
+        (
+            brep.vertices().len(),
+            brep.edges().len(),
+            brep.faces().len()
+        ),
+        (2, 3, 1)
+    );
+    assert_eq!(
+        brep.faces()[0].loops()[0]
+            .trims()
+            .iter()
+            .filter(|trim| trim.trim_type() == BrepTrimType::Seam)
+            .count(),
+        2
+    );
+    assert!(brep.area(Tolerance::DEFAULT).unwrap() > 8. * std::f64::consts::PI);
+}
+
+#[test]
+fn native_step_imports_exact_revolved_bspline_and_nurbs_faces() {
+    use monstertruck::meshing::prelude::ParametricSurface;
+    use monstertruck::modeling::{
+        BsplineCurve, Invertible, KnotVector, Line, NurbsCurve, Point2 as TruckPoint2, Processor,
+        RevolutionSurface, Vector3, Vector4, builder,
+    };
+    use monstertruck::step::load::step_geometry::{
+        Curve2D, Curve3D, StepParameterCurve, Surface, SweepSurface,
+    };
+    use monstertruck::step::save::StepModels;
+    use monstertruck::topology::Vertex;
+    use monstertruck::topology::compress::{
+        CompressedEdge, CompressedEdgeUse, CompressedTrimmedFace, CompressedTrimmedShell,
+    };
+    for rational in [false, true] {
+        let u0: f64 = 0.2;
+        let u1: f64 = 1.4;
+        let profile = if rational {
+            Curve3D::NurbsCurve(NurbsCurve::new(BsplineCurve::new(
+                KnotVector::bezier_knot(2),
+                vec![
+                    Vector4::new(2., 0., -1., 1.),
+                    Vector4::new(1.5, 0., 0., 0.5),
+                    Vector4::new(2., 0., 1., 1.),
+                ],
+            )))
+        } else {
+            Curve3D::BsplineCurve(BsplineCurve::new(
+                KnotVector::bezier_knot(2),
+                vec![
+                    TruckPoint3::new(2., 0., -1.),
+                    TruckPoint3::new(3., 0., 0.),
+                    TruckPoint3::new(2., 0., 1.),
+                ],
+            ))
+        };
+        let mut revolution = Processor::new(RevolutionSurface::by_revolution(
+            profile,
+            TruckPoint3::new(0., 0., 0.),
+            Vector3::new(0., 0., 1.),
+        ));
+        revolution.invert();
+        let surface = Surface::SweepSurface(SweepSurface::RevolutionSurface(revolution));
+        let vertices = vec![
+            surface.evaluate(u0, 0.),
+            surface.evaluate(u1, 0.),
+            surface.evaluate(u1, 1.),
+            surface.evaluate(u0, 1.),
+        ];
+        let meridian = |angle: f64| {
+            if rational {
+                Curve3D::NurbsCurve(NurbsCurve::new(BsplineCurve::new(
+                    KnotVector::bezier_knot(2),
+                    vec![
+                        Vector4::new(2. * angle.cos(), 2. * angle.sin(), -1., 1.),
+                        Vector4::new(1.5 * angle.cos(), 1.5 * angle.sin(), 0., 0.5),
+                        Vector4::new(2. * angle.cos(), 2. * angle.sin(), 1., 1.),
+                    ],
+                )))
+            } else {
+                Curve3D::BsplineCurve(BsplineCurve::new(
+                    KnotVector::bezier_knot(2),
+                    vec![
+                        TruckPoint3::new(2. * angle.cos(), 2. * angle.sin(), -1.),
+                        TruckPoint3::new(3. * angle.cos(), 3. * angle.sin(), 0.),
+                        TruckPoint3::new(2. * angle.cos(), 2. * angle.sin(), 1.),
+                    ],
+                ))
+            }
+        };
+        let circle_edge = |start: usize, end: usize, v| {
+            builder::circle_arc(
+                &Vertex::new(vertices[start]),
+                &Vertex::new(vertices[end]),
+                surface.evaluate((u0 + u1) / 2., v),
+            )
+            .curve()
+        };
+        let edges = vec![
+            CompressedEdge {
+                vertices: (0, 1),
+                curve: circle_edge(0, 1, 0.),
+            },
+            CompressedEdge {
+                vertices: (1, 2),
+                curve: meridian(u1),
+            },
+            CompressedEdge {
+                vertices: (3, 2),
+                curve: circle_edge(3, 2, 1.),
+            },
+            CompressedEdge {
+                vertices: (0, 3),
+                curve: meridian(u0),
+            },
+        ];
+        let uv = [
+            ([u0, 0.], [u1, 0.]),
+            ([u1, 0.], [u1, 1.]),
+            ([u0, 1.], [u1, 1.]),
+            ([u0, 0.], [u0, 1.]),
+        ];
+        let uses = uv
+            .into_iter()
+            .enumerate()
+            .map(|(index, (start, end))| CompressedEdgeUse {
+                index,
+                orientation: index < 2,
+                trim_curve: Some(StepParameterCurve::new(
+                    Box::new(Curve2D::Line(Line(
+                        TruckPoint2::new(start[0], start[1]),
+                        TruckPoint2::new(end[0], end[1]),
+                    ))),
+                    Box::new(surface.clone()),
+                )),
+            })
+            .collect();
+        let shell = CompressedTrimmedShell {
+            vertices,
+            edges,
+            faces: vec![CompressedTrimmedFace {
+                boundaries: vec![uses],
+                orientation: true,
+                surface: surface.clone(),
+            }],
+        };
+        let mut models = StepModels::default();
+        models.push_trimmed_shell(&shell);
+        let text = CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
+        assert!(text.contains("SURFACE_OF_REVOLUTION("));
+        if rational {
+            assert!(text.contains("RATIONAL_B_SPLINE_CURVE("));
+        }
+        let table = Table::from_step(&text).unwrap();
+        assert_eq!(table.entity_report.total(), 0);
+        let shell_id = *table.shell.keys().next().unwrap();
+        let (_, report) = reported_trimmed_shell(&table, shell_id).unwrap();
+        assert_eq!(report.total_lost(), 0);
+        let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+        let brep = &native.instances[0].brep;
+        assert_eq!(
+            (
+                brep.vertices().len(),
+                brep.edges().len(),
+                brep.faces().len()
+            ),
+            (4, 4, 1)
+        );
+        for u in [u0, u0 + 0.23 * (u1 - u0), (u0 + u1) / 2., u1] {
+            for v in [0., 0.17, 0.5, 0.83, 1.] {
+                let profile_point = surface.evaluate(u0, v);
+                let point = brep.faces()[0].surface().evaluate(u, v).unwrap();
+                let radius = profile_point.x.hypot(profile_point.y);
+                assert!((point.x().hypot(point.y()) - radius).abs() < 1e-10);
+                assert!((point.z() - profile_point.z).abs() < 1e-10);
+                let angle = point.y().atan2(point.x());
+                assert!(angle >= u0 - 1e-10 && angle <= u1 + 1e-10);
+                if u == u0 || u == (u0 + u1) / 2. || u == u1 {
+                    let expected = surface.evaluate(u, v);
+                    assert!((point.x() - expected.x).abs() < 1e-10);
+                    assert!((point.y() - expected.y).abs() < 1e-10);
+                }
+            }
+        }
+    }
+}
+
+#[test]
 fn native_step_imports_exact_line_bspline_and_nurbs_extrusions() {
     use monstertruck::meshing::prelude::ParametricSurface;
     use monstertruck::modeling::{

@@ -1,5 +1,6 @@
 //! Native conversion of STEP NURBS shell geometry and face-local p-curves.
 use super::{StepError, Table, native_planar, reported_trimmed_shell};
+use monstertruck::core::cgmath64::{InnerSpace, Transform as _};
 use monstertruck::meshing::prelude::{BoundedCurve, ParametricCurve, ParametricSurface};
 use monstertruck::step::load::step_geometry::{
     Conic2D, Conic3D, Curve2D, Curve3D, ElementarySurface, Surface, SweepSurface,
@@ -63,12 +64,19 @@ pub(super) fn convert_shell(
             return Err(unsupported("face has no boundary"));
         }
         let mut boundaries = Vec::with_capacity(face.boundaries.len());
-        let periodic_axes = match face.surface {
+        let periodic_axes = match &face.surface {
             Surface::ElementarySurface(
                 ElementarySurface::CylindricalSurface(_) | ElementarySurface::ConicalSurface(_),
             ) => [true, false],
             Surface::ElementarySurface(ElementarySurface::ToroidalSurface(_)) => [true, true],
             Surface::ElementarySurface(ElementarySurface::Sphere(_)) => [true, false],
+            Surface::SweepSurface(SweepSurface::RevolutionSurface(revolution)) => {
+                if revolution.orientation() {
+                    [false, true]
+                } else {
+                    [true, false]
+                }
+            }
             _ => [false, false],
         };
         for boundary in &face.boundaries {
@@ -497,6 +505,81 @@ fn surface(
                 vec![v0, v0, v1, v1],
             )?)
         }
+        Surface::SweepSurface(SweepSurface::RevolutionSurface(revolution)) => {
+            if revolution.orientation() {
+                return Err(unsupported(
+                    "STEP revolution parameters are not angle-first",
+                ));
+            }
+            let directrix = revolution.entity().entity_curve();
+            if !matches!(
+                directrix,
+                Curve3D::Line(_) | Curve3D::BsplineCurve(_) | Curve3D::NurbsCurve(_)
+            ) {
+                return Err(unsupported(
+                    "revolution directrix is not a line or B-spline curve",
+                ));
+            }
+            let directrix = edge_curve(directrix, id)?;
+            let mut u0 = f64::INFINITY;
+            let mut u1 = f64::NEG_INFINITY;
+            for trim in boundaries.iter().flatten() {
+                if trim.curve().degree() != 1 || trim.curve().control_points().len() != 2 {
+                    return Err(unsupported("revolution requires straight UV iso-trims"));
+                }
+                let start = trim.curve().start_point()?;
+                let end = trim.curve().end_point()?;
+                if (start.x() - end.x()).abs() > tolerance.angular()
+                    && (start.y() - end.y()).abs() > tolerance.absolute()
+                {
+                    return Err(unsupported("revolution requires UV iso-trims"));
+                }
+                u0 = u0.min(start.x()).min(end.x());
+                u1 = u1.max(start.x()).max(end.x());
+            }
+            let spans = arc_span_count(u1 - u0, id)?;
+            let step = (u1 - u0) / spans as f64;
+            let origin = revolution.entity().origin();
+            let axis = revolution.entity().axis();
+            let rotate = |point: Point3, angle: f64| -> Result<Point3, StepError> {
+                let point = monstertruck::modeling::Point3::new(point.x(), point.y(), point.z());
+                let displacement = point - origin;
+                let rotated = origin
+                    + displacement * angle.cos()
+                    + axis.cross(displacement) * angle.sin()
+                    + axis * axis.dot(displacement) * (1. - angle.cos());
+                point3(revolution.transform().transform_point(rotated))
+            };
+            let mut controls =
+                Vec::with_capacity((2 * spans + 1) * directrix.control_points().len());
+            for control in directrix.control_points() {
+                for index in 0..spans {
+                    let start = u0 + step * index as f64;
+                    let end = if index + 1 == spans { u1 } else { start + step };
+                    let p0 = rotate(control.point(), start)?;
+                    let pm = rotate(control.point(), (start + end) / 2.)?;
+                    let p1 = rotate(control.point(), end)?;
+                    let weight = ((end - start) / 2.).cos();
+                    if index == 0 {
+                        controls.push(WeightedPoint3::try_new(p0, control.weight())?);
+                    }
+                    controls.push(WeightedPoint3::try_new(
+                        circular_middle(p0, pm, p1, weight)?,
+                        control.weight() * weight,
+                    )?);
+                    controls.push(WeightedPoint3::try_new(p1, control.weight())?);
+                }
+            }
+            Ok(NurbsSurface::try_new_rational(
+                2,
+                directrix.degree(),
+                2 * spans + 1,
+                directrix.control_points().len(),
+                controls,
+                arc_knots(u0, u1, spans),
+                directrix.knots().to_vec(),
+            )?)
+        }
         Surface::ElementarySurface(
             ElementarySurface::CylindricalSurface(revolution)
             | ElementarySurface::ConicalSurface(revolution),
@@ -668,8 +751,5 @@ fn surface(
                 arc_knots(v0, v1, v_spans),
             )?)
         }
-        _ => Err(unsupported(
-            "surface is not a supported plane, extrusion, revolved line, torus, sphere, or B-spline",
-        )),
     }
 }
