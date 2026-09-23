@@ -63,9 +63,11 @@ pub(super) fn convert_shell(
             return Err(unsupported("face has no boundary"));
         }
         let mut boundaries = Vec::with_capacity(face.boundaries.len());
-        let periodic_cylinder = matches!(
+        let periodic_revolution = matches!(
             face.surface,
-            Surface::ElementarySurface(ElementarySurface::CylindricalSurface(_))
+            Surface::ElementarySurface(
+                ElementarySurface::CylindricalSurface(_) | ElementarySurface::ConicalSurface(_)
+            )
         );
         for boundary in &face.boundaries {
             let mut trims = Vec::with_capacity(boundary.len());
@@ -76,9 +78,9 @@ pub(super) fn convert_shell(
                     .as_ref()
                     .ok_or_else(|| unsupported("missing UV trim"))?;
                 let mut curve = trim_curve(source.curve().as_ref(), id)?;
-                if periodic_cylinder {
+                if periodic_revolution {
                     if let Some(end) = previous_end {
-                        curve = align_cylinder_trim(curve, end, tolerance)?;
+                        curve = align_revolution_trim(curve, end, tolerance)?;
                     }
                     previous_end = Some(curve.end_point()?);
                 }
@@ -133,7 +135,7 @@ pub(super) fn convert_shell(
 /// STEP readers may unwrap a circular 3D edge into a different full-turn UV
 /// interval from its explicit seam p-curves. Keep each p-curve's shape and
 /// align its periodic coordinate with the preceding trim in the loop.
-fn align_cylinder_trim(
+fn align_revolution_trim(
     curve: NurbsCurve2,
     previous_end: Point2,
     tolerance: Tolerance,
@@ -423,19 +425,24 @@ fn surface(
                 vec![min[1], min[1], max[1], max[1]],
             )?)
         }
-        Surface::ElementarySurface(ElementarySurface::CylindricalSurface(cylinder)) => {
+        Surface::ElementarySurface(
+            ElementarySurface::CylindricalSurface(revolution)
+            | ElementarySurface::ConicalSurface(revolution),
+        ) => {
             let mut min = [f64::INFINITY; 2];
             let mut max = [f64::NEG_INFINITY; 2];
             for trim in boundaries.iter().flatten() {
                 if trim.curve().degree() != 1 || trim.curve().control_points().len() != 2 {
-                    return Err(unsupported("cylinder requires straight UV iso-trims"));
+                    return Err(unsupported(
+                        "revolved line surface requires straight UV iso-trims",
+                    ));
                 }
                 let start = trim.curve().start_point()?;
                 let end = trim.curve().end_point()?;
                 if (start.x() - end.x()).abs() > tolerance.angular()
                     && (start.y() - end.y()).abs() > tolerance.absolute()
                 {
-                    return Err(unsupported("cylinder requires UV iso-trims"));
+                    return Err(unsupported("revolved line surface requires UV iso-trims"));
                 }
                 for point in [start, end] {
                     min[0] = min[0].min(point.x());
@@ -448,7 +455,7 @@ fn surface(
             let [u1, v1] = max;
             let angle = u1 - u0;
             if v0 >= v1 {
-                return Err(unsupported("cylinder axial trim range is degenerate"));
+                return Err(unsupported("revolved line axial trim range is degenerate"));
             }
             let spans = arc_span_count(angle, id)?;
             let step = angle / spans as f64;
@@ -457,9 +464,9 @@ fn surface(
                 for index in 0..spans {
                     let start = u0 + step * index as f64;
                     let end = if index + 1 == spans { u1 } else { start + step };
-                    let p0 = cylinder.evaluate(start, v);
-                    let pm = cylinder.evaluate((start + end) / 2., v);
-                    let p1 = cylinder.evaluate(end, v);
+                    let p0 = revolution.evaluate(start, v);
+                    let pm = revolution.evaluate((start + end) / 2., v);
+                    let p1 = revolution.evaluate(end, v);
                     let weight = ((end - start) / 2.).cos();
                     if index == 0 {
                         controls.push(WeightedPoint3::try_new(point3(p0)?, 1.)?);
@@ -484,7 +491,7 @@ fn surface(
             )?)
         }
         _ => Err(unsupported(
-            "surface is not a supported plane, cylinder, or B-spline",
+            "surface is not a supported plane, revolved line, or B-spline",
         )),
     }
 }
