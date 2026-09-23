@@ -2337,6 +2337,32 @@ fn native_step_imports_full_turn_revolved_bspline_seam() {
             .abs()
             < 1e-8
     );
+
+    let mut pcurve_shell = shell.clone();
+    pcurve_shell.edges[0].curve = Curve3D::ParameterCurve(StepParameterCurve::new(
+        Box::new(Curve2D::Line(Line(
+            TruckPoint2::new(0., 0.),
+            TruckPoint2::new(std::f64::consts::TAU, 0.),
+        ))),
+        Box::new(pcurve_shell.faces[0].surface.clone()),
+    ));
+    let mut pcurve_models = StepModels::default();
+    pcurve_models.push_trimmed_shell(&pcurve_shell);
+    let pcurve_text =
+        CompleteStepDisplay::new(pcurve_models, StepHeaderDescriptor::default()).to_string();
+    let pcurve_native =
+        read_step_native_instances(Cursor::new(pcurve_text), Tolerance::DEFAULT).unwrap();
+    let pcurve_brep = &pcurve_native.instances[0].brep;
+    assert_eq!(pcurve_brep.edges()[0].curve().degree(), 2);
+    assert_eq!(pcurve_brep.edges()[0].curve().control_points().len(), 9);
+    assert_eq!(
+        pcurve_brep.faces()[0].loops()[0]
+            .trims()
+            .iter()
+            .filter(|trim| trim.trim_type() == BrepTrimType::Seam)
+            .count(),
+        2
+    );
 }
 
 #[test]
@@ -2556,6 +2582,44 @@ fn native_step_imports_exact_revolved_polyline_conic_bspline_and_nurbs_faces() {
                     let expected = surface.evaluate(u, v);
                     assert!((point.x() - expected.x).abs() < 1e-10);
                     assert!((point.y() - expected.y).abs() < 1e-10);
+                }
+            }
+        }
+
+        if variant == 0 || variant == 2 {
+            let mut iso_shell = shell.clone();
+            iso_shell.edges[0].curve = Curve3D::ParameterCurve(StepParameterCurve::new(
+                Box::new(Curve2D::BsplineCurve(BsplineCurve::new(
+                    KnotVector::from(vec![5., 5., 9., 9.]),
+                    vec![TruckPoint2::new(u0, v_start), TruckPoint2::new(u1, v_start)],
+                ))),
+                Box::new(surface.clone()),
+            ));
+            iso_shell.edges[1].curve = Curve3D::ParameterCurve(StepParameterCurve::new(
+                Box::new(Curve2D::Line(Line(
+                    TruckPoint2::new(u1, v_start),
+                    TruckPoint2::new(u1, v_end),
+                ))),
+                Box::new(surface.clone()),
+            ));
+            let mut models = StepModels::default();
+            models.push_trimmed_shell(&iso_shell);
+            let text =
+                CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
+            assert!(text.contains("PCURVE("));
+            let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+            let brep = &native.instances[0].brep;
+            assert_eq!(brep.edges()[0].curve().degree(), 2);
+            assert_eq!(brep.edges()[0].curve().domain(), 5.0..=9.0);
+            assert_eq!(brep.edges()[1].curve().degree(), 2);
+            for fraction in [0., 0.17, 0.5, 0.83, 1.] {
+                for (index, t, u, v) in [
+                    (0, 5. + 4. * fraction, u0 + (u1 - u0) * fraction, v_start),
+                    (1, fraction, u1, v_start + (v_end - v_start) * fraction),
+                ] {
+                    let actual = brep.edges()[index].curve().evaluate(t).unwrap();
+                    let expected = brep.faces()[0].surface().evaluate(u, v).unwrap();
+                    assert!(actual.distance_to(expected).unwrap() < 1e-10);
                 }
             }
         }

@@ -147,6 +147,15 @@ constant-directrix-parameter edges use the extrusion line. Direct polynomial
 and rational tests cover partial and reversed edges, and serialized STEP shells
 check both iso directions and the source p-curve domain.
 
+On supported surfaces of revolution, constant-angle p-curves use a rotated
+copy of the converted directrix; constant-profile-parameter p-curves become
+exact rational circular arcs over at most one turn. The edge keeps the source
+p-curve domain, while the arc's interior angular parameterization follows the
+NURBS face. Serialized polynomial and rational profiles check both directions
+against face evaluation. A full-turn seam regression also checks a STEP loader
+case where coincident edge vertices produce a collapsed 3D leader: the importer
+uses its unique, endpoint-matching associated p-curve on the same surface.
+
 Degree-one, two-control-point rational 3D edges and UV trims are also supported
 when their weights are finite and positive. Homogeneous source controls are
 converted to Euclidean controls with separate weights, retaining knots and

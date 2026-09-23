@@ -3,7 +3,8 @@ use super::{StepError, Table, native_planar, reported_trimmed_shell};
 use monstertruck::core::cgmath64::{InnerSpace, Transform as _};
 use monstertruck::meshing::prelude::{BoundedCurve, ParametricCurve, ParametricSurface};
 use monstertruck::step::load::step_geometry::{
-    Conic2D, Conic3D, Curve2D, Curve3D, ElementarySurface, Surface, SweepSurface,
+    Conic2D, Conic3D, Curve2D, Curve3D, ElementarySurface, StepParameterCurve,
+    StepRevolutionSurface, Surface, SurfaceCurve3D, SurfaceCurveAssociatedGeometry, SweepSurface,
 };
 use num_rational::BigRational;
 use viboceros_geometry::{
@@ -216,7 +217,13 @@ fn weighted2(x: f64, y: f64, w: f64, id: u64) -> Result<WeightedPoint2, StepErro
 fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
     let unsupported = |reason| StepError::UnsupportedNativeShell { shell: id, reason };
     match curve {
-        Curve3D::SurfaceCurve(surface_curve) => edge_curve(surface_curve.leader(), id),
+        Curve3D::SurfaceCurve(surface_curve) => {
+            if let Some(parameter_curve) = collapsed_surface_curve_pcurve(surface_curve) {
+                edge_curve(&Curve3D::ParameterCurve(parameter_curve.clone()), id)
+            } else {
+                edge_curve(surface_curve.leader(), id)
+            }
+        }
         Curve3D::IntersectionCurve(intersection_curve) => {
             edge_curve(intersection_curve.leader(), id)
         }
@@ -315,6 +322,77 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
                             ],
                         )?);
                     }
+                    if let Surface::SweepSurface(SweepSurface::RevolutionSurface(revolution)) =
+                        basis
+                    {
+                        if revolution.orientation() {
+                            return Err(unsupported(
+                                "STEP revolution parameters are not angle-first",
+                            ));
+                        }
+                        let directrix = sweep_directrix(revolution.entity().entity_curve(), id)?;
+                        if uv0.x() == uv1.x() {
+                            let controls = directrix
+                                .control_points()
+                                .iter()
+                                .map(|control| {
+                                    Ok(WeightedPoint3::try_new(
+                                        rotate_revolution_point(
+                                            revolution,
+                                            control.point(),
+                                            uv0.x(),
+                                        )?,
+                                        control.weight(),
+                                    )?)
+                                })
+                                .collect::<Result<Vec<_>, StepError>>()?;
+                            let curve = NurbsCurve::try_new_rational(
+                                directrix.degree(),
+                                controls,
+                                directrix.knots().to_vec(),
+                            )?;
+                            return oriented_isocurve_edge(
+                                curve,
+                                uv0.y(),
+                                uv1.y(),
+                                uv.domain(),
+                                id,
+                            );
+                        }
+                        if !directrix.domain().contains(&uv0.y()) {
+                            return Err(unsupported(
+                                "3D edge p-curve leaves its revolution surface domain",
+                            ));
+                        }
+                        let base = directrix.evaluate(uv0.y())?;
+                        let start = uv0.x().min(uv1.x());
+                        let end = uv0.x().max(uv1.x());
+                        let spans = arc_span_count(end - start, id)?;
+                        let step = (end - start) / spans as f64;
+                        let mut controls = Vec::with_capacity(2 * spans + 1);
+                        for index in 0..spans {
+                            let a = start + step * index as f64;
+                            let b = if index + 1 == spans { end } else { a + step };
+                            let p0 = rotate_revolution_point(revolution, base, a)?;
+                            let pm = rotate_revolution_point(revolution, base, (a + b) / 2.)?;
+                            let p1 = rotate_revolution_point(revolution, base, b)?;
+                            let weight = ((b - a) / 2.).cos();
+                            if index == 0 {
+                                controls.push(WeightedPoint3::try_new(p0, 1.)?);
+                            }
+                            controls.push(WeightedPoint3::try_new(
+                                circular_middle(p0, pm, p1, weight)?,
+                                weight,
+                            )?);
+                            controls.push(WeightedPoint3::try_new(p1, 1.)?);
+                        }
+                        let curve = NurbsCurve::try_new_rational(
+                            2,
+                            controls,
+                            arc_knots(start, end, spans),
+                        )?;
+                        return oriented_isocurve_edge(curve, uv0.x(), uv1.x(), uv.domain(), id);
+                    }
                 }
             }
             if !globally_affine && bounded_affine.is_none() {
@@ -390,6 +468,55 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
     }
 }
 
+/// Some STEP loaders synthesize a point-like 3D leader for a full-turn edge
+/// whose vertices coincide, while preserving its actual p-curve as associated
+/// geometry. Accept that p-curve only when it is unique and closes at the
+/// leader's point on the same surface.
+fn collapsed_surface_curve_pcurve(surface_curve: &SurfaceCurve3D) -> Option<&StepParameterCurve> {
+    let Curve3D::ParameterCurve(leader) = surface_curve.leader() else {
+        return None;
+    };
+    let Curve2D::Line(line) = leader.curve().as_ref() else {
+        return None;
+    };
+    if line.0 != line.1 {
+        return None;
+    }
+    let surface = leader.surface().as_ref();
+    let leader_point = surface.evaluate(line.0.x, line.0.y);
+    let mut candidates = surface_curve
+        .associated_geometry()
+        .iter()
+        .filter_map(|entry| {
+            let SurfaceCurveAssociatedGeometry::ParameterCurve(candidate) = entry else {
+                return None;
+            };
+            if candidate.surface().as_ref() != surface {
+                return None;
+            }
+            let (start, end) = candidate.curve().range_tuple();
+            let endpoints = [
+                candidate.curve().evaluate(start),
+                candidate.curve().evaluate(end),
+            ];
+            endpoints
+                .into_iter()
+                .all(|uv| {
+                    let point = surface.evaluate(uv.x, uv.y);
+                    [
+                        (point.x, leader_point.x),
+                        (point.y, leader_point.y),
+                        (point.z, leader_point.z),
+                    ]
+                    .into_iter()
+                    .all(|(a, b)| (a - b).abs() <= 1e-10 * a.abs().max(b.abs()).max(1.))
+                })
+                .then_some(candidate)
+        });
+    let candidate = candidates.next()?;
+    candidates.next().is_none().then_some(candidate)
+}
+
 fn oriented_isocurve_edge(
     mut curve: NurbsCurve,
     varying_start: f64,
@@ -408,6 +535,22 @@ fn oriented_isocurve_edge(
         curve = curve.reversed()?;
     }
     Ok(curve.try_reparameterized(domain)?)
+}
+
+fn rotate_revolution_point(
+    revolution: &StepRevolutionSurface,
+    point: Point3,
+    angle: f64,
+) -> Result<Point3, StepError> {
+    let point = monstertruck::modeling::Point3::new(point.x(), point.y(), point.z());
+    let origin = revolution.entity().origin();
+    let axis = revolution.entity().axis();
+    let displacement = point - origin;
+    let rotated = origin
+        + displacement * angle.cos()
+        + axis.cross(displacement) * angle.sin()
+        + axis * axis.dot(displacement) * (1. - angle.cos());
+    point3(revolution.transform().transform_point(rotated))
 }
 
 /// A single bilinear patch is affine precisely when its homogeneous controls
@@ -820,26 +963,16 @@ fn surface(
             }
             let spans = arc_span_count(u1 - u0, id)?;
             let step = (u1 - u0) / spans as f64;
-            let origin = revolution.entity().origin();
-            let axis = revolution.entity().axis();
-            let rotate = |point: Point3, angle: f64| -> Result<Point3, StepError> {
-                let point = monstertruck::modeling::Point3::new(point.x(), point.y(), point.z());
-                let displacement = point - origin;
-                let rotated = origin
-                    + displacement * angle.cos()
-                    + axis.cross(displacement) * angle.sin()
-                    + axis * axis.dot(displacement) * (1. - angle.cos());
-                point3(revolution.transform().transform_point(rotated))
-            };
             let mut controls =
                 Vec::with_capacity((2 * spans + 1) * directrix.control_points().len());
             for control in directrix.control_points() {
                 for index in 0..spans {
                     let start = u0 + step * index as f64;
                     let end = if index + 1 == spans { u1 } else { start + step };
-                    let p0 = rotate(control.point(), start)?;
-                    let pm = rotate(control.point(), (start + end) / 2.)?;
-                    let p1 = rotate(control.point(), end)?;
+                    let p0 = rotate_revolution_point(revolution, control.point(), start)?;
+                    let pm =
+                        rotate_revolution_point(revolution, control.point(), (start + end) / 2.)?;
+                    let p1 = rotate_revolution_point(revolution, control.point(), end)?;
                     let weight = ((end - start) / 2.).cos();
                     if index == 0 {
                         controls.push(WeightedPoint3::try_new(p0, control.weight())?);
@@ -1040,11 +1173,13 @@ mod tests {
     use super::*;
     use monstertruck::core::cgmath64::Vector3;
     use monstertruck::modeling::{
-        BsplineCurve, BsplineSurface, KnotVector, Line, NurbsCurve as TruckNurbsCurve,
+        BsplineCurve, BsplineSurface, Invertible, KnotVector, Line, NurbsCurve as TruckNurbsCurve,
         NurbsSurface as TruckNurbsSurface, Plane, Point2 as TruckPoint2, Point3 as TruckPoint3,
-        PolylineCurve, Vector4, builder,
+        PolylineCurve, Processor, RevolutionSurface, Vector4, builder,
     };
-    use monstertruck::step::load::step_geometry::{StepExtrusionSurface, StepParameterCurve};
+    use monstertruck::step::load::step_geometry::{
+        StepExtrusionSurface, StepParameterCurve, SurfaceCurveKind, SurfaceCurveRepresentation,
+    };
     use monstertruck::topology::Vertex;
 
     #[test]
@@ -1441,6 +1576,168 @@ mod tests {
             assert!((point.x() - base.x()).abs() < 1e-12);
             assert!((point.y() - base.y() - 3. * v).abs() < 1e-12);
             assert!((point.z() - base.z()).abs() < 1e-12);
+        }
+    }
+
+    #[test]
+    fn revolved_pcurve_edges_preserve_exact_meridians_and_circular_locus() {
+        for profile in [
+            Curve3D::BsplineCurve(BsplineCurve::new(
+                KnotVector::bezier_knot(2),
+                vec![
+                    TruckPoint3::new(2., 0., -1.),
+                    TruckPoint3::new(3., 0., 0.),
+                    TruckPoint3::new(2., 0., 1.),
+                ],
+            )),
+            Curve3D::NurbsCurve(TruckNurbsCurve::new(BsplineCurve::new(
+                KnotVector::bezier_knot(2),
+                vec![
+                    Vector4::new(2., 0., -1., 1.),
+                    Vector4::new(1.5, 0., 0., 0.5),
+                    Vector4::new(2., 0., 1., 1.),
+                ],
+            ))),
+        ] {
+            let mut revolution = Processor::new(RevolutionSurface::by_revolution(
+                profile,
+                TruckPoint3::new(0., 0., 0.),
+                Vector3::new(0., 0., 1.),
+            ));
+            revolution.invert();
+            let basis = Surface::SweepSurface(SweepSurface::RevolutionSurface(revolution));
+            for (a, b, meridian) in [
+                ([0.4, 0.2], [0.4, 0.8], true),
+                ([0.4, 0.8], [0.4, 0.2], true),
+                ([0.2, 0.35], [1.4, 0.35], false),
+                ([1.4, 0.35], [0.2, 0.35], false),
+            ] {
+                let uv0 = TruckPoint2::new(a[0], a[1]);
+                let uv1 = TruckPoint2::new(b[0], b[1]);
+                for (uv, domain) in [
+                    (Curve2D::Line(Line(uv0, uv1)), 0.0..=1.0),
+                    (
+                        Curve2D::BsplineCurve(BsplineCurve::new(
+                            KnotVector::from(vec![5., 5., 9., 9.]),
+                            vec![uv0, uv1],
+                        )),
+                        5.0..=9.0,
+                    ),
+                ] {
+                    let source = Curve3D::ParameterCurve(StepParameterCurve::new(
+                        Box::new(uv),
+                        Box::new(basis.clone()),
+                    ));
+                    let curve = edge_curve(&source, 1).unwrap();
+                    assert_eq!(curve.degree(), 2);
+                    assert_eq!(curve.domain(), domain);
+                    for fraction in [0., 0.17, 0.5, 0.83, 1.] {
+                        let t = *domain.start() * (1. - fraction) + *domain.end() * fraction;
+                        let point = curve.evaluate(t).unwrap();
+                        let u = a[0] * (1. - fraction) + b[0] * fraction;
+                        let v = a[1] * (1. - fraction) + b[1] * fraction;
+                        let expected = basis.evaluate(u, v);
+                        if meridian || fraction == 0. || fraction == 1. {
+                            assert!((point.x() - expected.x).abs() < 1e-11);
+                            assert!((point.y() - expected.y).abs() < 1e-11);
+                            assert!((point.z() - expected.z).abs() < 1e-11);
+                        } else {
+                            let reference = basis.evaluate(a[0], a[1]);
+                            assert!(
+                                (point.x().hypot(point.y()) - reference.x.hypot(reference.y)).abs()
+                                    < 1e-11
+                            );
+                            assert!((point.z() - reference.z).abs() < 1e-11);
+                            let angle = point.y().atan2(point.x());
+                            assert!(angle >= a[0].min(b[0]) - 1e-11);
+                            assert!(angle <= a[0].max(b[0]) + 1e-11);
+                        }
+                    }
+                }
+            }
+
+            let full_circle = Curve3D::ParameterCurve(StepParameterCurve::new(
+                Box::new(Curve2D::Line(Line(
+                    TruckPoint2::new(0., 0.35),
+                    TruckPoint2::new(std::f64::consts::TAU, 0.35),
+                ))),
+                Box::new(basis.clone()),
+            ));
+            let full_circle = edge_curve(&full_circle, 1).unwrap();
+            assert_eq!(full_circle.degree(), 2);
+            assert_eq!(full_circle.control_points().len(), 9);
+            assert!(
+                full_circle
+                    .evaluate(0.)
+                    .unwrap()
+                    .distance_to(full_circle.evaluate(1.).unwrap())
+                    .unwrap()
+                    < 1e-11
+            );
+
+            let collapsed = Curve3D::ParameterCurve(StepParameterCurve::new(
+                Box::new(Curve2D::Line(Line(
+                    TruckPoint2::new(0., 0.35),
+                    TruckPoint2::new(0., 0.35),
+                ))),
+                Box::new(basis.clone()),
+            ));
+            let associated = StepParameterCurve::new(
+                Box::new(Curve2D::Line(Line(
+                    TruckPoint2::new(0., 0.35),
+                    TruckPoint2::new(std::f64::consts::TAU, 0.35),
+                ))),
+                Box::new(basis.clone()),
+            );
+            let wrapper = |geometry| {
+                SurfaceCurve3D::new(
+                    SurfaceCurveKind::SurfaceCurve,
+                    Box::new(collapsed.clone()),
+                    geometry,
+                    SurfaceCurveRepresentation::Curve3D,
+                )
+            };
+            assert!(
+                collapsed_surface_curve_pcurve(&wrapper(vec![
+                    SurfaceCurveAssociatedGeometry::ParameterCurve(associated.clone())
+                ]))
+                .is_some()
+            );
+            assert!(
+                collapsed_surface_curve_pcurve(&wrapper(vec![
+                    SurfaceCurveAssociatedGeometry::ParameterCurve(associated.clone()),
+                    SurfaceCurveAssociatedGeometry::ParameterCurve(associated),
+                ]))
+                .is_none()
+            );
+            let wrong_endpoint = StepParameterCurve::new(
+                Box::new(Curve2D::Line(Line(
+                    TruckPoint2::new(0.2, 0.35),
+                    TruckPoint2::new(1.4, 0.35),
+                ))),
+                Box::new(basis.clone()),
+            );
+            assert!(
+                collapsed_surface_curve_pcurve(&wrapper(vec![
+                    SurfaceCurveAssociatedGeometry::ParameterCurve(wrong_endpoint)
+                ]))
+                .is_none()
+            );
+
+            let outside = Curve3D::ParameterCurve(StepParameterCurve::new(
+                Box::new(Curve2D::Line(Line(
+                    TruckPoint2::new(0.2, 1.2),
+                    TruckPoint2::new(1.4, 1.2),
+                ))),
+                Box::new(basis),
+            ));
+            assert!(matches!(
+                edge_curve(&outside, 1),
+                Err(StepError::UnsupportedNativeShell {
+                    reason: "3D edge p-curve leaves its revolution surface domain",
+                    ..
+                })
+            ));
         }
     }
 }
