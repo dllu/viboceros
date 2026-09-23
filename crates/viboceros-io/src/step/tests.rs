@@ -2296,6 +2296,38 @@ fn native_step_imports_analytic_open_revolved_patches() {
                         .unwrap();
                 let spline_face = &spline_native.instances[0].brep.faces()[0];
                 assert_eq!(spline_face.loops()[0].trims()[0].curve().degree(), 2);
+                let mut degrees = with_degree_angle_units(&spline_text);
+                assert!(degrees.contains("0.7853981633974483"));
+                degrees = degrees
+                    .replace("1.5707963267948966", "90.0")
+                    .replace("0.7853981633974483", "45.0");
+                let degree_native = read_step_native_instances_in_units(
+                    Cursor::new(degrees),
+                    &LengthUnitSystem::Millimeters,
+                    Tolerance::DEFAULT,
+                )
+                .unwrap();
+                let degree_face = &degree_native.instances[0].brep.faces()[0];
+                assert_eq!(degree_face.loops()[0].trims()[0].curve().degree(), 2);
+                assert!(
+                    (degree_native.instances[0]
+                        .brep
+                        .area(Tolerance::DEFAULT)
+                        .unwrap()
+                        - expected_area)
+                        .abs()
+                        < 1e-8
+                );
+                for fraction in [0., 0.25, 0.5, 0.75, 1.] {
+                    let reference_curve = spline_face.loops()[0].trims()[0].curve();
+                    let degree_curve = degree_face.loops()[0].trims()[0].curve();
+                    let domain = reference_curve.domain();
+                    let t = *domain.start() * (1. - fraction) + *domain.end() * fraction;
+                    let expected = reference_curve.evaluate(t).unwrap();
+                    let actual = degree_curve.evaluate(t).unwrap();
+                    assert!((actual.x() - expected.x()).abs() < 1e-10);
+                    assert!((actual.y() - expected.y()).abs() < 1e-10);
+                }
                 assert!(
                     (spline_native.instances[0]
                         .brep

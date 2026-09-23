@@ -37,9 +37,13 @@ fn number(parameter: &Parameter) -> Result<f64, StepError> {
 }
 
 fn scale_number(parameter: &mut Parameter, factor: f64) -> Result<(), StepError> {
-    let value = number(parameter)? * factor;
+    let original = number(parameter)?;
+    let value = original * factor;
     if !value.is_finite() {
         return Err(invalid("angular geometry conversion overflows"));
+    }
+    if original != 0.0 && value == 0.0 {
+        return Err(invalid("angular geometry conversion underflows"));
     }
     *parameter = Parameter::Real(value);
     Ok(())
@@ -82,9 +86,10 @@ fn references_any(parameter: &Parameter, ids: &BTreeSet<u64>) -> bool {
     }
 }
 
-/// Converts conical semi-angles and axis-aligned 2D p-curves on cylinders and
-/// cones. The source angular assignment is replaced by its validated SI radian
-/// base after converting geometry; unrelated planar p-curves are untouched.
+/// Converts conical semi-angles and 2D line, polyline, and B-spline p-curves
+/// on cylinders and cones. The source angular assignment is replaced by its
+/// validated SI radian base after converting geometry; unrelated p-curves are
+/// untouched.
 pub(super) fn normalize(data: &mut DataSection) -> Result<(), StepError> {
     if is_angle_independent_geometry(data)
         || !data.entities.iter().map(entity_records).any(|records| {
@@ -135,8 +140,10 @@ pub(super) fn normalize(data: &mut DataSection) -> Result<(), StepError> {
     }
 
     let mut angular_lines = BTreeSet::new();
+    let mut angular_curves = BTreeSet::new();
     let mut angular_representations = BTreeSet::new();
-    let mut line_usage = HashMap::new();
+    let mut curve_usage = HashMap::new();
+    let mut point_ids = BTreeSet::new();
     for records in resolver.entities.values() {
         let Some(pcurve) = component(records, "PCURVE") else {
             continue;
@@ -167,14 +174,44 @@ pub(super) fn normalize(data: &mut DataSection) -> Result<(), StepError> {
         if items.len() != 3 || list(&items[1])?.len() != 1 {
             return Err(invalid("unsupported angular p-curve representation"));
         }
-        let line_id = reference(&list(&items[1])?[0])?;
+        let curve_id = reference(&list(&items[1])?[0])?;
         if angular {
-            record(&resolver, line_id, "LINE")?;
-            angular_lines.insert(line_id);
+            let curve = resolver
+                .entities
+                .get(&curve_id)
+                .ok_or_else(|| invalid("missing angular p-curve geometry"))?;
+            if component(curve, "LINE").is_some() {
+                angular_lines.insert(curve_id);
+            } else {
+                let controls = if let Some(polyline) = component(curve, "POLYLINE") {
+                    let args = list(&polyline.parameter)?;
+                    if args.len() != 2 {
+                        return Err(invalid("invalid angular p-curve polyline"));
+                    }
+                    list(&args[1])?
+                } else if let Some(spline) = component(curve, "B_SPLINE_CURVE")
+                    .or_else(|| component(curve, "B_SPLINE_CURVE_WITH_KNOTS"))
+                {
+                    let args = list(&spline.parameter)?;
+                    if args.len() < 3 {
+                        return Err(invalid("invalid angular p-curve B-spline"));
+                    }
+                    list(&args[2])?
+                } else {
+                    return Err(invalid("unsupported angular p-curve geometry"));
+                };
+                if controls.is_empty() {
+                    return Err(invalid("angular p-curve has no control points"));
+                }
+                for control in controls {
+                    point_ids.insert(reference(control)?);
+                }
+            }
+            angular_curves.insert(curve_id);
             angular_representations.insert(representation_id);
         }
-        if line_usage
-            .insert(line_id, angular)
+        if curve_usage
+            .insert(curve_id, angular)
             .is_some_and(|prior| prior != angular)
         {
             return Err(invalid(
@@ -183,8 +220,7 @@ pub(super) fn normalize(data: &mut DataSection) -> Result<(), StepError> {
         }
     }
 
-    let mut point_ids = BTreeSet::new();
-    let mut vector_ids = BTreeSet::new();
+    let mut vector_edits = BTreeMap::new();
     for &id in &angular_lines {
         let line = record(&resolver, id, "LINE")?;
         let args = list(&line.parameter)?;
@@ -193,14 +229,6 @@ pub(super) fn normalize(data: &mut DataSection) -> Result<(), StepError> {
         }
         let point_id = reference(&args[1])?;
         let vector_id = reference(&args[2])?;
-        let point = record(&resolver, point_id, "CARTESIAN_POINT")?;
-        let point_args = list(&point.parameter)?;
-        if point_args.len() != 2 || list(&point_args[1])?.len() != 2 {
-            return Err(invalid("angular p-curve point is not two-dimensional"));
-        }
-        for coordinate in list(&point_args[1])? {
-            number(coordinate)?;
-        }
         let vector = record(&resolver, vector_id, "VECTOR")?;
         let vector_args = list(&vector.parameter)?;
         if vector_args.len() != 3 {
@@ -213,55 +241,74 @@ pub(super) fn normalize(data: &mut DataSection) -> Result<(), StepError> {
         }
         let coordinates = list(&direction_args[1])?;
         let (dx, dy) = (number(&coordinates[0])?, number(&coordinates[1])?);
-        if !((dx != 0.0 && dy == 0.0) || (dx == 0.0 && dy != 0.0)) {
-            return Err(invalid(
-                "non-radian angular p-curves require axis-aligned lines",
-            ));
+        if dx == 0.0 && dy == 0.0 {
+            return Err(invalid("angular p-curve direction is zero"));
         }
-        if number(&vector_args[2])? <= 0.0 {
+        let magnitude = number(&vector_args[2])?;
+        if magnitude <= 0.0 {
             return Err(invalid("angular p-curve vector has no positive magnitude"));
         }
         point_ids.insert(point_id);
-        if dy == 0.0 {
-            vector_ids.insert(vector_id);
+        if let std::collections::btree_map::Entry::Vacant(entry) = vector_edits.entry(vector_id) {
+            let scaled_x = dx * factor;
+            if !scaled_x.is_finite() || (dx != 0.0 && scaled_x == 0.0) {
+                return Err(invalid("angular p-curve vector cannot be scaled"));
+            }
+            let norm = scaled_x.hypot(dy);
+            let new_magnitude = magnitude * norm;
+            if !norm.is_finite()
+                || norm == 0.0
+                || !new_magnitude.is_finite()
+                || new_magnitude == 0.0
+            {
+                return Err(invalid("angular p-curve vector cannot be scaled"));
+            }
+            let (new_x, new_y) = (scaled_x / norm, dy / norm);
+            if (scaled_x != 0.0 && new_x == 0.0) || (dy != 0.0 && new_y == 0.0) {
+                return Err(invalid("angular p-curve direction underflows"));
+            }
+            let mut new_direction = direction.clone();
+            let args = list_mut(&mut new_direction.parameter)?;
+            let ratios = list_mut(&mut args[1])?;
+            ratios[0] = Parameter::Real(new_x);
+            ratios[1] = Parameter::Real(new_y);
+            entry.insert((new_direction, new_magnitude));
         }
     }
+    for &id in &point_ids {
+        let point = record(&resolver, id, "CARTESIAN_POINT")?;
+        let args = list(&point.parameter)?;
+        if args.len() != 2 || list(&args[1])?.len() != 2 {
+            return Err(invalid("angular p-curve point is not two-dimensional"));
+        }
+        for coordinate in list(&args[1])? {
+            number(coordinate)?;
+        }
+    }
+    let vector_ids = vector_edits.keys().copied().collect::<BTreeSet<_>>();
 
-    // 2D point/vector entities may be shared. A reference from another curve
-    // would otherwise reinterpret that curve after the in-place conversion.
-    for (&id, records) in &resolver.entities {
-        let Some(line) = component(records, "LINE") else {
-            continue;
-        };
-        let args = list(&line.parameter)?;
-        if args.len() != 3 {
-            continue;
-        }
-        let point = reference(&args[1])?;
-        let vector = reference(&args[2])?;
-        if !angular_lines.contains(&id)
-            && (point_ids.contains(&point) || vector_ids.contains(&vector))
-        {
-            return Err(invalid(
-                "angular p-curve geometry is shared with another line",
-            ));
-        }
-    }
+    // A point, vector, or curve reused outside its angular p-curve would
+    // reinterpret unrelated geometry after the in-place conversion.
     for (&id, records) in &resolver.entities {
         for record in *records {
-            if record.name != "LINE"
+            let allowed_control_reference = angular_curves.contains(&id)
+                && matches!(
+                    record.name.as_str(),
+                    "LINE" | "POLYLINE" | "B_SPLINE_CURVE" | "B_SPLINE_CURVE_WITH_KNOTS"
+                );
+            if !allowed_control_reference
                 && (references_any(&record.parameter, &point_ids)
                     || references_any(&record.parameter, &vector_ids))
             {
                 return Err(invalid(
-                    "angular p-curve geometry is shared outside its line",
+                    "angular p-curve geometry is shared outside its curve",
                 ));
             }
             if !angular_representations.contains(&id)
-                && references_any(&record.parameter, &angular_lines)
+                && references_any(&record.parameter, &angular_curves)
             {
                 return Err(invalid(
-                    "angular p-curve line is shared outside its representation",
+                    "angular p-curve is shared outside its representation",
                 ));
             }
         }
@@ -284,9 +331,24 @@ pub(super) fn normalize(data: &mut DataSection) -> Result<(), StepError> {
         let args = list_mut(&mut point.parameter)?;
         scale_number(&mut list_mut(&mut args[1])?[0], factor)?;
     }
-    for &id in &vector_ids {
-        let vector = indexed_record_mut(data, &indices, id, "VECTOR")?;
-        scale_number(&mut list_mut(&mut vector.parameter)?[2], factor)?;
+    let max_id = indices.keys().max().copied().unwrap_or(0);
+    let direction_count = u64::try_from(vector_edits.len())
+        .map_err(|_| invalid("too many angular p-curve directions"))?;
+    max_id
+        .checked_add(direction_count)
+        .ok_or_else(|| invalid("no STEP entity identifier remains for angular conversion"))?;
+    for (offset, (id, (direction, magnitude))) in vector_edits.into_iter().enumerate() {
+        let next_id = max_id + 1 + offset as u64;
+        {
+            let vector = indexed_record_mut(data, &indices, id, "VECTOR")?;
+            let args = list_mut(&mut vector.parameter)?;
+            args[1] = Parameter::Ref(Name::Entity(next_id));
+            args[2] = Parameter::Real(magnitude);
+        }
+        data.entities.push(EntityInstance::Simple {
+            id: next_id,
+            record: direction,
+        });
     }
     for entity in &mut data.entities {
         for record in entity_records_mut(entity) {
@@ -373,22 +435,40 @@ mod tests {
     }
 
     #[test]
-    fn rejects_diagonal_trims_and_shared_parameter_points() {
+    fn converts_diagonal_trims_and_rejects_shared_parameter_points() {
         let mut diagonal = degree_cone();
+        diagonal
+            .entities
+            .push("#16 = VECTOR('',#15,7.);".parse().unwrap());
         let direction = diagonal
             .entities
             .iter_mut()
             .find(|entity| matches!(entity, EntityInstance::Simple { id: 15, .. }))
             .unwrap();
-        let record = entity_records_mut(direction).first_mut().unwrap();
-        list_mut(&mut record.parameter).unwrap()[1] =
+        let direction_record = entity_records_mut(direction).first_mut().unwrap();
+        list_mut(&mut direction_record.parameter).unwrap()[1] =
             Parameter::List(vec![Parameter::Real(0.5), Parameter::Real(0.5)]);
-        assert!(
-            normalize(&mut diagonal)
-                .unwrap_err()
-                .to_string()
-                .contains("axis-aligned")
+        normalize(&mut diagonal).unwrap();
+        let records = resolver(&diagonal).unwrap();
+        let original_direction = record(&records, 15, "DIRECTION").unwrap();
+        let original_ratios = list(&list(&original_direction.parameter).unwrap()[1]).unwrap();
+        assert_eq!(number(&original_ratios[0]).unwrap(), 0.5);
+        assert_eq!(number(&original_ratios[1]).unwrap(), 0.5);
+        assert_eq!(
+            reference(&list(&record(&records, 16, "VECTOR").unwrap().parameter).unwrap()[1])
+                .unwrap(),
+            15
         );
+        let transformed_vector = record(&records, 14, "VECTOR").unwrap();
+        let args = list(&transformed_vector.parameter).unwrap();
+        let transformed_id = reference(&args[1]).unwrap();
+        assert_ne!(transformed_id, 15);
+        let transformed_direction = record(&records, transformed_id, "DIRECTION").unwrap();
+        let ratios = list(&list(&transformed_direction.parameter).unwrap()[1]).unwrap();
+        let magnitude = number(&args[2]).unwrap();
+        let factor = std::f64::consts::PI / 180.0;
+        assert!((number(&ratios[0]).unwrap() * magnitude - 30. * factor).abs() < 1e-14);
+        assert!((number(&ratios[1]).unwrap() * magnitude - 30.).abs() < 1e-14);
 
         let mut shared = degree_cone();
         shared
@@ -425,5 +505,35 @@ mod tests {
                 .to_string()
                 .contains("invalid conical surface angle")
         );
+    }
+
+    #[test]
+    fn converts_polyline_and_bspline_control_points_without_changing_axial_coordinates() {
+        for source_curve in [
+            "#11 = POLYLINE('',(#13,#17));",
+            "#11 = B_SPLINE_CURVE_WITH_KNOTS('',1,(#13,#17),.UNSPECIFIED.,.F.,.F.,(2,2),(0.,1.),.UNSPECIFIED.);",
+            "#11 = (BOUNDED_CURVE() B_SPLINE_CURVE('',1,(#13,#17),.UNSPECIFIED.,.F.,.F.) B_SPLINE_CURVE_WITH_KNOTS((2,2),(0.,1.),.UNSPECIFIED.) CURVE() GEOMETRIC_REPRESENTATION_ITEM() RATIONAL_B_SPLINE_CURVE((1.,0.5)) REPRESENTATION_ITEM(''));",
+        ] {
+            let mut data = degree_cone();
+            let curve = data
+                .entities
+                .iter_mut()
+                .find(|entity| matches!(entity, EntityInstance::Simple { id: 11, .. }))
+                .unwrap();
+            *curve = source_curve.parse().unwrap();
+            data.entities
+                .push("#17 = CARTESIAN_POINT('',(120.,6.));".parse().unwrap());
+            normalize(&mut data).unwrap();
+            let records = resolver(&data).unwrap();
+            for (id, expected_u, expected_v) in [
+                (13, std::f64::consts::FRAC_PI_3, 3.0),
+                (17, 2. * std::f64::consts::FRAC_PI_3, 6.0),
+            ] {
+                let point = record(&records, id, "CARTESIAN_POINT").unwrap();
+                let coordinates = list(&list(&point.parameter).unwrap()[1]).unwrap();
+                assert!((number(&coordinates[0]).unwrap() - expected_u).abs() < 1e-14);
+                assert_eq!(number(&coordinates[1]).unwrap(), expected_v);
+            }
+        }
     }
 }
