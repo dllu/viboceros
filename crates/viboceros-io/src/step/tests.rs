@@ -743,6 +743,105 @@ fn native_step_imports_bspline_faces_with_polygon_holes() {
 }
 
 #[test]
+fn native_step_imports_exact_parabola_and_hyperbola_trims() {
+    use monstertruck::meshing::prelude::ParametricCurve;
+    use monstertruck::modeling::{
+        Plane, Processor, TrimmedCurve, UnitHyperbola, UnitParabola, builder,
+    };
+    use monstertruck::step::load::step_geometry::{
+        Conic2D, Conic3D, Curve2D, Curve3D, ElementarySurface, Surface,
+    };
+    use monstertruck::topology::{Edge, Face, Shell, Vertex, Wire};
+    for hyperbola in [false, true] {
+        let source = if hyperbola {
+            Curve3D::Conic(Conic3D::Hyperbola(Processor::new(TrimmedCurve::new(
+                UnitHyperbola::<TruckPoint3>::new(),
+                (-1., 1.),
+            ))))
+        } else {
+            Curve3D::Conic(Conic3D::Parabola(Processor::new(TrimmedCurve::new(
+                UnitParabola::<TruckPoint3>::new(),
+                (-1., 1.),
+            ))))
+        };
+        let low = Vertex::new(source.evaluate(-1.));
+        let high = Vertex::new(source.evaluate(1.));
+        let right_low = Vertex::new(TruckPoint3::new(3., low.point().y, 0.));
+        let right_high = Vertex::new(TruckPoint3::new(3., high.point().y, 0.));
+        let edges: Vec<Edge<TruckPoint3, Curve3D>> = vec![
+            builder::line(&low, &right_low),
+            builder::line(&right_low, &right_high),
+            builder::line(&right_high, &high),
+            Edge::new(&low, &high, source).inverse(),
+        ];
+        let surface = Surface::ElementarySurface(ElementarySurface::Plane(Plane::new(
+            TruckPoint3::new(0., 0., 0.),
+            TruckPoint3::new(1., 0., 0.),
+            TruckPoint3::new(0., 1., 0.),
+        )));
+        let shell = Shell::from(vec![Face::new(vec![Wire::from(edges)], surface)]).compress();
+        let text = CompleteStepDisplay::new(
+            TruckStepModel::from(&shell),
+            StepHeaderDescriptor::default(),
+        )
+        .to_string();
+        assert!(text.contains(if hyperbola { "HYPERBOLA(" } else { "PARABOLA(" }));
+        let table = Table::from_step(&text).unwrap();
+        assert_eq!(table.entity_report.total(), 0);
+        let shell_id = *table.shell.keys().next().unwrap();
+        let (decoded, report) = reported_trimmed_shell(&table, shell_id).unwrap();
+        assert_eq!(report.total_lost(), 0);
+        let conic_3d = match &decoded.edges[3].curve {
+            Curve3D::SurfaceCurve(curve) => curve.leader(),
+            curve => curve,
+        };
+        assert!(if hyperbola {
+            matches!(conic_3d, Curve3D::Conic(Conic3D::Hyperbola(_)))
+        } else {
+            matches!(conic_3d, Curve3D::Conic(Conic3D::Parabola(_)))
+        });
+        assert!(decoded.faces[0].boundaries[0].iter().any(|edge| {
+            let curve = edge.trim_curve.as_ref().map(|curve| curve.curve().as_ref());
+            if hyperbola {
+                matches!(curve, Some(Curve2D::Conic(Conic2D::Hyperbola(_))))
+            } else {
+                matches!(curve, Some(Curve2D::Conic(Conic2D::Parabola(_))))
+            }
+        }));
+        let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+        let brep = &native.instances[0].brep;
+        assert_eq!(
+            (
+                brep.vertices().len(),
+                brep.edges().len(),
+                brep.faces().len()
+            ),
+            (4, 4, 1)
+        );
+        let expected_area = if hyperbola {
+            6. * 1_f64.sinh() - 1_f64.sinh() * 1_f64.cosh() - 1.
+        } else {
+            32. / 3.
+        };
+        assert!((brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
+        let conic = brep
+            .edges()
+            .iter()
+            .find(|edge| edge.curve().degree() == 2)
+            .unwrap();
+        for t in [0., 0.17, 0.5, 0.83, 1.] {
+            let point = conic.curve().evaluate(t).unwrap();
+            let residual = if hyperbola {
+                point.x() * point.x() - point.y() * point.y() - 1.
+            } else {
+                point.x() - point.y() * point.y() / 4.
+            };
+            assert!(residual.abs() < 1e-10);
+        }
+    }
+}
+
+#[test]
 fn native_step_imports_analytic_circle_edge_and_uv_trim() {
     use monstertruck::modeling::{Plane, builder};
     use monstertruck::step::load::step_geometry::{

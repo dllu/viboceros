@@ -238,6 +238,7 @@ while preserving UV trims, occurrence grouping, and diagnostics.
 `read_step_native_instances` and its `_in_units` counterpart extend that
 assembly path to NURBS/B-spline surfaces, edges, and UV trims. Analytic circle
 and ellipse arcs on supported faces convert to exact multi-span rational NURBS.
+Bounded parabola and hyperbola edges and UV trims convert to exact quadratic NURBS.
 Cylinder and nonsingular cone faces with straight UV iso-trims spanning up to
 one turn also convert to exact rational NURBS patches; paired `SEAM_CURVE` uses
 on a full-turn wall are supported. Ring-torus patches and spherical bands away

@@ -247,8 +247,9 @@ The general native instance path reuses assembly placement, unit conversion,
 import diagnostics, and document transactions from the planar path. It maps
 supported B-spline/NURBS controls and knots without tessellation, including
 face-local UV curves. Analytic circle and ellipse arcs on supported faces use
-exact multi-span rational 3D and UV NURBS conversions. Cylindrical and
-nonsingular conical faces with straight UV iso-trims spanning up to one turn use
+exact multi-span rational 3D and UV NURBS conversions. Bounded parabolas and
+hyperbolas use exact quadratic conversions for 3D edges and UV trims. Cylindrical
+and nonsingular conical faces with straight UV iso-trims spanning up to one turn use
 exact rational patches, including paired `SEAM_CURVE` uses on a full-turn wall;
 angular parameters within each arc are reparameterized consistently with their
 trims. Ring-torus patches and spherical bands away from the poles with straight

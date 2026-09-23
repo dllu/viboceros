@@ -230,7 +230,7 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
                 StepError::UnsupportedPlanarShell { reason, .. } => unsupported(reason),
                 other => other,
             }),
-        Curve3D::Conic(Conic3D::Ellipse(_)) => conic_edge(curve, id),
+        Curve3D::Conic(conic) => conic_edge(conic, id),
         Curve3D::BsplineCurve(curve) => Ok(NurbsCurve::try_new(
             curve.degree(),
             curve
@@ -262,7 +262,7 @@ fn trim_curve(curve: &Curve2D, id: u64) -> Result<NurbsCurve2, StepError> {
                 StepError::UnsupportedPlanarShell { reason, .. } => unsupported(reason),
                 other => other,
             }),
-        Curve2D::Conic(Conic2D::Ellipse(_)) => conic_trim(curve, id),
+        Curve2D::Conic(conic) => conic_trim(conic, id),
         Curve2D::BsplineCurve(curve) => Ok(NurbsCurve2::try_new(
             curve.degree(),
             curve
@@ -281,7 +281,6 @@ fn trim_curve(curve: &Curve2D, id: u64) -> Result<NurbsCurve2, StepError> {
                 .collect::<Result<Vec<_>, _>>()?,
             curve.knot_vector().iter().copied().collect(),
         )?),
-        _ => Err(unsupported("UV trim is not a supported B-spline")),
     }
 }
 
@@ -314,9 +313,22 @@ fn circular_middle(p0: Point3, pm: Point3, p1: Point3, weight: f64) -> Result<Po
     )?)
 }
 
-fn conic_edge(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
+fn conic_edge(curve: &Conic3D, id: u64) -> Result<NurbsCurve, StepError> {
     let (start, end) = curve.range_tuple();
-    let spans = arc_span_count(end - start, id)?;
+    let spans = match curve {
+        Conic3D::Ellipse(_) => arc_span_count(end - start, id)?,
+        Conic3D::Hyperbola(_) | Conic3D::Parabola(_)
+            if start.is_finite() && end.is_finite() && start < end =>
+        {
+            1
+        }
+        _ => {
+            return Err(StepError::UnsupportedNativeShell {
+                shell: id,
+                reason: "conic edge parameter range is invalid",
+            });
+        }
+    };
     let step = (end - start) / spans as f64;
     let mut controls = Vec::with_capacity(2 * spans + 1);
     for index in 0..spans {
@@ -325,7 +337,11 @@ fn conic_edge(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
         let p0 = curve.evaluate(t0);
         let pm = curve.evaluate((t0 + t1) / 2.);
         let p1 = curve.evaluate(t1);
-        let weight = ((t1 - t0) / 2.).cos();
+        let weight = match curve {
+            Conic3D::Ellipse(_) => ((t1 - t0) / 2.).cos(),
+            Conic3D::Hyperbola(_) => ((t1 - t0) / 2.).cosh(),
+            Conic3D::Parabola(_) => 1.,
+        };
         if index == 0 {
             controls.push(WeightedPoint3::try_new(point3(p0)?, 1.)?);
         }
@@ -346,9 +362,22 @@ fn conic_edge(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
     )?)
 }
 
-fn conic_trim(curve: &Curve2D, id: u64) -> Result<NurbsCurve2, StepError> {
+fn conic_trim(curve: &Conic2D, id: u64) -> Result<NurbsCurve2, StepError> {
     let (start, end) = curve.range_tuple();
-    let spans = arc_span_count(end - start, id)?;
+    let spans = match curve {
+        Conic2D::Ellipse(_) => arc_span_count(end - start, id)?,
+        Conic2D::Hyperbola(_) | Conic2D::Parabola(_)
+            if start.is_finite() && end.is_finite() && start < end =>
+        {
+            1
+        }
+        _ => {
+            return Err(StepError::UnsupportedNativeShell {
+                shell: id,
+                reason: "conic UV trim parameter range is invalid",
+            });
+        }
+    };
     let step = (end - start) / spans as f64;
     let mut controls = Vec::with_capacity(2 * spans + 1);
     for index in 0..spans {
@@ -357,7 +386,11 @@ fn conic_trim(curve: &Curve2D, id: u64) -> Result<NurbsCurve2, StepError> {
         let p0 = curve.evaluate(t0);
         let pm = curve.evaluate((t0 + t1) / 2.);
         let p1 = curve.evaluate(t1);
-        let weight = ((t1 - t0) / 2.).cos();
+        let weight = match curve {
+            Conic2D::Ellipse(_) => ((t1 - t0) / 2.).cos(),
+            Conic2D::Hyperbola(_) => ((t1 - t0) / 2.).cosh(),
+            Conic2D::Parabola(_) => 1.,
+        };
         if index == 0 {
             controls.push(WeightedPoint2::try_new(Point2::try_new(p0.x, p0.y)?, 1.)?);
         }
