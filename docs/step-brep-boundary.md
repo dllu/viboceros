@@ -247,11 +247,13 @@ The general native instance path reuses assembly placement, unit conversion,
 import diagnostics, and document transactions from the planar path. It maps
 supported B-spline/NURBS controls and knots without tessellation, including
 face-local UV curves. Analytic circle and ellipse arcs on supported faces use
-exact rational 3D and UV NURBS conversions. The path validates shared topology
-in `Brep::try_new`. NURBS
+exact rational 3D and UV NURBS conversions. Cylindrical faces with straight UV
+iso-trims spanning at most a quarter turn use exact rational patches; angular
+parameters within each arc are reparameterized consistently with their trims.
+The path validates shared topology in `Brep::try_new`. NURBS
 faces with multiple straight UV polygon loops use the kernel's strict polygon
 boundary validation. Curved UV loops currently require one outer boundary.
-Analytic cylinders and other
-unsupported surface types, periodic seams, and missing UV curves still need
+Wider analytic cylinders and other unsupported surface types, periodic seams,
+and missing UV curves still need
 representation adapters or explicit topology handling. The default mesh import
 remains available for display of such files.

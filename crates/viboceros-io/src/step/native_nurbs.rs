@@ -87,7 +87,7 @@ pub(super) fn convert_shell(
             }
             boundaries.push(trims);
         }
-        let surface = surface(&face.surface, &boundaries, id)?;
+        let surface = surface(&face.surface, &boundaries, id, tolerance)?;
         let native =
             if boundaries.len() == 1 {
                 BrepFace::try_new(
@@ -235,6 +235,7 @@ fn surface(
     source: &Surface,
     boundaries: &[Vec<BrepTrim>],
     id: u64,
+    tolerance: Tolerance,
 ) -> Result<NurbsSurface, StepError> {
     let unsupported = |reason| StepError::UnsupportedNativeShell { shell: id, reason };
     match source {
@@ -310,6 +311,62 @@ fn surface(
                 vec![min[1], min[1], max[1], max[1]],
             )?)
         }
-        _ => Err(unsupported("surface is not a plane or B-spline")),
+        Surface::ElementarySurface(ElementarySurface::CylindricalSurface(cylinder)) => {
+            let mut min = [f64::INFINITY; 2];
+            let mut max = [f64::NEG_INFINITY; 2];
+            for trim in boundaries.iter().flatten() {
+                if trim.curve().degree() != 1 || trim.curve().control_points().len() != 2 {
+                    return Err(unsupported("cylinder requires straight UV iso-trims"));
+                }
+                let start = trim.curve().start_point()?;
+                let end = trim.curve().end_point()?;
+                if (start.x() - end.x()).abs() > tolerance.angular()
+                    && (start.y() - end.y()).abs() > tolerance.absolute()
+                {
+                    return Err(unsupported("cylinder requires UV iso-trims"));
+                }
+                for point in [start, end] {
+                    min[0] = min[0].min(point.x());
+                    min[1] = min[1].min(point.y());
+                    max[0] = max[0].max(point.x());
+                    max[1] = max[1].max(point.y());
+                }
+            }
+            let [u0, v0] = min;
+            let [u1, v1] = max;
+            let angle = u1 - u0;
+            if angle <= 0. || angle > std::f64::consts::FRAC_PI_2 + 1e-12 || v0 >= v1 {
+                return Err(unsupported(
+                    "cylinder patch must span at most one quarter turn",
+                ));
+            }
+            let weight = (angle / 2.).cos();
+            let mut controls = Vec::with_capacity(6);
+            for v in [v0, v1] {
+                let p0 = cylinder.evaluate(u0, v);
+                let pm = cylinder.evaluate((u0 + u1) / 2., v);
+                let p2 = cylinder.evaluate(u1, v);
+                let middle = Point3::try_new(
+                    (2. * (1. + weight) * pm.x - p0.x - p2.x) / (2. * weight),
+                    (2. * (1. + weight) * pm.y - p0.y - p2.y) / (2. * weight),
+                    (2. * (1. + weight) * pm.z - p0.z - p2.z) / (2. * weight),
+                )?;
+                controls.push(WeightedPoint3::try_new(point3(p0)?, 1.)?);
+                controls.push(WeightedPoint3::try_new(middle, weight)?);
+                controls.push(WeightedPoint3::try_new(point3(p2)?, 1.)?);
+            }
+            Ok(NurbsSurface::try_new_rational(
+                2,
+                1,
+                3,
+                2,
+                controls,
+                vec![u0, u0, u0, u1, u1, u1],
+                vec![v0, v0, v1, v1],
+            )?)
+        }
+        _ => Err(unsupported(
+            "surface is not a supported plane, cylinder, or B-spline",
+        )),
     }
 }

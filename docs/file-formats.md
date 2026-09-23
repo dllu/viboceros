@@ -236,10 +236,12 @@ counterpart converts placed geometry and assembly translations to target units
 while preserving UV trims, occurrence grouping, and diagnostics.
 `read_step_native_instances` and its `_in_units` counterpart extend that
 assembly path to NURBS/B-spline surfaces, edges, and UV trims. Analytic circle
-and ellipse arcs on supported faces convert to exact rational NURBS. NURBS faces can
-have polygon holes with straight UV trims; curved UV loops currently require one
-outer boundary. Unsupported analytic surfaces and periodic
-seams still fail native import.
+and ellipse arcs on supported faces convert to exact rational NURBS. Cylindrical
+faces with straight UV iso-trims spanning at most a quarter turn also convert to
+exact rational NURBS patches. NURBS faces can have polygon holes with straight
+UV trims; curved UV loops currently require one outer boundary. Wider analytic
+cylinders, other unsupported analytic surfaces, and periodic seams still fail
+native import.
 The native planar path supports straight-edged polygon holes, identifies the
 outer loop independently of source ordering, and rejects crossing, touching,
 outside, or nested hole boundaries before committing native topology.

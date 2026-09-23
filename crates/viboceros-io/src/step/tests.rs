@@ -694,7 +694,7 @@ fn native_step_imports_bspline_faces_with_polygon_holes() {
             read_step_planar_instances(Cursor::new(&text), Tolerance::DEFAULT),
             Err(StepError::UnsupportedPlanarShell { .. })
         ));
-        let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+        let native = read_step_native_instances(Cursor::new(&text), Tolerance::DEFAULT).unwrap();
         let brep = &native.instances[0].brep;
         assert_eq!(brep.faces()[0].loops().len(), 2);
         assert_eq!(brep.faces()[0].is_reversed(), reversed);
@@ -829,6 +829,121 @@ fn native_step_imports_analytic_ellipse_arc() {
     for t in [0., 0.25, 0.5, 0.75, 1.] {
         let p = arc.curve().evaluate(t).unwrap();
         assert!(((p.x() / 2.).powi(2) + p.y().powi(2) - 1.).abs() < 1e-12);
+    }
+}
+
+#[test]
+fn native_step_imports_analytic_open_cylinder_patches() {
+    use monstertruck::modeling::{
+        Invertible, Line, Point2 as TruckPoint2, Processor, RevolutionSurface, Vector3, builder,
+    };
+    use monstertruck::step::load::step_geometry::{
+        Curve2D, Curve3D, ElementarySurface, StepParameterCurve, Surface,
+    };
+    use monstertruck::step::save::StepModels;
+    use monstertruck::topology::compress::{
+        CompressedEdgeUse, CompressedTrimmedFace, CompressedTrimmedShell,
+    };
+    use monstertruck::topology::{Edge, Face, Shell, Vertex, Wire};
+    let point = |x, y, z| TruckPoint3::new(x, y, z);
+    for angle in [std::f64::consts::FRAC_PI_3, std::f64::consts::FRAC_PI_2] {
+        let east_bottom = Vertex::new(point(2., 0., 0.));
+        let north_bottom = Vertex::new(point(2. * angle.cos(), 2. * angle.sin(), 0.));
+        let north_top = Vertex::new(point(2. * angle.cos(), 2. * angle.sin(), 3.));
+        let east_top = Vertex::new(point(2., 0., 3.));
+        let diagonal = (2. * (angle / 2.).cos(), 2. * (angle / 2.).sin());
+        let edges: Vec<Edge<TruckPoint3, Curve3D>> = vec![
+            builder::circle_arc(
+                &east_bottom,
+                &north_bottom,
+                point(diagonal.0, diagonal.1, 0.),
+            ),
+            builder::line(&north_bottom, &north_top),
+            builder::circle_arc(&north_top, &east_top, point(diagonal.0, diagonal.1, 3.)),
+            builder::line(&east_top, &east_bottom),
+        ];
+        let mut cylinder = Processor::new(RevolutionSurface::by_revolution(
+            Line(point(2., 0., 0.), point(2., 0., 3.)),
+            point(0., 0., 0.),
+            Vector3::unit_z(),
+        ));
+        cylinder.invert();
+        let surface = Surface::ElementarySurface(ElementarySurface::CylindricalSurface(cylinder));
+        let shell = Shell::from(vec![Face::new(vec![Wire::from(edges)], surface)]).compress();
+        let face = &shell.faces[0];
+        let uv = [
+            ([0., 0.], [angle, 0.]),
+            ([angle, 0.], [angle, 3.]),
+            ([angle, 3.], [0., 3.]),
+            ([0., 3.], [0., 0.]),
+        ];
+        let boundaries = vec![
+            face.boundaries[0]
+                .iter()
+                .zip(uv)
+                .map(|(edge, (start, end))| CompressedEdgeUse {
+                    index: edge.index,
+                    orientation: edge.orientation,
+                    trim_curve: Some(StepParameterCurve::new(
+                        Box::new(Curve2D::Line(Line(
+                            TruckPoint2::new(start[0], start[1]),
+                            TruckPoint2::new(end[0], end[1]),
+                        ))),
+                        Box::new(face.surface.clone()),
+                    )),
+                })
+                .collect(),
+        ];
+        let trimmed = CompressedTrimmedShell {
+            vertices: shell.vertices,
+            edges: shell.edges,
+            faces: vec![CompressedTrimmedFace {
+                boundaries,
+                orientation: face.orientation,
+                surface: face.surface.clone(),
+            }],
+        };
+        let mut models = StepModels::default();
+        models.push_trimmed_shell(&trimmed);
+        let text = CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
+        assert!(text.contains("CYLINDRICAL_SURFACE("));
+        let table = Table::from_step(&text).unwrap();
+        assert_eq!(table.entity_report.total(), 0);
+        let shell_id = *table.shell.keys().next().unwrap();
+        let (decoded, report) = reported_trimmed_shell(&table, shell_id).unwrap();
+        assert_eq!(report.total_lost(), 0);
+        assert_eq!(decoded.faces[0].boundaries[0].len(), 4);
+        assert!(
+            decoded.faces[0].boundaries[0]
+                .iter()
+                .all(|edge| edge.trim_curve.is_some())
+        );
+        let native = read_step_native_instances(Cursor::new(&text), Tolerance::DEFAULT).unwrap();
+        let brep = &native.instances[0].brep;
+        assert_eq!(brep.faces().len(), 1);
+        assert!((brep.area(Tolerance::DEFAULT).unwrap() - 6. * angle).abs() < 1e-8);
+        for u in [0., angle * 0.25, angle * 0.5, angle * 0.75, angle] {
+            for v in [0., 1.5, 3.] {
+                let point = brep.faces()[0].surface().evaluate(u, v).unwrap();
+                assert!(((point.x().hypot(point.y())) - 2.).abs() < 1e-12);
+                assert!((point.z() - v).abs() < 1e-12);
+            }
+        }
+        let converted = read_step_native_instances_in_units(
+            Cursor::new(&text),
+            &LengthUnitSystem::Centimeters,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(
+            (converted.instances[0]
+                .brep
+                .area(Tolerance::DEFAULT)
+                .unwrap()
+                - 0.06 * angle)
+                .abs()
+                < 1e-10
+        );
     }
 }
 
