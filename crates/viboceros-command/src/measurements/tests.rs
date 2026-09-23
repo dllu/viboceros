@@ -270,6 +270,62 @@ fn measurement_failures_preserve_selection_and_both_history_stacks() {
 }
 
 #[test]
+fn length_subcurve_measures_directed_interval_without_model_edits() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry
+        .execute(&mut document, "Line 0,0,0 10,0,0")
+        .unwrap();
+    registry.execute(&mut document, "SelAll").unwrap();
+    registry
+        .execute(&mut document, "Reparameterize -2,8")
+        .unwrap();
+    let before = format!("{document:?}");
+    for input in [
+        "Length SubCrv Parameter=0,6",
+        "Length SubCrv Parameter 6,0",
+        "Length SubCrv 2,0,0 8,0,0",
+        "Len _SubCrv _Parameter=0,6",
+    ] {
+        assert_eq!(
+            registry.execute(&mut document, input).unwrap(),
+            "Measured 1 curve(s): total length 6"
+        );
+        assert_eq!(format!("{document:?}"), before);
+    }
+    for input in [
+        "Length SubCrv",
+        "Length SubCrv Parameter=0,0",
+        "Length SubCrv Parameter=-3,6",
+        "Length SubCrv 2,0,0",
+        "Length SubCrv Parameter=0,6 extra",
+    ] {
+        assert!(registry.execute(&mut document, input).is_err(), "{input}");
+        assert_eq!(format!("{document:?}"), before);
+    }
+}
+
+#[test]
+fn length_subcurve_measures_closed_curve_across_its_seam() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry.execute(&mut document, "Circle 0,0 4").unwrap();
+    registry.execute(&mut document, "SelAll").unwrap();
+    let before = format!("{document:?}");
+    let report = registry
+        .execute(&mut document, "Length SubCrv Parameter=5,1")
+        .unwrap();
+    let length = report
+        .split_whitespace()
+        .last()
+        .unwrap()
+        .parse::<f64>()
+        .unwrap();
+    assert!((length - (4.0 * std::f64::consts::TAU - 4.0)).abs() < 1e-10);
+    assert_eq!(format!("{document:?}"), before);
+}
+
+#[test]
 fn length_and_area_measure_mixed_selected_geometry_without_history() {
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::default();

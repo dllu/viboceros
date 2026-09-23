@@ -148,6 +148,19 @@ They do not change geometry, selection, or undo/redo history. An empty selection
 unsupported object, invalid measurement, or numerical failure rejects the query
 without reporting a partial total.
 
+Enter `Length` without preselection to pick curves, then press Enter to measure
+their total. To measure only part of one curve, select it and enter
+`Length SubCrv Parameter=0,6` or `Length SubCrv 2,0,0 8,0,0`. The first form
+uses native curve parameters; the second finds closest parameters to two world
+points. Enter `Length SubCrv` to select one curve if needed, then pick or type
+the start and end. A decreasing interval follows the selected direction: it
+reverses an open segment or crosses a closed curve's seam. Invalid end picks
+leave the prompt open for correction. These queries preserve selection and
+undo/redo state. Rhino also documents `SubCrv` for
+[Length](https://docs.mcneel.com/rhino/8/help/en-us/commands/length.htm); the
+parameter and world-point argument forms are native scripting conveniences.
+Rhino's `Units`, `SelChain`, and mesh/SubD edge length inputs remain pending.
+
 Totals use round-trip decimal digits, rather than a fixed twelve decimal places.
 Nonzero magnitudes below `1e-6` or at least `1e12` use scientific notation; zero
 is displayed as `0`. Small valid measurements therefore remain visible, and

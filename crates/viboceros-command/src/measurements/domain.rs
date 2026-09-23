@@ -1,9 +1,6 @@
 //! Native parameter domains; no evaluation-driven reparameterization.
 use super::*;
-use crate::{
-    ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSelectionWorkflow, orient_option,
-    parse_finite_real, parse_point,
-};
+use crate::{ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSelectionWorkflow, parse_point};
 
 pub(crate) struct DomainCommand;
 const USAGE: &str = "Domain [Face=index|point-on-selected-polysurface|SubCrv Parameter=start,end|SubCrv start_point end_point]";
@@ -56,37 +53,14 @@ impl Command for DomainCommand {
                 .first()
                 .is_some_and(|arg| crate::option_name_eq(arg, "SubCrv"))
             {
-                let source = curve.to_owned();
-                let selection = &arguments[1..];
-                let Some(first) = selection.first() else {
-                    return Err(CommandError::Usage(USAGE));
-                };
-                let option = first.split_once('=').map_or(*first, |(name, _)| name);
-                let [start, end] = if crate::option_name_eq(option, "Parameter") {
-                    let (name, value, consumed) = orient_option(selection, 0, USAGE)?;
-                    if !crate::option_name_eq(name, "Parameter") {
-                        return Err(CommandError::Usage(USAGE));
-                    }
-                    require_consumed(selection, consumed, USAGE)?;
-                    let values = value.split(',').collect::<Vec<_>>();
-                    if values.len() != 2 || values.iter().any(|value| value.is_empty()) {
-                        return Err(CommandError::Usage(USAGE));
-                    }
-                    [parse_finite_real(values[0])?, parse_finite_real(values[1])?]
-                } else {
-                    let (start_point, consumed) = parse_point(selection)?;
-                    let (end_point, second_consumed) = parse_point(&selection[consumed..])?;
-                    require_consumed(selection, consumed + second_consumed, USAGE)?;
-                    [
-                        source
-                            .as_ref()
-                            .closest_parameter(start_point, document.tolerance())?,
-                        source
-                            .as_ref()
-                            .closest_parameter(end_point, document.tolerance())?,
-                    ]
-                };
-                source.try_subcurve(start, end)?.as_ref().domain()
+                super::subcurve::parse_subcurve(
+                    curve,
+                    document.tolerance(),
+                    &arguments[1..],
+                    USAGE,
+                )?
+                .as_ref()
+                .domain()
             } else {
                 require_consumed(arguments, 0, "Domain")?;
                 curve.domain()

@@ -34,19 +34,24 @@ impl VibocerosApp {
         }
     }
 
-    pub(super) fn accept_domain_subcurve_point(
+    pub(super) fn accept_subcurve_measurement_point(
         &mut self,
+        name: &'static str,
         start: Option<Point3>,
         point: Point3,
     ) -> bool {
         let Some(start) = start else {
-            let next = InteractiveCommand::DomainSubCrv { start: Some(point) };
+            let next = match name {
+                "Domain" => InteractiveCommand::DomainSubCrv { start: Some(point) },
+                "Length" => InteractiveCommand::LengthSubCrv { start: Some(point) },
+                _ => unreachable!("only supported subcurve measurements are dispatched"),
+            };
             self.active_command = Some(next);
             self.push_log(next.prompt().to_owned());
             return true;
         };
         let input = format!(
-            "Domain SubCrv {} {}",
+            "{name} SubCrv {} {}",
             format_model_point(start),
             format_model_point(point)
         );

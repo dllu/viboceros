@@ -177,6 +177,9 @@ enum InteractiveCommand {
     DomainSubCrv {
         start: Option<Point3>,
     },
+    LengthSubCrv {
+        start: Option<Point3>,
+    },
     Align {
         options: viboceros_command::AlignmentOptions,
         postselected: bool,
@@ -433,6 +436,7 @@ impl InteractiveCommand {
             Self::EvaluateUv { .. } => "EvaluateUVPt",
             Self::DomainFace => "Domain",
             Self::DomainSubCrv { .. } => "Domain",
+            Self::LengthSubCrv { .. } => "Length",
             Self::Align { .. } => "Align",
             Self::Points => "Points",
             Self::Line { .. } => "Line",
@@ -533,6 +537,12 @@ impl InteractiveCommand {
             }
             Self::DomainSubCrv { start: Some(_) } => {
                 "Domain SubCrv: pick the end on the selected curve (Esc cancels)"
+            }
+            Self::LengthSubCrv { start: None } => {
+                "Length SubCrv: pick the start on the selected curve (Esc cancels)"
+            }
+            Self::LengthSubCrv { start: Some(_) } => {
+                "Length SubCrv: pick the end on the selected curve (Esc cancels)"
             }
             Self::Align { options, .. } if options.mode.is_none() => {
                 "Align: choose Left/Right/Top/Bottom/HorizCenter/VertCenter/Concentric/ToLine/ToPlane/ToFitPlane/ToCurve; AlignTo=CPlane|World"
@@ -1045,6 +1055,7 @@ impl InteractiveCommand {
             | Self::EvaluateUv { .. }
             | Self::DomainFace
             | Self::DomainSubCrv { start: None }
+            | Self::LengthSubCrv { start: None }
             | Self::Points
             | Self::Line { start: None }
             | Self::Distance { start: None, .. }
@@ -1124,6 +1135,7 @@ impl InteractiveCommand {
             } => None,
             Self::Line { start }
             | Self::DomainSubCrv { start }
+            | Self::LengthSubCrv { start }
             | Self::Distance { start, .. }
             | Self::Circle { center: start }
             | Self::Sphere { center: start }
@@ -1489,6 +1501,11 @@ impl VibocerosApp {
             && self.domain_has_one_curve()
         {
             InteractiveCommand::DomainSubCrv { start: None }
+        } else if matches!(normalized.as_str(), "length" | "len")
+            && matches!(arguments.as_slice(), [option] if option.trim_start_matches('_').eq_ignore_ascii_case("SubCrv"))
+            && self.domain_has_one_curve()
+        {
+            InteractiveCommand::LengthSubCrv { start: None }
         } else if normalized == "evaluatept" {
             let Some(command) = evaluate_point::start_command(&arguments) else {
                 return false;
@@ -3221,7 +3238,10 @@ impl VibocerosApp {
             }
             InteractiveCommand::DomainFace => return self.finish_domain_face(point),
             InteractiveCommand::DomainSubCrv { start } => {
-                return self.accept_domain_subcurve_point(start, point);
+                return self.accept_subcurve_measurement_point("Domain", start, point);
+            }
+            InteractiveCommand::LengthSubCrv { start } => {
+                return self.accept_subcurve_measurement_point("Length", start, point);
             }
             InteractiveCommand::Align { options, .. } => {
                 return self.finish_align(Some(point), options);
@@ -5522,6 +5542,7 @@ mod tests {
     mod group_prompt;
     mod interface;
     mod intersect_two_sets;
+    mod length;
     mod merge_edge;
     mod nurbs_selection;
     mod object_selection;

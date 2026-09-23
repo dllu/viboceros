@@ -1,6 +1,9 @@
 //! Read-only selected-object measurements and exact finite-value aggregation.
 
-use super::{Command, CommandError, geometry_curve_ref, require_consumed};
+use super::{
+    Command, CommandError, ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSelectionWorkflow,
+    geometry_curve_ref, option_name_eq, require_consumed,
+};
 use viboceros_document::{Document, Geometry};
 use viboceros_geometry::{FiniteSum, GeometryError, Real, Tolerance};
 
@@ -11,6 +14,7 @@ pub(super) use area_centroid::AreaCentroidCommand;
 pub(super) use volume::VolumeCommand;
 mod distance;
 mod domain;
+mod subcurve;
 pub(super) use domain::DomainCommand;
 mod evaluate_point;
 mod evaluate_uv;
@@ -34,6 +38,7 @@ fn format_measurement(value: Real) -> String {
 }
 
 pub(super) struct LengthCommand;
+const LENGTH_USAGE: &str = "Length [SubCrv Parameter=start,end|SubCrv start_point end_point]";
 
 impl Command for LengthCommand {
     fn name(&self) -> &'static str {
@@ -48,7 +53,49 @@ impl Command for LengthCommand {
         false
     }
 
+    fn object_selection_prompt(
+        &self,
+        arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        let subcurve = matches!(arguments, [option] if option_name_eq(option, "SubCrv"));
+        Ok(
+            (arguments.is_empty() || subcurve).then_some(ObjectSelectionPrompt {
+                command: "Length",
+                filter: ObjectSelectionFilter::Curves,
+                workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
+                options: vec![],
+                menus: vec![],
+                choices: vec![],
+            }),
+        )
+    }
+
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if arguments
+            .first()
+            .is_some_and(|argument| option_name_eq(argument, "SubCrv"))
+        {
+            let mut selected = document.selected_objects();
+            let object = selected.next().ok_or(CommandError::NoObjectsSelected)?;
+            if selected.next().is_some() {
+                return Err(CommandError::Usage(
+                    "Length SubCrv requires one selected curve",
+                ));
+            }
+            let curve = geometry_curve_ref(object.geometry())
+                .ok_or(CommandError::UnsupportedLengthGeometry)?;
+            let part = subcurve::parse_subcurve(
+                curve,
+                document.tolerance(),
+                &arguments[1..],
+                LENGTH_USAGE,
+            )?;
+            let total = part.as_ref().length(document.tolerance())?;
+            return Ok(format!(
+                "Measured 1 curve(s): total length {}",
+                format_measurement(total)
+            ));
+        }
         require_consumed(arguments, 0, "Length")?;
         let (count, total) = selected_measurement(document, |geometry, tolerance| {
             geometry_curve_ref(geometry)
