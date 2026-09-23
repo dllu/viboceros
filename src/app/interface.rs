@@ -21,6 +21,11 @@ impl VibocerosApp {
         let mut state = self.interface_state();
         match state.apply(command) {
             Ok(message) => {
+                if let InterfaceCommand::SetZoomScale(scale) = command {
+                    self.zoom_scale = scale.value();
+                    self.push_log(format!("View zoom scale factor: {}", self.zoom_scale));
+                    return;
+                }
                 if let InterfaceCommand::ZoomFactor(_)
                 | InterfaceCommand::ZoomIn
                 | InterfaceCommand::ZoomOut = command
@@ -31,12 +36,12 @@ impl VibocerosApp {
                             self.viewports[self.active_viewport].zoom_factor(factor.value()),
                         ),
                         InterfaceCommand::ZoomIn => (
-                            Viewport::ZOOM_STEP.recip(),
-                            self.viewports[self.active_viewport].zoom_in(),
+                            self.zoom_scale.recip(),
+                            self.viewports[self.active_viewport].zoom_in(self.zoom_scale),
                         ),
                         InterfaceCommand::ZoomOut => (
-                            Viewport::ZOOM_STEP,
-                            self.viewports[self.active_viewport].zoom_out(),
+                            self.zoom_scale,
+                            self.viewports[self.active_viewport].zoom_out(self.zoom_scale),
                         ),
                         _ => unreachable!(),
                     };

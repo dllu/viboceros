@@ -1,7 +1,7 @@
 //! Compact command-first chrome; modeling commands live in the command line.
 
 use super::*;
-use viboceros_command::interface::{InterfaceCommand, SwitchAction, ViewportTarget};
+use viboceros_command::interface::{InterfaceCommand, SwitchAction, ViewportTarget, ZoomScale};
 
 impl VibocerosApp {
     pub(super) fn show_toolbar(&mut self, root: &mut egui::Ui) {
@@ -65,6 +65,21 @@ impl VibocerosApp {
                         mode,
                     });
                 }
+                egui::containers::menu::MenuButton::new("View options").ui(ui, |ui| {
+                    let mut scale = self.zoom_scale;
+                    if ui
+                        .add(
+                            egui::DragValue::new(&mut scale)
+                                .speed(0.01)
+                                .prefix("Zoom step "),
+                        )
+                        .on_hover_text("View zoom scale factor; 0.9 is the Rhino default")
+                        .changed()
+                        && let Some(scale) = ZoomScale::try_new(scale)
+                    {
+                        self.apply_interface_command(InterfaceCommand::SetZoomScale(scale));
+                    }
+                });
                 ui.separator();
                 for (enabled, label, hint, command) in [
                     (

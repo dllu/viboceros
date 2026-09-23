@@ -86,6 +86,38 @@ fn zoom_in_out_parse_and_leave_interface_state_unchanged() {
 }
 
 #[test]
+fn view_zoom_scale_option_requires_a_finite_positive_reciprocal() {
+    for (input, value) in [
+        ("Options View Zoom ScaleFactor=0.9", 0.9),
+        ("'_Options _View _Zoom _ScaleFactor=1.25", 1.25),
+        ("Options View Zoom ScaleFactor=1", 1.0),
+        ("Options View Zoom ScaleFactor=1e300", 1e300),
+    ] {
+        let action = InterfaceCommand::SetZoomScale(ZoomScale::try_new(value).unwrap());
+        assert_eq!(parse(input), Some(Ok(action)));
+        let mut current = state();
+        let original = current.clone();
+        current.apply(action).unwrap();
+        assert_eq!(current, original);
+    }
+    for value in [0.0, -1.0, f64::NAN, f64::INFINITY, f64::from_bits(1)] {
+        assert!(ZoomScale::try_new(value).is_none());
+    }
+    for input in [
+        "Options",
+        "Options View Zoom",
+        "Options Zoom ScaleFactor=0.9",
+        "Options View Zoom ScaleFactor=0",
+        "Options View Zoom ScaleFactor=-1",
+        "Options View Zoom ScaleFactor=NaN",
+        "Options View Zoom ScaleFactor=5e-324",
+        "Options View Zoom ScaleFactor=0.9 extra",
+    ] {
+        assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
+    }
+}
+
+#[test]
 fn zoom_extents_is_a_validated_host_action() {
     for (input, expected) in [
         ("Zoom All Extents", InterfaceCommand::ZoomAllExtents),

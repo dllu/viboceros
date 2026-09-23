@@ -26,6 +26,7 @@ use crate::viewport::{
 };
 
 const MAX_LOG_ENTRIES: usize = 100;
+const DEFAULT_ZOOM_SCALE: f64 = 0.9;
 
 mod command_line;
 #[cfg(test)]
@@ -1228,6 +1229,7 @@ pub struct VibocerosApp {
     snaps: snapping::SnapControls,
     smart_track: bool,
     grid_snap: bool,
+    zoom_scale: f64,
     command_focus_requested: bool,
     active_command: Option<InteractiveCommand>,
     last_point: Option<Point3>,
@@ -1269,6 +1271,7 @@ impl VibocerosApp {
             snaps: snapping::SnapControls::default(),
             smart_track: true,
             grid_snap: true,
+            zoom_scale: DEFAULT_ZOOM_SCALE,
             command_focus_requested: false,
             active_command: None,
             last_point: None,
@@ -5442,6 +5445,7 @@ mod tests {
             snaps: snapping::SnapControls::default(),
             smart_track: true,
             grid_snap: true,
+            zoom_scale: DEFAULT_ZOOM_SCALE,
             command_focus_requested: false,
             active_command: None,
             last_point: None,

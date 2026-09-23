@@ -79,7 +79,22 @@ impl ZoomFactor {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct ZoomScale(u64);
+
+impl ZoomScale {
+    pub fn try_new(value: f64) -> Option<Self> {
+        (value.is_finite() && value > 0.0 && value.recip().is_finite())
+            .then_some(Self(value.to_bits()))
+    }
+
+    pub fn value(self) -> f64 {
+        f64::from_bits(self.0)
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum InterfaceCommand {
+    SetZoomScale(ZoomScale),
     ZoomFactor(ZoomFactor),
     ZoomIn,
     ZoomOut,
@@ -97,7 +112,8 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 11] = [
+pub const COMMAND_NAMES: [&str; 12] = [
+    "Options",
     "SnapToMeshes",
     "Zoom",
     "ZE",
@@ -111,7 +127,7 @@ pub const COMMAND_NAMES: [&str; 11] = [
     "Snap",
 ];
 
-pub const HELP: &str = "Interface: Zoom [All] Extents|Selected (ZE, ZS, ZEA, ZSA); Zoom In|Out|Factor <positive number>; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [All] Extents|Selected (ZE, ZS, ZEA, ZSA); Zoom In|Out|Factor <positive number>; Options View Zoom ScaleFactor=<positive number>; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -187,6 +203,21 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
                 }
                 _ => Err(InterfaceError::Usage(
                     "Zoom [All] Extents|Selected | Zoom In|Out|Factor <positive number> | ZE | ZS | ZEA | ZSA",
+                )),
+            }
+        } else if name.eq_ignore_ascii_case("Options") {
+            match args.as_slice() {
+                [view, zoom, scale] if keyword(view, "View") && keyword(zoom, "Zoom") => scale
+                    .split_once('=')
+                    .filter(|(key, _)| keyword(key, "ScaleFactor"))
+                    .and_then(|(_, value)| value.parse::<f64>().ok())
+                    .and_then(ZoomScale::try_new)
+                    .map(InterfaceCommand::SetZoomScale)
+                    .ok_or(InterfaceError::Usage(
+                        "Options View Zoom ScaleFactor=<finite positive number>",
+                    )),
+                _ => Err(InterfaceError::Usage(
+                    "Options View Zoom ScaleFactor=<finite positive number>",
                 )),
             }
         } else if name.eq_ignore_ascii_case("Snap") {
@@ -285,6 +316,9 @@ impl InterfaceState {
         }
         let on_off = |value| if value { "On" } else { "Off" };
         Ok(match command {
+            InterfaceCommand::SetZoomScale(scale) => {
+                format!("View zoom scale factor {} requested", scale.value())
+            }
             InterfaceCommand::ZoomFactor(factor) => {
                 format!("Zoom factor {} requested (active viewport)", factor.value())
             }

@@ -40,14 +40,17 @@ prompts, selection, and undo/redo. It currently requires an inline factor; bare
 `Zoom Factor` does not open a numeric prompt, and `Zoom All Factor` is unsupported.
 
 `Zoom In` and `Zoom Out` take one center-focused step in the active viewport.
-The current step uses the reported Rhino default View zoom scale factor of 0.9:
-In multiplies target-plane magnification by 1/0.9; Out multiplies it by 0.9.
-They share Factor's camera limits and preserve an unfinished modeling prompt.
-The scale factor is not yet configurable in Viboceros. Rhino documents the
+The initial View zoom scale factor is 0.9: In multiplies target-plane
+magnification by 1/0.9; Out multiplies it by 0.9. Set another finite positive
+scale with `Options View Zoom ScaleFactor=<number>` or the View options menu.
+Values above 1 reverse the apparent direction of In and Out, as in Rhino.
+The setting applies across all viewports, shares Factor's camera limits, and
+preserves unfinished modeling prompts and model history. It currently resets
+when the application closes. Rhino documents the
 [View zoom setting](https://docs.mcneel.com/rhino/8/help/en-us/options/view.htm),
 and the [McNeel forum explanation](https://discourse.mcneel.com/t/navigation-controls-customization/18619/12)
-ties the command options to that setting. A live Rhino camera probe remains
-pending after this session's Rhino launch crashed during .NET startup.
+ties the command options to that setting. A live Rhino camera comparison remains
+pending because recent Wine launches crashed or timed out before the worker ran.
 
 Perspective wheel zoom pins the point under the pointer on the camera-target
 plane (through the target, perpendicular to the viewing direction), rather than

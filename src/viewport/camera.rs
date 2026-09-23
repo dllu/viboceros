@@ -436,17 +436,18 @@ impl Viewport {
         self.zoom_by_factor(factor, Some(rect.center()), rect)
     }
 
-    /// One default View > Zoom increment. Rhino also exposes this setting to
-    /// users; a configurable value can replace this constant when view options
-    /// are implemented.
-    pub(crate) const ZOOM_STEP: Real = 0.9;
-
-    pub(crate) fn zoom_in(&mut self) -> Result<bool, &'static str> {
-        self.zoom_factor(Self::ZOOM_STEP.recip())
+    pub(crate) fn zoom_in(&mut self, scale: Real) -> Result<bool, &'static str> {
+        if !scale.is_finite() || scale <= 0.0 || !scale.recip().is_finite() {
+            return Err("invalid view zoom scale factor");
+        }
+        self.zoom_factor(scale.recip())
     }
 
-    pub(crate) fn zoom_out(&mut self) -> Result<bool, &'static str> {
-        self.zoom_factor(Self::ZOOM_STEP)
+    pub(crate) fn zoom_out(&mut self, scale: Real) -> Result<bool, &'static str> {
+        if !scale.is_finite() || scale <= 0.0 || !scale.recip().is_finite() {
+            return Err("invalid view zoom scale factor");
+        }
+        self.zoom_factor(scale)
     }
 
     fn zoom_by_factor(
@@ -709,15 +710,27 @@ mod tests {
             };
             let before = view.pixels_per_model_unit_at_origin(rect);
             let target = view.target;
-            assert_eq!(view.zoom_in(), Ok(true));
+            assert_eq!(view.zoom_in(0.9), Ok(true));
             let after = view.pixels_per_model_unit_at_origin(rect);
-            assert!((f64::from(after / before) - 1.0 / Viewport::ZOOM_STEP).abs() < 1e-6);
+            assert!((f64::from(after / before) - 1.0 / 0.9).abs() < 1e-6);
             assert_eq!(view.target, target);
-            assert_eq!(view.zoom_out(), Ok(true));
+            assert_eq!(view.zoom_out(0.9), Ok(true));
             assert!(
                 (f64::from(view.pixels_per_model_unit_at_origin(rect) / before) - 1.0).abs() < 1e-6
             );
             assert_eq!(view.target, target);
+            assert_eq!(view.zoom_in(1.25), Ok(true));
+            assert!(
+                (f64::from(view.pixels_per_model_unit_at_origin(rect) / before) - 0.8).abs() < 1e-6
+            );
+            assert_eq!(view.zoom_out(1.25), Ok(true));
+            assert!(
+                (f64::from(view.pixels_per_model_unit_at_origin(rect) / before) - 1.0).abs() < 1e-6
+            );
+            for invalid in [0.0, f64::NAN, f64::INFINITY, f64::from_bits(1)] {
+                assert!(view.zoom_in(invalid).is_err());
+                assert!(view.zoom_out(invalid).is_err());
+            }
         }
     }
 

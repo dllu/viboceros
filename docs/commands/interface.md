@@ -13,6 +13,8 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `Zoom Extents` / `ZE` | Fit visible geometry in the active viewport; [details and limits](zoom.md). |
 | `Zoom Selected` / `ZS` | Fit visible selected geometry without changing selection or model history. |
 | `Zoom Factor <number>` | Scale the active view about its center; positive factors above 1 zoom in and below 1 zoom out. |
+| `Zoom In` / `Zoom Out` | Take one step of the View zoom scale factor about the active viewport center. |
+| `Options View Zoom ScaleFactor=<number>` | Set the application zoom step; the View options menu exposes the same setting. |
 | `Zoom All Extents` / `ZEA` | Fit all four views, applying only after every fit succeeds. |
 | `Zoom All Selected` / `ZSA` | Fit visible selected geometry in all four views with the same all-or-nothing policy. |
 | `Snap` | Toggle the one-unit grid snap. |
@@ -25,6 +27,8 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 Names/options are case-insensitive, with optional Rhino-style underscore prefixes.
 Commands accept a leading hyphen and optional transparent-command apostrophe.
 `SetDisplayMode Shaded` and `SetDisplayMode Viewport All Mode Ghosted` also work.
+The inline `Options View Zoom ScaleFactor=…` path is a Viboceros scripting
+shortcut for Rhino's View options panel; the full Options dialog is pending.
 Supply the complete options on one line; bare option-taking commands show usage
 instead of starting another prompt. Unknown/duplicate options are rejected
 before mutation, and invalid input remains editable.

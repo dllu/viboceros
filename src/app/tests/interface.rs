@@ -120,6 +120,35 @@ fn zoom_extents_routes_to_the_active_view_without_cancelling_modeling_or_redo() 
 }
 
 #[test]
+fn view_zoom_scale_options_apply_globally_without_editing_the_model() {
+    let mut app = test_app();
+    let context = egui::Context::default();
+    layout_viewports(&context, &mut app);
+    enter(&mut app, "Point 2,3,4");
+    enter(&mut app, "Line");
+    enter(&mut app, "0");
+    let pending = app.active_command;
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, "Options View Zoom ScaleFactor=1.25");
+    assert_eq!(app.zoom_scale, 1.25);
+    assert_eq!(app.active_command, pending);
+    enter(&mut app, "Zoom In");
+    assert!(app.command_log.back().unwrap().contains("factor 0.8"));
+    enter(&mut app, "Zoom Out");
+    assert!(app.command_log.back().unwrap().contains("factor 1.25"));
+    for invalid in [
+        "Options View Zoom ScaleFactor=0",
+        "Options View Zoom ScaleFactor=5e-324",
+    ] {
+        enter(&mut app, invalid);
+        assert!(app.command_log.back().unwrap().starts_with("Error:"));
+        assert_eq!(app.zoom_scale, 1.25);
+    }
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+}
+
+#[test]
 fn tolerance_command_updates_settings_through_application_history() {
     let mut app = test_app();
     let initial = app.document.tolerance();
