@@ -68,6 +68,7 @@ pub(super) fn convert_shell(
                 ElementarySurface::CylindricalSurface(_) | ElementarySurface::ConicalSurface(_),
             ) => [true, false],
             Surface::ElementarySurface(ElementarySurface::ToroidalSurface(_)) => [true, true],
+            Surface::ElementarySurface(ElementarySurface::Sphere(_)) => [true, false],
             _ => [false, false],
         };
         for boundary in &face.boundaries {
@@ -513,19 +514,23 @@ fn surface(
                 vec![v0, v0, v1, v1],
             )?)
         }
-        Surface::ElementarySurface(ElementarySurface::ToroidalSurface(torus)) => {
+        Surface::ElementarySurface(
+            ElementarySurface::ToroidalSurface(_) | ElementarySurface::Sphere(_),
+        ) => {
             let mut min = [f64::INFINITY; 2];
             let mut max = [f64::NEG_INFINITY; 2];
             for trim in boundaries.iter().flatten() {
                 if trim.curve().degree() != 1 || trim.curve().control_points().len() != 2 {
-                    return Err(unsupported("torus requires straight UV iso-trims"));
+                    return Err(unsupported(
+                        "angular surface requires straight UV iso-trims",
+                    ));
                 }
                 let start = trim.curve().start_point()?;
                 let end = trim.curve().end_point()?;
                 if (start.x() - end.x()).abs() > tolerance.angular()
                     && (start.y() - end.y()).abs() > tolerance.angular()
                 {
-                    return Err(unsupported("torus requires UV iso-trims"));
+                    return Err(unsupported("angular surface requires UV iso-trims"));
                 }
                 for point in [start, end] {
                     min[0] = min[0].min(point.x());
@@ -536,6 +541,21 @@ fn surface(
             }
             let [u0, v0] = min;
             let [u1, v1] = max;
+            if matches!(
+                source,
+                Surface::ElementarySurface(ElementarySurface::Sphere(_))
+            ) {
+                if v0 < -std::f64::consts::FRAC_PI_2 - tolerance.angular()
+                    || v1 > std::f64::consts::FRAC_PI_2 + tolerance.angular()
+                {
+                    return Err(unsupported("sphere latitude lies outside [-pi/2, pi/2]"));
+                }
+                if v0 <= -std::f64::consts::FRAC_PI_2 + tolerance.angular()
+                    || v1 >= std::f64::consts::FRAC_PI_2 - tolerance.angular()
+                {
+                    return Err(unsupported("sphere pole requires singular trim support"));
+                }
+            }
             let u_spans = arc_span_count(u1 - u0, id)?;
             let v_spans = arc_span_count(v1 - v0, id)?;
             let u_step = (u1 - u0) / u_spans as f64;
@@ -551,9 +571,9 @@ fn surface(
                     } else {
                         start + u_step
                     };
-                    let p0 = point3(torus.evaluate(start, v))?;
-                    let pm = point3(torus.evaluate((start + end) / 2., v))?;
-                    let p1 = point3(torus.evaluate(end, v))?;
+                    let p0 = point3(source.evaluate(start, v))?;
+                    let pm = point3(source.evaluate((start + end) / 2., v))?;
+                    let p1 = point3(source.evaluate(end, v))?;
                     let weight = ((end - start) / 2.).cos();
                     if index == 0 {
                         row.push((p0, 1.));
@@ -601,7 +621,7 @@ fn surface(
             )?)
         }
         _ => Err(unsupported(
-            "surface is not a supported plane, revolved line, torus, or B-spline",
+            "surface is not a supported plane, revolved line, torus, sphere, or B-spline",
         )),
     }
 }

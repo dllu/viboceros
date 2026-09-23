@@ -240,8 +240,9 @@ assembly path to NURBS/B-spline surfaces, edges, and UV trims. Analytic circle
 and ellipse arcs on supported faces convert to exact multi-span rational NURBS.
 Cylinder and nonsingular cone faces with straight UV iso-trims spanning up to
 one turn also convert to exact rational NURBS patches; paired `SEAM_CURVE` uses
-on a full-turn wall are supported. Ring-torus faces with straight UV iso-trims
-convert to exact rational patches, including full major-angle seam strips.
+on a full-turn wall are supported. Ring-torus patches and spherical bands away
+from the poles with straight UV iso-trims convert to exact rational patches,
+including full-angle seam strips. Polar singular trims remain unsupported.
 NURBS faces can have polygon holes with
 straight UV trims; curved UV loops currently require one outer boundary. Other
 analytic surface types and periodic seam arrangements still fail native import.
