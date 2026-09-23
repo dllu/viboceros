@@ -2961,6 +2961,7 @@ fn native_step_imports_full_turn_revolved_bspline_seam() {
     let text = CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
     assert!(text.contains("SURFACE_OF_REVOLUTION("));
     assert_eq!(text.matches("SEAM_CURVE(").count(), 1);
+    let degrees = with_degree_angular_u(&text);
     let table = Table::from_step(&text).unwrap();
     assert_eq!(table.entity_report.total(), 0);
     let shell_id = *table.shell.keys().next().unwrap();
@@ -2971,7 +2972,7 @@ fn native_step_imports_full_turn_revolved_bspline_seam() {
             .iter()
             .all(|edge| edge.trim_curve.is_some())
     );
-    let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    let native = read_step_native_instances(Cursor::new(&text), Tolerance::DEFAULT).unwrap();
     let brep = &native.instances[0].brep;
     assert_eq!(
         (
@@ -2990,6 +2991,27 @@ fn native_step_imports_full_turn_revolved_bspline_seam() {
         2
     );
     assert!(brep.area(Tolerance::DEFAULT).unwrap() > 8. * std::f64::consts::PI);
+    let degree_native = read_step_native_instances_in_units(
+        Cursor::new(&degrees),
+        &LengthUnitSystem::Millimeters,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let degree_brep = &degree_native.instances[0].brep;
+    assert_eq!(
+        degree_brep.faces()[0].loops()[0]
+            .trims()
+            .iter()
+            .filter(|trim| trim.trim_type() == BrepTrimType::Seam)
+            .count(),
+        2
+    );
+    assert!(
+        (degree_brep.area(Tolerance::DEFAULT).unwrap() - brep.area(Tolerance::DEFAULT).unwrap())
+            .abs()
+            < 1e-8
+    );
+    assert_degree_step_mesh_matches(&text, &degrees);
 
     let mut spline_shell = shell.clone();
     let spline_surface = spline_shell.faces[0].surface.clone();
@@ -3223,8 +3245,41 @@ fn native_step_imports_exact_revolved_polyline_conic_bspline_and_nurbs_faces() {
         let shell_id = *table.shell.keys().next().unwrap();
         let (_, report) = reported_trimmed_shell(&table, shell_id).unwrap();
         assert_eq!(report.total_lost(), 0);
-        let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+        let degrees = with_degree_angular_u(&text);
+        let native = read_step_native_instances(Cursor::new(&text), Tolerance::DEFAULT).unwrap();
         let brep = &native.instances[0].brep;
+        let degree_native = read_step_native_instances_in_units(
+            Cursor::new(&degrees),
+            &LengthUnitSystem::Millimeters,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let degree_brep = &degree_native.instances[0].brep;
+        assert_eq!(degree_brep.edges().len(), brep.edges().len());
+        assert!(
+            (degree_brep.area(Tolerance::DEFAULT).unwrap()
+                - brep.area(Tolerance::DEFAULT).unwrap())
+            .abs()
+                < 1e-8
+        );
+        for (actual, expected) in degree_brep.vertices().iter().zip(brep.vertices()) {
+            assert!(actual.point().distance_to(expected.point()).unwrap() < 1e-9);
+        }
+        for (actual, expected) in degree_brep.faces()[0].loops()[0]
+            .trims()
+            .iter()
+            .zip(brep.faces()[0].loops()[0].trims())
+        {
+            for (actual, expected) in actual
+                .curve()
+                .control_points()
+                .iter()
+                .zip(expected.curve().control_points())
+            {
+                assert!((actual.point().x() - expected.point().x()).abs() < 1e-12);
+                assert!((actual.point().y() - expected.point().y()).abs() < 1e-12);
+            }
+        }
         assert_eq!(
             (
                 brep.vertices().len(),
@@ -4695,9 +4750,17 @@ fn with_degree_angle_units(source: &str) -> String {
 }
 
 fn with_degree_angular_uv(source: &str) -> String {
+    with_degree_angular_uv_axes(source, [true, true])
+}
+
+fn with_degree_angular_u(source: &str) -> String {
+    with_degree_angular_uv_axes(source, [true, false])
+}
+
+fn with_degree_angular_uv_axes(source: &str, axes: [bool; 2]) -> String {
     use monstertruck::step::load::step_p21::ast::{EntityInstance, Parameter};
     let data = read_data_section(Cursor::new(source)).unwrap();
-    let mut directions_2d = std::collections::BTreeSet::new();
+    let mut directions_2d = std::collections::BTreeMap::new();
     let mut replacements = std::collections::BTreeMap::new();
     let degree_per_radian = 180. / std::f64::consts::PI;
     for entity in &data.entities {
@@ -4710,7 +4773,15 @@ fn with_degree_angular_uv(source: &str) -> String {
         if record.name == "DIRECTION"
             && matches!(&args[1], Parameter::List(coordinates) if coordinates.len() == 2)
         {
-            directions_2d.insert(*id);
+            let Parameter::List(coordinates) = &args[1] else {
+                unreachable!()
+            };
+            let value = |axis| match &coordinates[axis] {
+                Parameter::Real(value) => *value,
+                Parameter::Integer(value) => *value as f64,
+                _ => panic!("non-numeric fixture direction"),
+            };
+            directions_2d.insert(*id, [value(0), value(1)]);
         }
         if record.name == "CARTESIAN_POINT" {
             let Parameter::List(coordinates) = &args[1] else {
@@ -4728,8 +4799,8 @@ fn with_degree_angular_uv(source: &str) -> String {
                 *id,
                 format!(
                     "#{id} = CARTESIAN_POINT('', ({:?}, {:?}));",
-                    value(0) * degree_per_radian,
-                    value(1) * degree_per_radian
+                    value(0) * if axes[0] { degree_per_radian } else { 1. },
+                    value(1) * if axes[1] { degree_per_radian } else { 1. }
                 ),
             );
         }
@@ -4747,21 +4818,34 @@ fn with_degree_angular_uv(source: &str) -> String {
         let Parameter::Ref(Name::Entity(direction)) = &args[1] else {
             continue;
         };
-        if !directions_2d.contains(direction) {
+        let Some(ratios) = directions_2d.get(direction) else {
             continue;
-        }
+        };
         let magnitude = match args[2] {
             Parameter::Real(value) => value,
             Parameter::Integer(value) => value as f64,
             _ => panic!("non-numeric fixture vector"),
         };
+        let scaled = [
+            ratios[0] * if axes[0] { degree_per_radian } else { 1. },
+            ratios[1] * if axes[1] { degree_per_radian } else { 1. },
+        ];
+        let norm = scaled[0].hypot(scaled[1]);
+        assert!(norm > 0.);
         replacements.insert(
             *id,
-            format!(
-                "#{id} = VECTOR('', #{direction}, {:?});",
-                magnitude * degree_per_radian
-            ),
+            format!("#{id} = VECTOR('', #{direction}, {:?});", magnitude * norm),
         );
+        if axes != [true, true] {
+            replacements.insert(
+                *direction,
+                format!(
+                    "#{direction} = DIRECTION('', ({:?}, {:?}));",
+                    scaled[0] / norm,
+                    scaled[1] / norm
+                ),
+            );
+        }
     }
     assert!(!replacements.is_empty());
     let degrees = with_degree_angle_units(source);

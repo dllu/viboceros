@@ -98,8 +98,8 @@ fn unsupported_angular_geometry(data: &DataSection) -> bool {
                         | "SPHERICAL_SURFACE"
                         | "TOROIDAL_SURFACE"
                 ))
-            || name.starts_with("SURFACE_OF_")
-            || name.contains("REVOL")
+            || (name.starts_with("SURFACE_OF_") && name != "SURFACE_OF_REVOLUTION")
+            || (name.contains("REVOL") && name != "SURFACE_OF_REVOLUTION")
             || name.contains("CIRCULAR")
     })
 }
@@ -114,9 +114,9 @@ fn references_any(parameter: &Parameter, ids: &BTreeSet<u64>) -> bool {
 }
 
 /// Converts conical semi-angles and 2D line, polyline, and B-spline p-curves
-/// on cylinders, cones, spheres, and tori. The source angular assignment is replaced by its
-/// validated SI radian base after converting geometry; unrelated p-curves are
-/// untouched.
+/// on cylinders, cones, spheres, tori, and surfaces of revolution. The source
+/// angular assignment is replaced by its validated SI radian base after
+/// converting geometry; unrelated p-curves are untouched.
 pub(super) fn normalize(data: &mut DataSection) -> Result<(), StepError> {
     if is_angle_independent_geometry(data)
         || !data.entities.iter().map(entity_records).any(|records| {
@@ -186,6 +186,7 @@ pub(super) fn normalize(data: &mut DataSection) -> Result<(), StepError> {
             .ok_or_else(|| invalid("missing p-curve basis surface"))?;
         let axes = if component(surface, "CONICAL_SURFACE").is_some()
             || component(surface, "CYLINDRICAL_SURFACE").is_some()
+            || component(surface, "SURFACE_OF_REVOLUTION").is_some()
         {
             U_ANGLE
         } else if component(surface, "SPHERICAL_SURFACE").is_some()

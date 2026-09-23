@@ -310,9 +310,10 @@ before document edits. Conversion-based plane-angle units, including degrees,
 are accepted for geometry without stored angular parameters, including planar
 solids with straight, circular, or elliptical edges and NURBS surfaces with
 parameter-space trims. Those conic arcs are bounded by endpoint vertices.
-Cylinder, cone, sphere, and torus faces with 2D line, polyline, and B-spline
+Cylinder, cone, sphere, torus, and surface-of-revolution faces with 2D line, polyline, and B-spline
 trims convert their angular UV coordinates to radians before import, including
-diagonal trims and patches spanning more than half a turn. Cone semi-angles are
+diagonal trims and patches spanning more than half a turn. Revolved surfaces
+convert U while retaining the profile curve's V parameter. Cone semi-angles are
 converted too. Explicit angular curve trims, conic p-curves on angular
 surfaces, and other angular surfaces remain unsupported in non-radian contexts
 and are rejected before import. Angular surfaces also require an assigned
