@@ -297,6 +297,9 @@ impl Command for ImportThreeDmCommand {
             if let Some(name) = object.name {
                 attributes = attributes.with_name(name);
             }
+            for (key, value) in object.user_text {
+                attributes = attributes.with_user_text(key, value);
+            }
             let id = document.add_geometry_with_attributes(
                 document_geometry_from_3dm(object.geometry),
                 attributes,
@@ -416,6 +419,7 @@ pub(super) fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, Co
                 geometry: geometry_to_3dm(object.geometry())?,
                 layer_index: layer_indices[&object.attributes().layer_id()],
                 name: object.attributes().name().map(str::to_owned),
+                user_text: object.attributes().user_text().clone(),
                 visible: object.attributes().is_visible(),
                 locked: object.attributes().is_locked(),
                 object_color: {

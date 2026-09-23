@@ -4,6 +4,36 @@ use viboceros_document::SelectionMode;
 use viboceros_geometry::Point3;
 
 #[test]
+fn attribute_user_text_survives_export_and_import_commands() {
+    let registry = CommandRegistry::with_builtins();
+    let mut source = Document::default();
+    let id = source
+        .add_geometry(Geometry::Point(Point3::try_new(0., 0., 0.).unwrap()))
+        .unwrap();
+    source.select_object(id, SelectionMode::Replace).unwrap();
+    registry
+        .execute(&mut source, "SetUserText \"Part Number\" \"α 12\"")
+        .unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("user text.3dm");
+    registry
+        .execute(&mut source, &format!("Export3dm \"{}\"", path.display()))
+        .unwrap();
+    let mut restored = Document::default();
+    registry
+        .execute(&mut restored, &format!("Import3dm \"{}\"", path.display()))
+        .unwrap();
+    assert_eq!(
+        restored.objects().next().unwrap().attributes().user_text()["Part Number"],
+        "α 12"
+    );
+    assert_eq!(
+        registry.execute(&mut restored, "SelValue \"α *\"").unwrap(),
+        "Selected 1 object(s)"
+    );
+}
+
+#[test]
 fn native_step_export_preserves_editable_box_and_units() {
     use viboceros_geometry::{Brep, Frame3, Vector3};
     let frame = Frame3::try_from_directions(

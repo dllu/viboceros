@@ -12,7 +12,7 @@ impl Command for SetObjectNameCommand {
     }
 
     fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
-        tokenize_name_arguments(input)
+        tokenize_name_arguments(input, SET_OBJECT_NAME_USAGE)
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
@@ -48,7 +48,10 @@ impl Command for SetObjectNameCommand {
 
 // Retain quotes so the semantic parser can distinguish literal option-like
 // names from options. All slicing offsets come from UTF-8 character boundaries.
-fn tokenize_name_arguments(mut input: &str) -> Result<Vec<&str>, CommandError> {
+pub(super) fn tokenize_name_arguments<'a>(
+    mut input: &'a str,
+    usage: &'static str,
+) -> Result<Vec<&'a str>, CommandError> {
     let mut arguments = Vec::new();
     loop {
         input = input.trim_start();
@@ -56,22 +59,19 @@ fn tokenize_name_arguments(mut input: &str) -> Result<Vec<&str>, CommandError> {
             return Ok(arguments);
         }
         let end = if let Some(tail) = input.strip_prefix('"') {
-            let end = tail
-                .find('"')
-                .ok_or(CommandError::Usage(SET_OBJECT_NAME_USAGE))?
-                + 2;
+            let end = tail.find('"').ok_or(CommandError::Usage(usage))? + 2;
             if input[end..]
                 .chars()
                 .next()
                 .is_some_and(|c| !c.is_whitespace())
             {
-                return Err(CommandError::Usage(SET_OBJECT_NAME_USAGE));
+                return Err(CommandError::Usage(usage));
             }
             end
         } else {
             let end = input.find(char::is_whitespace).unwrap_or(input.len());
             if input[..end].contains('"') {
-                return Err(CommandError::Usage(SET_OBJECT_NAME_USAGE));
+                return Err(CommandError::Usage(usage));
             }
             end
         };
@@ -135,7 +135,7 @@ mod tests {
             ("\"\" AppendCounter=Yes", None, true),
             ("\" \t \"", None, false),
         ] {
-            let arguments = tokenize_name_arguments(input).unwrap();
+            let arguments = tokenize_name_arguments(input, SET_OBJECT_NAME_USAGE).unwrap();
             let (name, append_counter) = parse_set_object_name_arguments(&arguments).unwrap();
             assert_eq!(name.as_deref(), expected, "{input:?}");
             assert_eq!(append_counter, counter, "{input:?}");

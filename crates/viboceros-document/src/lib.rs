@@ -133,6 +133,7 @@ pub enum ObjectColorSource {
 #[derive(Clone, Debug, PartialEq)]
 pub struct ObjectAttributes {
     name: Option<String>,
+    user_text: BTreeMap<String, String>,
     layer_id: LayerId,
     object_color: ColorRgb,
     color_source: ObjectColorSource,
@@ -145,6 +146,7 @@ impl ObjectAttributes {
     pub fn on_layer(layer_id: LayerId) -> Self {
         Self {
             name: None,
+            user_text: BTreeMap::new(),
             layer_id,
             object_color: ColorRgb::BLACK,
             color_source: ObjectColorSource::Layer,
@@ -156,6 +158,31 @@ impl ObjectAttributes {
 
     pub fn name(&self) -> Option<&str> {
         self.name.as_deref()
+    }
+
+    pub fn user_text(&self) -> &BTreeMap<String, String> {
+        &self.user_text
+    }
+
+    pub fn with_user_text(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
+        let key = key.into();
+        let value = value.into();
+        self.set_user_text(&key, Some(&value));
+        self
+    }
+
+    fn set_user_text(&mut self, key: &str, value: Option<&str>) {
+        let existing = self
+            .user_text
+            .keys()
+            .find(|candidate| candidate.to_lowercase() == key.to_lowercase())
+            .cloned();
+        if let Some(value) = value.filter(|value| !value.is_empty()) {
+            self.user_text
+                .insert(existing.unwrap_or_else(|| key.to_owned()), value.to_owned());
+        } else if let Some(existing) = existing {
+            self.user_text.remove(&existing);
+        }
     }
 
     pub fn with_name(mut self, name: impl Into<String>) -> Self {
@@ -834,6 +861,37 @@ impl Document {
         self.apply_selection_mode(matches, SelectionMode::Add)
     }
 
+    /// Selects visible, unlocked objects with matching attribute user text.
+    /// Either pattern may be omitted to search only the other field.
+    pub fn select_objects_by_user_text(
+        &mut self,
+        key_pattern: Option<&str>,
+        value_pattern: Option<&str>,
+    ) -> usize {
+        let key = key_pattern.map(CaseInsensitiveWildcard::new);
+        let value = value_pattern.map(CaseInsensitiveWildcard::new);
+        let matches = self
+            .objects
+            .iter()
+            .filter(|object| self.object_is_selectable(object))
+            .filter(|object| {
+                object
+                    .attributes
+                    .user_text
+                    .iter()
+                    .any(|(candidate_key, candidate_value)| {
+                        key.as_ref()
+                            .is_none_or(|pattern| pattern.matches(candidate_key))
+                            && value
+                                .as_ref()
+                                .is_none_or(|pattern| pattern.matches(candidate_value))
+                    })
+            })
+            .map(|object| object.id)
+            .collect();
+        self.apply_selection_mode(matches, SelectionMode::Add)
+    }
+
     /// Adds selectable, ungrouped objects with the resolved display color.
     /// Rhino's `SelColor` ignores every object contained in a group.
     pub fn select_objects_by_display_color(
@@ -1110,6 +1168,18 @@ impl Document {
                 .get(&object.id)
                 .expect("the requested object id is retained")
                 .clone();
+        })
+    }
+
+    /// Sets or removes one attribute user text pair on each editable object.
+    pub fn set_object_user_text(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        key: &str,
+        value: Option<&str>,
+    ) -> Result<usize, DocumentError> {
+        self.change_editable_objects(ids, "Set user text", |object| {
+            object.attributes.set_user_text(key, value);
         })
     }
 

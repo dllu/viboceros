@@ -161,6 +161,9 @@ SelName "Fastener *"
 SelID 550e8400-e29b-41d4-a716-446655440000
 SelLayer "Construction *"
 SelGroup Assembly
+SelKey "Part Number"
+SelValue "A*"
+SelKeyValue "Part Number" "A*"
 SelDup
 SelDupAll
 Invert
@@ -197,6 +200,9 @@ Group All Everything
 AddToGroup Assembly
 RemoveFromGroup Copy=No
 SetObjectName "Fastener Part" AppendCounter=Yes
+SetUserText "Part Number" "A 12"
+SetUserText "Part Number" ""
+GetUserText "Part Number"
 SetObjectColor 12,34,56
 SetObjectColor ByLayer
 Ungroup

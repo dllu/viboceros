@@ -53,6 +53,7 @@ struct BridgeObject {
   std::vector<uint32_t> indices;
   std::vector<uint8_t> geometry_data;
   std::vector<int32_t> group_indices;
+  std::vector<std::pair<std::string, std::string>> user_text;
 };
 
 std::once_flag g_open_nurbs_once;
@@ -664,6 +665,14 @@ ON_3dmObjectAttributes* attributes_for(const ViboWriteObject& source,
   attributes->SetColorSource(
       static_cast<ON::object_color_source>(source.color_source));
   attributes->m_wire_density = source.wire_density;
+  for (size_t index = 0; index < source.user_text_count; ++index) {
+    const ViboUserText& text = source.user_text[index];
+    if (text.key == nullptr || text.key[0] == '\0' || text.value == nullptr ||
+        !attributes->SetUserString(ON_wString(text.key), ON_wString(text.value))) {
+      delete attributes;
+      return nullptr;
+    }
+  }
   return attributes;
 }
 
@@ -1508,6 +1517,14 @@ extern "C" int32_t vibo_3dm_read(const char* path,
         object.color_green = static_cast<uint8_t>(attributes->m_color.Green());
         object.color_blue = static_cast<uint8_t>(attributes->m_color.Blue());
         object.wire_density = attributes->m_wire_density;
+        ON_ClassArray<ON_wString> keys;
+        attributes->GetUserStringKeys(keys);
+        for (int text_index = 0; text_index < keys.Count(); ++text_index) {
+          ON_wString value;
+          if (attributes->GetUserString(keys[text_index], value)) {
+            object.user_text.emplace_back(utf8(keys[text_index]), utf8(value));
+          }
+        }
         const int group_count = attributes->GroupCount();
         const int* group_list = attributes->GroupList();
         if (group_count > 0 && group_list == nullptr) {
@@ -1663,6 +1680,26 @@ extern "C" int32_t vibo_3dm_object(
   return 1;
 }
 
+extern "C" size_t vibo_3dm_object_user_text_count(
+    const ViboThreeDmModel* model, size_t index) {
+  return model == nullptr || index >= model->objects.size()
+             ? 0 : model->objects[index].user_text.size();
+}
+
+extern "C" int32_t vibo_3dm_object_user_text(
+    const ViboThreeDmModel* model, size_t index, size_t text_index,
+    const char** key, const char** value) {
+  if (model == nullptr || index >= model->objects.size() ||
+      text_index >= model->objects[index].user_text.size() ||
+      key == nullptr || value == nullptr) {
+    return 0;
+  }
+  const auto& pair = model->objects[index].user_text[text_index];
+  *key = pair.first.c_str();
+  *value = pair.second.c_str();
+  return 1;
+}
+
 extern "C" int32_t vibo_3dm_units(const ViboThreeDmModel* model,
     uint32_t* unit_system, double* meters_per_unit, const char** name) {
   if (model == nullptr || unit_system == nullptr || meters_per_unit == nullptr || name == nullptr) {
@@ -1809,6 +1846,10 @@ extern "C" int32_t vibo_3dm_write(
       if (source.group_index_count != 0 && source.group_indices == nullptr) {
         set_error(error, error_capacity,
                   "3DM object has a null group index array");
+        return 0;
+      }
+      if (source.user_text_count != 0 && source.user_text == nullptr) {
+        set_error(error, error_capacity, "3DM object has a null user text array");
         return 0;
       }
       bool valid_groups = true;

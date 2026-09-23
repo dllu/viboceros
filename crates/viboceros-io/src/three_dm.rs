@@ -67,6 +67,7 @@ pub struct ThreeDmObject {
     pub geometry: ThreeDmGeometry,
     pub layer_index: usize,
     pub name: Option<String>,
+    pub user_text: BTreeMap<String, String>,
     pub visible: bool,
     pub locked: bool,
     pub object_color: [u8; 3],
@@ -82,6 +83,7 @@ impl ThreeDmObject {
             geometry,
             layer_index,
             name: None,
+            user_text: BTreeMap::new(),
             visible: true,
             locked: false,
             object_color: [0, 0, 0],
@@ -294,6 +296,33 @@ pub fn write_3dm_file(
                 .transpose()
         })
         .collect::<Result<Vec<_>, _>>()?;
+    let user_text_strings = prepared
+        .iter()
+        .map(|(object, _)| {
+            object
+                .user_text
+                .iter()
+                .map(|(key, value)| {
+                    Ok((
+                        c_string(key, "user text key")?,
+                        c_string(value, "user text value")?,
+                    ))
+                })
+                .collect::<Result<Vec<_>, ThreeDmError>>()
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let user_text = user_text_strings
+        .iter()
+        .map(|pairs| {
+            pairs
+                .iter()
+                .map(|(key, value)| ffi::ViboUserText {
+                    key: key.as_ptr(),
+                    value: value.as_ptr(),
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
     let payloads = prepared
         .iter()
         .map(|(_, geometry)| ObjectPayload::from_geometry(geometry))
@@ -302,34 +331,39 @@ pub fn write_3dm_file(
         .iter()
         .zip(&object_names)
         .zip(&payloads)
-        .map(|(((object, _), name), payload)| ffi::ViboWriteObject {
-            object_type: payload.object_type,
-            layer_index: object.layer_index,
-            name: name.as_ref().map_or(std::ptr::null(), |name| name.as_ptr()),
-            visible: u8::from(object.visible),
-            locked: u8::from(object.locked),
-            color_source: object.color_source as u8,
-            color_red: object.object_color[0],
-            color_green: object.object_color[1],
-            color_blue: object.object_color[2],
-            wire_density: object.wire_density,
-            degree_u: payload.degree_u,
-            degree_v: payload.degree_v,
-            control_point_count_u: payload.control_point_count_u,
-            control_point_count_v: payload.control_point_count_v,
-            coordinates: pointer_or_null(&payload.coordinates),
-            coordinate_count: payload.coordinates.len(),
-            knots_u: pointer_or_null(&payload.knots_u),
-            knot_u_count: payload.knots_u.len(),
-            knots_v: pointer_or_null(&payload.knots_v),
-            knot_v_count: payload.knots_v.len(),
-            indices: pointer_or_null(&payload.indices),
-            index_count: payload.indices.len(),
-            geometry_data: pointer_or_null(&payload.geometry_data),
-            geometry_data_count: payload.geometry_data.len(),
-            group_indices: pointer_or_null(&object.group_indices),
-            group_index_count: object.group_indices.len(),
-        })
+        .zip(&user_text)
+        .map(
+            |((((object, _), name), payload), text)| ffi::ViboWriteObject {
+                object_type: payload.object_type,
+                layer_index: object.layer_index,
+                name: name.as_ref().map_or(std::ptr::null(), |name| name.as_ptr()),
+                visible: u8::from(object.visible),
+                locked: u8::from(object.locked),
+                color_source: object.color_source as u8,
+                color_red: object.object_color[0],
+                color_green: object.object_color[1],
+                color_blue: object.object_color[2],
+                wire_density: object.wire_density,
+                degree_u: payload.degree_u,
+                degree_v: payload.degree_v,
+                control_point_count_u: payload.control_point_count_u,
+                control_point_count_v: payload.control_point_count_v,
+                coordinates: pointer_or_null(&payload.coordinates),
+                coordinate_count: payload.coordinates.len(),
+                knots_u: pointer_or_null(&payload.knots_u),
+                knot_u_count: payload.knots_u.len(),
+                knots_v: pointer_or_null(&payload.knots_v),
+                knot_v_count: payload.knots_v.len(),
+                indices: pointer_or_null(&payload.indices),
+                index_count: payload.indices.len(),
+                geometry_data: pointer_or_null(&payload.geometry_data),
+                geometry_data_count: payload.geometry_data.len(),
+                group_indices: pointer_or_null(&object.group_indices),
+                group_index_count: object.group_indices.len(),
+                user_text: pointer_or_null(text),
+                user_text_count: text.len(),
+            },
+        )
         .collect::<Vec<_>>();
 
     let mut error = [0 as c_char; ERROR_CAPACITY];
@@ -547,6 +581,27 @@ fn decode_object(
             })
         })
         .collect::<Result<Vec<_>, _>>()?;
+    // SAFETY: the handle owns the bridge model and the index is in range.
+    let user_text_count = unsafe { ffi::vibo_3dm_object_user_text_count(handle.0.as_ptr(), index) };
+    let mut user_text = BTreeMap::new();
+    for text_index in 0..user_text_count {
+        let mut key = std::ptr::null();
+        let mut value = std::ptr::null();
+        // SAFETY: output pointers are valid and the model remains live.
+        let success = unsafe {
+            ffi::vibo_3dm_object_user_text(
+                handle.0.as_ptr(),
+                index,
+                text_index,
+                &mut key,
+                &mut value,
+            )
+        };
+        if success == 0 || key.is_null() || value.is_null() {
+            return Err(ThreeDmError::MalformedBridge("invalid object user text"));
+        }
+        user_text.insert(c_text(key)?, c_text(value)?);
+    }
     let layer_index = layer_positions
         .get(&info.source_layer_index)
         .copied()
@@ -779,6 +834,7 @@ fn decode_object(
         geometry,
         layer_index,
         name,
+        user_text,
         visible: info.visible != 0,
         locked: info.locked != 0,
         object_color: [info.color_red, info.color_green, info.color_blue],
@@ -825,6 +881,14 @@ fn validate_model(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
         }
     }
     for (index, object) in model.objects.iter().enumerate() {
+        let mut user_text_keys = BTreeSet::new();
+        for (key, value) in &object.user_text {
+            if key.is_empty() || value.is_empty() || !user_text_keys.insert(key.to_lowercase()) {
+                return Err(ThreeDmError::InvalidModel(format!(
+                    "object {index} has an empty or duplicate user text entry"
+                )));
+            }
+        }
         if object.layer_index >= model.layers.len() {
             return Err(ThreeDmError::InvalidModel(format!(
                 "object {index} references missing layer {}",
@@ -1178,6 +1242,12 @@ mod ffi {
     }
 
     #[repr(C)]
+    pub struct ViboUserText {
+        pub key: *const c_char,
+        pub value: *const c_char,
+    }
+
+    #[repr(C)]
     pub struct ViboWriteObject {
         pub object_type: c_int,
         pub layer_index: usize,
@@ -1205,6 +1275,8 @@ mod ffi {
         pub geometry_data_count: usize,
         pub group_indices: *const usize,
         pub group_index_count: usize,
+        pub user_text: *const ViboUserText,
+        pub user_text_count: usize,
     }
 
     unsafe extern "C" {
@@ -1252,6 +1324,17 @@ mod ffi {
             indices: *mut *const u32,
             geometry_data: *mut *const u8,
             group_indices: *mut *const i32,
+        ) -> c_int;
+        pub fn vibo_3dm_object_user_text_count(
+            model: *const ViboThreeDmModel,
+            index: usize,
+        ) -> usize;
+        pub fn vibo_3dm_object_user_text(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            text_index: usize,
+            key: *mut *const c_char,
+            value: *mut *const c_char,
         ) -> c_int;
         pub fn vibo_3dm_write(
             path: *const c_char,
@@ -1469,6 +1552,7 @@ mod tests {
                     geometry: ThreeDmGeometry::Line(line),
                     layer_index: 1,
                     name: Some("guide".to_owned()),
+                    user_text: BTreeMap::new(),
                     visible: true,
                     locked: true,
                     object_color: [90, 80, 70],
@@ -1574,6 +1658,32 @@ mod tests {
             );
         }
         fs::remove_file(output).unwrap();
+    }
+
+    #[test]
+    fn attribute_user_text_round_trips_through_opennurbs() {
+        let path = temporary_path("user-text.3dm");
+        let layer = ThreeDmLayer {
+            name: "Default".to_owned(),
+            color: [0, 0, 0],
+            visible: true,
+            locked: false,
+        };
+        let mut object = ThreeDmObject::new(
+            ThreeDmGeometry::Point(Point3::try_new(0., 0., 0.).unwrap()),
+            0,
+        );
+        object
+            .user_text
+            .insert("Part Number".to_owned(), "α 12".to_owned());
+        object
+            .user_text
+            .insert(".hidden".to_owned(), "kept".to_owned());
+        let model = ThreeDmModel::new(vec![layer], vec![], vec![object.clone()]);
+        write_3dm_file(&path, &model).unwrap();
+        let decoded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(decoded.objects[0].user_text, object.user_text);
+        fs::remove_file(path).unwrap();
     }
 
     #[test]

@@ -59,6 +59,11 @@ typedef struct ViboWriteGroup {
   const char* name;
 } ViboWriteGroup;
 
+typedef struct ViboUserText {
+  const char* key;
+  const char* value;
+} ViboUserText;
+
 typedef struct ViboWriteObject {
   int32_t object_type;
   size_t layer_index;
@@ -86,6 +91,8 @@ typedef struct ViboWriteObject {
   size_t geometry_data_count;
   const size_t* group_indices;
   size_t group_index_count;
+  const ViboUserText* user_text;
+  size_t user_text_count;
 } ViboWriteObject;
 
 int32_t vibo_3dm_read(const char* path, ViboThreeDmModel** output,
@@ -112,6 +119,11 @@ int32_t vibo_3dm_object(const ViboThreeDmModel* model, size_t index,
                         const uint32_t** indices,
                         const uint8_t** geometry_data,
                         const int32_t** group_indices);
+size_t vibo_3dm_object_user_text_count(const ViboThreeDmModel* model,
+                                       size_t index);
+int32_t vibo_3dm_object_user_text(const ViboThreeDmModel* model,
+                                  size_t index, size_t text_index,
+                                  const char** key, const char** value);
 
 int32_t vibo_3dm_write(const char* path, uint32_t unit_system,
                        double meters_per_unit, const char* unit_name,
