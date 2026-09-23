@@ -228,6 +228,45 @@ fn round_both_sides_keeps_inner_sharp_and_outer_rounded() {
 }
 
 #[test]
+fn none_option_selects_each_disconnected_offset_piece() {
+    let mut document = Document::default();
+    let source = document
+        .add_geometry(Geometry::Polyline(
+            viboceros_geometry::Polyline3::try_new(
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.0, 3.0, 0.0),
+                    point(0.0, 3.0, 0.0),
+                    point(0.0, 0.0, 0.0),
+                ],
+                document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    document
+        .select_object(source, SelectionMode::Replace)
+        .unwrap();
+    let message = CommandRegistry::with_builtins()
+        .execute(&mut document, "Offset 1 BothSides=Yes Corner=None")
+        .unwrap();
+    assert!(message.contains("5 offset curve(s)"));
+    let results = document
+        .selected_objects()
+        .map(|object| object.geometry())
+        .collect::<Vec<_>>();
+    assert_eq!(results.len(), 5);
+    assert!(matches!(results[0], Geometry::Polyline(_)));
+    assert!(
+        results[1..]
+            .iter()
+            .all(|geometry| matches!(geometry, Geometry::Line(_)))
+    );
+    assert_eq!(document.objects().count(), 6);
+}
+
+#[test]
 fn collapsing_polyline_offset_rolls_back_other_selected_results() {
     let mut document = Document::default();
     let line = document

@@ -5,7 +5,7 @@ use super::*;
 #[cfg(test)]
 mod tests;
 
-const USAGE: &str = "Offset distance side-point [BothSides=Yes|No] [Corner=Sharp|Chamfer|Round] [OutputLayer=Current|Input] | Offset distance BothSides=Yes [Corner=Sharp|Chamfer|Round] [OutputLayer=Current|Input]";
+const USAGE: &str = "Offset distance side-point [BothSides=Yes|No] [Corner=Sharp|Chamfer|Round|None] [OutputLayer=Current|Input] | Offset distance BothSides=Yes [Corner=Sharp|Chamfer|Round|None] [OutputLayer=Current|Input]";
 
 pub(super) struct OffsetCommand;
 
@@ -61,15 +61,19 @@ impl Command for OffsetCommand {
             let distances = [sign * options.distance, -options.distance];
             let count = 1 + usize::from(options.both_sides);
             for &signed_distance in &distances[..count] {
-                let offset = curve
-                    .try_offset_with_corner_style(
+                let parts = curve
+                    .try_offset_parts(
                         signed_distance,
                         normal,
                         document.tolerance(),
                         options.corner,
                     )
                     .map_err(map_offset_error)?;
-                outputs.push((Geometry::from(offset), output_attributes.clone()));
+                outputs.extend(
+                    parts
+                        .into_iter()
+                        .map(|part| (Geometry::from(part), output_attributes.clone())),
+                );
             }
         }
         let count = outputs.len();
@@ -159,6 +163,8 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
                 CurveOffsetCornerStyle::Chamfer
             } else if value.eq_ignore_ascii_case("Round") {
                 CurveOffsetCornerStyle::Round
+            } else if value.eq_ignore_ascii_case("None") {
+                CurveOffsetCornerStyle::None
             } else {
                 return Err(CommandError::Usage(USAGE));
             };

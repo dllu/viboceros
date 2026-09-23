@@ -12,6 +12,7 @@ pub enum CurveOffsetCornerStyle {
     Sharp,
     Chamfer,
     Round,
+    None,
 }
 
 impl Curve3 {
@@ -43,6 +44,14 @@ impl Curve3 {
     ) -> Result<Self, GeometryError> {
         if !distance.is_finite() || distance == 0.0 {
             return Err(GeometryError::InvalidCurveOffsetDistance);
+        }
+        if corner == CurveOffsetCornerStyle::None && matches!(self, Self::Polyline(_)) {
+            let mut pieces = self.try_offset_parts(distance, plane_normal, tolerance, corner)?;
+            return if pieces.len() == 1 {
+                Ok(pieces.remove(0))
+            } else {
+                Err(GeometryError::DisconnectedCurveOffset)
+            };
         }
         match self {
             Self::Line(line) => {
@@ -84,6 +93,37 @@ impl Curve3 {
             }
             _ => Err(GeometryError::UnsupportedCurveOffset),
         }
+    }
+
+    /// Return every connected offset piece. `None` leaves convex polyline
+    /// corner gaps open; other styles produce one piece for each input curve.
+    pub fn try_offset_parts(
+        &self,
+        distance: Real,
+        plane_normal: UnitVector3,
+        tolerance: Tolerance,
+        corner: CurveOffsetCornerStyle,
+    ) -> Result<Vec<Self>, GeometryError> {
+        if corner == CurveOffsetCornerStyle::None {
+            if !distance.is_finite() || distance == 0.0 {
+                return Err(GeometryError::InvalidCurveOffsetDistance);
+            }
+            if let Self::Polyline(polyline) = self {
+                return offset_polyline_open_gaps(polyline, distance, plane_normal, tolerance);
+            }
+            return Ok(vec![self.try_offset_with_corner_style(
+                distance,
+                plane_normal,
+                tolerance,
+                CurveOffsetCornerStyle::Sharp,
+            )?]);
+        }
+        Ok(vec![self.try_offset_with_corner_style(
+            distance,
+            plane_normal,
+            tolerance,
+            corner,
+        )?])
     }
 
     /// Returns which signed offset reaches `side` for this curve's oriented
@@ -185,6 +225,61 @@ fn offset_polyline(
     tolerance: Tolerance,
     corner_style: CurveOffsetCornerStyle,
 ) -> Result<Curve3, GeometryError> {
+    let layout = polyline_offset_layout(polyline, distance, fallback, tolerance, corner_style)?;
+    let normal = layout.normal;
+    let corners = &layout.corners;
+    let vertices = polyline.vertices();
+    let closed = polyline.is_closed();
+    if corner_style == CurveOffsetCornerStyle::Round && corners.iter().any(|(a, b)| a != b) {
+        return Ok(Curve3::PolyCurve(round_offset_polyline(
+            polyline, corners, normal, tolerance,
+        )?));
+    }
+    let mut result = Vec::with_capacity(vertices.len() + corners.len());
+    for &(incoming, outgoing) in corners {
+        result.push(incoming);
+        if incoming != outgoing {
+            result.push(outgoing);
+        }
+    }
+    if closed {
+        result.push(result[0]);
+    }
+    let parameters = if result.len() == vertices.len() {
+        polyline.parameters().to_vec()
+    } else {
+        let source = polyline.parameters();
+        let start = source[0];
+        let end = source[source.len() - 1];
+        let span = end - start;
+        let last = result.len() - 1;
+        (0..=last)
+            .map(|index| {
+                if index == last {
+                    end
+                } else {
+                    start + span * (index as Real / last as Real)
+                }
+            })
+            .collect()
+    };
+    Ok(Curve3::Polyline(Polyline3::try_with_parameters(
+        result, parameters, tolerance,
+    )?))
+}
+
+struct OffsetPolylineLayout {
+    normal: UnitVector3,
+    corners: Vec<(Point3, Point3)>,
+}
+
+fn polyline_offset_layout(
+    polyline: &Polyline3,
+    distance: Real,
+    fallback: UnitVector3,
+    tolerance: Tolerance,
+    corner_style: CurveOffsetCornerStyle,
+) -> Result<OffsetPolylineLayout, GeometryError> {
     let normal = polyline_offset_normal(polyline, fallback, tolerance)?;
     let vertices = polyline.vertices();
     let closed = polyline.is_closed();
@@ -228,7 +323,7 @@ fn offset_polyline(
                 );
                 if pair.0 == pair.1 {
                     return Err(GeometryError::Degenerate {
-                        context: "offset chamfer under model precision",
+                        context: "offset corner gap under model precision",
                     });
                 }
                 pair
@@ -265,42 +360,90 @@ fn offset_polyline(
             });
         }
     }
-    if corner_style == CurveOffsetCornerStyle::Round && corners.iter().any(|(a, b)| a != b) {
-        return Ok(Curve3::PolyCurve(round_offset_polyline(
-            polyline, &corners, normal, tolerance,
-        )?));
-    }
-    let mut result = Vec::with_capacity(vertices.len() + corners.len());
-    for &(incoming, outgoing) in &corners {
-        result.push(incoming);
-        if incoming != outgoing {
-            result.push(outgoing);
+    Ok(OffsetPolylineLayout { normal, corners })
+}
+
+fn offset_polyline_open_gaps(
+    polyline: &Polyline3,
+    distance: Real,
+    fallback: UnitVector3,
+    tolerance: Tolerance,
+) -> Result<Vec<Curve3>, GeometryError> {
+    let layout = polyline_offset_layout(
+        polyline,
+        distance,
+        fallback,
+        tolerance,
+        CurveOffsetCornerStyle::None,
+    )?;
+    let corners = &layout.corners;
+    let gaps = corners
+        .iter()
+        .filter(|(incoming, outgoing)| incoming != outgoing)
+        .count();
+    if gaps == 0 {
+        let mut vertices = corners.iter().map(|corner| corner.0).collect::<Vec<_>>();
+        if polyline.is_closed() {
+            vertices.push(vertices[0]);
         }
+        return Ok(vec![Curve3::Polyline(Polyline3::try_with_parameters(
+            vertices,
+            polyline.parameters().to_vec(),
+            tolerance,
+        )?)]);
     }
-    if closed {
-        result.push(result[0]);
-    }
-    let parameters = if result.len() == vertices.len() {
-        polyline.parameters().to_vec()
-    } else {
-        let source = polyline.parameters();
-        let start = source[0];
-        let end = source[source.len() - 1];
-        let span = end - start;
-        let last = result.len() - 1;
-        (0..=last)
-            .map(|index| {
-                if index == last {
-                    end
-                } else {
-                    start + span * (index as Real / last as Real)
+
+    let mut pieces = Vec::with_capacity(gaps + usize::from(!polyline.is_closed()));
+    if polyline.is_closed() {
+        let first_gap = corners
+            .iter()
+            .position(|(a, b)| a != b)
+            .expect("a gap exists");
+        let mut current = vec![corners[first_gap].1];
+        for step in 0..polyline.segment_count() {
+            let next = (first_gap + step + 1) % corners.len();
+            current.push(corners[next].0);
+            if corners[next].0 != corners[next].1 {
+                pieces.push(offset_polyline_piece(
+                    std::mem::take(&mut current),
+                    tolerance,
+                )?);
+                if step + 1 < polyline.segment_count() {
+                    current.push(corners[next].1);
                 }
-            })
-            .collect()
-    };
-    Ok(Curve3::Polyline(Polyline3::try_with_parameters(
-        result, parameters, tolerance,
-    )?))
+            }
+        }
+    } else {
+        let mut current = vec![corners[0].1];
+        for index in 0..polyline.segment_count() {
+            let next = index + 1;
+            current.push(corners[next].0);
+            if corners[next].0 != corners[next].1 {
+                pieces.push(offset_polyline_piece(
+                    std::mem::take(&mut current),
+                    tolerance,
+                )?);
+                current.push(corners[next].1);
+            }
+        }
+        pieces.push(offset_polyline_piece(current, tolerance)?);
+    }
+    Ok(pieces)
+}
+
+fn offset_polyline_piece(
+    vertices: Vec<Point3>,
+    tolerance: Tolerance,
+) -> Result<Curve3, GeometryError> {
+    if vertices.len() == 2 {
+        Ok(Curve3::Line(LineSegment::try_new(
+            vertices[0],
+            vertices[1],
+            tolerance,
+        )?))
+    } else {
+        Ok(Curve3::Polyline(Polyline3::try_new(vertices, tolerance)?))
+    }
 }
 
 fn round_offset_polyline(
@@ -957,5 +1100,125 @@ mod tests {
         assert_eq!(last.start(), point(5.0, 0.0, 0.0));
         assert_eq!(arc.center(), point(4.0, 0.0, 0.0));
         assert_eq!(arc.normal().unwrap(), normal.opposite());
+    }
+
+    #[test]
+    fn none_style_splits_open_convex_gap_and_keeps_concave_join() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let source = Curve3::Polyline(
+            Polyline3::try_new(
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.0, 4.0, 0.0),
+                    point(8.0, 4.0, 0.0),
+                ],
+                tol,
+            )
+            .unwrap(),
+        );
+        assert_eq!(
+            source.try_offset_with_corner_style(1.0, normal, tol, CurveOffsetCornerStyle::None,),
+            Err(GeometryError::DisconnectedCurveOffset)
+        );
+        let parts = source
+            .try_offset_parts(1.0, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        assert_eq!(parts.len(), 2);
+        let [Curve3::Polyline(first), Curve3::Line(last)] = parts.as_slice() else {
+            panic!("open pieces")
+        };
+        assert_eq!(
+            first.vertices(),
+            &[
+                point(0.0, 1.0, 0.0),
+                point(3.0, 1.0, 0.0),
+                point(3.0, 4.0, 0.0),
+            ]
+        );
+        assert_eq!(last.start(), point(4.0, 5.0, 0.0));
+        assert_eq!(last.end(), point(8.0, 5.0, 0.0));
+    }
+
+    #[test]
+    fn none_style_splits_closed_outward_square_into_four_lines() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let source = Curve3::Polyline(
+            Polyline3::try_new(
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.0, 3.0, 0.0),
+                    point(0.0, 3.0, 0.0),
+                    point(0.0, 0.0, 0.0),
+                ],
+                tol,
+            )
+            .unwrap(),
+        );
+        let parts = source
+            .try_offset_parts(-1.0, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        assert_eq!(parts.len(), 4);
+        let expected = [
+            (point(0.0, -1.0, 0.0), point(4.0, -1.0, 0.0)),
+            (point(5.0, 0.0, 0.0), point(5.0, 3.0, 0.0)),
+            (point(4.0, 4.0, 0.0), point(0.0, 4.0, 0.0)),
+            (point(-1.0, 3.0, 0.0), point(-1.0, 0.0, 0.0)),
+        ];
+        for (part, (start, end)) in parts.iter().zip(expected) {
+            let Curve3::Line(line) = part else {
+                panic!("line piece")
+            };
+            assert_eq!((line.start(), line.end()), (start, end));
+        }
+    }
+
+    #[test]
+    fn none_style_without_gaps_preserves_polyline_domain() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let source = Curve3::Polyline(
+            Polyline3::try_with_parameters(
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.0, 4.0, 0.0),
+                ],
+                vec![2.0, 5.0, 9.0],
+                tol,
+            )
+            .unwrap(),
+        );
+        let parts = source
+            .try_offset_parts(1.0, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        assert!(matches!(
+            source.try_offset_with_corner_style(1.0, normal, tol, CurveOffsetCornerStyle::None),
+            Ok(Curve3::Polyline(_))
+        ));
+        let [Curve3::Polyline(result)] = parts.as_slice() else {
+            panic!("single polyline")
+        };
+        assert_eq!(result.parameters(), &[2.0, 5.0, 9.0]);
+        assert_eq!(
+            result.vertices(),
+            &[
+                point(0.0, 1.0, 0.0),
+                point(3.0, 1.0, 0.0),
+                point(3.0, 4.0, 0.0),
+            ]
+        );
     }
 }

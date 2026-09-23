@@ -11,6 +11,8 @@ pub enum GeometryError {
     AmbiguousCurveOffsetSide,
     #[error("offset distance must be nonzero and finite")]
     InvalidCurveOffsetDistance,
+    #[error("an open-gap offset may have multiple components; use try_offset_parts")]
+    DisconnectedCurveOffset,
     #[error(transparent)]
     UnitConversion(#[from] crate::UnitError),
     #[error("best-fit plane exceeds the input limit of {maximum} points")]

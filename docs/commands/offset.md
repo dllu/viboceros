@@ -15,9 +15,12 @@ segments to their intersection. `Corner=Chamfer` bridges convex gaps with a
 straight segment; concave corners still meet at the segment intersection.
 `Corner=Round` fills each convex gap with a tangent circular arc and returns a
 polycurve when any arcs are needed.
+`Corner=None` leaves convex gaps open, creating separate curves where needed.
+Concave corners still meet at the offset segment intersection.
 Sharp results retain one parameter per source vertex. Chamfer results retain
 the source domain and assign new parameters when extra vertices are added.
 Round results retain the source domain across their line and arc segments.
+Disconnected `None` results receive separate natural parameter domains.
 Collinear polylines use the construction
 plane; other planar polylines use their own plane, aligned with the
 construction plane normal when possible. A side point chooses the nearest
