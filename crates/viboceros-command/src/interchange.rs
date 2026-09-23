@@ -220,14 +220,14 @@ impl Command for ExportStepCommand {
                     _ => Err(viboceros_io::StepError::NativeExportRequiresBrep { object: index }),
                 })
                 .collect::<Result<Vec<_>, _>>()?;
-            viboceros_io::write_step_planar_breps_file_in_units(
+            viboceros_io::write_step_native_breps_file_in_units(
                 path,
                 breps.iter().copied(),
                 document.units(),
                 document.tolerance(),
             )?;
             return Ok(format!(
-                "Exported {} planar B-rep object(s) as native STEP to '{path}'",
+                "Exported {} B-rep object(s) as native STEP to '{path}'",
                 breps.len()
             ));
         }

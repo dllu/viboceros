@@ -15,6 +15,39 @@ use super::super::export_plane::ExportPlane;
 use super::super::{StepError, TruckPoint3};
 use super::components;
 mod boxes;
+mod nurbs;
+pub use nurbs::{write_step_nurbs_breps, write_step_nurbs_breps_in_units};
+
+/// Uses the compact planar writer when possible and exact NURBS geometry
+/// otherwise. The input set is handled atomically by the file wrapper below.
+pub fn write_step_native_breps_in_units<'a, W: Write>(
+    mut writer: W,
+    breps: impl IntoIterator<Item = &'a Brep>,
+    units: &LengthUnitSystem,
+    tolerance: Tolerance,
+) -> Result<(), StepError> {
+    let breps = breps.into_iter().collect::<Vec<_>>();
+    let mut planar = Vec::new();
+    match write_step_planar_breps_in_units(&mut planar, breps.iter().copied(), units, tolerance) {
+        Ok(()) => writer.write_all(&planar).map_err(StepError::from),
+        Err(StepError::UnsupportedNativeBrep { .. }) => {
+            write_step_nurbs_breps_in_units(writer, breps, units, tolerance)
+        }
+        Err(error) => Err(error),
+    }
+}
+
+/// Atomically writes supported native STEP B-reps in millimetres.
+pub fn write_step_native_breps_file_in_units<'a>(
+    path: impl AsRef<Path>,
+    breps: impl IntoIterator<Item = &'a Brep>,
+    units: &LengthUnitSystem,
+    tolerance: Tolerance,
+) -> Result<(), StepError> {
+    super::write_step_staged(path.as_ref(), move |file| {
+        write_step_native_breps_in_units(file, breps, units, tolerance)
+    })
+}
 
 type PlanarShell = CompressedShell<ExportPoint, ExportLine, ExportPlane>;
 type PlanarSolid = CompressedSolid<ExportPoint, ExportLine, ExportPlane>;

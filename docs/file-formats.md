@@ -207,13 +207,15 @@ existing destination unchanged. The low-level
 `write_step`/`write_step_file` APIs interpret coordinates as millimetres;
 their `_in_units` counterparts accept explicit source units and tolerance.
 
-`ExportStep Native=Yes` writes editable straight-edged planar B-reps as STEP
-plane faces and shared line edges, including polygon holes. It preserves
-face/edge incidence and converts coordinates to millimetres without rebuilding
-the source B-rep's UV trims. Curved edges, singular trims, nonplanar faces, and
-non-B-rep document objects produce an explicit error; staged file replacement
-leaves an existing destination intact. Certified convex planar polyhedra become STEP
-solids; strictly contained, disjoint inward convex cavities remain one solid shape.
+`ExportStep Native=Yes` writes editable B-reps as STEP faces and shared edges.
+Planar straight-edged inputs use plane and line entities; curved or nonplanar
+inputs use rational B-splines where needed and explicit UV p-curves on curved
+faces. It preserves face/edge incidence and converts coordinates to millimetres
+without rebuilding the source B-rep's UV trims. Singular trims, closed or
+repeated seam edges, mixed-sign NURBS weights, and non-B-rep document objects
+produce an explicit error; staged file replacement leaves an existing
+destination intact. Certified convex planar polyhedra become STEP solids;
+strictly contained, disjoint inward convex cavities remain one solid shape.
 Other edge-disconnected shells become separate STEP surface models, so general
 compound B-rep object grouping, names, and materials are not yet preserved.
 See [command details](commands/export-step.md).

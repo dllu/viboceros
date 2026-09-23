@@ -8,6 +8,7 @@ use viboceros_geometry::{NurbsSurface, Point3, Tolerance, TriangleMesh};
 use super::export_geometry::{ExportDirection, ExportPoint};
 use super::{StepError, TruckPoint3};
 
+#[derive(Clone)]
 pub(super) struct ExportPlane {
     origin: TruckPoint3,
     normal: Vector3,

@@ -4,6 +4,260 @@ use std::io::Cursor;
 use super::*;
 
 #[test]
+fn nurbs_brep_step_export_retains_curved_surface_and_explicit_pcurves() {
+    use viboceros_geometry::{Brep, Frame3, NurbsSurface, Vector3};
+    let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+    let surface = NurbsSurface::try_bilinear([
+        point(0., 0., 0.),
+        point(2., 0., 0.),
+        point(2., 3., 1.),
+        point(0., 3., 0.),
+    ])
+    .unwrap();
+    let source = Brep::try_surface_face(surface, Tolerance::DEFAULT).unwrap();
+    assert!(
+        source.faces()[0]
+            .surface()
+            .plane(Tolerance::DEFAULT)
+            .unwrap()
+            .is_none()
+    );
+    let mut output = Vec::new();
+    write_step_nurbs_breps(&mut output, [&source]).unwrap();
+    let text = String::from_utf8(output).unwrap();
+    assert!(text.contains("B_SPLINE_SURFACE_WITH_KNOTS("));
+    assert_eq!(text.matches("PCURVE(").count(), source.edges().len());
+    let table = Table::from_step(&text).unwrap();
+    assert_eq!(table.entity_report.total(), 0);
+    let shell_id = *table.shell.keys().next().unwrap();
+    let (shell, report) = reported_trimmed_shell(&table, shell_id).unwrap();
+    assert_eq!(report.total_lost(), 0);
+    assert_eq!(shell.faces.len(), 1);
+    assert_eq!(shell.edges.len(), 4);
+    assert!(
+        shell.faces[0].boundaries[0]
+            .iter()
+            .all(|edge| edge.trim_curve.is_some())
+    );
+    let frame = Frame3::try_from_directions(
+        point(0., 0., 0.),
+        Vector3::try_new(1., 0., 0.).unwrap(),
+        Vector3::try_new(0., 1., 0.).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let box_brep = Brep::try_box(frame, [[-2., 2.]; 3], Tolerance::DEFAULT).unwrap();
+    let mut mixed = Vec::new();
+    write_step_native_breps_in_units(
+        &mut mixed,
+        [&box_brep, &source],
+        &LengthUnitSystem::Millimeters,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let mixed = String::from_utf8(mixed).unwrap();
+    assert_eq!(mixed.matches("MANIFOLD_SOLID_BREP(").count(), 1);
+    assert_eq!(mixed.matches("SHELL_BASED_SURFACE_MODEL(").count(), 1);
+    assert!(mixed.contains("B_SPLINE_SURFACE("));
+    assert_eq!(mixed.matches("PLANE(").count(), 6);
+    assert_eq!(mixed.matches("LINE(").count(), 12);
+    assert_eq!(mixed.matches("PCURVE(").count(), 4);
+    let table = Table::from_step(&mixed).unwrap();
+    assert_eq!(table.entity_report.total(), 0);
+    let box_shell_id = *table
+        .shell
+        .keys()
+        .find(|&&id| reported_trimmed_shell(&table, id).unwrap().0.faces.len() == 6)
+        .unwrap();
+    let restored = native_planar::convert_shell(&table, box_shell_id, Tolerance::DEFAULT).unwrap();
+    assert!((restored.signed_volume(Tolerance::DEFAULT).unwrap() - 64.).abs() < 1e-9);
+}
+
+#[test]
+fn nurbs_brep_step_export_keeps_curved_edges_and_surface_shape() {
+    use monstertruck::meshing::prelude::{ParametricCurve, ParametricSurface};
+    use viboceros_geometry::{Brep, NurbsSurface};
+    let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+    let surface = NurbsSurface::try_new(
+        2,
+        1,
+        3,
+        2,
+        vec![
+            point(0., 0., 0.),
+            point(1., 1., 0.),
+            point(2., 0., 0.),
+            point(0., 0., 3.),
+            point(1., 1., 3.),
+            point(2., 0., 3.),
+        ],
+        vec![0., 0., 0., 1., 1., 1.],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap();
+    let source = Brep::try_surface_face(surface, Tolerance::DEFAULT).unwrap();
+    assert_eq!(
+        source
+            .edges()
+            .iter()
+            .filter(|edge| edge.curve().degree() == 2)
+            .count(),
+        2
+    );
+    let mut output = Vec::new();
+    write_step_nurbs_breps(&mut output, [&source]).unwrap();
+    let text = String::from_utf8(output).unwrap();
+    assert!(text.contains("B_SPLINE_CURVE(2,"));
+    let table = Table::from_step(&text).unwrap();
+    assert_eq!(table.entity_report.total(), 0);
+    let shell_id = *table.shell.keys().next().unwrap();
+    let (shell, report) = reported_trimmed_shell(&table, shell_id).unwrap();
+    assert_eq!(report.total_lost(), 0);
+    assert_eq!(shell.faces.len(), 1);
+    assert_eq!(shell.edges.len(), 4);
+    for (u, v) in [(0.25, 0.25), (0.5, 0.5), (0.75, 0.8)] {
+        let expected = source.faces()[0].surface().evaluate(u, v).unwrap();
+        let actual = shell.faces[0].surface.evaluate(u, v);
+        assert!((actual.x - expected.x()).abs() < 1e-12);
+        assert!((actual.y - expected.y()).abs() < 1e-12);
+        assert!((actual.z - expected.z()).abs() < 1e-12);
+    }
+    for (source_edge, loaded_edge) in source.edges().iter().zip(&shell.edges) {
+        for (source_vertex, loaded_vertex) in source_edge
+            .vertices()
+            .into_iter()
+            .zip([loaded_edge.vertices.0, loaded_edge.vertices.1])
+        {
+            let expected = source.vertices()[source_vertex].point();
+            let actual = shell.vertices[loaded_vertex];
+            assert!((actual.x - expected.x()).abs() < 1e-12);
+            assert!((actual.y - expected.y()).abs() < 1e-12);
+            assert!((actual.z - expected.z()).abs() < 1e-12);
+        }
+        if source_edge.curve().degree() != 2 {
+            continue;
+        }
+        let domain = source_edge.curve().domain();
+        for fraction in [0., 0.25, 0.5, 0.75, 1.] {
+            let t = *domain.start() * (1. - fraction) + *domain.end() * fraction;
+            let expected = source_edge.curve().evaluate(t).unwrap();
+            let actual = loaded_edge.curve.evaluate(t);
+            assert!((actual.x - expected.x()).abs() < 1e-12);
+            assert!((actual.y - expected.y()).abs() < 1e-12);
+            assert!((actual.z - expected.z()).abs() < 1e-12);
+        }
+    }
+
+    let mut scaled_output = Vec::new();
+    write_step_nurbs_breps_in_units(
+        &mut scaled_output,
+        [&source],
+        &LengthUnitSystem::Inches,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let scaled_text = String::from_utf8(scaled_output).unwrap();
+    let scaled_table = Table::from_step(&scaled_text).unwrap();
+    let scaled_shell_id = *scaled_table.shell.keys().next().unwrap();
+    let (scaled_shell, scaled_report) =
+        reported_trimmed_shell(&scaled_table, scaled_shell_id).unwrap();
+    assert_eq!(scaled_report.total_lost(), 0);
+    let actual = scaled_shell.faces[0].surface.evaluate(0.5, 0.5);
+    let expected = source.faces()[0].surface().evaluate(0.5, 0.5).unwrap();
+    for (a, b) in [actual.x, actual.y, actual.z]
+        .into_iter()
+        .zip(expected.to_array())
+    {
+        assert!((a - b * 25.4).abs() < 1e-12);
+    }
+}
+
+#[test]
+fn nurbs_brep_step_export_rejects_periodic_seam_atomically() {
+    use viboceros_geometry::{Brep, Frame3, NurbsSurface, Vector3};
+    let frame = Frame3::try_from_directions(
+        Point3::try_new(0., 0., 0.).unwrap(),
+        Vector3::try_new(1., 0., 0.).unwrap(),
+        Vector3::try_new(0., 1., 0.).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let surface = NurbsSurface::try_cylinder(frame, 2., 0., 3.).unwrap();
+    let source = Brep::try_surface_face(surface, Tolerance::DEFAULT).unwrap();
+    assert_eq!(source.faces().len(), 1);
+    assert!(source.faces()[0].loops()[0].trims().len() > source.edges().len());
+    let mut output = Vec::new();
+    assert!(matches!(
+        write_step_nurbs_breps(&mut output, [&source]),
+        Err(StepError::UnsupportedNativeBrep { .. })
+    ));
+    assert!(output.is_empty());
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("existing.step");
+    std::fs::write(&path, b"old STEP bytes").unwrap();
+    assert!(matches!(
+        write_step_native_breps_file_in_units(
+            &path,
+            [&source],
+            &LengthUnitSystem::Millimeters,
+            Tolerance::DEFAULT,
+        ),
+        Err(StepError::UnsupportedNativeBrep { .. })
+    ));
+    assert_eq!(std::fs::read(&path).unwrap(), b"old STEP bytes");
+}
+
+#[test]
+fn nurbs_brep_step_export_keeps_open_rational_arc_surface() {
+    use monstertruck::meshing::prelude::ParametricSurface;
+    use viboceros_geometry::{Brep, NurbsSurface, WeightedPoint3};
+    let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+    let middle = std::f64::consts::FRAC_1_SQRT_2;
+    let controls = [
+        (point(2., 0., 0.), 1.),
+        (point(2., 2., 0.), middle),
+        (point(0., 2., 0.), 1.),
+        (point(2., 0., 3.), 1.),
+        (point(2., 2., 3.), middle),
+        (point(0., 2., 3.), 1.),
+    ]
+    .into_iter()
+    .map(|(point, weight)| WeightedPoint3::try_new(point, weight).unwrap())
+    .collect();
+    let surface = NurbsSurface::try_new_rational(
+        2,
+        1,
+        3,
+        2,
+        controls,
+        vec![0., 0., 0., 1., 1., 1.],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap();
+    let source = Brep::try_surface_face(surface, Tolerance::DEFAULT).unwrap();
+    let mut output = Vec::new();
+    write_step_nurbs_breps(&mut output, [&source]).unwrap();
+    let text = String::from_utf8(output).unwrap();
+    assert!(text.contains("RATIONAL_B_SPLINE_SURFACE("));
+    assert!(text.contains("RATIONAL_B_SPLINE_CURVE("));
+    let table = Table::from_step(&text).unwrap();
+    assert_eq!(table.entity_report.total(), 0);
+    let shell_id = *table.shell.keys().next().unwrap();
+    let (shell, report) = reported_trimmed_shell(&table, shell_id).unwrap();
+    assert_eq!(report.total_lost(), 0);
+    assert!(
+        shell.faces[0].boundaries[0]
+            .iter()
+            .all(|use_| use_.trim_curve.is_some())
+    );
+    let actual = shell.faces[0].surface.evaluate(0.5, 0.5);
+    let expected = source.faces()[0].surface().evaluate(0.5, 0.5).unwrap();
+    assert!((actual.x - expected.x()).abs() < 1e-12);
+    assert!((actual.y - expected.y()).abs() < 1e-12);
+    assert!((actual.z - expected.z()).abs() < 1e-12);
+}
+
+#[test]
 fn explicit_linear_bspline_step_pcurves_import_without_losing_parameter_intervals() {
     let original = polygon_face_step(&[vec![[0., 0.], [10., 0.], [0., 10.]]], false);
     let table = Table::from_step(&original).unwrap();

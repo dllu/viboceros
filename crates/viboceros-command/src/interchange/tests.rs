@@ -28,7 +28,7 @@ fn native_step_export_preserves_editable_box_and_units() {
             &format!("ExportStep Native=Yes \"{}\"", path.display()),
         )
         .unwrap();
-    assert!(report.contains("1 planar B-rep object"));
+    assert!(report.contains("1 B-rep object"));
     assert_eq!(format!("{document:?}"), before);
     let output = std::fs::read_to_string(&path).unwrap();
     assert_eq!(output.matches("ADVANCED_FACE(").count(), 6);
@@ -51,6 +51,50 @@ fn native_step_export_preserves_editable_box_and_units() {
     assert!(
         (restored.signed_volume(Tolerance::DEFAULT).unwrap() - 24. * 25.4_f64.powi(3)).abs() < 1e-7
     );
+}
+
+#[test]
+fn native_step_export_keeps_curved_surface_geometry() {
+    use viboceros_geometry::{Brep, NurbsSurface};
+    let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+    let surface = NurbsSurface::try_new(
+        2,
+        1,
+        3,
+        2,
+        vec![
+            point(0., 0., 0.),
+            point(1., 1., 0.),
+            point(2., 0., 0.),
+            point(0., 0., 3.),
+            point(1., 1., 3.),
+            point(2., 0., 3.),
+        ],
+        vec![0., 0., 0., 1., 1., 1.],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap();
+    let brep = Brep::try_surface_face(surface, Tolerance::DEFAULT).unwrap();
+    let mut document = Document::default();
+    document.add_geometry(Geometry::Brep(brep)).unwrap();
+    let before = format!("{document:?}");
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("curved.step");
+    let report = CommandRegistry::with_builtins()
+        .execute(
+            &mut document,
+            &format!("ExportStep Native=Yes {}", path.display()),
+        )
+        .unwrap();
+    assert!(report.contains("1 B-rep object"));
+    assert_eq!(format!("{document:?}"), before);
+    let output = std::fs::read_to_string(&path).unwrap();
+    assert!(output.contains("B_SPLINE_SURFACE("));
+    assert!(output.contains("B_SPLINE_CURVE(2,"));
+    assert_eq!(output.matches("PCURVE(").count(), 4);
+    let imported = viboceros_io::read_step_file(&path, Tolerance::DEFAULT).unwrap();
+    assert_eq!(imported.objects.len(), 1);
+    assert!(!imported.objects[0].mesh.triangles().is_empty());
 }
 
 #[test]

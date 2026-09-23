@@ -5,7 +5,9 @@ mod export;
 mod export_geometry;
 mod export_plane;
 pub use export::native::{
-    write_step_planar_breps, write_step_planar_breps_file, write_step_planar_breps_file_in_units,
+    write_step_native_breps_file_in_units, write_step_native_breps_in_units,
+    write_step_nurbs_breps, write_step_nurbs_breps_in_units, write_step_planar_breps,
+    write_step_planar_breps_file, write_step_planar_breps_file_in_units,
     write_step_planar_breps_in_units,
 };
 pub use export::{write_step, write_step_file, write_step_file_in_units, write_step_in_units};

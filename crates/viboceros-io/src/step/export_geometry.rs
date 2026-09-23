@@ -94,6 +94,7 @@ impl StepFormat for ExportDirection {
         )
     }
 }
+#[derive(Clone)]
 pub(super) struct ExportLine {
     origin: TruckPoint3,
     direction: Vector3,
