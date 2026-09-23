@@ -349,6 +349,55 @@ fn zoom_all_records_one_independent_view_step_per_viewport() {
 }
 
 #[test]
+fn set_view_world_resets_each_standard_camera_and_keeps_model_history() {
+    use viboceros_command::construction_plane::WorldPlane;
+
+    let mut app = test_app();
+    for command in ["Point 1,2,3", "Undo", "Line", "0"] {
+        enter(&mut app, command);
+    }
+    let pending = app.active_command;
+    let redo = app.document.redo_label().map(str::to_owned);
+    let context = egui::Context::default();
+    layout_viewports(&context, &mut app);
+    app.active_viewport = 2;
+    let untouched = app.viewports[0].camera_snapshot();
+    for (name, kind, plane) in [
+        ("Top", ViewKind::Top, Some(WorldPlane::Top)),
+        ("Bottom", ViewKind::Bottom, Some(WorldPlane::Bottom)),
+        ("Front", ViewKind::Front, Some(WorldPlane::Front)),
+        ("Back", ViewKind::Back, Some(WorldPlane::Back)),
+        ("Right", ViewKind::Right, Some(WorldPlane::Right)),
+        ("Left", ViewKind::Left, Some(WorldPlane::Left)),
+        ("Perspective", ViewKind::Perspective, None),
+    ] {
+        enter(&mut app, "Zoom Factor 2");
+        let before = app.viewports[2].camera_snapshot();
+        let plane_before = app.viewports[2].construction_plane();
+        enter(&mut app, &format!("SetView World {name}"));
+        assert_eq!(app.viewports[2].kind(), kind);
+        assert_eq!(
+            app.viewports[2].camera_snapshot(),
+            Viewport::new(kind).camera_snapshot()
+        );
+        assert_eq!(
+            app.viewports[2].construction_plane(),
+            plane.map_or(plane_before, WorldPlane::frame)
+        );
+        enter(&mut app, "UndoView");
+        assert_eq!(app.viewports[2].camera_snapshot(), before);
+        enter(&mut app, "RedoView");
+        assert_eq!(
+            app.viewports[2].camera_snapshot(),
+            Viewport::new(kind).camera_snapshot()
+        );
+        assert_eq!(app.viewports[0].camera_snapshot(), untouched);
+        assert_eq!(app.active_command, pending);
+        assert_eq!(app.document.redo_label(), redo.as_deref());
+    }
+}
+
+#[test]
 fn zoom_extents_routes_to_the_active_view_without_cancelling_modeling_or_redo() {
     let mut app = test_app();
     for command in ["Point 100,200,300", "Point 110,210,310", "Undo"] {

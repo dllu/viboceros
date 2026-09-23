@@ -26,7 +26,6 @@ impl Viewport {
     ) -> Option<ObjectSnap> {
         let options = options.into();
         if let Some(projection) = self.point_cloud_projection() {
-            let origin = self.world_origin(rect);
             let scale = Real::from(self.pixels_per_unit);
             let target = Point3::try_new(self.target.x, self.target.y, self.target.z).ok()?;
             self.object_snap_cache
@@ -35,10 +34,7 @@ impl Viewport {
                     document,
                     projection,
                     target,
-                    [
-                        (Real::from(pointer.x) - Real::from(origin.x)) / scale,
-                        (Real::from(origin.y) - Real::from(pointer.y)) / scale,
-                    ],
+                    self.parallel_query_offset(pointer, rect)?,
                     Real::from(OSNAP_CAPTURE_PIXELS) / scale,
                     options,
                 )

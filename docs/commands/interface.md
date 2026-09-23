@@ -21,6 +21,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `Zoom All Extents` / `ZEA` | Fit all four views, applying only after every fit succeeds. |
 | `Zoom All Selected` / `ZSA` | Fit visible selected geometry in all four views with the same all-or-nothing policy. |
 | `UndoView` / `RedoView` | Step backward or forward through camera changes in the active viewport, separately from model undo. |
+| `SetView World Top\|Bottom\|Front\|Back\|Right\|Left\|Perspective` | Reset the active viewport to a [standard world view](set-view.md). |
 | `Snap` | Toggle the one-unit grid snap. |
 | `SetSnap On\|Off\|Toggle` | Set or toggle grid snapping. |
 | `DisableOsnap Enable\|Disable\|Toggle` | Enable, suspend, or toggle object snaps. |
@@ -60,8 +61,9 @@ active-view extents; Ctrl/Cmd+Alt+E zooms all viewports to extents.
 These shortcuts work while
 editing coordinates, ignore key auto-repeat, and leave unrelated shortcuts and
 text-editor undo alone. F3 and F11 are not drafting toggles. The view-preset menu
-changes the active viewport's existing Top/Perspective/Front/Right preset; it is
-not an implementation of Rhino's complete `SetView` command.
+switches among seven standard world directions while retaining its camera
+target and zoom. `SetView World` resets the camera; see the [view reference](set-view.md).
+CPlane-relative and two-point perspective modes remain pending.
 
 ## Scope and validation
 

@@ -237,6 +237,28 @@ fn view_history_commands_are_transparent_and_reject_arguments() {
     }
 }
 
+#[test]
+fn set_view_world_parses_all_standard_directions_without_mutating_model_state() {
+    for view in WorldView::ALL {
+        let input = format!("'_SetView _World _{}", view.label());
+        let action = InterfaceCommand::SetViewWorld(view);
+        assert_eq!(parse(&input), Some(Ok(action)));
+        let mut current = state();
+        let before = current.clone();
+        current.apply(action).unwrap();
+        assert_eq!(current, before);
+    }
+    for input in [
+        "SetView",
+        "SetView World",
+        "SetView CPlane Top",
+        "SetView World Isometric",
+        "SetView World Top extra",
+    ] {
+        assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
+    }
+}
+
 fn state() -> InterfaceState {
     InterfaceState {
         grid_snap: true,
@@ -341,6 +363,7 @@ fn malformed_known_commands_are_not_treated_as_modeling_input() {
         "SetDisplayMode Viewport=All",
         "SetDisplayMode Rendered",
         "SetDisplayMode Shaded Wireframe",
+        "SetView",
         "SetDisplayMode Viewport=All Viewport=Active Shaded",
         "SetDisplayMode Mode=Shaded Wrong=All",
         "SetDisplayMode Viewport=Top Wireframe",
@@ -348,7 +371,7 @@ fn malformed_known_commands_are_not_treated_as_modeling_input() {
     ] {
         assert!(parse(command).unwrap().is_err(), "{command}");
     }
-    for command in ["", "  ", "Point 1,2,3", "Osnap", "SetView", "Unknown"] {
+    for command in ["", "  ", "Point 1,2,3", "Osnap", "Unknown"] {
         assert!(parse(command).is_none(), "{command}");
     }
 }

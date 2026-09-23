@@ -135,6 +135,10 @@ zoom window. Both points can also be typed.
 Home and End do the same when a text field is not focused. View history is
 separate from model undo and construction-plane undo.
 
+The view-preset menu offers Top, Bottom, Front, Back, Right, Left, and
+Perspective. `SetView World <direction>` resets the active camera to that
+standard view. See [standard world views](commands/set-view.md).
+
 `MeshToNURB` also supports [command-first object picking](object-selection.md).
 During that prompt, clicks and selection windows add only selectable meshes;
 Ctrl/Command removes picks, Enter finishes, and Escape cancels. `SelAll` is filtered

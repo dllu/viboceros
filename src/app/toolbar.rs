@@ -34,9 +34,12 @@ impl VibocerosApp {
                     .show_ui(ui, |ui| {
                         for choice in [
                             ViewKind::Top,
+                            ViewKind::Bottom,
                             ViewKind::Perspective,
                             ViewKind::Front,
+                            ViewKind::Back,
                             ViewKind::Right,
+                            ViewKind::Left,
                         ] {
                             preset_picked |= ui
                                 .selectable_value(&mut kind, choice, choice.label())

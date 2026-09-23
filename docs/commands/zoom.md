@@ -140,8 +140,9 @@ Target, Extents, or Selected action records one camera step; All records one ste
 each affected viewport. Wheel zoom records each scroll update, while a mouse
 pan or orbit drag records one step when released. Invalid or unchanged actions
 leave history alone, and a new camera action after UndoView discards the redo
-branch. Each viewport retains up to 50 prior camera states. View presets,
-display modes, and construction-plane edits are outside this camera history.
+branch. Each viewport retains up to 50 prior camera states. View presets and
+`SetView World` enter camera history; display modes and construction-plane edits
+remain outside it.
 See [Rhino's UndoView and RedoView commands](https://docs.mcneel.com/rhino/8/help/en-us/commands/undoview.htm).
 
 Other Zoom options remain unimplemented.

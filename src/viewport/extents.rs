@@ -165,8 +165,11 @@ impl Viewport {
             let local = corner - target;
             let (x, y) = match self.kind {
                 ViewKind::Top => (local.x, local.y),
+                ViewKind::Bottom => (local.x, -local.y),
                 ViewKind::Front => (local.x, local.z),
+                ViewKind::Back => (-local.x, local.z),
                 ViewKind::Right => (local.y, local.z),
+                ViewKind::Left => (-local.y, local.z),
                 ViewKind::Perspective => {
                     let x = local.dot(&right);
                     let y = local.dot(&up);

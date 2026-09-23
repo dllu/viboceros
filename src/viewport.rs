@@ -66,6 +66,7 @@ const VIEW_HISTORY_LIMIT: usize = 50;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) struct CameraSnapshot {
+    kind: ViewKind,
     pixels_per_unit: f32,
     pan: Vec2,
     orbit_yaw: Real,
@@ -77,18 +78,24 @@ pub(crate) struct CameraSnapshot {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ViewKind {
     Top,
+    Bottom,
     Perspective,
     Front,
+    Back,
     Right,
+    Left,
 }
 
 impl ViewKind {
     pub(crate) const fn label(self) -> &'static str {
         match self {
             Self::Top => "Top",
+            Self::Bottom => "Bottom",
             Self::Perspective => "Perspective",
             Self::Front => "Front",
+            Self::Back => "Back",
             Self::Right => "Right",
+            Self::Left => "Left",
         }
     }
 
@@ -245,6 +252,7 @@ impl Viewport {
 
     pub(crate) fn camera_snapshot(&self) -> CameraSnapshot {
         CameraSnapshot {
+            kind: self.kind,
             pixels_per_unit: self.pixels_per_unit,
             pan: self.pan,
             orbit_yaw: self.orbit_yaw,
@@ -255,6 +263,7 @@ impl Viewport {
     }
 
     fn restore_camera(&mut self, camera: CameraSnapshot) {
+        self.kind = camera.kind;
         self.pixels_per_unit = camera.pixels_per_unit;
         self.pan = camera.pan;
         self.orbit_yaw = camera.orbit_yaw;
@@ -298,8 +307,11 @@ impl Viewport {
     pub(crate) fn apparent_intersection_normal(&self) -> Vector3 {
         let direction = match self.kind {
             ViewKind::Top => [0.0, 0.0, 1.0],
+            ViewKind::Bottom => [0.0, 0.0, -1.0],
             ViewKind::Front => [0.0, 1.0, 0.0],
+            ViewKind::Back => [0.0, -1.0, 0.0],
             ViewKind::Right => [1.0, 0.0, 0.0],
+            ViewKind::Left => [-1.0, 0.0, 0.0],
             ViewKind::Perspective => {
                 let (_, _, forward) = self.perspective_basis();
                 [forward.x, forward.y, forward.z]
@@ -315,8 +327,25 @@ impl Viewport {
     /// The preset menu resets the plane explicitly. CPlane edits never change
     /// camera projection, navigation, or geometry display.
     pub(crate) fn set_view_kind(&mut self, kind: ViewKind) {
+        let previous = self.camera_snapshot();
         self.kind = kind;
         self.plane.set(Self::default_plane(kind));
+        self.record_camera_change(previous);
+    }
+
+    pub(crate) fn set_world_view(&mut self, kind: ViewKind) {
+        let previous = self.camera_snapshot();
+        self.kind = kind;
+        self.target = NaVector3::zeros();
+        self.pan = Vec2::ZERO;
+        self.pixels_per_unit = 40.0;
+        self.perspective_camera_distance = DEFAULT_PERSPECTIVE_CAMERA_DISTANCE;
+        self.orbit_yaw = -std::f64::consts::FRAC_PI_4;
+        self.orbit_pitch = std::f64::consts::FRAC_PI_6;
+        if kind.is_parallel() {
+            self.plane.set(Self::default_plane(kind));
+        }
+        self.record_camera_change(previous);
     }
 
     pub(crate) fn construction_plane(&self) -> viboceros_geometry::Frame3 {
@@ -326,8 +355,11 @@ impl Viewport {
     fn default_plane(kind: ViewKind) -> viboceros_geometry::Frame3 {
         match kind {
             ViewKind::Top | ViewKind::Perspective => WorldPlane::Top,
+            ViewKind::Bottom => WorldPlane::Bottom,
             ViewKind::Front => WorldPlane::Front,
+            ViewKind::Back => WorldPlane::Back,
             ViewKind::Right => WorldPlane::Right,
+            ViewKind::Left => WorldPlane::Left,
         }
         .frame()
     }
@@ -1102,8 +1134,11 @@ mod tests {
         let rect = Rect::from_min_size(Pos2::new(20.0, 30.0), Vec2::new(800.0, 600.0));
         for kind in [
             ViewKind::Top,
+            ViewKind::Bottom,
             ViewKind::Front,
+            ViewKind::Back,
             ViewKind::Right,
+            ViewKind::Left,
             ViewKind::Perspective,
         ] {
             let mut viewport = Viewport::new(kind);
@@ -1112,8 +1147,11 @@ mod tests {
             let model = Point3::try_new(1e12 + 1.0, -2e12 + 2.0, 3e12 + 3.0).unwrap();
             let expected = match kind {
                 ViewKind::Top => [40.0, 80.0, 0.0],
+                ViewKind::Bottom => [40.0, 80.0, 0.0],
                 ViewKind::Front => [40.0, 0.0, 120.0],
+                ViewKind::Back => [40.0, 0.0, 120.0],
                 ViewKind::Right => [0.0, 80.0, 120.0],
+                ViewKind::Left => [0.0, 80.0, 120.0],
                 ViewKind::Perspective => [1.0, 2.0, 3.0],
             };
             assert_eq!(viewport.gpu_position(model), Some(expected));
@@ -1144,7 +1182,14 @@ mod tests {
     #[test]
     fn parallel_gpu_matrices_remain_normal_at_extreme_zoom_scales() {
         let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
-        for kind in [ViewKind::Top, ViewKind::Front, ViewKind::Right] {
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Bottom,
+            ViewKind::Front,
+            ViewKind::Back,
+            ViewKind::Right,
+            ViewKind::Left,
+        ] {
             for scale in [1.0, 2.0_f64.powi(126)] {
                 let mut viewport = Viewport::new(kind);
                 viewport.last_rect = Some(rect);
@@ -1152,8 +1197,11 @@ mod tests {
                 let point = Point3::try_new(scale, 2.0 * scale, 3.0 * scale).unwrap();
                 let expected = match kind {
                     ViewKind::Top => [40.0, 80.0, 0.0],
+                    ViewKind::Bottom => [40.0, 80.0, 0.0],
                     ViewKind::Front => [40.0, 0.0, 120.0],
+                    ViewKind::Back => [40.0, 0.0, 120.0],
                     ViewKind::Right => [0.0, 80.0, 120.0],
+                    ViewKind::Left => [0.0, 80.0, 120.0],
                     _ => unreachable!(),
                 };
                 assert_eq!(viewport.gpu_position(point), Some(expected));
@@ -1211,8 +1259,11 @@ mod tests {
         let model = point(2.0, 3.0, 4.0);
         let projected = |kind| Viewport::new(kind).project(model, rect).unwrap();
         assert_eq!(projected(ViewKind::Top), Pos2::new(480.0, 180.0));
+        assert_eq!(projected(ViewKind::Bottom), Pos2::new(480.0, 420.0));
         assert_eq!(projected(ViewKind::Front), Pos2::new(480.0, 140.0));
+        assert_eq!(projected(ViewKind::Back), Pos2::new(320.0, 140.0));
         assert_eq!(projected(ViewKind::Right), Pos2::new(520.0, 140.0));
+        assert_eq!(projected(ViewKind::Left), Pos2::new(280.0, 140.0));
     }
 
     #[test]
@@ -1221,16 +1272,19 @@ mod tests {
         let model = point(2.25, -3.5, 1.75);
         for kind in [
             ViewKind::Top,
+            ViewKind::Bottom,
             ViewKind::Perspective,
             ViewKind::Front,
+            ViewKind::Back,
             ViewKind::Right,
+            ViewKind::Left,
         ] {
             let viewport = Viewport::new(kind);
             let screen = viewport.project(model, rect).unwrap();
             let fixed_coordinate = match kind {
-                ViewKind::Top | ViewKind::Perspective => model.z(),
-                ViewKind::Front => model.y(),
-                ViewKind::Right => model.x(),
+                ViewKind::Top | ViewKind::Bottom | ViewKind::Perspective => model.z(),
+                ViewKind::Front | ViewKind::Back => model.y(),
+                ViewKind::Right | ViewKind::Left => model.x(),
             };
             let round_trip = viewport.unproject(screen, rect, fixed_coordinate).unwrap();
             assert!((round_trip.x() - model.x()).abs() < 1.0e-5);
@@ -1260,8 +1314,11 @@ mod tests {
         let finish = Pos2::new(240.0, 180.0);
         for kind in [
             ViewKind::Top,
+            ViewKind::Bottom,
             ViewKind::Front,
+            ViewKind::Back,
             ViewKind::Right,
+            ViewKind::Left,
             ViewKind::Perspective,
         ] {
             for (button, modifiers) in [
@@ -2279,8 +2336,11 @@ mod tests {
         let model = point(3.25, -2.75, 1.5);
         for kind in [
             ViewKind::Top,
+            ViewKind::Bottom,
             ViewKind::Front,
+            ViewKind::Back,
             ViewKind::Right,
+            ViewKind::Left,
             ViewKind::Perspective,
         ] {
             let viewport = Viewport {
@@ -2300,8 +2360,11 @@ mod tests {
 
             let (near, far) = match kind {
                 ViewKind::Top => (point(0.0, 0.0, 5.0), point(0.0, 0.0, -5.0)),
+                ViewKind::Bottom => (point(0.0, 0.0, -5.0), point(0.0, 0.0, 5.0)),
                 ViewKind::Front => (point(0.0, -5.0, 0.0), point(0.0, 5.0, 0.0)),
+                ViewKind::Back => (point(0.0, 5.0, 0.0), point(0.0, -5.0, 0.0)),
                 ViewKind::Right => (point(5.0, 0.0, 0.0), point(-5.0, 0.0, 0.0)),
+                ViewKind::Left => (point(-5.0, 0.0, 0.0), point(5.0, 0.0, 0.0)),
                 ViewKind::Perspective => {
                     let (_, _, forward) = viewport.perspective_basis();
                     let camera = -forward * viewport.perspective_camera_distance;
@@ -2792,7 +2855,14 @@ mod tests {
 
     #[test]
     fn translated_parallel_osnap_respects_pixel_capture_radius() {
-        for kind in [ViewKind::Top, ViewKind::Front, ViewKind::Right] {
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Bottom,
+            ViewKind::Front,
+            ViewKind::Back,
+            ViewKind::Right,
+            ViewKind::Left,
+        ] {
             let mut view = Viewport::new(kind);
             view.target = NaVector3::repeat(2.0_f64.powi(54));
             let target = point(view.target.x, view.target.y, view.target.z);
@@ -2825,6 +2895,75 @@ mod tests {
                     );
                 }
             }
+        }
+    }
+
+    #[test]
+    fn reversed_world_views_capture_the_correct_point_cloud_member() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        for (kind, first, second) in [
+            (
+                ViewKind::Bottom,
+                point(0.0, 2.0, 0.0),
+                point(0.0, -2.0, 0.0),
+            ),
+            (ViewKind::Back, point(2.0, 0.0, 0.0), point(-2.0, 0.0, 0.0)),
+            (ViewKind::Left, point(0.0, 2.0, 0.0), point(0.0, -2.0, 0.0)),
+        ] {
+            let view = Viewport::new(kind);
+            let mut document = Document::default();
+            document
+                .add_geometry(Geometry::PointCloud(
+                    PointCloud3::try_new(vec![first, second]).unwrap(),
+                ))
+                .unwrap();
+            let pointer = view.project(first, rect).unwrap();
+            let snap = view
+                .object_snap(
+                    pointer,
+                    rect,
+                    &document,
+                    viboceros_drafting::ObjectSnapModes::ALL,
+                )
+                .unwrap();
+            assert_eq!(snap.point(), first, "{kind:?}");
+
+            let mut separate = Document::default();
+            let first_id = separate
+                .add_geometry(Geometry::PointCloud(
+                    PointCloud3::try_new(vec![first]).unwrap(),
+                ))
+                .unwrap();
+            separate
+                .add_geometry(Geometry::PointCloud(
+                    PointCloud3::try_new(vec![second]).unwrap(),
+                ))
+                .unwrap();
+            assert_eq!(view.pick_object(pointer, rect, &separate), Some(first_id));
+        }
+    }
+
+    #[test]
+    fn reversed_world_views_fit_visible_extents_and_restore_camera_history() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let points = [point(-5.0, -3.0, -1.0), point(5.0, 3.0, 1.0)];
+        let mut document = Document::default();
+        for point in points {
+            document.add_geometry(Geometry::Point(point)).unwrap();
+        }
+        for kind in [ViewKind::Bottom, ViewKind::Back, ViewKind::Left] {
+            let mut view = Viewport::new(kind);
+            view.last_rect = Some(rect);
+            let before = view.camera_snapshot();
+            assert_eq!(
+                view.zoom_extents(&document, ZoomExtentsBorders::default()),
+                Ok(true)
+            );
+            for point in points {
+                assert!(rect.contains(view.project(point, rect).unwrap()));
+            }
+            assert!(view.undo_view());
+            assert_eq!(view.camera_snapshot(), before);
         }
     }
 

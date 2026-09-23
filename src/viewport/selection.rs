@@ -89,7 +89,6 @@ impl Viewport {
                 }
                 Geometry::PointCloud(cloud) => {
                     let distance = if let Some(projection) = self.point_cloud_projection() {
-                        let origin = self.world_origin(rect);
                         let scale = Real::from(self.pixels_per_unit);
                         Point3::try_new(self.target.x, self.target.y, self.target.z)
                             .ok()
@@ -98,10 +97,7 @@ impl Viewport {
                                     .nearest_projected_relative(
                                         projection,
                                         target,
-                                        [
-                                            (Real::from(pointer.x) - Real::from(origin.x)) / scale,
-                                            (Real::from(origin.y) - Real::from(pointer.y)) / scale,
-                                        ],
+                                        self.parallel_query_offset(pointer, rect)?,
                                         Real::from(PICK_CAPTURE_PIXELS) / scale,
                                     )
                                     .ok()

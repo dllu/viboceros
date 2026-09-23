@@ -42,6 +42,7 @@ Rhino's complete command set is still a work in progress.
 - [Native planar STEP export](export-step.md)
 - [Display modes and drafting controls](interface.md)
 - [Zoom, extents, and border settings](zoom.md)
+- [Standard world views](set-view.md)
 - [Construction-plane editing](../cplane.md)
 
 See [viewport controls](../interface.md) for picking and interactive input, and

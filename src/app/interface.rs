@@ -2,7 +2,7 @@
 
 use super::*;
 use viboceros_command::interface::{
-    self, InterfaceCommand, InterfaceState, SwitchAction, ViewportTarget,
+    self, InterfaceCommand, InterfaceState, SwitchAction, ViewportTarget, WorldView,
 };
 
 impl VibocerosApp {
@@ -31,6 +31,22 @@ impl VibocerosApp {
                     self.zoom_window_pending = false;
                     self.zoom_target = Some(ZoomTargetState::PickTarget);
                     self.push_log("Zoom Target: pick or type the view center".into());
+                    return;
+                }
+                if let InterfaceCommand::SetViewWorld(view) = command {
+                    self.zoom_window_pending = false;
+                    self.zoom_target = None;
+                    let kind = match view {
+                        WorldView::Top => ViewKind::Top,
+                        WorldView::Bottom => ViewKind::Bottom,
+                        WorldView::Front => ViewKind::Front,
+                        WorldView::Back => ViewKind::Back,
+                        WorldView::Right => ViewKind::Right,
+                        WorldView::Left => ViewKind::Left,
+                        WorldView::Perspective => ViewKind::Perspective,
+                    };
+                    self.viewports[self.active_viewport].set_world_view(kind);
+                    self.push_log(format!("World {} view (active viewport)", view.label()));
                     return;
                 }
                 if matches!(

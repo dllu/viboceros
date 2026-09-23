@@ -64,6 +64,47 @@ pub enum ViewportTarget {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum WorldView {
+    Top,
+    Bottom,
+    Front,
+    Back,
+    Right,
+    Left,
+    Perspective,
+}
+
+impl WorldView {
+    pub const ALL: [Self; 7] = [
+        Self::Top,
+        Self::Bottom,
+        Self::Front,
+        Self::Back,
+        Self::Right,
+        Self::Left,
+        Self::Perspective,
+    ];
+
+    pub const fn label(self) -> &'static str {
+        match self {
+            Self::Top => "Top",
+            Self::Bottom => "Bottom",
+            Self::Front => "Front",
+            Self::Back => "Back",
+            Self::Right => "Right",
+            Self::Left => "Left",
+            Self::Perspective => "Perspective",
+        }
+    }
+
+    fn parse(input: &str) -> Option<Self> {
+        Self::ALL
+            .into_iter()
+            .find(|view| keyword(input, view.label()))
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct ZoomFactor(u64);
 
 impl ZoomFactor {
@@ -110,6 +151,7 @@ pub enum InterfaceCommand {
     ZoomAllSelected,
     UndoView,
     RedoView,
+    SetViewWorld(WorldView),
     SetSnap(SwitchAction),
     SetOsnap(SwitchAction),
     SnapToMeshes(SwitchAction),
@@ -120,7 +162,7 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 16] = [
+pub const COMMAND_NAMES: [&str; 17] = [
     "Options",
     "SetZoomExtentsBorder",
     "SnapToMeshes",
@@ -137,9 +179,10 @@ pub const COMMAND_NAMES: [&str; 16] = [
     "Snap",
     "UndoView",
     "RedoView",
+    "SetView",
 ];
 
-pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor <positive number>; UndoView; RedoView; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor <positive number>; UndoView; RedoView; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -224,6 +267,17 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
                 }
                 _ => Err(InterfaceError::Usage(
                     "Zoom [Window]|Target|[All] Extents|Selected | Zoom In|Out|Factor <positive number> | ZE | ZS | ZEA | ZSA | ZT",
+                )),
+            }
+        } else if name.eq_ignore_ascii_case("SetView") {
+            match args.as_slice() {
+                [world, view] if keyword(world, "World") => WorldView::parse(view)
+                    .map(InterfaceCommand::SetViewWorld)
+                    .ok_or(InterfaceError::Usage(
+                        "SetView World Top|Bottom|Front|Back|Right|Left|Perspective",
+                    )),
+                _ => Err(InterfaceError::Usage(
+                    "SetView World Top|Bottom|Front|Back|Right|Left|Perspective",
                 )),
             }
         } else if name.eq_ignore_ascii_case("UndoView") {
@@ -402,6 +456,10 @@ impl InterfaceState {
             InterfaceCommand::ZoomAllSelected => "Zoom selected requested (all viewports)".into(),
             InterfaceCommand::UndoView => "Undo view requested (active viewport)".into(),
             InterfaceCommand::RedoView => "Redo view requested (active viewport)".into(),
+            InterfaceCommand::SetViewWorld(view) => format!(
+                "Set world {} view requested (active viewport)",
+                view.label()
+            ),
             InterfaceCommand::SetSnap(action) => {
                 self.grid_snap = action.apply(self.grid_snap);
                 format!("Grid snap: {}", on_off(self.grid_snap))

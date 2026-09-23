@@ -11,14 +11,24 @@ fn gpu_parallel_depth_translation_preserves_pixels() {
         wgpu::TextureFormat::Rgba8UnormSrgb,
     ] {
         let mut renderer = OffscreenRenderer::new(format);
-        for kind in [ViewKind::Top, ViewKind::Front, ViewKind::Right] {
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Bottom,
+            ViewKind::Front,
+            ViewKind::Back,
+            ViewKind::Right,
+            ViewKind::Left,
+        ] {
             let mut baseline = None;
             let mut viewport = Viewport::new(kind);
             viewport.display_mode = DisplayMode::Shaded;
             let (right, up, forward) = match kind {
                 ViewKind::Top => (NaVector3::x(), NaVector3::y(), -NaVector3::z()),
+                ViewKind::Bottom => (NaVector3::x(), -NaVector3::y(), NaVector3::z()),
                 ViewKind::Front => (NaVector3::x(), NaVector3::z(), NaVector3::y()),
+                ViewKind::Back => (-NaVector3::x(), NaVector3::z(), -NaVector3::y()),
                 ViewKind::Right => (NaVector3::y(), NaVector3::z(), -NaVector3::x()),
+                ViewKind::Left => (-NaVector3::y(), NaVector3::z(), NaVector3::x()),
                 _ => unreachable!(),
             };
             for depth in [0.0, 2.0_f64.powi(80), 2.0_f64.powi(1020)] {
@@ -100,7 +110,14 @@ fn gpu_parallel_zoom_preserves_pixels_at_extreme_model_scales() {
         wgpu::TextureFormat::Rgba8UnormSrgb,
     ] {
         let mut renderer = OffscreenRenderer::new(format);
-        for kind in [ViewKind::Top, ViewKind::Front, ViewKind::Right] {
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Bottom,
+            ViewKind::Front,
+            ViewKind::Back,
+            ViewKind::Right,
+            ViewKind::Left,
+        ] {
             let mut baseline = None;
             for model_scale in [1.0, 2.0_f64.powi(126)] {
                 let mut viewport = Viewport::new(kind);
@@ -109,8 +126,11 @@ fn gpu_parallel_zoom_preserves_pixels_at_extreme_model_scales() {
                 viewport.zoom_factor(1.0 / model_scale).unwrap();
                 let (right, up, forward) = match kind {
                     ViewKind::Top => (NaVector3::x(), NaVector3::y(), -NaVector3::z()),
+                    ViewKind::Bottom => (NaVector3::x(), -NaVector3::y(), NaVector3::z()),
                     ViewKind::Front => (NaVector3::x(), NaVector3::z(), NaVector3::y()),
+                    ViewKind::Back => (-NaVector3::x(), NaVector3::z(), -NaVector3::y()),
                     ViewKind::Right => (NaVector3::y(), NaVector3::z(), -NaVector3::x()),
+                    ViewKind::Left => (-NaVector3::y(), NaVector3::z(), NaVector3::x()),
                     _ => unreachable!(),
                 };
                 let point = |x: Real, y: Real, z: Real| {
@@ -192,8 +212,11 @@ fn gpu_camera_relative_geometry_preserves_large_translation_pixels() {
         let mut renderer = OffscreenRenderer::new(format);
         for kind in [
             ViewKind::Top,
+            ViewKind::Bottom,
             ViewKind::Front,
+            ViewKind::Back,
             ViewKind::Right,
+            ViewKind::Left,
             ViewKind::Perspective,
         ] {
             let mut baseline = None;
@@ -208,8 +231,11 @@ fn gpu_camera_relative_geometry_preserves_large_translation_pixels() {
                 viewport.display_mode = DisplayMode::Shaded;
                 let (right, up, forward) = match kind {
                     ViewKind::Top => (NaVector3::x(), NaVector3::y(), -NaVector3::z()),
+                    ViewKind::Bottom => (NaVector3::x(), -NaVector3::y(), NaVector3::z()),
                     ViewKind::Front => (NaVector3::x(), NaVector3::z(), NaVector3::y()),
+                    ViewKind::Back => (-NaVector3::x(), NaVector3::z(), -NaVector3::y()),
                     ViewKind::Right => (NaVector3::y(), NaVector3::z(), -NaVector3::x()),
+                    ViewKind::Left => (-NaVector3::y(), NaVector3::z(), NaVector3::x()),
                     ViewKind::Perspective => viewport.perspective_basis(),
                 };
                 let point = |x: Real, y: Real, z: Real| {
@@ -275,15 +301,21 @@ fn face_click_selection_uses_depth_not_insertion_order() {
     let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(SIZE as f32));
     for kind in [
         ViewKind::Top,
+        ViewKind::Bottom,
         ViewKind::Front,
+        ViewKind::Back,
         ViewKind::Right,
+        ViewKind::Left,
         ViewKind::Perspective,
     ] {
         let mut viewport = Viewport::new(kind);
         let (right, up, forward) = match kind {
             ViewKind::Top => (NaVector3::x(), NaVector3::y(), -NaVector3::z()),
+            ViewKind::Bottom => (NaVector3::x(), -NaVector3::y(), NaVector3::z()),
             ViewKind::Front => (NaVector3::x(), NaVector3::z(), NaVector3::y()),
+            ViewKind::Back => (-NaVector3::x(), NaVector3::z(), -NaVector3::y()),
             ViewKind::Right => (NaVector3::y(), NaVector3::z(), -NaVector3::x()),
+            ViewKind::Left => (-NaVector3::y(), NaVector3::z(), NaVector3::x()),
             ViewKind::Perspective => viewport.perspective_basis(),
         };
         let origin = if kind.is_parallel() {
@@ -353,15 +385,21 @@ fn gpu_depth_and_ghosted_compositing_ignore_object_insertion_order() {
         let mut renderer = OffscreenRenderer::new(format);
         for kind in [
             ViewKind::Top,
+            ViewKind::Bottom,
             ViewKind::Front,
+            ViewKind::Back,
             ViewKind::Right,
+            ViewKind::Left,
             ViewKind::Perspective,
         ] {
             let mut viewport = Viewport::new(kind);
             let (right, up, forward) = match kind {
                 ViewKind::Top => (NaVector3::x(), NaVector3::y(), -NaVector3::z()),
+                ViewKind::Bottom => (NaVector3::x(), -NaVector3::y(), NaVector3::z()),
                 ViewKind::Front => (NaVector3::x(), NaVector3::z(), NaVector3::y()),
+                ViewKind::Back => (-NaVector3::x(), NaVector3::z(), -NaVector3::y()),
                 ViewKind::Right => (NaVector3::y(), NaVector3::z(), -NaVector3::x()),
+                ViewKind::Left => (-NaVector3::y(), NaVector3::z(), NaVector3::x()),
                 ViewKind::Perspective => viewport.perspective_basis(),
             };
             let origin = if kind.is_parallel() {
