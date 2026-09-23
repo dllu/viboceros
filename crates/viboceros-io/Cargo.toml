@@ -8,6 +8,7 @@ rust-version.workspace = true
 [dependencies]
 monstertruck.workspace = true
 num-rational.workspace = true
+num-traits.workspace = true
 tempfile = "3.27.0"
 thiserror.workspace = true
 viboceros-geometry.workspace = true

@@ -7,6 +7,7 @@ use monstertruck::step::load::step_geometry::{
     StepRevolutionSurface, Surface, SurfaceCurve3D, SurfaceCurveAssociatedGeometry, SweepSurface,
 };
 use num_rational::BigRational;
+use num_traits::ToPrimitive;
 use viboceros_geometry::{
     Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex,
     NurbsCurve, NurbsCurve2, NurbsSurface, Point2, Point3, SurfaceIso, Tolerance, WeightedPoint2,
@@ -391,6 +392,9 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
                 if let Some(curve) = bezier_patch_pcurve_edge(basis, uv0, uv1, uv.domain(), id)? {
                     return Ok(curve);
                 }
+                if let Some(curve) = multispan_pcurve_edge(basis, uv0, uv1, uv.domain(), id)? {
+                    return Ok(curve);
+                }
             }
             if !globally_affine && bounded_affine.is_none() {
                 return Err(unsupported("3D edge p-curve basis is not affine"));
@@ -760,14 +764,26 @@ fn bezier_patch_pcurve_edge(
     if degree_u.checked_add(1) != Some(u_count) || degree_v.checked_add(1) != Some(v_count) {
         return Ok(None);
     }
+    let surface = spline_surface_basis(basis, id)?;
+    compose_bezier_patch(&surface, uv0, uv1, domain, id)
+}
+
+fn compose_bezier_patch(
+    surface: &NurbsSurface,
+    uv0: Point2,
+    uv1: Point2,
+    domain: std::ops::RangeInclusive<f64>,
+    id: u64,
+) -> Result<Option<NurbsCurve>, StepError> {
     let unsupported = |reason| StepError::UnsupportedNativeShell { shell: id, reason };
+    let degree_u = surface.degree_u();
+    let degree_v = surface.degree_v();
     let degree = degree_u
         .checked_add(degree_v)
         .ok_or_else(|| unsupported("Bezier p-curve composition degree overflows"))?;
     if degree > 64 {
         return Err(unsupported("Bezier p-curve composition degree exceeds 64"));
     }
-    let surface = spline_surface_basis(basis, id)?;
     let u_domain = surface.domain_u();
     let v_domain = surface.domain_v();
     let clamped = |knots: &[f64], degree: usize, start: f64, end: f64| {
@@ -810,6 +826,8 @@ fn bezier_patch_pcurve_edge(
     let u1 = (uv1.x() - u_domain.start()) / (u_domain.end() - u_domain.start());
     let v0 = (uv0.y() - v_domain.start()) / (v_domain.end() - v_domain.start());
     let v1 = (uv1.y() - v_domain.start()) / (v_domain.end() - v_domain.start());
+    let u_count = surface.control_point_count_u();
+    let v_count = surface.control_point_count_v();
     let mut u_restricted = Vec::with_capacity(v_count);
     for v in 0..v_count {
         let row = (0..u_count)
@@ -903,6 +921,113 @@ fn binomial(n: usize, k: usize) -> f64 {
     (1..=k).fold(1., |value, index| {
         value * (n - k + index) as f64 / index as f64
     })
+}
+
+/// Split a straight UV path wherever it crosses a surface knot. Exact
+/// rational fractions keep simultaneous U/V crossings together and map each
+/// segment endpoint onto the source knot without a floating-point gap.
+fn multispan_pcurve_edge(
+    basis: &Surface,
+    uv0: Point2,
+    uv1: Point2,
+    domain: std::ops::RangeInclusive<f64>,
+    id: u64,
+) -> Result<Option<NurbsCurve>, StepError> {
+    if !matches!(basis, Surface::NurbsSurface(_) | Surface::BsplineSurface(_)) {
+        return Ok(None);
+    }
+    let unsupported = |reason| StepError::UnsupportedNativeShell { shell: id, reason };
+    let surface = spline_surface_basis(basis, id)?;
+    let u_domain = surface.domain_u();
+    let v_domain = surface.domain_v();
+    if !u_domain.contains(&uv0.x())
+        || !u_domain.contains(&uv1.x())
+        || !v_domain.contains(&uv0.y())
+        || !v_domain.contains(&uv1.y())
+    {
+        return Err(unsupported(
+            "3D edge p-curve leaves its spline surface domain",
+        ));
+    }
+    let exact = |value: f64| BigRational::from_float(value).unwrap();
+    let zero = exact(0.);
+    let one = exact(1.);
+    let u0 = exact(uv0.x());
+    let u1 = exact(uv1.x());
+    let v0 = exact(uv0.y());
+    let v1 = exact(uv1.y());
+    let t_start = exact(*domain.start());
+    let t_end = exact(*domain.end());
+    let mut fractions = vec![zero.clone(), one.clone()];
+    for (knots, from, to) in [(surface.knots_u(), &u0, &u1), (surface.knots_v(), &v0, &v1)] {
+        let low = from.min(to);
+        let high = from.max(to);
+        for knot in knots.iter().copied() {
+            let knot = exact(knot);
+            if knot > *low && knot < *high {
+                let fraction = (&knot - from) / (to - from);
+                if fraction > zero && fraction < one {
+                    fractions.push(fraction);
+                }
+            }
+        }
+    }
+    fractions.sort();
+    fractions.dedup();
+    let value_at =
+        |from: &BigRational, to: &BigRational, fraction: &BigRational| -> Result<f64, StepError> {
+            (from + (to - from) * fraction)
+                .to_f64()
+                .ok_or_else(|| unsupported("p-curve knot crossing is not representable"))
+        };
+    let mut spans = Vec::with_capacity(fractions.len() - 1);
+    for pair in fractions.windows(2) {
+        let a = Point2::try_new(value_at(&u0, &u1, &pair[0])?, value_at(&v0, &v1, &pair[0])?)?;
+        let b = Point2::try_new(value_at(&u0, &u1, &pair[1])?, value_at(&v0, &v1, &pair[1])?)?;
+        let start = value_at(&t_start, &t_end, &pair[0])?;
+        let end = value_at(&t_start, &t_end, &pair[1])?;
+        if start >= end || a.x() == b.x() || a.y() == b.y() {
+            return Err(unsupported(
+                "p-curve knot crossings are too close to compose",
+            ));
+        }
+        let patch = surface.try_trimmed(
+            a.x().min(b.x())..=a.x().max(b.x()),
+            a.y().min(b.y())..=a.y().max(b.y()),
+        )?;
+        let curve = compose_bezier_patch(&patch, a, b, start..=end, id)?
+            .ok_or_else(|| unsupported("p-curve knot rectangle is not a Bezier patch"))?;
+        spans.push(curve);
+    }
+    let degree = spans[0].degree();
+    let mut controls = spans[0].control_points().to_vec();
+    let mut knots = vec![*domain.start(); degree + 1];
+    for span in spans.iter().skip(1) {
+        let previous = *controls.last().unwrap();
+        let first = span.control_points()[0];
+        let distance = previous.point().distance_to(first.point())?;
+        let scale = [previous.point(), first.point()]
+            .into_iter()
+            .flat_map(|point| [point.x().abs(), point.y().abs(), point.z().abs()])
+            .fold(1_f64, f64::max);
+        if distance > 1e-9 * scale {
+            return Err(unsupported("composed p-curve spans do not meet"));
+        }
+        let factor = previous.weight() / first.weight();
+        if !factor.is_finite() || factor == 0. {
+            return Err(unsupported("composed p-curve weights cannot be joined"));
+        }
+        let knot = *span.domain().start();
+        knots.extend(vec![knot; degree]);
+        for control in span.control_points().iter().skip(1) {
+            controls.push(WeightedPoint3::try_new(
+                control.point(),
+                control.weight() * factor,
+            )?);
+        }
+    }
+    knots.extend(vec![*domain.end(); degree + 1]);
+    Ok(Some(NurbsCurve::try_new_rational(degree, controls, knots)?))
 }
 
 fn rotate_revolution_point(
@@ -1950,12 +2075,136 @@ mod tests {
                 TruckPoint2::new(0., 0.),
                 TruckPoint2::new(1., 1.),
             ))),
-            Box::new(multispan),
+            Box::new(multispan.clone()),
+        ));
+        let curve = edge_curve(&diagonal, 1).unwrap();
+        assert_eq!(curve.degree(), 3);
+        assert_eq!(
+            curve.knots(),
+            &[0., 0., 0., 0., 0.5, 0.5, 0.5, 1., 1., 1., 1.]
+        );
+        for t in [0., 0.17, 0.5, 0.83, 1.] {
+            let actual = curve.evaluate(t).unwrap();
+            let expected = multispan.evaluate(t, t);
+            assert!((actual.x() - expected.x).abs() < 1e-10);
+            assert!((actual.y() - expected.y).abs() < 1e-10);
+            assert!((actual.z() - expected.z).abs() < 1e-10);
+        }
+        for (a, b) in [([0.1, 0.2], [0.3, 0.8]), ([0.6, 0.2], [0.9, 0.8])] {
+            let source = Curve3D::ParameterCurve(StepParameterCurve::new(
+                Box::new(Curve2D::Line(Line(
+                    TruckPoint2::new(a[0], a[1]),
+                    TruckPoint2::new(b[0], b[1]),
+                ))),
+                Box::new(multispan.clone()),
+            ));
+            let curve = edge_curve(&source, 1).unwrap();
+            assert_eq!(curve.degree(), 3);
+            for t in [0., 0.17, 0.5, 0.83, 1.] {
+                let u = a[0] * (1. - t) + b[0] * t;
+                let v = a[1] * (1. - t) + b[1] * t;
+                let actual = curve.evaluate(t).unwrap();
+                let expected = multispan.evaluate(u, v);
+                assert!((actual.x() - expected.x).abs() < 1e-10);
+                assert!((actual.y() - expected.y).abs() < 1e-10);
+                assert!((actual.z() - expected.z).abs() < 1e-10);
+            }
+        }
+    }
+
+    #[test]
+    fn multispan_rational_surface_diagonal_pcurves_cross_both_knot_directions() {
+        let basis = Surface::NurbsSurface(TruckNurbsSurface::new(BsplineSurface::new(
+            (
+                KnotVector::from(vec![0., 0., 0., 0.25, 1., 1., 1.]),
+                KnotVector::from(vec![0., 0., 0., 0.75, 1., 1., 1.]),
+            ),
+            (0..4)
+                .map(|u| {
+                    (0..4)
+                        .map(|v| {
+                            let x = u as f64;
+                            let y = v as f64;
+                            let weight = 1. + 0.2 * x + 0.3 * y;
+                            Vector4::new(
+                                x * weight,
+                                y * weight,
+                                (x * y + if u == 2 && v == 1 { 1. } else { 0. }) * weight,
+                                weight,
+                            )
+                        })
+                        .collect::<Vec<_>>()
+                })
+                .collect(),
+        )));
+        for (a, b) in [
+            ([0.1, 0.2], [0.9, 0.8]),
+            ([0.9, 0.8], [0.1, 0.2]),
+            ([0., 0.5], [0.5, 1.]),
+        ] {
+            let uv0 = TruckPoint2::new(a[0], a[1]);
+            let uv1 = TruckPoint2::new(b[0], b[1]);
+            for (uv, domain) in [
+                (Curve2D::Line(Line(uv0, uv1)), 0.0..=1.0),
+                (
+                    Curve2D::BsplineCurve(BsplineCurve::new(
+                        KnotVector::from(vec![5., 5., 9., 9.]),
+                        vec![uv0, uv1],
+                    )),
+                    5.0..=9.0,
+                ),
+            ] {
+                let source = Curve3D::ParameterCurve(StepParameterCurve::new(
+                    Box::new(uv),
+                    Box::new(basis.clone()),
+                ));
+                let curve = edge_curve(&source, 1).unwrap();
+                assert_eq!(curve.degree(), 4);
+                assert_eq!(curve.domain(), domain);
+                let mut fractions = vec![0., 0.17, 0.5, 0.83, 1.];
+                for (knot, start, end) in [(0.25, a[0], b[0]), (0.75, a[1], b[1])] {
+                    let crossing = (knot - start) / (end - start);
+                    if (0.0..1.0).contains(&crossing) {
+                        fractions.extend([crossing - 1e-6, crossing, crossing + 1e-6]);
+                    }
+                }
+                for fraction in fractions {
+                    let u = a[0] * (1. - fraction) + b[0] * fraction;
+                    let v = a[1] * (1. - fraction) + b[1] * fraction;
+                    let t = *domain.start() * (1. - fraction) + *domain.end() * fraction;
+                    let expected = basis.evaluate(u, v);
+                    let actual = curve.evaluate(t).unwrap();
+                    assert!((actual.x() - expected.x).abs() < 1e-9);
+                    assert!((actual.y() - expected.y).abs() < 1e-9);
+                    assert!((actual.z() - expected.z).abs() < 1e-9);
+                }
+            }
+        }
+
+        let nearly_coincident = Surface::BsplineSurface(BsplineSurface::new(
+            (
+                KnotVector::from(vec![0., 0., 0.35, 1., 1.]),
+                KnotVector::from(vec![0., 0., 0.65, 1., 1.]),
+            ),
+            (0..3)
+                .map(|u| {
+                    (0..3)
+                        .map(|v| TruckPoint3::new(u as f64, v as f64, 0.))
+                        .collect::<Vec<_>>()
+                })
+                .collect(),
+        ));
+        let diagonal = Curve3D::ParameterCurve(StepParameterCurve::new(
+            Box::new(Curve2D::Line(Line(
+                TruckPoint2::new(0., 0.3),
+                TruckPoint2::new(0.7, 1.),
+            ))),
+            Box::new(nearly_coincident),
         ));
         assert!(matches!(
             edge_curve(&diagonal, 1),
             Err(StepError::UnsupportedNativeShell {
-                reason: "3D edge p-curve basis is not affine",
+                reason: "p-curve knot crossings are too close to compose",
                 ..
             })
         ));

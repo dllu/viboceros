@@ -271,7 +271,7 @@ fn nurbs_brep_step_export_keeps_curved_edges_and_surface_shape() {
 }
 
 #[test]
-fn native_step_imports_diagonal_pcurve_on_bezier_patches() {
+fn native_step_imports_diagonal_pcurve_on_spline_patches() {
     use monstertruck::meshing::prelude::ParametricSurface;
     use monstertruck::modeling::{
         BsplineCurve, BsplineSurface, KnotVector, Line, NurbsSurface as TruckNurbsSurface,
@@ -325,6 +325,43 @@ fn native_step_imports_diagonal_pcurve_on_bezier_patches() {
                                 let x = u as f64;
                                 let y = v as f64;
                                 let weight = 1. + x + y;
+                                Vector4::new(x * weight, y * weight, x * y * weight, weight)
+                            })
+                            .collect::<Vec<_>>()
+                    })
+                    .collect(),
+            ))),
+            4,
+        ),
+        (
+            Surface::BsplineSurface(BsplineSurface::new(
+                (
+                    KnotVector::from(vec![0., 0., 0., 0.5, 1., 1., 1.]),
+                    KnotVector::bezier_knot(1),
+                ),
+                (0..4)
+                    .map(|u| {
+                        (0..2)
+                            .map(|v| TruckPoint3::new(u as f64, v as f64, (u * v) as f64))
+                            .collect::<Vec<_>>()
+                    })
+                    .collect(),
+            )),
+            3,
+        ),
+        (
+            Surface::NurbsSurface(TruckNurbsSurface::new(BsplineSurface::new(
+                (
+                    KnotVector::from(vec![0., 0., 0., 0.25, 1., 1., 1.]),
+                    KnotVector::from(vec![0., 0., 0., 0.75, 1., 1., 1.]),
+                ),
+                (0..4)
+                    .map(|u| {
+                        (0..4)
+                            .map(|v| {
+                                let x = u as f64;
+                                let y = v as f64;
+                                let weight = 1. + 0.2 * x + 0.3 * y;
                                 Vector4::new(x * weight, y * weight, x * y * weight, weight)
                             })
                             .collect::<Vec<_>>()

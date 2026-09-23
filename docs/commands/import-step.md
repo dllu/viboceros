@@ -25,9 +25,10 @@ isocurve geometry and their source parameter domain.
 Straight diagonal `PCURVE` edges on single degree-one 2-by-2 B-spline/NURBS
 patches compose to exact rational quadratic edges, including warped and
 varying-weight patches. Clamped single-span higher-degree patches also compose
-to exact rational Bézier edges up to degree 64.
-Cylindrical and
-nonsingular conical faces with straight UV iso-trims spanning up to one turn
+to exact rational Bézier edges up to degree 64. Multi-span B-spline/NURBS
+patches compose piecewise at crossed knots when the crossings remain distinct
+in the source p-curve domain. Cylindrical and nonsingular conical faces with
+straight UV iso-trims spanning up to one turn
 convert to exact rational NURBS patches, including a full-turn wall with a paired
 `SEAM_CURVE`
 and explicit face-local

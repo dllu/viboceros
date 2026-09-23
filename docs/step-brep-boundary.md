@@ -155,8 +155,18 @@ control net to the traversed UV rectangle, then multiplies its two Bernstein
 bases along the diagonal. The result has degree `degree_u + degree_v` and keeps
 the source UV interval. Direct tests cover partial/reversed paths through
 quadratic-by-linear, quadratic-by-quadratic rational, and cubic-by-quadratic
-patches; serialized STEP triangles cover the first two. Multi-span and
-unclamped higher-degree surfaces still require separate composition support.
+patches; serialized STEP triangles cover the first two.
+
+For multi-span B-spline/NURBS surfaces, the importer splits a straight diagonal
+UV path at every crossed U or V knot, trims each knot rectangle to an exact
+Bézier patch, composes that patch, and joins the rational curve spans with
+source parameter values and shared endpoint controls. Knot-crossing fractions
+are compared as exact binary rationals so simultaneous U/V crossings form one
+event. Direct rational tests cover staggered, simultaneous, partial, and
+reversed crossings; serialized polynomial and rational triangles validate the
+joined edge against source-surface evaluation. Crossings too close to retain
+distinct binary64 parameters are rejected. Unclamped higher-degree single-span
+surfaces still require separate composition support.
 
 The same degree-one isoparametric p-curves on linear extrusions of curved
 directrices lift exactly. Constant-height edges use the translated directrix;

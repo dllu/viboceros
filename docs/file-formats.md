@@ -269,9 +269,12 @@ toroidal faces import as exact trimmed NURBS isocurves, keeping the source
 p-curve domain.
 Straight diagonal p-curves on single degree-one 2-by-2 B-spline/NURBS patches
 also import as exact rational quadratic edges. Clamped single-span higher-degree
-patches compose to exact rational Bézier edges up to degree 64. Multi-span or
-unclamped higher-degree surfaces and unequal-weight p-curves on non-affine
-bases remain unsupported.
+patches compose to exact rational Bézier edges up to degree 64. Unclamped
+higher-degree single-span surfaces and unequal-weight p-curves on non-affine
+bases remain unsupported. Straight diagonals across multi-span B-spline/NURBS
+surfaces also import as joined rational spans when their knot crossings have
+distinct representable parameters; numerically inseparable crossings fail
+native import.
 Other analytic surface types and
 periodic seam arrangements still fail native import.
 The native planar path supports straight-edged polygon holes, identifies the
