@@ -212,9 +212,10 @@ Planar straight-edged inputs use plane and line entities; curved or nonplanar
 inputs use rational B-splines where needed and explicit UV p-curves on curved
 faces. It preserves face/edge incidence and converts coordinates to millimetres
 without rebuilding the source B-rep's UV trims. Full-turn cylinder walls with
-paired `SEAM_CURVE` uses round trip as editable faces. Singular trims, mixed-sign
-NURBS weights, and non-B-rep document objects
-produce an explicit error; staged file replacement leaves an existing
+paired `SEAM_CURVE` uses round trip as editable faces. In a connected shell
+containing a NURBS face, planar neighbors also retain NURBS UV parameterization
+and explicit p-curves. Singular trims, mixed-sign NURBS weights, and non-B-rep
+document objects produce an explicit error; staged file replacement leaves an existing
 destination intact. Certified convex planar polyhedra become STEP solids;
 strictly contained, disjoint inward convex cavities remain one solid shape.
 Other edge-disconnected shells become separate STEP surface models, so general
@@ -251,7 +252,9 @@ iso-trims convert to exact rational patches over angles up to one turn, includin
 paired full-turn seams. NURBS faces can have polygon holes with certified
 straight-segment UV trims, including higher-degree collinear NURBS. Curved UV
 holes can also use one closed four-span quadratic NURBS trim under a strict convex
-containment certificate. Other curved UV loops require one outer boundary.
+containment certificate. Certified quadratic outer loops can contain holes
+strictly inside their endpoint quadrilateral. Other curved multi-loop regions
+remain unsupported.
 Other analytic surface types and
 periodic seam arrangements still fail native import.
 The native planar path supports straight-edged polygon holes, identifies the

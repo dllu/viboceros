@@ -188,11 +188,29 @@ fn shell(
     let mut output_faces = Vec::new();
     let mut vertex_map = BTreeMap::new();
     let mut edge_map = BTreeMap::new();
-    let surfaces = faces
+    let mut surfaces = faces
         .iter()
         .map(|&face_index| {
-            let surface = brep.faces()[face_index].surface();
-            let converted = if surface.degree_u() == 1
+            let face = &brep.faces()[face_index];
+            let surface = face.surface();
+            // A STEP plane has its own local frame, which need not match the
+            // source surface UV frame. Preserve the NURBS parameterization
+            // whenever native import needs the explicit face-local p-curves.
+            let needs_pcurves = face
+                .loops()
+                .iter()
+                .flat_map(|loop_| loop_.trims())
+                .any(|trim| {
+                    trim.curve().degree() != 1
+                        || trim.curve().control_points().len() != 2
+                        || !trim.curve().is_straight_segment()
+                        || trim.edge().is_none_or(|edge| {
+                            brep.edges()[edge].curve().degree() != 1
+                                || brep.edges()[edge].curve().control_points().len() != 2
+                        })
+                });
+            let converted = if !needs_pcurves
+                && surface.degree_u() == 1
                 && surface.degree_v() == 1
                 && surface.control_point_count_u() == 2
                 && surface.control_point_count_v() == 2
@@ -214,6 +232,20 @@ fn shell(
     let curved_shell = surfaces
         .iter()
         .any(|surface| matches!(surface, Surface3::Nurbs(_)));
+    if curved_shell {
+        // Native import needs a p-curve on every edge use in this connected
+        // shell. A STEP plane's local frame differs from source UV, so retain
+        // every face's original NURBS parameterization with those p-curves.
+        for (&face_index, surface) in faces.iter().zip(&mut surfaces) {
+            if matches!(surface, Surface3::Plane(_)) {
+                *surface = Surface3::Nurbs(nurbs_surface3(
+                    brep.faces()[face_index].surface(),
+                    scale,
+                    index,
+                )?);
+            }
+        }
+    }
     for (&face_index, surface) in faces.iter().zip(surfaces) {
         let face = &brep.faces()[face_index];
         let mut boundaries = Vec::new();

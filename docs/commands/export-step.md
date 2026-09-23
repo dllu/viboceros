@@ -10,6 +10,10 @@ The default `ExportStep` writes a faceted shell from document geometry.
 other nonsingular B-reps use rational B-splines where curves or surfaces need
 them, with explicit face-local p-curves on curved faces. Both paths retain
 shared edge topology and face orientation without mesh tessellation.
+Planar faces with curved edge or trim representations retain a NURBS surface
+and explicit p-curves, preserving their source UV coordinates on reimport.
+When one face in an edge-connected shell needs that representation, neighboring
+faces retain NURBS surfaces and p-curves as well.
 The `ExportStp` alias accepts the same option. Quote a filename beginning with
 `Native=Yes` to use that text as a path.
 

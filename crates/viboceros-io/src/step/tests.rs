@@ -276,6 +276,79 @@ fn nurbs_brep_step_export_roundtrips_periodic_seam() {
 }
 
 #[test]
+fn nurbs_step_export_keeps_pcurves_on_planar_neighbors_in_mixed_shell() {
+    use viboceros_geometry::{Brep, BrepFace, Frame3, NurbsSurface, Vector3};
+    let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+    let frame = Frame3::try_from_directions(
+        point(0., 0., 0.),
+        Vector3::try_new(1., 0., 0.).unwrap(),
+        Vector3::try_new(0., 1., 0.).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let box_brep = Brep::try_box(frame, [[0., 2.]; 3], Tolerance::DEFAULT).unwrap();
+    let mut faces = box_brep.faces().to_vec();
+    let original = faces[0].surface();
+    assert_eq!((original.degree_u(), original.degree_v()), (1, 1));
+    let middle = |a: Point3, b: Point3| {
+        point(
+            (a.x() + b.x()) / 2.,
+            (a.y() + b.y()) / 2.,
+            (a.z() + b.z()) / 2.,
+        )
+    };
+    let controls = [0, 1]
+        .into_iter()
+        .flat_map(|v| {
+            let first = original.control_point(0, v).unwrap().point();
+            let last = original.control_point(1, v).unwrap().point();
+            [first, middle(first, last), last]
+        })
+        .collect();
+    let domain = original.domain_u();
+    let surface = NurbsSurface::try_new(
+        2,
+        1,
+        3,
+        2,
+        controls,
+        vec![
+            *domain.start(),
+            *domain.start(),
+            *domain.start(),
+            *domain.end(),
+            *domain.end(),
+            *domain.end(),
+        ],
+        original.knots_v().to_vec(),
+    )
+    .unwrap();
+    faces[0] =
+        BrepFace::try_new(surface, faces[0].is_reversed(), faces[0].loops().to_vec()).unwrap();
+    let source = Brep::try_new(
+        box_brep.vertices().to_vec(),
+        box_brep.edges().to_vec(),
+        faces,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let mut output = Vec::new();
+    write_step_nurbs_breps(&mut output, [&source]).unwrap();
+    let text = String::from_utf8(output).unwrap();
+    assert_eq!(text.matches("PCURVE(").count(), 24);
+    assert!(text.contains("B_SPLINE_SURFACE_WITH_KNOTS("));
+    let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    let restored = &native.instances[0].brep;
+    assert_eq!(restored.faces().len(), 6);
+    assert!(
+        (restored.signed_volume(Tolerance::DEFAULT).unwrap()
+            - source.signed_volume(Tolerance::DEFAULT).unwrap())
+        .abs()
+            < 1e-8
+    );
+}
+
+#[test]
 fn nurbs_brep_step_export_keeps_open_rational_arc_surface() {
     use monstertruck::meshing::prelude::ParametricSurface;
     use viboceros_geometry::{Brep, NurbsSurface, WeightedPoint3};
@@ -788,6 +861,15 @@ fn native_step_imports_bspline_faces_with_polygon_holes() {
 
 #[test]
 fn native_step_imports_certified_quadratic_hole_on_bspline_face() {
+    use monstertruck::core::cgmath64::{Matrix3, Vector2, Vector3};
+    use monstertruck::meshing::prelude::{BoundedCurve, ParametricCurve};
+    use monstertruck::modeling::{
+        Invertible, Point2 as TruckPoint2, Processor, Transformed, TrimmedCurve, UnitCircle,
+    };
+    use monstertruck::step::load::step_geometry::{
+        Conic2D, Conic3D, Curve2D, Curve3D, StepParameterCurve,
+    };
+    use monstertruck::step::save::StepModels;
     use viboceros_geometry::{
         Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex,
         NurbsCurve, NurbsCurve2, NurbsSurface, Point2, SurfaceIso, WeightedPoint2, WeightedPoint3,
@@ -878,9 +960,107 @@ fn native_step_imports_certified_quadratic_hole_on_bspline_face() {
     let text = String::from_utf8(output).unwrap();
     assert!(text.contains("B_SPLINE_SURFACE_WITH_KNOTS("));
     assert!(text.contains("RATIONAL_B_SPLINE_CURVE("));
+    let native = read_step_native_instances(Cursor::new(&text), Tolerance::DEFAULT).unwrap();
+    let brep = &native.instances[0].brep;
+    assert_eq!(brep.faces()[0].loops().len(), 2);
+    assert_eq!(brep.faces()[0].loops()[1].trims()[0].curve().degree(), 2);
+    assert!((brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
+
+    let table = Table::from_step(&text).unwrap();
+    let shell_id = *table.shell.keys().next().unwrap();
+    let (mut shell, report) = reported_trimmed_shell(&table, shell_id).unwrap();
+    assert_eq!(report.total_lost(), 0);
+    let hole_edge = shell.faces[0].boundaries[1][0].index;
+    let original_edge = &shell.edges[hole_edge].curve;
+    let (start, end) = original_edge.range_tuple();
+    let quarter = original_edge.evaluate(start + (end - start) / 4.);
+    let mut circle3 = Processor::new(TrimmedCurve::new(
+        UnitCircle::<TruckPoint3>::new(),
+        (0., std::f64::consts::TAU),
+    ));
+    circle3.transform_by(Matrix4::from_translation(Vector3::new(5., 5., 0.)));
+    if (circle3.evaluate(std::f64::consts::FRAC_PI_2).y - quarter.y).abs() > 0.5 {
+        circle3.invert();
+    }
+    shell.edges[hole_edge].curve = Curve3D::Conic(Conic3D::Ellipse(circle3));
+    let original_trim = shell.faces[0].boundaries[1][0]
+        .trim_curve
+        .as_ref()
+        .unwrap()
+        .curve();
+    let (start, end) = original_trim.range_tuple();
+    let quarter = original_trim.evaluate(start + (end - start) / 4.);
+    let mut circle2 = Processor::new(TrimmedCurve::new(
+        UnitCircle::<TruckPoint2>::new(),
+        (0., std::f64::consts::TAU),
+    ));
+    circle2.transform_by(Matrix3::from_translation(Vector2::new(5., 5.)));
+    if (circle2.evaluate(std::f64::consts::FRAC_PI_2).y - quarter.y).abs() > 0.5 {
+        circle2.invert();
+    }
+    let step_surface = shell.faces[0].surface.clone();
+    shell.faces[0].boundaries[1][0].trim_curve = Some(StepParameterCurve::new(
+        Box::new(Curve2D::Conic(Conic2D::Ellipse(circle2))),
+        Box::new(step_surface),
+    ));
+    let mut models = StepModels::default();
+    models.push_trimmed_shell(&shell);
+    let conic_text = CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
+    assert!(conic_text.contains("CIRCLE("));
+    let analytic = read_step_native_instances(Cursor::new(conic_text), Tolerance::DEFAULT).unwrap();
+    let analytic_brep = &analytic.instances[0].brep;
+    assert_eq!(analytic_brep.faces()[0].loops().len(), 2);
+    assert!(
+        (analytic_brep.area(Tolerance::DEFAULT).unwrap() - (100. - std::f64::consts::PI)).abs()
+            < 1e-8
+    );
+}
+
+#[test]
+fn native_step_imports_closed_quadratic_outer_with_inner_hole() {
+    use viboceros_geometry::{Brep, NurbsCurve, WeightedPoint3};
+    let circle = |radius: f64| {
+        let controls = [
+            (1., 0.),
+            (1., 1.),
+            (0., 1.),
+            (-1., 1.),
+            (-1., 0.),
+            (-1., -1.),
+            (0., -1.),
+            (1., -1.),
+            (1., 0.),
+        ]
+        .into_iter()
+        .enumerate()
+        .map(|(index, (x, y))| {
+            WeightedPoint3::try_new(
+                Point3::try_new(5. + radius * x, 5. + radius * y, 0.).unwrap(),
+                if index % 2 == 0 { 1. } else { 0.75 },
+            )
+            .unwrap()
+        })
+        .collect();
+        NurbsCurve::try_new_rational(
+            2,
+            controls,
+            vec![0., 0., 0., 1., 1., 2., 2., 3., 3., 4., 4., 4.],
+        )
+        .unwrap()
+    };
+    let source =
+        Brep::try_planar_face_with_holes(&circle(4.), &[circle(0.5)], Tolerance::DEFAULT).unwrap();
+    let expected_area = source.area(Tolerance::DEFAULT).unwrap();
+    let mut output = Vec::new();
+    write_step_nurbs_breps(&mut output, [&source]).unwrap();
+    let text = String::from_utf8(output).unwrap();
+    assert!(text.contains("RATIONAL_B_SPLINE_CURVE("));
+    assert_eq!(text.matches("PCURVE(").count(), 2);
+    assert!(text.contains("B_SPLINE_SURFACE_WITH_KNOTS("));
     let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
     let brep = &native.instances[0].brep;
     assert_eq!(brep.faces()[0].loops().len(), 2);
+    assert_eq!(brep.faces()[0].loops()[0].trims()[0].curve().degree(), 2);
     assert_eq!(brep.faces()[0].loops()[1].trims()[0].curve().degree(), 2);
     assert!((brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
 }
