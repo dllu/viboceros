@@ -89,6 +89,24 @@ Hidden members are excluded from display and viewport picking, including window
 selection. Remove can still address them by stored index. An invalid index
 leaves the document unchanged.
 
+## Reduce a cloud
+
+`ReducePointCloud` randomly removes a requested count or percentage of stored
+members from one cloud. Enter `ReducePointCloud` to select a cloud and then type
+the count or `Percent=n`. With an amount on the command line, select a cloud
+first or specify `Target=<id>`:
+
+```text
+ReducePointCloud 250
+ReducePointCloud Percent=25 Target=<id>
+```
+
+Percentage removal rounds to the nearest whole member. Surviving members keep
+their stored order, colors, normals, scalar values, hidden flags, plane, and
+ordered-stream flag. Removing all members deletes the cloud. Invalid counts and
+percentages leave it unchanged. Each reduction is one undo step. The exact
+random sample and percentage rounding have not been compared with Rhino 8.
+
 ## Limits
 
 Mesh vertex colors are represented in native meshes and survive 3DM round trips,
@@ -108,7 +126,8 @@ extraction workflows. `PointGrid` creates rectangular clouds.
 
 The [Rhino reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/pointcloud.htm)
 describes additional cloud editing and color workflows; these are not implied
-by the implemented creation path.
+by the implemented creation path. Rhino also documents
+[ReducePointCloud](https://docs.mcneel.com/rhino/8/help/en-us/commands/pointcloud.htm#ReducePointCloud).
 
 ## Verification
 

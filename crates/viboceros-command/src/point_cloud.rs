@@ -78,6 +78,190 @@ impl Command for PointCloudCommand {
     }
 }
 
+const REDUCE_USAGE: &str = "ReducePointCloud <count>|Percent=<0..100> [Target=<id>]";
+
+pub(super) struct ReducePointCloudCommand;
+
+#[derive(Clone, Copy)]
+enum ReductionAmount {
+    Count(usize),
+    Percent(f64),
+}
+
+impl Command for ReducePointCloudCommand {
+    fn name(&self) -> &'static str {
+        "ReducePointCloud"
+    }
+
+    fn object_selection_prompt(
+        &self,
+        arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        if arguments.is_empty() {
+            return Ok(Some(reduction_prompt(
+                ObjectSelectionWorkflow::ConfirmAfterSelection,
+            )));
+        }
+        let (_, target) = parse_reduction(arguments)?;
+        Ok(target.is_none().then_some(reduction_prompt(
+            ObjectSelectionWorkflow::OptionsDuringSelection,
+        )))
+    }
+
+    fn object_selection_confirmation(
+        &self,
+        document: &Document,
+        arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        Ok((arguments.is_empty()
+            && document
+                .selected_objects()
+                .any(|object| matches!(object.geometry(), Geometry::PointCloud(_))))
+        .then_some(reduction_prompt(
+            ObjectSelectionWorkflow::ConfirmAfterSelection,
+        )))
+    }
+
+    fn object_selection_complete(
+        &self,
+        document: &Document,
+        arguments: &[&str],
+    ) -> Result<bool, CommandError> {
+        if !arguments.is_empty() {
+            parse_reduction(arguments)?;
+        }
+        Ok(document
+            .selected_objects()
+            .filter(|object| matches!(object.geometry(), Geometry::PointCloud(_)))
+            .take(2)
+            .count()
+            == 1)
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (amount, target) = parse_reduction(arguments)?;
+        reduce_point_cloud(document, target, amount, &mut rand::rng())
+    }
+}
+
+fn reduction_prompt(workflow: ObjectSelectionWorkflow) -> ObjectSelectionPrompt {
+    ObjectSelectionPrompt {
+        command: "ReducePointCloud",
+        filter: ObjectSelectionFilter::PointCloud,
+        workflow,
+        options: vec![],
+        menus: vec![],
+        choices: vec![],
+    }
+}
+
+fn parse_reduction(
+    arguments: &[&str],
+) -> Result<(ReductionAmount, Option<ObjectId>), CommandError> {
+    let mut amount = None;
+    let mut target = None;
+    for argument in arguments {
+        if let Some((name, value)) = argument.split_once('=') {
+            let name = name.trim_start_matches('_');
+            if name.eq_ignore_ascii_case("Target") && target.is_none() {
+                target = Some(
+                    value
+                        .parse()
+                        .map_err(|_| CommandError::Usage(REDUCE_USAGE))?,
+                );
+            } else if name.eq_ignore_ascii_case("Percent") && amount.is_none() {
+                let percent = value
+                    .parse::<f64>()
+                    .map_err(|_| CommandError::Usage(REDUCE_USAGE))?;
+                if !percent.is_finite() || !(0.0..=100.0).contains(&percent) {
+                    return Err(CommandError::Usage(REDUCE_USAGE));
+                }
+                amount = Some(ReductionAmount::Percent(percent));
+            } else if name.eq_ignore_ascii_case("Count") && amount.is_none() {
+                amount = Some(ReductionAmount::Count(
+                    value
+                        .parse()
+                        .map_err(|_| CommandError::Usage(REDUCE_USAGE))?,
+                ));
+            } else {
+                return Err(CommandError::Usage(REDUCE_USAGE));
+            }
+        } else if amount.is_none() {
+            amount = Some(ReductionAmount::Count(
+                argument
+                    .parse()
+                    .map_err(|_| CommandError::Usage(REDUCE_USAGE))?,
+            ));
+        } else {
+            return Err(CommandError::Usage(REDUCE_USAGE));
+        }
+    }
+    Ok((amount.ok_or(CommandError::Usage(REDUCE_USAGE))?, target))
+}
+
+fn reduce_point_cloud<R: rand::Rng + ?Sized>(
+    document: &mut Document,
+    explicit: Option<ObjectId>,
+    amount: ReductionAmount,
+    rng: &mut R,
+) -> Result<String, CommandError> {
+    let target = selected_target(document, explicit)?;
+    let Geometry::PointCloud(cloud) = document.object(target).unwrap().geometry() else {
+        unreachable!()
+    };
+    let total = cloud.points().len();
+    let remove_count = match amount {
+        ReductionAmount::Count(count) => count,
+        ReductionAmount::Percent(percent) => ((percent / 100.0) * total as f64).round() as usize,
+    };
+    if remove_count > total {
+        return Err(CommandError::Usage(REDUCE_USAGE));
+    }
+    if remove_count == 0 {
+        return Ok(format!("Removed 0 of {total} point cloud members"));
+    }
+    if remove_count == total {
+        document.delete_object(target)?;
+        return Ok(format!(
+            "Removed {remove_count} of {total} point cloud members"
+        ));
+    }
+
+    let retain_count = total - remove_count;
+    // Sample the smaller side, then restore stored order before copying channels.
+    let retained_indices = if retain_count <= remove_count {
+        let mut indices = rand::seq::index::sample(rng, total, retain_count).into_vec();
+        indices.sort_unstable();
+        indices
+    } else {
+        let mut removed = rand::seq::index::sample(rng, total, remove_count).into_vec();
+        removed.sort_unstable();
+        let mut removed = removed.into_iter().peekable();
+        (0..total)
+            .filter(|index| {
+                if removed.peek() == Some(index) {
+                    removed.next();
+                    false
+                } else {
+                    true
+                }
+            })
+            .collect::<Vec<_>>()
+    };
+    let points = retained_indices
+        .iter()
+        .map(|&index| cloud.points()[index])
+        .collect();
+    let channels = channels_for_indices(cloud, &retained_indices);
+    document.replace_object_geometries([(
+        target,
+        Geometry::PointCloud(PointCloud3::try_with_channels(points, channels)?),
+    )])?;
+    Ok(format!(
+        "Removed {remove_count} of {total} point cloud members"
+    ))
+}
+
 fn parse(arguments: &[&str]) -> Result<Operation, CommandError> {
     if arguments.is_empty() {
         return Ok(Operation::Create { use_colors: false });

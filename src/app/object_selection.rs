@@ -50,6 +50,11 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if self.description.command == "ReducePointCloud"
+            && self.phase == ObjectPromptPhase::Options
+        {
+            return "Enter number to remove or Percent=n; Esc cancels";
+        }
         if self.cloud_action_target.is_some() {
             return "Selected point cloud: type Add or Remove; Esc cancels";
         }
@@ -331,13 +336,16 @@ impl VibocerosApp {
                 return true;
             }
             self.document.clear_selection();
+            let command_override = (description.command == "ReducePointCloud"
+                && input.split_whitespace().nth(1).is_some())
+            .then(|| input.to_owned());
             self.object_prompt = Some(PendingObjectCommand {
                 description,
                 phase: ObjectPromptPhase::Selecting,
                 postselected: true,
                 subcurve_measurement,
                 measurement_display_units,
-                command_override: None,
+                command_override,
                 excluded_object: None,
                 selection_before: None,
                 cloud_removal: None,
@@ -442,6 +450,13 @@ impl VibocerosApp {
                     }
                 }
             }
+            if pending.description.command == "ReducePointCloud"
+                && pending.phase == ObjectPromptPhase::Options
+                && pending.command_override.is_none()
+            {
+                self.push_log("Enter number to remove or Percent=n".into());
+                return true;
+            }
             let mut command = pending
                 .command_override
                 .clone()
@@ -502,12 +517,30 @@ impl VibocerosApp {
                         self.object_prompt = None;
                         self.push_log(format!("{} declined", pending.description.command));
                     } else {
+                        if pending.description.command == "ReducePointCloud" {
+                            pending.command_override = None;
+                            self.object_prompt = Some(pending);
+                        }
                         self.push_log(format!("Error: {error}"));
                     }
                 }
             }
             self.command_input.clear();
             return true;
+        }
+        if pending.description.command == "ReducePointCloud"
+            && pending.phase == ObjectPromptPhase::Options
+        {
+            let amount = input.trim_start_matches('_');
+            let option = amount.split_once('=').is_some_and(|(name, _)| {
+                name.eq_ignore_ascii_case("Percent") || name.eq_ignore_ascii_case("Count")
+            });
+            if amount.parse::<usize>().is_ok() || option {
+                pending.command_override = Some(format!("ReducePointCloud {amount}"));
+                self.object_prompt = Some(pending);
+                self.command_input.clear();
+                return self.try_continue_object_prompt("");
+            }
         }
         let normalized = input.trim_start_matches(['_', '-']).to_ascii_lowercase();
         if matches!(pending.description.command, "Length" | "Area")

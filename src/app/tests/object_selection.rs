@@ -1,4 +1,5 @@
 use super::*;
+use crate::app::object_selection::ObjectPromptPhase;
 use viboceros_document::SelectionMode;
 
 #[test]
@@ -702,6 +703,109 @@ fn point_cloud_command_first_filters_clouds_and_curves_and_preserves_pick_order(
     assert_eq!(app.document.selected_object_count(), 0);
     enter(&mut app, "Undo");
     assert_eq!(app.document.objects().len(), 4);
+}
+
+#[test]
+fn reduce_point_cloud_accepts_command_first_cloud_pick() {
+    let mut app = test_app();
+    let target = app
+        .document
+        .add_geometry(Geometry::PointCloud(
+            viboceros_geometry::PointCloud3::try_new(
+                (0..5).map(|index| point(index as f64, 0.0, 0.0)).collect(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    let other = app
+        .document
+        .add_geometry(Geometry::Point(point(10.0, 0.0, 0.0)))
+        .unwrap();
+    enter(&mut app, "ReducePointCloud 2");
+    assert_eq!(
+        app.object_prompt.as_ref().unwrap().description.filter,
+        viboceros_command::ObjectSelectionFilter::PointCloud
+    );
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(other),
+        mode: SelectionMode::Add,
+    });
+    assert!(!app.document.is_selected(other));
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(target),
+        mode: SelectionMode::Add,
+    });
+    enter(&mut app, "");
+    assert!(app.object_prompt.is_none());
+    let Geometry::PointCloud(cloud) = app.document.object(target).unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(cloud.points().len(), 3);
+    enter(&mut app, "Undo");
+    let Geometry::PointCloud(cloud) = app.document.object(target).unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(cloud.points().len(), 5);
+}
+
+#[test]
+fn reduce_point_cloud_prompts_for_amount_after_cloud_selection() {
+    for preselected in [false, true] {
+        let mut app = test_app();
+        let target = app
+            .document
+            .add_geometry(Geometry::PointCloud(
+                viboceros_geometry::PointCloud3::try_new(
+                    (0..5).map(|index| point(index as f64, 0.0, 0.0)).collect(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        if preselected {
+            app.document
+                .select_object(target, SelectionMode::Replace)
+                .unwrap();
+        }
+        enter(&mut app, "ReducePointCloud");
+        assert_eq!(
+            app.object_prompt.as_ref().unwrap().phase,
+            if preselected {
+                ObjectPromptPhase::Options
+            } else {
+                ObjectPromptPhase::Selecting
+            }
+        );
+        if !preselected {
+            app.apply_selection_click(SelectionClick {
+                object_id: Some(target),
+                mode: SelectionMode::Replace,
+            });
+            enter(&mut app, "");
+            assert_eq!(
+                app.object_prompt.as_ref().unwrap().phase,
+                ObjectPromptPhase::Options
+            );
+        }
+        enter(&mut app, "");
+        assert!(app.object_prompt.is_some());
+        enter(&mut app, "99");
+        assert!(app.object_prompt.is_some());
+        let Geometry::PointCloud(cloud) = app.document.object(target).unwrap().geometry() else {
+            panic!()
+        };
+        assert_eq!(cloud.points().len(), 5);
+        enter(&mut app, "Percent=40");
+        assert!(app.object_prompt.is_none());
+        let Geometry::PointCloud(cloud) = app.document.object(target).unwrap().geometry() else {
+            panic!()
+        };
+        assert_eq!(cloud.points().len(), 3);
+        enter(&mut app, "Undo");
+        let Geometry::PointCloud(cloud) = app.document.object(target).unwrap().geometry() else {
+            panic!()
+        };
+        assert_eq!(cloud.points().len(), 5);
+    }
 }
 
 #[test]

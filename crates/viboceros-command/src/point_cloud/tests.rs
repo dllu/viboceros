@@ -33,6 +33,156 @@ fn p(x: Real) -> Point3 {
 }
 
 #[test]
+fn reduction_keeps_member_channels_aligned_and_is_undoable() {
+    let mut doc = Document::default();
+    let points = (0..10).map(|index| p(index as Real)).collect::<Vec<_>>();
+    let colors = (0..10)
+        .map(|index| [index as u8, 20, 30, 0])
+        .collect::<Vec<_>>();
+    let values = (0..10).map(|index| index as Real + 0.5).collect::<Vec<_>>();
+    let hidden = (0..10).map(|index| index % 3 == 0).collect::<Vec<_>>();
+    let normals = (0..10)
+        .map(|index| viboceros_geometry::Vector3::try_new(index as Real, 1.0, 0.0).unwrap())
+        .collect::<Vec<_>>();
+    let plane = viboceros_geometry::PointCloudPlane::try_new(
+        p(0.0),
+        [
+            viboceros_geometry::Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            viboceros_geometry::Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            viboceros_geometry::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+        ],
+    )
+    .unwrap();
+    let cloud = PointCloud3::try_with_channels(
+        points.clone(),
+        viboceros_geometry::PointCloudChannels {
+            colors: Some(colors.clone()),
+            normals: Some(normals.clone()),
+            values: Some(values.clone()),
+            hidden: Some(hidden.clone()),
+            ordered: true,
+            plane: Some(plane),
+        },
+    )
+    .unwrap();
+    let target = doc
+        .add_geometry(Geometry::PointCloud(cloud.clone()))
+        .unwrap();
+    doc.select_objects_direct([target], SelectionMode::Replace)
+        .unwrap();
+    let registry = CommandRegistry::with_builtins();
+    assert_eq!(
+        registry
+            .object_selection_prompt("ReducePointCloud Percent=40")
+            .unwrap()
+            .unwrap()
+            .filter,
+        ObjectSelectionFilter::PointCloud
+    );
+    assert!(
+        registry
+            .object_selection_prompt(&format!("ReducePointCloud 4 Target={target}"))
+            .unwrap()
+            .is_none()
+    );
+    assert_eq!(
+        registry
+            .execute(&mut doc, "ReducePointCloud Percent=40")
+            .unwrap(),
+        "Removed 4 of 10 point cloud members"
+    );
+    let Geometry::PointCloud(reduced) = doc.object(target).unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(reduced.points().len(), 6);
+    assert!(
+        reduced
+            .points()
+            .windows(2)
+            .all(|pair| pair[0].x() < pair[1].x())
+    );
+    assert!(reduced.is_ordered());
+    assert_eq!(reduced.plane(), Some(plane));
+    for (slot, point) in reduced.points().iter().enumerate() {
+        let original = point.x() as usize;
+        assert_eq!(reduced.colors().unwrap()[slot], colors[original]);
+        assert_eq!(reduced.values().unwrap()[slot], values[original]);
+        assert_eq!(reduced.normals().unwrap()[slot], normals[original]);
+        assert_eq!(reduced.is_hidden(slot), hidden[original]);
+    }
+    let reduced = reduced.clone();
+    registry.execute(&mut doc, "Undo").unwrap();
+    assert_eq!(
+        doc.object(target).unwrap().geometry(),
+        &Geometry::PointCloud(cloud)
+    );
+    registry.execute(&mut doc, "Redo").unwrap();
+    assert_eq!(
+        doc.object(target).unwrap().geometry(),
+        &Geometry::PointCloud(reduced)
+    );
+}
+
+#[test]
+fn reduction_count_and_percent_bounds_are_atomic() {
+    let mut doc = Document::default();
+    let target = doc
+        .add_geometry(Geometry::PointCloud(
+            PointCloud3::try_new((0..5).map(|index| p(index as Real)).collect()).unwrap(),
+        ))
+        .unwrap();
+    let registry = CommandRegistry::with_builtins();
+    for command in [
+        "ReducePointCloud Percent=-1",
+        "ReducePointCloud Percent=101",
+        "ReducePointCloud Percent=NaN",
+        "ReducePointCloud Count=6",
+        "ReducePointCloud 1 Percent=2",
+        "ReducePointCloud",
+    ] {
+        assert!(
+            registry
+                .execute(&mut doc, &format!("{command} Target={target}"))
+                .is_err(),
+            "{command} should fail"
+        );
+        let Geometry::PointCloud(cloud) = doc.object(target).unwrap().geometry() else {
+            panic!()
+        };
+        assert_eq!(cloud.points().len(), 5);
+    }
+    registry
+        .execute(&mut doc, &format!("ReducePointCloud 0 Target={target}"))
+        .unwrap();
+    let Geometry::PointCloud(cloud) = doc.object(target).unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(cloud.points().len(), 5);
+    registry
+        .execute(
+            &mut doc,
+            &format!("ReducePointCloud Percent=50 Target={target}"),
+        )
+        .unwrap();
+    let Geometry::PointCloud(cloud) = doc.object(target).unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(cloud.points().len(), 2);
+    registry
+        .execute(
+            &mut doc,
+            &format!("ReducePointCloud Count=2 Target={target}"),
+        )
+        .unwrap();
+    assert!(doc.object(target).is_none());
+    registry.execute(&mut doc, "Undo").unwrap();
+    let Geometry::PointCloud(cloud) = doc.object(target).unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(cloud.points().len(), 2);
+}
+
+#[test]
 fn point_conversion_respects_pre_and_postselection_order_and_undo() {
     for postselected in [false, true] {
         let mut doc = Document::default();
