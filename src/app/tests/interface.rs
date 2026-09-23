@@ -164,7 +164,7 @@ fn typed_window_commands_force_mode_for_one_drag_and_preserve_model_history() {
     };
     for (command, start, end, crossing) in [
         (
-            "SelCrossing",
+            "C",
             egui::Pos2::new(390., 290.),
             egui::Pos2::new(410., 310.),
             true,
@@ -248,16 +248,20 @@ fn empty_enter_cancels_typed_window_without_advancing_an_object_prompt() {
 }
 
 #[test]
-fn typed_window_is_rejected_during_point_input_without_consuming_the_prompt() {
-    for alias in ["W", "C"] {
-        let mut app = test_app();
-        enter(&mut app, "Line");
-        let pending = app.active_command;
-        enter(&mut app, alias);
-        assert_eq!(app.selection_window_override, None);
-        assert_eq!(app.active_command, pending);
-        assert_eq!(app.document.objects().count(), 0);
-    }
+fn typed_window_alias_does_not_replace_point_input() {
+    let mut app = test_app();
+    enter(&mut app, "Line");
+    let pending = app.active_command;
+    enter(&mut app, "W");
+    assert_eq!(app.selection_window_override, None);
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.document.objects().count(), 0);
+    enter(&mut app, "C");
+    assert_eq!(app.selection_window_override, None);
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::Circle { .. })
+    ));
 }
 
 #[test]
