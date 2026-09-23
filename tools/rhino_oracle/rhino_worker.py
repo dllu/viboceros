@@ -3490,12 +3490,13 @@ def _point_grid_command(operation, diagonal=False):
     third_width = operation.get("third_width")
     width_choice_point = operation.get("width_choice_point")
     centered = operation.get("centered", False)
-    if type(centered) is not bool or type(diagonal) is not bool or sum(bool(mode) for mode in [centered, three_point, diagonal]) > 1:
+    vertical = operation.get("vertical", False)
+    if type(centered) is not bool or type(vertical) is not bool or type(diagonal) is not bool or sum(bool(mode) for mode in [centered, three_point, vertical, diagonal]) > 1:
         raise ValueError("PointGrid base modes must be mutually exclusive booleans")
-    if type(three_point) is not bool or len(points) != (3 if three_point and third_width is None else 2):
+    if type(three_point) is not bool or len(points) != (3 if (three_point or vertical) and third_width is None else 2):
         raise ValueError("PointGrid requires two corners or three base points")
-    if third_width is not None and not three_point:
-        raise ValueError("third_width requires 3Point mode")
+    if third_width is not None and not (three_point or vertical):
+        raise ValueError("third_width requires 3Point or Vertical mode")
     if (third_width is None) != (width_choice_point is None):
         raise ValueError("numeric 3Point width requires a rectangle choice point")
     if third_width is not None and (type(third_width) not in (int, float) or _finite(third_width, "grid width") == 0):
@@ -3518,6 +3519,8 @@ def _point_grid_command(operation, diagonal=False):
         script = "_PointGrid _XCount=%d _YCount=%d _ZCount=%d " % tuple(counts)
     if three_point:
         script += "_3Point "
+    if vertical:
+        script += "_Vertical "
     if centered:
         script += "_Center "
     if diagonal:
@@ -3534,15 +3537,25 @@ def _point_grid_command(operation, diagonal=False):
             raise ValueError("PointGrid did not produce a point cloud")
         if diagonal:
             return {"points": [_xyz(p) for p in geometry.GetPoints()]}
-        third = width_choice_point if third_width is not None else (points[2] if three_point else None)
-        plane = (Rhino.Geometry.Plane(_point(points[0]), _point(points[1]), _point(third)) if three_point else
-                 Rhino.Geometry.Plane(_point(points[0]), _vector(operation["x_axis"]), _vector(operation["y_axis"])))
+        third = width_choice_point if third_width is not None else (points[2] if three_point or vertical else None)
+        if vertical:
+            construction = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
+            edge = _point(points[1]) - _point(points[0])
+            plane = Rhino.Geometry.Plane(_point(points[0]), edge, construction.Normal)
+            signed_width = Rhino.Geometry.Vector3d.Multiply(_point(third) - plane.Origin, plane.YAxis)
+            if signed_width < 0:
+                plane = Rhino.Geometry.Plane(_point(points[0]), edge, -construction.Normal)
+        else:
+            plane = (Rhino.Geometry.Plane(_point(points[0]), _point(points[1]), _point(third)) if three_point else
+                     Rhino.Geometry.Plane(_point(points[0]), _vector(operation["x_axis"]), _vector(operation["y_axis"])))
         axes = [plane.XAxis, plane.YAxis, plane.ZAxis]
         delta = _point(points[1]) - plane.Origin
         size = [Rhino.Geometry.Vector3d.Multiply(delta, axis) for axis in axes]
         if three_point:
             size[1] = (abs(third_width) if third_width is not None else
                        Rhino.Geometry.Vector3d.Multiply(_point(points[2]) - plane.Origin, plane.YAxis))
+        if vertical:
+            size[1] = abs(third_width) if third_width is not None and third_width > 0 else abs(signed_width)
         size[2] = operation.get("height") if operation.get("height") is not None else abs(size[1]) * (2 if centered else 1)
         dimensions = [max(2, counts[0]), max(2, counts[1]), counts[2]]
         def key(p):

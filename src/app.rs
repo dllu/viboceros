@@ -634,7 +634,7 @@ impl InteractiveCommand {
                 opposite: None,
                 options,
                 ..
-            } if options.three_point() => {
+            } if options.three_point() || options.vertical() => {
                 "PointGrid: pick the end of the first edge (Esc to cancel)"
             }
             Self::PointGrid {
@@ -657,8 +657,15 @@ impl InteractiveCommand {
                 width: Some(_),
                 options,
                 ..
-            } if options.three_point() => {
+            } if options.three_point() || options.vertical() => {
                 "PointGrid: pick which side of the edge contains the rectangle (Esc to cancel)"
+            }
+            Self::PointGrid {
+                third: None,
+                options,
+                ..
+            } if options.vertical() => {
+                "PointGrid: pick a vertical width point or enter a width (Esc to cancel)"
             }
             Self::PointGrid {
                 third: None,

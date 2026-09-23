@@ -10,11 +10,15 @@ impl VibocerosApp {
             options,
             ..
         }) = self.active_command
-            && options.three_point()
+            && (options.three_point() || options.vertical())
             && let Ok(width) = input.parse::<f64>()
         {
             if !width.is_finite() || width == 0.0 {
                 self.push_log("Error: point grid width must be finite and nonzero".to_owned());
+            } else if options.vertical() && width < 0.0 {
+                self.push_log(
+                    "Error: Vertical width must be positive; pick a width point".to_owned(),
+                );
             } else {
                 let command = InteractiveCommand::PointGrid {
                     base: Some(base),
@@ -36,7 +40,7 @@ impl VibocerosApp {
                 third,
                 options,
                 ..
-            }) if !options.diagonal() && (!options.three_point() || third.is_some())
+            }) if !options.diagonal() && (!(options.three_point() || options.vertical()) || third.is_some())
         ) {
             return false;
         }
@@ -81,16 +85,28 @@ impl VibocerosApp {
                     .unwrap_or(plane)
                     .with_origin(base)
                     .coordinates_of(point);
-                let valid = if options.three_point() {
-                    base.vector_to(point)
-                        .and_then(|v| v.normalized(self.document.tolerance()))
-                        .is_ok()
+                let valid = if options.three_point() || options.vertical() {
+                    base.vector_to(point).is_ok_and(|edge| {
+                        if options.vertical() {
+                            Frame3::try_from_directions(
+                                base,
+                                edge,
+                                self.drafting_plane.unwrap_or(plane).z_axis().as_vector(),
+                                self.document.tolerance(),
+                            )
+                            .is_ok()
+                        } else {
+                            edge.normalized(self.document.tolerance()).is_ok()
+                        }
+                    })
                 } else {
                     local.as_ref().is_ok_and(|[x, y, _]| *x != 0.0 && *y != 0.0)
                 };
                 if !valid {
                     self.push_log(
-                        if options.three_point() {
+                        if options.vertical() {
+                            "Error: vertical point grid edge must not be parallel to the construction-plane normal"
+                        } else if options.three_point() {
                             "Error: point grid first edge must exceed model tolerance"
                         } else {
                             "Error: point grid base must have nonzero finite width and depth"
@@ -117,10 +133,22 @@ impl VibocerosApp {
                     options,
                 }
             }
-            (Some(base), Some(second)) if options.three_point() && third.is_none() => {
-                if let Err(error) =
+            (Some(base), Some(second))
+                if (options.three_point() || options.vertical()) && third.is_none() =>
+            {
+                let frame = if options.vertical() {
+                    viboceros_command::point_grid_vertical_frame(
+                        self.drafting_plane.unwrap_or(plane),
+                        base,
+                        second,
+                        point,
+                        self.document.tolerance(),
+                    )
+                    .map(|(frame, _)| frame)
+                } else {
                     Frame3::try_from_points(base, second, point, self.document.tolerance())
-                {
+                };
+                if let Err(error) = frame {
                     self.push_log(format!("Error: {error}"));
                     return false;
                 }
@@ -151,7 +179,18 @@ impl VibocerosApp {
             }
             (Some(base), Some(second)) => {
                 let frame = if let Some(third) = third {
-                    Frame3::try_from_points(base, second, third, self.document.tolerance())
+                    if options.vertical() {
+                        viboceros_command::point_grid_vertical_frame(
+                            self.drafting_plane.unwrap_or(plane),
+                            base,
+                            second,
+                            third,
+                            self.document.tolerance(),
+                        )
+                        .map(|(frame, _)| frame)
+                    } else {
+                        Frame3::try_from_points(base, second, third, self.document.tolerance())
+                    }
                 } else {
                     Ok(plane.with_origin(base))
                 };

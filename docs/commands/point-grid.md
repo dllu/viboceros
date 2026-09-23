@@ -13,6 +13,8 @@ PointGrid 0,0,0 6,4,0 XCount=7 YCount=5 ZCount=1
 PointGrid 0,0,0 6,4,0 -8 XCount=7 YCount=5 ZCount=9
 PointGrid 3Point 0,0,0 6,0,2 3,4,5 2 XCount=3 YCount=2 ZCount=2
 PointGrid 3Point 0,0,0 6,0,2 4 0,8,0 2 XCount=3 YCount=2 ZCount=2
+PointGrid Vertical 0,0,0 6,0,2 0,0,4 2 XCount=3 YCount=2 ZCount=2
+PointGrid Vertical 0,0,0 6,0,0 4 0,0,-8 2 XCount=3 YCount=2 ZCount=2
 PointGrid Center 10,20,3 12,24,3 XCount=3 YCount=3 ZCount=2
 PointGrid Diagonal 10,20,3 8,24,-1 XCount=3 YCount=2 ZCount=2
 PointGrid Diagonal 0,0,3 6,4,3 0,0,5 XCount=3 YCount=2 ZCount=2
@@ -65,6 +67,28 @@ side-point [height]`; write the side point with commas to distinguish it from
 the existing whitespace-form `x y z` third point. The default height uses the
 entered width.
 
+## Vertical bases
+
+`PointGrid Vertical first edge-end width-point [height]` uses the first edge
+and the construction-plane normal to make a vertical base. Only the width
+point's component perpendicular to the edge in that vertical plane determines
+the width. Its sign chooses the side and the base normal for a positive height.
+The edge may tilt away from the construction plane. A width point with zero
+component along the base's width axis is rejected.
+
+Enter `PointGrid Vertical` with optional counts to pick the edge endpoints and
+width point, then pick, type, or default the height. A numeric width at the
+third prompt asks for a side-choice point, just like 3Point; the entered width
+sets the length, and the side point sets orientation. The first pick's
+construction plane remains in use across viewport switches. The typed form
+requires a comma-form side point after a numeric width. [Rhino's Rectangle
+documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/rectangle.htm)
+defines Vertical as perpendicular to the construction plane; the frame here
+is checked against live PointGrid output. Rhino 8.32 leaves a negative numeric
+Vertical width at the width prompt, so the following side point supplies its
+distance. Native interactive input rejects the negative number and keeps that
+prompt; the typed form accepts the same sequence.
+
 ## Center-based grids
 
 `PointGrid Center base-center corner [height]` creates a base symmetric about
@@ -108,8 +132,8 @@ positive height (increases for negative height), then Z advances from the base
 to the requested height. The result is a point cloud, not a polygon mesh.
 Existing Explode and point-cloud picking operations apply.
 
-This implementation accepts two-corner, three-point, center-based, and
-diagonal input. Rhino's Vertical workflow is not yet implemented.
+This implementation accepts two-corner, three-point, vertical, center-based,
+and diagonal input.
 The [Diagonal investigation](../point-grid-diagonal.md) records measured behavior
 and the remaining prompt uncertainties.
 Count-option prompts observed in Rhino 8.32 use `XCount`,
@@ -150,6 +174,12 @@ native result at `1e-10`; the [raw observation](../../tools/rhino_oracle/observa
 also shows a Rhino point-cloud traversal-order difference on the positive side. UI tests cover the width
 and side prompts, invalid side picks, and typed-command equivalence.
 
+Nine Vertical cases cover two planar edge directions, a negative width side,
+an oblique construction plane, a tilted edge, an off-axis width pick, numeric
+widths, and default height. The native point sets match recorded
+Rhino output at `1e-10`.
+UI tests cover picked and typed widths and cross-viewport completion.
+
 The three-case center fixture covers default full-width height, a negative
 height with a reflected corner, and an oblique CPlane. Live Rhino comparisons
 passed within `2.7e-15`; the
@@ -177,6 +207,7 @@ completion without losing the active draft.
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_command.json --timeout 300
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_three_point.json --timeout 300
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_three_point_width.json --timeout 300
+tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_vertical.json --timeout 300
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_center.json --timeout 300
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_diagonal.json --timeout 180
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_diagonal_planes.json --timeout 180

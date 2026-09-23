@@ -2,7 +2,7 @@
 
 use super::*;
 
-const USAGE: &str = "PointGrid [3Point|Center] first-point second-point [third-base-point|width side-point] [height] [XCount=n YCount=n ZCount=n] | PointGrid Diagonal first-corner opposite-corner [height-point] [XCount=n YCount=n ZCount=n]";
+const USAGE: &str = "PointGrid [3Point|Vertical|Center] first-point second-point [third-base-point|width side-point] [height] [XCount=n YCount=n ZCount=n] | PointGrid Diagonal first-corner opposite-corner [height-point] [XCount=n YCount=n ZCount=n]";
 const MAX_POINTS: usize = 1_000_000;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
@@ -10,6 +10,7 @@ enum BaseMode {
     #[default]
     Corners,
     ThreePoint,
+    Vertical,
     Center,
     Diagonal,
 }
@@ -25,6 +26,11 @@ impl PointGridOptions {
     /// Whether the base is defined by an edge and a third, off-edge point.
     pub const fn three_point(self) -> bool {
         matches!(self.base_mode, BaseMode::ThreePoint)
+    }
+
+    /// Whether the base stands perpendicular to the construction plane.
+    pub const fn vertical(self) -> bool {
+        matches!(self.base_mode, BaseMode::Vertical)
     }
 
     /// Whether the first point is the base center rather than a corner.
@@ -55,6 +61,7 @@ impl PointGridOptions {
         while cursor < arguments.len() {
             if let Some((_, mode)) = [
                 ("3Point", BaseMode::ThreePoint),
+                ("Vertical", BaseMode::Vertical),
                 ("Center", BaseMode::Center),
                 ("Diagonal", BaseMode::Diagonal),
             ]
@@ -115,6 +122,7 @@ impl std::fmt::Display for PointGridOptions {
         match self.base_mode {
             BaseMode::Corners => {}
             BaseMode::ThreePoint => write!(f, " 3Point")?,
+            BaseMode::Vertical => write!(f, " Vertical")?,
             BaseMode::Center => write!(f, " Center")?,
             BaseMode::Diagonal => write!(f, " Diagonal")?,
         }
@@ -124,6 +132,33 @@ impl std::fmt::Display for PointGridOptions {
             }
         }
         Ok(())
+    }
+}
+
+/// Builds the base frame for the Vertical PointGrid prompt. The side point's
+/// projection onto the base width axis chooses its side; its other components
+/// do not rotate the vertical base.
+pub fn point_grid_vertical_frame(
+    construction_plane: Frame3,
+    first: Point3,
+    edge_end: Point3,
+    side: Point3,
+    tolerance: Tolerance,
+) -> Result<(Frame3, Real), GeometryError> {
+    let edge = first.vector_to(edge_end)?;
+    let normal = construction_plane.z_axis().as_vector();
+    let initial = Frame3::try_from_directions(first, edge, normal, tolerance)?;
+    let signed_width = initial.coordinates_of(side)?[1];
+    if signed_width == 0.0 {
+        return Err(GeometryError::Degenerate {
+            context: "vertical point grid width",
+        });
+    }
+    if signed_width < 0.0 {
+        let frame = Frame3::try_from_directions(first, edge, normal.scaled(-1.0)?, tolerance)?;
+        Ok((frame, -signed_width))
+    } else {
+        Ok((initial, signed_width))
     }
 }
 
@@ -159,7 +194,7 @@ impl Command for PointMatrixCommand {
         let (first, consumed) = parse_point(&coordinates)?;
         let (opposite, more) = parse_point(&coordinates[consumed..])?;
         let mut consumed = consumed + more;
-        let (frame, x, y) = if options.three_point() {
+        let (frame, x, y) = if options.three_point() || options.vertical() {
             // A scalar third input enters Rhino's rectangle-choice prompt.
             // Require a comma-form side point to distinguish it from an
             // existing whitespace-form third point (x y z).
@@ -177,11 +212,28 @@ impl Command for PointMatrixCommand {
             };
             let (third, more) = parse_point(&coordinates[consumed..])?;
             consumed += more;
-            let frame = Frame3::try_from_points(first, opposite, third, document.tolerance())?;
+            let (frame, picked_width) = if options.vertical() {
+                point_grid_vertical_frame(
+                    context.construction_plane,
+                    first,
+                    opposite,
+                    third,
+                    document.tolerance(),
+                )?
+            } else {
+                let frame = Frame3::try_from_points(first, opposite, third, document.tolerance())?;
+                (frame, frame.coordinates_of(third)?[1])
+            };
             (
                 frame,
                 first.distance_to(opposite)?,
-                width.map_or(frame.coordinates_of(third)?[1], Real::abs),
+                if options.vertical() && width.is_some_and(|value| value < 0.0) {
+                    // Rhino leaves a negative Vertical width at the width
+                    // prompt; the following side point supplies the width.
+                    picked_width
+                } else {
+                    width.map_or(picked_width, Real::abs)
+                },
             )
         } else {
             let frame = context.construction_plane.with_origin(first);

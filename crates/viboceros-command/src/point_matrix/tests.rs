@@ -151,6 +151,9 @@ fn centered_mode_conflicts_and_unrepresentable_default_height_fail_atomically() 
         "PointGrid Center Center 0,0,0 1,1,0",
         "PointGrid 3Point Center 0,0,0 1,1,0",
         "PointGrid Center 3Point 0,0,0 1,1,0",
+        "PointGrid Vertical Center 0,0,0 1,1,0",
+        "PointGrid Vertical 3Point 0,0,0 1,1,0",
+        "PointGrid Vertical Vertical 0,0,0 1,1,0",
     ] {
         assert!(registry.execute(&mut document, input).is_err());
     }
@@ -297,6 +300,76 @@ fn three_point_numeric_width_uses_choice_only_for_side_and_ignores_width_sign() 
             "PointGrid 3Point 0 0 0 6 0 0 0 4 0 2 XCount=2 YCount=2 ZCount=1",
         )
         .unwrap();
+}
+
+#[test]
+fn vertical_grid_uses_construction_normal_and_signed_width_side() {
+    let registry = CommandRegistry::with_builtins();
+    for (side, expected_y, normal_y) in [(4., [4., 0.], -2.), (-4., [-4., 0.], 2.)] {
+        let mut document = Document::default();
+        registry
+            .execute(
+                &mut document,
+                &format!("PointGrid Vertical 0,0,0 6,0,0 0,0,{side} 2 XCount=3 YCount=2 ZCount=2"),
+            )
+            .unwrap();
+        for (index, point) in points(&document).iter().enumerate() {
+            assert_eq!(point[0], (index % 3) as f64 * 3.);
+            assert_eq!(point[1], (index / 6) as f64 * normal_y);
+            assert_eq!(point[2], expected_y[(index / 3) % 2]);
+        }
+    }
+    let mut document = Document::default();
+    registry
+        .execute(
+            &mut document,
+            "PointGrid Vertical 0,0,0 6,0,2 0,0,4 2 XCount=3 YCount=2 ZCount=2",
+        )
+        .unwrap();
+    let actual = points(&document);
+    assert!((actual[0][0] + 1.2).abs() < 1e-12);
+    assert!((actual[0][2] - 3.6).abs() < 1e-12);
+    assert!((actual[6][1] + 2.).abs() < 1e-12);
+    for input in [
+        "PointGrid Vertical 0,0,0 0,0,6 0,0,4 2",
+        "PointGrid Vertical 0,0,0 6,0,0 0,4,0 2",
+    ] {
+        assert!(registry.execute(&mut document, input).is_err());
+        assert_eq!(points(&document), actual);
+    }
+}
+
+#[test]
+fn vertical_grid_numeric_width_uses_choice_for_side_only() {
+    let registry = CommandRegistry::with_builtins();
+    let mut picked = Document::default();
+    let mut numeric = Document::default();
+    registry
+        .execute(
+            &mut picked,
+            "PointGrid Vertical 0,0,0 6,0,0 0,0,-4 2 XCount=3 YCount=2 ZCount=2",
+        )
+        .unwrap();
+    registry
+        .execute(
+            &mut numeric,
+            "PointGrid Vertical 0,0,0 6,0,0 4 0,0,-8 2 XCount=3 YCount=2 ZCount=2",
+        )
+        .unwrap();
+    assert_eq!(points(&numeric), points(&picked));
+    registry
+        .execute(
+            &mut picked,
+            "PointGrid Vertical 0,0,0 6,0,0 0,0,-8 2 XCount=3 YCount=2 ZCount=2",
+        )
+        .unwrap();
+    registry
+        .execute(
+            &mut numeric,
+            "PointGrid Vertical 0,0,0 6,0,0 -4 0,0,-8 2 XCount=3 YCount=2 ZCount=2",
+        )
+        .unwrap();
+    assert_eq!(points(&numeric), points(&picked));
 }
 
 #[test]

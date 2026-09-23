@@ -240,6 +240,73 @@ fn three_point_numeric_width_prompts_for_side_and_matches_typed_command() {
 }
 
 #[test]
+fn vertical_grid_picking_matches_typed_command() {
+    let mut app = test_app();
+    enter(&mut app, "PointGrid Vertical XCount=3 YCount=2 ZCount=2");
+    assert!(app.accept_drafting_point(point(0., 0., 0.)));
+    assert!(!app.accept_drafting_point(point(0., 0., 6.)));
+    assert!(
+        app.active_command
+            .unwrap()
+            .prompt()
+            .contains("end of the first edge")
+    );
+    assert!(app.accept_drafting_point(point(6., 0., 0.)));
+    assert!(
+        app.active_command
+            .unwrap()
+            .prompt()
+            .contains("vertical width")
+    );
+    assert!(!app.accept_drafting_point(point(2., 4., 0.)));
+    assert!(app.accept_drafting_point(point(0., 0., 4.)));
+    enter(&mut app, "2");
+    let mut expected = Document::default();
+    CommandRegistry::with_builtins()
+        .execute(
+            &mut expected,
+            "PointGrid Vertical 0,0,0 6,0,0 0,0,4 2 XCount=3 YCount=2 ZCount=2",
+        )
+        .unwrap();
+    assert_eq!(cloud(&app.document), cloud(&expected));
+    assert!(app.active_command.is_none());
+}
+
+#[test]
+fn vertical_numeric_width_keeps_first_pick_plane_across_viewports() {
+    let mut app = test_app();
+    app.active_viewport = 0;
+    let plane = app.viewports[0].construction_plane();
+    enter(&mut app, "PointGrid Vertical XCount=3 YCount=2 ZCount=2");
+    assert!(app.accept_drafting_point(point(0., 0., 0.)));
+    assert!(app.accept_drafting_point(point(6., 0., 0.)));
+    enter(&mut app, "-4");
+    assert!(
+        app.active_command
+            .unwrap()
+            .prompt()
+            .contains("vertical width")
+    );
+    enter(&mut app, "4");
+    assert!(app.active_command.unwrap().prompt().contains("which side"));
+    app.active_viewport = 2;
+    assert!(app.accept_drafting_point(point(0., 0., -8.)));
+    assert!(app.accept_drafting_point(point(0., 2., 0.)));
+    let mut expected = Document::default();
+    CommandRegistry::with_builtins()
+        .execute_in_context(
+            &mut expected,
+            "PointGrid Vertical 0,0,0 6,0,0 4 0,0,-8 2 XCount=3 YCount=2 ZCount=2",
+            viboceros_command::CommandContext {
+                construction_plane: plane,
+            },
+        )
+        .unwrap();
+    assert_eq!(cloud(&app.document), cloud(&expected));
+    assert!(app.active_command.is_none());
+}
+
+#[test]
 fn three_point_grid_accepts_numeric_and_default_heights() {
     for height in ["-2", ""] {
         let mut app = test_app();

@@ -11,6 +11,8 @@ pub struct PointMatrixFixture {
     pub three_point: bool,
     #[serde(default)]
     pub centered: bool,
+    #[serde(default)]
+    pub vertical: bool,
     pub count: [usize; 3],
     pub height: Option<f64>,
     pub height_point: Option<[f64; 3]>,
@@ -37,7 +39,7 @@ fn run_mode(
     tolerance: Tolerance,
     diagonal: bool,
 ) -> Result<(Value, u64), ProbeError> {
-    if (diagonal && (f.three_point || f.centered || f.height.is_some()))
+    if (diagonal && (f.three_point || f.centered || f.vertical || f.height.is_some()))
         || (!diagonal && f.height_point.is_some())
     {
         return Err(ProbeError::FixtureInvariant(
@@ -45,10 +47,11 @@ fn run_mode(
         ));
     }
     if (f.centered && f.three_point)
+        || (f.vertical && (f.centered || f.three_point))
         || f.third_width.is_some() != f.width_choice_point.is_some()
-        || (f.third_width.is_some() && !f.three_point)
+        || (f.third_width.is_some() && !(f.three_point || f.vertical))
         || f.points.len()
-            != if f.three_point && f.third_width.is_none() {
+            != if (f.three_point || f.vertical) && f.third_width.is_none() {
                 3
             } else {
                 2
@@ -72,6 +75,9 @@ fn run_mode(
     );
     if f.three_point {
         command.push_str(" 3Point");
+    }
+    if f.vertical {
+        command.push_str(" Vertical");
     }
     if f.centered {
         command.push_str(" Center");
@@ -110,7 +116,16 @@ fn run_mode(
             0,
         ));
     }
-    let frame = if f.three_point {
+    let frame = if f.vertical {
+        viboceros_command::point_grid_vertical_frame(
+            context.construction_plane,
+            Point3::try_from(f.points[0])?,
+            Point3::try_from(f.points[1])?,
+            Point3::try_from(f.width_choice_point.unwrap_or_else(|| f.points[2]))?,
+            tolerance,
+        )?
+        .0
+    } else if f.three_point {
         Frame3::try_from_points(
             Point3::try_from(f.points[0])?,
             Point3::try_from(f.points[1])?,
@@ -123,11 +138,13 @@ fn run_mode(
             .with_origin(Point3::try_from(f.points[0])?)
     };
     let mut size = frame.coordinates_of(Point3::try_from(f.points[1])?)?;
-    if f.three_point {
-        size[1] = if let Some(width) = f.third_width {
+    if f.three_point || f.vertical {
+        size[1] = if let Some(width) = f.third_width.filter(|width| !f.vertical || *width > 0.0) {
             width.abs()
         } else {
-            frame.coordinates_of(Point3::try_from(f.points[2])?)?[1]
+            frame.coordinates_of(Point3::try_from(
+                f.width_choice_point.unwrap_or_else(|| f.points[2]),
+            )?)?[1]
         };
     }
     size[2] = f
@@ -231,6 +248,14 @@ mod tests {
             include_str!(
                 "../../../tools/rhino_oracle/observations/point_matrix_three_point_width.json"
             ),
+        );
+    }
+
+    #[test]
+    fn vertical_grid_matches_rhino_point_sets() {
+        check(
+            include_str!("../../../tools/rhino_oracle/fixtures/point_matrix_vertical.json"),
+            include_str!("../../../tools/rhino_oracle/observations/point_matrix_vertical.json"),
         );
     }
 

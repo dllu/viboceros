@@ -126,7 +126,7 @@ mod point_cloud;
 mod point_grid;
 mod point_matrix;
 mod points;
-pub use point_matrix::PointGridOptions;
+pub use point_matrix::{PointGridOptions, point_grid_vertical_frame};
 mod sweep;
 #[cfg(test)]
 use curve_domain::{CURVE_SEAM_USAGE, REPARAMETERIZE_USAGE, SUBCURVE_USAGE};
