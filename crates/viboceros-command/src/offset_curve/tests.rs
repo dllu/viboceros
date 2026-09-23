@@ -59,7 +59,7 @@ fn both_sides_keeps_source_and_adds_two_analytic_circles() {
 }
 
 #[test]
-fn unsupported_curve_does_not_add_partial_outputs() {
+fn unsupported_geometry_does_not_add_partial_outputs() {
     let mut document = Document::default();
     let line = document
         .add_geometry(Geometry::Line(
@@ -71,21 +71,11 @@ fn unsupported_curve_does_not_add_partial_outputs() {
             .unwrap(),
         ))
         .unwrap();
-    let polyline = document
-        .add_geometry(Geometry::Polyline(
-            viboceros_geometry::Polyline3::try_new(
-                vec![
-                    point(0.0, 0.0, 0.0),
-                    point(1.0, 0.0, 0.0),
-                    point(1.0, 1.0, 0.0),
-                ],
-                document.tolerance(),
-            )
-            .unwrap(),
-        ))
+    let unsupported = document
+        .add_geometry(Geometry::Point(point(0.0, 0.0, 0.0)))
         .unwrap();
     document
-        .select_objects_direct([line, polyline], SelectionMode::Replace)
+        .select_objects_direct([line, unsupported], SelectionMode::Replace)
         .unwrap();
     let before = document.objects().cloned().collect::<Vec<_>>();
     let result = CommandRegistry::with_builtins().execute(&mut document, "Offset 1 0,2,0");
@@ -93,6 +83,80 @@ fn unsupported_curve_does_not_add_partial_outputs() {
         result,
         Err(CommandError::UnsupportedOffsetGeometry)
     ));
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+}
+
+#[test]
+fn offset_open_polyline_keeps_sharp_corner_and_vertex_parameters() {
+    let mut document = Document::default();
+    let curve = viboceros_geometry::Polyline3::try_with_parameters(
+        vec![
+            point(0.0, 0.0, 0.0),
+            point(4.0, 0.0, 0.0),
+            point(4.0, 4.0, 0.0),
+        ],
+        vec![2.0, 5.0, 9.0],
+        document.tolerance(),
+    )
+    .unwrap();
+    let source = document.add_geometry(Geometry::Polyline(curve)).unwrap();
+    document
+        .select_object(source, SelectionMode::Replace)
+        .unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "Offset 1 1,2,0")
+        .unwrap();
+    let Geometry::Polyline(output) = document.selected_objects().next().unwrap().geometry() else {
+        panic!("offset polyline")
+    };
+    assert_eq!(
+        output.vertices(),
+        &[
+            point(0.0, 1.0, 0.0),
+            point(3.0, 1.0, 0.0),
+            point(3.0, 4.0, 0.0)
+        ]
+    );
+    assert_eq!(output.parameters(), &[2.0, 5.0, 9.0]);
+}
+
+#[test]
+fn collapsing_polyline_offset_rolls_back_other_selected_results() {
+    let mut document = Document::default();
+    let line = document
+        .add_geometry(Geometry::Line(
+            LineSegment::try_new(
+                point(0.0, -5.0, 0.0),
+                point(4.0, -5.0, 0.0),
+                document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    let boundary = document
+        .add_geometry(Geometry::Polyline(
+            viboceros_geometry::Polyline3::try_new(
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.0, 3.0, 0.0),
+                    point(0.0, 3.0, 0.0),
+                    point(0.0, 0.0, 0.0),
+                ],
+                document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    document
+        .select_objects_direct([line, boundary], SelectionMode::Replace)
+        .unwrap();
+    let before = document.objects().cloned().collect::<Vec<_>>();
+    assert!(
+        CommandRegistry::with_builtins()
+            .execute(&mut document, "Offset 2 BothSides=Yes")
+            .is_err()
+    );
     assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
 }
 

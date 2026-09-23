@@ -1,4 +1,4 @@
-//! Exact analytic curve offsets with explicit side and layer choices.
+//! Exact analytic and sharp polyline offsets with explicit side and layer choices.
 
 use super::*;
 
@@ -37,6 +37,7 @@ impl Command for OffsetCommand {
                 Geometry::Line(line) => Curve3::Line(*line),
                 Geometry::Circle(circle) => Curve3::Circle(*circle),
                 Geometry::Arc(arc) => Curve3::Arc(*arc),
+                Geometry::Polyline(polyline) => Curve3::Polyline(polyline.clone()),
                 _ => return Err(CommandError::UnsupportedOffsetGeometry),
             };
             let sign = if options.both_sides {

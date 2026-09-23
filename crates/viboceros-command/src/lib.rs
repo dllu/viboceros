@@ -17340,7 +17340,7 @@ pub enum CommandError {
     #[error("CloseCrv requires curve geometry")]
     UnsupportedCloseCurveGeometry,
 
-    #[error("Offset requires selected line, circle, or circular arc curves")]
+    #[error("Offset requires selected line, circle, circular arc, or planar polyline curves")]
     UnsupportedOffsetGeometry,
 
     #[error("ToNURBS requires a curve, surface, B-rep, or mesh")]
