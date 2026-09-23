@@ -251,9 +251,9 @@ tensor-product NURBS surfaces. Revolutions of those directrices with straight UV
 iso-trims convert to exact rational patches over angles up to one turn, including
 paired full-turn seams. NURBS faces can have polygon holes with certified
 straight-segment UV trims, including higher-degree collinear NURBS. Curved UV
-holes can also use one closed four-span quadratic NURBS trim under a strict convex
-containment certificate. Certified quadratic outer loops can contain holes
-strictly inside their endpoint quadrilateral. Other curved multi-loop regions
+holes can also use a closed Bézier-span NURBS trim under a strict convex
+containment certificate. Certified curved outer loops can contain holes
+strictly inside their convex endpoint polygon. Other curved multi-loop regions
 remain unsupported.
 Other analytic surface types and
 periodic seam arrangements still fail native import.

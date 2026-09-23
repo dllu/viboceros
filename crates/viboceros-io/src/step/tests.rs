@@ -1066,6 +1066,68 @@ fn native_step_imports_closed_quadratic_outer_with_inner_hole() {
 }
 
 #[test]
+fn native_step_imports_three_span_cubic_outer_with_hole() {
+    use viboceros_geometry::{Brep, NurbsCurve, WeightedPoint3};
+    let outer = NurbsCurve::try_new(
+        3,
+        [
+            [8., 5.],
+            [8., 7.],
+            [6., 9.],
+            [3., 8.],
+            [1., 7.],
+            [1., 3.],
+            [3., 2.],
+            [6., 1.],
+            [8., 3.],
+            [8., 5.],
+        ]
+        .into_iter()
+        .map(|[x, y]| Point3::try_new(x, y, 0.).unwrap())
+        .collect(),
+        vec![0., 0., 0., 0., 1., 1., 1., 2., 2., 2., 3., 3., 3., 3.],
+    )
+    .unwrap();
+    let inner = NurbsCurve::try_new_rational(
+        2,
+        [
+            [5.5, 5.],
+            [5.5, 5.5],
+            [5., 5.5],
+            [4.5, 5.5],
+            [4.5, 5.],
+            [4.5, 4.5],
+            [5., 4.5],
+            [5.5, 4.5],
+            [5.5, 5.],
+        ]
+        .into_iter()
+        .enumerate()
+        .map(|(index, [x, y])| {
+            WeightedPoint3::try_new(
+                Point3::try_new(x, y, 0.).unwrap(),
+                if index % 2 == 0 { 1. } else { 0.75 },
+            )
+            .unwrap()
+        })
+        .collect(),
+        vec![0., 0., 0., 1., 1., 2., 2., 3., 3., 4., 4., 4.],
+    )
+    .unwrap();
+    let source = Brep::try_planar_face_with_holes(&outer, &[inner], Tolerance::DEFAULT).unwrap();
+    let expected_area = source.area(Tolerance::DEFAULT).unwrap();
+    let mut output = Vec::new();
+    write_step_nurbs_breps(&mut output, [&source]).unwrap();
+    let text = String::from_utf8(output).unwrap();
+    assert_eq!(text.matches("PCURVE(").count(), 2);
+    let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    let brep = &native.instances[0].brep;
+    assert_eq!(brep.faces()[0].loops().len(), 2);
+    assert_eq!(brep.faces()[0].loops()[0].trims()[0].curve().degree(), 3);
+    assert!((brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
+}
+
+#[test]
 fn native_step_imports_exact_parabola_and_hyperbola_trims() {
     use monstertruck::meshing::prelude::ParametricCurve;
     use monstertruck::modeling::{

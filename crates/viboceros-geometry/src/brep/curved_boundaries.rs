@@ -1,4 +1,4 @@
-//! Conservative certificates for curved holes inside polygonal UV boundaries.
+//! Conservative certificates for curved UV boundary loops.
 
 use super::*;
 use crate::exact_scalar::{Rational, rational};
@@ -13,15 +13,16 @@ enum Sense {
 }
 
 impl BrepFace {
-    /// Constructs polygonal boundaries with optional certified quadratic loops.
+    /// Constructs polygonal boundaries with optional certified Bézier loops.
     ///
-    /// A curved loop must be one closed rational quadratic curve with four
-    /// Bézier spans. Its four span endpoints form a strictly convex
-    /// quadrilateral. Each intermediate control lies strictly inside its
-    /// angular sector about the endpoint centroid. Same-sign weights keep
-    /// each arc in that sector, proving a simple closed loop. A curved outer
-    /// loop must bow outside its endpoint quadrilateral; holes must lie
-    /// strictly inside that quadrilateral or a convex polygonal outer loop.
+    /// A curved loop must be one closed rational NURBS curve with at least
+    /// three Bézier spans. Its span endpoints form a strictly convex polygon.
+    /// Each intermediate control lies strictly inside its angular sector
+    /// about the endpoint centroid and advances along its endpoint chord.
+    /// Same-sign weights keep each arc in that sector; strict chord progress
+    /// prevents a span from retracing or crossing itself. A curved outer
+    /// loop must bow outside its endpoint polygon; holes must lie
+    /// strictly inside that polygon or a convex polygonal outer loop.
     /// Disjoint control bounds separate holes. Other curves are rejected.
     pub fn try_from_certified_boundaries(
         surface: NurbsSurface,
@@ -37,7 +38,7 @@ impl BrepFace {
                 polygon_ids.push(id);
                 polygons.push(boundary);
             } else if boundary.len() == 1 {
-                let sense = certified_quadratic_loop(&boundary[0]).ok_or_else(invalid)?;
+                let sense = certified_bezier_loop(&boundary[0]).ok_or_else(invalid)?;
                 curved.push((id, boundary, sense));
             } else {
                 return Err(invalid());
@@ -158,28 +159,43 @@ impl BrepFace {
     }
 }
 
-fn certified_quadratic_loop(trim: &BrepTrim) -> Option<Sense> {
-    let curve = &trim.curve;
+/// Exact Bézier structure: clamped endpoints and degree-multiplicity joins.
+fn bezier_layout(curve: &NurbsCurve2) -> Option<(usize, usize)> {
+    let degree = curve.degree();
     let controls = curve.control_points();
     let knots = curve.knots();
-    if trim.vertices[0] != trim.vertices[1]
-        || curve.degree() != 2
-        || controls.len() != 9
-        || !(knots[0] == knots[1]
-            && knots[1] == knots[2]
-            && knots[2] < knots[3]
-            && knots[3] == knots[4]
-            && knots[4] < knots[5]
-            && knots[5] == knots[6]
-            && knots[6] < knots[7]
-            && knots[7] == knots[8]
-            && knots[8] < knots[9]
-            && knots[9] == knots[10]
-            && knots[10] == knots[11])
-        || controls[0].point() != controls[8].point()
-    {
+    if degree < 2 || !(controls.len() - 1).is_multiple_of(degree) {
         return None;
     }
+    let spans = (controls.len() - 1) / degree;
+    if spans < 3 || knots[..=degree].iter().any(|&knot| knot != knots[0]) {
+        return None;
+    }
+    let mut offset = degree + 1;
+    let mut previous = knots[0];
+    for _ in 1..spans {
+        let current = knots[offset];
+        if current <= previous
+            || knots[offset..offset + degree]
+                .iter()
+                .any(|&knot| knot != current)
+        {
+            return None;
+        }
+        previous = current;
+        offset += degree;
+    }
+    let end = knots[offset];
+    (end > previous && knots[offset..].iter().all(|&knot| knot == end)).then_some((degree, spans))
+}
+
+fn certified_bezier_loop(trim: &BrepTrim) -> Option<Sense> {
+    let curve = &trim.curve;
+    let controls = curve.control_points();
+    if trim.vertices[0] != trim.vertices[1] || controls[0].point() != controls.last()?.point() {
+        return None;
+    }
+    let (degree, spans) = bezier_layout(curve)?;
     let sign = controls[0].weight().is_sign_positive();
     if controls
         .iter()
@@ -187,9 +203,11 @@ fn certified_quadratic_loop(trim: &BrepTrim) -> Option<Sense> {
     {
         return None;
     }
-    let corners = [0, 2, 4, 6].map(|index| exact_point(controls[index].point()));
+    let corners = (0..spans)
+        .map(|index| exact_point(controls[index * degree].point()))
+        .collect::<Vec<_>>();
     let center = std::array::from_fn(|axis| {
-        corners.iter().map(|point| &point[axis]).sum::<Rational>() / rational(4.)
+        corners.iter().map(|point| &point[axis]).sum::<Rational>() / rational(spans as Real)
     });
     let zero = rational(0.);
     let first = cross(&corners[0], &corners[1], &corners[2]);
@@ -205,41 +223,58 @@ fn certified_quadratic_loop(trim: &BrepTrim) -> Option<Sense> {
         Sense::Counterclockwise => value > zero,
         Sense::Clockwise => value < zero,
     };
-    (0..4)
+    (0..spans)
         .all(|i| {
-            let next = (i + 1) % 4;
-            let after = (i + 2) % 4;
-            let middle = exact_point(controls[2 * i + 1].point());
-            oriented(cross(&corners[i], &corners[next], &corners[after]))
-                && oriented(cross(&center, &corners[i], &middle))
-                && oriented(cross(&center, &middle, &corners[next]))
+            let next = (i + 1) % spans;
+            // Every other endpoint must lie strictly on the interior side of
+            // every directed edge. Local turns alone accept star polygons.
+            let convex = (0..spans).all(|j| {
+                j == i || j == next || oriented(cross(&corners[i], &corners[next], &corners[j]))
+            });
+            let mut previous_progress = zero.clone();
+            let full_progress = progress(&corners[i], &corners[next], &corners[next]);
+            convex
+                && (i * degree + 1..(i + 1) * degree).all(|index| {
+                    let control = exact_point(controls[index].point());
+                    let next_progress = progress(&corners[i], &corners[next], &control);
+                    let accepted = next_progress > previous_progress
+                        && next_progress < full_progress
+                        && oriented(cross(&center, &corners[i], &control))
+                        && oriented(cross(&center, &control, &corners[next]));
+                    previous_progress = next_progress;
+                    accepted
+                })
         })
         .then_some(sense)
 }
 
 fn outer_bows_outward(trim: &BrepTrim) -> bool {
     let controls = trim.curve.control_points();
+    let Some((degree, spans)) = bezier_layout(&trim.curve) else {
+        return false;
+    };
     let zero = rational(0.);
-    (0..4).all(|i| {
-        cross(
-            &exact_point(controls[2 * i].point()),
-            &exact_point(controls[2 * i + 2].point()),
-            &exact_point(controls[2 * i + 1].point()),
-        ) < zero
+    (0..spans).all(|i| {
+        let start = exact_point(controls[i * degree].point());
+        let end = exact_point(controls[(i + 1) * degree].point());
+        (i * degree + 1..(i + 1) * degree)
+            .all(|index| cross(&start, &end, &exact_point(controls[index].point())) < zero)
     })
 }
 
 fn endpoint_polygon(trim: &BrepTrim) -> Result<Vec<BrepTrim>, GeometryError> {
     let controls = trim.curve.control_points();
-    (0..4)
+    let (degree, spans) =
+        bezier_layout(&trim.curve).ok_or(GeometryError::InvalidPlanarFaceBoundary)?;
+    (0..spans)
         .map(|i| {
             BrepTrim::try_new(
-                [i, (i + 1) % 4],
+                [i, (i + 1) % spans],
                 Some(i),
                 false,
                 NurbsCurve2::try_line(
-                    controls[2 * i].point(),
-                    controls[2 * ((i + 1) % 4)].point(),
+                    controls[degree * i].point(),
+                    controls[degree * ((i + 1) % spans)].point(),
                 )?,
                 BrepTrimType::Boundary,
                 SurfaceIso::NotIso,
@@ -255,6 +290,10 @@ fn exact_point(point: Point2) -> ExactPoint {
 
 fn cross(a: &ExactPoint, b: &ExactPoint, c: &ExactPoint) -> Rational {
     (&b[0] - &a[0]) * (&c[1] - &a[1]) - (&b[1] - &a[1]) * (&c[0] - &a[0])
+}
+
+fn progress(a: &ExactPoint, b: &ExactPoint, point: &ExactPoint) -> Rational {
+    (&point[0] - &a[0]) * (&b[0] - &a[0]) + (&point[1] - &a[1]) * (&b[1] - &a[1])
 }
 
 fn bounds(points: impl IntoIterator<Item = Point2>) -> Bounds {
@@ -358,6 +397,69 @@ mod tests {
         boundary
     }
 
+    fn closed_bezier(degree: usize, points: &[[Real; 2]], knots: Vec<Real>) -> Vec<BrepTrim> {
+        vec![
+            BrepTrim::try_new(
+                [100, 100],
+                Some(100),
+                false,
+                NurbsCurve2::try_new(
+                    degree,
+                    points.iter().map(|p| point(p[0], p[1])).collect(),
+                    knots,
+                )
+                .unwrap(),
+                BrepTrimType::Boundary,
+                SurfaceIso::NotIso,
+                [0.; 2],
+            )
+            .unwrap(),
+        ]
+    }
+
+    fn cubic_outer() -> Vec<BrepTrim> {
+        closed_bezier(
+            3,
+            &[
+                [8., 5.],
+                [8., 7.],
+                [6., 9.],
+                [3., 8.],
+                [1., 7.],
+                [1., 3.],
+                [3., 2.],
+                [6., 1.],
+                [8., 3.],
+                [8., 5.],
+            ],
+            vec![0., 0., 0., 0., 1., 1., 1., 2., 2., 2., 3., 3., 3., 3.],
+        )
+    }
+
+    fn six_span_outer() -> Vec<BrepTrim> {
+        closed_bezier(
+            2,
+            &[
+                [8., 5.],
+                [8., 7.],
+                [7., 8.],
+                [5., 9.],
+                [3., 8.],
+                [2., 7.],
+                [2., 5.],
+                [2., 3.],
+                [3., 2.],
+                [5., 1.],
+                [7., 2.],
+                [8., 3.],
+                [8., 5.],
+            ],
+            vec![
+                0., 0., 0., 1., 1., 2., 2., 3., 3., 4., 4., 5., 5., 6., 6., 6.,
+            ],
+        )
+    }
+
     fn face(boundaries: Vec<Vec<BrepTrim>>) -> Result<BrepFace, GeometryError> {
         let surface = NurbsSurface::try_new(
             1,
@@ -439,5 +541,44 @@ mod tests {
         inward[0].curve =
             NurbsCurve2::try_new_rational(2, controls, inward[0].curve.knots().to_vec()).unwrap();
         assert!(face(vec![inward]).is_err());
+    }
+
+    #[test]
+    fn accepts_cubic_and_six_span_outer_loops() {
+        let inner = polygon(&[[4.5, 4.5], [4.5, 5.5], [5.5, 5.5], [5.5, 4.5]]);
+        for outer in [cubic_outer(), six_span_outer()] {
+            let built = face(vec![inner.clone(), outer.clone()]).unwrap();
+            assert_eq!(built.loops[0].trims, outer);
+            assert_eq!(built.loops[1].trims, inner);
+        }
+    }
+
+    #[test]
+    fn rejects_star_endpoint_polygon_despite_consistent_local_turns() {
+        let corners = [[5., 0.], [8., 10.], [0., 4.], [10., 4.], [2., 10.]];
+        let mut points = Vec::new();
+        for index in 0..corners.len() {
+            let a = corners[index];
+            let b = corners[(index + 1) % corners.len()];
+            points.push(a);
+            points.push([(a[0] + b[0]) / 2., (a[1] + b[1]) / 2.]);
+        }
+        points.push(corners[0]);
+        let star = closed_bezier(
+            2,
+            &points,
+            vec![0., 0., 0., 1., 1., 2., 2., 3., 3., 4., 4., 5., 5., 5.],
+        );
+        assert!(certified_bezier_loop(&star[0]).is_none());
+    }
+
+    #[test]
+    fn rejects_cubic_span_with_reversed_chord_progress() {
+        let mut boundary = cubic_outer();
+        let mut controls = boundary[0].curve.control_points().to_vec();
+        controls.swap(1, 2);
+        boundary[0].curve =
+            NurbsCurve2::try_new_rational(3, controls, boundary[0].curve.knots().to_vec()).unwrap();
+        assert!(certified_bezier_loop(&boundary[0]).is_none());
     }
 }

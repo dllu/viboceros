@@ -207,12 +207,14 @@ agreement, edge-use types, and winding, but does not establish those planar
 region conditions; the polygon constructor establishes them before the native
 STEP reader performs full model-space validation.
 
-`BrepFace::try_from_certified_boundaries` also accepts closed rational quadratic
-loops with four Bézier spans when their endpoint quadrilateral and control
-sectors certify a simple loop. Exact control-hull checks place curved holes
-strictly inside a convex polygonal outer boundary. A curved outer loop must
-bow outside its endpoint quadrilateral; holes must fit strictly inside that
-quadrilateral. Disjoint control bounds separate holes. Other curved loop
+`BrepFace::try_from_certified_boundaries` also accepts closed rational NURBS
+loops of degree at least two with at least three Bézier spans when their
+strictly convex endpoint polygon, control sectors, and strictly increasing
+control projections along each span chord certify a simple loop.
+Exact control-hull checks place curved holes strictly inside a convex polygonal
+outer boundary. A curved outer loop must
+bow outside its endpoint polygon; holes must fit strictly inside that
+polygon. Disjoint control bounds separate holes. Other curved loop
 configurations remain unsupported. This does not change other B-rep constructors.
 
 Native loop-winding validation also uses the range-safe UV normalization.
@@ -268,7 +270,7 @@ iso-trims use exact rational patches over angles up to one turn, including paire
 full-turn seams. Polar singular trims remain unsupported. The path
 validates shared topology in `Brep::try_new`. NURBS faces with multiple loops of
 certified straight-segment UV trims use strict polygon boundary validation.
-Four-span quadratic NURBS UV holes and outer loops are accepted under the
+Certified Bézier-span NURBS UV holes and outer loops are accepted under the
 containment and sector certificates above. Other curved multi-loop regions
 remain unsupported.
 Other surface types, periodic seam arrangements, and missing UV curves still
