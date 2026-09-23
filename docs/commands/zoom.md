@@ -123,13 +123,14 @@ coordinates; see [GPU tests](../gpu-tests.md).
 
 `src/viewport/extents.rs` owns fitting. A model-space target is shared by CPU
 projection, unprojection, drafting rays, perspective depth, and GPU matrices.
-Tests fit translated boxes in all four views, compare GPU and CPU projections,
+Tests fit translated boxes in the four default viewports, compare GPU and CPU projections,
 check picking and unprojection, reject unsupported ranges, exclude hidden
 geometry, and execute ZE and ZS during a modeling prompt with redo history present.
 All-view tests cover a late perspective failure after valid parallel fits,
 missing layout, successful independent fits, and all four command spellings
-during an unfinished modeling prompt. Selection-fitting tests exercise all four view kinds, irrelevant unsupported
-geometry, empty-selection no-ops, and retained selection/model history.
+during an unfinished modeling prompt. Selection-fitting tests exercise the four
+default viewport kinds, irrelevant unsupported geometry, empty-selection
+no-ops, and retained selection/model history.
 No live Rhino camera comparison has been performed for this implementation.
 
 `UndoView` and `RedoView` step through the active viewport's camera history,
