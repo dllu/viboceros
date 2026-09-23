@@ -94,6 +94,7 @@ pub use sweep::SweepFixture;
 mod curve_area;
 mod curve_join_close;
 mod curve_native;
+mod ellipse_offset;
 mod non_manifold_selection;
 pub use curve_frames::CurveFramesFixture;
 pub use curve_native::NativeCurveFixture;
@@ -475,6 +476,13 @@ pub enum Operation {
     CurveArea {
         id: String,
         curve: curve_join_close::CurveInput,
+    },
+    EllipseOffsetGeometry {
+        id: String,
+        curve: curve_join_close::CurveInput,
+        side: [f64; 3],
+        distance: f64,
+        samples: usize,
     },
     NonManifoldSelection {
         id: String,
@@ -1776,6 +1784,7 @@ impl Operation {
             | Self::ThreeDmBrepInterchange { id, .. }
             | Self::CurveNative { id, .. }
             | Self::CurveArea { id, .. }
+            | Self::EllipseOffsetGeometry { id, .. }
             | Self::NonManifoldSelection { id, .. }
             | Self::CurveExtrudeCommand { id, .. }
             | Self::PolycurveNative { id, .. }
@@ -2276,6 +2285,13 @@ fn execute(
             curve_native::run(fixture, iterations, tolerance)?
         }
         Operation::CurveArea { curve, .. } => curve_area::run(curve, iterations, tolerance)?,
+        Operation::EllipseOffsetGeometry {
+            curve,
+            side,
+            distance,
+            samples,
+            ..
+        } => ellipse_offset::run(curve, *side, *distance, *samples, iterations, tolerance)?,
         Operation::NonManifoldSelection {
             as_brep, preselect, ..
         } => non_manifold_selection::run(*as_brep, *preselect, tolerance)?,

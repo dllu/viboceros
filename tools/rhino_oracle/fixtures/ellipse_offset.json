@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "ellipse_offset_geometry",
+      "id": "ellipse-outward",
+      "curve": {
+        "type": "ellipse",
+        "center": [0, 0, 0],
+        "radius_x": 5,
+        "radius_y": 3,
+        "x_axis": [1, 0, 0],
+        "y_axis": [0, 1, 0]
+      },
+      "side": [8, 0, 0],
+      "distance": 0.8,
+      "samples": 65
+    },
+    {
+      "op": "ellipse_offset_geometry",
+      "id": "ellipse-inward",
+      "curve": {
+        "type": "ellipse",
+        "center": [0, 0, 0],
+        "radius_x": 5,
+        "radius_y": 3,
+        "x_axis": [1, 0, 0],
+        "y_axis": [0, 1, 0]
+      },
+      "side": [0, 0, 0],
+      "distance": 0.5,
+      "samples": 65
+    },
+    {
+      "op": "ellipse_offset_geometry",
+      "id": "ellipse-rotated-outward",
+      "curve": {
+        "type": "ellipse",
+        "center": [1, 2, 3],
+        "radius_x": 10,
+        "radius_y": 2,
+        "x_axis": [0, 1, 0],
+        "y_axis": [-1, 0, 0]
+      },
+      "side": [1, 15, 3],
+      "distance": 0.3,
+      "samples": 65
+    },
+    {
+      "op": "ellipse_offset_geometry",
+      "id": "round-ellipse-inward",
+      "curve": {
+        "type": "ellipse",
+        "center": [0, 0, 0],
+        "radius_x": 3,
+        "radius_y": 3,
+        "x_axis": [1, 0, 0],
+        "y_axis": [0, 1, 0]
+      },
+      "side": [0, 0, 0],
+      "distance": 1,
+      "samples": 65
+    }
+  ]
+}

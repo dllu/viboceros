@@ -1309,6 +1309,42 @@ def _curve_area(operation, iterations):
         curve.Dispose()
 
 
+def _ellipse_offset_geometry(operation, iterations, tolerance):
+    definition = operation["curve"]
+    if definition["type"] != "ellipse" or not 8 <= operation["samples"] <= 513 or operation["distance"] <= 0:
+        raise ValueError("invalid ellipse offset fixture")
+    plane = Rhino.Geometry.Plane(_point(definition["center"]),
+                                 Rhino.Geometry.Vector3d(*definition["x_axis"]),
+                                 Rhino.Geometry.Vector3d(*definition["y_axis"]))
+    source = _join_close_input(definition)
+    try:
+        def compute():
+            curves = source.Offset(_point(operation["side"]), plane.Normal,
+                                   float(operation["distance"]), float(tolerance["absolute"]),
+                                   Rhino.Geometry.CurveOffsetCornerStyle.Sharp)
+            if curves is None or len(curves) != 1:
+                if curves is not None:
+                    for curve in curves: curve.Dispose()
+                raise ValueError("ellipse offset did not produce one curve")
+            return curves[0]
+
+        def record(curve):
+            samples = []
+            for index in range(operation["samples"]):
+                angle = 2.0 * math.pi * index / (operation["samples"] - 1)
+                target = plane.PointAt(float(definition["radius_x"]) * math.cos(angle),
+                                       float(definition["radius_y"]) * math.sin(angle))
+                found, parameter = curve.ClosestPoint(target)
+                if not found:
+                    raise ValueError("ellipse offset closest-point search failed")
+                samples.append(_xyz(curve.PointAt(parameter)))
+            return {"closed": bool(curve.IsClosed), "samples": samples}
+
+        return _measure_disposable(iterations, compute, record)
+    finally:
+        source.Dispose()
+
+
 def _curve_native(operation, iterations, tolerance):
     source = _join_close_input(operation["curve"])
     try:
@@ -5192,6 +5228,8 @@ def _execute(operation, iterations, tolerance):
         return _curve_native(operation, iterations, tolerance)
     if kind == "curve_area":
         return _curve_area(operation, iterations)
+    if kind == "ellipse_offset_geometry":
+        return _ellipse_offset_geometry(operation, iterations, tolerance)
     if kind in ("polycurve_geometry", "polycurve_document"):
         return _polycurve_geometry(operation, iterations, tolerance)
     if kind == "trimmed_surface_mass_properties":

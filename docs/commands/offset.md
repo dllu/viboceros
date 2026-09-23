@@ -62,3 +62,19 @@ result before changing the document, so an unsupported or degenerate selected
 curve leaves the document unchanged. General NURBS and polycurve
 offsets, as well as smooth corners, trim, cap, and construction-plane overrides, remain
 to be implemented.
+
+## Ellipse oracle probe
+
+The [ellipse offset fixture](../../tools/rhino_oracle/fixtures/ellipse_offset.json)
+compares 65 geometric stations on inward, outward, rotated, and circular
+ellipses. The native probe uses the offset's retained angle parameterization;
+the Rhino worker finds the nearest output point to each source station, so
+different spline knot layouts can still be compared by location. Run:
+
+```sh
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/ellipse_offset.json \
+  --absolute-epsilon 1e-8 --relative-epsilon 1e-9 --timeout 360
+```
+
+The native fixture passes. A Rhino observation is not recorded yet.
