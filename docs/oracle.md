@@ -1016,6 +1016,10 @@ Set `VIBOCEROS_RHINO_LAUNCHER` to use another launcher. McNeel's documented
 has an owned-window fallback that requires `wmctrl` and `xdotool` and never
 targets a pre-existing Rhino process. Set `VIBOCEROS_RHINO_UI_FALLBACK=0` to
 disable it. The `viboceros` and `rhino` modes run either side independently.
+On Linux the driver reports a Rhino process that exits before publishing a
+response after a two-second exit grace period. If no owned Rhino process ever
+appears, it reports startup failure after 30 seconds; an active process keeps
+the full requested probe timeout.
 
 ### SetView CPlane camera probe
 

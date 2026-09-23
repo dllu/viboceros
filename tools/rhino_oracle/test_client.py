@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -33,6 +34,41 @@ def _response(engine: str, value: object, elapsed_ns: int = 100) -> dict:
 
 
 class OracleClientTests(unittest.TestCase):
+    @unittest.skipUnless(Path("/proc").is_dir(), "startup process check uses procfs")
+    def test_launcher_without_a_rhino_process_fails_before_probe_timeout(self):
+        client = OracleClient(launcher="/bin/true")
+        completed = subprocess.CompletedProcess(["true"], 0, stdout="", stderr="")
+        with (
+            patch("tools.rhino_oracle.client.RHINO_STARTUP_GRACE_SECONDS", 0.0),
+            patch("tools.rhino_oracle.client._rhino_process_ids", return_value=set()),
+            patch("tools.rhino_oracle.client._ui_fallback_enabled", return_value=False),
+            patch("tools.rhino_oracle.client._run_logged", return_value=completed),
+            self.assertRaisesRegex(OracleError, "Rhino process never appeared"),
+        ):
+            client.run_rhino({"protocol_version": 1, "iterations": 1, "operations": []}, timeout=120)
+
+    @unittest.skipUnless(Path("/proc").is_dir(), "process exit check uses procfs")
+    def test_rhino_exiting_before_worker_progress_is_reported(self):
+        client = OracleClient(launcher="/bin/true")
+        probes = []
+
+        def process_ids(marker=None):
+            if marker is None:
+                return set()
+            probes.append(marker)
+            return {2_000_000_000} if len(probes) == 1 else set()
+
+        completed = subprocess.CompletedProcess(["true"], 0, stdout="", stderr="")
+        with (
+            patch("tools.rhino_oracle.client.RHINO_PROCESS_EXIT_GRACE_SECONDS", 0.0),
+            patch("tools.rhino_oracle.client._rhino_process_ids", side_effect=process_ids),
+            patch("tools.rhino_oracle.client._ui_fallback_enabled", return_value=False),
+            patch("tools.rhino_oracle.client._run_logged", return_value=completed),
+            self.assertRaisesRegex(OracleError, "Rhino process exited before publishing"),
+        ):
+            client.run_rhino({"protocol_version": 1, "iterations": 1, "operations": []}, timeout=120)
+        self.assertGreaterEqual(len(probes), 2)
+
     def test_repeated_source_dicts_get_distinct_artifacts(self):
         from .client import _owned_artifact_request
         source = {"brep": {"artifact_path": "/unowned/source.3dm"}}

@@ -22,6 +22,8 @@ if TYPE_CHECKING:
 PROTOCOL_VERSION = 1
 DEFAULT_LAUNCHER = Path.home() / "wines/prefixes/rhino/launch.sh"
 RHINO_EXIT_GRACE_SECONDS = 15.0
+RHINO_STARTUP_GRACE_SECONDS = 30.0
+RHINO_PROCESS_EXIT_GRACE_SECONDS = 2.0
 
 
 class OracleError(RuntimeError):
@@ -324,12 +326,17 @@ class OracleClient:
             if completed.returncode != 0:
                 raise OracleError(_command_failure("Rhino launcher", completed))
 
-            deadline = time.monotonic() + timeout
+            started_waiting = time.monotonic()
+            deadline = started_waiting + timeout
+            startup_deadline = started_waiting + min(timeout, RHINO_STARTUP_GRACE_SECONDS)
+            procfs_available = Path("/proc").is_dir()
             owned_pids: set[int] = set()
             owned_window: str | None = None
             fallback_ready_at: float | None = None
             fallback_sent = False
             worker_exited = False
+            startup_failed = False
+            process_missing_since: float | None = None
             try:
                 while not response_path.is_file() and time.monotonic() < deadline:
                     owned_pids.update(
@@ -337,6 +344,19 @@ class OracleClient:
                     )
                     if _owned_worker_exited(owned_pids, job_path / "worker-progress.log"):
                         worker_exited = True
+                        break
+                    if (owned_pids and procfs_available
+                            and _wait_for_process_exit(owned_pids, 0.0)):
+                        if process_missing_since is None:
+                            process_missing_since = time.monotonic()
+                        elif time.monotonic() - process_missing_since >= RHINO_PROCESS_EXIT_GRACE_SECONDS:
+                            worker_exited = True
+                            break
+                    else:
+                        process_missing_since = None
+                    if (procfs_available and not owned_pids
+                            and time.monotonic() >= startup_deadline):
+                        startup_failed = True
                         break
                     if not fallback_sent and _ui_fallback_enabled():
                         candidate = _rhino_window_for_pids(owned_pids)
@@ -368,11 +388,12 @@ class OracleClient:
                     suffix = (
                         "\n" + "\n".join(diagnostics) if diagnostics else ""
                     )
-                    failure = (
-                        "Rhino worker exited without publishing a response"
-                        if worker_exited
-                        else f"Rhino probe did not respond within {timeout:g} seconds"
-                    )
+                    if worker_exited:
+                        failure = "Rhino process exited before publishing a response"
+                    elif startup_failed:
+                        failure = "Rhino process never appeared after launcher completion"
+                    else:
+                        failure = f"Rhino probe did not respond within {timeout:g} seconds"
                     raise OracleError(
                         f"{failure} "
                         f"(owned_pids={sorted(owned_pids)}, "
