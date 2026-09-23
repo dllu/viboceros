@@ -42,7 +42,7 @@ fn select_matching_geometry(
             matches.push(object.id());
         }
     }
-    document.select_objects(matches, SelectionMode::Add)?;
+    document.select_objects_direct(matches, SelectionMode::Add)?;
     Ok(format!(
         "Selected {} object(s)",
         document.selected_object_count()
@@ -170,6 +170,41 @@ impl GeometrySelectionFilter {
 }
 
 pub(super) struct SelShortCurveCommand;
+
+pub(super) struct SelSmallCommand;
+
+impl Command for SelSmallCommand {
+    fn name(&self) -> &'static str {
+        "SelSmall"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let [size] = arguments else {
+            return Err(CommandError::Usage("SelSmall maximum-size"));
+        };
+        let maximum = parse_finite_real(size)?;
+        if maximum < 0.0 {
+            return Err(CommandError::Usage("SelSmall maximum-size"));
+        }
+        let tolerance = document.tolerance();
+        select_matching_geometry(document, |geometry| {
+            let bounds = geometry.tight_bounds(tolerance)?;
+            let min = bounds.min().to_array();
+            let max = bounds.max().to_array();
+            // hypot keeps a diagonal larger than f64::MAX as infinity, so such
+            // an object simply fails a finite limit instead of failing the
+            // entire selection on an intermediate subtraction overflow.
+            let diagonal = (max[0] - min[0])
+                .hypot(max[1] - min[1])
+                .hypot(max[2] - min[2]);
+            Ok(diagonal < maximum)
+        })
+    }
+}
 
 impl Command for SelShortCurveCommand {
     fn name(&self) -> &'static str {
@@ -442,6 +477,83 @@ mod tests {
                     .is_err()
             );
         }
+    }
+
+    #[test]
+    fn small_selection_uses_tight_world_diagonal_and_skips_hidden_locked_objects() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0,0 3,0,0").unwrap();
+        let line = document.objects().last().unwrap().id();
+        registry.execute(&mut document, "Circle 0,0,0 1").unwrap();
+        let circle = document.objects().last().unwrap().id();
+        let point = document
+            .add_geometry(Geometry::Point(Point3::try_new(5., 5., 5.).unwrap()))
+            .unwrap();
+        let arch = NurbsCurve::try_new(
+            2,
+            vec![
+                Point3::try_new(0., 0., 0.).unwrap(),
+                Point3::try_new(1., 100., 0.).unwrap(),
+                Point3::try_new(2., 0., 0.).unwrap(),
+            ],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        let arch = document.add_geometry(Geometry::NurbsCurve(arch)).unwrap();
+        let extreme = PointCloud3::try_new(vec![
+            Point3::try_new(-Real::MAX, 0., 0.).unwrap(),
+            Point3::try_new(Real::MAX, 0., 0.).unwrap(),
+        ])
+        .unwrap();
+        let extreme = document
+            .add_geometry(Geometry::PointCloud(extreme))
+            .unwrap();
+        let hidden = document
+            .add_geometry(Geometry::Point(Point3::try_new(6., 6., 6.).unwrap()))
+            .unwrap();
+        let locked = document
+            .add_geometry(Geometry::Point(Point3::try_new(7., 7., 7.).unwrap()))
+            .unwrap();
+        document.set_objects_visibility([hidden], false).unwrap();
+        document.set_objects_locked([locked], true).unwrap();
+        document
+            .add_group(Some("Pair".to_owned()), [line, circle])
+            .unwrap();
+        registry.execute(&mut document, "Point 9,9,9").unwrap();
+        registry.execute(&mut document, "Undo").unwrap();
+        let original = document.objects().cloned().collect::<Vec<_>>();
+        let undo = document.undo_label().map(str::to_owned);
+        let redo = document.redo_label().map(str::to_owned);
+
+        assert_eq!(
+            registry.execute(&mut document, "SelSmall 3").unwrap(),
+            "Selected 2 object(s)"
+        );
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([circle, point])
+        );
+        assert_eq!(
+            registry.execute(&mut document, "SelSmall 60").unwrap(),
+            "Selected 4 object(s)"
+        );
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([line, circle, point, arch])
+        );
+        assert!(!document.is_selected(extreme));
+        for input in [
+            "SelSmall",
+            "SelSmall -1",
+            "SelSmall NaN",
+            "SelSmall 3 extra",
+        ] {
+            assert!(registry.execute(&mut document, input).is_err(), "{input}");
+        }
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), original);
+        assert_eq!(document.undo_label(), undo.as_deref());
+        assert_eq!(document.redo_label(), redo.as_deref());
     }
 
     #[test]

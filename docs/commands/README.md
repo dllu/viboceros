@@ -140,6 +140,7 @@ SelPlanarCrv
 SelLine
 SelPolyline
 SelShortCrv 1.0
+SelSmall 5.0
 SelPt
 SelPtCloud
 SelSrf

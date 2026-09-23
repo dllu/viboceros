@@ -70,6 +70,11 @@ measurement used by `Length`. Its adaptive three-point integration can reject
 on a coarse estimate, matching all 96 retained circle/arch classifications.
 Knot refinement can change its answer without changing the locus; this is
 selection compatibility behavior, not a certified geometric length bound.
+`SelSmall maximum-size` adds visible, unlocked objects whose tight world
+bounding-box diagonal is strictly below the size. This applies to points,
+curves, surfaces, B-reps, meshes, and point clouds. The threshold measures
+extent, not curve length, area, or volume, following [Rhino's documented
+selector](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelSmall).
 Mesh closure uses exact
 location-welded polygon-edge topology, so quad meshes, indexed triangle meshes,
 and STL-style triangle soup classify consistently; quad diagonals are used only
