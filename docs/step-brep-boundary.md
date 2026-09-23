@@ -251,7 +251,9 @@ exact multi-span rational 3D and UV NURBS conversions. Cylindrical and
 nonsingular conical faces with straight UV iso-trims spanning up to one turn use
 exact rational patches, including paired `SEAM_CURVE` uses on a full-turn wall;
 angular parameters within each arc are reparameterized consistently with their
-trims. The path validates shared topology in `Brep::try_new`. NURBS faces with
+trims. Ring-torus faces with straight UV iso-trims use exact rational
+biquadratic patches, including full major-angle seam strips. The path validates
+shared topology in `Brep::try_new`. NURBS faces with
 multiple straight UV polygon loops use the kernel's strict polygon
 boundary validation. Curved UV loops currently require one outer boundary.
 Other surface types, periodic seam arrangements, and missing UV curves still

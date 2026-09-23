@@ -63,12 +63,13 @@ pub(super) fn convert_shell(
             return Err(unsupported("face has no boundary"));
         }
         let mut boundaries = Vec::with_capacity(face.boundaries.len());
-        let periodic_revolution = matches!(
-            face.surface,
+        let periodic_axes = match face.surface {
             Surface::ElementarySurface(
-                ElementarySurface::CylindricalSurface(_) | ElementarySurface::ConicalSurface(_)
-            )
-        );
+                ElementarySurface::CylindricalSurface(_) | ElementarySurface::ConicalSurface(_),
+            ) => [true, false],
+            Surface::ElementarySurface(ElementarySurface::ToroidalSurface(_)) => [true, true],
+            _ => [false, false],
+        };
         for boundary in &face.boundaries {
             let mut trims = Vec::with_capacity(boundary.len());
             let mut previous_end = None;
@@ -78,9 +79,9 @@ pub(super) fn convert_shell(
                     .as_ref()
                     .ok_or_else(|| unsupported("missing UV trim"))?;
                 let mut curve = trim_curve(source.curve().as_ref(), id)?;
-                if periodic_revolution {
+                if periodic_axes != [false; 2] {
                     if let Some(end) = previous_end {
-                        curve = align_revolution_trim(curve, end, tolerance)?;
+                        curve = align_periodic_trim(curve, end, periodic_axes, tolerance)?;
                     }
                     previous_end = Some(curve.end_point()?);
                 }
@@ -132,24 +133,33 @@ pub(super) fn convert_shell(
     Ok(Brep::try_new(vertices, edges, faces, tolerance)?)
 }
 
-/// STEP readers may unwrap a circular 3D edge into a different full-turn UV
-/// interval from its explicit seam p-curves. Keep each p-curve's shape and
-/// align its periodic coordinate with the preceding trim in the loop.
-fn align_revolution_trim(
+/// Face-local p-curves on a periodic surface may use different angular turns.
+/// Translate by whole turns so adjacent trims meet without changing their shape.
+fn align_periodic_trim(
     curve: NurbsCurve2,
     previous_end: Point2,
+    periodic_axes: [bool; 2],
     tolerance: Tolerance,
 ) -> Result<NurbsCurve2, StepError> {
     let start = curve.start_point()?;
-    if (previous_end.y() - start.y()).abs() > tolerance.absolute() {
-        return Ok(curve);
-    }
-    let turns = ((previous_end.x() - start.x()) / std::f64::consts::TAU).round();
-    let offset = turns * std::f64::consts::TAU;
-    if !offset.is_finite()
-        || offset == 0.
-        || (previous_end.x() - start.x() - offset).abs() > tolerance.angular()
+    let mut offset = [0.; 2];
+    for (axis, delta) in [previous_end.x() - start.x(), previous_end.y() - start.y()]
+        .into_iter()
+        .enumerate()
     {
+        if periodic_axes[axis] {
+            offset[axis] = (delta / std::f64::consts::TAU).round() * std::f64::consts::TAU;
+        }
+        let threshold = if periodic_axes[axis] {
+            tolerance.angular()
+        } else {
+            tolerance.absolute()
+        };
+        if !offset[axis].is_finite() || (delta - offset[axis]).abs() > threshold {
+            return Ok(curve);
+        }
+    }
+    if offset == [0.; 2] {
         return Ok(curve);
     }
     let controls = curve
@@ -157,7 +167,10 @@ fn align_revolution_trim(
         .iter()
         .map(|control| {
             WeightedPoint2::try_new(
-                Point2::try_new(control.point().x() + offset, control.point().y())?,
+                Point2::try_new(
+                    control.point().x() + offset[0],
+                    control.point().y() + offset[1],
+                )?,
                 control.weight(),
             )
         })
@@ -280,6 +293,16 @@ fn arc_knots(start: f64, end: f64, spans: usize) -> Vec<f64> {
     }
     knots.extend([end; 3]);
     knots
+}
+
+fn circular_middle(p0: Point3, pm: Point3, p1: Point3, weight: f64) -> Result<Point3, StepError> {
+    let factor = 2. * (1. + weight);
+    let denominator = 2. * weight;
+    Ok(Point3::try_new(
+        (factor * pm.x() - p0.x() - p1.x()) / denominator,
+        (factor * pm.y() - p0.y() - p1.y()) / denominator,
+        (factor * pm.z() - p0.z() - p1.z()) / denominator,
+    )?)
 }
 
 fn conic_edge(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
@@ -490,8 +513,95 @@ fn surface(
                 vec![v0, v0, v1, v1],
             )?)
         }
+        Surface::ElementarySurface(ElementarySurface::ToroidalSurface(torus)) => {
+            let mut min = [f64::INFINITY; 2];
+            let mut max = [f64::NEG_INFINITY; 2];
+            for trim in boundaries.iter().flatten() {
+                if trim.curve().degree() != 1 || trim.curve().control_points().len() != 2 {
+                    return Err(unsupported("torus requires straight UV iso-trims"));
+                }
+                let start = trim.curve().start_point()?;
+                let end = trim.curve().end_point()?;
+                if (start.x() - end.x()).abs() > tolerance.angular()
+                    && (start.y() - end.y()).abs() > tolerance.angular()
+                {
+                    return Err(unsupported("torus requires UV iso-trims"));
+                }
+                for point in [start, end] {
+                    min[0] = min[0].min(point.x());
+                    min[1] = min[1].min(point.y());
+                    max[0] = max[0].max(point.x());
+                    max[1] = max[1].max(point.y());
+                }
+            }
+            let [u0, v0] = min;
+            let [u1, v1] = max;
+            let u_spans = arc_span_count(u1 - u0, id)?;
+            let v_spans = arc_span_count(v1 - v0, id)?;
+            let u_step = (u1 - u0) / u_spans as f64;
+            let v_step = (v1 - v0) / v_spans as f64;
+            // U control positions vary circularly with V; interpolating those
+            // positions as rational V arcs gives the exact tensor product.
+            let u_controls_at = |v: f64| -> Result<Vec<(Point3, f64)>, StepError> {
+                let mut row = Vec::with_capacity(2 * u_spans + 1);
+                for index in 0..u_spans {
+                    let start = u0 + u_step * index as f64;
+                    let end = if index + 1 == u_spans {
+                        u1
+                    } else {
+                        start + u_step
+                    };
+                    let p0 = point3(torus.evaluate(start, v))?;
+                    let pm = point3(torus.evaluate((start + end) / 2., v))?;
+                    let p1 = point3(torus.evaluate(end, v))?;
+                    let weight = ((end - start) / 2.).cos();
+                    if index == 0 {
+                        row.push((p0, 1.));
+                    }
+                    row.push((circular_middle(p0, pm, p1, weight)?, weight));
+                    row.push((p1, 1.));
+                }
+                Ok(row)
+            };
+            let mut controls = Vec::with_capacity((2 * u_spans + 1) * (2 * v_spans + 1));
+            for index in 0..v_spans {
+                let start = v0 + v_step * index as f64;
+                let end = if index + 1 == v_spans {
+                    v1
+                } else {
+                    start + v_step
+                };
+                let bottom = u_controls_at(start)?;
+                let middle = u_controls_at((start + end) / 2.)?;
+                let top = u_controls_at(end)?;
+                if index == 0 {
+                    for &(point, weight) in &bottom {
+                        controls.push(WeightedPoint3::try_new(point, weight)?);
+                    }
+                }
+                let v_weight = ((end - start) / 2.).cos();
+                for ((bottom, middle), top) in bottom.iter().zip(&middle).zip(&top) {
+                    controls.push(WeightedPoint3::try_new(
+                        circular_middle(bottom.0, middle.0, top.0, v_weight)?,
+                        bottom.1 * v_weight,
+                    )?);
+                }
+                for (point, weight) in top {
+                    controls.push(WeightedPoint3::try_new(point, weight)?);
+                }
+            }
+            Ok(NurbsSurface::try_new_rational(
+                2,
+                2,
+                2 * u_spans + 1,
+                2 * v_spans + 1,
+                controls,
+                arc_knots(u0, u1, u_spans),
+                arc_knots(v0, v1, v_spans),
+            )?)
+        }
         _ => Err(unsupported(
-            "surface is not a supported plane, revolved line, or B-spline",
+            "surface is not a supported plane, revolved line, torus, or B-spline",
         )),
     }
 }

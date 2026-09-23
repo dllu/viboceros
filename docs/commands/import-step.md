@@ -18,7 +18,9 @@ NURBS edges and UV curves. Cylindrical and nonsingular conical faces with straig
 UV iso-trims spanning up to one turn convert to exact rational NURBS patches,
 including a full-turn wall with a paired `SEAM_CURVE` and explicit face-local
 UV curves. This changes the angular parameterization within each arc while
-retaining the surface and trim geometry. Faces with multiple loops require
+retaining the surface and trim geometry. Ring-torus faces with straight UV
+iso-trims also convert to exact rational patches, including full major-angle
+strips with a paired seam. Faces with multiple loops require
 straight UV polygon boundaries; the polygon constructor validates hole
 containment and intersections. Curved UV loops currently require a single outer
 boundary. Other periodic seam arrangements, missing trims, and invalid topology fail the
