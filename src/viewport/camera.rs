@@ -467,6 +467,7 @@ impl Viewport {
         if !factor.is_finite() || factor <= 0.0 {
             return Err("invalid zoom window or viewport coordinates");
         }
+        let previous = self.camera_snapshot();
         let center = window.center();
         let viewport_center = rect.center();
         if self.kind == ViewKind::Perspective {
@@ -486,6 +487,7 @@ impl Viewport {
             let changed = target != self.target || new_distance != old_distance;
             self.target = target;
             self.perspective_camera_distance = new_distance;
+            self.record_camera_change(previous);
             return Ok(changed);
         }
         let old_scale = self.pixels_per_unit;
@@ -503,6 +505,7 @@ impl Viewport {
         let changed = pan != self.pan || new_scale != old_scale;
         self.pan = pan;
         self.pixels_per_unit = new_scale;
+        self.record_camera_change(previous);
         Ok(changed)
     }
 
@@ -522,6 +525,7 @@ impl Viewport {
         {
             return Err("invalid zoom factor or viewport coordinates");
         }
+        let previous = self.camera_snapshot();
         if self.kind == ViewKind::Perspective {
             let old_distance = self.perspective_camera_distance;
             let new_distance = (old_distance / factor).clamp(
@@ -547,6 +551,7 @@ impl Viewport {
             }
             self.target = target;
             self.perspective_camera_distance = new_distance;
+            self.record_camera_change(previous);
             return Ok(true);
         }
         let old_scale = self.pixels_per_unit;
@@ -567,6 +572,7 @@ impl Viewport {
             self.pan = pan;
         }
         self.pixels_per_unit = new_scale;
+        self.record_camera_change(previous);
         Ok(true)
     }
 
@@ -775,6 +781,41 @@ mod tests {
         let window = Rect::from_min_max(Pos2::new(100.0, 100.0), Pos2::new(300.0, 300.0));
         assert!(parallel.zoom_window(window, rect).is_err());
         assert_eq!((parallel.pan, parallel.pixels_per_unit), before);
+    }
+
+    #[test]
+    fn camera_history_branches_after_undo_and_skips_failed_zooms() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut view = Viewport::new(ViewKind::Top);
+        view.last_rect = Some(rect);
+        let original = view.camera_snapshot();
+        assert_eq!(view.zoom_factor(2.0), Ok(true));
+        let first = view.camera_snapshot();
+        assert_eq!(view.zoom_factor(3.0), Ok(true));
+        assert!(view.undo_view());
+        assert_eq!(view.camera_snapshot(), first);
+        assert!(view.undo_view());
+        assert_eq!(view.camera_snapshot(), original);
+        assert!(!view.undo_view());
+        assert!(view.redo_view());
+        assert_eq!(view.camera_snapshot(), first);
+        assert_eq!(view.zoom_factor(1.0), Ok(false));
+        assert!(view.redo_view());
+        assert!(view.undo_view());
+        assert_eq!(view.camera_snapshot(), first);
+        assert!(
+            view.zoom_window(
+                Rect::from_min_max(Pos2::new(100.0, 100.0), Pos2::new(300.0, 300.0)),
+                rect,
+            )
+            .unwrap()
+        );
+        assert!(!view.redo_view());
+        let changed = view.camera_snapshot();
+        assert!(view.zoom_factor(-1.0).is_err());
+        assert_eq!(view.camera_snapshot(), changed);
+        assert!(view.undo_view());
+        assert_eq!(view.camera_snapshot(), first);
     }
 
     #[test]

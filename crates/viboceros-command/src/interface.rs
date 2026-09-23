@@ -107,6 +107,8 @@ pub enum InterfaceCommand {
     ZoomSelected,
     ZoomAllExtents,
     ZoomAllSelected,
+    UndoView,
+    RedoView,
     SetSnap(SwitchAction),
     SetOsnap(SwitchAction),
     SnapToMeshes(SwitchAction),
@@ -117,7 +119,7 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 13] = [
+pub const COMMAND_NAMES: [&str; 15] = [
     "Options",
     "SetZoomExtentsBorder",
     "SnapToMeshes",
@@ -131,9 +133,11 @@ pub const COMMAND_NAMES: [&str; 13] = [
     "SetSnap",
     "SmartTrack",
     "Snap",
+    "UndoView",
+    "RedoView",
 ];
 
-pub const HELP: &str = "Interface: Zoom [Window]|[All] Extents|Selected (ZE, ZS, ZEA, ZSA); Zoom In|Out|Factor <positive number>; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [Window]|[All] Extents|Selected (ZE, ZS, ZEA, ZSA); Zoom In|Out|Factor <positive number>; UndoView; RedoView; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -214,6 +218,18 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
                 _ => Err(InterfaceError::Usage(
                     "Zoom [Window]|[All] Extents|Selected | Zoom In|Out|Factor <positive number> | ZE | ZS | ZEA | ZSA",
                 )),
+            }
+        } else if name.eq_ignore_ascii_case("UndoView") {
+            if args.is_empty() {
+                Ok(InterfaceCommand::UndoView)
+            } else {
+                Err(InterfaceError::Usage("UndoView"))
+            }
+        } else if name.eq_ignore_ascii_case("RedoView") {
+            if args.is_empty() {
+                Ok(InterfaceCommand::RedoView)
+            } else {
+                Err(InterfaceError::Usage("RedoView"))
             }
         } else if name.eq_ignore_ascii_case("Options") {
             match args.as_slice() {
@@ -376,6 +392,8 @@ impl InterfaceState {
             InterfaceCommand::ZoomSelected => "Zoom selected requested (active viewport)".into(),
             InterfaceCommand::ZoomAllExtents => "Zoom extents requested (all viewports)".into(),
             InterfaceCommand::ZoomAllSelected => "Zoom selected requested (all viewports)".into(),
+            InterfaceCommand::UndoView => "Undo view requested (active viewport)".into(),
+            InterfaceCommand::RedoView => "Redo view requested (active viewport)".into(),
             InterfaceCommand::SetSnap(action) => {
                 self.grid_snap = action.apply(self.grid_snap);
                 format!("Grid snap: {}", on_off(self.grid_snap))

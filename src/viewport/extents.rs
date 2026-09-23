@@ -42,6 +42,7 @@ struct CameraFit {
 
 impl CameraFit {
     fn apply(self, viewport: &mut Viewport) {
+        let previous = viewport.camera_snapshot();
         viewport.target = self.target;
         viewport.pan = Vec2::ZERO;
         if viewport.kind == ViewKind::Perspective {
@@ -49,6 +50,7 @@ impl CameraFit {
         } else {
             viewport.pixels_per_unit = self.scale;
         }
+        viewport.record_camera_change(previous);
     }
 }
 

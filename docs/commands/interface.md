@@ -19,6 +19,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `SetZoomExtentsBorder [ParallelView=<number>] [PerspectiveView=<number>]` | Set or query the independent Zoom Extents fitting borders. |
 | `Zoom All Extents` / `ZEA` | Fit all four views, applying only after every fit succeeds. |
 | `Zoom All Selected` / `ZSA` | Fit visible selected geometry in all four views with the same all-or-nothing policy. |
+| `UndoView` / `RedoView` | Step backward or forward through camera changes in the active viewport, separately from model undo. |
 | `Snap` | Toggle the one-unit grid snap. |
 | `SetSnap On\|Off\|Toggle` | Set or toggle grid snapping. |
 | `DisableOsnap Enable\|Disable\|Toggle` | Enable, suspend, or toggle object snaps. |
@@ -50,7 +51,8 @@ The line still starts at the accepted origin. Interface changes do not consume
 model undo steps or destroy redo history. `DisableOsnap` and `SnapToMeshes` use **Enable/Disable**,
 not On/Off; the toolbar's Osnap indicator is lit when snapping is enabled.
 
-F9 toggles grid snap; F4 toggles object snaps. Ctrl/Cmd+W starts Zoom Window.
+F9 toggles grid snap; F4 toggles object snaps. Home and End run UndoView and
+RedoView when a text field is not focused. Ctrl/Cmd+W starts Zoom Window.
 Ctrl/Cmd+Alt+W, S, and G select
 Wireframe, Shaded, and Ghosted in the active viewport. Ctrl/Cmd+Shift+E zooms to
 active-view extents; Ctrl/Cmd+Alt+E zooms all viewports to extents.

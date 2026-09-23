@@ -26,6 +26,28 @@ impl VibocerosApp {
                     self.push_log("Drag a window in a viewport to zoom; Esc to cancel".into());
                     return;
                 }
+                if matches!(
+                    command,
+                    InterfaceCommand::UndoView | InterfaceCommand::RedoView
+                ) {
+                    self.zoom_window_pending = false;
+                    let changed = if command == InterfaceCommand::UndoView {
+                        self.viewports[self.active_viewport].undo_view()
+                    } else {
+                        self.viewports[self.active_viewport].redo_view()
+                    };
+                    self.push_log(
+                        match (command, changed) {
+                            (InterfaceCommand::UndoView, true) => "Undid active viewport change",
+                            (InterfaceCommand::UndoView, false) => "No viewport change to undo",
+                            (InterfaceCommand::RedoView, true) => "Redid active viewport change",
+                            (InterfaceCommand::RedoView, false) => "No viewport change to redo",
+                            _ => unreachable!(),
+                        }
+                        .into(),
+                    );
+                    return;
+                }
                 if let InterfaceCommand::SetZoomScale(scale) = command {
                     self.zoom_scale = scale.value();
                     self.push_log(format!("View zoom scale factor: {}", self.zoom_scale));
@@ -185,6 +207,16 @@ impl VibocerosApp {
         // own undo history; document undo/redo is not intercepted here.
         let shortcuts = [
             (
+                egui::Modifiers::NONE,
+                egui::Key::Home,
+                InterfaceCommand::UndoView,
+            ),
+            (
+                egui::Modifiers::NONE,
+                egui::Key::End,
+                InterfaceCommand::RedoView,
+            ),
+            (
                 egui::Modifiers::COMMAND,
                 egui::Key::W,
                 InterfaceCommand::ZoomWindow,
@@ -236,6 +268,7 @@ impl VibocerosApp {
         ];
         // Preserve event order, reject extra modifiers (notably Alt+F4), and
         // consume auto-repeat without repeatedly toggling a setting.
+        let text_edit_focused = ui.ctx().text_edit_focused();
         let actions = ui.input_mut(|input| {
             let mut actions = Vec::new();
             input.events.retain(|event| {
@@ -250,6 +283,11 @@ impl VibocerosApp {
                         shortcuts.iter().find(|(pattern, shortcut_key, _)| {
                             key == shortcut_key && modifiers.matches_exact(*pattern)
                         })
+                    && !(text_edit_focused
+                        && matches!(
+                            *command,
+                            InterfaceCommand::UndoView | InterfaceCommand::RedoView
+                        ))
                 {
                     if *pressed && !*repeat {
                         actions.push(*command);

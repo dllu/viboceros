@@ -215,6 +215,23 @@ fn zoom_extents_is_a_validated_host_action() {
     }
 }
 
+#[test]
+fn view_history_commands_are_transparent_and_reject_arguments() {
+    for (input, action) in [
+        ("UndoView", InterfaceCommand::UndoView),
+        ("'_RedoView", InterfaceCommand::RedoView),
+    ] {
+        assert_eq!(parse(input), Some(Ok(action)));
+        let mut current = state();
+        let before = current.clone();
+        current.apply(action).unwrap();
+        assert_eq!(current, before);
+    }
+    for input in ["UndoView 2", "RedoView All"] {
+        assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
+    }
+}
+
 fn state() -> InterfaceState {
     InterfaceState {
         grid_snap: true,

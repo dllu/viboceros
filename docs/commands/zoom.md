@@ -119,4 +119,16 @@ during an unfinished modeling prompt. Selection-fitting tests exercise all four 
 geometry, empty-selection no-ops, and retained selection/model history.
 No live Rhino camera comparison has been performed for this implementation.
 
-Other Zoom options, including view history, remain unimplemented.
+`UndoView` and `RedoView` step through the active viewport's camera history,
+separately from document undo and construction-plane undo. Home and End trigger
+them when no text field is focused. The typed commands remain available while a
+modeling prompt is unfinished. Each successful Zoom Factor, In/Out, Window,
+Extents, or Selected action records one camera step; All records one step in
+each affected viewport. Wheel zoom records each scroll update, while a mouse
+pan or orbit drag records one step when released. Invalid or unchanged actions
+leave history alone, and a new camera action after UndoView discards the redo
+branch. Each viewport retains up to 50 prior camera states. View presets,
+display modes, and construction-plane edits are outside this camera history.
+See [Rhino's UndoView and RedoView commands](https://docs.mcneel.com/rhino/8/help/en-us/commands/undoview.htm).
+
+Other Zoom options remain unimplemented.

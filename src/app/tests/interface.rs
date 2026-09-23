@@ -134,6 +134,69 @@ fn zoom_window_drag_preserves_an_unfinished_modeling_command() {
 }
 
 #[test]
+fn view_history_is_per_viewport_and_independent_of_model_history() {
+    let mut app = test_app();
+    for command in ["Point 1,2,3", "Point 4,5,6", "Undo", "Line", "0"] {
+        enter(&mut app, command);
+    }
+    let context = egui::Context::default();
+    layout_viewports(&context, &mut app);
+    let original = app
+        .viewports
+        .each_ref()
+        .map(|viewport| viewport.camera_snapshot());
+    let pending = app.active_command;
+    let redo = app.document.redo_label().map(str::to_owned);
+    let objects = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, "UndoView");
+    assert_eq!(
+        app.command_log.back().unwrap(),
+        "No viewport change to undo"
+    );
+    enter(&mut app, "Zoom Factor 2");
+    let changed_top = app.viewports[0].camera_snapshot();
+    assert_ne!(changed_top, original[0]);
+    app.active_viewport = 1;
+    enter(&mut app, "Zoom Factor 3");
+    let changed_perspective = app.viewports[1].camera_snapshot();
+    assert_ne!(changed_perspective, original[1]);
+    enter(&mut app, "'_UndoView");
+    assert_eq!(app.viewports[1].camera_snapshot(), original[1]);
+    assert_eq!(app.viewports[0].camera_snapshot(), changed_top);
+    enter(&mut app, "RedoView");
+    assert_eq!(app.viewports[1].camera_snapshot(), changed_perspective);
+    app.active_viewport = 0;
+    enter(&mut app, "UndoView");
+    assert_eq!(app.viewports[0].camera_snapshot(), original[0]);
+    assert_eq!(app.viewports[1].camera_snapshot(), changed_perspective);
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
+    assert_eq!(app.document.redo_label(), redo.as_deref());
+}
+
+#[test]
+fn zoom_all_records_one_independent_view_step_per_viewport() {
+    let mut app = test_app();
+    enter(&mut app, "Point 10,20,30");
+    let context = egui::Context::default();
+    layout_viewports(&context, &mut app);
+    let undo = app.document.undo_label().map(str::to_owned);
+    let before = app.viewports.each_ref().map(|view| view.camera_snapshot());
+    enter(&mut app, "ZEA");
+    let after = app.viewports.each_ref().map(|view| view.camera_snapshot());
+    for index in 0..4 {
+        assert_ne!(after[index], before[index]);
+        app.active_viewport = index;
+        enter(&mut app, "UndoView");
+        assert_eq!(app.viewports[index].camera_snapshot(), before[index]);
+        enter(&mut app, "RedoView");
+        assert_eq!(app.viewports[index].camera_snapshot(), after[index]);
+    }
+    assert_eq!(app.document.objects().len(), 1);
+    assert_eq!(app.document.undo_label(), undo.as_deref());
+}
+
+#[test]
 fn zoom_extents_routes_to_the_active_view_without_cancelling_modeling_or_redo() {
     let mut app = test_app();
     for command in ["Point 100,200,300", "Point 110,210,310", "Undo"] {
@@ -636,6 +699,60 @@ fn zoom_shortcuts_preserve_focused_modeling_input_and_consume_repeats() {
         )
         .1
         .drop_without_applying_deltas();
+    }
+}
+
+#[test]
+fn home_end_view_history_shortcuts_leave_text_editing_keys_alone() {
+    let mut app = test_app();
+    let context = egui::Context::default();
+    layout_viewports(&context, &mut app);
+    let original = app.viewports[0].camera_snapshot();
+    enter(&mut app, "Zoom Factor 2");
+    let zoomed = app.viewports[0].camera_snapshot();
+    app.command_input = "r1.5,".into();
+    app.command_focus_requested = true;
+    frame(&context, &mut app, 1000.0, vec![])
+        .1
+        .drop_without_applying_deltas();
+    assert!(context.text_edit_focused());
+    for key_code in [egui::Key::Home, egui::Key::End] {
+        frame(
+            &context,
+            &mut app,
+            1000.0,
+            vec![key(key_code, egui::Modifiers::NONE, true, false)],
+        )
+        .1
+        .drop_without_applying_deltas();
+        frame(
+            &context,
+            &mut app,
+            1000.0,
+            vec![key(key_code, egui::Modifiers::NONE, false, false)],
+        )
+        .1
+        .drop_without_applying_deltas();
+    }
+    assert_eq!(app.viewports[0].camera_snapshot(), zoomed);
+    assert_eq!(app.command_input, "r1.5,");
+
+    let unfocused = egui::Context::default();
+    for (key_code, expected) in [(egui::Key::Home, original), (egui::Key::End, zoomed)] {
+        unfocused
+            .run_ui(
+                egui::RawInput {
+                    screen_rect: Some(egui::Rect::from_min_size(
+                        egui::Pos2::ZERO,
+                        egui::vec2(800.0, 600.0),
+                    )),
+                    events: vec![key(key_code, egui::Modifiers::NONE, true, false)],
+                    ..Default::default()
+                },
+                |ui| app.handle_interface_shortcuts(ui),
+            )
+            .drop_without_applying_deltas();
+        assert_eq!(app.viewports[0].camera_snapshot(), expected);
     }
 }
 

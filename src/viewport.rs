@@ -62,6 +62,17 @@ const DEFAULT_PERSPECTIVE_CAMERA_DISTANCE: Real = 50.0;
 const MIN_PERSPECTIVE_CAMERA_DISTANCE: Real = 0.01;
 const MAX_PERSPECTIVE_CAMERA_DISTANCE: Real = 1.0e9;
 const PERSPECTIVE_VERTICAL_FOV_RADIANS: Real = 35.0 * std::f64::consts::PI / 180.0;
+const VIEW_HISTORY_LIMIT: usize = 50;
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub(crate) struct CameraSnapshot {
+    pixels_per_unit: f32,
+    pan: Vec2,
+    orbit_yaw: Real,
+    orbit_pitch: Real,
+    perspective_camera_distance: Real,
+    target: NaVector3<Real>,
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ViewKind {
@@ -182,6 +193,9 @@ pub struct Viewport {
     last_rect: Option<Rect>,
     selection_drag_start: Option<Pos2>,
     zoom_window_start: Option<Pos2>,
+    navigation_drag_start: Option<CameraSnapshot>,
+    view_undo: Vec<CameraSnapshot>,
+    view_redo: Vec<CameraSnapshot>,
 }
 
 impl Default for Viewport {
@@ -211,7 +225,62 @@ impl Viewport {
             last_rect: None,
             selection_drag_start: None,
             zoom_window_start: None,
+            navigation_drag_start: None,
+            view_undo: Vec::new(),
+            view_redo: Vec::new(),
         }
+    }
+
+    pub(crate) fn camera_snapshot(&self) -> CameraSnapshot {
+        CameraSnapshot {
+            pixels_per_unit: self.pixels_per_unit,
+            pan: self.pan,
+            orbit_yaw: self.orbit_yaw,
+            orbit_pitch: self.orbit_pitch,
+            perspective_camera_distance: self.perspective_camera_distance,
+            target: self.target,
+        }
+    }
+
+    fn restore_camera(&mut self, camera: CameraSnapshot) {
+        self.pixels_per_unit = camera.pixels_per_unit;
+        self.pan = camera.pan;
+        self.orbit_yaw = camera.orbit_yaw;
+        self.orbit_pitch = camera.orbit_pitch;
+        self.perspective_camera_distance = camera.perspective_camera_distance;
+        self.target = camera.target;
+    }
+
+    fn record_camera_change(&mut self, previous: CameraSnapshot) {
+        if self.camera_snapshot() == previous {
+            return;
+        }
+        if self.view_undo.len() == VIEW_HISTORY_LIMIT {
+            self.view_undo.remove(0);
+        }
+        self.view_undo.push(previous);
+        self.view_redo.clear();
+    }
+
+    pub(crate) fn undo_view(&mut self) -> bool {
+        let Some(previous) = self.view_undo.pop() else {
+            return false;
+        };
+        self.view_redo.push(self.camera_snapshot());
+        self.restore_camera(previous);
+        true
+    }
+
+    pub(crate) fn redo_view(&mut self) -> bool {
+        let Some(next) = self.view_redo.pop() else {
+            return false;
+        };
+        if self.view_undo.len() == VIEW_HISTORY_LIMIT {
+            self.view_undo.remove(0);
+        }
+        self.view_undo.push(self.camera_snapshot());
+        self.restore_camera(next);
+        true
     }
 
     pub(crate) fn apparent_intersection_normal(&self) -> Vector3 {
@@ -267,10 +336,21 @@ impl Viewport {
         self.last_rect = Some(rect);
 
         let modifiers = ui.input(|input| input.modifiers);
+        if response.drag_started_by(PointerButton::Middle)
+            || response.drag_started_by(PointerButton::Secondary)
+        {
+            self.navigation_drag_start = Some(self.camera_snapshot());
+        }
         if response.dragged_by(PointerButton::Middle) {
             self.apply_navigation_drag(PointerButton::Middle, modifiers, response.drag_delta());
         } else if response.dragged_by(PointerButton::Secondary) {
             self.apply_navigation_drag(PointerButton::Secondary, modifiers, response.drag_delta());
+        }
+        if (response.drag_stopped_by(PointerButton::Middle)
+            || response.drag_stopped_by(PointerButton::Secondary))
+            && let Some(previous) = self.navigation_drag_start.take()
+        {
+            self.record_camera_change(previous);
         }
         let mut zoomed = false;
         if response.hovered() {
@@ -1125,6 +1205,7 @@ mod tests {
                 let mut viewport = Viewport::new(kind);
                 viewport.target = NaVector3::new(100.0, 200.0, 300.0);
                 let target = viewport.target;
+                let initial_camera = viewport.camera_snapshot();
                 let plane = viewport.construction_plane();
                 let angles = (viewport.orbit_yaw, viewport.orbit_pitch);
                 let button_event = |position, pressed| egui::Event::PointerButton {
@@ -1229,6 +1310,19 @@ mod tests {
                     assert_eq!(viewport.target, target);
                 }
                 assert_eq!(viewport.construction_plane(), plane);
+                assert!(viewport.undo_view());
+                assert_eq!(viewport.camera_snapshot(), initial_camera);
+                assert!(!viewport.undo_view());
+                assert!(viewport.redo_view());
+                assert_eq!(
+                    (
+                        viewport.pan,
+                        viewport.orbit_yaw,
+                        viewport.orbit_pitch,
+                        viewport.target
+                    ),
+                    final_state
+                );
             }
         }
     }
