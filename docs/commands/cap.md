@@ -4,13 +4,15 @@
 
 `Cap` fills planar naked-edge loops on selected NURBS surfaces, B-reps, and meshes.
 Enter it before selecting objects, or select objects first. For meshes,
-`Cap [DeleteInput=Yes|No]` controls whether the capped result replaces the
-source (the default) or is added as a copy. The option is remembered. A copy
+`Cap [DeleteInput=Yes|No] [Crease=Yes|No]` controls whether the capped result
+replaces the source (the default) or is added as a copy, and whether cap boundary
+vertices remain separate (`Crease=Yes`, the default) or are welded to the source
+(`Crease=No`). Both options are remembered. A copy
 inherits the source's attributes and groups, while geometry-attached user text
 is cleared because its geometry changed. Mixed selections still cap B-reps and
-NURBS surfaces in place. Mesh caps are triangulated; the mesh `Crease` and
-`Triangles` options and SubD capping are unavailable. For nonplanar mesh holes,
-see [meshes](meshes.md).
+NURBS surfaces in place. Mesh caps are triangulated; `Triangles=No` n-gon caps
+and SubD capping are unavailable. For nonplanar mesh holes, see
+[meshes](meshes.md).
 
 Caps retain the spatial boundary geometry. The command subdivides newly capped
 edges at C0 knot joins with tangent breaks of at least 1°, independently of
@@ -26,6 +28,9 @@ Disjoint nested loops on the same plane form a triangulated cap with one or more
 inner openings. A coplanar source face in the cap bounds prevents a duplicate
 sheet. Intersecting, touching, and otherwise ambiguous coplanar loops remain
 open.
+`Crease=No` reuses source raw vertices at the new cap boundaries and welds
+coincident source boundary vertices there. Raw seams away from capped boundaries
+are preserved. Exact-location topology closes in either crease mode.
 
 In-place results retain their IDs, names, layers, colors, and group memberships.
 `DeleteInput=No` retains each source mesh and creates a new object for each

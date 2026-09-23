@@ -5,27 +5,60 @@ use viboceros_geometry::BrepSolidOrientation;
 #[cfg(test)]
 mod tests;
 
-const MESH_CAP_USAGE: &str = "Cap [DeleteInput=Yes|No]";
+const MESH_CAP_USAGE: &str = "Cap [DeleteInput=Yes|No] [Crease=Yes|No]";
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct MeshCapOptions {
+    delete_input: bool,
+    crease: bool,
+}
+
+impl Default for MeshCapOptions {
+    fn default() -> Self {
+        Self {
+            delete_input: true,
+            crease: true,
+        }
+    }
+}
 
 pub(super) struct CapCommand {
-    delete_input: remembered::Remembered<bool>,
+    options: remembered::Remembered<MeshCapOptions>,
 }
 
 impl Default for CapCommand {
     fn default() -> Self {
         Self {
-            delete_input: remembered::Remembered::new(true),
+            options: remembered::Remembered::new(MeshCapOptions::default()),
         }
     }
 }
 
 impl CapCommand {
-    fn parse(&self, arguments: &[&str]) -> Result<bool, CommandError> {
-        if arguments.is_empty() {
-            Ok(self.delete_input.get())
-        } else {
-            parse_delete_input(arguments, MESH_CAP_USAGE, &["DeleteInput"])
+    fn parse(&self, arguments: &[&str]) -> Result<MeshCapOptions, CommandError> {
+        let mut options = self.options.get();
+        let (mut delete_seen, mut crease_seen, mut index) = (false, false, 0);
+        while index < arguments.len() {
+            if arguments.len() == 1
+                && let Some(value) = parse_yes_no(arguments[index])
+            {
+                options.delete_input = value;
+                break;
+            }
+            let (name, value, consumed) = orient_option(arguments, index, MESH_CAP_USAGE)?;
+            let value = parse_yes_no(value).ok_or(CommandError::Usage(MESH_CAP_USAGE))?;
+            if option_name_eq(name, "DeleteInput") && !delete_seen {
+                options.delete_input = value;
+                delete_seen = true;
+            } else if option_name_eq(name, "Crease") && !crease_seen {
+                options.crease = value;
+                crease_seen = true;
+            } else {
+                return Err(CommandError::Usage(MESH_CAP_USAGE));
+            }
+            index += consumed;
         }
+        Ok(options)
     }
 }
 
@@ -38,15 +71,22 @@ impl Command for CapCommand {
         &self,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        let delete_input = self.parse(arguments)?;
+        let options = self.parse(arguments)?;
         Ok(Some(ObjectSelectionPrompt {
             command: "Cap",
             filter: ObjectSelectionFilter::Cap,
-            options: vec![BooleanSelectionOption {
-                name: "DeleteInput",
-                value: delete_input,
-                aliases: &[],
-            }],
+            options: vec![
+                BooleanSelectionOption {
+                    name: "DeleteInput",
+                    value: options.delete_input,
+                    aliases: &[],
+                },
+                BooleanSelectionOption {
+                    name: "Crease",
+                    value: options.crease,
+                    aliases: &[],
+                },
+            ],
             menus: vec![],
             choices: vec![],
             workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
@@ -54,12 +94,12 @@ impl Command for CapCommand {
     }
 
     fn accept_object_selection_options(&self, arguments: &[&str]) -> Result<(), CommandError> {
-        self.delete_input.set(self.parse(arguments)?);
+        self.options.set(self.parse(arguments)?);
         Ok(())
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let delete_input = self.parse(arguments)?;
+        let options = self.parse(arguments)?;
         if document.selected_object_count() == 0 {
             return Err(CommandError::NoObjectsSelected);
         }
@@ -71,10 +111,11 @@ impl Command for CapCommand {
         for object in document.selected_objects() {
             if let Geometry::Mesh(mesh) = object.geometry() {
                 selected_mesh = true;
-                let (capped, count) = mesh.cap_planar_holes(document.tolerance())?;
+                let (capped, count) =
+                    mesh.cap_planar_holes_with_crease(document.tolerance(), options.crease)?;
                 if count > 0 {
                     face_count += capped.face_count() - mesh.face_count();
-                    if delete_input {
+                    if options.delete_input {
                         replacements.push((object.id(), Geometry::Mesh(capped)));
                     } else {
                         mesh_copies.push((object.id(), Geometry::Mesh(capped)));
@@ -146,7 +187,7 @@ impl Command for CapCommand {
             .copy_object_geometries_into_source_groups(mesh_copies)?
             .len();
         let count = replaced + copied;
-        self.delete_input.set(delete_input);
+        self.options.set(options);
         let mut message = format!("Capped {count} object(s) with {face_count} planar face(s)");
         if copied > 0 {
             message.push_str(&format!("; retained {copied} source mesh(es)"));

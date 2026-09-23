@@ -2232,6 +2232,17 @@ impl TriangleMesh {
     /// their outer loop; simple loops use the mesh hole filler's winding and
     /// constrained triangulation. Unused closing vertices are removed.
     pub fn cap_planar_holes(&self, tolerance: Tolerance) -> Result<(Self, usize), GeometryError> {
+        self.cap_planar_holes_with_crease(tolerance, true)
+    }
+
+    /// Caps planar openings, optionally welding cap boundary vertices to the
+    /// source mesh. `crease = true` keeps separate raw vertices at the join;
+    /// exact-location topology is closed in either case.
+    pub fn cap_planar_holes_with_crease(
+        &self,
+        tolerance: Tolerance,
+        crease: bool,
+    ) -> Result<(Self, usize), GeometryError> {
         let mut capped = self.clone();
         let mut count = 0_usize;
         loop {
@@ -2276,6 +2287,9 @@ impl TriangleMesh {
             count = count
                 .checked_add(1)
                 .ok_or(GeometryError::TooManyMeshFaces)?;
+        }
+        if !crease && count > 0 {
+            capped = planar_cap::weld_cap_boundary(self, capped, tolerance)?;
         }
         Ok((capped, count))
     }
@@ -6666,6 +6680,108 @@ mod tests {
         assert_eq!(capped.topology().boundary_edge_count(), 4);
         assert_eq!(capped.cap_planar_holes(Tolerance::DEFAULT).unwrap().1, 0);
         assert_eq!(mesh.fill_holes(Tolerance::DEFAULT).unwrap().1, 2);
+        let (welded, welded_count) = mesh
+            .cap_planar_holes_with_crease(Tolerance::DEFAULT, false)
+            .unwrap();
+        assert_eq!(welded_count, 1);
+        assert_eq!(welded.vertices(), mesh.vertices());
+        assert_eq!(&welded.faces()[..4], &mesh.faces()[..4]);
+        assert_eq!(welded.topology().boundary_edge_count(), 4);
+    }
+
+    #[test]
+    fn planar_cap_crease_controls_raw_boundary_welding() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0., 0., 0.),
+                point(4., 0., 0.),
+                point(0., 4., 0.),
+                point(0., 0., 4.),
+            ],
+            vec![[0, 1, 3], [1, 2, 3], [2, 0, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (creased, count) = mesh
+            .cap_planar_holes_with_crease(Tolerance::DEFAULT, true)
+            .unwrap();
+        assert_eq!(count, 1);
+        assert_eq!(creased.vertices().len(), 7);
+        assert!(creased.topology().is_solid());
+        assert!(
+            !creased
+                .filtered_edge_polylines(MeshEdgeFilter::Unwelded, Tolerance::DEFAULT)
+                .unwrap()
+                .is_empty()
+        );
+
+        let (welded, count) = mesh
+            .cap_planar_holes_with_crease(Tolerance::DEFAULT, false)
+            .unwrap();
+        assert_eq!(count, 1);
+        assert_eq!(welded.vertices(), mesh.vertices());
+        assert!(welded.topology().is_solid());
+        assert!(
+            welded
+                .filtered_edge_polylines(MeshEdgeFilter::Unwelded, Tolerance::DEFAULT)
+                .unwrap()
+                .is_empty()
+        );
+        assert!((welded.signed_volume().unwrap() - creased.signed_volume().unwrap()).abs() < 1e-12);
+        assert_eq!(
+            mesh.cap_planar_holes(Tolerance::DEFAULT).unwrap().0,
+            creased
+        );
+    }
+
+    #[test]
+    fn welded_cap_reuses_seamed_boundary_vertices_without_welding_remote_seams() {
+        let positions = [
+            point(0., 0., 0.),
+            point(4., 0., 0.),
+            point(0., 4., 0.),
+            point(0., 0., 4.),
+        ];
+        let mesh = TriangleMesh::try_new(
+            vec![
+                positions[0],
+                positions[1],
+                positions[3],
+                positions[1],
+                positions[2],
+                positions[3],
+                positions[2],
+                positions[0],
+                positions[3],
+            ],
+            vec![[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (welded, count) = mesh
+            .cap_planar_holes_with_crease(Tolerance::DEFAULT, false)
+            .unwrap();
+        assert_eq!(count, 1);
+        assert_eq!(welded.vertices(), mesh.vertices());
+        assert!(welded.topology().is_solid());
+        assert_eq!(
+            welded.faces()[3]
+                .indices()
+                .iter()
+                .copied()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([0, 1, 4])
+        );
+        // The source's three independent apex copies are not on the cap
+        // boundary and remain independent raw vertices.
+        assert_eq!(
+            [
+                welded.faces()[0].indices()[2],
+                welded.faces()[1].indices()[2],
+                welded.faces()[2].indices()[2]
+            ],
+            [2, 5, 8]
+        );
     }
 
     #[test]
@@ -6850,6 +6966,20 @@ mod tests {
         assert!(capped.topology().is_solid());
         assert!((capped.signed_volume().unwrap() - 24.).abs() < 1e-12);
         assert_eq!(capped.cap_planar_holes(Tolerance::DEFAULT).unwrap().1, 0);
+        let (welded, welded_count) = wall
+            .cap_planar_holes_with_crease(Tolerance::DEFAULT, false)
+            .unwrap();
+        assert_eq!(welded_count, 4);
+        assert_eq!(welded.vertices(), wall.vertices());
+        assert_eq!(welded.face_count(), capped.face_count());
+        assert!(welded.topology().is_solid());
+        assert!(
+            welded
+                .filtered_edge_polylines(MeshEdgeFilter::Unwelded, Tolerance::DEFAULT)
+                .unwrap()
+                .is_empty()
+        );
+        assert!((welded.signed_volume().unwrap() - 24.).abs() < 1e-12);
 
         let rotation = AffineTransform3::try_rotation(
             point(0., 0., 0.),

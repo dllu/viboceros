@@ -1,6 +1,68 @@
 //! Planar mesh caps with an outer boundary and one or more inner boundaries.
 use super::*;
 
+/// Reuses source raw vertices on newly capped boundaries. Only vertices at
+/// locations used by a new cap are welded; unrelated open boundaries and
+/// existing interior seams retain their original raw indices.
+pub(super) fn weld_cap_boundary(
+    source: &TriangleMesh,
+    capped: TriangleMesh,
+    tolerance: Tolerance,
+) -> Result<TriangleMesh, GeometryError> {
+    let source_len = source.vertices.len();
+    debug_assert_eq!(&capped.vertices[..source_len], source.vertices.as_slice());
+    let mut representatives = capped.vertices[source_len..]
+        .iter()
+        .copied()
+        .map(|point| (point_key(point), u32::MAX))
+        .collect::<BTreeMap<_, _>>();
+    let data = source.topology_data();
+    for use_record in data
+        .edges
+        .values()
+        .filter(|incidence| incidence.count == 1)
+        .filter_map(|incidence| incidence.first_use)
+    {
+        for raw in use_record.raw_vertices {
+            let key = point_key(source.vertices[raw as usize]);
+            if let Some(representative) = representatives.get_mut(&key) {
+                *representative = (*representative).min(raw);
+            }
+        }
+    }
+    if representatives.values().any(|&raw| raw == u32::MAX) {
+        return Err(GeometryError::MeshCapWeldSourceMissing);
+    }
+
+    let mut remap = (0..capped.vertices.len())
+        .map(|index| u32::try_from(index).expect("a validated mesh has u32 vertex indices"))
+        .collect::<Vec<_>>();
+    for use_record in data
+        .edges
+        .values()
+        .filter(|incidence| incidence.count == 1)
+        .filter_map(|incidence| incidence.first_use)
+    {
+        for raw in use_record.raw_vertices {
+            let key = point_key(source.vertices[raw as usize]);
+            if let Some(&representative) = representatives.get(&key) {
+                remap[raw as usize] = representative;
+            }
+        }
+    }
+    for (index, point) in capped.vertices[source_len..].iter().copied().enumerate() {
+        remap[source_len + index] = representatives[&point_key(point)];
+    }
+    let faces = capped
+        .faces
+        .into_iter()
+        .map(|face| face.remapped(|raw| remap[raw as usize]))
+        .collect();
+    let mut vertices = capped.vertices;
+    vertices.truncate(source_len);
+    TriangleMesh::try_new_faces(vertices, faces, tolerance)
+}
+
 pub(super) fn try_cap_annular(
     mesh: &TriangleMesh,
     data: &MeshTopologyData,

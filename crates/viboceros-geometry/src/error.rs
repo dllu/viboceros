@@ -618,6 +618,8 @@ pub enum GeometryError {
 
     #[error("a mesh unweld angle tolerance must be finite and lie in [0, pi]")]
     InvalidMeshUnweldAngle,
+    #[error("a planar mesh cap vertex has no source boundary vertex to weld")]
+    MeshCapWeldSourceMissing,
 
     #[error("mesh topology edge index {edge} is outside the edge count {edge_count}")]
     MeshTopologyEdgeIndexOutOfRange { edge: usize, edge_count: usize },

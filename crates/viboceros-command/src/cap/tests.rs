@@ -215,7 +215,9 @@ fn cap_mesh_delete_input_no_retains_source_and_copies_attributes_and_groups() {
     doc.select_object(id, SelectionMode::Replace).unwrap();
     let before = doc.object(id).unwrap().clone();
     let registry = CommandRegistry::with_builtins();
-    registry.execute(&mut doc, "Cap DeleteInput=No").unwrap();
+    registry
+        .execute(&mut doc, "Cap DeleteInput=No Crease=No")
+        .unwrap();
     assert_eq!(doc.objects().len(), 2);
     assert_eq!(doc.object(id), Some(&before));
     let copied = doc
@@ -225,7 +227,9 @@ fn cap_mesh_delete_input_no_retains_source_and_copies_attributes_and_groups() {
         .clone();
     assert_eq!(copied.attributes(), &attrs);
     assert!(copied.geometry_user_text().is_empty());
-    assert!(matches!(copied.geometry(), Geometry::Mesh(mesh) if mesh.topology().is_solid()));
+    assert!(
+        matches!(copied.geometry(), Geometry::Mesh(mesh) if mesh.topology().is_solid() && mesh.vertices().len() == 4)
+    );
     assert!(doc.is_selected(id));
     assert!(!doc.is_selected(copied.id()));
     assert_eq!(
@@ -240,12 +244,77 @@ fn cap_mesh_delete_input_no_retains_source_and_copies_attributes_and_groups() {
             .options[0]
             .value
     );
+    assert!(
+        !registry
+            .object_selection_prompt("Cap")
+            .unwrap()
+            .unwrap()
+            .options[1]
+            .value
+    );
     assert_eq!(doc.undo_label(), Some("Cap"));
     registry.execute(&mut doc, "Undo").unwrap();
     assert_eq!(doc.object(id), Some(&before));
     assert!(doc.object(copied.id()).is_none());
     registry.execute(&mut doc, "Redo").unwrap();
     assert_eq!(doc.object(copied.id()), Some(&copied));
+}
+
+#[test]
+fn cap_mesh_crease_no_welds_boundary_and_remembers_choice() {
+    let mut doc = Document::default();
+    let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+    let mesh = TriangleMesh::try_new(
+        vec![
+            point(0., 0., 0.),
+            point(4., 0., 0.),
+            point(0., 4., 0.),
+            point(0., 0., 4.),
+        ],
+        vec![[0, 1, 3], [1, 2, 3], [2, 0, 3]],
+        doc.tolerance(),
+    )
+    .unwrap();
+    let id = doc.add_geometry(Geometry::Mesh(mesh)).unwrap();
+    doc.select_object(id, SelectionMode::Replace).unwrap();
+    let before = doc.object(id).unwrap().clone();
+    let registry = CommandRegistry::with_builtins();
+    assert!(
+        registry
+            .object_selection_prompt("Cap")
+            .unwrap()
+            .unwrap()
+            .options[1]
+            .value
+    );
+    registry.execute(&mut doc, "Cap Crease=No").unwrap();
+    let after = doc.object(id).unwrap().clone();
+    let Geometry::Mesh(welded) = after.geometry() else {
+        panic!("expected mesh")
+    };
+    assert_eq!(welded.vertices().len(), 4);
+    assert!(welded.topology().is_solid());
+    assert!(
+        welded
+            .filtered_edge_polylines(
+                viboceros_geometry::MeshEdgeFilter::Unwelded,
+                doc.tolerance()
+            )
+            .unwrap()
+            .is_empty()
+    );
+    assert!(
+        !registry
+            .object_selection_prompt("Cap")
+            .unwrap()
+            .unwrap()
+            .options[1]
+            .value
+    );
+    registry.execute(&mut doc, "Undo").unwrap();
+    assert_eq!(doc.object(id), Some(&before));
+    registry.execute(&mut doc, "Redo").unwrap();
+    assert_eq!(doc.object(id), Some(&after));
 }
 
 #[test]
@@ -282,6 +351,8 @@ fn cap_mixed_sources_copy_mesh_and_replace_brep_in_one_transaction() {
     for invalid in [
         "Cap DeleteInput=Maybe",
         "Cap DeleteInput=No DeleteInput=Yes",
+        "Cap Crease=Maybe",
+        "Cap Crease=Yes Crease=No",
     ] {
         let unchanged = format!("{doc:?}");
         assert!(registry.execute(&mut doc, invalid).is_err());
