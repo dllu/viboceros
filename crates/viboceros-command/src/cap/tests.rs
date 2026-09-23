@@ -184,6 +184,50 @@ fn cap_mesh_fills_only_planar_openings_and_preserves_object_history() {
 }
 
 #[test]
+fn cap_mesh_triangulates_annular_openings_in_one_undo_step() {
+    let mut doc = Document::default();
+    let mut vertices = Vec::new();
+    let outer = [[0., 0.], [4., 0.], [4., 4.], [0., 4.]];
+    let inner = [[1., 1.], [3., 1.], [3., 3.], [1., 3.]];
+    for (ring, z) in [(outer, 0.), (outer, 2.), (inner, 0.), (inner, 2.)] {
+        vertices.extend(ring.map(|[x, y]| Point3::try_new(x, y, z).unwrap()));
+    }
+    let mut faces = Vec::new();
+    for side in 0..4_u32 {
+        let next = (side + 1) % 4;
+        faces.push(viboceros_geometry::MeshFace::Quad([
+            side,
+            next,
+            next + 4,
+            side + 4,
+        ]));
+        faces.push(viboceros_geometry::MeshFace::Quad([
+            side + 8,
+            side + 12,
+            next + 12,
+            next + 8,
+        ]));
+    }
+    let wall = TriangleMesh::try_new_faces(vertices, faces, doc.tolerance()).unwrap();
+    let id = doc.add_geometry(Geometry::Mesh(wall)).unwrap();
+    doc.select_object(id, SelectionMode::Replace).unwrap();
+    let before = doc.object(id).unwrap().clone();
+    let registry = CommandRegistry::with_builtins();
+    registry.execute(&mut doc, "Cap").unwrap();
+    let after = doc.object(id).unwrap().clone();
+    let Geometry::Mesh(capped) = after.geometry() else {
+        panic!("expected capped mesh")
+    };
+    assert!(capped.topology().is_solid());
+    assert!((capped.signed_volume().unwrap() - 24.).abs() < 1e-12);
+    assert_eq!(doc.undo_label(), Some("Cap"));
+    registry.execute(&mut doc, "Undo").unwrap();
+    assert_eq!(doc.object(id), Some(&before));
+    registry.execute(&mut doc, "Redo").unwrap();
+    assert_eq!(doc.object(id), Some(&after));
+}
+
+#[test]
 fn kink_boundary_subdivision_is_part_of_one_identity_preserving_history_step() {
     let mut doc = Document::default();
     let profile = NurbsCurve::try_clamped_uniform(

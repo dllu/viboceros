@@ -13,6 +13,7 @@ mod edge_split;
 mod edge_unweld_tests;
 mod edge_weld;
 mod normals;
+mod planar_cap;
 mod radial;
 use radial::{
     ordered_vertex_face_components, radial_vertex_face_walk, radially_sorted_vertex_edges,
@@ -25,6 +26,7 @@ use union_find::{index_root, union_faces, union_indices_keep_earlier, union_indi
 mod transform_tests;
 
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
+use std::ops::Range;
 
 use spade::{
     ConstrainedDelaunayTriangulation, HasPosition, Point2 as TriangulationPoint2, Triangulation,
@@ -2226,13 +2228,23 @@ impl TriangleMesh {
 
     /// Caps closed, unambiguous naked boundaries whose vertices lie within the
     /// absolute modelling tolerance of a common plane. Other openings remain
-    /// untouched. Each cap uses the mesh hole filler's existing winding and
-    /// constrained triangulation, and unused closing vertices are removed.
+    /// untouched. Disjoint coplanar inner loops are triangulated together with
+    /// their outer loop; simple loops use the mesh hole filler's winding and
+    /// constrained triangulation. Unused closing vertices are removed.
     pub fn cap_planar_holes(&self, tolerance: Tolerance) -> Result<(Self, usize), GeometryError> {
         let mut capped = self.clone();
         let mut count = 0_usize;
         loop {
             let data = capped.topology_data();
+            if let Some((next, filled_boundaries)) =
+                planar_cap::try_cap_annular(&capped, &data, tolerance)?
+            {
+                capped = next;
+                count = count
+                    .checked_add(filled_boundaries)
+                    .ok_or(GeometryError::TooManyMeshFaces)?;
+                continue;
+            }
             let mut next = None;
             for (edge, _) in data
                 .edges
@@ -3641,12 +3653,40 @@ impl TriangleMesh {
 fn triangulate_projected_mesh_hole(
     projected: &[[Real; 2]],
 ) -> Result<Option<Vec<[u32; 3]>>, GeometryError> {
+    let loop_range = 0..projected.len();
+    triangulate_projected_mesh_region(projected, std::slice::from_ref(&loop_range))
+}
+
+/// The first loop is the outer boundary; later loops are disjoint inner holes.
+/// All coordinates share one normalized planar frame.
+fn triangulate_projected_mesh_region(
+    projected: &[[Real; 2]],
+    loops: &[Range<usize>],
+) -> Result<Option<Vec<[u32; 3]>>, GeometryError> {
     if projected.len() > u32::MAX as usize {
         return Err(GeometryError::TooManyMeshVertices);
     }
-    let doubled_area = projected_polygon_doubled_area(projected);
+    if loops.is_empty()
+        || loops.iter().any(|range| range.len() < 3)
+        || loops.first().is_none_or(|range| range.start != 0)
+        || loops
+            .last()
+            .is_none_or(|range| range.end != projected.len())
+        || loops.windows(2).any(|pair| pair[0].end != pair[1].start)
+    {
+        return Ok(None);
+    }
+    let loop_points = loops
+        .iter()
+        .map(|range| &projected[range.clone()])
+        .collect::<Vec<_>>();
+    let doubled_area = projected_polygon_doubled_area(loop_points[0]).abs()
+        - loop_points[1..]
+            .iter()
+            .map(|points| projected_polygon_doubled_area(points).abs())
+            .sum::<Real>();
     let epsilon = 64.0 * Real::EPSILON * projected.len() as Real;
-    if !doubled_area.is_finite() || doubled_area.abs() <= epsilon {
+    if !doubled_area.is_finite() || doubled_area <= epsilon {
         return Ok(None);
     }
 
@@ -3670,22 +3710,36 @@ fn triangulate_projected_mesh_hole(
     for vertex in triangulation.vertices() {
         handles[vertex.data().source_index] = Some(vertex.fix());
     }
-    for source in 0..projected.len() {
-        let Some(from) = handles[source] else {
-            return Ok(None);
-        };
-        let Some(to) = handles[(source + 1) % projected.len()] else {
-            return Ok(None);
-        };
-        let before = triangulation.num_constraints();
-        if triangulation.try_add_constraint(from, to).is_empty()
-            || triangulation.num_constraints() != before + 1
-        {
-            return Ok(None);
+    for range in loops {
+        for source in range.clone() {
+            let Some(from) = handles[source] else {
+                return Ok(None);
+            };
+            let Some(to) = handles[if source + 1 == range.end {
+                range.start
+            } else {
+                source + 1
+            }] else {
+                return Ok(None);
+            };
+            let before = triangulation.num_constraints();
+            if triangulation.try_add_constraint(from, to).is_empty()
+                || triangulation.num_constraints() != before + 1
+            {
+                return Ok(None);
+            }
         }
     }
 
-    let mut triangles = Vec::with_capacity(projected.len().saturating_sub(2));
+    let expected_triangle_count = projected
+        .len()
+        .checked_add(loops.len().saturating_sub(1).saturating_mul(2))
+        .and_then(|count| count.checked_sub(2))
+        .ok_or(GeometryError::TooManyMeshFaces)?;
+    let mut triangles = Vec::new();
+    triangles
+        .try_reserve(expected_triangle_count)
+        .map_err(|_| GeometryError::TooManyMeshFaces)?;
     let mut actual_area = 0.0;
     let mut area_correction = 0.0;
     for face in triangulation.inner_faces() {
@@ -3698,7 +3752,11 @@ fn triangulate_projected_mesh_hole(
             (face_points[0][0] + face_points[1][0] + face_points[2][0]) / 3.0,
             (face_points[0][1] + face_points[1][1] + face_points[2][1]) / 3.0,
         ];
-        if !point_in_mesh_hole_polygon(centroid, projected, epsilon) {
+        if !point_in_mesh_hole_polygon(centroid, loop_points[0], epsilon)
+            || loop_points[1..]
+                .iter()
+                .any(|hole| point_in_mesh_hole_polygon(centroid, hole, epsilon))
+        {
             continue;
         }
         let triangle_area = mesh_hole_cross(face_points[0], face_points[1], face_points[2]);
@@ -3713,20 +3771,20 @@ fn triangulate_projected_mesh_hole(
         }
         triangles.push(triangle);
     }
-    if triangles.len() != projected.len() - 2 {
+    if triangles.len() != expected_triangle_count {
         return Ok(None);
     }
     let actual_area = actual_area + area_correction;
     let area_tolerance = 4096.0 * Real::EPSILON * projected.len() as Real;
-    if (actual_area - doubled_area.abs()).abs() > area_tolerance {
+    if (actual_area - doubled_area).abs() > area_tolerance {
         return Ok(None);
     }
     Ok(Some(triangles))
 }
 
-/// Independent coplanar loops with overlapping bounds may enclose one another.
-/// Filling either as a disk would overlap the other cap or the existing mesh.
-/// Until mesh caps can triangulate multiple loops together, leave both open.
+/// Prevent a simple disk fallback when another coplanar boundary overlaps its
+/// bounds. The annular path handles proven nested loops first; ambiguous cases
+/// stay open instead of creating overlapping faces.
 fn coplanar_mesh_boundary_overlaps(
     data: &MeshTopologyData,
     boundary: &[Point3],
@@ -6641,6 +6699,200 @@ mod tests {
             mesh.cap_planar_holes(Tolerance::DEFAULT).unwrap(),
             (mesh.clone(), 0)
         );
+    }
+
+    #[test]
+    fn constrained_mesh_region_triangulates_an_annulus_without_covering_its_hole() {
+        let points = [
+            [0., 0.],
+            [1., 0.],
+            [1., 1.],
+            [0., 1.],
+            [0.25, 0.25],
+            [0.75, 0.25],
+            [0.75, 0.75],
+            [0.25, 0.75],
+        ];
+        let triangles = triangulate_projected_mesh_region(&points, &[0..4, 4..8])
+            .unwrap()
+            .unwrap();
+        assert_eq!(triangles.len(), 8);
+        let area = triangles
+            .iter()
+            .map(|triangle| {
+                mesh_hole_cross(
+                    points[triangle[0] as usize],
+                    points[triangle[1] as usize],
+                    points[triangle[2] as usize],
+                ) * 0.5
+            })
+            .sum::<Real>();
+        assert!((area - 0.75).abs() < 1e-14);
+    }
+
+    #[test]
+    fn constrained_mesh_region_handles_disjoint_holes_with_overlapping_bounds() {
+        let points = [
+            [0., 0.],
+            [6., 0.],
+            [6., 6.],
+            [0., 6.],
+            [1., 1.],
+            [5., 1.],
+            [1., 5.],
+            [5., 5.],
+            [5., 2.],
+            [2., 5.],
+        ];
+        let triangles = triangulate_projected_mesh_region(&points, &[0..4, 4..7, 7..10])
+            .unwrap()
+            .unwrap();
+        assert_eq!(triangles.len(), 12);
+        let area = triangles
+            .iter()
+            .map(|triangle| {
+                mesh_hole_cross(
+                    points[triangle[0] as usize],
+                    points[triangle[1] as usize],
+                    points[triangle[2] as usize],
+                ) * 0.5
+            })
+            .sum::<Real>();
+        assert!((area - 23.5).abs() < 1e-12);
+    }
+
+    #[test]
+    fn constrained_mesh_region_rejects_nested_inner_holes() {
+        let points = [
+            [0., 0.],
+            [10., 0.],
+            [10., 10.],
+            [0., 10.],
+            [2., 2.],
+            [8., 2.],
+            [8., 8.],
+            [2., 8.],
+            [4., 4.],
+            [6., 4.],
+            [6., 6.],
+            [4., 6.],
+        ];
+        assert!(
+            triangulate_projected_mesh_region(&points, &[0..4, 4..8, 8..12])
+                .unwrap()
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn constrained_mesh_region_rejects_crossing_inner_holes() {
+        let points = [
+            [0., 0.],
+            [10., 0.],
+            [10., 10.],
+            [0., 10.],
+            [2., 2.],
+            [6., 2.],
+            [6., 6.],
+            [2., 6.],
+            [4., 4.],
+            [8., 4.],
+            [8., 8.],
+            [4., 8.],
+        ];
+        assert!(
+            triangulate_projected_mesh_region(&points, &[0..4, 4..8, 8..12])
+                .unwrap()
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn constrained_mesh_region_rejects_a_hole_touching_the_outer_boundary() {
+        let points = [
+            [0., 0.],
+            [1., 0.],
+            [1., 1.],
+            [0., 1.],
+            [0., 0.],
+            [0.4, 0.2],
+            [0.2, 0.4],
+        ];
+        assert!(
+            triangulate_projected_mesh_region(&points, &[0..4, 4..7])
+                .unwrap()
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn planar_cap_closes_both_annular_ends_of_a_square_tube() {
+        let mut vertices = Vec::new();
+        for (z, ring) in [
+            (0., [[0., 0.], [4., 0.], [4., 4.], [0., 4.]]),
+            (2., [[0., 0.], [4., 0.], [4., 4.], [0., 4.]]),
+            (0., [[1., 1.], [3., 1.], [3., 3.], [1., 3.]]),
+            (2., [[1., 1.], [3., 1.], [3., 3.], [1., 3.]]),
+        ] {
+            vertices.extend(ring.map(|[x, y]| point(x, y, z)));
+        }
+        let mut faces = Vec::new();
+        for side in 0..4_u32 {
+            let next = (side + 1) % 4;
+            faces.push(MeshFace::Quad([side, next, next + 4, side + 4]));
+            faces.push(MeshFace::Quad([side + 8, side + 12, next + 12, next + 8]));
+        }
+        let wall = TriangleMesh::try_new_faces(vertices, faces, Tolerance::DEFAULT).unwrap();
+        assert_eq!(wall.topology().boundary_edge_count(), 16);
+        let (capped, count) = wall.cap_planar_holes(Tolerance::DEFAULT).unwrap();
+        assert_eq!(count, 4);
+        assert_eq!(capped.face_count(), 24);
+        assert!(capped.topology().is_solid());
+        assert!((capped.signed_volume().unwrap() - 24.).abs() < 1e-12);
+        assert_eq!(capped.cap_planar_holes(Tolerance::DEFAULT).unwrap().1, 0);
+
+        let rotation = AffineTransform3::try_rotation(
+            point(0., 0., 0.),
+            UnitVector3::try_new(1., 1., 1., Tolerance::DEFAULT).unwrap(),
+            0.37,
+        )
+        .unwrap();
+        let rotated = wall.transformed(rotation, Tolerance::DEFAULT).unwrap();
+        let (rotated_cap, rotated_count) = rotated.cap_planar_holes(Tolerance::DEFAULT).unwrap();
+        assert_eq!(rotated_count, 4);
+        assert!(rotated_cap.topology().is_solid());
+        assert!((rotated_cap.signed_volume().unwrap() - 24.).abs() < 1e-9);
+    }
+
+    #[test]
+    fn planar_cap_supports_two_inner_boundaries_per_end() {
+        let rings = [
+            [[0., 0.], [10., 0.], [10., 10.], [0., 10.]],
+            [[1., 1.], [3., 1.], [3., 3.], [1., 3.]],
+            [[7., 7.], [9., 7.], [9., 9.], [7., 9.]],
+        ];
+        let mut vertices = Vec::new();
+        let mut faces = Vec::new();
+        for (ring_index, ring) in rings.into_iter().enumerate() {
+            let base = u32::try_from(vertices.len()).unwrap();
+            vertices.extend(ring.map(|[x, y]| point(x, y, 0.)));
+            vertices.extend(ring.map(|[x, y]| point(x, y, 2.)));
+            for side in 0..4_u32 {
+                let next = (side + 1) % 4;
+                let indices = if ring_index == 0 {
+                    [base + side, base + next, base + next + 4, base + side + 4]
+                } else {
+                    [base + side, base + side + 4, base + next + 4, base + next]
+                };
+                faces.push(MeshFace::Quad(indices));
+            }
+        }
+        let wall = TriangleMesh::try_new_faces(vertices, faces, Tolerance::DEFAULT).unwrap();
+        let (capped, count) = wall.cap_planar_holes(Tolerance::DEFAULT).unwrap();
+        assert_eq!(count, 6);
+        assert_eq!(capped.face_count(), 40);
+        assert!(capped.topology().is_solid());
+        assert!((capped.signed_volume().unwrap() - 184.).abs() < 1e-12);
     }
 
     #[test]

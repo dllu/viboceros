@@ -18,8 +18,10 @@ Planar openings can be capped while other nonplanar openings remain open.
 For meshes, each unbranched boundary is tested against a best-fit plane using
 the document's absolute tolerance. Existing mesh winding is preserved around
 the generated triangles. Nonplanar and ambiguous boundaries remain open.
-Coplanar mesh boundaries with overlapping bounding boxes are left open to
-avoid overlapping disks; annular caps with inner boundaries are not yet built.
+Disjoint nested loops on the same plane form a triangulated cap with one or more
+inner openings. A coplanar source face in the cap bounds prevents a duplicate
+sheet. Intersecting, touching, and otherwise ambiguous coplanar loops remain
+open.
 
 Objects retain their IDs, names, layers, colors, and group memberships.
 Preselection is retained; command-first selection is cleared on success,
@@ -158,5 +160,6 @@ tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/cap_edge_
 McNeel's [Cap reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/cap.htm)
 documents the remaining mesh and SubD options.
 The [mesh Cap probe](../../tools/rhino_oracle/fixtures/mesh_cap_command.json)
-is prepared for command-level comparison. The first run could not execute:
-the local Rhino process exited during .NET startup with an access violation.
+is prepared for command-level comparison, including an open square tube. Local
+runs have not executed because Rhino exits during .NET startup with an access
+violation.
