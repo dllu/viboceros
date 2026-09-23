@@ -272,6 +272,8 @@ directrices use exact tensor-product NURBS patches. Revolutions of those
 directrices with straight UV iso-trims use exact rational patches over angles
 up to one turn, including paired
 full-turn seams. Polar singular trims remain unsupported. The path
+follows the 3D leader of `SURFACE_CURVE` and `INTERSECTION_CURVE` sweep
+directrices when that leader is one of these supported curves. It
 validates shared topology in `Brep::try_new`. NURBS faces with multiple loops of
 certified straight-segment or degree-one polyline UV trims use strict polygon
 boundary validation, including loops represented by one closed polyline trim.

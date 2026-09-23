@@ -259,6 +259,8 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
 
 fn sweep_directrix(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
     match curve {
+        Curve3D::SurfaceCurve(curve) => sweep_directrix(curve.leader(), id),
+        Curve3D::IntersectionCurve(curve) => sweep_directrix(curve.leader(), id),
         Curve3D::Line(_)
         | Curve3D::Polyline(_)
         | Curve3D::BsplineCurve(_)

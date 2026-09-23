@@ -2416,14 +2416,15 @@ fn native_step_imports_exact_line_polyline_conic_bspline_and_nurbs_extrusions() 
         Vector4, builder,
     };
     use monstertruck::step::load::step_geometry::{
-        Curve2D, Curve3D, StepExtrusionSurface, StepParameterCurve, Surface, SweepSurface,
+        Curve2D, Curve3D, StepExtrusionSurface, StepParameterCurve, Surface, SurfaceCurve3D,
+        SurfaceCurveKind, SurfaceCurveRepresentation, SweepSurface,
     };
     use monstertruck::step::save::StepModels;
     use monstertruck::topology::Vertex;
     use monstertruck::topology::compress::{
         CompressedEdge, CompressedEdgeUse, CompressedTrimmedFace, CompressedTrimmedShell,
     };
-    for variant in 0..5 {
+    for variant in 0..6 {
         let rational = variant == 3;
         let make_curve = |y: f64| {
             if variant == 0 {
@@ -2444,6 +2445,17 @@ fn native_step_imports_exact_line_polyline_conic_bspline_and_nurbs_extrusions() 
                     TruckPoint3::new(1., y, 1.),
                 )
                 .curve()
+            } else if variant == 5 {
+                Curve3D::SurfaceCurve(SurfaceCurve3D::new(
+                    SurfaceCurveKind::SurfaceCurve,
+                    Box::new(Curve3D::Polyline(PolylineCurve(vec![
+                        TruckPoint3::new(0., y, 0.),
+                        TruckPoint3::new(1., y, 1.),
+                        TruckPoint3::new(2., y, 0.),
+                    ]))),
+                    vec![],
+                    SurfaceCurveRepresentation::Curve3D,
+                ))
             } else if rational {
                 Curve3D::NurbsCurve(NurbsCurve::new(BsplineCurve::new(
                     KnotVector::bezier_knot(2),
@@ -2530,8 +2542,11 @@ fn native_step_imports_exact_line_polyline_conic_bspline_and_nurbs_extrusions() 
         assert!(text.contains("SURFACE_OF_LINEAR_EXTRUSION("));
         if rational {
             assert!(text.contains("RATIONAL_B_SPLINE_CURVE("));
-        } else if variant == 1 {
+        } else if variant == 1 || variant == 5 {
             assert!(text.contains("POLYLINE("));
+            if variant == 5 {
+                assert!(text.contains("SURFACE_CURVE("));
+            }
         } else if variant == 4 {
             assert!(text.contains("CIRCLE("));
         }
@@ -2550,7 +2565,7 @@ fn native_step_imports_exact_line_polyline_conic_bspline_and_nurbs_extrusions() 
             ),
             (4, 4, 1)
         );
-        if variant == 1 {
+        if variant == 1 || variant == 5 {
             let patch = brep.faces()[0].surface();
             assert_eq!(patch.degree_u(), 1);
             assert_eq!(patch.knots_u(), &[0., 0., 1., 2., 2.]);
