@@ -838,6 +838,104 @@ fn point_cloud_add_accepts_explicit_unselected_target_after_picking() {
     assert!(!app.document.is_selected(target));
 }
 
+#[test]
+fn point_cloud_remove_picks_members_and_changes_output_at_prompt() {
+    let mut app = test_app();
+    let target = app
+        .document
+        .add_geometry(Geometry::PointCloud(
+            viboceros_geometry::PointCloud3::try_new(vec![
+                point(1.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+            ])
+            .unwrap(),
+        ))
+        .unwrap();
+    app.document
+        .select_objects_direct([target], SelectionMode::Replace)
+        .unwrap();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, "PointCloud Remove");
+    assert!(app.object_prompt.is_some());
+    enter(&mut app, "");
+    assert!(app.object_prompt.is_some());
+    app.select_cloud_points(&[2, 0], SelectionMode::Add);
+    app.select_cloud_points(&[2], SelectionMode::Remove);
+    app.select_cloud_points(&[1], SelectionMode::Add);
+    enter(&mut app, "Output=PointCloud");
+    enter(&mut app, "");
+    assert!(app.object_prompt.is_none());
+    let Geometry::PointCloud(cloud) = app.document.object(target).unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(cloud.points(), [point(2.0, 0.0, 0.0), point(4.0, 0.0, 0.0)]);
+    let output = app
+        .document
+        .objects()
+        .find(|object| object.id() != target)
+        .unwrap();
+    let Geometry::PointCloud(output) = output.geometry() else {
+        panic!()
+    };
+    assert_eq!(
+        output.points(),
+        [point(1.0, 0.0, 0.0), point(2.0, 0.0, 0.0)]
+    );
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+}
+
+#[test]
+fn point_cloud_remove_cancel_and_selall_leave_model_consistent() {
+    let mut app = test_app();
+    let target = app
+        .document
+        .add_geometry(Geometry::PointCloud(
+            viboceros_geometry::PointCloud3::try_new(vec![
+                point(1.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+            ])
+            .unwrap(),
+        ))
+        .unwrap();
+    app.document
+        .select_objects_direct([target], SelectionMode::Replace)
+        .unwrap();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, "PointCloud Remove");
+    app.select_cloud_points(&[0], SelectionMode::Add);
+    app.cancel_interactive_command(false);
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![target]
+    );
+    enter(&mut app, "PointCloud Remove Output=PointCloud");
+    enter(&mut app, "SelAll");
+    assert_eq!(
+        app.object_prompt
+            .as_ref()
+            .unwrap()
+            .cloud_removal
+            .as_ref()
+            .unwrap()
+            .indices
+            .len(),
+        2
+    );
+    enter(&mut app, "");
+    assert!(app.document.object(target).is_none());
+    let Geometry::PointCloud(output) = app.document.objects().next().unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(
+        output.points(),
+        [point(1.0, 0.0, 0.0), point(2.0, 0.0, 0.0)]
+    );
+}
+
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
     app.run_command();

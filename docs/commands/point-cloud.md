@@ -41,8 +41,15 @@ PointCloud Add Target=<id>
 The target retains its ID, attributes, groups, and selection. Meshes are not Add
 sources. Add is one undo step.
 
-Remove uses zero-based stored point indices, separated by commas. Removed points
-keep their stored order, and duplicate indices count once:
+Select one target cloud, enter `PointCloud Remove`, then click cloud points or
+drag a selection window. Additional picks accumulate; Ctrl-click removes a
+member from the pending selection. `SelAll` and `SelNone` act on cloud members.
+Type `Output=Points` or `Output=PointCloud` at the prompt, then press Enter.
+Esc cancels without changing the cloud.
+
+For scripts, Remove also accepts zero-based stored point indices separated by
+commas. Removed points keep their stored order, and duplicate indices count
+once:
 
 ```text
 PointCloud Remove Indices=0,3 Output=Points
@@ -58,8 +65,8 @@ step.
 ## Limits
 
 Per-point colors are not implemented; `UsePointColors=Yes` returns an error.
-Remove currently uses typed indices. Viewport point subobject picking and
-Rhino's interactive Remove option loop are pending.
+Rhino's full interactive Add/Remove option loop is pending. Remove currently
+selects cloud members by click, window, or typed indices.
 Bare `PointCloud` with a preselected cloud asks for an explicit edit action.
 Creation still ignores existing cloud inputs. Use `Explode` to extract individual
 points from a cloud, or `ExtractPt Output=PointCloud` for supported geometry
@@ -78,8 +85,8 @@ mixed input, output attributes, and selection. The
 replays against native command execution. Independent Python checks use explicit
 expected point lists and retained source indices. Native tests also cover
 undo/redo, group restoration, Add/Remove editing, and atomic rejection; UI tests
-cover filtered creation selection, Add source picking and cancellation, pick
-order, and unsupported colors.
+cover filtered creation selection, Add source picking, Remove member picking
+in four view types, cancellation, pick order, and unsupported colors.
 The eight-case live comparison passed with zero coordinate difference and
 matching recorded document state. A [batch-deletion benchmark](../batch-deletion.md)
 tracks native conversion and history costs; Rhino performance parity remains unmeasured.

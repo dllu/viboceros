@@ -8,8 +8,8 @@ use viboceros_command::ObjectSelectionFilter;
 use viboceros_command::construction_plane::{ConstructionPlaneState, WorldPlane};
 use viboceros_document::{Document, Geometry, ObjectAttributes, ObjectId, SelectionMode};
 use viboceros_geometry::{
-    CircularArc3, CurveSegment3, Frame3, GeometryError, NurbsCurve, Point3, Real, Tolerance,
-    TriangleMesh, Vector3,
+    CircularArc3, CurveSegment3, Frame3, GeometryError, NurbsCurve, Point3, PointCloud3, Real,
+    Tolerance, TriangleMesh, Vector3,
 };
 
 use crate::viewport_gpu::{
@@ -142,6 +142,8 @@ pub struct ViewportInput<'a> {
     pub zoom_window: bool,
     pub zoom_target: Option<ZoomTargetInput>,
     pub object_filter: Option<ObjectSelectionFilter>,
+    pub point_cloud_remove_target: Option<ObjectId>,
+    pub point_cloud_highlights: &'a [usize],
     pub preview_curve: Option<&'a NurbsCurve>,
     pub edge_pick: bool,
     pub edge_highlights: &'a [EdgePick],
@@ -158,6 +160,8 @@ impl Default for ViewportInput<'_> {
             zoom_window: false,
             zoom_target: None,
             object_filter: Some(ObjectSelectionFilter::Any),
+            point_cloud_remove_target: None,
+            point_cloud_highlights: &[],
             preview_curve: None,
             edge_pick: false,
             edge_highlights: &[],
@@ -181,6 +185,7 @@ pub struct ViewportOutput {
     pub picked_point: Option<Point3>,
     pub selection_click: Option<SelectionClick>,
     pub selection_window: Option<SelectionWindow>,
+    pub point_cloud_selection: Option<PointCloudPointSelection>,
     pub enter_pressed: bool,
     pub activated: bool,
 }
@@ -188,6 +193,12 @@ pub struct ViewportOutput {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct SelectionClick {
     pub object_id: Option<ObjectId>,
+    pub mode: SelectionMode,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PointCloudPointSelection {
+    pub indices: Vec<usize>,
     pub mode: SelectionMode,
 }
 
@@ -486,7 +497,9 @@ impl Viewport {
             }
         }
 
-        let component_input = input.edge_pick || input.edge_curve.is_some();
+        let component_input = input.edge_pick
+            || input.edge_curve.is_some()
+            || input.point_cloud_remove_target.is_some();
         if input.edge_curve.is_none() {
             self.edge_snap_cache.borrow_mut().take();
         }
@@ -495,8 +508,12 @@ impl Viewport {
             && !drafting.active
             && !component_input
             && input.object_filter.is_some();
+        let cloud_selecting = input.point_cloud_remove_target.is_some()
+            && !input.zoom_window
+            && input.zoom_target.is_none()
+            && !drafting.active;
         let object_filter = input.object_filter.unwrap_or_default();
-        if !selecting {
+        if !selecting && !cloud_selecting {
             self.selection_drag_start = None;
         } else if response.drag_started_by(PointerButton::Primary) {
             self.selection_drag_start = ui.input(|input| input.pointer.press_origin());
@@ -568,6 +585,30 @@ impl Viewport {
         } else {
             None
         };
+        let point_cloud_selection = input.point_cloud_remove_target.and_then(|target| {
+            let Geometry::PointCloud(cloud) = document.object(target)?.geometry() else {
+                return None;
+            };
+            if cloud_selecting && response.drag_stopped_by(PointerButton::Primary) {
+                let start = self.selection_drag_start.take()?;
+                let end = selection_pointer?;
+                let window = Rect::from_two_pos(start, end);
+                let indices = self.point_cloud_members_in_window(cloud, rect, window);
+                Some(PointCloudPointSelection {
+                    indices,
+                    mode: selection_mode(modifiers),
+                })
+            } else if cloud_selecting && response.clicked_by(PointerButton::Primary) {
+                let pointer = response.interact_pointer_pos()?;
+                let (index, _) = self.pick_point_cloud_member(pointer, rect, cloud)?;
+                Some(PointCloudPointSelection {
+                    indices: vec![index],
+                    mode: selection_mode(modifiers),
+                })
+            } else {
+                None
+            }
+        });
 
         let drafting_cursor = if drafting.active
             && !component_input
@@ -599,6 +640,18 @@ impl Viewport {
         painter.rect_filled(rect, 0.0, self.background_color());
         self.paint_grid(&painter, rect);
         self.paint_objects(&painter, rect, document, viewport_index);
+        if let Some(target) = input.point_cloud_remove_target
+            && let Some(object) = document.object(target)
+            && let Geometry::PointCloud(cloud) = object.geometry()
+        {
+            for &index in input.point_cloud_highlights {
+                if let Some(point) = cloud.points().get(index)
+                    && let Some(pixel) = self.project(*point, rect)
+                {
+                    painter.circle_stroke(pixel, 7.0, Stroke::new(2.0, SELECTED_COLOR));
+                }
+            }
+        }
         self.paint_edge_highlights(&painter, rect, document, input.edge_highlights);
         if let Some(ends) = input.edge_endpoints {
             for (point, label) in ends.into_iter().zip(["A", "B"]) {
@@ -752,6 +805,7 @@ impl Viewport {
                 .flatten(),
             selection_click,
             selection_window,
+            point_cloud_selection,
             enter_pressed: !input.zoom_window
                 && input.zoom_target.is_none()
                 && response.clicked_by(PointerButton::Secondary),

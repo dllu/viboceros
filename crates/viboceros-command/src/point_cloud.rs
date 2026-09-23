@@ -10,7 +10,7 @@ enum Operation {
     },
     Remove {
         target: Option<ObjectId>,
-        indices: BTreeSet<usize>,
+        indices: Option<BTreeSet<usize>>,
         output_cloud: bool,
     },
 }
@@ -42,7 +42,12 @@ impl Command for PointCloudCommand {
         let filter = match parse(arguments)? {
             Operation::Create => ObjectSelectionFilter::PointCloudSources,
             Operation::Add { .. } => ObjectSelectionFilter::PointCloudAddSources,
-            Operation::Remove { .. } => return Ok(None),
+            Operation::Remove { indices: None, .. } => {
+                ObjectSelectionFilter::PointCloudRemoveTarget
+            }
+            Operation::Remove {
+                indices: Some(_), ..
+            } => return Ok(None),
         };
         Ok(Some(ObjectSelectionPrompt {
             command: self.name(),
@@ -99,7 +104,7 @@ fn parse(arguments: &[&str]) -> Result<Operation, CommandError> {
         return if remove {
             Ok(Operation::Remove {
                 target,
-                indices: indices.ok_or(CommandError::Usage(USAGE))?,
+                indices,
                 output_cloud,
             })
         } else {
@@ -130,7 +135,12 @@ fn execute(
             target,
             indices,
             output_cloud,
-        } => remove(document, target, &indices, output_cloud),
+        } => remove(
+            document,
+            target,
+            &indices.ok_or(CommandError::Usage(USAGE))?,
+            output_cloud,
+        ),
     }
 }
 

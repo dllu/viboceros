@@ -1,6 +1,106 @@
 use super::*;
 
 #[test]
+fn point_cloud_member_pick_returns_stored_index_in_all_views() {
+    let cloud = PointCloud3::try_new(vec![
+        point(-2.0, 0.0, 0.0),
+        point(2.0, 0.0, 1.0),
+        point(2.0, 0.0, 1.0),
+    ])
+    .unwrap();
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+    for kind in [
+        ViewKind::Top,
+        ViewKind::Front,
+        ViewKind::Plan,
+        ViewKind::Perspective,
+    ] {
+        let view = Viewport::new(kind);
+        let pixel = view.project(cloud.points()[1], rect).unwrap();
+        assert_eq!(
+            view.pick_point_cloud_member(pixel, rect, &cloud).unwrap().0,
+            1
+        );
+        let window = Rect::from_center_size(pixel, Vec2::splat(2.0));
+        assert_eq!(
+            view.point_cloud_members_in_window(&cloud, rect, window),
+            vec![1, 2]
+        );
+    }
+}
+
+#[test]
+fn point_cloud_remove_viewport_click_emits_member_index() {
+    let mut document = Document::default();
+    let cloud = PointCloud3::try_new(vec![point(-2.0, 0.0, 0.0), point(2.0, 0.0, 0.0)]).unwrap();
+    let target = document.add_geometry(Geometry::PointCloud(cloud)).unwrap();
+    let context = egui::Context::default();
+    let mut viewport = Viewport::new(ViewKind::Top);
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+    let pointer = viewport.project(point(2.0, 0.0, 0.0), rect).unwrap();
+    let mut frame = |events| {
+        let mut result = ViewportOutput::default();
+        context
+            .run_ui(
+                egui::RawInput {
+                    screen_rect: Some(rect),
+                    events,
+                    ..Default::default()
+                },
+                |ui| {
+                    result = viewport.show(
+                        ui,
+                        &document,
+                        ViewportInput {
+                            object_filter: None,
+                            point_cloud_remove_target: Some(target),
+                            ..Default::default()
+                        },
+                        &[],
+                        0,
+                        true,
+                    );
+                },
+            )
+            .drop_without_applying_deltas();
+        result
+    };
+    let event = |pos, pressed| egui::Event::PointerButton {
+        pos,
+        pressed,
+        button: PointerButton::Primary,
+        modifiers: egui::Modifiers::NONE,
+    };
+    frame(vec![]);
+    frame(vec![
+        egui::Event::PointerMoved(pointer),
+        event(pointer, true),
+    ]);
+    let output = frame(vec![event(pointer, false)]);
+    assert_eq!(
+        output.point_cloud_selection,
+        Some(PointCloudPointSelection {
+            indices: vec![1],
+            mode: SelectionMode::Replace,
+        })
+    );
+    assert!(output.selection_click.is_none());
+    let start = pointer - Vec2::splat(12.0);
+    let end = pointer + Vec2::splat(12.0);
+    frame(vec![egui::Event::PointerMoved(start), event(start, true)]);
+    frame(vec![egui::Event::PointerMoved(end)]);
+    let output = frame(vec![event(end, false)]);
+    assert_eq!(
+        output.point_cloud_selection,
+        Some(PointCloudPointSelection {
+            indices: vec![1],
+            mode: SelectionMode::Replace,
+        })
+    );
+    assert!(output.selection_window.is_none());
+}
+
+#[test]
 fn surface_filter_precedes_coincident_point_curve_and_mesh_hits() {
     let mut document = Document::default();
     let points = vec![

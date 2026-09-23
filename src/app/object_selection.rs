@@ -1,5 +1,6 @@
 //! Object picking and confirmation are prompt phases, not model transactions.
 use super::*;
+use std::collections::BTreeSet;
 use viboceros_command::{ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSelectionWorkflow};
 use viboceros_document::{Geometry, ObjectId, SelectionMode};
 
@@ -21,11 +22,20 @@ pub(super) struct PendingObjectCommand {
     pub(super) command_override: Option<String>,
     pub(super) excluded_object: Option<ObjectId>,
     pub(super) selection_before: Option<Vec<ObjectId>>,
+    pub(super) cloud_removal: Option<PendingCloudRemoval>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(super) struct PendingCloudRemoval {
+    pub(super) target: ObjectId,
+    pub(super) indices: BTreeSet<usize>,
+    pub(super) output_cloud: bool,
 }
 
 impl PendingObjectCommand {
     pub(super) fn selection_filter(&self) -> Option<ObjectSelectionFilter> {
-        (self.phase == ObjectPromptPhase::Selecting).then_some(self.description.filter)
+        (self.phase == ObjectPromptPhase::Selecting && self.cloud_removal.is_none())
+            .then_some(self.description.filter)
     }
 
     pub(super) fn label(&self) -> &'static str {
@@ -37,6 +47,9 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if self.cloud_removal.is_some() {
+            return "Pick cloud points or drag a window; Output=Points|PointCloud; Enter removes, Esc cancels";
+        }
         if self.phase == ObjectPromptPhase::Selecting
             && self.description.allows_selection_options()
             && matches!(
@@ -96,6 +109,27 @@ impl PendingObjectCommand {
 }
 
 impl VibocerosApp {
+    fn point_cloud_prompt_target(&self, input: &str) -> Option<ObjectId> {
+        let explicit = input
+            .split_whitespace()
+            .skip(2)
+            .filter_map(|argument| argument.split_once('='))
+            .find(|(name, _)| name.trim_start_matches('_').eq_ignore_ascii_case("Target"))
+            .and_then(|(_, value)| value.parse::<ObjectId>().ok());
+        let target = explicit.or_else(|| {
+            let mut clouds = self
+                .document
+                .selected_objects()
+                .filter(|object| matches!(object.geometry(), Geometry::PointCloud(_)));
+            let first = clouds.next()?.id();
+            clouds.next().is_none().then_some(first)
+        })?;
+        self.document
+            .object(target)
+            .filter(|object| matches!(object.geometry(), Geometry::PointCloud(_)))
+            .map(|_| target)
+    }
+
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
         if self.edge_prompt.is_some() {
             return None;
@@ -144,30 +178,9 @@ impl VibocerosApp {
             })
             .flatten();
         if description.filter == ObjectSelectionFilter::PointCloudAddSources {
-            let explicit_target = input
-                .split_whitespace()
-                .skip(2)
-                .filter_map(|argument| argument.split_once('='))
-                .find(|(name, _)| name.trim_start_matches('_').eq_ignore_ascii_case("Target"))
-                .and_then(|(_, value)| value.parse::<ObjectId>().ok());
-            let target = explicit_target.or_else(|| {
-                let mut clouds = self
-                    .document
-                    .selected_objects()
-                    .filter(|object| matches!(object.geometry(), Geometry::PointCloud(_)));
-                let first = clouds.next()?.id();
-                clouds.next().is_none().then_some(first)
-            });
-            let Some(target) = target else {
+            let Some(target) = self.point_cloud_prompt_target(input) else {
                 return false;
             };
-            if self
-                .document
-                .object(target)
-                .is_none_or(|object| !matches!(object.geometry(), Geometry::PointCloud(_)))
-            {
-                return false;
-            }
             if self
                 .document
                 .selected_objects()
@@ -186,6 +199,41 @@ impl VibocerosApp {
                 command_override: Some(format!("PointCloud Add Target={target}")),
                 excluded_object: Some(target),
                 selection_before: Some(selection_before),
+                cloud_removal: None,
+            });
+            self.command_input.clear();
+            self.push_log(format!("> {input}"));
+            self.log_object_prompt();
+            return true;
+        }
+        if description.filter == ObjectSelectionFilter::PointCloudRemoveTarget {
+            let Some(target) = self.point_cloud_prompt_target(input) else {
+                return false;
+            };
+            let output_cloud = input
+                .split_whitespace()
+                .skip(2)
+                .filter_map(|argument| argument.split_once('='))
+                .find(|(name, _)| name.trim_start_matches('_').eq_ignore_ascii_case("Output"))
+                .is_some_and(|(_, value)| value.eq_ignore_ascii_case("PointCloud"));
+            self.cancel_interactive_command(false);
+            self.object_prompt = Some(PendingObjectCommand {
+                description,
+                phase: ObjectPromptPhase::Selecting,
+                postselected: false,
+                subcurve_measurement: false,
+                measurement_display_units: None,
+                command_override: Some(format!(
+                    "PointCloud Remove Target={target} Output={}",
+                    if output_cloud { "PointCloud" } else { "Points" }
+                )),
+                excluded_object: None,
+                selection_before: None,
+                cloud_removal: Some(PendingCloudRemoval {
+                    target,
+                    indices: BTreeSet::new(),
+                    output_cloud,
+                }),
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -227,6 +275,7 @@ impl VibocerosApp {
                         command_override: None,
                         excluded_object: None,
                         selection_before: None,
+                        cloud_removal: None,
                     });
                 }
                 Ok(None) => return false,
@@ -254,6 +303,7 @@ impl VibocerosApp {
                 command_override: None,
                 excluded_object: None,
                 selection_before: None,
+                cloud_removal: None,
             });
         }
         self.command_input.clear();
@@ -291,6 +341,9 @@ impl VibocerosApp {
         let Some(mut pending) = self.object_prompt.clone() else {
             return false;
         };
+        if pending.cloud_removal.is_some() {
+            return self.continue_cloud_removal(input, pending);
+        }
         if input.is_empty() {
             if matches!(
                 pending.phase,
@@ -556,6 +609,117 @@ impl VibocerosApp {
             Err(error) => self.push_log(format!("Error: {error}")),
         }
         true
+    }
+
+    fn continue_cloud_removal(&mut self, input: &str, mut pending: PendingObjectCommand) -> bool {
+        let removal = pending.cloud_removal.as_mut().unwrap();
+        if input.is_empty() {
+            if removal.indices.is_empty() {
+                self.push_log("Pick at least one cloud point; Esc cancels".into());
+                return true;
+            }
+            let indices = removal
+                .indices
+                .iter()
+                .map(usize::to_string)
+                .collect::<Vec<_>>()
+                .join(",");
+            let command = format!(
+                "{} Indices={indices}",
+                pending.command_override.as_deref().unwrap()
+            );
+            let context = viboceros_command::CommandContext {
+                construction_plane: self.viewports[self.active_viewport].construction_plane(),
+            };
+            self.push_log(format!("> {command}"));
+            match self
+                .commands
+                .execute_in_context(&mut self.document, &command, context)
+            {
+                Ok(message) => {
+                    self.object_prompt = None;
+                    self.push_log(message);
+                }
+                Err(error) => self.push_log(format!("Error: {error}")),
+            }
+            self.command_input.clear();
+            return true;
+        }
+        let normalized = input.trim_start_matches(['_', '-']);
+        if normalized.eq_ignore_ascii_case("SelAll") || normalized.eq_ignore_ascii_case("SelNone") {
+            if normalized.eq_ignore_ascii_case("SelNone") {
+                removal.indices.clear();
+            } else if let Some(object) = self.document.object(removal.target)
+                && let Geometry::PointCloud(cloud) = object.geometry()
+            {
+                removal.indices = (0..cloud.points().len()).collect();
+            }
+        } else if let Some((name, value)) = normalized.split_once('=')
+            && name.eq_ignore_ascii_case("Output")
+        {
+            removal.output_cloud = if value.eq_ignore_ascii_case("PointCloud") {
+                true
+            } else if value.eq_ignore_ascii_case("Points") {
+                false
+            } else {
+                self.push_log("Output must be Points or PointCloud".into());
+                return true;
+            };
+            pending.command_override = Some(format!(
+                "PointCloud Remove Target={} Output={}",
+                removal.target,
+                if removal.output_cloud {
+                    "PointCloud"
+                } else {
+                    "Points"
+                }
+            ));
+        } else if input
+            .split_whitespace()
+            .next()
+            .is_some_and(|name| self.commands.recognizes(name))
+        {
+            self.cancel_object_prompt(true);
+            return false;
+        } else {
+            self.push_log(
+                "Pick cloud points or type Output=Points|PointCloud, SelAll, or SelNone".into(),
+            );
+            return true;
+        }
+        let count = removal.indices.len();
+        self.push_log(format!("{count} cloud point(s) selected"));
+        self.object_prompt = Some(pending);
+        self.command_input.clear();
+        true
+    }
+
+    pub(super) fn select_cloud_points(&mut self, indices: &[usize], mode: SelectionMode) {
+        let Some(pending) = self.object_prompt.as_mut() else {
+            return;
+        };
+        let Some(removal) = pending.cloud_removal.as_mut() else {
+            return;
+        };
+        match mode {
+            SelectionMode::Replace | SelectionMode::Add => {
+                removal.indices.extend(indices.iter().copied());
+            }
+            SelectionMode::Remove => {
+                for index in indices {
+                    removal.indices.remove(index);
+                }
+            }
+            SelectionMode::Toggle => {
+                for index in indices {
+                    if !removal.indices.insert(*index) {
+                        removal.indices.remove(index);
+                    }
+                }
+            }
+        }
+        let count = removal.indices.len();
+        self.push_log(format!("{count} cloud point(s) selected"));
     }
 
     pub(super) fn cancel_object_prompt(&mut self, announce: bool) {

@@ -56,6 +56,82 @@ impl ProjectedPrimitives {
 }
 
 impl Viewport {
+    pub(super) fn pick_point_cloud_member(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        cloud: &PointCloud3,
+    ) -> Option<(usize, f32)> {
+        let nearest = if let Some(projection) = self.point_cloud_projection() {
+            let scale = Real::from(self.pixels_per_unit);
+            Point3::try_new(self.target.x, self.target.y, self.target.z)
+                .ok()
+                .and_then(|target| {
+                    cloud
+                        .nearest_projected_relative(
+                            projection,
+                            target,
+                            self.parallel_query_offset(pointer, rect)?,
+                            Real::from(PICK_CAPTURE_PIXELS) / scale,
+                        )
+                        .ok()
+                        .flatten()
+                })
+                .map(|(index, _, distance)| (index, (distance * scale) as f32))
+        } else if self.kind == ViewKind::Plan {
+            self.plan_target_frame()
+                .zip(self.parallel_query_offset(pointer, rect))
+                .and_then(|(frame, offset)| {
+                    cloud
+                        .nearest_projected_frame_relative(
+                            frame,
+                            offset,
+                            Real::from(PICK_CAPTURE_PIXELS) / Real::from(self.pixels_per_unit),
+                        )
+                        .ok()
+                        .flatten()
+                })
+                .map(|(index, _, distance)| {
+                    (index, (distance * Real::from(self.pixels_per_unit)) as f32)
+                })
+        } else {
+            cloud
+                .points()
+                .iter()
+                .enumerate()
+                .filter_map(|(index, point)| {
+                    self.project(*point, rect)
+                        .map(|projected| (index, (projected - pointer).length()))
+                })
+                .fold(None, |best: Option<(usize, f32)>, candidate| {
+                    if best.is_none_or(|(_, distance)| candidate.1 < distance) {
+                        Some(candidate)
+                    } else {
+                        best
+                    }
+                })
+        };
+        nearest.filter(|(_, distance)| distance.is_finite() && *distance <= PICK_CAPTURE_PIXELS)
+    }
+
+    pub(super) fn point_cloud_members_in_window(
+        &self,
+        cloud: &PointCloud3,
+        viewport_rect: Rect,
+        selection: Rect,
+    ) -> Vec<usize> {
+        cloud
+            .points()
+            .iter()
+            .enumerate()
+            .filter_map(|(index, point)| {
+                self.project(*point, viewport_rect)
+                    .is_some_and(|pixel| selection.contains(pixel))
+                    .then_some(index)
+            })
+            .collect()
+    }
+
     #[cfg(test)]
     pub(super) fn pick_object(
         &self,
@@ -88,49 +164,9 @@ impl Viewport {
                     PickHit::screen(0, distance)
                 }
                 Geometry::PointCloud(cloud) => {
-                    let distance = if let Some(projection) = self.point_cloud_projection() {
-                        let scale = Real::from(self.pixels_per_unit);
-                        Point3::try_new(self.target.x, self.target.y, self.target.z)
-                            .ok()
-                            .and_then(|target| {
-                                cloud
-                                    .nearest_projected_relative(
-                                        projection,
-                                        target,
-                                        self.parallel_query_offset(pointer, rect)?,
-                                        Real::from(PICK_CAPTURE_PIXELS) / scale,
-                                    )
-                                    .ok()
-                                    .flatten()
-                            })
-                            .map_or(f32::INFINITY, |(_, _, distance)| {
-                                (distance * Real::from(self.pixels_per_unit)) as f32
-                            })
-                    } else if self.kind == ViewKind::Plan {
-                        self.plan_target_frame()
-                            .zip(self.parallel_query_offset(pointer, rect))
-                            .and_then(|(frame, offset)| {
-                                cloud
-                                    .nearest_projected_frame_relative(
-                                        frame,
-                                        offset,
-                                        Real::from(PICK_CAPTURE_PIXELS)
-                                            / Real::from(self.pixels_per_unit),
-                                    )
-                                    .ok()
-                                    .flatten()
-                            })
-                            .map_or(f32::INFINITY, |(_, _, distance)| {
-                                (distance * Real::from(self.pixels_per_unit)) as f32
-                            })
-                    } else {
-                        cloud
-                            .points()
-                            .iter()
-                            .filter_map(|point| self.project(*point, rect))
-                            .map(|projected| (projected - pointer).length())
-                            .fold(f32::INFINITY, f32::min)
-                    };
+                    let distance = self
+                        .pick_point_cloud_member(pointer, rect, cloud)
+                        .map_or(f32::INFINITY, |(_, distance)| distance);
                     PickHit::screen(0, distance)
                 }
                 _ => {

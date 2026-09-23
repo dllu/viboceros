@@ -5204,6 +5204,8 @@ impl VibocerosApp {
             } else {
                 self.accept_drafting_point(point);
             }
+        } else if let Some(selection) = output.point_cloud_selection {
+            self.select_cloud_points(&selection.indices, selection.mode);
         } else if let Some(click) = output.selection_click {
             self.apply_selection_click(click);
         } else if let Some(selection) = output.selection_window {
@@ -5392,6 +5394,14 @@ impl eframe::App for VibocerosApp {
         let zoom_window_pending = self.zoom_window_pending;
         let zoom_target = self.zoom_target;
         let object_filter = self.viewport_object_filter();
+        let cloud_removal = self
+            .object_prompt
+            .as_ref()
+            .and_then(|prompt| prompt.cloud_removal.as_ref());
+        let point_cloud_remove_target = cloud_removal.map(|removal| removal.target);
+        let point_cloud_highlights = cloud_removal
+            .map(|removal| removal.indices.iter().copied().collect::<Vec<_>>())
+            .unwrap_or_default();
         let preview_curve = self.curve_draft_preview();
         let edge_pick = self
             .edge_prompt
@@ -5463,6 +5473,8 @@ impl eframe::App for VibocerosApp {
                                             None => None,
                                         },
                                         object_filter,
+                                        point_cloud_remove_target,
+                                        point_cloud_highlights: &point_cloud_highlights,
                                         preview_curve: preview_curve.as_deref(),
                                         edge_pick,
                                         edge_highlights: &edge_highlights,
