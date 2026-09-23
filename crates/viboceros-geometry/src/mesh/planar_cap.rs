@@ -204,8 +204,9 @@ pub(super) fn try_cap_annular(
                 .into_iter()
                 .map(|triangle| MeshFace::Triangle(triangle.map(|index| offset + index))),
         );
-        return TriangleMesh::try_new_faces(vertices, faces, tolerance)
-            .map(|capped| Some((capped, holes.len() + 1)));
+        let mut capped = TriangleMesh::try_new_faces(vertices, faces, tolerance)?;
+        capped.ngons = mesh.ngons.clone();
+        return Ok(Some((capped, holes.len() + 1)));
     }
     Ok(None)
 }

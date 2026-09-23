@@ -164,13 +164,14 @@ attributes. The joined representation preserves Rhino's duplicated raw
 boundary storage while exact-location topology closes the seam. Patch winding
 is made consistent with the source, tilted and mildly nonplanar boundaries are
 projected stably, and ambiguous branched or self-crossing boundaries are
-rejected atomically.
+rejected atomically. Existing source n-gons are retained in the joined mesh.
 
 `FillMeshHoles` fills every simple closed naked boundary on every selected
 mesh, including outer borders, and keeps each repaired mesh's identity,
 attributes, groups, and selection. It stages the full selection atomically,
 leaves already-closed meshes unchanged, and rejects ambiguous branched or
 self-crossing boundary topology rather than guessing a repair.
+Existing source n-gons remain attached through each filled boundary.
 
 ## Direction, welding, and topology
 

@@ -457,4 +457,49 @@ mod tests {
         assert_eq!(mesh.delete_faces(&[2]).unwrap().unwrap().ngons().len(), 1);
         assert!(mesh.delete_faces(&[0]).unwrap().unwrap().ngons().is_empty());
     }
+
+    #[test]
+    fn mesh_hole_filling_keeps_existing_ngons() {
+        let point = |x, y| Point3::try_new(x, y, 0.).unwrap();
+        let mesh = TriangleMesh::try_new(
+            vec![point(0., 0.), point(2., 0.), point(2., 2.), point(0., 2.)],
+            vec![[0, 1, 2], [0, 2, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .try_with_ngons(vec![MeshNgon::from_parts(vec![0, 1, 2, 3], vec![0, 1])])
+        .unwrap();
+        let filled_one = mesh
+            .fill_topology_hole(0, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert_eq!(filled_one.filled().ngons(), mesh.ngons());
+        assert!(filled_one.patch().ngons().is_empty());
+        let (filled_all, count) = mesh.fill_holes(Tolerance::DEFAULT).unwrap();
+        assert_eq!(count, 1);
+        assert_eq!(filled_all.ngons(), mesh.ngons());
+        assert!(
+            filled_all
+                .clone()
+                .try_with_ngons(filled_all.ngons().to_vec())
+                .is_ok()
+        );
+
+        let shifted = mesh
+            .transformed(
+                AffineTransform3::from_translation(crate::Vector3::try_new(5., 0., 0.).unwrap()),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        let two = TriangleMesh::try_append(&[&mesh, &shifted]).unwrap();
+        let (both_filled, count) = two.fill_holes(Tolerance::DEFAULT).unwrap();
+        assert_eq!(count, 2);
+        assert_eq!(both_filled.ngons(), two.ngons());
+        assert!(
+            both_filled
+                .clone()
+                .try_with_ngons(both_filled.ngons().to_vec())
+                .is_ok()
+        );
+    }
 }

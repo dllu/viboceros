@@ -2232,7 +2232,8 @@ impl TriangleMesh {
             });
             faces.push(MeshFace::Triangle(mapped));
         }
-        let filled = Self::try_new_faces(vertices, faces, tolerance)?;
+        let mut filled = Self::try_new_faces(vertices, faces, tolerance)?;
+        filled.ngons = self.ngons.clone();
         Ok(Some(MeshHoleFill { filled, patch }))
     }
 
@@ -2282,7 +2283,7 @@ impl TriangleMesh {
                 next.vertices.contains(&closing_duplicate),
                 "the removed vertex duplicates the boundary start"
             );
-            filled = Self::from_validated_parts(next.vertices, next.faces);
+            filled = next;
             filled_hole_count = filled_hole_count
                 .checked_add(1)
                 .ok_or(GeometryError::TooManyMeshFaces)?;
@@ -2361,7 +2362,7 @@ impl TriangleMesh {
             };
             next.vertices.pop();
             simple_cap_face_ranges.push(capped.faces.len()..next.faces.len());
-            capped = Self::from_validated_parts(next.vertices, next.faces);
+            capped = next;
             count = count
                 .checked_add(1)
                 .ok_or(GeometryError::TooManyMeshFaces)?;
@@ -7226,6 +7227,24 @@ mod tests {
             .cap_planar_holes_with_options(Tolerance::DEFAULT, true, false)
             .unwrap();
         assert!(ngon_mode.ngons().is_empty());
+
+        let decorated = wall
+            .clone()
+            .try_with_ngons(vec![MeshNgon::from_parts(vec![0, 1, 5, 4], vec![0])])
+            .unwrap();
+        for crease in [false, true] {
+            let (capped, count) = decorated
+                .cap_planar_holes_with_crease(Tolerance::DEFAULT, crease)
+                .unwrap();
+            assert_eq!(count, 4);
+            assert_eq!(capped.ngons().len(), 1);
+            assert!(
+                capped
+                    .clone()
+                    .try_with_ngons(capped.ngons().to_vec())
+                    .is_ok()
+            );
+        }
 
         let rotation = AffineTransform3::try_rotation(
             point(0., 0., 0.),
