@@ -1479,6 +1479,7 @@ fn empty_finish_invalid_options_and_nonmesh_clicks_keep_the_prompt_usable() {
         object_ids: ids.to_vec(),
         mode: SelectionMode::Replace,
         crossing: true,
+        inverted: false,
     });
     assert_eq!(app.document.selected_object_count(), 2);
     enter(&mut app, "");

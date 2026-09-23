@@ -135,6 +135,7 @@ CopyToLayer Default
 SelAll
 SelWindow
 SelCrossing
+SelRectangular SelectionMode=InvertCrossing
 SelLast
 SelPrev
 SelLast DeselectOthersBeforeSelect=No

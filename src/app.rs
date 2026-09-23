@@ -1267,7 +1267,7 @@ pub struct VibocerosApp {
     zoom_scale: f64,
     zoom_extents_borders: ZoomExtentsBorders,
     zoom_window_pending: bool,
-    selection_window_override: Option<bool>,
+    selection_window_override: Option<viboceros_command::interface::RectSelectionMode>,
     zoom_target: Option<ZoomTargetState>,
     command_focus_requested: bool,
     active_command: Option<InteractiveCommand>,
@@ -1346,6 +1346,9 @@ impl VibocerosApp {
         if input.is_empty() && self.selection_window_override.take().is_some() {
             self.push_log("Selection window canceled".into());
             self.command_input.clear();
+            return;
+        }
+        if self.try_continue_rect_selection_option(&input) {
             return;
         }
         if self.selection_window_override.is_some()
@@ -5172,10 +5175,11 @@ impl VibocerosApp {
             self.select_prompt_objects(selection.object_ids, selection.mode);
             return;
         }
-        let selected_kind = if selection.crossing {
-            "crossing"
-        } else {
-            "window"
+        let selected_kind = match (selection.crossing, selection.inverted) {
+            (false, false) => "window",
+            (true, false) => "crossing",
+            (false, true) => "inverse window",
+            (true, true) => "inverse crossing",
         };
         match self
             .document
@@ -5485,7 +5489,7 @@ impl eframe::App for VibocerosApp {
                                     ViewportInput {
                                         drafting,
                                         zoom_window: zoom_window_pending,
-                                        forced_crossing: selection_window_override,
+                                        rect_selection_mode: selection_window_override,
                                         zoom_target: match zoom_target {
                                             Some(ZoomTargetState::PickTarget) => {
                                                 Some(ZoomTargetInput::PickTarget)

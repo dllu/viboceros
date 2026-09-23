@@ -2,10 +2,38 @@
 
 use super::*;
 use viboceros_command::interface::{
-    self, InterfaceCommand, InterfaceState, SwitchAction, ViewportTarget, WorldView,
+    self, InterfaceCommand, InterfaceState, RectSelectionMode, SwitchAction, ViewportTarget,
+    WorldView,
 };
 
 impl VibocerosApp {
+    pub(super) fn try_continue_rect_selection_option(&mut self, input: &str) -> bool {
+        if self.selection_window_override.is_none() {
+            return false;
+        }
+        let name = input
+            .split_once('=')
+            .map_or(input, |(name, _)| name)
+            .trim_start_matches('_');
+        if !matches!(
+            name.to_ascii_lowercase().as_str(),
+            "selectionmode" | "window" | "crossing" | "invertwindow" | "invertcrossing"
+        ) {
+            return false;
+        }
+        match interface::parse(&format!("SelRectangular {input}")) {
+            Some(Ok(InterfaceCommand::SelRectangular(mode))) => {
+                self.selection_window_override = Some(mode);
+                self.push_log(format!("Selection mode: {mode:?}"));
+                self.command_input.clear();
+            }
+            _ => self.push_log(
+                "Usage: SelectionMode=Window|Crossing|InvertWindow|InvertCrossing".into(),
+            ),
+        }
+        true
+    }
+
     pub(super) fn interface_state(&self) -> InterfaceState {
         InterfaceState {
             grid_snap: self.grid_snap,
@@ -23,7 +51,9 @@ impl VibocerosApp {
             Ok(message) => {
                 if matches!(
                     command,
-                    InterfaceCommand::SelWindow | InterfaceCommand::SelCrossing
+                    InterfaceCommand::SelWindow
+                        | InterfaceCommand::SelCrossing
+                        | InterfaceCommand::SelRectangular(_)
                 ) {
                     if self.viewport_object_filter().is_none()
                         || self.active_command.is_some()
@@ -33,13 +63,24 @@ impl VibocerosApp {
                         self.push_log("Selection window unavailable during this prompt".into());
                         return;
                     }
-                    let crossing = command == InterfaceCommand::SelCrossing;
-                    self.selection_window_override = Some(crossing);
+                    let mode = match command {
+                        InterfaceCommand::SelWindow => RectSelectionMode::Window,
+                        InterfaceCommand::SelCrossing => RectSelectionMode::Crossing,
+                        InterfaceCommand::SelRectangular(mode) => mode,
+                        _ => unreachable!(),
+                    };
+                    self.selection_window_override = Some(mode);
                     self.zoom_window_pending = false;
                     self.zoom_target = None;
                     self.push_log(format!(
                         "Drag a {} selection in a viewport; Esc to cancel",
-                        if crossing { "crossing" } else { "window" }
+                        match mode {
+                            RectSelectionMode::Automatic => "rectangular",
+                            RectSelectionMode::Window => "window",
+                            RectSelectionMode::Crossing => "crossing",
+                            RectSelectionMode::InvertWindow => "inverse window",
+                            RectSelectionMode::InvertCrossing => "inverse crossing",
+                        }
                     ));
                     return;
                 }

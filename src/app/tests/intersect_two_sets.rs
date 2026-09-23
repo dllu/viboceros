@@ -37,6 +37,7 @@ fn viewport_picks_two_sets_and_ignores_within_set_intersections() {
         object_ids: vec![ids[2]],
         mode: SelectionMode::Replace,
         crossing: false,
+        inverted: false,
     });
     enter(&mut app, "");
     assert!(app.intersection_prompt.is_none());

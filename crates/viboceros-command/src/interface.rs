@@ -136,6 +136,43 @@ impl ZoomScale {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum RectSelectionMode {
+    Automatic,
+    Window,
+    Crossing,
+    InvertWindow,
+    InvertCrossing,
+}
+
+impl RectSelectionMode {
+    fn parse(value: &str) -> Option<Self> {
+        if keyword(value, "Window") {
+            Some(Self::Window)
+        } else if keyword(value, "Crossing") {
+            Some(Self::Crossing)
+        } else if keyword(value, "InvertWindow") {
+            Some(Self::InvertWindow)
+        } else if keyword(value, "InvertCrossing") {
+            Some(Self::InvertCrossing)
+        } else {
+            None
+        }
+    }
+
+    pub fn crossing(self, automatic_crossing: bool) -> bool {
+        match self {
+            Self::Automatic => automatic_crossing,
+            Self::Window | Self::InvertWindow => false,
+            Self::Crossing | Self::InvertCrossing => true,
+        }
+    }
+
+    pub fn inverted(self) -> bool {
+        matches!(self, Self::InvertWindow | Self::InvertCrossing)
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum InterfaceCommand {
     SetZoomScale(ZoomScale),
     SetZoomExtentsBorder {
@@ -153,6 +190,7 @@ pub enum InterfaceCommand {
     ZoomAllSelected,
     SelWindow,
     SelCrossing,
+    SelRectangular(RectSelectionMode),
     UndoView,
     RedoView,
     Plan,
@@ -168,7 +206,7 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 22] = [
+pub const COMMAND_NAMES: [&str; 23] = [
     "Options",
     "SetZoomExtentsBorder",
     "SnapToMeshes",
@@ -189,11 +227,12 @@ pub const COMMAND_NAMES: [&str; 22] = [
     "Plan",
     "SelWindow",
     "SelCrossing",
+    "SelRectangular",
     "W",
     "C",
 ];
 
-pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor <positive number>; SelWindow (W); SelCrossing (C); UndoView; RedoView; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor <positive number>; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; UndoView; RedoView; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -291,6 +330,25 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
                 Ok(InterfaceCommand::SelCrossing)
             } else {
                 Err(InterfaceError::Usage("SelCrossing"))
+            }
+        } else if name.eq_ignore_ascii_case("SelRectangular") {
+            const USAGE: &str =
+                "SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]";
+            match args.as_slice() {
+                [] => Ok(InterfaceCommand::SelRectangular(
+                    RectSelectionMode::Automatic,
+                )),
+                [option] => {
+                    let value = option
+                        .split_once('=')
+                        .filter(|(name, _)| keyword(name, "SelectionMode"))
+                        .map(|(_, value)| value)
+                        .unwrap_or(option);
+                    RectSelectionMode::parse(value)
+                        .map(InterfaceCommand::SelRectangular)
+                        .ok_or(InterfaceError::Usage(USAGE))
+                }
+                _ => Err(InterfaceError::Usage(USAGE)),
             }
         } else if name.eq_ignore_ascii_case("Plan") {
             if args.is_empty() {
@@ -492,6 +550,9 @@ impl InterfaceState {
             InterfaceCommand::ZoomAllSelected => "Zoom selected requested (all viewports)".into(),
             InterfaceCommand::SelWindow => "Window selection requested".into(),
             InterfaceCommand::SelCrossing => "Crossing selection requested".into(),
+            InterfaceCommand::SelRectangular(mode) => {
+                format!("Rectangular {mode:?} selection requested")
+            }
             InterfaceCommand::UndoView => "Undo view requested (active viewport)".into(),
             InterfaceCommand::RedoView => "Redo view requested (active viewport)".into(),
             InterfaceCommand::Plan => "Plan view requested (active viewport)".into(),

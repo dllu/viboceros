@@ -6,6 +6,7 @@ use eframe::egui::{
 use nalgebra::Vector3 as NaVector3;
 use viboceros_command::ObjectSelectionFilter;
 use viboceros_command::construction_plane::{ConstructionPlaneState, WorldPlane};
+use viboceros_command::interface::RectSelectionMode;
 use viboceros_document::{Document, Geometry, ObjectAttributes, ObjectId, SelectionMode};
 use viboceros_geometry::{
     CircularArc3, CurveSegment3, Frame3, GeometryError, NurbsCurve, Point3, PointCloud3, Real,
@@ -140,7 +141,7 @@ pub enum ZoomTargetInput {
 pub struct ViewportInput<'a> {
     pub drafting: DraftingInput,
     pub zoom_window: bool,
-    pub forced_crossing: Option<bool>,
+    pub rect_selection_mode: Option<RectSelectionMode>,
     pub zoom_target: Option<ZoomTargetInput>,
     pub object_filter: Option<ObjectSelectionFilter>,
     pub selection_preview: Option<ObjectSelectionFilter>,
@@ -179,7 +180,7 @@ impl Default for ViewportInput<'_> {
         Self {
             drafting: DraftingInput::default(),
             zoom_window: false,
-            forced_crossing: None,
+            rect_selection_mode: None,
             zoom_target: None,
             object_filter: Some(ObjectSelectionFilter::Any),
             selection_preview: None,
@@ -231,6 +232,7 @@ pub struct SelectionWindow {
     pub object_ids: Vec<ObjectId>,
     pub mode: SelectionMode,
     pub crossing: bool,
+    pub inverted: bool,
 }
 
 pub struct Viewport {
@@ -592,21 +594,30 @@ impl Viewport {
         let selection_window = if selecting && response.drag_stopped_by(PointerButton::Primary) {
             self.selection_drag_start.take().and_then(|start| {
                 let end = selection_pointer?;
-                let crossing = input
-                    .forced_crossing
-                    .unwrap_or_else(|| is_crossing_selection(start, end));
+                let rect_mode = input
+                    .rect_selection_mode
+                    .unwrap_or(RectSelectionMode::Automatic);
+                let resolved_mode = match rect_mode {
+                    RectSelectionMode::Automatic if is_crossing_selection(start, end) => {
+                        RectSelectionMode::Crossing
+                    }
+                    RectSelectionMode::Automatic => RectSelectionMode::Window,
+                    mode => mode,
+                };
+                let crossing = resolved_mode.crossing(false);
                 let selection_rect = Rect::from_two_pos(start, end);
                 Some(SelectionWindow {
-                    object_ids: self.objects_in_selection_matching_preview(
+                    object_ids: self.objects_in_selection_mode_preview(
                         rect,
                         selection_rect,
-                        crossing,
+                        resolved_mode,
                         document,
                         object_filter,
                         input.selection_preview,
                     ),
                     mode: selection_mode(modifiers),
                     crossing,
+                    inverted: resolved_mode.inverted(),
                 })
             })
         } else {
@@ -654,7 +665,7 @@ impl Viewport {
             ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
         }
         let selection_click = if selecting
-            && input.forced_crossing.is_none()
+            && input.rect_selection_mode.is_none()
             && response.clicked_by(PointerButton::Primary)
         {
             Some(SelectionClick {
@@ -772,7 +783,7 @@ impl Viewport {
             self.paint_drafting(&painter, rect, zoom_drafting, cursor);
         }
         if let (Some(start), Some(end)) = (self.selection_drag_start, selection_pointer) {
-            self.paint_selection_window(&painter, start, end, input.forced_crossing);
+            self.paint_selection_window(&painter, start, end, input.rect_selection_mode);
         }
         if let (Some(start), Some(end)) = (self.zoom_window_start, selection_pointer) {
             painter.rect_stroke(

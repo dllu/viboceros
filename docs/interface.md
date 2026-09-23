@@ -115,6 +115,13 @@ Esc to clear the selection; press Delete to remove selected objects.
 for the next drag, regardless of drag direction. They also work during object
 selection prompts; Esc cancels the capture. The commands follow Rhino's
 [window and crossing selection](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelCrossing).
+`SelRectangular` uses the drag direction by default. Enter
+`SelectionMode=Window|Crossing|InvertWindow|InvertCrossing` with the command or
+before dragging. Inverse Window
+selects objects completely outside the rectangle; inverse Crossing also
+selects objects that extend outside it. The
+[Rhino command](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelRectangular)
+also offers an occlusion option, which is not implemented yet.
 
 Navigation ignores non-finite drag deltas, invalid zoom factors/pointers, and
 non-finite or empty zoom rectangles. Pan updates that overflow screen coordinates

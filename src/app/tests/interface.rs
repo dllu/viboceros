@@ -131,7 +131,7 @@ fn selection_capture_frame(
                     &app.document,
                     ViewportInput {
                         object_filter: app.viewport_object_filter(),
-                        forced_crossing: app.selection_window_override,
+                        rect_selection_mode: app.selection_window_override,
                         ..Default::default()
                     },
                     &[],
@@ -178,7 +178,14 @@ fn typed_window_commands_force_mode_for_one_drag_and_preserve_model_history() {
     ] {
         app.document.clear_selection();
         enter(&mut app, command);
-        assert_eq!(app.selection_window_override, Some(crossing));
+        assert_eq!(
+            app.selection_window_override,
+            Some(if crossing {
+                viboceros_command::interface::RectSelectionMode::Crossing
+            } else {
+                viboceros_command::interface::RectSelectionMode::Window
+            })
+        );
         selection_capture_frame(&context, &mut app, vec![]);
         selection_capture_frame(
             &context,
@@ -195,6 +202,37 @@ fn typed_window_commands_force_mode_for_one_drag_and_preserve_model_history() {
         assert_eq!(app.document.is_selected(ids[1]), crossing);
         assert_eq!(app.document.undo_label(), undo.as_deref());
     }
+    for (start, end, crossing) in [
+        (
+            egui::Pos2::new(390., 290.),
+            egui::Pos2::new(410., 310.),
+            false,
+        ),
+        (
+            egui::Pos2::new(410., 310.),
+            egui::Pos2::new(390., 290.),
+            true,
+        ),
+    ] {
+        app.document.clear_selection();
+        enter(&mut app, "SelRectangular");
+        assert_eq!(
+            app.selection_window_override,
+            Some(viboceros_command::interface::RectSelectionMode::Automatic)
+        );
+        selection_capture_frame(&context, &mut app, vec![]);
+        selection_capture_frame(
+            &context,
+            &mut app,
+            vec![egui::Event::PointerMoved(start), button(start, true)],
+        );
+        selection_capture_frame(&context, &mut app, vec![egui::Event::PointerMoved(end)]);
+        let output = selection_capture_frame(&context, &mut app, vec![button(end, false)]);
+        assert_eq!(output.selection_window.as_ref().unwrap().crossing, crossing);
+        assert!(app.handle_viewport_action(output));
+        assert!(app.document.is_selected(ids[0]));
+        assert_eq!(app.document.is_selected(ids[1]), crossing);
+    }
 }
 
 #[test]
@@ -205,7 +243,10 @@ fn typed_window_selection_can_feed_an_object_prompt() {
     enter(&mut app, "Flip");
     assert!(app.object_prompt.is_some());
     enter(&mut app, "W");
-    assert_eq!(app.selection_window_override, Some(false));
+    assert_eq!(
+        app.selection_window_override,
+        Some(viboceros_command::interface::RectSelectionMode::Window)
+    );
     let context = egui::Context::default();
     let start = egui::Pos2::new(300., 250.);
     let end = egui::Pos2::new(500., 350.);
@@ -233,6 +274,68 @@ fn typed_window_selection_can_feed_an_object_prompt() {
 }
 
 #[test]
+fn rectangular_inverse_modes_distinguish_partial_overlap_from_fully_outside() {
+    use viboceros_command::interface::RectSelectionMode;
+    let mut app = test_app();
+    enter(&mut app, "Point 0,0,0");
+    enter(&mut app, "Line -5,0,0 5,0,0");
+    enter(&mut app, "Point 10,0,0");
+    let ids = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    let context = egui::Context::default();
+    let start = egui::Pos2::new(390., 290.);
+    let end = egui::Pos2::new(410., 310.);
+    let button = |pos, pressed| egui::Event::PointerButton {
+        pos,
+        pressed,
+        button: egui::PointerButton::Primary,
+        modifiers: egui::Modifiers::NONE,
+    };
+    for (index, (name, mode, expected)) in [
+        (
+            "InvertWindow",
+            RectSelectionMode::InvertWindow,
+            vec![ids[2]],
+        ),
+        (
+            "InvertCrossing",
+            RectSelectionMode::InvertCrossing,
+            vec![ids[1], ids[2]],
+        ),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        app.document.clear_selection();
+        if index == 0 {
+            enter(&mut app, "SelRectangular");
+            enter(&mut app, &format!("SelectionMode={name}"));
+        } else {
+            enter(&mut app, &format!("SelRectangular SelectionMode={name}"));
+        }
+        assert_eq!(app.selection_window_override, Some(mode));
+        selection_capture_frame(&context, &mut app, vec![]);
+        selection_capture_frame(
+            &context,
+            &mut app,
+            vec![egui::Event::PointerMoved(start), button(start, true)],
+        );
+        selection_capture_frame(&context, &mut app, vec![egui::Event::PointerMoved(end)]);
+        let output = selection_capture_frame(&context, &mut app, vec![button(end, false)]);
+        assert!(output.selection_window.as_ref().unwrap().inverted);
+        assert!(app.handle_viewport_action(output));
+        assert_eq!(app.selection_window_override, None);
+        assert_eq!(
+            app.document.selected_object_ids().collect::<Vec<_>>(),
+            expected
+        );
+    }
+}
+
+#[test]
 fn empty_enter_cancels_typed_window_without_advancing_an_object_prompt() {
     let mut app = test_app();
     enter(&mut app, "Line -1,0,0 1,0,0");
@@ -240,7 +343,10 @@ fn empty_enter_cancels_typed_window_without_advancing_an_object_prompt() {
     let before = app.object_prompt.clone();
     let undo = app.document.undo_label().map(str::to_owned);
     enter(&mut app, "SelCrossing");
-    assert_eq!(app.selection_window_override, Some(true));
+    assert_eq!(
+        app.selection_window_override,
+        Some(viboceros_command::interface::RectSelectionMode::Crossing)
+    );
     enter(&mut app, "");
     assert_eq!(app.selection_window_override, None);
     assert_eq!(app.object_prompt, before);

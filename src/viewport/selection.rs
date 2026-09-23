@@ -254,6 +254,7 @@ impl Viewport {
         )
     }
 
+    #[cfg(test)]
     pub(super) fn objects_in_selection_matching_preview(
         &self,
         viewport_rect: Rect,
@@ -263,6 +264,30 @@ impl Viewport {
         filter: ObjectSelectionFilter,
         preview: Option<ObjectSelectionFilter>,
     ) -> Vec<ObjectId> {
+        self.objects_in_selection_mode_preview(
+            viewport_rect,
+            selection,
+            if crossing {
+                RectSelectionMode::Crossing
+            } else {
+                RectSelectionMode::Window
+            },
+            document,
+            filter,
+            preview,
+        )
+    }
+
+    pub(super) fn objects_in_selection_mode_preview(
+        &self,
+        viewport_rect: Rect,
+        selection: Rect,
+        mode: RectSelectionMode,
+        document: &Document,
+        filter: ObjectSelectionFilter,
+        preview: Option<ObjectSelectionFilter>,
+    ) -> Vec<ObjectId> {
+        let crossing = mode.crossing(false);
         document
             .objects()
             .filter(|object| {
@@ -275,10 +300,11 @@ impl Viewport {
                     .get(object, document.tolerance());
                 let primitives =
                     self.projected_display(&display, viewport_rect, document.tolerance());
-                let selected = if crossing {
-                    primitives.is_crossed_by(selection)
-                } else {
-                    primitives.is_windowed_by(selection)
+                let selected = match (crossing, mode.inverted()) {
+                    (false, false) => primitives.is_windowed_by(selection),
+                    (true, false) => primitives.is_crossed_by(selection),
+                    (false, true) => !primitives.is_crossed_by(selection),
+                    (true, true) => !primitives.is_windowed_by(selection),
                 };
                 selected.then_some(object.id())
             })
@@ -508,10 +534,12 @@ impl Viewport {
         painter: &egui::Painter,
         start: Pos2,
         end: Pos2,
-        forced_crossing: Option<bool>,
+        rect_mode: Option<RectSelectionMode>,
     ) {
         let selection = Rect::from_two_pos(start, end);
-        let crossing = forced_crossing.unwrap_or_else(|| is_crossing_selection(start, end));
+        let crossing = rect_mode
+            .unwrap_or(RectSelectionMode::Automatic)
+            .crossing(is_crossing_selection(start, end));
         let color = if crossing {
             Color32::from_rgb(45, 145, 75)
         } else {

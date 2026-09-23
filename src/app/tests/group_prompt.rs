@@ -44,6 +44,7 @@ fn bare_add_to_group_collects_sources_then_target_without_early_edits() {
         object_ids: vec![ids[1]],
         mode: SelectionMode::Remove,
         crossing: false,
+        inverted: false,
     });
     assert_eq!(
         app.document.selected_object_ids().collect::<Vec<_>>(),
@@ -53,6 +54,7 @@ fn bare_add_to_group_collects_sources_then_target_without_early_edits() {
         object_ids: vec![ids[1]],
         mode: SelectionMode::Replace,
         crossing: true,
+        inverted: false,
     });
     assert_eq!(app.document.selected_object_count(), 2);
     assert_eq!(app.document.undo_label(), history.as_deref());
