@@ -14,14 +14,21 @@ enum SplitPosition {
 /// Retain canonical insertion order separately from final face winding.
 struct SplitTriangle {
     raw_vertices: [u32; 2],
+    edge_vertices: [u32; 2],
     split_position: SplitPosition,
     forward: bool,
 }
 
 impl SplitTriangle {
-    fn new(raw_vertices: [u32; 2], split_position: SplitPosition, forward: bool) -> Self {
+    fn new(
+        raw_vertices: [u32; 2],
+        edge_vertices: [u32; 2],
+        split_position: SplitPosition,
+        forward: bool,
+    ) -> Self {
         Self {
             raw_vertices,
+            edge_vertices,
             split_position,
             forward,
         }
@@ -159,8 +166,18 @@ impl TriangleMesh {
                     }
                     let opposite = indices[(edge_use.side + 2) % 3];
                     generated.extend([
-                        SplitTriangle::new([opposite, from], SplitPosition::Last, edge_use.forward),
-                        SplitTriangle::new([opposite, to], SplitPosition::Middle, edge_use.forward),
+                        SplitTriangle::new(
+                            [opposite, from],
+                            [from, to],
+                            SplitPosition::Last,
+                            edge_use.forward,
+                        ),
+                        SplitTriangle::new(
+                            [opposite, to],
+                            [from, to],
+                            SplitPosition::Middle,
+                            edge_use.forward,
+                        ),
                     ]);
                 }
                 MeshFace::Quad(indices) => {
@@ -177,16 +194,19 @@ impl TriangleMesh {
                     generated.extend([
                         SplitTriangle::new(
                             [from_opposite, to_opposite],
+                            [from, to],
                             SplitPosition::Middle,
                             edge_use.forward,
                         ),
                         SplitTriangle::new(
                             [from_opposite, from],
+                            [from, to],
                             SplitPosition::Last,
                             edge_use.forward,
                         ),
                         SplitTriangle::new(
                             [to_opposite, to],
+                            [from, to],
                             SplitPosition::Middle,
                             edge_use.forward,
                         ),
@@ -293,6 +313,10 @@ impl TriangleMesh {
             debug_assert_eq!(output, face_count);
         }
         let mut vertices = Vec::new();
+        let mut colors = self
+            .vertex_colors
+            .as_ref()
+            .map(|_| Vec::with_capacity(vertex_count));
         vertices
             .try_reserve_exact(vertex_count)
             .map_err(|_| GeometryError::TooManyMeshVertices)?;
@@ -300,13 +324,16 @@ impl TriangleMesh {
         faces
             .try_reserve_exact(face_count)
             .map_err(|_| GeometryError::TooManyMeshFaces)?;
-        for (&point, mapped) in self.vertices.iter().zip(&mut raw_remap) {
+        for (source, (&point, mapped)) in self.vertices.iter().zip(&mut raw_remap).enumerate() {
             if *mapped == 0 {
                 continue;
             }
             *mapped =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
             vertices.push(point);
+            if let Some(colors) = &mut colors {
+                colors.push(self.vertex_colors.as_ref().unwrap()[source]);
+            }
         }
         faces.extend(retained_faces.map(|face| face.remapped(|raw| raw_remap[raw as usize])));
 
@@ -314,6 +341,13 @@ impl TriangleMesh {
             let split_vertex =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
             vertices.push(split_point);
+            if let Some(colors) = &mut colors {
+                colors.push(interpolated_vertex_color(
+                    self.vertex_colors.as_ref().unwrap(),
+                    first_raw_edge,
+                    parameter,
+                ));
+            }
             faces.extend(generated.into_iter().map(|candidate| {
                 let triangle = candidate
                     .canonical_vertices()
@@ -327,13 +361,25 @@ impl TriangleMesh {
                     *target = u32::try_from(vertices.len())
                         .map_err(|_| GeometryError::TooManyMeshVertices)?;
                     vertices.push(raw.map_or(split_point, |raw| self.vertices[raw as usize]));
+                    if let Some(colors) = &mut colors {
+                        colors.push(raw.map_or_else(
+                            || {
+                                interpolated_vertex_color(
+                                    self.vertex_colors.as_ref().unwrap(),
+                                    candidate.edge_vertices,
+                                    parameter,
+                                )
+                            },
+                            |raw| self.vertex_colors.as_ref().unwrap()[raw as usize],
+                        ));
+                    }
                 }
                 faces.push(candidate.oriented_face(triangle));
             }
         }
-        Ok(Some(
-            Self::try_new_faces(vertices, faces, tolerance)?
-                .retain_valid_ngons_from_face_map(&self.ngons, &ngon_face_map),
-        ))
+        let mut split = Self::try_new_faces(vertices, faces, tolerance)?
+            .retain_valid_ngons_from_face_map(&self.ngons, &ngon_face_map);
+        split.vertex_colors = colors;
+        Ok(Some(split))
     }
 }

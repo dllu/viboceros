@@ -71,6 +71,16 @@ impl TriangleMesh {
                 edge_use.raw_vertices[1] as usize,
             );
         }
+        let mut merged_colors = self.vertex_colors.as_ref().map(|colors| {
+            let mut merged = vec![None; self.vertices.len()];
+            for edge_use in incidence.uses() {
+                let root = index_root(&mut parents, edge_use.raw_vertices[0] as usize);
+                merged[root].get_or_insert_with(|| {
+                    interpolated_vertex_color(colors, edge_use.raw_vertices, 0.5)
+                });
+            }
+            merged
+        });
         let mut faces = Vec::new();
         faces
             .try_reserve_exact(self.faces.len())
@@ -118,6 +128,10 @@ impl TriangleMesh {
             }
         }
         let mut vertices = Vec::new();
+        let mut colors = self
+            .vertex_colors
+            .as_ref()
+            .map(|_| Vec::with_capacity(retained_vertex_count));
         vertices
             .try_reserve_exact(retained_vertex_count)
             .map_err(|_| GeometryError::TooManyMeshVertices)?;
@@ -136,6 +150,14 @@ impl TriangleMesh {
                     point
                 },
             );
+            if let Some(colors) = &mut colors {
+                colors.push(
+                    merged_colors
+                        .as_mut()
+                        .and_then(|merged| merged[raw])
+                        .unwrap_or(self.vertex_colors.as_ref().unwrap()[raw]),
+                );
+            }
         }
         for face in &mut faces {
             *face = face.remapped(|raw| {
@@ -143,9 +165,9 @@ impl TriangleMesh {
                     .expect("compaction cannot exceed the validated source vertex count")
             });
         }
-        Ok(Some(
-            Self::try_new_faces(vertices, faces, tolerance)?
-                .retain_valid_ngons_from_face_map(&self.ngons, &ngon_face_map),
-        ))
+        let mut collapsed = Self::try_new_faces(vertices, faces, tolerance)?
+            .retain_valid_ngons_from_face_map(&self.ngons, &ngon_face_map);
+        collapsed.vertex_colors = colors;
+        Ok(Some(collapsed))
     }
 }

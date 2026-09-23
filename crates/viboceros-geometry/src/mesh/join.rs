@@ -141,6 +141,7 @@ fn key(point: Point3) -> [u64; 3] {
 fn compact(mesh: &TriangleMesh) -> TriangleMesh {
     let mut mapping = vec![None; mesh.vertices.len()];
     let mut vertices = Vec::new();
+    let mut colors = mesh.vertex_colors.as_ref().map(|_| Vec::new());
     let faces = mesh
         .faces
         .iter()
@@ -149,12 +150,16 @@ fn compact(mesh: &TriangleMesh) -> TriangleMesh {
                 *mapping[i as usize].get_or_insert_with(|| {
                     let index = vertices.len() as u32;
                     vertices.push(mesh.vertices[i as usize]);
+                    if let Some(colors) = &mut colors {
+                        colors.push(mesh.vertex_colors.as_ref().unwrap()[i as usize]);
+                    }
                     index
                 })
             })
         })
         .collect();
     let mut compacted = TriangleMesh::from_validated_parts(vertices, faces);
+    compacted.vertex_colors = colors;
     compacted.ngons = mesh
         .ngons
         .iter()
@@ -329,7 +334,8 @@ fn align(
                 }
             }
             TriangleMesh::try_new_faces(vertices, mesh.faces.clone(), Tolerance::MESH_VALIDATION)?
-                .try_with_ngons(mesh.ngons.clone())
+                .try_with_ngons(mesh.ngons.clone())?
+                .try_with_vertex_colors(mesh.vertex_colors.clone())
         })
         .collect()
 }

@@ -168,6 +168,7 @@ impl TriangleMesh {
         ngon_seen: &mut [bool],
     ) -> Self {
         let mut vertices = Vec::new();
+        let mut colors = self.vertex_colors.as_ref().map(|_| Vec::new());
         let mut retained_faces = Vec::with_capacity(faces.len());
         let mut ngons = Vec::new();
         for &face in faces {
@@ -183,6 +184,9 @@ impl TriangleMesh {
                     let target = u32::try_from(vertices.len())
                         .expect("a mesh component cannot have more vertices than its source");
                     vertices.push(self.vertices[source]);
+                    if let Some(colors) = &mut colors {
+                        colors.push(self.vertex_colors.as_ref().unwrap()[source]);
+                    }
                     target
                 })
             });
@@ -220,6 +224,7 @@ impl TriangleMesh {
             })
             .collect();
         let mut piece = Self::from_validated_parts(vertices, retained_faces);
+        piece.vertex_colors = colors;
         piece.ngons = ngons;
         piece
     }

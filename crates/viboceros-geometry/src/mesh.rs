@@ -387,6 +387,18 @@ pub struct TriangleMesh {
     ngons: Vec<MeshNgon>,
 }
 
+/// Interpolate OpenNURBS RGBA bytes, including transparency, on a mesh edge.
+fn interpolated_vertex_color(colors: &[[u8; 4]], endpoints: [u32; 2], parameter: Real) -> [u8; 4] {
+    let first = colors[endpoints[0] as usize];
+    let second = colors[endpoints[1] as usize];
+    std::array::from_fn(|channel| {
+        (Real::from(first[channel])
+            + (Real::from(second[channel]) - Real::from(first[channel])) * parameter)
+            .round()
+            .clamp(0.0, 255.0) as u8
+    })
+}
+
 /// One logical polygon over a connected set of triangle or quad mesh faces.
 /// The oriented boundary uses raw mesh vertex indices and excludes its repeated
 /// closing vertex. Its face indices refer to the underlying face table.
@@ -2224,7 +2236,24 @@ impl TriangleMesh {
             .copied()
             .map(MeshFace::Triangle)
             .collect::<Vec<_>>();
-        let patch = Self::try_new_faces(boundary_points.clone(), patch_faces, tolerance)?;
+        let boundary_colors = self.vertex_colors.as_ref().map(|source_colors| {
+            let mut raw_by_topology = vec![None; data.topological_vertex_count];
+            for incidence in data.edges.values().filter(|incidence| incidence.count == 1) {
+                for raw in incidence.first_use.unwrap().raw_vertices {
+                    raw_by_topology[data.topological_vertices[raw as usize]].get_or_insert(raw);
+                }
+            }
+            boundary
+                .iter()
+                .map(|&topology| {
+                    source_colors[raw_by_topology[topology]
+                        .expect("a naked boundary vertex belongs to a naked edge")
+                        as usize]
+                })
+                .collect::<Vec<_>>()
+        });
+        let patch = Self::try_new_faces(boundary_points.clone(), patch_faces, tolerance)?
+            .try_with_vertex_colors(boundary_colors.clone())?;
 
         let added_vertex_count = boundary_points.len().saturating_add(1);
         let total_vertex_count = self
@@ -2259,6 +2288,12 @@ impl TriangleMesh {
             faces.push(MeshFace::Triangle(mapped));
         }
         let mut filled = Self::try_new_faces(vertices, faces, tolerance)?;
+        if let Some(boundary_colors) = boundary_colors {
+            let mut colors = self.vertex_colors.as_ref().unwrap().clone();
+            colors.extend_from_slice(&boundary_colors);
+            colors.push(boundary_colors[0]);
+            filled.vertex_colors = Some(colors);
+        }
         filled.ngons = self.ngons.clone();
         Ok(Some(MeshHoleFill { filled, patch }))
     }
@@ -2297,6 +2332,9 @@ impl TriangleMesh {
                 .vertices
                 .pop()
                 .expect("a filled boundary appends an unused closing vertex");
+            if let Some(colors) = &mut next.vertex_colors {
+                colors.pop();
+            }
             debug_assert!(
                 !next
                     .faces
@@ -2387,6 +2425,9 @@ impl TriangleMesh {
                 break;
             };
             next.vertices.pop();
+            if let Some(colors) = &mut next.vertex_colors {
+                colors.pop();
+            }
             simple_cap_face_ranges.push(capped.faces.len()..next.faces.len());
             capped = next;
             count = count
@@ -6712,6 +6753,13 @@ mod tests {
             vec![[0, 1, 3], [1, 2, 3], [2, 0, 3]],
             Tolerance::DEFAULT,
         )
+        .unwrap()
+        .try_with_vertex_colors(Some(vec![
+            [10, 0, 0, 0],
+            [20, 0, 0, 0],
+            [30, 0, 0, 0],
+            [40, 0, 0, 0],
+        ]))
         .unwrap();
         let edge = topology_edge_index_between(&mesh, point(0.0, 0.0, 0.0), point(4.0, 0.0, 0.0));
         let fill = mesh
@@ -6726,6 +6774,14 @@ mod tests {
                 point(4.0, 0.0, 0.0),
                 point(0.0, 4.0, 0.0),
             ]
+        );
+        assert_eq!(
+            fill.patch().vertex_colors(),
+            Some(&[[10, 0, 0, 0], [20, 0, 0, 0], [30, 0, 0, 0]][..])
+        );
+        assert_eq!(
+            &fill.filled().vertex_colors().unwrap()[4..],
+            &[[10, 0, 0, 0], [20, 0, 0, 0], [30, 0, 0, 0], [10, 0, 0, 0]]
         );
         let mut patch_triangle = fill.patch().triangles()[0];
         patch_triangle.sort_unstable();
@@ -6957,12 +7013,33 @@ mod tests {
             vec![[0, 1, 3], [1, 2, 3], [2, 0, 3]],
             Tolerance::DEFAULT,
         )
+        .unwrap()
+        .try_with_vertex_colors(Some(vec![
+            [10, 0, 0, 0],
+            [20, 0, 0, 0],
+            [30, 0, 0, 0],
+            [40, 0, 0, 0],
+        ]))
         .unwrap();
         let (creased, count) = mesh
             .cap_planar_holes_with_crease(Tolerance::DEFAULT, true)
             .unwrap();
         assert_eq!(count, 1);
         assert_eq!(creased.vertices().len(), 7);
+        assert_eq!(
+            creased.vertex_colors(),
+            Some(
+                &[
+                    [10, 0, 0, 0],
+                    [20, 0, 0, 0],
+                    [30, 0, 0, 0],
+                    [40, 0, 0, 0],
+                    [10, 0, 0, 0],
+                    [20, 0, 0, 0],
+                    [30, 0, 0, 0],
+                ][..]
+            )
+        );
         assert!(creased.topology().is_solid());
         assert!(
             !creased
@@ -6976,6 +7053,7 @@ mod tests {
             .unwrap();
         assert_eq!(count, 1);
         assert_eq!(welded.vertices(), mesh.vertices());
+        assert_eq!(welded.vertex_colors(), mesh.vertex_colors());
         assert!(welded.topology().is_solid());
         assert!(
             welded
@@ -7260,9 +7338,28 @@ mod tests {
             faces.push(MeshFace::Quad([side, next, next + 4, side + 4]));
             faces.push(MeshFace::Quad([side + 8, side + 12, next + 12, next + 8]));
         }
-        let wall = TriangleMesh::try_new_faces(vertices, faces, Tolerance::DEFAULT).unwrap();
+        let wall = TriangleMesh::try_new_faces(vertices, faces, Tolerance::DEFAULT)
+            .unwrap()
+            .try_with_vertex_colors(Some((0..16).map(|value| [value, 0, 0, 0]).collect()))
+            .unwrap();
         assert_eq!(wall.topology().boundary_edge_count(), 16);
         let (capped, count) = wall.cap_planar_holes(Tolerance::DEFAULT).unwrap();
+        assert_eq!(
+            capped.vertex_colors().unwrap().len(),
+            capped.vertices().len()
+        );
+        for (&vertex, &color) in capped
+            .vertices()
+            .iter()
+            .zip(capped.vertex_colors().unwrap())
+        {
+            let source = wall
+                .vertices()
+                .iter()
+                .position(|&candidate| candidate == vertex)
+                .unwrap();
+            assert_eq!(color, wall.vertex_colors().unwrap()[source]);
+        }
         assert_eq!(count, 4);
         assert_eq!(capped.face_count(), 24);
         assert!(capped.topology().is_solid());
@@ -7273,6 +7370,7 @@ mod tests {
             .unwrap();
         assert_eq!(welded_count, 4);
         assert_eq!(welded.vertices(), wall.vertices());
+        assert_eq!(welded.vertex_colors(), wall.vertex_colors());
         assert_eq!(welded.face_count(), capped.face_count());
         assert!(welded.topology().is_solid());
         assert!(

@@ -1,6 +1,82 @@
 use super::*;
 
 #[test]
+fn split_interpolates_vertex_colors_at_the_edge_parameter() {
+    let mesh = TriangleMesh::try_new(
+        vec![point(0., 0., 0.), point(2., 0., 0.), point(0., 2., 0.)],
+        vec![[0, 1, 2]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap()
+    .try_with_vertex_colors(Some(vec![
+        [0, 0, 0, 0],
+        [200, 100, 80, 200],
+        [30, 40, 50, 60],
+    ]))
+    .unwrap();
+    let edge = topology_edge_index_between(&mesh, point(0., 0., 0.), point(2., 0., 0.));
+    let split = mesh
+        .split_topology_edge(edge, 0.25, Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    let colors = split.vertex_colors().unwrap();
+    let split_index = split
+        .vertices()
+        .iter()
+        .position(|&vertex| vertex == point(0.5, 0., 0.))
+        .unwrap();
+    assert_eq!(colors[split_index], [50, 25, 20, 50]);
+    for (source, color) in mesh.vertices().iter().zip(mesh.vertex_colors().unwrap()) {
+        let index = split
+            .vertices()
+            .iter()
+            .position(|vertex| vertex == source)
+            .unwrap();
+        assert_eq!(&colors[index], color);
+    }
+}
+
+#[test]
+fn splitting_unwelded_edge_keeps_each_face_color_seam() {
+    let mesh = TriangleMesh::try_new(
+        vec![
+            point(0., 0., 0.),
+            point(2., 0., 0.),
+            point(0., 2., 0.),
+            point(0., 0., 0.),
+            point(2., 0., 0.),
+            point(0., -2., 0.),
+        ],
+        vec![[0, 1, 2], [4, 3, 5]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap()
+    .try_with_vertex_colors(Some(vec![
+        [0, 0, 0, 0],
+        [200, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 200, 0, 0],
+        [0, 0, 0, 0],
+    ]))
+    .unwrap();
+    let edge = topology_edge_index_between(&mesh, point(0., 0., 0.), point(2., 0., 0.));
+    let split = mesh
+        .split_topology_edge(edge, 0.25, Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    let split_colors = split
+        .vertices()
+        .iter()
+        .zip(split.vertex_colors().unwrap())
+        .filter_map(|(&vertex, &color)| (vertex == point(0.5, 0., 0.)).then_some(color))
+        .collect::<Vec<_>>();
+    assert_eq!(split_colors.len(), 4);
+    assert!(split_colors.contains(&[50, 0, 0, 0]));
+    assert!(split_colors.contains(&[0, 50, 0, 0]));
+}
+
+#[test]
 fn splitting_mesh_edges_remaps_ngon_member_faces_and_boundaries() {
     let square = TriangleMesh::try_new(
         vec![
@@ -110,7 +186,8 @@ fn compact_candidates_preserve_full_index_range_split_position_and_winding() {
                     (SplitPosition::Middle, [Some(first), None, Some(second)]),
                     (SplitPosition::Last, [Some(first), Some(second), None]),
                 ] {
-                    let candidate = SplitTriangle::new([first, second], position, forward);
+                    let candidate =
+                        SplitTriangle::new([first, second], [first, second], position, forward);
                     assert_eq!(candidate.canonical_vertices(), expected);
                     let vertices = expected.map(|raw| raw.unwrap_or(7));
                     let oriented = if forward {

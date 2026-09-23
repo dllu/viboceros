@@ -74,9 +74,11 @@ step.
 
 ## Limits
 
-Mesh vertex colors are represented in native meshes and survive 3DM round trips
-and basic vertex-order-preserving edits. Some mesh topology edits still drop
-vertex colors; preserving or interpolating them remains work in progress.
+Mesh vertex colors are represented in native meshes and survive 3DM round trips,
+component extraction, joining, unwelding, hole filling, and other mesh edits.
+Edge splits and collapses interpolate colors. Merging differently colored
+coincident vertices keeps one representative color, and appending a colored
+mesh to an uncolored one removes per-vertex colors from the result.
 Point cloud normals, scalar values, and hidden members in 3DM remain unsupported.
 The Add and Remove pickers run as separate prompts after the initial action
 choice. Remove selects cloud members by click, window, or typed indices.

@@ -60,7 +60,8 @@ pub(super) fn weld_cap_boundary(
         .collect();
     let mut vertices = capped.vertices;
     vertices.truncate(source_len);
-    TriangleMesh::try_new_faces(vertices, faces, tolerance)
+    TriangleMesh::try_new_faces(vertices, faces, tolerance)?
+        .try_with_vertex_colors(source.vertex_colors.clone())
 }
 
 pub(super) fn try_cap_annular(
@@ -194,7 +195,7 @@ pub(super) fn try_cap_annular(
         vertices
             .try_reserve(points.len())
             .map_err(|_| GeometryError::TooManyMeshVertices)?;
-        vertices.extend(points);
+        vertices.extend(points.iter().copied());
         let mut faces = mesh.faces.clone();
         faces
             .try_reserve(triangles.len())
@@ -205,6 +206,23 @@ pub(super) fn try_cap_annular(
                 .map(|triangle| MeshFace::Triangle(triangle.map(|index| offset + index))),
         );
         let mut capped = TriangleMesh::try_new_faces(vertices, faces, tolerance)?;
+        if let Some(source_colors) = &mesh.vertex_colors {
+            let mut boundary_color_by_point = BTreeMap::new();
+            for incidence in data.edges.values().filter(|incidence| incidence.count == 1) {
+                for raw in incidence.first_use.unwrap().raw_vertices {
+                    boundary_color_by_point
+                        .entry(point_key(mesh.vertices[raw as usize]))
+                        .or_insert(source_colors[raw as usize]);
+                }
+            }
+            let mut colors = source_colors.clone();
+            colors.extend(
+                points
+                    .iter()
+                    .map(|&point| boundary_color_by_point[&point_key(point)]),
+            );
+            capped.vertex_colors = Some(colors);
+        }
         capped.ngons = mesh.ngons.clone();
         return Ok(Some((capped, holes.len() + 1)));
     }

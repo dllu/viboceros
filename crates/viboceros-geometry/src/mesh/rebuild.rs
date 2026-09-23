@@ -55,6 +55,10 @@ impl TriangleMesh {
             .map_err(|_| GeometryError::TooManyMeshVertices)?;
         raw_remap.resize(self.vertices.len(), 0_u32);
         let mut vertices = Vec::new();
+        let mut colors = self
+            .vertex_colors
+            .as_ref()
+            .map(|_| Vec::with_capacity(vertex_count));
         vertices
             .try_reserve_exact(vertex_count)
             .map_err(|_| GeometryError::TooManyMeshVertices)?;
@@ -65,6 +69,9 @@ impl TriangleMesh {
             raw_remap[source] =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
             vertices.push(point);
+            if let Some(colors) = &mut colors {
+                colors.push(self.vertex_colors.as_ref().unwrap()[source]);
+            }
         }
 
         // Faces have at most four corners. Corner-indexed slots avoid a tree
@@ -89,6 +96,16 @@ impl TriangleMesh {
                 let target = u32::try_from(vertices.len())
                     .map_err(|_| GeometryError::TooManyMeshVertices)?;
                 vertices.push(data.topological_points[topological_vertex]);
+                if let Some(colors) = &mut colors {
+                    let source_face = component[0];
+                    let source = self.faces[source_face]
+                        .indices()
+                        .iter()
+                        .copied()
+                        .find(|&raw| data.topological_vertices[raw as usize] == topological_vertex)
+                        .expect("a face component contains its topology vertex");
+                    colors.push(self.vertex_colors.as_ref().unwrap()[source as usize]);
+                }
                 for &face in component {
                     let corner = self.faces[face]
                         .indices()
@@ -122,7 +139,9 @@ impl TriangleMesh {
                     })
                 }),
         );
-        Ok(Self::from_validated_parts(vertices, faces)
-            .retain_valid_ngons_for_same_faces(&self.ngons))
+        let mut rebuilt = Self::from_validated_parts(vertices, faces)
+            .retain_valid_ngons_for_same_faces(&self.ngons);
+        rebuilt.vertex_colors = colors;
+        Ok(rebuilt)
     }
 }

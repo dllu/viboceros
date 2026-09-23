@@ -1,6 +1,51 @@
 use super::*;
 
 #[test]
+fn edge_unwelding_copies_colors_to_duplicate_vertices() {
+    let mesh = TriangleMesh::try_new(
+        vec![
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Point3::try_new(2., 0., 0.).unwrap(),
+            Point3::try_new(0., 1., 0.).unwrap(),
+            Point3::try_new(0., -1., 0.).unwrap(),
+        ],
+        vec![[0, 1, 2], [1, 0, 3]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap()
+    .try_with_vertex_colors(Some(vec![
+        [10, 20, 30, 0],
+        [40, 50, 60, 64],
+        [70, 80, 90, 128],
+        [100, 110, 120, 255],
+    ]))
+    .unwrap();
+    let edge = mesh
+        .wireframe_lines(Tolerance::DEFAULT)
+        .unwrap()
+        .iter()
+        .position(|edge| {
+            edge.start() == mesh.vertices()[0] && edge.end() == mesh.vertices()[1]
+                || edge.start() == mesh.vertices()[1] && edge.end() == mesh.vertices()[0]
+        })
+        .unwrap();
+    let (unwelded, count) = mesh.unwelded_topology_edges(&[edge]).unwrap();
+    assert_eq!(count, 1);
+    for (&vertex, &color) in unwelded
+        .vertices()
+        .iter()
+        .zip(unwelded.vertex_colors().unwrap())
+    {
+        let source = mesh
+            .vertices()
+            .iter()
+            .position(|&candidate| candidate == vertex)
+            .unwrap();
+        assert_eq!(color, mesh.vertex_colors().unwrap()[source]);
+    }
+}
+
+#[test]
 fn output_counts_match_wide_arithmetic_at_index_and_machine_boundaries() {
     let values = [
         0,

@@ -1,6 +1,41 @@
 use super::*;
 
 #[test]
+fn collapse_blends_endpoint_colors_and_keeps_other_colors() {
+    let mesh = TriangleMesh::try_new_faces(
+        vec![
+            point(0., 0., 0.),
+            point(2., 0., 0.),
+            point(2., 2., 0.),
+            point(0., 2., 0.),
+        ],
+        vec![MeshFace::Quad([0, 1, 2, 3])],
+        Tolerance::DEFAULT,
+    )
+    .unwrap()
+    .try_with_vertex_colors(Some(vec![
+        [0, 0, 0, 0],
+        [200, 100, 80, 200],
+        [30, 40, 50, 60],
+        [70, 80, 90, 100],
+    ]))
+    .unwrap();
+    let edge = topology_edge_index_between(&mesh, point(0., 0., 0.), point(2., 0., 0.));
+    let collapsed = mesh
+        .collapse_topology_edge(edge, Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        collapsed.vertices(),
+        &[point(1., 0., 0.), point(2., 2., 0.), point(0., 2., 0.)]
+    );
+    assert_eq!(
+        collapsed.vertex_colors(),
+        Some(&[[100, 50, 40, 100], [30, 40, 50, 60], [70, 80, 90, 100]][..])
+    );
+}
+
+#[test]
 fn collapsing_mesh_edges_remaps_surviving_ngon_regions() {
     let square = TriangleMesh::try_new(
         vec![

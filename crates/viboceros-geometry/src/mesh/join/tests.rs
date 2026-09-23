@@ -37,14 +37,31 @@ fn joining_preserves_ngons_through_alignment_and_vertex_compaction() {
     )
     .unwrap()
     .try_with_ngons(vec![MeshNgon::from_parts(vec![1, 2, 3, 4], vec![0, 1])])
+    .unwrap()
+    .try_with_vertex_colors(Some((0..5).map(|value| [value, 0, 0, 0]).collect()))
     .unwrap();
-    let second = quad(2.);
+    let second = quad(2.)
+        .try_with_vertex_colors(Some((5..9).map(|value| [value, 0, 0, 0]).collect()))
+        .unwrap();
     for disjoint in [false, true] {
         let joined = join_meshes(&[&first, &second], options(disjoint, 0.))
             .unwrap()
             .remove(0)
             .mesh;
         assert_eq!(joined.ngons().len(), 1);
+        assert_eq!(
+            joined
+                .vertex_colors()
+                .unwrap()
+                .iter()
+                .map(|color| color[0])
+                .collect::<Vec<_>>(),
+            if disjoint {
+                (0..9).collect::<Vec<_>>()
+            } else {
+                (1..9).collect::<Vec<_>>()
+            }
+        );
         assert_eq!(joined.ngons()[0].faces(), &[0, 1]);
         assert_eq!(
             joined.ngons()[0].vertices(),

@@ -1,6 +1,36 @@
 use super::*;
 
 #[test]
+fn component_extraction_keeps_colors_with_their_raw_vertices() {
+    let mesh = TriangleMesh::try_new(
+        vec![
+            p(0., 0., 0.),
+            p(1., 0., 0.),
+            p(0., 1., 0.),
+            p(3., 0., 0.),
+            p(4., 0., 0.),
+            p(3., 1., 0.),
+        ],
+        vec![[0, 1, 2], [3, 4, 5]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap()
+    .try_with_vertex_colors(Some((0..6).map(|value| [value, 0, 0, 0]).collect()))
+    .unwrap();
+    for pieces in [mesh.disjoint_pieces(), mesh.explode_pieces()] {
+        assert_eq!(pieces.len(), 2);
+        assert_eq!(
+            pieces[0].vertex_colors(),
+            Some(&[[0, 0, 0, 0], [1, 0, 0, 0], [2, 0, 0, 0]][..])
+        );
+        assert_eq!(
+            pieces[1].vertex_colors(),
+            Some(&[[3, 0, 0, 0], [4, 0, 0, 0], [5, 0, 0, 0]][..])
+        );
+    }
+}
+
+#[test]
 fn ordered_grouping_matches_label_partitions_and_all_root_orders() {
     let faces = [91, 5, 72, 18];
     let permutations = (0..256)
