@@ -3,10 +3,14 @@
 [Command reference](README.md) · [Surfaces and solids](surfaces.md)
 
 `Cap` fills planar naked-edge loops on selected NURBS surfaces, B-reps, and meshes.
-Enter it before selecting objects, or select objects first. There are currently
-no options. Mesh caps are triangulated in place; Rhino's mesh `DeleteInput`,
-`Crease`, and `Triangles` options and SubD capping are still unavailable. For
-nonplanar mesh holes, see [meshes](meshes.md).
+Enter it before selecting objects, or select objects first. For meshes,
+`Cap [DeleteInput=Yes|No]` controls whether the capped result replaces the
+source (the default) or is added as a copy. The option is remembered. A copy
+inherits the source's attributes and groups, while geometry-attached user text
+is cleared because its geometry changed. Mixed selections still cap B-reps and
+NURBS surfaces in place. Mesh caps are triangulated; the mesh `Crease` and
+`Triangles` options and SubD capping are unavailable. For nonplanar mesh holes,
+see [meshes](meshes.md).
 
 Caps retain the spatial boundary geometry. The command subdivides newly capped
 edges at C0 knot joins with tangent breaks of at least 1°, independently of
@@ -23,7 +27,9 @@ inner openings. A coplanar source face in the cap bounds prevents a duplicate
 sheet. Intersecting, touching, and otherwise ambiguous coplanar loops remain
 open.
 
-Objects retain their IDs, names, layers, colors, and group memberships.
+In-place results retain their IDs, names, layers, colors, and group memberships.
+`DeleteInput=No` retains each source mesh and creates a new object for each
+mesh with a planar opening; a no-op mesh creates no copy.
 Preselection is retained; command-first selection is cleared on success,
 including no-ops. Replacements are staged into one undo step. Invalid arguments,
 unsupported direct inputs, numerical validation failures, and resource-limit
@@ -158,7 +164,7 @@ tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/cap_edge_
 ```
 
 McNeel's [Cap reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/cap.htm)
-documents the remaining mesh and SubD options.
+documents the mesh and SubD options.
 The [mesh Cap probe](../../tools/rhino_oracle/fixtures/mesh_cap_command.json)
 is prepared for command-level comparison, including an open square tube. Local
 runs have not executed because Rhino exits during .NET startup with an access

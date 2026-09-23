@@ -725,7 +725,7 @@ impl CommandRegistry {
             .register(CloseCrvCommand)
             .expect("unique built-in command");
         registry
-            .register(CapCommand)
+            .register(CapCommand::default())
             .expect("unique built-in command");
         registry
             .register(MergeAllEdgesCommand)

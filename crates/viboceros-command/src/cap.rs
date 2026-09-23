@@ -1,11 +1,33 @@
-//! In-place planar surface, B-rep, and mesh hole capping.
+//! Planar surface, B-rep, and mesh hole capping.
 use super::*;
 use viboceros_geometry::BrepSolidOrientation;
 
 #[cfg(test)]
 mod tests;
 
-pub(super) struct CapCommand;
+const MESH_CAP_USAGE: &str = "Cap [DeleteInput=Yes|No]";
+
+pub(super) struct CapCommand {
+    delete_input: remembered::Remembered<bool>,
+}
+
+impl Default for CapCommand {
+    fn default() -> Self {
+        Self {
+            delete_input: remembered::Remembered::new(true),
+        }
+    }
+}
+
+impl CapCommand {
+    fn parse(&self, arguments: &[&str]) -> Result<bool, CommandError> {
+        if arguments.is_empty() {
+            Ok(self.delete_input.get())
+        } else {
+            parse_delete_input(arguments, MESH_CAP_USAGE, &["DeleteInput"])
+        }
+    }
+}
 
 impl Command for CapCommand {
     fn name(&self) -> &'static str {
@@ -16,31 +38,47 @@ impl Command for CapCommand {
         &self,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        require_consumed(arguments, 0, "Cap")?;
+        let delete_input = self.parse(arguments)?;
         Ok(Some(ObjectSelectionPrompt {
             command: "Cap",
             filter: ObjectSelectionFilter::Cap,
-            options: vec![],
+            options: vec![BooleanSelectionOption {
+                name: "DeleteInput",
+                value: delete_input,
+                aliases: &[],
+            }],
             menus: vec![],
             choices: vec![],
             workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
         }))
     }
 
+    fn accept_object_selection_options(&self, arguments: &[&str]) -> Result<(), CommandError> {
+        self.delete_input.set(self.parse(arguments)?);
+        Ok(())
+    }
+
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        require_consumed(arguments, 0, "Cap")?;
+        let delete_input = self.parse(arguments)?;
         if document.selected_object_count() == 0 {
             return Err(CommandError::NoObjectsSelected);
         }
         let mut replacements = Vec::new();
+        let mut mesh_copies = Vec::new();
         let mut face_count = 0;
         let mut unresolved_compounds = 0;
+        let mut selected_mesh = false;
         for object in document.selected_objects() {
             if let Geometry::Mesh(mesh) = object.geometry() {
+                selected_mesh = true;
                 let (capped, count) = mesh.cap_planar_holes(document.tolerance())?;
                 if count > 0 {
                     face_count += capped.face_count() - mesh.face_count();
-                    replacements.push((object.id(), Geometry::Mesh(capped)));
+                    if delete_input {
+                        replacements.push((object.id(), Geometry::Mesh(capped)));
+                    } else {
+                        mesh_copies.push((object.id(), Geometry::Mesh(capped)));
+                    }
                 }
                 continue;
             }
@@ -100,8 +138,19 @@ impl Command for CapCommand {
                 replacements.push((object.id(), Geometry::Brep(capped)));
             }
         }
-        let count = document.replace_object_geometries(replacements)?;
+        if !selected_mesh && !arguments.is_empty() {
+            return Err(CommandError::Usage("Cap"));
+        }
+        let replaced = document.replace_object_geometries(replacements)?;
+        let copied = document
+            .copy_object_geometries_into_source_groups(mesh_copies)?
+            .len();
+        let count = replaced + copied;
+        self.delete_input.set(delete_input);
         let mut message = format!("Capped {count} object(s) with {face_count} planar face(s)");
+        if copied > 0 {
+            message.push_str(&format!("; retained {copied} source mesh(es)"));
+        }
         if unresolved_compounds > 0 {
             message.push_str(&format!(
                 "; orientation unresolved for {unresolved_compounds} compound solid(s)"
