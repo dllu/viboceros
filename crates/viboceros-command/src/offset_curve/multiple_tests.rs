@@ -76,6 +76,49 @@ fn closed_smooth_polycurve_offsets_as_region() {
 }
 
 #[test]
+fn closed_linear_nurbs_offsets_inward_and_outward() {
+    let mut document = Document::default();
+    let polygon = Polyline3::try_new(
+        vec![
+            point(0.0, 0.0),
+            point(4.0, 0.0),
+            point(4.0, 4.0),
+            point(0.0, 4.0),
+            point(0.0, 0.0),
+        ],
+        document.tolerance(),
+    )
+    .unwrap();
+    let id = document
+        .add_geometry(Geometry::NurbsCurve(polygon.to_native_nurbs().unwrap()))
+        .unwrap();
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "OffsetMultiple 0.5 2,2,0 OffsetCount=1")
+        .unwrap();
+    let Geometry::Polyline(inner) = document.selected_objects().next().unwrap().geometry() else {
+        panic!("inward linear NURBS offset")
+    };
+    assert_eq!(inner.vertices()[0], point(0.5, 0.5));
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "OffsetMultiple 0.5 5,5,0 OffsetCount=1")
+        .unwrap();
+    let Geometry::Polyline(outer) = document.selected_objects().next().unwrap().geometry() else {
+        panic!("outward linear NURBS offset")
+    };
+    assert_eq!(outer.vertices()[0], point(-0.5, -0.5));
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(
+            &mut document,
+            "OffsetMultiple 0.5 5,5,0 Corner=None OffsetCount=1",
+        )
+        .unwrap();
+    assert_eq!(document.selected_object_count(), 4);
+}
+
+#[test]
 fn open_nurbs_multiple_offsets_follow_pick_side() {
     let mut document = Document::default();
     let source = NurbsCurve::try_new(

@@ -2,13 +2,68 @@
 
 use crate::{
     Brep, Curve3, CurveCurveIntersectionEvent, CurveSegment3, GeometryError, NurbsCurve,
-    ParameterSide, Point3, PolyCurve3, Real, Tolerance, UnitVector3, Vector3, WeightedPoint3,
-    nurbs::curve_points_coincident,
+    ParameterSide, Point3, PolyCurve3, Polyline3, Real, Tolerance, UnitVector3, Vector3,
+    WeightedPoint3, nurbs::curve_points_coincident,
 };
 
 const MAX_OFFSET_SPANS: usize = 8_192;
 const CHECKS_PER_SPAN: usize = 15;
 const MAX_REGION_PIECES: usize = 8_192;
+
+/// Degree-one, uniform-weight spans are exactly affine in their native knot
+/// intervals. Preserve every knot as a polyline vertex for corner handling.
+pub(super) fn linear_nurbs_proxy(
+    curve: &NurbsCurve,
+    tolerance: Tolerance,
+) -> Result<Option<Polyline3>, GeometryError> {
+    linear_nurbs_polyline(curve, tolerance, 2)
+}
+
+pub(super) fn linear_nurbs_leaf_proxy(
+    curve: &NurbsCurve,
+    tolerance: Tolerance,
+) -> Result<Option<Polyline3>, GeometryError> {
+    linear_nurbs_polyline(curve, tolerance, 1)
+}
+
+fn linear_nurbs_polyline(
+    curve: &NurbsCurve,
+    tolerance: Tolerance,
+    minimum_spans: usize,
+) -> Result<Option<Polyline3>, GeometryError> {
+    if curve.degree() != 1
+        || curve
+            .control_points()
+            .iter()
+            .any(|control| control.weight() != curve.control_points()[0].weight())
+    {
+        return Ok(None);
+    }
+    let spans = curve.spans().collect::<Vec<_>>();
+    if spans.len() < minimum_spans {
+        return Ok(None);
+    }
+    let mut vertices = Vec::with_capacity(spans.len() + 1);
+    let mut parameters = Vec::with_capacity(spans.len() + 1);
+    for (index, &(a, b)) in spans.iter().enumerate() {
+        let start = curve.evaluate_on_side(a, ParameterSide::Right)?;
+        if index == 0 {
+            vertices.push(start);
+            parameters.push(a);
+        } else if !curve_points_coincident(*vertices.last().unwrap(), start)
+            || vertices.last().unwrap().distance_to(start)? > tolerance.absolute()
+        {
+            return Err(GeometryError::Degenerate {
+                context: "discontinuous linear NURBS offset source",
+            });
+        }
+        vertices.push(curve.evaluate_on_side(b, ParameterSide::Left)?);
+        parameters.push(b);
+    }
+    Ok(Some(Polyline3::try_with_parameters(
+        vertices, parameters, tolerance,
+    )?))
+}
 
 #[derive(Clone, Copy)]
 struct Sample {

@@ -5,16 +5,24 @@ use crate::{
     parameter::map_parameter,
 };
 
+use super::nurbs::linear_nurbs_leaf_proxy;
+
 pub(super) fn offset_proxy(
     curve: &PolyCurve3,
     tolerance: Tolerance,
 ) -> Result<Curve3, GeometryError> {
-    if !curve
-        .segments()
-        .iter()
-        .all(|segment| matches!(segment, CurveSegment3::Line(_) | CurveSegment3::Polyline(_)))
-    {
-        return Ok(Curve3::NurbsCurve(curve.to_nurbs()?));
+    let mut linear_nurbs = Vec::with_capacity(curve.segments().len());
+    for segment in curve.segments() {
+        match segment {
+            CurveSegment3::Line(_) | CurveSegment3::Polyline(_) => linear_nurbs.push(None),
+            CurveSegment3::NurbsCurve(source) => {
+                let Some(polyline) = linear_nurbs_leaf_proxy(source, tolerance)? else {
+                    return Ok(Curve3::NurbsCurve(curve.to_nurbs()?));
+                };
+                linear_nurbs.push(Some(polyline));
+            }
+            CurveSegment3::Arc(_) => return Ok(Curve3::NurbsCurve(curve.to_nurbs()?)),
+        }
     }
     let mut vertices = Vec::<Point3>::new();
     let mut parameters = Vec::<Real>::new();
@@ -29,7 +37,13 @@ pub(super) fn offset_proxy(
                 vertices.push(line.end());
                 parameters.push(*outer.end());
             }
-            CurveSegment3::Polyline(polyline) => {
+            CurveSegment3::Polyline(_) | CurveSegment3::NurbsCurve(_) => {
+                let polyline = match segment {
+                    CurveSegment3::Polyline(polyline) => polyline,
+                    _ => linear_nurbs[index]
+                        .as_ref()
+                        .expect("validated linear NURBS leaf"),
+                };
                 if vertices.is_empty() {
                     vertices.push(polyline.vertices()[0]);
                     parameters.push(*outer.start());
@@ -44,7 +58,7 @@ pub(super) fn offset_proxy(
                     parameters.push(map_parameter(parameter, polyline.domain(), outer.clone())?);
                 }
             }
-            _ => unreachable!("linear-family check"),
+            CurveSegment3::Arc(_) => unreachable!("linear-family check"),
         }
     }
     Ok(Curve3::Polyline(Polyline3::try_with_parameters(
