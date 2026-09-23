@@ -436,6 +436,19 @@ impl Viewport {
         self.zoom_by_factor(factor, Some(rect.center()), rect)
     }
 
+    /// One default View > Zoom increment. Rhino also exposes this setting to
+    /// users; a configurable value can replace this constant when view options
+    /// are implemented.
+    pub(crate) const ZOOM_STEP: Real = 0.9;
+
+    pub(crate) fn zoom_in(&mut self) -> Result<bool, &'static str> {
+        self.zoom_factor(Self::ZOOM_STEP.recip())
+    }
+
+    pub(crate) fn zoom_out(&mut self) -> Result<bool, &'static str> {
+        self.zoom_factor(Self::ZOOM_STEP)
+    }
+
     fn zoom_by_factor(
         &mut self,
         factor: Real,
@@ -679,6 +692,33 @@ mod tests {
         let mut position = [1.0, 2.0, 3.0];
         viewport.encode_gpu_depth(&mut position, 1e24, Some((0.0, 2e24)));
         assert_eq!(position, [1.0, 2.0, 3.0]);
+    }
+
+    #[test]
+    fn zoom_in_out_take_inverse_view_center_steps() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let mut view = Viewport {
+                last_rect: Some(rect),
+                ..Viewport::new(kind)
+            };
+            let before = view.pixels_per_model_unit_at_origin(rect);
+            let target = view.target;
+            assert_eq!(view.zoom_in(), Ok(true));
+            let after = view.pixels_per_model_unit_at_origin(rect);
+            assert!((f64::from(after / before) - 1.0 / Viewport::ZOOM_STEP).abs() < 1e-6);
+            assert_eq!(view.target, target);
+            assert_eq!(view.zoom_out(), Ok(true));
+            assert!(
+                (f64::from(view.pixels_per_model_unit_at_origin(rect) / before) - 1.0).abs() < 1e-6
+            );
+            assert_eq!(view.target, target);
+        }
     }
 
     #[test]

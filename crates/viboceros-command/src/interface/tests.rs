@@ -68,6 +68,24 @@ fn zoom_factor_is_finite_positive_and_does_not_mutate_interface_state() {
 }
 
 #[test]
+fn zoom_in_out_parse_and_leave_interface_state_unchanged() {
+    for (input, expected) in [
+        ("Zoom In", InterfaceCommand::ZoomIn),
+        ("'_Zoom _Out", InterfaceCommand::ZoomOut),
+        ("zoom in", InterfaceCommand::ZoomIn),
+    ] {
+        assert_eq!(parse(input), Some(Ok(expected)));
+        let mut current = state();
+        let original = current.clone();
+        current.apply(expected).unwrap();
+        assert_eq!(current, original);
+    }
+    for input in ["Zoom In extra", "Zoom All In", "Zoom Out 2"] {
+        assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
+    }
+}
+
+#[test]
 fn zoom_extents_is_a_validated_host_action() {
     for (input, expected) in [
         ("Zoom All Extents", InterfaceCommand::ZoomAllExtents),

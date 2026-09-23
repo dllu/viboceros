@@ -94,6 +94,8 @@ fn zoom_extents_routes_to_the_active_view_without_cancelling_modeling_or_redo() 
     for command in [
         "Zoom Factor 2",
         "'_Zoom _Factor 0.5",
+        "Zoom In",
+        "'_Zoom _Out",
         "Zoom Factor 1",
         "Zoom Factor NaN",
         "Zoom Factor 0",

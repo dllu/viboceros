@@ -21,12 +21,27 @@ impl VibocerosApp {
         let mut state = self.interface_state();
         match state.apply(command) {
             Ok(message) => {
-                if let InterfaceCommand::ZoomFactor(factor) = command {
-                    let result = self.viewports[self.active_viewport].zoom_factor(factor.value());
+                if let InterfaceCommand::ZoomFactor(_)
+                | InterfaceCommand::ZoomIn
+                | InterfaceCommand::ZoomOut = command
+                {
+                    let (factor, result) = match command {
+                        InterfaceCommand::ZoomFactor(factor) => (
+                            factor.value(),
+                            self.viewports[self.active_viewport].zoom_factor(factor.value()),
+                        ),
+                        InterfaceCommand::ZoomIn => (
+                            Viewport::ZOOM_STEP.recip(),
+                            self.viewports[self.active_viewport].zoom_in(),
+                        ),
+                        InterfaceCommand::ZoomOut => (
+                            Viewport::ZOOM_STEP,
+                            self.viewports[self.active_viewport].zoom_out(),
+                        ),
+                        _ => unreachable!(),
+                    };
                     self.push_log(match result {
-                        Ok(true) => {
-                            format!("Zoomed by factor {} (active viewport)", factor.value())
-                        }
+                        Ok(true) => format!("Zoomed by factor {factor} (active viewport)"),
                         Ok(false) => {
                             "Zoom unchanged (factor has no effect at current precision or limits)"
                                 .into()

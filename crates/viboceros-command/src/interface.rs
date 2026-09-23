@@ -81,6 +81,8 @@ impl ZoomFactor {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum InterfaceCommand {
     ZoomFactor(ZoomFactor),
+    ZoomIn,
+    ZoomOut,
     ZoomExtents,
     ZoomSelected,
     ZoomAllExtents,
@@ -109,7 +111,7 @@ pub const COMMAND_NAMES: [&str; 11] = [
     "Snap",
 ];
 
-pub const HELP: &str = "Interface: Zoom [All] Extents|Selected (ZE, ZS, ZEA, ZSA); Zoom Factor <positive number>; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [All] Extents|Selected (ZE, ZS, ZEA, ZSA); Zoom In|Out|Factor <positive number>; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -151,6 +153,12 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
                 [option] if name.eq_ignore_ascii_case("Zoom") && keyword(option, "Selected") => {
                     Ok(InterfaceCommand::ZoomSelected)
                 }
+                [option] if name.eq_ignore_ascii_case("Zoom") && keyword(option, "In") => {
+                    Ok(InterfaceCommand::ZoomIn)
+                }
+                [option] if name.eq_ignore_ascii_case("Zoom") && keyword(option, "Out") => {
+                    Ok(InterfaceCommand::ZoomOut)
+                }
                 [option, value]
                     if name.eq_ignore_ascii_case("Zoom") && keyword(option, "Factor") =>
                 {
@@ -178,7 +186,7 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
                     Ok(InterfaceCommand::ZoomAllSelected)
                 }
                 _ => Err(InterfaceError::Usage(
-                    "Zoom [All] Extents|Selected | Zoom Factor <positive number> | ZE | ZS | ZEA | ZSA",
+                    "Zoom [All] Extents|Selected | Zoom In|Out|Factor <positive number> | ZE | ZS | ZEA | ZSA",
                 )),
             }
         } else if name.eq_ignore_ascii_case("Snap") {
@@ -280,6 +288,8 @@ impl InterfaceState {
             InterfaceCommand::ZoomFactor(factor) => {
                 format!("Zoom factor {} requested (active viewport)", factor.value())
             }
+            InterfaceCommand::ZoomIn => "Zoom in requested (active viewport)".into(),
+            InterfaceCommand::ZoomOut => "Zoom out requested (active viewport)".into(),
             InterfaceCommand::ZoomExtents => "Zoom extents requested (active viewport)".into(),
             InterfaceCommand::ZoomSelected => "Zoom selected requested (active viewport)".into(),
             InterfaceCommand::ZoomAllExtents => "Zoom extents requested (all viewports)".into(),
