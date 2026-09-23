@@ -130,8 +130,15 @@ fn conversion_based_angles_are_accepted_only_without_angular_geometry() {
     assert_eq!(scale(&format!("{units} #7 = PLANE('flat',#8); #8 = AXIS2_PLACEMENT_3D('',#9,$,$); #9 = CARTESIAN_POINT('',(0.,0.,0.));")).unwrap(), 1e-3);
     for geometry in [
         "#7 = CIRCLE('',#8,1.);",
+        "#7 = ELLIPSE('',#8,2.,1.);",
+        "#7 = PCURVE('',#8,#9); #8 = PLANE('',#10);",
+    ] {
+        assert_eq!(scale(&format!("{units} {geometry}")).unwrap(), 1e-3);
+    }
+    for geometry in [
         "#7 = CONICAL_SURFACE('',#8,1.,1.);",
-        "#7 = PCURVE('',#8,#9);",
+        "#7 = PCURVE('',#8,#9); #8 = CYLINDRICAL_SURFACE('',#10,1.);",
+        "#7 = TRIMMED_CURVE('',#8,(0.),(90.),.T.,.PARAMETER.);",
     ] {
         assert!(
             scale(&format!("{units} {geometry}"))

@@ -307,9 +307,11 @@ while converting the declared file accuracy separately. This
 currently requires a single data section with uniform length units across
 contexts. Missing, mixed, cyclic, or unsupported unit definitions are rejected
 before document edits. Conversion-based plane-angle units, including degrees,
-are accepted for geometry without angular parameters, including straight-edged
-planar solids. Geometry with angular parameters, such as circles and cones,
-remains unsupported in non-radian contexts and is rejected before import.
+are accepted for geometry without stored angular parameters, including planar
+solids with straight, circular, or elliptical edges. Those conic arcs are
+bounded by endpoint vertices. Explicit angular trims and angular surfaces,
+such as cones and cylinders, remain unsupported in non-radian contexts and
+are rejected before import.
 Mixed-unit assembly conversion
 remains unimplemented. The low-level `read_step` and
 `read_step_file` APIs retain raw file coordinates; their `_in_units`

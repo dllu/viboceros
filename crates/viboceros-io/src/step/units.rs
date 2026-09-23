@@ -120,9 +120,11 @@ pub(super) fn uniform_meters_per_unit(data: &DataSection) -> Result<f64, StepErr
     result.ok_or_else(|| invalid("missing global length-unit assignment"))
 }
 
-// With no angular geometry parameters, a valid conversion-based angle unit
-// changes no coordinates. Angular STEP geometry must be normalized before table
-// conversion; Monstertruck otherwise interprets some parameters as radians.
+// A conic edge without an explicit angular trim is bounded by its 3D vertices,
+// so its arc can be reconstructed in radians regardless of the declared angle
+// unit. PCURVEs on non-angular surfaces are similarly independent. Angular
+// surfaces and explicit parameter trims need normalization before table
+// conversion; Monstertruck otherwise interprets some values as radians.
 fn is_angle_independent_geometry(data: &DataSection) -> bool {
     data.entities.iter().all(|entity| {
         let records = match entity {
@@ -131,10 +133,9 @@ fn is_angle_independent_geometry(data: &DataSection) -> bool {
         };
         records.iter().all(|record| {
             let name = record.name.as_str();
-            !(matches!(
-                name,
-                "CIRCLE" | "ELLIPSE" | "HYPERBOLA" | "PARABOLA" | "PCURVE" | "TRIMMED_CURVE"
-            ) || (name.ends_with("_SURFACE") && name != "PLANE")
+            !(matches!(name, "HYPERBOLA" | "PARABOLA" | "TRIMMED_CURVE")
+                || (name.ends_with("_SURFACE") && name != "PLANE")
+                || name.starts_with("SURFACE_OF_")
                 || name.contains("REVOL")
                 || name.contains("CIRCULAR"))
         })

@@ -1913,8 +1913,31 @@ fn native_step_imports_analytic_circle_edge_and_uv_trim() {
             read_step_planar_instances(Cursor::new(&text), Tolerance::DEFAULT),
             Err(StepError::UnsupportedPlanarShell { .. })
         ));
-        let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT)
+        let native = read_step_native_instances(Cursor::new(&text), Tolerance::DEFAULT)
             .unwrap_or_else(|error| panic!("angle {angle}: {error:?}"));
+        let degree_native = read_step_native_instances_in_units(
+            Cursor::new(with_degree_angle_units(&text)),
+            &LengthUnitSystem::Millimeters,
+            Tolerance::DEFAULT,
+        )
+        .unwrap_or_else(|error| panic!("degree angle {angle}: {error:?}"));
+        assert_eq!(degree_native.instances.len(), 1);
+        assert_eq!(degree_native.instances[0].brep, native.instances[0].brep);
+        let degree_mesh = read_step_in_units(
+            Cursor::new(with_degree_angle_units(&text)),
+            &LengthUnitSystem::Millimeters,
+            Tolerance::DEFAULT,
+        )
+        .unwrap_or_else(|error| panic!("degree mesh angle {angle}: {error:?}"));
+        assert_eq!(
+            degree_mesh,
+            read_step_in_units(
+                Cursor::new(&text),
+                &LengthUnitSystem::Millimeters,
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+        );
         assert_eq!(native.instances.len(), 1);
         let brep = &native.instances[0].brep;
         assert_eq!(
@@ -1978,7 +2001,14 @@ fn native_step_imports_analytic_ellipse_arc() {
     )
     .to_string();
     assert!(text.contains("ELLIPSE("));
-    let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    let native = read_step_native_instances(Cursor::new(&text), Tolerance::DEFAULT).unwrap();
+    let degree_native = read_step_native_instances_in_units(
+        Cursor::new(with_degree_angle_units(&text)),
+        &LengthUnitSystem::Millimeters,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    assert_eq!(degree_native.instances[0].brep, native.instances[0].brep);
     let brep = &native.instances[0].brep;
     assert!((brep.area(Tolerance::DEFAULT).unwrap() - std::f64::consts::FRAC_PI_2).abs() < 1e-9);
     let arc = brep
@@ -4487,6 +4517,23 @@ fn cube_step() -> String {
     .to_string()
 }
 
+fn with_degree_angle_units(source: &str) -> String {
+    let radian = "NAMED_UNIT(*) PLANE_ANGLE_UNIT() SI_UNIT($,.RADIAN.)";
+    assert!(source.contains(radian), "fixture has no radian angle unit");
+    let mut degrees = source.replace(
+        radian,
+        "CONVERSION_BASED_UNIT('degree',#900001) NAMED_UNIT(#900002) PLANE_ANGLE_UNIT()",
+    );
+    let end = degrees
+        .rfind("ENDSEC;")
+        .expect("fixture has a data section");
+    degrees.insert_str(
+        end,
+        "#900001 = MEASURE_WITH_UNIT(PLANE_ANGLE_MEASURE(0.017453292519943295),#900003);\n#900002 = DIMENSIONAL_EXPONENTS(0.,0.,0.,0.,0.,0.,0.);\n#900003 = ( NAMED_UNIT(*) PLANE_ANGLE_UNIT() SI_UNIT($,.RADIAN.) );\n",
+    );
+    degrees
+}
+
 #[test]
 fn planar_brep_step_export_keeps_cube_faces_edges_and_volume_editable() {
     let source = read_step_planar_instances(Cursor::new(cube_step()), Tolerance::DEFAULT).unwrap();
@@ -4919,10 +4966,7 @@ fn imports_conversion_based_length_units_by_factor_not_name() {
 #[test]
 fn imports_planar_step_with_degree_angle_units_without_changing_coordinates() {
     let source = cube_step();
-    let degrees = source.replace(
-        "#13 = ( NAMED_UNIT(*) PLANE_ANGLE_UNIT() SI_UNIT($,.RADIAN.) );",
-        "#13 = ( CONVERSION_BASED_UNIT('degree',#900001) NAMED_UNIT(#900002) PLANE_ANGLE_UNIT() );\n#900001 = MEASURE_WITH_UNIT(PLANE_ANGLE_MEASURE(0.017453292519943295),#900003);\n#900002 = DIMENSIONAL_EXPONENTS(0.,0.,0.,0.,0.,0.,0.);\n#900003 = ( NAMED_UNIT(*) PLANE_ANGLE_UNIT() SI_UNIT($,.RADIAN.) );",
-    );
+    let degrees = with_degree_angle_units(&source);
     assert_ne!(degrees, source, "the cube fixture's angular unit changed");
     let target = LengthUnitSystem::Millimeters;
     let expected =
