@@ -253,6 +253,8 @@ Split 4,0,0 7,0,0
 Split CuttingObjects=1,0,0
 Split Isocurve=4,6,0 Direction=Both Shrink=Yes
 Intersect
+IntersectTwoSets first-id[,id...] second-id[,id...] OutputLayer=FirstSet
+IntersectTwoSets Selected second-id
 Trim 5,0,0
 Extend Length=5 Side=End Type=Natural Join=Merge
 Extend Length=2 Side=Both Type=Line Join=Merge

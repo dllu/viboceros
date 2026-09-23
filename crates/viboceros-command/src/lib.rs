@@ -51,9 +51,11 @@ use to_nurbs::ToNurbsCommand;
 mod bounding_box;
 mod distribute;
 mod geometry_selection;
+mod intersect_two_sets;
 mod object_name;
 mod selection_commands;
 mod user_text;
+use intersect_two_sets::IntersectTwoSetsCommand;
 #[cfg(test)]
 use object_name::SET_OBJECT_NAME_USAGE;
 use object_name::SetObjectNameCommand;
@@ -757,6 +759,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(IntersectCommand)
+            .expect("unique built-in command");
+        registry
+            .register(IntersectTwoSetsCommand)
             .expect("unique built-in command");
         registry
             .register(TrimCurveCommand)
@@ -10297,6 +10302,96 @@ enum IntersectInput {
     Brep(Brep),
 }
 
+fn intersect_input(geometry: &Geometry) -> Result<IntersectInput, CommandError> {
+    if let Geometry::NurbsSurface(surface) = geometry {
+        return Ok(IntersectInput::Surface(surface.clone()));
+    }
+    if let Geometry::Brep(brep) = geometry {
+        return Ok(IntersectInput::Brep(brep.clone()));
+    }
+    geometry
+        .nurbs_curve_representation()?
+        .map(IntersectInput::Curve)
+        .ok_or(CommandError::UnsupportedIntersectGeometry)
+}
+
+fn intersect_pair(
+    first: &IntersectInput,
+    second: &IntersectInput,
+    tolerance: Tolerance,
+) -> Result<Vec<Geometry>, GeometryError> {
+    Ok(match (first, second) {
+        (IntersectInput::Curve(first), IntersectInput::Curve(second)) => first
+            .intersection_events_with_curve(second, tolerance)?
+            .into_iter()
+            .map(|event| match event {
+                CurveCurveIntersectionEvent::Point(intersection) => {
+                    Ok(Geometry::Point(intersection.point()))
+                }
+                CurveCurveIntersectionEvent::Overlap(overlap) => Ok(Geometry::NurbsCurve(
+                    second.try_trimmed(overlap.second_interval())?,
+                )),
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?,
+        (IntersectInput::Curve(curve), IntersectInput::Surface(surface))
+        | (IntersectInput::Surface(surface), IntersectInput::Curve(curve)) => {
+            curve_surface_intersection_events(curve, surface, tolerance)?
+                .into_iter()
+                .map(|event| match event {
+                    CurveSurfaceIntersectionEvent::Point(intersection) => {
+                        Ok(Geometry::Point(intersection.point()))
+                    }
+                    CurveSurfaceIntersectionEvent::Overlap(overlap) => Ok(Geometry::NurbsCurve(
+                        curve.try_trimmed(overlap.curve_interval())?,
+                    )),
+                })
+                .collect::<Result<Vec<_>, GeometryError>>()?
+        }
+        (IntersectInput::Curve(curve), IntersectInput::Brep(brep))
+        | (IntersectInput::Brep(brep), IntersectInput::Curve(curve)) => {
+            curve_brep_intersection_events(curve, brep, tolerance)?
+                .into_iter()
+                .map(|event| match event {
+                    CurveBrepIntersectionEvent::Point(intersection) => {
+                        Ok(Geometry::Point(intersection.point()))
+                    }
+                    CurveBrepIntersectionEvent::Overlap(overlap) => Ok(Geometry::NurbsCurve(
+                        curve.try_trimmed(overlap.curve_interval())?,
+                    )),
+                })
+                .collect::<Result<Vec<_>, GeometryError>>()?
+        }
+        (IntersectInput::Surface(first), IntersectInput::Surface(second)) => {
+            surface_surface_intersection_events(first, second, tolerance)?
+                .into_iter()
+                .map(|event| match event {
+                    SurfaceSurfaceIntersectionEvent::Point(point) => Geometry::Point(point),
+                    SurfaceSurfaceIntersectionEvent::Curve(curve) => Geometry::NurbsCurve(curve),
+                })
+                .collect()
+        }
+        (IntersectInput::Surface(surface), IntersectInput::Brep(brep))
+        | (IntersectInput::Brep(brep), IntersectInput::Surface(surface)) => {
+            surface_brep_intersection_events(surface, brep, tolerance)?
+                .into_iter()
+                .map(|event| match event {
+                    SurfaceBrepIntersectionEvent::Point(point) => Geometry::Point(point),
+                    SurfaceBrepIntersectionEvent::Curve(curve) => Geometry::NurbsCurve(curve),
+                })
+                .collect()
+        }
+        (IntersectInput::Brep(first), IntersectInput::Brep(second)) => {
+            brep_brep_intersection_events(first, second, tolerance)?
+                .into_iter()
+                .map(|event| match event {
+                    BrepBrepIntersectionEvent::Point(point) => Geometry::Point(point),
+                    BrepBrepIntersectionEvent::Curve(curve) => Geometry::NurbsCurve(curve),
+                })
+                .collect()
+        }
+    })
+}
+
 impl Command for IntersectCommand {
     fn name(&self) -> &'static str {
         "Intersect"
@@ -10306,19 +10401,7 @@ impl Command for IntersectCommand {
         require_consumed(arguments, 0, "Intersect")?;
         let inputs = document
             .selected_objects()
-            .map(|object| {
-                let geometry = object.geometry();
-                if let Geometry::NurbsSurface(surface) = geometry {
-                    return Ok(IntersectInput::Surface(surface.clone()));
-                }
-                if let Geometry::Brep(brep) = geometry {
-                    return Ok(IntersectInput::Brep(brep.clone()));
-                }
-                geometry
-                    .nurbs_curve_representation()?
-                    .map(IntersectInput::Curve)
-                    .ok_or(CommandError::UnsupportedIntersectGeometry)
-            })
+            .map(|object| intersect_input(object.geometry()))
             .collect::<Result<Vec<_>, CommandError>>()?;
         if inputs.len() < 2 {
             return Err(CommandError::IntersectRequiresAtLeastTwoObjects {
@@ -10343,92 +10426,7 @@ impl Command for IntersectCommand {
             let first = &inputs[first_index];
             for second in &inputs[first_index + 1..] {
                 let mut pair_points = Vec::new();
-                let pair_output = match (first, second) {
-                    (IntersectInput::Curve(first), IntersectInput::Curve(second)) => first
-                        .intersection_events_with_curve(second, document.tolerance())?
-                        .into_iter()
-                        .map(|event| match event {
-                            CurveCurveIntersectionEvent::Point(intersection) => {
-                                Ok(Geometry::Point(intersection.point()))
-                            }
-                            CurveCurveIntersectionEvent::Overlap(overlap) => {
-                                Ok(Geometry::NurbsCurve(
-                                    second.try_trimmed(overlap.second_interval())?,
-                                ))
-                            }
-                        })
-                        .collect::<Result<Vec<_>, GeometryError>>()?,
-                    (IntersectInput::Curve(curve), IntersectInput::Surface(surface))
-                    | (IntersectInput::Surface(surface), IntersectInput::Curve(curve)) => {
-                        curve_surface_intersection_events(curve, surface, document.tolerance())?
-                            .into_iter()
-                            .map(|event| match event {
-                                CurveSurfaceIntersectionEvent::Point(intersection) => {
-                                    Ok(Geometry::Point(intersection.point()))
-                                }
-                                CurveSurfaceIntersectionEvent::Overlap(overlap) => {
-                                    Ok(Geometry::NurbsCurve(
-                                        curve.try_trimmed(overlap.curve_interval())?,
-                                    ))
-                                }
-                            })
-                            .collect::<Result<Vec<_>, GeometryError>>()?
-                    }
-                    (IntersectInput::Curve(curve), IntersectInput::Brep(brep))
-                    | (IntersectInput::Brep(brep), IntersectInput::Curve(curve)) => {
-                        curve_brep_intersection_events(curve, brep, document.tolerance())?
-                            .into_iter()
-                            .map(|event| match event {
-                                CurveBrepIntersectionEvent::Point(intersection) => {
-                                    Ok(Geometry::Point(intersection.point()))
-                                }
-                                CurveBrepIntersectionEvent::Overlap(overlap) => {
-                                    Ok(Geometry::NurbsCurve(
-                                        curve.try_trimmed(overlap.curve_interval())?,
-                                    ))
-                                }
-                            })
-                            .collect::<Result<Vec<_>, GeometryError>>()?
-                    }
-                    (IntersectInput::Surface(first), IntersectInput::Surface(second)) => {
-                        surface_surface_intersection_events(first, second, document.tolerance())?
-                            .into_iter()
-                            .map(|event| match event {
-                                SurfaceSurfaceIntersectionEvent::Point(point) => {
-                                    Geometry::Point(point)
-                                }
-                                SurfaceSurfaceIntersectionEvent::Curve(curve) => {
-                                    Geometry::NurbsCurve(curve)
-                                }
-                            })
-                            .collect()
-                    }
-                    (IntersectInput::Surface(surface), IntersectInput::Brep(brep))
-                    | (IntersectInput::Brep(brep), IntersectInput::Surface(surface)) => {
-                        surface_brep_intersection_events(surface, brep, document.tolerance())?
-                            .into_iter()
-                            .map(|event| match event {
-                                SurfaceBrepIntersectionEvent::Point(point) => {
-                                    Geometry::Point(point)
-                                }
-                                SurfaceBrepIntersectionEvent::Curve(curve) => {
-                                    Geometry::NurbsCurve(curve)
-                                }
-                            })
-                            .collect()
-                    }
-                    (IntersectInput::Brep(first), IntersectInput::Brep(second)) => {
-                        brep_brep_intersection_events(first, second, document.tolerance())?
-                            .into_iter()
-                            .map(|event| match event {
-                                BrepBrepIntersectionEvent::Point(point) => Geometry::Point(point),
-                                BrepBrepIntersectionEvent::Curve(curve) => {
-                                    Geometry::NurbsCurve(curve)
-                                }
-                            })
-                            .collect()
-                    }
-                };
+                let pair_output = intersect_pair(first, second, document.tolerance())?;
                 for geometry in pair_output {
                     if let Geometry::Point(point) = &geometry {
                         if pair_points.iter().any(|existing| {
@@ -17747,7 +17745,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: AddToGroup, Align, Angle, Arc, Area, AreaCentroid, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Cap, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curvature, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Diameter, Dir, Distance, Distribute, Divide, Domain, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, EdgeSrf, Ellipse, Ellipsoid, EvaluatePt, EvaluateUVPt, Explode, Export3dm, ExportStep, ExportStl, Extend, ExtendSrf, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, GetUserText, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Intersect, Invert, Isolate, IsolateLock, Join, JoinCopy, Layer, Length, Line, Lock, LockSwap, Loft, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, MergeAllEdges, MergeEdge, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, PointCloud, PointGrid, Points, Polygon, Polyline, ProjectToCPlane, Pyramid, Radius, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveFromGroup, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelClosedSrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelID, SelKey, SelKeyValue, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelNonManifold, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelOpenSrf, SelPlanarCrv, SelPlanarSrf, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSmall, SelSrf, SelTrimmedSrf, SelUntrimmedSrf, SelValue, SetObjectColor, SetObjectName, SetUserText, Shear, Show, Sphere, Spiral, Split, SplitDisjointMesh, SplitEdge, SplitMeshEdge, SrfControlPtGrid, SrfPt, SrfPtGrid, SrfSeam, SubCrv, SwapMeshEdge, Sweep1, Tolerance, ToNURBS, Torus, TriangulateMesh, Trim, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UngroupAll, UnifyMeshNormals, Unisolate, UnisolateLock, Units, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, VolumeCentroid, Weld, WeldEdge, WeldVertices"
+            "Commands: AddToGroup, Align, Angle, Arc, Area, AreaCentroid, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Cap, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curvature, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Diameter, Dir, Distance, Distribute, Divide, Domain, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, EdgeSrf, Ellipse, Ellipsoid, EvaluatePt, EvaluateUVPt, Explode, Export3dm, ExportStep, ExportStl, Extend, ExtendSrf, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, GetUserText, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Intersect, IntersectTwoSets, Invert, Isolate, IsolateLock, Join, JoinCopy, Layer, Length, Line, Lock, LockSwap, Loft, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, MergeAllEdges, MergeEdge, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, PointCloud, PointGrid, Points, Polygon, Polyline, ProjectToCPlane, Pyramid, Radius, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveFromGroup, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelClosedSrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelID, SelKey, SelKeyValue, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelNonManifold, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelOpenSrf, SelPlanarCrv, SelPlanarSrf, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSmall, SelSrf, SelTrimmedSrf, SelUntrimmedSrf, SelValue, SetObjectColor, SetObjectName, SetUserText, Shear, Show, Sphere, Spiral, Split, SplitDisjointMesh, SplitEdge, SplitMeshEdge, SrfControlPtGrid, SrfPt, SrfPtGrid, SrfSeam, SubCrv, SwapMeshEdge, Sweep1, Tolerance, ToNURBS, Torus, TriangulateMesh, Trim, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UngroupAll, UnifyMeshNormals, Unisolate, UnisolateLock, Units, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, VolumeCentroid, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -26097,6 +26095,123 @@ mod tests {
 
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().count(), 2);
+    }
+
+    #[test]
+    fn intersect_two_sets_ignores_within_set_pairs_and_assigns_output_layers() {
+        for (option, expected_layer) in [
+            ("", "Default"),
+            (" OutputLayer=FirstSet", "First"),
+            (" OutputLayer=SecondSet", "Second"),
+        ] {
+            let registry = CommandRegistry::with_builtins();
+            let mut document = Document::default();
+            let first_layer = document.add_layer("First", ColorRgb::BLACK).unwrap();
+            let second_layer = document.add_layer("Second", ColorRgb::BLACK).unwrap();
+            let first = document
+                .add_geometry_with_attributes(
+                    Geometry::Line(
+                        LineSegment::try_new(
+                            Point3::try_new(0., 0., 0.).unwrap(),
+                            Point3::try_new(10., 0., 0.).unwrap(),
+                            document.tolerance(),
+                        )
+                        .unwrap(),
+                    ),
+                    ObjectAttributes::on_layer(first_layer),
+                )
+                .unwrap();
+            let within = document
+                .add_geometry_with_attributes(
+                    Geometry::Line(
+                        LineSegment::try_new(
+                            Point3::try_new(3., -5., 0.).unwrap(),
+                            Point3::try_new(3., 5., 0.).unwrap(),
+                            document.tolerance(),
+                        )
+                        .unwrap(),
+                    ),
+                    ObjectAttributes::on_layer(first_layer),
+                )
+                .unwrap();
+            let second = document
+                .add_geometry_with_attributes(
+                    Geometry::Line(
+                        LineSegment::try_new(
+                            Point3::try_new(7., -5., 0.).unwrap(),
+                            Point3::try_new(7., 5., 0.).unwrap(),
+                            document.tolerance(),
+                        )
+                        .unwrap(),
+                    ),
+                    ObjectAttributes::on_layer(second_layer),
+                )
+                .unwrap();
+            let first_arg = if option == " OutputLayer=FirstSet" {
+                document
+                    .select_objects_direct([first, within], SelectionMode::Replace)
+                    .unwrap();
+                "Selected".to_owned()
+            } else {
+                format!("{first},{within}")
+            };
+            assert_eq!(
+                registry
+                    .execute(
+                        &mut document,
+                        &format!("IntersectTwoSets {first_arg} {second}{option}")
+                    )
+                    .unwrap(),
+                "Created 1 intersection object(s) from 2 object pair(s)"
+            );
+            let output = document.selected_objects().next().unwrap();
+            assert!(matches!(output.geometry(), Geometry::Point(point)
+                if *point == Point3::try_new(7., 0., 0.).unwrap()));
+            let layer = document.layer(output.attributes().layer_id()).unwrap();
+            assert_eq!(layer.name(), expected_layer);
+            assert_eq!(document.objects().count(), 4);
+            registry.execute(&mut document, "Undo").unwrap();
+            assert_eq!(document.objects().count(), 3);
+        }
+    }
+
+    #[test]
+    fn intersect_two_sets_rejects_invalid_inputs_before_editing() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0 10,0").unwrap();
+        registry.execute(&mut document, "Point 5,0").unwrap();
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        document
+            .select_object(ids[0], SelectionMode::Replace)
+            .unwrap();
+        let before = format!("{document:?}");
+        for input in [
+            format!("IntersectTwoSets {}", ids[0]),
+            format!("IntersectTwoSets {} nope", ids[0]),
+            format!("IntersectTwoSets {} {} OutputLayer=Bad", ids[0], ids[1]),
+            format!("IntersectTwoSets {} {}", ids[0], ids[1]),
+            format!(
+                "IntersectTwoSets {} 00000000-0000-0000-0000-000000000000",
+                ids[0]
+            ),
+        ] {
+            assert!(registry.execute(&mut document, &input).is_err(), "{input}");
+            assert_eq!(format!("{document:?}"), before, "{input}");
+        }
+        let history = document.undo_label().map(str::to_owned);
+        assert_eq!(
+            registry
+                .execute(&mut document, "IntersectTwoSets Selected Selected")
+                .unwrap(),
+            "Created 0 intersection object(s) from 0 object pair(s)"
+        );
+        assert_eq!(document.objects().count(), 2);
+        assert_eq!(document.selected_object_count(), 0);
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]
