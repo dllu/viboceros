@@ -263,9 +263,10 @@ remain unsupported.
 knots, and rational weights. Other p-curve bases still need exact surface-curve
 composition.
 Degree-one, two-control-point isoparametric `PCURVE` edges with equal weights
-on curved B-spline/NURBS bases, linear extrusions of curved directrices, and
-supported surfaces of revolution import as exact trimmed NURBS isocurves,
-keeping the source p-curve domain.
+on curved B-spline/NURBS bases, linear extrusions of curved directrices,
+supported surfaces of revolution, and cylindrical, conical, spherical, or
+toroidal faces import as exact trimmed NURBS isocurves, keeping the source
+p-curve domain.
 Diagonal and unequal-weight p-curves on those bases remain unsupported unless
 the affine certificate applies.
 Other analytic surface types and

@@ -365,33 +365,24 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
                             ));
                         }
                         let base = directrix.evaluate(uv0.y())?;
-                        let start = uv0.x().min(uv1.x());
-                        let end = uv0.x().max(uv1.x());
-                        let spans = arc_span_count(end - start, id)?;
-                        let step = (end - start) / spans as f64;
-                        let mut controls = Vec::with_capacity(2 * spans + 1);
-                        for index in 0..spans {
-                            let a = start + step * index as f64;
-                            let b = if index + 1 == spans { end } else { a + step };
-                            let p0 = rotate_revolution_point(revolution, base, a)?;
-                            let pm = rotate_revolution_point(revolution, base, (a + b) / 2.)?;
-                            let p1 = rotate_revolution_point(revolution, base, b)?;
-                            let weight = ((b - a) / 2.).cos();
-                            if index == 0 {
-                                controls.push(WeightedPoint3::try_new(p0, 1.)?);
-                            }
-                            controls.push(WeightedPoint3::try_new(
-                                circular_middle(p0, pm, p1, weight)?,
-                                weight,
-                            )?);
-                            controls.push(WeightedPoint3::try_new(p1, 1.)?);
-                        }
-                        let curve = NurbsCurve::try_new_rational(
-                            2,
-                            controls,
-                            arc_knots(start, end, spans),
-                        )?;
-                        return oriented_isocurve_edge(curve, uv0.x(), uv1.x(), uv.domain(), id);
+                        return circular_isocurve_edge(
+                            |angle| rotate_revolution_point(revolution, base, angle),
+                            uv0.x(),
+                            uv1.x(),
+                            uv.domain(),
+                            id,
+                        );
+                    }
+                    if matches!(
+                        basis,
+                        Surface::ElementarySurface(
+                            ElementarySurface::CylindricalSurface(_)
+                                | ElementarySurface::ConicalSurface(_)
+                                | ElementarySurface::ToroidalSurface(_)
+                                | ElementarySurface::Sphere(_)
+                        )
+                    ) {
+                        return elementary_isocurve_edge(basis, uv0, uv1, uv.domain(), id);
                     }
                 }
             }
@@ -535,6 +526,104 @@ fn oriented_isocurve_edge(
         curve = curve.reversed()?;
     }
     Ok(curve.try_reparameterized(domain)?)
+}
+
+fn circular_isocurve_edge(
+    evaluate: impl Fn(f64) -> Result<Point3, StepError>,
+    from: f64,
+    to: f64,
+    domain: std::ops::RangeInclusive<f64>,
+    id: u64,
+) -> Result<NurbsCurve, StepError> {
+    if from == to {
+        return Err(StepError::UnsupportedNativeShell {
+            shell: id,
+            reason: "3D edge p-curve is degenerate",
+        });
+    }
+    let start = from.min(to);
+    let end = from.max(to);
+    let spans = arc_span_count(end - start, id)?;
+    let step = (end - start) / spans as f64;
+    let mut controls = Vec::with_capacity(2 * spans + 1);
+    for index in 0..spans {
+        let a = start + step * index as f64;
+        let b = if index + 1 == spans { end } else { a + step };
+        let p0 = evaluate(a)?;
+        let pm = evaluate((a + b) / 2.)?;
+        let p1 = evaluate(b)?;
+        let weight = ((b - a) / 2.).cos();
+        if index == 0 {
+            controls.push(WeightedPoint3::try_new(p0, 1.)?);
+        }
+        controls.push(WeightedPoint3::try_new(
+            circular_middle(p0, pm, p1, weight)?,
+            weight,
+        )?);
+        controls.push(WeightedPoint3::try_new(p1, 1.)?);
+    }
+    let curve = NurbsCurve::try_new_rational(2, controls, arc_knots(start, end, spans))?;
+    oriented_isocurve_edge(curve, from, to, domain, id)
+}
+
+fn elementary_isocurve_edge(
+    basis: &Surface,
+    uv0: Point2,
+    uv1: Point2,
+    domain: std::ops::RangeInclusive<f64>,
+    id: u64,
+) -> Result<NurbsCurve, StepError> {
+    let varying_u = uv0.y() == uv1.y();
+    let (from, to) = if varying_u {
+        (uv0.x(), uv1.x())
+    } else {
+        (uv0.y(), uv1.y())
+    };
+    if from == to {
+        return Err(StepError::UnsupportedNativeShell {
+            shell: id,
+            reason: "3D edge p-curve is degenerate",
+        });
+    }
+    if varying_u
+        && matches!(
+            basis,
+            Surface::ElementarySurface(ElementarySurface::Sphere(_))
+        )
+        && (uv0.y().abs() - std::f64::consts::FRAC_PI_2).abs() <= 1e-12
+    {
+        return Err(StepError::UnsupportedNativeShell {
+            shell: id,
+            reason: "sphere pole requires singular trim support",
+        });
+    }
+    let evaluate = |parameter| {
+        if varying_u {
+            point3(basis.evaluate(parameter, uv0.y()))
+        } else {
+            point3(basis.evaluate(uv0.x(), parameter))
+        }
+    };
+    if !varying_u
+        && matches!(
+            basis,
+            Surface::ElementarySurface(
+                ElementarySurface::CylindricalSurface(_) | ElementarySurface::ConicalSurface(_)
+            )
+        )
+    {
+        return Ok(NurbsCurve::try_new(
+            1,
+            vec![evaluate(from)?, evaluate(to)?],
+            vec![
+                *domain.start(),
+                *domain.start(),
+                *domain.end(),
+                *domain.end(),
+            ],
+        )?);
+    }
+    circular_isocurve_edge(evaluate, from, to, domain, id)
 }
 
 fn rotate_revolution_point(
@@ -1175,10 +1264,12 @@ mod tests {
     use monstertruck::modeling::{
         BsplineCurve, BsplineSurface, Invertible, KnotVector, Line, NurbsCurve as TruckNurbsCurve,
         NurbsSurface as TruckNurbsSurface, Plane, Point2 as TruckPoint2, Point3 as TruckPoint3,
-        PolylineCurve, Processor, RevolutionSurface, Vector4, builder,
+        PolylineCurve, Processor, RevolutionSurface, Sphere as TruckSphere, Torus, Vector4,
+        builder,
     };
     use monstertruck::step::load::step_geometry::{
-        StepExtrusionSurface, StepParameterCurve, SurfaceCurveKind, SurfaceCurveRepresentation,
+        Sphere as StepSphere, StepExtrusionSurface, StepParameterCurve, SurfaceCurveKind,
+        SurfaceCurveRepresentation,
     };
     use monstertruck::topology::Vertex;
 
@@ -1738,6 +1829,139 @@ mod tests {
                     ..
                 })
             ));
+        }
+    }
+
+    #[test]
+    fn elementary_surface_pcurve_edges_preserve_iso_geometry() {
+        let revolved_line = |end| {
+            let mut revolution = Processor::new(RevolutionSurface::by_revolution(
+                Line(TruckPoint3::new(2., 0., 0.), end),
+                TruckPoint3::new(0., 0., 0.),
+                Vector3::new(0., 0., 1.),
+            ));
+            revolution.invert();
+            revolution
+        };
+        for (basis, straight_v) in [
+            (
+                Surface::ElementarySurface(ElementarySurface::CylindricalSurface(revolved_line(
+                    TruckPoint3::new(2., 0., 3.),
+                ))),
+                true,
+            ),
+            (
+                Surface::ElementarySurface(ElementarySurface::ConicalSurface(revolved_line(
+                    TruckPoint3::new(3., 0., 3.),
+                ))),
+                true,
+            ),
+            (
+                Surface::ElementarySurface(ElementarySurface::Sphere(Processor::new(StepSphere(
+                    TruckSphere::new(TruckPoint3::new(0., 0., 0.), 2.),
+                )))),
+                false,
+            ),
+            (
+                Surface::ElementarySurface(ElementarySurface::ToroidalSurface(Processor::new(
+                    Torus::new(TruckPoint3::new(0., 0., 0.), 3., 1.),
+                ))),
+                false,
+            ),
+        ] {
+            for (a, b, varying_u) in [
+                ([0.2, 0.25], [1.4, 0.25], true),
+                ([1.4, 0.25], [0.2, 0.25], true),
+                ([0.4, 0.2], [0.4, 0.8], false),
+                ([0.4, 0.8], [0.4, 0.2], false),
+            ] {
+                let uv0 = TruckPoint2::new(a[0], a[1]);
+                let uv1 = TruckPoint2::new(b[0], b[1]);
+                for (uv, domain) in [
+                    (Curve2D::Line(Line(uv0, uv1)), 0.0..=1.0),
+                    (
+                        Curve2D::BsplineCurve(BsplineCurve::new(
+                            KnotVector::from(vec![5., 5., 9., 9.]),
+                            vec![uv0, uv1],
+                        )),
+                        5.0..=9.0,
+                    ),
+                ] {
+                    let source = Curve3D::ParameterCurve(StepParameterCurve::new(
+                        Box::new(uv),
+                        Box::new(basis.clone()),
+                    ));
+                    let curve = edge_curve(&source, 1).unwrap();
+                    assert_eq!(curve.degree(), if !varying_u && straight_v { 1 } else { 2 });
+                    assert_eq!(curve.domain(), domain);
+                    for fraction in [0., 0.17, 0.5, 0.83, 1.] {
+                        let t = *domain.start() * (1. - fraction) + *domain.end() * fraction;
+                        let point = curve.evaluate(t).unwrap();
+                        let u = a[0] * (1. - fraction) + b[0] * fraction;
+                        let v = a[1] * (1. - fraction) + b[1] * fraction;
+                        let expected = basis.evaluate(u, v);
+                        if (!varying_u && straight_v)
+                            || fraction == 0.
+                            || fraction == 0.5
+                            || fraction == 1.
+                        {
+                            assert!((point.x() - expected.x).abs() < 1e-11);
+                            assert!((point.y() - expected.y).abs() < 1e-11);
+                            assert!((point.z() - expected.z).abs() < 1e-11);
+                        } else if varying_u {
+                            let reference = basis.evaluate(a[0], a[1]);
+                            assert!(
+                                (point.x().hypot(point.y()) - reference.x.hypot(reference.y)).abs()
+                                    < 1e-11
+                            );
+                            assert!((point.z() - reference.z).abs() < 1e-11);
+                        } else if matches!(
+                            basis,
+                            Surface::ElementarySurface(ElementarySurface::Sphere(_))
+                        ) {
+                            assert!(
+                                (point.x().hypot(point.y()).hypot(point.z()) - 2.).abs() < 1e-11
+                            );
+                        } else {
+                            let radius = point.x().hypot(point.y()) - 3.;
+                            assert!((radius * radius + point.z() * point.z() - 1.).abs() < 1e-11);
+                        }
+                    }
+                }
+            }
+            let diagonal = Curve3D::ParameterCurve(StepParameterCurve::new(
+                Box::new(Curve2D::Line(Line(
+                    TruckPoint2::new(0.2, 0.2),
+                    TruckPoint2::new(1.4, 0.8),
+                ))),
+                Box::new(basis.clone()),
+            ));
+            assert!(matches!(
+                edge_curve(&diagonal, 1),
+                Err(StepError::UnsupportedNativeShell {
+                    reason: "3D edge p-curve basis is not affine",
+                    ..
+                })
+            ));
+            if matches!(
+                basis,
+                Surface::ElementarySurface(ElementarySurface::Sphere(_))
+            ) {
+                let pole = Curve3D::ParameterCurve(StepParameterCurve::new(
+                    Box::new(Curve2D::Line(Line(
+                        TruckPoint2::new(0.2, std::f64::consts::FRAC_PI_2),
+                        TruckPoint2::new(1.4, std::f64::consts::FRAC_PI_2),
+                    ))),
+                    Box::new(basis),
+                ));
+                assert!(matches!(
+                    edge_curve(&pole, 1),
+                    Err(StepError::UnsupportedNativeShell {
+                        reason: "sphere pole requires singular trim support",
+                        ..
+                    })
+                ));
+            }
         }
     }
 }

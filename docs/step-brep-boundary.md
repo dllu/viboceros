@@ -156,6 +156,12 @@ against face evaluation. A full-turn seam regression also checks a STEP loader
 case where coincident edge vertices produce a collapsed 3D leader: the importer
 uses its unique, endpoint-matching associated p-curve on the same surface.
 
+Elementary cylindrical, conical, spherical, and toroidal faces also accept
+degree-one iso-parametric p-curve edges with equal weights. Circular directions
+use exact rational arc spans; axial directions on cylinders and cones use exact
+lines. Serialized STEP checks cover both directions and full-turn seams on all
+four surface types, plus periodic sphere/torus trims.
+
 Degree-one, two-control-point rational 3D edges and UV trims are also supported
 when their weights are finite and positive. Homogeneous source controls are
 converted to Euclidean controls with separate weights, retaining knots and

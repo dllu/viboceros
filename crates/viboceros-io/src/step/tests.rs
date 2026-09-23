@@ -1942,6 +1942,41 @@ fn native_step_imports_periodic_revolved_wall_seams() {
                     assert!((sample.z() - v).abs() < 1e-10);
                 }
             }
+
+            let mut pcurve_shell = shell.clone();
+            pcurve_shell.edges[0].curve = Curve3D::ParameterCurve(StepParameterCurve::new(
+                Box::new(Curve2D::Line(Line(
+                    TruckPoint2::new(uv_origin, 0.),
+                    TruckPoint2::new(uv_origin + std::f64::consts::TAU, 0.),
+                ))),
+                Box::new(surface.clone()),
+            ));
+            pcurve_shell.edges[1].curve = Curve3D::ParameterCurve(StepParameterCurve::new(
+                Box::new(Curve2D::Line(Line(
+                    TruckPoint2::new(uv_origin + std::f64::consts::TAU, 0.),
+                    TruckPoint2::new(uv_origin + std::f64::consts::TAU, 3.),
+                ))),
+                Box::new(surface.clone()),
+            ));
+            let mut models = StepModels::default();
+            models.push_trimmed_shell(&pcurve_shell);
+            let text =
+                CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
+            let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+            let brep = &native.instances[0].brep;
+            assert_eq!(brep.edges()[0].curve().degree(), 2);
+            assert_eq!(brep.edges()[0].curve().control_points().len(), 9);
+            assert_eq!(brep.edges()[1].curve().degree(), 1);
+            for fraction in [0., 0.17, 0.5, 0.83, 1.] {
+                for (index, u, v) in [
+                    (0, uv_origin + std::f64::consts::TAU * fraction, 0.),
+                    (1, uv_origin + std::f64::consts::TAU, 3. * fraction),
+                ] {
+                    let actual = brep.edges()[index].curve().evaluate(fraction).unwrap();
+                    let expected = brep.faces()[0].surface().evaluate(u, v).unwrap();
+                    assert!(actual.distance_to(expected).unwrap() < 1e-10);
+                }
+            }
         }
     }
 }
@@ -2066,6 +2101,43 @@ fn native_step_imports_exact_toroidal_patches() {
                 .abs()
                 < 1e-10
         );
+
+        let mut pcurve_shell = shell.clone();
+        let mut replaced = Vec::new();
+        for use_ in shell.faces[0].boundaries[0].iter().take(2) {
+            let trim = use_.trim_curve.as_ref().unwrap().curve();
+            let (start, end) = trim.range_tuple();
+            let (a, b) = if use_.orientation {
+                (trim.evaluate(start), trim.evaluate(end))
+            } else {
+                (trim.evaluate(end), trim.evaluate(start))
+            };
+            pcurve_shell.edges[use_.index].curve =
+                Curve3D::ParameterCurve(StepParameterCurve::new(
+                    Box::new(Curve2D::Line(Line(a, b))),
+                    Box::new(shell.faces[0].surface.clone()),
+                ));
+            replaced.push((use_.index, a, b));
+        }
+        let mut models = StepModels::default();
+        models.push_trimmed_shell(&pcurve_shell);
+        let text = CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
+        let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+        let pcurve_brep = &native.instances[0].brep;
+        assert!((pcurve_brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
+        for (index, a, b) in replaced {
+            let curve = pcurve_brep.edges()[index].curve();
+            assert_eq!(curve.degree(), 2);
+            if shifted_period == 0. {
+                for fraction in [0., 0.17, 0.5, 0.83, 1.] {
+                    let u = a.x * (1. - fraction) + b.x * fraction;
+                    let v = a.y * (1. - fraction) + b.y * fraction;
+                    let actual = curve.evaluate(fraction).unwrap();
+                    let expected = pcurve_brep.faces()[0].surface().evaluate(u, v).unwrap();
+                    assert!(actual.distance_to(expected).unwrap() < 1e-10);
+                }
+            }
+        }
     }
 }
 
@@ -2183,6 +2255,23 @@ fn native_step_imports_full_turn_toroidal_strip_seam() {
     );
     let expected_area = std::f64::consts::TAU * (3. * v_end + v_end.sin());
     assert!((brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
+
+    let mut pcurve_shell = shell.clone();
+    pcurve_shell.edges[0].curve = Curve3D::ParameterCurve(StepParameterCurve::new(
+        Box::new(Curve2D::Line(Line(
+            TruckPoint2::new(0., 0.),
+            TruckPoint2::new(std::f64::consts::TAU, 0.),
+        ))),
+        Box::new(shell.faces[0].surface.clone()),
+    ));
+    let mut models = StepModels::default();
+    models.push_trimmed_shell(&pcurve_shell);
+    let text = CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
+    let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    let pcurve_brep = &native.instances[0].brep;
+    assert_eq!(pcurve_brep.edges()[0].curve().degree(), 2);
+    assert_eq!(pcurve_brep.edges()[0].curve().control_points().len(), 9);
+    assert!((pcurve_brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
 }
 
 #[test]
@@ -3025,6 +3114,43 @@ fn native_step_imports_exact_spherical_bands() {
                 );
             }
         }
+
+        let mut pcurve_shell = shell.clone();
+        let mut replaced = Vec::new();
+        for use_ in shell.faces[0].boundaries[0].iter().take(2) {
+            let trim = use_.trim_curve.as_ref().unwrap().curve();
+            let (start, end) = trim.range_tuple();
+            let (a, b) = if use_.orientation {
+                (trim.evaluate(start), trim.evaluate(end))
+            } else {
+                (trim.evaluate(end), trim.evaluate(start))
+            };
+            pcurve_shell.edges[use_.index].curve =
+                Curve3D::ParameterCurve(StepParameterCurve::new(
+                    Box::new(Curve2D::Line(Line(a, b))),
+                    Box::new(shell.faces[0].surface.clone()),
+                ));
+            replaced.push((use_.index, a, b));
+        }
+        let mut models = StepModels::default();
+        models.push_trimmed_shell(&pcurve_shell);
+        let text = CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
+        let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+        let pcurve_brep = &native.instances[0].brep;
+        assert!((pcurve_brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
+        for (index, a, b) in replaced {
+            let curve = pcurve_brep.edges()[index].curve();
+            assert_eq!(curve.degree(), 2);
+            if shifted_period == 0. {
+                for fraction in [0., 0.17, 0.5, 0.83, 1.] {
+                    let u = a.x * (1. - fraction) + b.x * fraction;
+                    let v = a.y * (1. - fraction) + b.y * fraction;
+                    let actual = curve.evaluate(fraction).unwrap();
+                    let expected = pcurve_brep.faces()[0].surface().evaluate(u, v).unwrap();
+                    assert!(actual.distance_to(expected).unwrap() < 1e-10);
+                }
+            }
+        }
     }
 }
 
@@ -3148,6 +3274,23 @@ fn native_step_imports_full_longitude_spherical_band_seam() {
     );
     let expected_area = 4. * std::f64::consts::TAU * (v1.sin() - v0.sin());
     assert!((brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
+
+    let mut pcurve_shell = shell.clone();
+    pcurve_shell.edges[0].curve = Curve3D::ParameterCurve(StepParameterCurve::new(
+        Box::new(Curve2D::Line(Line(
+            TruckPoint2::new(0., v0),
+            TruckPoint2::new(std::f64::consts::TAU, v0),
+        ))),
+        Box::new(shell.faces[0].surface.clone()),
+    ));
+    let mut models = StepModels::default();
+    models.push_trimmed_shell(&pcurve_shell);
+    let text = CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
+    let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    let pcurve_brep = &native.instances[0].brep;
+    assert_eq!(pcurve_brep.edges()[0].curve().degree(), 2);
+    assert_eq!(pcurve_brep.edges()[0].curve().control_points().len(), 9);
+    assert!((pcurve_brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1e-8);
 }
 
 #[test]

@@ -19,8 +19,9 @@ also convert to exact quadratic NURBS. Edge geometry given as a `PCURVE` on a
 STEP plane, line extrusion, or certified affine 2-by-2 B-spline/NURBS patch
 lifts to an exact 3D NURBS curve. Degree-one, two-control-point isoparametric
 `PCURVE` edges with equal weights on curved B-spline/NURBS surfaces, linear
-extrusions of curved directrices, and supported surfaces of revolution retain
-exact trimmed isocurve geometry and their source parameter domain.
+extrusions of curved directrices, supported surfaces of revolution, and
+cylindrical, conical, spherical, or toroidal faces retain exact trimmed
+isocurve geometry and their source parameter domain.
 Cylindrical and
 nonsingular conical faces with straight UV iso-trims spanning up to one turn
 convert to exact rational NURBS patches, including a full-turn wall with a paired
