@@ -12,8 +12,10 @@ Quote filenames beginning with `Native=Yes` to treat that text as a filename.
 The `ImportStp` alias accepts the same syntax.
 
 Native mode supports straight-edged planar faces, including valid polygon holes,
-and NURBS/B-spline surfaces with matching curved 3D edges and UV trims. Curved
-faces currently require one outer loop. Analytic cylinders, periodic seam edges,
+and NURBS/B-spline surfaces with matching curved 3D edges and UV trims. Faces
+with multiple loops require straight UV polygon boundaries; the polygon
+constructor validates hole containment and intersections. Curved UV loops
+currently require a single outer boundary. Analytic cylinders, periodic seam edges,
 missing trims, and invalid topology fail the
 import; there is no automatic mesh fallback. Assembly and representation warnings
 follow the existing STEP importer and are counted in the result message.

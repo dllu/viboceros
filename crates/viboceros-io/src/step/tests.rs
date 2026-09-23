@@ -646,6 +646,63 @@ fn polygon_face_step(boundaries: &[Vec<[f64; 2]>], reversed: bool) -> String {
 }
 
 #[test]
+fn native_step_imports_bspline_faces_with_polygon_holes() {
+    use viboceros_geometry::{Brep, BrepFace, NurbsSurface};
+    let outer = vec![[0., 0.], [10., 0.], [10., 10.], [0., 10.]];
+    let hole = vec![[2., 2.], [2., 4.], [4., 4.], [4., 2.]];
+    for reversed in [false, true] {
+        let planar = polygon_face_step(&[hole.clone(), outer.clone()], reversed);
+        let imported = read_step_planar_instances(Cursor::new(planar), Tolerance::DEFAULT).unwrap();
+        let source = &imported.instances[0].brep;
+        let surface = NurbsSurface::try_new(
+            2,
+            1,
+            3,
+            2,
+            [
+                [0., 0.],
+                [5., 0.],
+                [10., 0.],
+                [0., 10.],
+                [5., 10.],
+                [10., 10.],
+            ]
+            .into_iter()
+            .map(|[x, y]| Point3::try_new(x, y, 0.).unwrap())
+            .collect(),
+            vec![0., 0., 0., 10., 10., 10.],
+            vec![0., 0., 10., 10.],
+        )
+        .unwrap();
+        let face =
+            BrepFace::try_new(surface, reversed, source.faces()[0].loops().to_vec()).unwrap();
+        let source = Brep::try_new(
+            source.vertices().to_vec(),
+            source.edges().to_vec(),
+            vec![face],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut output = Vec::new();
+        write_step_nurbs_breps(&mut output, [&source]).unwrap();
+        let text = String::from_utf8(output).unwrap();
+        assert!(text.contains("B_SPLINE_SURFACE_WITH_KNOTS("));
+        assert_eq!(text.matches("PCURVE(").count(), 8);
+        let table = Table::from_step(&text).unwrap();
+        assert_eq!(table.entity_report.total(), 0);
+        assert!(matches!(
+            read_step_planar_instances(Cursor::new(&text), Tolerance::DEFAULT),
+            Err(StepError::UnsupportedPlanarShell { .. })
+        ));
+        let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+        let brep = &native.instances[0].brep;
+        assert_eq!(brep.faces()[0].loops().len(), 2);
+        assert_eq!(brep.faces()[0].is_reversed(), reversed);
+        assert!((brep.area(Tolerance::DEFAULT).unwrap() - 96.).abs() < 1e-9);
+    }
+}
+
+#[test]
 fn native_planar_step_retains_small_holes() {
     for size in [1e-4, 1e-6, 1e-8, 1e-10] {
         let text = polygon_face_step(

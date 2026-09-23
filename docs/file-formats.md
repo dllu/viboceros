@@ -235,8 +235,9 @@ assemble classified solids or insert document objects. Its `_in_units`
 counterpart converts placed geometry and assembly translations to target units
 while preserving UV trims, occurrence grouping, and diagnostics.
 `read_step_native_instances` and its `_in_units` counterpart extend that
-assembly path to NURBS/B-spline surfaces, edges, and UV trims. Curved faces
-currently require one outer loop; unsupported analytic surfaces and periodic
+assembly path to NURBS/B-spline surfaces, edges, and UV trims. NURBS faces can
+have polygon holes with straight UV trims; curved UV loops currently require one
+outer boundary. Unsupported analytic surfaces and periodic
 seams still fail native import.
 The native planar path supports straight-edged polygon holes, identifies the
 outer loop independently of source ordering, and rejects crossing, touching,

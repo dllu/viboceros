@@ -246,8 +246,10 @@ every trim, or trims must undergo the same verified parameter mapping.
 The general native instance path reuses assembly placement, unit conversion,
 import diagnostics, and document transactions from the planar path. It maps
 supported B-spline/NURBS controls and knots without tessellation, including
-face-local UV curves, and validates shared topology in `Brep::try_new`. Curved
-faces currently require one outer boundary. Analytic cylinders and other
+face-local UV curves, and validates shared topology in `Brep::try_new`. NURBS
+faces with multiple straight UV polygon loops use the kernel's strict polygon
+boundary validation. Curved UV loops currently require one outer boundary.
+Analytic cylinders and other
 unsupported surface types, periodic seams, and missing UV curves still need
 representation adapters or explicit topology handling. The default mesh import
 remains available for display of such files.

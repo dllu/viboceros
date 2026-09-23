@@ -50,42 +50,60 @@ pub(super) fn convert_shell(
     }
     let mut faces = Vec::with_capacity(shell.faces.len());
     for face in &shell.faces {
-        if face.boundaries.len() != 1 {
-            return Err(unsupported("curved face must have one outer boundary"));
+        if face.boundaries.is_empty() {
+            return Err(unsupported("face has no boundary"));
         }
-        let mut trims = Vec::new();
-        for use_ in &face.boundaries[0] {
-            let source = use_
-                .trim_curve
-                .as_ref()
-                .ok_or_else(|| unsupported("missing UV trim"))?;
-            let curve = trim_curve(source.curve().as_ref(), id)?;
-            let endpoints = shell.edges[use_.index].vertices;
-            let vertices = if use_.orientation {
-                [endpoints.0, endpoints.1]
-            } else {
-                [endpoints.1, endpoints.0]
-            };
-            trims.push(BrepTrim::try_new(
-                vertices,
-                Some(use_.index),
-                !use_.orientation,
-                curve,
-                if incidence[use_.index] == 2 {
-                    BrepTrimType::Mated
+        let mut boundaries = Vec::with_capacity(face.boundaries.len());
+        for boundary in &face.boundaries {
+            let mut trims = Vec::with_capacity(boundary.len());
+            for use_ in boundary {
+                let source = use_
+                    .trim_curve
+                    .as_ref()
+                    .ok_or_else(|| unsupported("missing UV trim"))?;
+                let curve = trim_curve(source.curve().as_ref(), id)?;
+                let endpoints = shell.edges[use_.index].vertices;
+                let vertices = if use_.orientation {
+                    [endpoints.0, endpoints.1]
                 } else {
-                    BrepTrimType::Boundary
-                },
-                SurfaceIso::NotIso,
-                [0.0; 2],
-            )?);
+                    [endpoints.1, endpoints.0]
+                };
+                trims.push(BrepTrim::try_new(
+                    vertices,
+                    Some(use_.index),
+                    !use_.orientation,
+                    curve,
+                    if incidence[use_.index] == 2 {
+                        BrepTrimType::Mated
+                    } else {
+                        BrepTrimType::Boundary
+                    },
+                    SurfaceIso::NotIso,
+                    [0.0; 2],
+                )?);
+            }
+            boundaries.push(trims);
         }
-        let surface = surface(&face.surface, &trims, id)?;
-        faces.push(BrepFace::try_new(
-            surface,
-            !face.orientation,
-            vec![BrepLoop::try_new(BrepLoopType::Outer, trims)?],
-        )?);
+        let surface = surface(&face.surface, &boundaries, id)?;
+        let native =
+            if boundaries.len() == 1 {
+                BrepFace::try_new(
+                    surface,
+                    !face.orientation,
+                    vec![BrepLoop::try_new(
+                        BrepLoopType::Outer,
+                        boundaries.remove(0),
+                    )?],
+                )?
+            } else {
+                if boundaries.iter().flatten().any(|trim| {
+                    trim.curve().degree() != 1 || trim.curve().control_points().len() != 2
+                }) {
+                    return Err(unsupported("multiple loops require straight UV boundaries"));
+                }
+                BrepFace::try_from_polygon_boundaries(surface, !face.orientation, boundaries)?
+            };
+        faces.push(native);
     }
     Ok(Brep::try_new(vertices, edges, faces, tolerance)?)
 }
@@ -179,7 +197,11 @@ fn trim_curve(curve: &Curve2D, id: u64) -> Result<NurbsCurve2, StepError> {
     }
 }
 
-fn surface(source: &Surface, trims: &[BrepTrim], id: u64) -> Result<NurbsSurface, StepError> {
+fn surface(
+    source: &Surface,
+    boundaries: &[Vec<BrepTrim>],
+    id: u64,
+) -> Result<NurbsSurface, StepError> {
     let unsupported = |reason| StepError::UnsupportedNativeShell { shell: id, reason };
     match source {
         Surface::NurbsSurface(surface) => {
@@ -220,8 +242,9 @@ fn surface(source: &Surface, trims: &[BrepTrim], id: u64) -> Result<NurbsSurface
             )?)
         }
         Surface::ElementarySurface(ElementarySurface::Plane(plane)) => {
-            let points = trims
+            let points = boundaries
                 .iter()
+                .flatten()
                 .flat_map(|trim| trim.curve().control_points().iter().map(|p| p.point()));
             let mut min = [f64::INFINITY; 2];
             let mut max = [f64::NEG_INFINITY; 2];
