@@ -1949,6 +1949,7 @@ mod tests {
                 ]),
                 values: Some(vec![0.5, -20.0]),
                 ordered: true,
+                hidden: None,
                 plane: Some(
                     viboceros_geometry::PointCloudPlane::try_new(
                         Point3::try_new(0.0, 0.0, 5.0).unwrap(),
@@ -1982,6 +1983,10 @@ mod tests {
             vec![
                 ThreeDmObject::new(ThreeDmGeometry::PointCloud(cloud.clone()), 0),
                 ThreeDmObject::new(ThreeDmGeometry::PointCloud(ordered_only.clone()), 0),
+                ThreeDmObject::new(
+                    ThreeDmGeometry::PointCloud(cloud.with_hidden(vec![true, false]).unwrap()),
+                    0,
+                ),
             ],
         );
         write_3dm_file(&path, &model).unwrap();
@@ -1989,11 +1994,15 @@ mod tests {
         assert_eq!(loaded.unsupported_object_count(), 0);
         assert_eq!(
             loaded.objects[0].geometry,
-            ThreeDmGeometry::PointCloud(cloud)
+            ThreeDmGeometry::PointCloud(cloud.clone())
         );
         assert_eq!(
             loaded.objects[1].geometry,
             ThreeDmGeometry::PointCloud(ordered_only)
+        );
+        assert_eq!(
+            loaded.objects[2].geometry,
+            ThreeDmGeometry::PointCloud(cloud)
         );
     }
 

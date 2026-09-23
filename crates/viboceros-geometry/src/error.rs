@@ -117,6 +117,9 @@ pub enum GeometryError {
     #[error("point-cloud value count must match point count")]
     InvalidPointCloudValueCount,
 
+    #[error("point-cloud hidden flag count must match point count")]
+    InvalidPointCloudHiddenCount,
+
     #[error("mesh vertex colors must match the vertex count")]
     InvalidMeshVertexColorCount,
 

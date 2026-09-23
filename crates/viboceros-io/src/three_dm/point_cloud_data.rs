@@ -123,6 +123,7 @@ pub(super) fn decode(bytes: &[u8], count: usize) -> Result<PointCloudChannels, T
         values,
         ordered: flags & ORDERED != 0,
         plane,
+        hidden: None,
     })
 }
 
@@ -184,11 +185,15 @@ mod tests {
                     )
                     .unwrap(),
                 ),
+                hidden: None,
             },
         )
         .unwrap();
         let bytes = encode(&cloud);
         assert_eq!(decode(&bytes, 1).unwrap(), *cloud.channels());
+        let hidden_cloud = cloud.with_hidden(vec![true]).unwrap();
+        assert_eq!(encode(&hidden_cloud), bytes);
+        assert_eq!(decode(&encode(&hidden_cloud), 1).unwrap().hidden, None);
         for end in 1..bytes.len() {
             assert!(decode(&bytes[..end], 1).is_err());
         }

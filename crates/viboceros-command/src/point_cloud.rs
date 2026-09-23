@@ -1,7 +1,7 @@
 //! PointCloud creation and selected-cloud editing.
 use super::*;
 
-const USAGE: &str = "PointCloud [UsePointColors=No] | PointCloud Add [Target=<id>] | PointCloud Remove Indices=<zero-based-list> [Target=<id>] [Output=Points|PointCloud]";
+const USAGE: &str = "PointCloud [UsePointColors=No] | PointCloud Add [Target=<id>] | PointCloud Remove Indices=<zero-based-list> [Target=<id>] [Output=Points|PointCloud] | PointCloud Hide|Show Indices=<zero-based-list> [Target=<id>]";
 
 enum Operation {
     Create {
@@ -14,6 +14,11 @@ enum Operation {
         target: Option<ObjectId>,
         indices: Option<BTreeSet<usize>>,
         output_cloud: bool,
+    },
+    SetHidden {
+        target: Option<ObjectId>,
+        indices: BTreeSet<usize>,
+        hidden: bool,
     },
 }
 
@@ -52,6 +57,7 @@ impl Command for PointCloudCommand {
             Operation::Remove {
                 indices: Some(_), ..
             } => return Ok(None),
+            Operation::SetHidden { .. } => return Ok(None),
         };
         Ok(Some(ObjectSelectionPrompt {
             command: self.name(),
@@ -77,8 +83,13 @@ fn parse(arguments: &[&str]) -> Result<Operation, CommandError> {
         return Ok(Operation::Create { use_colors: false });
     }
     let action = arguments[0].trim_start_matches('_');
-    if action.eq_ignore_ascii_case("Add") || action.eq_ignore_ascii_case("Remove") {
+    if action.eq_ignore_ascii_case("Add")
+        || action.eq_ignore_ascii_case("Remove")
+        || action.eq_ignore_ascii_case("Hide")
+        || action.eq_ignore_ascii_case("Show")
+    {
         let remove = action.eq_ignore_ascii_case("Remove");
+        let visibility = action.eq_ignore_ascii_case("Hide") || action.eq_ignore_ascii_case("Show");
         let mut target = None;
         let mut indices = None;
         let mut output_cloud = false;
@@ -88,7 +99,10 @@ fn parse(arguments: &[&str]) -> Result<Operation, CommandError> {
             let name = name.trim_start_matches('_');
             if name.eq_ignore_ascii_case("Target") && target.is_none() {
                 target = Some(value.parse().map_err(|_| CommandError::Usage(USAGE))?);
-            } else if remove && name.eq_ignore_ascii_case("Indices") && indices.is_none() {
+            } else if (remove || visibility)
+                && name.eq_ignore_ascii_case("Indices")
+                && indices.is_none()
+            {
                 let parsed = value
                     .split(',')
                     .map(|part| {
@@ -118,6 +132,12 @@ fn parse(arguments: &[&str]) -> Result<Operation, CommandError> {
                 target,
                 indices,
                 output_cloud,
+            })
+        } else if visibility {
+            Ok(Operation::SetHidden {
+                target,
+                indices: indices.ok_or(CommandError::Usage(USAGE))?,
+                hidden: action.eq_ignore_ascii_case("Hide"),
             })
         } else {
             Ok(Operation::Add { target })
@@ -152,7 +172,44 @@ fn execute(
             &indices.ok_or(CommandError::Usage(USAGE))?,
             output_cloud,
         ),
+        Operation::SetHidden {
+            target,
+            indices,
+            hidden,
+        } => set_hidden(document, target, &indices, hidden),
     }
+}
+
+fn set_hidden(
+    document: &mut Document,
+    explicit: Option<ObjectId>,
+    indices: &BTreeSet<usize>,
+    hidden: bool,
+) -> Result<String, CommandError> {
+    let target = selected_target(document, explicit)?;
+    let Geometry::PointCloud(cloud) = document.object(target).unwrap().geometry() else {
+        unreachable!()
+    };
+    if indices
+        .last()
+        .is_some_and(|index| *index >= cloud.points().len())
+    {
+        return Err(CommandError::PointCloudIndexOutOfRange);
+    }
+    let mut flags = cloud
+        .hidden()
+        .map(<[_]>::to_vec)
+        .unwrap_or_else(|| vec![false; cloud.points().len()]);
+    for &index in indices {
+        flags[index] = hidden;
+    }
+    document
+        .replace_object_geometries([(target, Geometry::PointCloud(cloud.with_hidden(flags)?))])?;
+    Ok(format!(
+        "{} {} point cloud members",
+        if hidden { "Hid" } else { "Revealed" },
+        indices.len()
+    ))
 }
 
 fn selected_target(
@@ -201,6 +258,7 @@ fn channels_for_indices(
         colors: select(cloud.colors(), indices),
         normals: select(cloud.normals(), indices),
         values: select(cloud.values(), indices),
+        hidden: select(cloud.hidden(), indices),
         ordered: cloud.is_ordered(),
         plane: cloud.plane(),
     }
@@ -228,6 +286,11 @@ fn add(document: &mut Document, explicit: Option<ObjectId>) -> Result<String, Co
             object.id() != target
                 && matches!(object.geometry(), Geometry::PointCloud(source) if source.values().is_some())
         });
+    let use_hidden = cloud.hidden().is_some()
+        || document.selected_objects().any(|object| {
+            object.id() != target
+                && matches!(object.geometry(), Geometry::PointCloud(source) if source.hidden().is_some())
+        });
     let mut colors = if use_colors {
         Some(if let Some(colors) = cloud.colors() {
             colors.to_vec()
@@ -250,6 +313,12 @@ fn add(document: &mut Document, explicit: Option<ObjectId>) -> Result<String, Co
             .map(<[_]>::to_vec)
             .unwrap_or_else(|| vec![0.0; old_count])
     });
+    let mut hidden = use_hidden.then(|| {
+        cloud
+            .hidden()
+            .map(<[_]>::to_vec)
+            .unwrap_or_else(|| vec![false; old_count])
+    });
     let mut consumed = Vec::new();
     for object in document.selected_objects() {
         if object.id() == target {
@@ -266,6 +335,9 @@ fn add(document: &mut Document, explicit: Option<ObjectId>) -> Result<String, Co
                 }
                 if let Some(values) = &mut values {
                     values.push(0.0);
+                }
+                if let Some(hidden) = &mut hidden {
+                    hidden.push(false);
                 }
                 consumed.push(object.id());
             }
@@ -295,6 +367,13 @@ fn add(document: &mut Document, explicit: Option<ObjectId>) -> Result<String, Co
                         values.extend(std::iter::repeat_n(0.0, source.points().len()));
                     }
                 }
+                if let Some(hidden) = &mut hidden {
+                    if let Some(source_hidden) = source.hidden() {
+                        hidden.extend_from_slice(source_hidden);
+                    } else {
+                        hidden.extend(std::iter::repeat_n(false, source.points().len()));
+                    }
+                }
                 consumed.push(object.id());
             }
             _ => {}
@@ -313,6 +392,7 @@ fn add(document: &mut Document, explicit: Option<ObjectId>) -> Result<String, Co
                 colors,
                 normals,
                 values,
+                hidden,
                 ordered,
                 plane: cloud.plane(),
             },

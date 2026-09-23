@@ -224,6 +224,78 @@ fn add_points_and_another_cloud_preserves_target_and_undo() {
 }
 
 #[test]
+fn hide_show_and_add_preserve_runtime_flags_and_undo() {
+    let mut doc = Document::default();
+    let target = doc
+        .add_geometry(Geometry::PointCloud(
+            PointCloud3::try_new(vec![p(1.0), p(2.0)]).unwrap(),
+        ))
+        .unwrap();
+    let registry = CommandRegistry::with_builtins();
+    registry
+        .execute(
+            &mut doc,
+            &format!("PointCloud Hide Target={target} Indices=1"),
+        )
+        .unwrap();
+    let Geometry::PointCloud(cloud) = doc.object(target).unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(cloud.hidden(), Some(&[false, true][..]));
+    let before_invalid = cloud.clone();
+    assert!(matches!(
+        registry.execute(
+            &mut doc,
+            &format!("PointCloud Hide Target={target} Indices=2")
+        ),
+        Err(CommandError::PointCloudIndexOutOfRange)
+    ));
+    assert_eq!(
+        doc.object(target).unwrap().geometry(),
+        &Geometry::PointCloud(before_invalid)
+    );
+    let source = doc
+        .add_geometry(Geometry::PointCloud(
+            PointCloud3::try_new(vec![p(3.0)])
+                .unwrap()
+                .with_hidden(vec![true])
+                .unwrap(),
+        ))
+        .unwrap();
+    doc.select_objects_direct([target, source], SelectionMode::Replace)
+        .unwrap();
+    registry
+        .execute(&mut doc, &format!("PointCloud Add Target={target}"))
+        .unwrap();
+    let Geometry::PointCloud(cloud) = doc.object(target).unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(cloud.hidden(), Some(&[false, true, true][..]));
+    registry
+        .execute(&mut doc, "PointCloud Remove Indices=1 Output=PointCloud")
+        .unwrap();
+    let Geometry::PointCloud(cloud) = doc.object(target).unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(cloud.hidden(), Some(&[false, true][..]));
+    registry
+        .execute(
+            &mut doc,
+            &format!("PointCloud Show Target={target} Indices=1"),
+        )
+        .unwrap();
+    let Geometry::PointCloud(cloud) = doc.object(target).unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(cloud.hidden(), None);
+    registry.execute(&mut doc, "Undo").unwrap();
+    let Geometry::PointCloud(cloud) = doc.object(target).unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(cloud.hidden(), Some(&[false, true][..]));
+}
+
+#[test]
 fn remove_indices_preserves_order_and_is_atomic_on_invalid_index() {
     for output in ["Points", "PointCloud"] {
         let mut doc = Document::default();
@@ -362,6 +434,7 @@ fn cloud_edits_keep_member_colors_aligned_with_stored_points() {
                     colors: Some(vec![[10, 20, 30, 0], [40, 50, 60, 128]]),
                     normals: Some(vec![up, side]),
                     values: Some(vec![3.5, 7.25]),
+                    hidden: None,
                     ordered: true,
                     plane: Some(
                         viboceros_geometry::PointCloudPlane::try_new(

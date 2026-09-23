@@ -5,7 +5,7 @@ use crate::{
 };
 
 mod index;
-use index::{NodeBounds, ProjectedIndex, SearchRegion};
+use index::{NodeBounds, ProjectedIndex, ProjectedQuery, SearchRegion};
 
 /// Axis-aligned projection used by a point-cloud spatial query.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -125,6 +125,8 @@ pub struct PointCloudChannels {
     pub values: Option<Vec<Real>>,
     pub ordered: bool,
     pub plane: Option<PointCloudPlane>,
+    /// Runtime visibility flags; OpenNURBS does not serialize these to 3DM.
+    pub hidden: Option<Vec<bool>>,
 }
 
 #[derive(Debug)]
@@ -164,7 +166,7 @@ impl PointCloud3 {
     /// Creates a point cloud with validated, index-aligned optional channels.
     pub fn try_with_channels(
         points: Vec<Point3>,
-        channels: PointCloudChannels,
+        mut channels: PointCloudChannels,
     ) -> Result<Self, GeometryError> {
         if channels
             .colors
@@ -186,6 +188,20 @@ impl PointCloud3 {
             .is_some_and(|values| values.len() != points.len())
         {
             return Err(GeometryError::InvalidPointCloudValueCount);
+        }
+        if channels
+            .hidden
+            .as_ref()
+            .is_some_and(|hidden| hidden.len() != points.len())
+        {
+            return Err(GeometryError::InvalidPointCloudHiddenCount);
+        }
+        if channels
+            .hidden
+            .as_ref()
+            .is_some_and(|hidden| !hidden.contains(&true))
+        {
+            channels.hidden = None;
         }
         if channels
             .values
@@ -239,6 +255,27 @@ impl PointCloud3 {
 
     pub fn channels(&self) -> &PointCloudChannels {
         &self.data.channels
+    }
+
+    pub fn hidden(&self) -> Option<&[bool]> {
+        self.data.channels.hidden.as_deref()
+    }
+
+    pub fn is_hidden(&self, index: usize) -> bool {
+        self.hidden()
+            .is_some_and(|hidden| hidden.get(index) == Some(&true))
+    }
+
+    pub fn hidden_count(&self) -> usize {
+        self.hidden()
+            .map_or(0, |hidden| hidden.iter().filter(|&&flag| flag).count())
+    }
+
+    /// Returns a new cloud with the same stored members and updated runtime visibility.
+    pub fn with_hidden(&self, hidden: Vec<bool>) -> Result<Self, GeometryError> {
+        let mut channels = self.data.channels.clone();
+        channels.hidden = Some(hidden);
+        Self::try_with_channels(self.points().to_vec(), channels)
     }
 
     #[inline]
@@ -299,6 +336,24 @@ impl PointCloud3 {
             origin,
             offset,
             SearchRegion::Circle(maximum_distance),
+            None,
+        )
+    }
+
+    /// Nearest visible member in a projected circle. Stored indices are unchanged.
+    pub fn nearest_visible_projected_relative(
+        &self,
+        projection: PointCloudProjection,
+        origin: Point3,
+        offset: [Real; 2],
+        maximum_distance: Real,
+    ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
+        self.nearest_in_region(
+            projection,
+            origin,
+            offset,
+            SearchRegion::Circle(maximum_distance),
+            self.hidden(),
         )
     }
 
@@ -314,7 +369,13 @@ impl PointCloud3 {
         offset: [Real; 2],
         half_width: Real,
     ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
-        self.nearest_in_region(projection, origin, offset, SearchRegion::Square(half_width))
+        self.nearest_in_region(
+            projection,
+            origin,
+            offset,
+            SearchRegion::Square(half_width),
+            None,
+        )
     }
 
     /// Nearest member in an arbitrary orthonormal frame's XY projection.
@@ -326,7 +387,22 @@ impl PointCloud3 {
         offset: [Real; 2],
         maximum_distance: Real,
     ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
-        self.nearest_in_frame_region(frame, offset, SearchRegion::Circle(maximum_distance))
+        self.nearest_in_frame_region(frame, offset, SearchRegion::Circle(maximum_distance), None)
+    }
+
+    /// Nearest visible member in a frame projection.
+    pub fn nearest_visible_projected_frame_relative(
+        &self,
+        frame: Frame3,
+        offset: [Real; 2],
+        maximum_distance: Real,
+    ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
+        self.nearest_in_frame_region(
+            frame,
+            offset,
+            SearchRegion::Circle(maximum_distance),
+            self.hidden(),
+        )
     }
 
     /// As above, with an inclusive square capture aperture and Euclidean ranking.
@@ -336,7 +412,7 @@ impl PointCloud3 {
         offset: [Real; 2],
         half_width: Real,
     ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
-        self.nearest_in_frame_region(frame, offset, SearchRegion::Square(half_width))
+        self.nearest_in_frame_region(frame, offset, SearchRegion::Square(half_width), None)
     }
 
     fn nearest_in_frame_region(
@@ -344,6 +420,7 @@ impl PointCloud3 {
         frame: Frame3,
         offset: [Real; 2],
         region: SearchRegion,
+        hidden: Option<&[bool]>,
     ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
         let radius = region.half_width();
         if !radius.is_finite() || radius < 0.0 {
@@ -358,10 +435,10 @@ impl PointCloud3 {
             .data
             .spatial_bounds
             .get_or_init(|| self.data.xy.node_bounds(&self.data.points));
-        let best = self
-            .data
-            .xy
-            .nearest_in_frame(&self.data.points, bounds, frame, offset, region);
+        let best =
+            self.data
+                .xy
+                .nearest_in_frame(&self.data.points, hidden, bounds, frame, offset, region);
         Ok(best.map(|(distance, index)| (index, self.data.points[index], distance)))
     }
 
@@ -371,6 +448,7 @@ impl PointCloud3 {
         origin: Point3,
         offset: [Real; 2],
         region: SearchRegion,
+        hidden: Option<&[bool]>,
     ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
         let maximum_distance = region.half_width();
         if !maximum_distance.is_finite() || maximum_distance < 0.0 {
@@ -395,10 +473,13 @@ impl PointCloud3 {
         let mut best = None;
         index.nearest_from(
             index.root,
-            &self.data.points,
-            origin,
-            offset,
-            region,
+            ProjectedQuery {
+                points: &self.data.points,
+                hidden,
+                origin,
+                offset,
+                region,
+            },
             &mut best,
         );
         if best.is_some_and(|(distance, _)| !distance.is_finite()) {

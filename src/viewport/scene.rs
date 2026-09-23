@@ -306,6 +306,9 @@ impl Viewport {
                 }
                 Geometry::PointCloud(cloud) => {
                     for (index, point) in cloud.points().iter().enumerate() {
+                        if cloud.is_hidden(index) {
+                            continue;
+                        }
                         let color = if object.member_colors_enabled {
                             cloud.colors().map_or(object.color, |colors| {
                                 let [red, green, blue, transparency] = colors[index];
@@ -674,6 +677,20 @@ mod tests {
                 .iter()
                 .all(|point| point.color == color_to_gpu(SELECTED_COLOR))
         );
+    }
+
+    #[test]
+    fn hidden_cloud_members_do_not_reach_gpu_scene() {
+        let mut document = Document::default();
+        let cloud = PointCloud3::try_new(vec![point(-1.0, 0.0, 0.0), point(1.0, 0.0, 0.0)])
+            .unwrap()
+            .with_hidden(vec![true, false])
+            .unwrap();
+        document.add_geometry(Geometry::PointCloud(cloud)).unwrap();
+        let view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let scene = view.object_scene(rect, &document);
+        assert_eq!(scene.points.len(), 1);
     }
 
     #[test]

@@ -52,7 +52,8 @@ PointCloud Add Target=<id>
 ```
 
 The target retains its ID, attributes, groups, and selection. Meshes are not Add
-sources. Add is one undo step.
+sources. Add is one undo step. Runtime hidden flags follow members copied from
+source clouds; newly added point objects are visible.
 
 Select one target cloud, enter `PointCloud Remove`, then click cloud points or
 drag a selection window. Additional picks accumulate; Ctrl-click removes a
@@ -75,6 +76,19 @@ groups are not copied. If all points are removed, the empty source cloud is
 deleted. An invalid index leaves the document unchanged. Remove is one undo
 step.
 
+`PointCloud Hide` and `PointCloud Show` change runtime visibility by zero-based
+stored index. They preserve point order and all per-point channels, and each is
+one undo step. Select one target cloud or specify its ID:
+
+```text
+PointCloud Hide Indices=0,3 Target=<id>
+PointCloud Show Indices=3 Target=<id>
+```
+
+Hidden members are excluded from display and viewport picking, including window
+selection. Remove can still address them by stored index. An invalid index
+leaves the document unchanged.
+
 ## Limits
 
 Mesh vertex colors are represented in native meshes and survive 3DM round trips,
@@ -83,8 +97,9 @@ Edge splits and collapses interpolate colors. Merging differently colored
 coincident vertices keeps one representative color, and appending a colored
 mesh to an uncolored one removes per-vertex colors from the result.
 Point outputs cannot carry cloud normals or scalar values. OpenNURBS
-hidden-point flags are runtime only
-and are not saved in 3DM files; the native cloud does not yet model them.
+hidden-point flags are runtime only and are not saved in 3DM files. Exporting a
+cloud stores every member, including hidden ones; importing it starts with all
+members visible.
 The Add and Remove pickers run as separate prompts after the initial action
 choice. Remove selects cloud members by click, window, or typed indices.
 Creation still ignores existing cloud inputs. Use `Explode` to extract individual

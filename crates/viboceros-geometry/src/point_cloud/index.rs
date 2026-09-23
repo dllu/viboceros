@@ -24,6 +24,15 @@ impl SearchRegion {
     }
 }
 
+#[derive(Clone, Copy)]
+pub(super) struct ProjectedQuery<'a> {
+    pub points: &'a [Point3],
+    pub hidden: Option<&'a [bool]>,
+    pub origin: Point3,
+    pub offset: [Real; 2],
+    pub region: SearchRegion,
+}
+
 #[derive(Debug)]
 pub(super) struct ProjectedIndex {
     pub(super) nodes: Vec<ProjectedNode>,
@@ -123,10 +132,7 @@ impl ProjectedIndex {
     pub(super) fn nearest_from(
         &self,
         node_index: usize,
-        points: &[Point3],
-        origin: Point3,
-        offset: [Real; 2],
-        region: SearchRegion,
+        query: ProjectedQuery<'_>,
         best: &mut Option<(Real, usize)>,
     ) {
         let node = self.nodes[node_index];
@@ -137,13 +143,16 @@ impl ProjectedIndex {
         {
             return;
         }
-        let point = points[node.point_index];
+        let point = query.points[node.point_index];
         let relative = [
-            (coordinate(point, self.axes[0]) - coordinate(origin, self.axes[0])) - offset[0],
-            (coordinate(point, self.axes[1]) - coordinate(origin, self.axes[1])) - offset[1],
+            (coordinate(point, self.axes[0]) - coordinate(query.origin, self.axes[0]))
+                - query.offset[0],
+            (coordinate(point, self.axes[1]) - coordinate(query.origin, self.axes[1]))
+                - query.offset[1],
         ];
         let distance = relative[0].hypot(relative[1]);
-        if region.contains(relative, distance)
+        if !query.hidden.is_some_and(|flags| flags[node.point_index])
+            && query.region.contains(relative, distance)
             && best.is_none_or(|(best_distance, best_index)| {
                 distance < best_distance
                     || (distance == best_distance && node.point_index < best_index)
@@ -168,21 +177,21 @@ impl ProjectedIndex {
             // Source order finds the winning exact tie before considering
             // subtrees whose minimum index can then rule them out entirely.
             for child in children.into_iter().flatten() {
-                self.nearest_from(child, points, origin, offset, region, best);
+                self.nearest_from(child, query, best);
             }
             return;
         }
 
         if let Some(near) = near {
-            self.nearest_from(near, points, origin, offset, region, best);
+            self.nearest_from(near, query, best);
         }
-        let search_distance = best.map_or(region.half_width(), |(distance, _)| {
-            distance.min(region.half_width())
+        let search_distance = best.map_or(query.region.half_width(), |(distance, _)| {
+            distance.min(query.region.half_width())
         });
         if delta.abs() <= search_distance
             && let Some(far) = far
         {
-            self.nearest_from(far, points, origin, offset, region, best);
+            self.nearest_from(far, query, best);
         }
     }
 
@@ -209,6 +218,7 @@ impl ProjectedIndex {
     pub(super) fn nearest_in_frame(
         &self,
         points: &[Point3],
+        hidden: Option<&[bool]>,
         bounds: &[NodeBounds],
         frame: Frame3,
         offset: [Real; 2],
@@ -217,6 +227,7 @@ impl ProjectedIndex {
         let mut query = FrameSearch {
             index: self,
             points,
+            hidden,
             bounds,
             frame,
             offset,
@@ -231,6 +242,7 @@ impl ProjectedIndex {
 struct FrameSearch<'a> {
     index: &'a ProjectedIndex,
     points: &'a [Point3],
+    hidden: Option<&'a [bool]>,
     bounds: &'a [NodeBounds],
     frame: Frame3,
     offset: [Real; 2],
@@ -259,7 +271,9 @@ impl FrameSearch<'_> {
             }
         }
         let point = self.points[node.point_index];
-        if let Ok(projected) = self.frame.projected_coordinates_of(point) {
+        if !self.hidden.is_some_and(|flags| flags[node.point_index])
+            && let Ok(projected) = self.frame.projected_coordinates_of(point)
+        {
             let relative = [projected[0] - self.offset[0], projected[1] - self.offset[1]];
             let distance = relative[0].hypot(relative[1]);
             if distance.is_finite()

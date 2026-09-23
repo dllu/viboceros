@@ -27,6 +27,85 @@ fn optional_point_colors_validate_and_survive_transforms() {
 }
 
 #[test]
+fn hidden_members_keep_indices_and_visible_queries_skip_them() {
+    let points = vec![
+        point(0.0, 0.0, 0.0),
+        point(0.0, 0.0, 0.0),
+        point(1.0, 0.0, 0.0),
+    ];
+    let plain = PointCloud3::try_new(points.clone()).unwrap();
+    assert_eq!(plain.hidden(), None);
+    assert_eq!(
+        plain.with_hidden(vec![true]),
+        Err(GeometryError::InvalidPointCloudHiddenCount)
+    );
+    let cloud = plain.with_hidden(vec![true, false, true]).unwrap();
+    assert_eq!(cloud.hidden_count(), 2);
+    assert!(cloud.is_hidden(0));
+    assert!(!cloud.is_hidden(1));
+    assert_eq!(cloud.points(), points);
+    assert_eq!(
+        cloud
+            .nearest_xy_relative(points[0], [0.0, 0.0], 1.0)
+            .unwrap()
+            .unwrap()
+            .0,
+        0
+    );
+    assert_eq!(
+        cloud
+            .nearest_visible_projected_relative(
+                PointCloudProjection::Xy,
+                points[0],
+                [0.0, 0.0],
+                1.0
+            )
+            .unwrap()
+            .unwrap()
+            .0,
+        1
+    );
+    let frame = Frame3::try_from_directions(
+        points[0],
+        Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+        Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+        crate::Tolerance::DEFAULT,
+    )
+    .unwrap();
+    assert_eq!(
+        cloud
+            .nearest_visible_projected_frame_relative(frame, [0.0, 0.0], 1.0)
+            .unwrap()
+            .unwrap()
+            .0,
+        1
+    );
+    assert_eq!(cloud.with_hidden(vec![false; 3]).unwrap().hidden(), None);
+    assert!(
+        cloud
+            .with_hidden(vec![true; 3])
+            .unwrap()
+            .nearest_visible_projected_relative(
+                PointCloudProjection::Xy,
+                points[0],
+                [0.0, 0.0],
+                1.0,
+            )
+            .unwrap()
+            .is_none()
+    );
+    assert_eq!(
+        cloud
+            .transformed(AffineTransform3::from_translation(
+                Vector3::try_new(2.0, 0.0, 0.0).unwrap()
+            ))
+            .unwrap()
+            .hidden(),
+        Some(&[true, false, true][..])
+    );
+}
+
+#[test]
 fn optional_normals_values_and_order_validate_and_survive_transforms() {
     let points = vec![point(1.0, 2.0, 3.0), point(4.0, 5.0, 6.0)];
     let normals = vec![

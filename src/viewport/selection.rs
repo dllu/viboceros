@@ -68,7 +68,7 @@ impl Viewport {
                 .ok()
                 .and_then(|target| {
                     cloud
-                        .nearest_projected_relative(
+                        .nearest_visible_projected_relative(
                             projection,
                             target,
                             self.parallel_query_offset(pointer, rect)?,
@@ -83,7 +83,7 @@ impl Viewport {
                 .zip(self.parallel_query_offset(pointer, rect))
                 .and_then(|(frame, offset)| {
                     cloud
-                        .nearest_projected_frame_relative(
+                        .nearest_visible_projected_frame_relative(
                             frame,
                             offset,
                             Real::from(PICK_CAPTURE_PIXELS) / Real::from(self.pixels_per_unit),
@@ -99,6 +99,7 @@ impl Viewport {
                 .points()
                 .iter()
                 .enumerate()
+                .filter(|(index, _)| !cloud.is_hidden(*index))
                 .filter_map(|(index, point)| {
                     self.project(*point, rect)
                         .map(|projected| (index, (projected - pointer).length()))
@@ -124,6 +125,7 @@ impl Viewport {
             .points()
             .iter()
             .enumerate()
+            .filter(|(index, _)| !cloud.is_hidden(*index))
             .filter_map(|(index, point)| {
                 self.project(*point, viewport_rect)
                     .is_some_and(|pixel| selection.contains(pixel))
@@ -259,7 +261,10 @@ impl Viewport {
         match &*display.geometry {
             Geometry::Point(point) => projected.add_point(self.project(*point, rect)),
             Geometry::PointCloud(cloud) => {
-                for point in cloud.points() {
+                for (index, point) in cloud.points().iter().enumerate() {
+                    if cloud.is_hidden(index) {
+                        continue;
+                    }
                     projected.add_point(self.project(*point, rect));
                 }
             }
@@ -302,7 +307,10 @@ impl Viewport {
         match geometry {
             Geometry::Point(point) => projected.add_point(self.project(*point, viewport_rect)),
             Geometry::PointCloud(cloud) => {
-                for point in cloud.points() {
+                for (index, point) in cloud.points().iter().enumerate() {
+                    if cloud.is_hidden(index) {
+                        continue;
+                    }
                     projected.add_point(self.project(*point, viewport_rect));
                 }
             }
@@ -773,5 +781,35 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn hidden_cloud_members_are_excluded_from_picks_and_windows() {
+        let view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let hidden_point = Point3::try_new(0.0, 0.0, 0.0).unwrap();
+        let visible_point = hidden_point;
+        let cloud = viboceros_geometry::PointCloud3::try_new(vec![hidden_point, visible_point])
+            .unwrap()
+            .with_hidden(vec![true, false])
+            .unwrap();
+        assert_eq!(
+            view.pick_point_cloud_member(view.project(hidden_point, rect).unwrap(), rect, &cloud),
+            Some((1, 0.0))
+        );
+        assert_eq!(
+            view.point_cloud_members_in_window(&cloud, rect, rect),
+            vec![1]
+        );
+        let mut document = Document::default();
+        document
+            .add_geometry(Geometry::PointCloud(
+                cloud.with_hidden(vec![true, true]).unwrap(),
+            ))
+            .unwrap();
+        assert_eq!(
+            view.pick_object(view.project(hidden_point, rect).unwrap(), rect, &document),
+            None
+        );
     }
 }
