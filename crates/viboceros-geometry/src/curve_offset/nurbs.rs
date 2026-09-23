@@ -10,6 +10,9 @@ const MAX_OFFSET_SPANS: usize = 8_192;
 const CHECKS_PER_SPAN: usize = 15;
 const MAX_REGION_PIECES: usize = 8_192;
 
+mod closed_offset;
+use closed_offset::offset_nurbs_closed_gaps;
+
 /// Degree-one, uniform-weight spans are exactly affine in their native knot
 /// intervals. Preserve every knot as a polyline vertex for corner handling.
 pub(super) fn linear_nurbs_proxy(
@@ -183,6 +186,16 @@ pub(super) fn offset_nurbs(
     fallback: UnitVector3,
     tolerance: Tolerance,
 ) -> Result<NurbsCurve, GeometryError> {
+    offset_nurbs_with_closure(curve, distance, fallback, tolerance, curve.is_closed()?)
+}
+
+fn offset_nurbs_with_closure(
+    curve: &NurbsCurve,
+    distance: Real,
+    fallback: UnitVector3,
+    tolerance: Tolerance,
+    closed: bool,
+) -> Result<NurbsCurve, GeometryError> {
     let normal = offset_plane(curve, fallback, tolerance)?;
     curve.tight_bounds(tolerance)?; // Reject poles before the adaptive fit.
     let source_spans = curve.spans().collect::<Vec<_>>();
@@ -203,7 +216,6 @@ pub(super) fn offset_nurbs(
             });
         }
     }
-    let closed = curve.is_closed()?;
     if closed
         && boundaries
             .last()
@@ -304,46 +316,43 @@ pub(super) fn offset_nurbs_open_gaps(
             curve.evaluate_with_derivative_on_side(parameter, ParameterSide::Left)?;
         let (right_point, right_velocity) =
             curve.evaluate_with_derivative_on_side(parameter, ParameterSide::Right)?;
-        if left_point.distance_to(right_point)? > tolerance.absolute() {
-            return Err(GeometryError::Degenerate {
-                context: "discontinuous NURBS offset source",
-            });
+        if let Some(convex) = classify_offset_kink(
+            left_point,
+            left_velocity,
+            right_point,
+            right_velocity,
+            normal,
+            distance,
+            tolerance,
+        )? {
+            cuts.push((parameter, convex));
         }
-        let left = normal
-            .as_vector()
-            .cross(left_velocity)?
-            .normalized_nonzero()?;
-        let right = normal
-            .as_vector()
-            .cross(right_velocity)?
-            .normalized_nonzero()?;
-        let a = left.as_vector().to_array();
-        let b = right.as_vector().to_array();
-        let separation = (a[0] - b[0]).hypot(a[1] - b[1]).hypot(a[2] - b[2]);
-        if separation * distance.abs() <= tolerance.absolute() {
-            continue;
-        }
-        let turn = left_velocity
-            .normalized_nonzero()?
-            .as_vector()
-            .cross(right_velocity.normalized_nonzero()?.as_vector())?
-            .dot(normal.as_vector())?;
-        if turn.abs() <= tolerance.angular() {
-            return Err(GeometryError::Degenerate {
-                context: "NURBS offset backtracking kink",
-            });
-        }
-        cuts.push((parameter, turn * distance < 0.0));
     }
-    if cuts.is_empty() {
+    let closed = curve.is_closed()?;
+    let seam = if closed {
+        let (left_point, left_velocity) =
+            curve.evaluate_with_derivative_on_side(*domain.end(), ParameterSide::Left)?;
+        let (right_point, right_velocity) =
+            curve.evaluate_with_derivative_on_side(*domain.start(), ParameterSide::Right)?;
+        classify_offset_kink(
+            left_point,
+            left_velocity,
+            right_point,
+            right_velocity,
+            normal,
+            distance,
+            tolerance,
+        )?
+    } else {
+        None
+    };
+    if cuts.is_empty() && seam.is_none() {
         return Ok(vec![Curve3::NurbsCurve(offset_nurbs(
             curve, distance, fallback, tolerance,
         )?)]);
     }
-    if curve.is_closed()? {
-        return Err(GeometryError::Degenerate {
-            context: "closed NURBS offset kink requires corner joining",
-        });
+    if closed {
+        return offset_nurbs_closed_gaps(curve, distance, fallback, normal, tolerance, &cuts, seam);
     }
     debug_assert!(
         cuts.iter()
@@ -464,6 +473,48 @@ pub(super) fn offset_nurbs_open_gaps(
         group_start = index + 1;
     }
     Ok(results)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn classify_offset_kink(
+    left_point: Point3,
+    left_velocity: Vector3,
+    right_point: Point3,
+    right_velocity: Vector3,
+    normal: UnitVector3,
+    distance: Real,
+    tolerance: Tolerance,
+) -> Result<Option<bool>, GeometryError> {
+    if left_point.distance_to(right_point)? > tolerance.absolute() {
+        return Err(GeometryError::Degenerate {
+            context: "discontinuous NURBS offset source",
+        });
+    }
+    let left = normal
+        .as_vector()
+        .cross(left_velocity)?
+        .normalized_nonzero()?;
+    let right = normal
+        .as_vector()
+        .cross(right_velocity)?
+        .normalized_nonzero()?;
+    let a = left.as_vector().to_array();
+    let b = right.as_vector().to_array();
+    let separation = (a[0] - b[0]).hypot(a[1] - b[1]).hypot(a[2] - b[2]);
+    if separation * distance.abs() <= tolerance.absolute() {
+        return Ok(None);
+    }
+    let turn = left_velocity
+        .normalized_nonzero()?
+        .as_vector()
+        .cross(right_velocity.normalized_nonzero()?.as_vector())?
+        .dot(normal.as_vector())?;
+    if turn.abs() <= tolerance.angular() {
+        return Err(GeometryError::Degenerate {
+            context: "NURBS offset backtracking kink",
+        });
+    }
+    Ok(Some(turn * distance < 0.0))
 }
 
 fn validate_trimmed_offset(

@@ -1777,6 +1777,136 @@ mod tests {
     }
 
     #[test]
+    fn closed_quadratic_cornered_nurbs_none_joins_inward_and_opens_outward() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let source = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                2,
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(2.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.0, 2.0, 0.0),
+                    point(4.0, 4.0, 0.0),
+                    point(2.0, 4.0, 0.0),
+                    point(0.0, 4.0, 0.0),
+                    point(0.0, 2.0, 0.0),
+                    point(0.0, 0.0, 0.0),
+                ],
+                vec![0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 4.0],
+            )
+            .unwrap(),
+        );
+        assert_eq!(source.offset_region_inward_sign(normal, tol), Ok(Some(1.0)));
+        let inward = source
+            .try_offset_parts(0.5, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        let [Curve3::PolyCurve(inner)] = inward.as_slice() else {
+            panic!("closed inward trim")
+        };
+        assert!(inner.is_closed().unwrap());
+        assert_eq!(inner.segments().len(), 4);
+        assert_eq!(inner.domain(), 0.0..=4.0);
+        let outward = source
+            .try_offset_parts(-0.5, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        assert_eq!(outward.len(), 4);
+        assert!(
+            outward
+                .iter()
+                .all(|piece| matches!(piece, Curve3::NurbsCurve(_)))
+        );
+        let Curve3::NurbsCurve(first) = &outward[0] else {
+            unreachable!()
+        };
+        assert!(
+            first
+                .evaluate(*first.domain().start())
+                .unwrap()
+                .distance_to(point(0.0, -0.5, 0.0))
+                .unwrap()
+                <= tol.absolute()
+        );
+        let Curve3::NurbsCurve(square) = source else {
+            unreachable!()
+        };
+        let relocated =
+            Curve3::NurbsCurve(square.try_split_at_parameters(&[0.5]).unwrap().remove(0));
+        let relocated_inward = relocated
+            .try_offset_parts(0.5, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        let [Curve3::PolyCurve(relocated_inner)] = relocated_inward.as_slice() else {
+            panic!("smooth seam inward trim")
+        };
+        assert!(relocated_inner.is_closed().unwrap());
+        assert_eq!(relocated_inner.segments().len(), 4);
+        assert_eq!(relocated_inner.domain(), 1.0..=5.0);
+        assert_eq!(
+            relocated
+                .try_offset_parts(-0.5, normal, tol, CurveOffsetCornerStyle::None)
+                .unwrap()
+                .len(),
+            4
+        );
+    }
+
+    #[test]
+    fn closed_quadratic_mixed_corners_join_across_cycle() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let source = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                2,
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(2.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.0, 0.5, 0.0),
+                    point(4.0, 1.0, 0.0),
+                    point(2.5, 1.0, 0.0),
+                    point(1.0, 1.0, 0.0),
+                    point(1.0, 2.5, 0.0),
+                    point(1.0, 4.0, 0.0),
+                    point(0.5, 4.0, 0.0),
+                    point(0.0, 4.0, 0.0),
+                    point(0.0, 2.0, 0.0),
+                    point(0.0, 0.0, 0.0),
+                ],
+                vec![
+                    0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 5.0, 5.0, 6.0, 6.0, 6.0,
+                ],
+            )
+            .unwrap(),
+        );
+        let inward = source
+            .try_offset_parts(0.2, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        let [Curve3::PolyCurve(inner)] = inward.as_slice() else {
+            panic!("one open inward group")
+        };
+        assert_eq!(inner.segments().len(), 6);
+        assert!(!inner.is_closed().unwrap());
+        let outward = source
+            .try_offset_parts(-0.2, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        assert_eq!(outward.len(), 5);
+        assert_eq!(
+            outward
+                .iter()
+                .filter(|piece| matches!(piece, Curve3::PolyCurve(_)))
+                .count(),
+            1
+        );
+    }
+
+    #[test]
     fn straight_tilted_nurbs_uses_construction_normal_projection() {
         let tol = Tolerance::DEFAULT;
         let normal = Vector3::try_new(0.0, 0.0, 1.0)
