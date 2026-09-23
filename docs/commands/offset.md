@@ -25,12 +25,13 @@ interior stations of every span. Inward distances reaching the first cusp are
 rejected. The fit uses the document absolute tolerance and an 8,192-span cap.
 Planar NURBS offsets are likewise fitted with cubic spans from the source
 curve's position and derivatives, then checked at interior stations against
-the offset locus. Source kinks, stationary points, and offsets that develop a
-cusp are rejected. The output retains the source parameter interval.
+the offset locus. Stationary points and offsets that develop a cusp are
+rejected. The output retains the source parameter interval. Convex source
+kinks can use `Corner=None` to return separate smooth pieces.
 Polycurves made entirely of lines and polylines use the same corner rules as
 polylines and retain their outer parameter interval. Smooth mixed polycurves
-are converted to one NURBS curve before offset fitting. Curved junctions with
-sharp kinks remain unsupported.
+are converted to one NURBS curve before offset fitting. Convex sharp curved
+junctions also support `Corner=None` as separate pieces.
 Planar polylines use `Corner=Sharp` by default, extending neighboring offset
 segments to their intersection. `Corner=Chamfer` bridges convex gaps with a
 straight segment; concave corners still meet at the segment intersection.
@@ -65,14 +66,15 @@ boundaries that intersect or touch are rejected. Self-intersecting closed
 polylines and NURBS curves are rejected as ambiguous regions. NURBS region
 validation has an 8,192-piece resource cap.
 The command supports the same `Corner` and `OutputLayer` options as `Offset`;
-at most 100,000 source/count combinations can be requested. All outputs are
+at most 100,000 source/count combinations or resulting pieces can be requested.
+Both offset commands cap staged output at 100,000 curves. All outputs are
 staged before the document changes.
 
 `OutputLayer=Current` is the default; `OutputLayer=Input` uses each source's
 layer. Both choices create fresh object attributes. The command stages every
 result before changing the document, so an unsupported or degenerate selected
-curve leaves the document unchanged. NURBS and mixed polycurve offsets across
-sharp corners, as well as smooth corners,
+curve leaves the document unchanged. Concave NURBS and mixed polycurve kink
+trimming, connected corner styles at their kinks, smooth corners,
 trim, cap, and construction-plane overrides, remain
 to be implemented.
 

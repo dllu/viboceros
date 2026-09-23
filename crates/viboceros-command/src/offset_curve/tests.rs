@@ -53,6 +53,64 @@ fn offset_linear_polycurve_applies_corner_rule_and_through_point() {
 }
 
 #[test]
+fn offset_curved_polycurve_none_selects_both_convex_gap_pieces() {
+    let mut document = Document::default();
+    let normal = CommandContext::default().construction_plane.z_axis();
+    let line = LineSegment::try_new(
+        point(0.0, 0.0, 0.0),
+        point(2.0, 0.0, 0.0),
+        document.tolerance(),
+    )
+    .unwrap();
+    let circle = Circle3::try_from_center_point(
+        point(1.0, 0.0, 0.0),
+        point(2.0, 0.0, 0.0),
+        normal,
+        document.tolerance(),
+    )
+    .unwrap();
+    let arc = CircularArc3::try_from_circle_sweep(circle, std::f64::consts::FRAC_PI_2).unwrap();
+    let source =
+        PolyCurve3::try_new(vec![CurveSegment3::Line(line), CurveSegment3::Arc(arc)]).unwrap();
+    let id = document.add_geometry(Geometry::PolyCurve(source)).unwrap();
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "Offset 0.2 3,-1,0 Corner=None")
+        .unwrap();
+    let pieces = document
+        .selected_objects()
+        .map(|object| {
+            let Geometry::NurbsCurve(curve) = object.geometry() else {
+                panic!("NURBS offset part")
+            };
+            curve.clone()
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(pieces.len(), 2);
+    assert!(
+        pieces[0]
+            .evaluate(*pieces[0].domain().end())
+            .unwrap()
+            .distance_to(point(2.0, -0.2, 0.0))
+            .unwrap()
+            <= document.tolerance().absolute()
+    );
+    assert!(
+        pieces[1]
+            .evaluate(*pieces[1].domain().start())
+            .unwrap()
+            .distance_to(point(2.2, 0.0, 0.0))
+            .unwrap()
+            <= document.tolerance().absolute()
+    );
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "Offset ThroughPoint=0,-0.2,0 Corner=None")
+        .unwrap();
+    assert_eq!(document.selected_object_count(), 2);
+}
+
+#[test]
 fn offset_open_nurbs_curve_uses_pick_side_and_through_point() {
     let mut document = Document::default();
     let source = NurbsCurve::try_new(

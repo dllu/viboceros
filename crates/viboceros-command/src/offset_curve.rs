@@ -13,7 +13,7 @@ pub(super) struct OffsetCommand;
 pub(super) struct OffsetMultipleCommand;
 
 const MULTIPLE_USAGE: &str = "OffsetMultiple distance side-point [OffsetCount=2] [Corner=Sharp|Chamfer|Round|None] [OutputLayer=Current|Input]";
-const MAX_MULTIPLE_OUTPUTS: usize = 100_000;
+const MAX_OFFSET_OUTPUTS: usize = 100_000;
 
 impl Command for OffsetMultipleCommand {
     fn name(&self) -> &'static str {
@@ -37,7 +37,7 @@ impl Command for OffsetMultipleCommand {
         }
         if selected_count
             .checked_mul(options.count)
-            .is_none_or(|total| total > MAX_MULTIPLE_OUTPUTS)
+            .is_none_or(|total| total > MAX_OFFSET_OUTPUTS)
         {
             return Err(CommandError::Usage(MULTIPLE_USAGE));
         }
@@ -149,6 +149,13 @@ impl Command for OffsetMultipleCommand {
                 let parts = curve
                     .try_offset_parts(distance, normal, tolerance, options.corner)
                     .map_err(map_offset_error)?;
+                if outputs
+                    .len()
+                    .checked_add(parts.len())
+                    .is_none_or(|total| total > MAX_OFFSET_OUTPUTS)
+                {
+                    return Err(CommandError::Usage(MULTIPLE_USAGE));
+                }
                 outputs.extend(
                     parts
                         .into_iter()
@@ -229,7 +236,7 @@ fn parse_multiple(arguments: &[&str]) -> Result<MultipleOptions, CommandError> {
                 options.count = value
                     .parse::<usize>()
                     .ok()
-                    .filter(|&n| n > 0 && n <= MAX_MULTIPLE_OUTPUTS)
+                    .filter(|&n| n > 0 && n <= MAX_OFFSET_OUTPUTS)
                     .ok_or(CommandError::Usage(MULTIPLE_USAGE))?
             }
             1 => {
@@ -325,6 +332,13 @@ impl Command for OffsetCommand {
                                 options.corner,
                             )
                             .map_err(map_offset_error)?;
+                        if outputs
+                            .len()
+                            .checked_add(parts.len())
+                            .is_none_or(|total| total > MAX_OFFSET_OUTPUTS)
+                        {
+                            return Err(CommandError::Usage(USAGE));
+                        }
                         outputs.extend(
                             parts
                                 .into_iter()
@@ -341,6 +355,13 @@ impl Command for OffsetCommand {
                             options.corner,
                         )
                         .map_err(map_offset_error)?;
+                    if outputs
+                        .len()
+                        .checked_add(parts.len())
+                        .is_none_or(|total| total > MAX_OFFSET_OUTPUTS)
+                    {
+                        return Err(CommandError::Usage(USAGE));
+                    }
                     outputs.extend(
                         parts
                             .into_iter()

@@ -12,7 +12,7 @@ use ellipse::{
 };
 use nurbs::{
     nurbs_offset_side, nurbs_region_contains, nurbs_region_inward_sign, nurbs_through_distance,
-    offset_nurbs,
+    offset_nurbs, offset_nurbs_open_gaps,
 };
 use polycurve::offset_proxy;
 
@@ -295,8 +295,8 @@ impl Curve3 {
         )
     }
 
-    /// Offset with the requested corner treatment for planar polylines.
-    /// Analytic curve families have no polyline corners and ignore `corner`.
+    /// Offset with the requested corner treatment for planar polylines and
+    /// supported kinked NURBS/polycurves. Analytic families ignore `corner`.
     pub fn try_offset_with_corner_style(
         &self,
         distance: Real,
@@ -307,7 +307,12 @@ impl Curve3 {
         if !distance.is_finite() || distance == 0.0 {
             return Err(GeometryError::InvalidCurveOffsetDistance);
         }
-        if corner == CurveOffsetCornerStyle::None && matches!(self, Self::Polyline(_)) {
+        if corner == CurveOffsetCornerStyle::None
+            && matches!(
+                self,
+                Self::Polyline(_) | Self::NurbsCurve(_) | Self::PolyCurve(_)
+            )
+        {
             let mut pieces = self.try_offset_parts(distance, plane_normal, tolerance, corner)?;
             return if pieces.len() == 1 {
                 Ok(pieces.remove(0))
@@ -369,8 +374,8 @@ impl Curve3 {
         }
     }
 
-    /// Return every connected offset piece. `None` leaves convex polyline
-    /// corner gaps open; other styles produce one piece for each input curve.
+    /// Return every connected offset piece. `None` leaves convex polyline and
+    /// NURBS corner gaps open; connected corner styles return one input result.
     pub fn try_offset_parts(
         &self,
         distance: Real,
@@ -384,6 +389,10 @@ impl Curve3 {
             }
             if let Self::Polyline(polyline) = self {
                 return offset_polyline_open_gaps(polyline, distance, plane_normal, tolerance);
+            }
+            if let Self::NurbsCurve(curve) = self {
+                return offset_nurbs_open_gaps(curve, distance, plane_normal, tolerance)
+                    .map(|pieces| pieces.into_iter().map(Self::NurbsCurve).collect());
             }
             if let Self::PolyCurve(curve) = self {
                 return offset_proxy(curve, tolerance)?.try_offset_parts(
@@ -1440,6 +1449,102 @@ mod tests {
                 context: "NURBS offset source kink"
             })
         ));
+    }
+
+    #[test]
+    fn convex_nurbs_kink_none_keeps_separate_offset_pieces() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let source = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                1,
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(1.0, 0.0, 0.0),
+                    point(1.0, 1.0, 0.0),
+                ],
+                vec![0.0, 0.0, 1.0, 2.0, 2.0],
+            )
+            .unwrap(),
+        );
+        let parts = source
+            .try_offset_parts(-0.2, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        assert_eq!(parts.len(), 2);
+        let [Curve3::NurbsCurve(first), Curve3::NurbsCurve(second)] = parts.as_slice() else {
+            panic!("separate smooth pieces")
+        };
+        assert_eq!(first.domain(), 0.0..=1.0);
+        assert_eq!(second.domain(), 1.0..=2.0);
+        assert!(
+            first
+                .evaluate(1.0)
+                .unwrap()
+                .distance_to(point(1.0, -0.2, 0.0))
+                .unwrap()
+                <= tol.absolute()
+        );
+        assert!(
+            second
+                .evaluate(1.0)
+                .unwrap()
+                .distance_to(point(1.2, 0.0, 0.0))
+                .unwrap()
+                <= tol.absolute()
+        );
+        assert_eq!(
+            source.try_offset_with_corner_style(-0.2, normal, tol, CurveOffsetCornerStyle::None),
+            Err(GeometryError::DisconnectedCurveOffset)
+        );
+        assert!(matches!(
+            source.try_offset_parts(0.2, normal, tol, CurveOffsetCornerStyle::None),
+            Err(GeometryError::Degenerate {
+                context: "concave NURBS offset kink requires trimming"
+            })
+        ));
+    }
+
+    #[test]
+    fn curved_polycurve_kink_none_preserves_convex_gap() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let line = LineSegment::try_new(point(0.0, 0.0, 0.0), point(2.0, 0.0, 0.0), tol).unwrap();
+        let circle =
+            Circle3::try_from_center_point(point(1.0, 0.0, 0.0), point(2.0, 0.0, 0.0), normal, tol)
+                .unwrap();
+        let arc = CircularArc3::try_from_circle_sweep(circle, std::f64::consts::FRAC_PI_2).unwrap();
+        let source = Curve3::PolyCurve(
+            PolyCurve3::try_new(vec![CurveSegment3::Line(line), CurveSegment3::Arc(arc)]).unwrap(),
+        );
+        let parts = source
+            .try_offset_parts(-0.2, normal, tol, CurveOffsetCornerStyle::None)
+            .unwrap();
+        assert_eq!(parts.len(), 2);
+        let [Curve3::NurbsCurve(first), Curve3::NurbsCurve(second)] = parts.as_slice() else {
+            panic!("mixed polycurve pieces")
+        };
+        assert!(
+            first
+                .evaluate(*first.domain().end())
+                .unwrap()
+                .distance_to(point(2.0, -0.2, 0.0))
+                .unwrap()
+                <= tol.absolute()
+        );
+        assert!(
+            second
+                .evaluate(*second.domain().start())
+                .unwrap()
+                .distance_to(point(2.2, 0.0, 0.0))
+                .unwrap()
+                <= tol.absolute()
+        );
     }
 
     #[test]

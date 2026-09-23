@@ -229,6 +229,74 @@ pub(super) fn offset_nurbs(
     Ok(result)
 }
 
+/// Keep open convex gaps as separate exact-domain offset pieces. A concave
+/// kink needs a curve-curve trim and is left to the connected corner solver.
+pub(super) fn offset_nurbs_open_gaps(
+    curve: &NurbsCurve,
+    distance: Real,
+    fallback: UnitVector3,
+    tolerance: Tolerance,
+) -> Result<Vec<NurbsCurve>, GeometryError> {
+    let normal = offset_plane(curve, fallback, tolerance)?;
+    let domain = curve.domain();
+    let spans = curve.spans().collect::<Vec<_>>();
+    let mut cuts = Vec::new();
+    for pair in spans.windows(2) {
+        let parameter = pair[0].1;
+        let (left_point, left_velocity) =
+            curve.evaluate_with_derivative_on_side(parameter, ParameterSide::Left)?;
+        let (right_point, right_velocity) =
+            curve.evaluate_with_derivative_on_side(parameter, ParameterSide::Right)?;
+        if left_point.distance_to(right_point)? > tolerance.absolute() {
+            return Err(GeometryError::Degenerate {
+                context: "discontinuous NURBS offset source",
+            });
+        }
+        let left = normal
+            .as_vector()
+            .cross(left_velocity)?
+            .normalized_nonzero()?;
+        let right = normal
+            .as_vector()
+            .cross(right_velocity)?
+            .normalized_nonzero()?;
+        let a = left.as_vector().to_array();
+        let b = right.as_vector().to_array();
+        let separation = (a[0] - b[0]).hypot(a[1] - b[1]).hypot(a[2] - b[2]);
+        if separation * distance.abs() <= tolerance.absolute() {
+            continue;
+        }
+        let turn = left_velocity
+            .normalized_nonzero()?
+            .as_vector()
+            .cross(right_velocity.normalized_nonzero()?.as_vector())?
+            .dot(normal.as_vector())?;
+        if turn * distance >= -tolerance.angular() * distance.abs() {
+            return Err(GeometryError::Degenerate {
+                context: "concave NURBS offset kink requires trimming",
+            });
+        }
+        cuts.push(parameter);
+    }
+    if cuts.is_empty() {
+        return Ok(vec![offset_nurbs(curve, distance, fallback, tolerance)?]);
+    }
+    if curve.is_closed()? {
+        return Err(GeometryError::Degenerate {
+            context: "closed NURBS offset kink requires corner joining",
+        });
+    }
+    debug_assert!(
+        cuts.iter()
+            .all(|&parameter| parameter > *domain.start() && parameter < *domain.end())
+    );
+    curve
+        .try_split_at_parameters(&cuts)?
+        .iter()
+        .map(|piece| offset_nurbs(piece, distance, fallback, tolerance))
+        .collect()
+}
+
 fn signed_distance(
     curve: &NurbsCurve,
     point: Point3,
