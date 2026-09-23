@@ -30,7 +30,9 @@ ones, also compose to exact rational Bézier edges up to degree 64. Multi-span
 B-spline/NURBS patches compose piecewise at crossed knots when the crossings
 remain distinct in the source p-curve domain. Rational degree-one straight UV
 p-curves with unequal endpoint weights retain their source parameterization
-through single-span and multi-span patches, including isocurves. Cylindrical and
+through single-span and multi-span patches, including isocurves. Curved rational
+UV Bézier spans also compose when each span's control hull fits one surface knot
+rectangle; composition degree is capped at 64. Cylindrical and
 nonsingular conical faces with straight UV iso-trims spanning up to one turn
 convert to exact rational NURBS patches, including a full-turn wall with a paired
 `SEAM_CURVE`

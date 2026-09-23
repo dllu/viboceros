@@ -1,4 +1,5 @@
 //! Native conversion of STEP NURBS shell geometry and face-local p-curves.
+mod curved_pcurve;
 use super::{StepError, Table, native_planar, reported_trimmed_shell};
 use monstertruck::core::cgmath64::{InnerSpace, Transform as _};
 use monstertruck::meshing::prelude::{BoundedCurve, ParametricCurve, ParametricSurface};
@@ -430,6 +431,12 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
                 {
                     return Ok(curve);
                 }
+            }
+            if !globally_affine
+                && bounded_affine.is_none()
+                && let Some(curve) = curved_pcurve::compose(basis, &uv, id)?
+            {
+                return Ok(curve);
             }
             if !globally_affine && bounded_affine.is_none() {
                 return Err(unsupported("3D edge p-curve basis is not affine"));

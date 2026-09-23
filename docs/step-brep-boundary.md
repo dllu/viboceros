@@ -177,6 +177,18 @@ and reversed rational UV paths. For isocurves, each crossed source curve span
 retains its own degree; the same rational reparameterization applies to its
 homogeneous controls before joining.
 
+`native_nurbs/curved_pcurve` lifts a higher-degree UV NURBS p-curve into exact
+Bézier spans. When one span's same-sign control hull fits a single surface
+knot rectangle, it composes the UV and tensor-product surface Bernstein bases
+in homogeneous form. The 3D result has degree `UV degree × (surface U degree +
+surface V degree)`, with the original UV interval and break values when spans are
+joined. Direct tests compare rational UV curves on polynomial and rational
+patches against independent surface evaluation, including UV spans aligned
+with surface knots and a path on a discontinuous knot line. A serialized STEP
+triangle checks the parser and B-rep validator. A UV span that crosses a
+surface knot in its interior remains unsupported because its exact crossing
+parameter has not been isolated.
+
 The same degree-one isoparametric p-curves on linear extrusions of curved
 directrices lift exactly. Constant-height edges use the translated directrix;
 constant-directrix-parameter edges use the extrusion line. Direct polynomial

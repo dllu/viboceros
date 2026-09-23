@@ -539,6 +539,110 @@ fn native_step_imports_diagonal_pcurve_on_spline_patches() {
 }
 
 #[test]
+fn native_step_imports_curved_rational_uv_pcurve_on_bezier_surface() {
+    use monstertruck::meshing::prelude::{ParametricCurve, ParametricSurface};
+    use monstertruck::modeling::{
+        BsplineCurve, BsplineSurface, KnotVector, Line, NurbsCurve as TruckNurbsCurve,
+        Point2 as TruckPoint2, Vector3,
+    };
+    use monstertruck::step::load::step_geometry::{Curve2D, Curve3D, StepParameterCurve, Surface};
+    use monstertruck::step::save::StepModels;
+    use monstertruck::topology::compress::{
+        CompressedEdge, CompressedEdgeUse, CompressedTrimmedFace, CompressedTrimmedShell,
+    };
+    let surface = Surface::BsplineSurface(BsplineSurface::new(
+        (KnotVector::bezier_knot(2), KnotVector::bezier_knot(1)),
+        vec![
+            vec![TruckPoint3::new(0., 0., 0.), TruckPoint3::new(0., 2., 0.)],
+            vec![TruckPoint3::new(1., 0., 1.), TruckPoint3::new(1., 2., 2.)],
+            vec![TruckPoint3::new(2., 0., 0.), TruckPoint3::new(2., 2., 1.)],
+        ],
+    ));
+    let uv = [
+        TruckPoint2::new(0., 0.),
+        TruckPoint2::new(1., 0.),
+        TruckPoint2::new(1., 1.),
+    ];
+    let curved_uv = || {
+        Curve2D::NurbsCurve(TruckNurbsCurve::new(BsplineCurve::new(
+            KnotVector::from(vec![5., 5., 5., 9., 9., 9.]),
+            vec![
+                Vector3::new(0., 0., 1.),
+                Vector3::new(0.15, 0.6, 0.75),
+                Vector3::new(1.5, 1.5, 1.5),
+            ],
+        )))
+    };
+    let parameter_curve = |curve| {
+        Curve3D::ParameterCurve(StepParameterCurve::new(
+            Box::new(curve),
+            Box::new(surface.clone()),
+        ))
+    };
+    let shell = CompressedTrimmedShell {
+        vertices: uv
+            .iter()
+            .map(|point| surface.evaluate(point.x, point.y))
+            .collect(),
+        edges: vec![
+            CompressedEdge {
+                vertices: (0, 1),
+                curve: parameter_curve(Curve2D::Line(Line(uv[0], uv[1]))),
+            },
+            CompressedEdge {
+                vertices: (1, 2),
+                curve: parameter_curve(Curve2D::Line(Line(uv[1], uv[2]))),
+            },
+            CompressedEdge {
+                vertices: (0, 2),
+                curve: parameter_curve(curved_uv()),
+            },
+        ],
+        faces: vec![CompressedTrimmedFace {
+            boundaries: vec![
+                [
+                    (0, true, Curve2D::Line(Line(uv[0], uv[1]))),
+                    (1, true, Curve2D::Line(Line(uv[1], uv[2]))),
+                    (2, false, curved_uv()),
+                ]
+                .into_iter()
+                .map(|(index, orientation, curve)| CompressedEdgeUse {
+                    index,
+                    orientation,
+                    trim_curve: Some(StepParameterCurve::new(
+                        Box::new(curve),
+                        Box::new(surface.clone()),
+                    )),
+                })
+                .collect(),
+            ],
+            orientation: true,
+            surface: surface.clone(),
+        }],
+    };
+    let mut models = StepModels::default();
+    models.push_trimmed_shell(&shell);
+    let text = CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
+    assert!(text.contains("PCURVE("));
+    let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+    let brep = &native.instances[0].brep;
+    assert_eq!(brep.edges().len(), 3);
+    assert_eq!(brep.faces().len(), 1);
+    let edge = brep.edges()[2].curve();
+    assert_eq!(edge.degree(), 6);
+    assert_eq!(edge.domain(), 5.0..=9.0);
+    let source = curved_uv();
+    for t in [5., 5.17, 6., 7., 8.83, 9.] {
+        let point = source.evaluate(t);
+        let expected = surface.evaluate(point.x, point.y);
+        let actual = edge.evaluate(t).unwrap();
+        assert!((actual.x() - expected.x).abs() < 1e-9);
+        assert!((actual.y() - expected.y).abs() < 1e-9);
+        assert!((actual.z() - expected.z).abs() < 1e-9);
+    }
+}
+
+#[test]
 fn nurbs_brep_step_export_roundtrips_periodic_seam() {
     use viboceros_geometry::{Brep, BrepTrimType, Frame3, NurbsSurface, Vector3};
     let frame = Frame3::try_from_directions(
