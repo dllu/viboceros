@@ -220,11 +220,17 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
             edge_curve(intersection_curve.leader(), id)
         }
         Curve3D::ParameterCurve(parameter_curve) => {
-            let Surface::ElementarySurface(ElementarySurface::Plane(plane)) =
-                parameter_curve.surface().as_ref()
-            else {
-                return Err(unsupported("3D edge p-curve basis is not a plane"));
-            };
+            let basis = parameter_curve.surface().as_ref();
+            if !matches!(
+                basis,
+                Surface::ElementarySurface(ElementarySurface::Plane(_))
+            ) && !matches!(
+                basis,
+                Surface::SweepSurface(SweepSurface::ExtrusionSurface(extrusion))
+                    if matches!(extrusion.entity_curve(), Curve3D::Line(_))
+            ) {
+                return Err(unsupported("3D edge p-curve basis is not affine"));
+            }
             let uv = trim_curve(parameter_curve.curve().as_ref(), id)?;
             let controls = uv
                 .control_points()
@@ -232,7 +238,7 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
                 .map(|control| {
                     let point = control.point();
                     WeightedPoint3::try_new(
-                        point3(plane.evaluate(point.x(), point.y()))?,
+                        point3(basis.evaluate(point.x(), point.y()))?,
                         control.weight(),
                     )
                     .map_err(StepError::from)
@@ -836,48 +842,60 @@ mod tests {
     use super::*;
     use monstertruck::core::cgmath64::Vector3;
     use monstertruck::modeling::{
-        BsplineCurve, KnotVector, NurbsCurve as TruckNurbsCurve, Plane, Point3 as TruckPoint3,
+        BsplineCurve, KnotVector, Line, NurbsCurve as TruckNurbsCurve, Plane, Point3 as TruckPoint3,
     };
-    use monstertruck::step::load::step_geometry::StepParameterCurve;
+    use monstertruck::step::load::step_geometry::{StepExtrusionSurface, StepParameterCurve};
 
     #[test]
     fn planar_pcurve_edge_lifts_rational_controls_without_losing_weights() {
-        let plane = Surface::ElementarySurface(ElementarySurface::Plane(Plane::new(
-            TruckPoint3::new(10., 20., 30.),
-            TruckPoint3::new(12., 20., 30.),
-            TruckPoint3::new(10., 23., 30.),
-        )));
-        let parameter = StepParameterCurve::new(
-            Box::new(Curve2D::NurbsCurve(TruckNurbsCurve::new(
-                BsplineCurve::new(
-                    KnotVector::bezier_knot(2),
-                    vec![
-                        Vector3::new(0., 0., 1.),
-                        Vector3::new(0.5, 0.5, 0.5),
-                        Vector3::new(2., 0., 1.),
-                    ],
-                ),
+        for basis in [
+            Surface::ElementarySurface(ElementarySurface::Plane(Plane::new(
+                TruckPoint3::new(10., 20., 30.),
+                TruckPoint3::new(12., 20., 30.),
+                TruckPoint3::new(10., 23., 30.),
             ))),
-            Box::new(plane),
-        );
-        let lifted = edge_curve(&Curve3D::ParameterCurve(parameter.clone()), 1).unwrap();
-        assert_eq!(lifted.degree(), 2);
-        assert_eq!(lifted.knots(), &[0., 0., 0., 1., 1., 1.]);
-        assert_eq!(
-            lifted
-                .control_points()
-                .iter()
-                .map(|control| control.weight())
-                .collect::<Vec<_>>(),
-            vec![1., 0.5, 1.]
-        );
-        for t in [0., 0.17, 0.5, 0.83, 1.] {
-            let uv = parameter.curve().evaluate(t);
-            let expected = parameter.surface().evaluate(uv.x, uv.y);
-            let actual = lifted.evaluate(t).unwrap();
-            assert!((actual.x() - expected.x).abs() < 1e-12);
-            assert!((actual.y() - expected.y).abs() < 1e-12);
-            assert!((actual.z() - expected.z).abs() < 1e-12);
+            Surface::SweepSurface(SweepSurface::ExtrusionSurface(
+                StepExtrusionSurface::by_extrusion(
+                    Curve3D::Line(Line(
+                        TruckPoint3::new(10., 20., 30.),
+                        TruckPoint3::new(12., 20., 30.),
+                    )),
+                    Vector3::new(0., 3., 0.),
+                ),
+            )),
+        ] {
+            let parameter = StepParameterCurve::new(
+                Box::new(Curve2D::NurbsCurve(TruckNurbsCurve::new(
+                    BsplineCurve::new(
+                        KnotVector::bezier_knot(2),
+                        vec![
+                            Vector3::new(0., 0., 1.),
+                            Vector3::new(0.5, 0.5, 0.5),
+                            Vector3::new(2., 0., 1.),
+                        ],
+                    ),
+                ))),
+                Box::new(basis),
+            );
+            let lifted = edge_curve(&Curve3D::ParameterCurve(parameter.clone()), 1).unwrap();
+            assert_eq!(lifted.degree(), 2);
+            assert_eq!(lifted.knots(), &[0., 0., 0., 1., 1., 1.]);
+            assert_eq!(
+                lifted
+                    .control_points()
+                    .iter()
+                    .map(|control| control.weight())
+                    .collect::<Vec<_>>(),
+                vec![1., 0.5, 1.]
+            );
+            for t in [0., 0.17, 0.5, 0.83, 1.] {
+                let uv = parameter.curve().evaluate(t);
+                let expected = parameter.surface().evaluate(uv.x, uv.y);
+                let actual = lifted.evaluate(t).unwrap();
+                assert!((actual.x() - expected.x).abs() < 1e-12);
+                assert!((actual.y() - expected.y).abs() < 1e-12);
+                assert!((actual.z() - expected.z).abs() < 1e-12);
+            }
         }
     }
 }

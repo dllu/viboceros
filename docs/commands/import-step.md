@@ -16,9 +16,10 @@ and NURBS/B-spline surfaces with matching curved 3D edges and UV trims. Analytic
 circle and ellipse arcs on supported faces convert to exact multi-span rational
 NURBS edges and UV curves. Bounded parabola and hyperbola edges and UV trims
 also convert to exact quadratic NURBS. Edge geometry given as a `PCURVE` on a
-STEP plane lifts to an exact 3D NURBS curve. Cylindrical and nonsingular conical
-faces with straight UV iso-trims spanning up to one turn convert to exact
-rational NURBS patches, including a full-turn wall with a paired `SEAM_CURVE`
+STEP plane or line extrusion lifts to an exact 3D NURBS curve. Cylindrical and
+nonsingular conical faces with straight UV iso-trims spanning up to one turn
+convert to exact rational NURBS patches, including a full-turn wall with a paired
+`SEAM_CURVE`
 and explicit face-local
 UV curves. This changes the angular parameterization within each arc while
 retaining the surface and trim geometry. Ring-torus patches and spherical bands

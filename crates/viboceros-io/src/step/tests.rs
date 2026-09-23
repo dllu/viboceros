@@ -860,10 +860,12 @@ fn native_step_imports_bspline_faces_with_polygon_holes() {
 }
 
 #[test]
-fn native_step_imports_multispan_polyline_and_planar_pcurve_edges_with_holes() {
+fn native_step_imports_multispan_polyline_and_affine_pcurve_edges_with_holes() {
     use monstertruck::meshing::prelude::{BoundedCurve, ParametricCurve};
-    use monstertruck::modeling::{Point2 as TruckPoint2, PolylineCurve};
-    use monstertruck::step::load::step_geometry::{Curve2D, Curve3D, StepParameterCurve};
+    use monstertruck::modeling::{Line, Point2 as TruckPoint2, PolylineCurve, Vector3};
+    use monstertruck::step::load::step_geometry::{
+        Curve2D, Curve3D, StepExtrusionSurface, StepParameterCurve, Surface, SweepSurface,
+    };
     use monstertruck::step::save::StepModels;
 
     let outer = vec![[0., 0.], [10., 0.], [10., 10.], [0., 10.]];
@@ -871,7 +873,7 @@ fn native_step_imports_multispan_polyline_and_planar_pcurve_edges_with_holes() {
     let text = polygon_face_step(&[hole, outer], false);
     let table = Table::from_step(&text).unwrap();
     let shell_id = *table.shell.keys().next().unwrap();
-    for parameter_edge in [false, true] {
+    for edge_basis in 0..3 {
         let (mut shell, report) = reported_trimmed_shell(&table, shell_id).unwrap();
         assert_eq!(report.total_lost(), 0);
         let (boundary_index, use_index) = shell.faces[0]
@@ -897,14 +899,37 @@ fn native_step_imports_multispan_polyline_and_planar_pcurve_edges_with_holes() {
         let (start, end) = original_edge.range_tuple();
         let p0 = original_edge.evaluate(start);
         let p1 = original_edge.evaluate(end);
-        shell.edges[edge_index].curve = if parameter_edge {
+        shell.edges[edge_index].curve = if edge_basis != 0 {
+            let (points, basis) = if edge_basis == 1 {
+                (
+                    vec![
+                        TruckPoint2::new(p0.x, p0.y),
+                        TruckPoint2::new((p0.x + p1.x) / 2., 1.),
+                        TruckPoint2::new(p1.x, p1.y),
+                    ],
+                    shell.faces[0].surface.clone(),
+                )
+            } else {
+                (
+                    vec![
+                        TruckPoint2::new(p0.x / 10., 0.),
+                        TruckPoint2::new((p0.x + p1.x) / 20., 0.1),
+                        TruckPoint2::new(p1.x / 10., 0.),
+                    ],
+                    Surface::SweepSurface(SweepSurface::ExtrusionSurface(
+                        StepExtrusionSurface::by_extrusion(
+                            Curve3D::Line(Line(
+                                TruckPoint3::new(0., 0., 0.),
+                                TruckPoint3::new(10., 0., 0.),
+                            )),
+                            Vector3::new(0., 10., 0.),
+                        ),
+                    )),
+                )
+            };
             Curve3D::ParameterCurve(StepParameterCurve::new(
-                Box::new(Curve2D::Polyline(PolylineCurve(vec![
-                    TruckPoint2::new(p0.x, p0.y),
-                    TruckPoint2::new((p0.x + p1.x) / 2., 1.),
-                    TruckPoint2::new(p1.x, p1.y),
-                ]))),
-                Box::new(shell.faces[0].surface.clone()),
+                Box::new(Curve2D::Polyline(PolylineCurve(points))),
+                Box::new(basis),
             ))
         } else {
             Curve3D::Polyline(PolylineCurve(vec![
@@ -935,8 +960,11 @@ fn native_step_imports_multispan_polyline_and_planar_pcurve_edges_with_holes() {
         models.push_trimmed_shell(&shell);
         let text = CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
         assert!(text.contains("POLYLINE("));
-        if parameter_edge {
+        if edge_basis != 0 {
             assert!(text.contains("PCURVE("));
+            if edge_basis == 2 {
+                assert!(text.contains("SURFACE_OF_LINEAR_EXTRUSION("));
+            }
         }
         let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
         let brep = &native.instances[0].brep;
