@@ -75,12 +75,28 @@ impl TriangleMesh {
         faces
             .try_reserve_exact(self.faces.len())
             .map_err(|_| GeometryError::TooManyMeshFaces)?;
-        for face in self.faces.iter().copied() {
+        let mut ngon_face_map = if self.ngons.is_empty() {
+            Vec::new()
+        } else {
+            let mut map = Vec::new();
+            map.try_reserve_exact(self.faces.len())
+                .map_err(|_| GeometryError::TooManyMeshFaces)?;
+            map.resize_with(self.faces.len(), Vec::new);
+            map
+        };
+        for (source, face) in self.faces.iter().copied().enumerate() {
             let remapped = face.remapped(|raw| {
                 u32::try_from(index_root(&mut parents, raw as usize))
                     .expect("a mesh raw vertex index already fits in u32")
             });
             if let Some(face) = reduced_face(remapped) {
+                if !ngon_face_map.is_empty() {
+                    if let Ok(output) = u32::try_from(faces.len()) {
+                        ngon_face_map[source].push(output);
+                    } else {
+                        ngon_face_map.clear();
+                    }
+                }
                 faces.push(face);
             }
         }
@@ -127,6 +143,9 @@ impl TriangleMesh {
                     .expect("compaction cannot exceed the validated source vertex count")
             });
         }
-        Ok(Some(Self::try_new_faces(vertices, faces, tolerance)?))
+        Ok(Some(
+            Self::try_new_faces(vertices, faces, tolerance)?
+                .retain_valid_ngons_from_face_map(&self.ngons, &ngon_face_map),
+        ))
     }
 }

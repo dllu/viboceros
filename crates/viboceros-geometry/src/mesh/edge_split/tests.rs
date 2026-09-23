@@ -1,6 +1,51 @@
 use super::*;
 
 #[test]
+fn splitting_mesh_edges_remaps_ngon_member_faces_and_boundaries() {
+    let square = TriangleMesh::try_new(
+        vec![
+            point(0., 0., 0.),
+            point(2., 0., 0.),
+            point(2., 2., 0.),
+            point(0., 2., 0.),
+        ],
+        vec![[0, 1, 2], [0, 2, 3]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap()
+    .try_with_ngons(vec![MeshNgon::from_parts(vec![0, 1, 2, 3], vec![0, 1])])
+    .unwrap();
+    for (first, second, expected_boundary, expected_faces) in [
+        (point(0., 0., 0.), point(2., 0., 0.), 5, 3),
+        (point(0., 0., 0.), point(2., 2., 0.), 4, 4),
+    ] {
+        let edge = topology_edge_index_between(&square, first, second);
+        let split = square
+            .split_topology_edge(edge, 0.5, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert_eq!(split.ngons().len(), 1);
+        assert_eq!(split.ngons()[0].vertices().len(), expected_boundary);
+        assert_eq!(split.ngons()[0].faces().len(), expected_faces);
+        assert!(split.clone().try_with_ngons(split.ngons().to_vec()).is_ok());
+    }
+
+    let other = TriangleMesh::try_new(
+        vec![point(10., 0., 0.), point(12., 0., 0.), point(10., 2., 0.)],
+        vec![[0, 1, 2]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let joined = TriangleMesh::try_append(&[&square, &other]).unwrap();
+    let edge = topology_edge_index_between(&joined, point(10., 0., 0.), point(12., 0., 0.));
+    let split = joined
+        .split_topology_edge(edge, 0.5, Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    assert_eq!(split.ngons(), square.ngons());
+}
+
+#[test]
 fn retained_mixed_faces_stay_in_source_order_at_interior_and_endpoint_splits() {
     let vertices = [
         [10., 0., 0.],

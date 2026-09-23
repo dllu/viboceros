@@ -1,4 +1,56 @@
 use super::*;
+
+#[test]
+fn collapsing_mesh_edges_remaps_surviving_ngon_regions() {
+    let square = TriangleMesh::try_new(
+        vec![
+            point(0., 0., 0.),
+            point(2., 0., 0.),
+            point(2., 2., 0.),
+            point(0., 2., 0.),
+        ],
+        vec![[0, 1, 2], [0, 2, 3]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap()
+    .try_with_ngons(vec![MeshNgon::from_parts(vec![0, 1, 2, 3], vec![0, 1])])
+    .unwrap();
+    let boundary = topology_edge_index_between(&square, point(0., 0., 0.), point(2., 0., 0.));
+    let collapsed = square
+        .collapse_topology_edge(boundary, Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    assert_eq!(collapsed.ngons().len(), 1);
+    assert_eq!(collapsed.ngons()[0].vertices().len(), 3);
+    assert_eq!(collapsed.ngons()[0].faces(), &[0]);
+    assert!(
+        collapsed
+            .clone()
+            .try_with_ngons(collapsed.ngons().to_vec())
+            .is_ok()
+    );
+
+    let other = TriangleMesh::try_new(
+        vec![point(10., 0., 0.), point(12., 0., 0.), point(10., 2., 0.)],
+        vec![[0, 1, 2]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let joined = TriangleMesh::try_append(&[&square, &other]).unwrap();
+    let independent = topology_edge_index_between(&joined, point(10., 0., 0.), point(12., 0., 0.));
+    let collapsed = joined
+        .collapse_topology_edge(independent, Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    assert_eq!(collapsed.ngons(), square.ngons());
+
+    let diagonal = topology_edge_index_between(&joined, point(0., 0., 0.), point(2., 2., 0.));
+    let collapsed = joined
+        .collapse_topology_edge(diagonal, Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    assert!(collapsed.ngons().is_empty());
+}
 use std::collections::BTreeSet;
 
 #[test]

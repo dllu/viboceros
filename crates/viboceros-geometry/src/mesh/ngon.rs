@@ -96,6 +96,30 @@ impl TriangleMesh {
         self
     }
 
+    /// Rebuilds overlays after edits that remove or replace source faces.
+    /// Each source face maps to its retained or replacement output faces.
+    pub(super) fn retain_valid_ngons_from_face_map(
+        mut self,
+        source: &[MeshNgon],
+        face_map: &[Vec<u32>],
+    ) -> Self {
+        if source.is_empty() || face_map.is_empty() {
+            return self;
+        }
+        self.ngons = source
+            .iter()
+            .filter_map(|ngon| {
+                let faces = ngon
+                    .faces
+                    .iter()
+                    .flat_map(|&face| face_map[face as usize].iter().copied())
+                    .collect();
+                self.ngon_from_faces(faces)
+            })
+            .collect();
+        self
+    }
+
     fn ngon_boundary(&self, faces: &[u32]) -> Option<Vec<u32>> {
         if faces.is_empty() || faces.iter().copied().collect::<BTreeSet<_>>().len() != faces.len() {
             return None;

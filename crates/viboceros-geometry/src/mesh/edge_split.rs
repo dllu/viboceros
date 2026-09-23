@@ -138,6 +138,12 @@ impl TriangleMesh {
         generated
             .try_reserve_exact(candidate_count)
             .map_err(|_| GeometryError::TooManyMeshFaces)?;
+        let mut generated_source_faces = Vec::new();
+        if !self.ngons.is_empty() {
+            generated_source_faces
+                .try_reserve_exact(candidate_count)
+                .map_err(|_| GeometryError::TooManyMeshFaces)?;
+        }
         let mut affected_faces = Vec::new();
         affected_faces
             .try_reserve_exact(self.faces.len())
@@ -148,6 +154,9 @@ impl TriangleMesh {
             let [from, to] = edge_use.raw_vertices;
             match self.faces[edge_use.face] {
                 MeshFace::Triangle(indices) => {
+                    if !self.ngons.is_empty() {
+                        generated_source_faces.extend([edge_use.face; 2]);
+                    }
                     let opposite = indices[(edge_use.side + 2) % 3];
                     generated.extend([
                         SplitTriangle::new([opposite, from], SplitPosition::Last, edge_use.forward),
@@ -155,6 +164,9 @@ impl TriangleMesh {
                     ]);
                 }
                 MeshFace::Quad(indices) => {
+                    if !self.ngons.is_empty() {
+                        generated_source_faces.extend([edge_use.face; 3]);
+                    }
                     let after_edge = indices[(edge_use.side + 2) % 4];
                     let before_edge = indices[(edge_use.side + 3) % 4];
                     let (from_opposite, to_opposite) = if edge_use.forward {
@@ -183,12 +195,23 @@ impl TriangleMesh {
             }
         }
         debug_assert_eq!(generated.len(), candidate_count);
+        let mut source_read = 0;
+        let mut source_write = 0;
         generated.retain(|candidate| {
             let [a, b, c] = candidate
                 .canonical_vertices()
                 .map(|raw| raw.map_or(split_point, |raw| self.vertices[raw as usize]));
-            a != b && b != c && c != a
+            let keep = a != b && b != c && c != a;
+            if !generated_source_faces.is_empty() {
+                if keep {
+                    generated_source_faces[source_write] = generated_source_faces[source_read];
+                    source_write += 1;
+                }
+                source_read += 1;
+            }
+            keep
         });
+        generated_source_faces.truncate(source_write);
 
         let retained_faces =
             self.faces
@@ -235,6 +258,40 @@ impl TriangleMesh {
         let face_count = retained_face_count
             .checked_add(generated.len())
             .ok_or(GeometryError::TooManyMeshFaces)?;
+        let mut ngon_face_map = if self.ngons.is_empty()
+            || face_count
+                .checked_sub(1)
+                .is_some_and(|last| u32::try_from(last).is_err())
+        {
+            Vec::new()
+        } else {
+            let mut map = Vec::new();
+            map.try_reserve_exact(self.faces.len())
+                .map_err(|_| GeometryError::TooManyMeshFaces)?;
+            map.resize_with(self.faces.len(), Vec::new);
+            map
+        };
+        if !ngon_face_map.is_empty() {
+            let mut output = 0usize;
+            for (source, face) in self.faces.iter().enumerate() {
+                if !affected_faces[source]
+                    || (split_at_endpoint && matches!(face, MeshFace::Triangle(_)))
+                {
+                    ngon_face_map[source].push(
+                        u32::try_from(output).expect("the n-gon output face index was preflighted"),
+                    );
+                    output += 1;
+                }
+            }
+            debug_assert_eq!(output, retained_face_count);
+            for source in generated_source_faces {
+                ngon_face_map[source].push(
+                    u32::try_from(output).expect("the n-gon output face index was preflighted"),
+                );
+                output += 1;
+            }
+            debug_assert_eq!(output, face_count);
+        }
         let mut vertices = Vec::new();
         vertices
             .try_reserve_exact(vertex_count)
@@ -274,6 +331,9 @@ impl TriangleMesh {
                 faces.push(candidate.oriented_face(triangle));
             }
         }
-        Ok(Some(Self::try_new_faces(vertices, faces, tolerance)?))
+        Ok(Some(
+            Self::try_new_faces(vertices, faces, tolerance)?
+                .retain_valid_ngons_from_face_map(&self.ngons, &ngon_face_map),
+        ))
     }
 }

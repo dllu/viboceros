@@ -140,6 +140,8 @@ components remain distinct, and surviving faces and vertices retain source
 order. Surviving objects keep identity, attributes, groups, and selection; an
 empty result deletes the object. A collapse that would leave a zero-area face
 is rejected atomically to preserve the validated-mesh invariant.
+N-gon overlays follow their surviving face groups; an overlay whose entire
+face group is removed disappears.
 
 `SplitMeshEdge` divides a selected topology edge at a normalized parameter in
 its deterministic wireframe direction. Use `Edge=1 Parameter=0.25`, provide an
@@ -150,6 +152,8 @@ order. Welded faces share one appended split vertex, while unwelded replacement
 triangles remain fully separated. Exact endpoint parameters preserve Rhino's
 coincident topology behavior. Object identity, attributes, groups, selection,
 and undo are retained; tolerance-degenerate results are rejected atomically.
+N-gon overlays are rebuilt over retained and replacement faces when they still
+form one valid raw-edge-connected region.
 
 `FillMeshHole` follows the closed naked boundary containing a picked topology
 edge and fills it with a constrained-Delaunay triangle patch. Use `Edge=1`,
