@@ -141,6 +141,12 @@ and rational partial/reversed cases are checked against source-surface
 evaluation and serialized STEP import. Diagonal and unequal-weight p-curves on
 non-affine surfaces still need exact surface-curve composition.
 
+The same degree-one isoparametric p-curves on linear extrusions of curved
+directrices lift exactly. Constant-height edges use the translated directrix;
+constant-directrix-parameter edges use the extrusion line. Direct polynomial
+and rational tests cover partial and reversed edges, and serialized STEP shells
+check both iso directions and the source p-curve domain.
+
 Degree-one, two-control-point rational 3D edges and UV trims are also supported
 when their weights are finite and positive. Homogeneous source controls are
 converted to Euclidean controls with separate weights, retaining knots and

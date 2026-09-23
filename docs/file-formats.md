@@ -263,9 +263,10 @@ remain unsupported.
 knots, and rational weights. Other p-curve bases still need exact surface-curve
 composition.
 Degree-one, two-control-point isoparametric `PCURVE` edges with equal weights
-on curved B-spline/NURBS bases import as exact trimmed NURBS isocurves, keeping
-the source p-curve domain. Diagonal and unequal-weight p-curves on those bases
-remain unsupported unless the affine certificate applies.
+on curved B-spline/NURBS bases and linear extrusions of curved directrices
+import as exact trimmed NURBS isocurves, keeping the source p-curve domain.
+Diagonal and unequal-weight p-curves on those bases remain unsupported unless
+the affine certificate applies.
 Other analytic surface types and
 periodic seam arrangements still fail native import.
 The native planar path supports straight-edged polygon holes, identifies the

@@ -2770,6 +2770,49 @@ fn native_step_imports_exact_line_polyline_conic_bspline_and_nurbs_extrusions() 
                 }
             }
         }
+
+        if variant == 2 || variant == 3 {
+            let mut iso_shell = shell.clone();
+            iso_shell.edges[2].curve = Curve3D::ParameterCurve(StepParameterCurve::new(
+                Box::new(Curve2D::BsplineCurve(BsplineCurve::new(
+                    KnotVector::from(vec![5., 5., 9., 9.]),
+                    vec![TruckPoint2::new(u_start, 1.), TruckPoint2::new(u_end, 1.)],
+                ))),
+                Box::new(surface.clone()),
+            ));
+            iso_shell.edges[3].curve = Curve3D::ParameterCurve(StepParameterCurve::new(
+                Box::new(Curve2D::Line(Line(
+                    TruckPoint2::new(u_start, 0.),
+                    TruckPoint2::new(u_start, 1.),
+                ))),
+                Box::new(surface.clone()),
+            ));
+            let mut models = StepModels::default();
+            models.push_trimmed_shell(&iso_shell);
+            let text =
+                CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
+            assert!(text.contains("PCURVE("));
+            let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
+            let brep = &native.instances[0].brep;
+            assert_eq!(brep.edges()[2].curve().degree(), 2);
+            assert_eq!(brep.edges()[2].curve().domain(), 5.0..=9.0);
+            assert_eq!(brep.edges()[3].curve().degree(), 1);
+            for fraction in [0., 0.17, 0.5, 0.83, 1.] {
+                for (edge_index, t, expected) in [
+                    (
+                        2,
+                        5. + 4. * fraction,
+                        surface.evaluate(u_start * (1. - fraction) + u_end * fraction, 1.),
+                    ),
+                    (3, fraction, surface.evaluate(u_start, fraction)),
+                ] {
+                    let actual = brep.edges()[edge_index].curve().evaluate(t).unwrap();
+                    assert!((actual.x() - expected.x).abs() < 1e-11);
+                    assert!((actual.y() - expected.y).abs() < 1e-11);
+                    assert!((actual.z() - expected.z).abs() < 1e-11);
+                }
+            }
+        }
     }
 }
 
