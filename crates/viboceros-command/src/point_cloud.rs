@@ -372,10 +372,14 @@ fn convert(
             Geometry::Mesh(m) => {
                 points.extend_from_slice(m.vertices());
                 if use_colors {
-                    colors.extend(std::iter::repeat_n(
-                        source_display_color(document, object)?,
-                        m.vertices().len(),
-                    ));
+                    if let Some(vertex_colors) = m.vertex_colors() {
+                        colors.extend_from_slice(vertex_colors);
+                    } else {
+                        colors.extend(std::iter::repeat_n(
+                            source_display_color(document, object)?,
+                            m.vertices().len(),
+                        ));
+                    }
                 }
             }
             _ => unreachable!("source filter excludes non-point-bearing geometry"),

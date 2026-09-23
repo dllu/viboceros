@@ -18,6 +18,16 @@ impl TriangleMesh {
         let mut faces = Vec::new();
         let mut triangles = Vec::new();
         let mut ngons = Vec::new();
+        let vertex_colors = meshes
+            .iter()
+            .all(|mesh| mesh.vertex_colors.is_some())
+            .then(|| {
+                let mut colors = Vec::with_capacity(vertex_count);
+                for mesh in meshes {
+                    colors.extend_from_slice(mesh.vertex_colors.as_ref().unwrap());
+                }
+                colors
+            });
         vertices
             .try_reserve_exact(vertex_count)
             .map_err(|_| GeometryError::TooManyMeshVertices)?;
@@ -61,6 +71,7 @@ impl TriangleMesh {
         }
         Ok(Self {
             vertices,
+            vertex_colors,
             faces,
             triangles,
             ngons,

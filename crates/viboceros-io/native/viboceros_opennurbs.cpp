@@ -122,7 +122,7 @@ constexpr uint32_t kBrepVersion = 1;
 constexpr uint8_t kPolyCurveMagic[8] = {'V', 'I', 'B', 'O', 'P', 'L', 'Y', 0};
 constexpr uint32_t kPolyCurveVersion = 2;
 constexpr uint8_t kNgonMagic[8] = {'V', 'I', 'B', 'O', 'N', 'G', 'O', 'N'};
-constexpr uint32_t kNgonVersion = 1;
+constexpr uint32_t kNgonVersion = 2;
 constexpr size_t kMaxPolyCurveSegments = 65536;
 constexpr uint64_t kNoEdge = std::numeric_limits<uint64_t>::max();
 
@@ -675,7 +675,8 @@ bool append_mesh(const ON_Mesh& mesh, BridgeObject& output) {
   for (uint32_t index = 0; index < mesh.NgonUnsignedCount(); ++index) {
     ngon_count += mesh.Ngon(index) != nullptr ? 1U : 0U;
   }
-  if (ngon_count != 0) {
+  const bool has_colors = mesh.HasVertexColors();
+  if (ngon_count != 0 || has_colors) {
     ByteWriter writer(output.geometry_data);
     writer.Bytes(kNgonMagic, sizeof(kNgonMagic));
     writer.U32(kNgonVersion);
@@ -702,6 +703,17 @@ bool append_mesh(const ON_Mesh& mesh, BridgeObject& output) {
           return false;
         }
         writer.U32(ngon->m_fi[face]);
+      }
+    }
+    writer.U32(has_colors ? static_cast<uint32_t>(mesh.VertexCount()) : 0U);
+    if (has_colors) {
+      for (int index = 0; index < mesh.VertexCount(); ++index) {
+        const ON_Color color = mesh.m_C[index];
+        const uint8_t rgba[4] = {static_cast<uint8_t>(color.Red()),
+                                 static_cast<uint8_t>(color.Green()),
+                                 static_cast<uint8_t>(color.Blue()),
+                                 static_cast<uint8_t>(color.Alpha())};
+        writer.Bytes(rgba, sizeof(rgba));
       }
     }
   }
@@ -1478,7 +1490,7 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
       if (source.geometry_data_count != 0) {
         if (source.geometry_data == nullptr) {
           delete mesh;
-          error = "polygon mesh n-gon payload is missing";
+          error = "polygon mesh payload is missing";
           return nullptr;
         }
         ByteReader reader(source.geometry_data, source.geometry_data_count);
@@ -1488,7 +1500,7 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
             !reader.U32(version) || version != kNgonVersion ||
             !reader.U32(ngon_count) || ngon_count > reader.Remaining() / 8) {
           delete mesh;
-          error = "polygon mesh n-gon payload is invalid";
+          error = "polygon mesh payload is invalid";
           return nullptr;
         }
         for (uint32_t index = 0; index < ngon_count; ++index) {
@@ -1526,9 +1538,27 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
             return nullptr;
           }
         }
+        uint32_t color_count = 0;
+        if (!reader.U32(color_count) ||
+            (color_count != 0 && color_count != vertex_count) ||
+            color_count > reader.Remaining() / 4) {
+          delete mesh;
+          error = "polygon mesh vertex colors are invalid";
+          return nullptr;
+        }
+        for (uint32_t index = 0; index < color_count; ++index) {
+          uint8_t rgba[4];
+          if (!reader.U8(rgba[0]) || !reader.U8(rgba[1]) ||
+              !reader.U8(rgba[2]) || !reader.U8(rgba[3])) {
+            delete mesh;
+            error = "polygon mesh vertex colors are truncated";
+            return nullptr;
+          }
+          mesh->m_C.Append(ON_Color(rgba[0], rgba[1], rgba[2], rgba[3]));
+        }
         if (!reader.Finished()) {
           delete mesh;
-          error = "polygon mesh n-gon payload has trailing bytes";
+          error = "polygon mesh payload has trailing bytes";
           return nullptr;
         }
       }

@@ -4,8 +4,9 @@
 
 `PointCloud [UsePointColors=No]` creates one point cloud from selected point
 objects and mesh vertices. It does not accept a typed list of coordinates.
-`UsePointColors=Yes` stores each point object's display color; mesh vertices
-currently inherit the mesh object's display color. The colors display in the
+`UsePointColors=Yes` stores each point object's display color and each mesh
+vertex color when present. Uncolored mesh vertices inherit the mesh object's
+display color. The colors display in the
 viewport and survive 3DM import, export, transforms, Add, and Remove when the
 removed output is another cloud. Removed point objects retain the RGB color;
 their attributes cannot represent per-point transparency.
@@ -73,10 +74,10 @@ step.
 
 ## Limits
 
-Mesh vertex colors are not yet represented in the native mesh geometry, so
-`UsePointColors=Yes` cannot inherit distinct colors from individual mesh
-vertices. Point cloud normals, scalar values, and hidden members in 3DM also
-remain unsupported.
+Mesh vertex colors are represented in native meshes and survive 3DM round trips
+and basic vertex-order-preserving edits. Some mesh topology edits still drop
+vertex colors; preserving or interpolating them remains work in progress.
+Point cloud normals, scalar values, and hidden members in 3DM remain unsupported.
 The Add and Remove pickers run as separate prompts after the initial action
 choice. Remove selects cloud members by click, window, or typed indices.
 Creation still ignores existing cloud inputs. Use `Explode` to extract individual

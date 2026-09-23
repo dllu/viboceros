@@ -1,13 +1,22 @@
-//! Versioned n-gon payload for the OpenNURBS bridge's mesh records.
+//! Versioned n-gon and vertex-color payload for the OpenNURBS bridge's mesh records.
 use viboceros_geometry::MeshNgon;
 
 use super::ThreeDmError;
 
 const MAGIC: &[u8; 8] = b"VIBONGON";
-const VERSION: u32 = 1;
+const VERSION: u32 = 2;
 
-pub(super) fn encode(ngons: &[MeshNgon]) -> Result<Vec<u8>, ThreeDmError> {
-    if ngons.is_empty() {
+#[derive(Debug, PartialEq)]
+pub(super) struct MeshPayload {
+    pub(super) ngons: Vec<MeshNgon>,
+    pub(super) vertex_colors: Option<Vec<[u8; 4]>>,
+}
+
+pub(super) fn encode(
+    ngons: &[MeshNgon],
+    colors: Option<&[[u8; 4]]>,
+) -> Result<Vec<u8>, ThreeDmError> {
+    if ngons.is_empty() && colors.is_none() {
         return Ok(Vec::new());
     }
     let mut bytes = Vec::new();
@@ -21,12 +30,19 @@ pub(super) fn encode(ngons: &[MeshNgon]) -> Result<Vec<u8>, ThreeDmError> {
             bytes.extend_from_slice(&index.to_le_bytes());
         }
     }
+    write_count(&mut bytes, colors.map_or(0, |colors| colors.len()))?;
+    if let Some(colors) = colors {
+        bytes.extend(colors.iter().flat_map(|color| *color));
+    }
     Ok(bytes)
 }
 
-pub(super) fn decode(bytes: &[u8]) -> Result<Vec<MeshNgon>, ThreeDmError> {
+pub(super) fn decode(bytes: &[u8], vertex_count: usize) -> Result<MeshPayload, ThreeDmError> {
     if bytes.is_empty() {
-        return Ok(Vec::new());
+        return Ok(MeshPayload {
+            ngons: Vec::new(),
+            vertex_colors: None,
+        });
     }
     let mut reader = Reader { bytes, cursor: 0 };
     if reader.take(8)? != MAGIC || reader.u32()? != VERSION {
@@ -57,10 +73,28 @@ pub(super) fn decode(bytes: &[u8]) -> Result<Vec<MeshNgon>, ThreeDmError> {
         }
         ngons.push(MeshNgon::from_parts(vertices, faces));
     }
+    let color_count = reader.u32()? as usize;
+    if color_count != 0 && color_count != vertex_count {
+        return Err(invalid());
+    }
+    let colors = if color_count == 0 {
+        None
+    } else {
+        let color_bytes = reader.take(color_count.checked_mul(4).ok_or_else(invalid)?)?;
+        Some(
+            color_bytes
+                .chunks_exact(4)
+                .map(|rgba| [rgba[0], rgba[1], rgba[2], rgba[3]])
+                .collect(),
+        )
+    };
     if reader.remaining() != 0 {
         return Err(invalid());
     }
-    Ok(ngons)
+    Ok(MeshPayload {
+        ngons,
+        vertex_colors: colors,
+    })
 }
 
 fn write_count(bytes: &mut Vec<u8>, count: usize) -> Result<(), ThreeDmError> {
@@ -103,14 +137,36 @@ mod tests {
     #[test]
     fn codec_round_trips_and_rejects_truncation_or_trailing_bytes() {
         let ngons = vec![MeshNgon::from_parts(vec![0, 1, 2, 3], vec![5, 6])];
-        let bytes = encode(&ngons).unwrap();
-        assert_eq!(decode(&bytes).unwrap(), ngons);
+        let colors = [[1, 2, 3, 0], [4, 5, 6, 128]];
+        let bytes = encode(&ngons, Some(&colors)).unwrap();
+        assert_eq!(
+            decode(&bytes, colors.len()).unwrap(),
+            MeshPayload {
+                ngons,
+                vertex_colors: Some(colors.to_vec()),
+            }
+        );
         for end in 1..bytes.len() {
-            assert!(decode(&bytes[..end]).is_err());
+            assert!(decode(&bytes[..end], colors.len()).is_err());
         }
         let mut trailing = bytes;
         trailing.push(0);
-        assert!(decode(&trailing).is_err());
-        assert!(decode(&[]).unwrap().is_empty());
+        assert!(decode(&trailing, colors.len()).is_err());
+        assert_eq!(
+            decode(&[], 0).unwrap(),
+            MeshPayload {
+                ngons: Vec::new(),
+                vertex_colors: None,
+            }
+        );
+        assert!(decode(&encode(&[], Some(&colors)).unwrap(), colors.len() + 1).is_err());
+        let ngons = vec![MeshNgon::from_parts(vec![0, 1, 2], vec![0])];
+        assert_eq!(
+            decode(&encode(&ngons, None).unwrap(), 3).unwrap(),
+            MeshPayload {
+                ngons,
+                vertex_colors: None,
+            }
+        );
     }
 }

@@ -847,9 +847,11 @@ fn decode_object(
                     }
                 })
                 .collect();
+            let mesh_payload = mesh_ngon::decode(geometry_data, vertices.len())?;
             ThreeDmGeometry::Mesh(
                 TriangleMesh::try_new_faces(vertices, faces, Tolerance::MESH_VALIDATION)?
-                    .try_with_ngons(mesh_ngon::decode(geometry_data)?)?,
+                    .try_with_ngons(mesh_payload.ngons)?
+                    .try_with_vertex_colors(mesh_payload.vertex_colors)?,
             )
         }
         OBJECT_BREP | OBJECT_POLYCURVE | OBJECT_ARC
@@ -1192,7 +1194,7 @@ impl ObjectPayload {
                         MeshFace::Quad(indices) => indices,
                     })
                     .collect(),
-                geometry_data: mesh_ngon::encode(mesh.ngons())?,
+                geometry_data: mesh_ngon::encode(mesh.ngons(), mesh.vertex_colors())?,
             },
         })
     }
@@ -1864,6 +1866,13 @@ mod tests {
         )
         .unwrap()
         .try_with_ngons(vec![MeshNgon::from_parts(vec![0, 1, 2, 3], vec![0, 1])])
+        .unwrap()
+        .try_with_vertex_colors(Some(vec![
+            [255, 0, 0, 0],
+            [0, 255, 0, 0],
+            [0, 0, 255, 64],
+            [255, 255, 0, 128],
+        ]))
         .unwrap();
         let triangle = TriangleMesh::try_new(
             vec![
@@ -1875,7 +1884,7 @@ mod tests {
             Tolerance::DEFAULT,
         )
         .unwrap()
-        .try_with_ngons(vec![MeshNgon::from_parts(vec![0, 1, 2], vec![0])])
+        .try_with_vertex_colors(Some(vec![[4, 5, 6, 0], [7, 8, 9, 128], [10, 11, 12, 255]]))
         .unwrap();
         let model = ThreeDmModel::new(
             vec![ThreeDmLayer {

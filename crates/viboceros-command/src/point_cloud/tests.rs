@@ -297,6 +297,9 @@ fn creation_inherits_source_display_colors_and_undoes() {
         doc.tolerance(),
     )
     .unwrap();
+    let mesh = mesh
+        .try_with_vertex_colors(Some(vec![[5, 6, 7, 0], [8, 9, 10, 128], [11, 12, 13, 255]]))
+        .unwrap();
     let mesh_id = doc
         .add_geometry_with_attributes(Geometry::Mesh(mesh), ObjectAttributes::on_layer(layer))
         .unwrap();
@@ -320,9 +323,9 @@ fn creation_inherits_source_display_colors_and_undoes() {
             &[
                 [220, 20, 30, 0],
                 [15, 40, 230, 0],
-                [220, 20, 30, 0],
-                [220, 20, 30, 0],
-                [220, 20, 30, 0],
+                [5, 6, 7, 0],
+                [8, 9, 10, 128],
+                [11, 12, 13, 255],
             ][..]
         )
     );

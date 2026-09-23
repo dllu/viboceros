@@ -111,6 +111,9 @@ pub enum GeometryError {
     #[error("point-cloud color count must match point count")]
     InvalidPointCloudColorCount,
 
+    #[error("mesh vertex colors must match the vertex count")]
+    InvalidMeshVertexColorCount,
+
     #[error("the linear system is singular at the requested tolerance")]
     SingularSystem,
 

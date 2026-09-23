@@ -380,6 +380,8 @@ impl MeshFace {
 #[derive(Clone, Debug, PartialEq)]
 pub struct TriangleMesh {
     vertices: Vec<Point3>,
+    /// OpenNURBS RGBA colors, indexed by raw mesh vertex; alpha is transparency.
+    vertex_colors: Option<Vec<[u8; 4]>>,
     faces: Vec<MeshFace>,
     triangles: Vec<[u32; 3]>,
     ngons: Vec<MeshNgon>,
@@ -462,6 +464,7 @@ impl TriangleMesh {
 
         Ok(Self {
             vertices,
+            vertex_colors: None,
             faces,
             triangles,
             ngons: Vec::new(),
@@ -1906,6 +1909,7 @@ impl TriangleMesh {
         }
         Self {
             vertices,
+            vertex_colors: None,
             faces,
             triangles,
             ngons: Vec::new(),
@@ -1915,6 +1919,26 @@ impl TriangleMesh {
     #[inline]
     pub fn vertices(&self) -> &[Point3] {
         &self.vertices
+    }
+
+    /// Sets colors for every raw vertex. OpenNURBS alpha is transparency:
+    /// zero is opaque and 255 is fully transparent.
+    pub fn try_with_vertex_colors(
+        mut self,
+        colors: Option<Vec<[u8; 4]>>,
+    ) -> Result<Self, GeometryError> {
+        if colors
+            .as_ref()
+            .is_some_and(|colors| colors.len() != self.vertices.len())
+        {
+            return Err(GeometryError::InvalidMeshVertexColorCount);
+        }
+        self.vertex_colors = colors;
+        Ok(self)
+    }
+
+    pub fn vertex_colors(&self) -> Option<&[[u8; 4]]> {
+        self.vertex_colors.as_deref()
     }
 
     #[inline]
@@ -1938,6 +1962,7 @@ impl TriangleMesh {
             self.vertices.clone(),
             self.faces.iter().copied().map(MeshFace::reversed).collect(),
         );
+        reversed.vertex_colors = self.vertex_colors.clone();
         reversed.ngons = self
             .ngons
             .iter()
@@ -1984,6 +2009,7 @@ impl TriangleMesh {
             faces.push(MeshFace::Triangle(second));
         }
         let mut triangulated = Self::try_new_faces(self.vertices.clone(), faces, tolerance)?;
+        triangulated.vertex_colors = self.vertex_colors.clone();
         if !self.ngons.is_empty() {
             let ngons = self
                 .ngons
@@ -2068,10 +2094,10 @@ impl TriangleMesh {
         let mut faces = self.faces.clone();
         faces[backward.face] = MeshFace::Triangle(backward_replacement);
         faces[forward.face] = MeshFace::Triangle(forward_replacement);
-        Ok(Some(
-            Self::from_validated_parts(self.vertices.clone(), faces)
-                .retain_valid_ngons_for_same_faces(&self.ngons),
-        ))
+        let mut swapped = Self::from_validated_parts(self.vertices.clone(), faces)
+            .retain_valid_ngons_for_same_faces(&self.ngons);
+        swapped.vertex_colors = self.vertex_colors.clone();
+        Ok(Some(swapped))
     }
 
     /// Fills the closed naked boundary containing one topology edge.
@@ -2895,11 +2921,10 @@ impl TriangleMesh {
         if flipped_face_count == 0 {
             return Ok((self.clone(), 0));
         }
-        Ok((
-            Self::from_validated_parts(self.vertices.clone(), faces)
-                .rebuild_ngons_for_same_faces(&self.ngons)?,
-            flipped_face_count,
-        ))
+        let mut unified = Self::from_validated_parts(self.vertices.clone(), faces)
+            .rebuild_ngons_for_same_faces(&self.ngons)?;
+        unified.vertex_colors = self.vertex_colors.clone();
+        Ok((unified, flipped_face_count))
     }
 
     /// Removes the requested source faces into a separate mesh.
@@ -3047,7 +3072,8 @@ impl TriangleMesh {
     }
 
     /// Merges vertices at exactly equal locations, ignoring derived normals
-    /// and attributes that this mesh representation does not store. Matching
+    /// and distinct colors at duplicate locations. The first source color is
+    /// retained for each location. Matching
     /// OpenNURBS behavior, a changed mesh sorts unique vertices by descending
     /// `(x, y, z)` while a mesh with no duplicates remains byte-for-byte equal.
     pub fn combined_identical_vertices(&self) -> (Self, usize) {
@@ -3063,6 +3089,20 @@ impl TriangleMesh {
 
         let mut vertices = unique_by_location.into_values().collect::<Vec<_>>();
         vertices.sort_by(compare_points_descending);
+        let colors = self.vertex_colors.as_ref().map(|source_colors| {
+            let mut first_color_by_location = BTreeMap::new();
+            for (&vertex, &color) in self.vertices.iter().zip(source_colors) {
+                first_color_by_location
+                    .entry(vertex.to_array().map(canonical_coordinate_bits))
+                    .or_insert(color);
+            }
+            vertices
+                .iter()
+                .map(|vertex| {
+                    first_color_by_location[&vertex.to_array().map(canonical_coordinate_bits)]
+                })
+                .collect()
+        });
         let index_by_location = vertices
             .iter()
             .enumerate()
@@ -3087,11 +3127,10 @@ impl TriangleMesh {
                 })
             })
             .collect();
-        (
-            Self::from_validated_parts(vertices, faces)
-                .retain_valid_ngons_for_same_faces(&self.ngons),
-            removed,
-        )
+        let mut combined = Self::from_validated_parts(vertices, faces)
+            .retain_valid_ngons_for_same_faces(&self.ngons);
+        combined.vertex_colors = colors;
+        (combined, removed)
     }
 
     /// Welds coincident edge endpoints whose incident face normals fall
@@ -3576,12 +3615,19 @@ impl TriangleMesh {
             })
             .collect::<Vec<_>>();
         let mut vertices = Vec::with_capacity(retained_count);
+        let mut colors = self
+            .vertex_colors
+            .as_ref()
+            .map(|_| Vec::with_capacity(retained_count));
         for (source, (&point, keep)) in self.vertices.iter().zip(retained).enumerate() {
             if !keep {
                 continue;
             }
             parents[source] = vertices.len();
             vertices.push(point);
+            if let Some(colors) = &mut colors {
+                colors.push(self.vertex_colors.as_ref().unwrap()[source]);
+            }
         }
         for face in &mut faces {
             *face = face.remapped(|representative| {
@@ -3589,11 +3635,10 @@ impl TriangleMesh {
                     .expect("a compacted mesh cannot have more vertices than its source")
             });
         }
-        (
-            Self::from_validated_parts(vertices, faces)
-                .retain_valid_ngons_for_same_faces(&self.ngons),
-            removed,
-        )
+        let mut compacted = Self::from_validated_parts(vertices, faces)
+            .retain_valid_ngons_for_same_faces(&self.ngons);
+        compacted.vertex_colors = colors;
+        (compacted, removed)
     }
 
     /// Removes vertices that are not referenced by any face. Referenced
@@ -3615,6 +3660,10 @@ impl TriangleMesh {
 
         let mut vertex_remap = vec![0_u32; self.vertices.len()];
         let mut vertices = Vec::with_capacity(retained_vertex_count);
+        let mut colors = self
+            .vertex_colors
+            .as_ref()
+            .map(|_| Vec::with_capacity(retained_vertex_count));
         for (source, (&point, is_used)) in self.vertices.iter().zip(used).enumerate() {
             if !is_used {
                 continue;
@@ -3622,6 +3671,9 @@ impl TriangleMesh {
             vertex_remap[source] = u32::try_from(vertices.len())
                 .expect("a culled mesh cannot have more vertices than its source");
             vertices.push(point);
+            if let Some(colors) = &mut colors {
+                colors.push(self.vertex_colors.as_ref().unwrap()[source]);
+            }
         }
         let faces = self
             .faces
@@ -3630,6 +3682,7 @@ impl TriangleMesh {
             .map(|face| face.remapped(|vertex| vertex_remap[vertex as usize]))
             .collect();
         let mut culled = Self::from_validated_parts(vertices, faces);
+        culled.vertex_colors = colors;
         culled.ngons = self
             .ngons
             .iter()
@@ -3654,6 +3707,7 @@ impl TriangleMesh {
         }
         let mut vertex_remap = vec![0_u32; self.vertices.len()];
         let mut vertices = Vec::new();
+        let mut colors = self.vertex_colors.as_ref().map(|_| Vec::new());
         for (source, (&point, used)) in self.vertices.iter().zip(used).enumerate() {
             if !used {
                 continue;
@@ -3661,12 +3715,16 @@ impl TriangleMesh {
             vertex_remap[source] = u32::try_from(vertices.len())
                 .expect("a mesh subset cannot have more vertices than its source");
             vertices.push(point);
+            if let Some(colors) = &mut colors {
+                colors.push(self.vertex_colors.as_ref().unwrap()[source]);
+            }
         }
         let retained_faces = faces
             .iter()
             .map(|&face| self.faces[face].remapped(|vertex| vertex_remap[vertex as usize]))
             .collect();
         let mut subset = Self::from_validated_parts(vertices, retained_faces);
+        subset.vertex_colors = colors;
         if !self.ngons.is_empty() {
             let mut face_remap = vec![None; self.faces.len()];
             for (local, &source) in faces.iter().enumerate() {
@@ -3856,6 +3914,7 @@ impl TriangleMesh {
             .map(|point| transform.transform_point(*point))
             .collect::<Result<_, _>>()?;
         let mut transformed = Self::try_new_faces(vertices, self.faces.clone(), tolerance)?;
+        transformed.vertex_colors = self.vertex_colors.clone();
         transformed.ngons = self.ngons.clone();
         Ok(transformed)
     }
@@ -9213,5 +9272,70 @@ mod tests {
         )
         .unwrap();
         assert!(mesh.transformed(collapsed, Tolerance::DEFAULT).is_err());
+    }
+
+    #[test]
+    fn vertex_colors_validate_and_follow_unchanged_vertex_order() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            mesh.clone()
+                .try_with_vertex_colors(Some(vec![[1, 2, 3, 0]])),
+            Err(GeometryError::InvalidMeshVertexColorCount)
+        );
+        let colors = vec![[1, 2, 3, 0], [4, 5, 6, 128], [7, 8, 9, 255]];
+        let colored = mesh.try_with_vertex_colors(Some(colors.clone())).unwrap();
+        assert_eq!(colored.reversed().vertex_colors(), Some(colors.as_slice()));
+        assert_eq!(
+            colored
+                .transformed(
+                    AffineTransform3::from_translation(
+                        crate::Vector3::try_new(2.0, 3.0, 4.0).unwrap(),
+                    ),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap()
+                .vertex_colors(),
+            Some(colors.as_slice())
+        );
+        assert_eq!(
+            TriangleMesh::try_append(&[&colored, &colored])
+                .unwrap()
+                .vertex_colors(),
+            Some([colors.as_slice(), colors.as_slice()].concat().as_slice())
+        );
+        let with_unused = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(9.0, 9.0, 9.0),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .try_with_vertex_colors(Some(
+            colors.iter().copied().chain([[90, 91, 92, 0]]).collect(),
+        ))
+        .unwrap();
+        assert_eq!(
+            with_unused.culled_unused_vertices().0.vertex_colors(),
+            Some(colors.as_slice())
+        );
+        assert_eq!(
+            with_unused
+                .subset_preserving_vertex_order(&[0])
+                .vertex_colors(),
+            Some(colors.as_slice())
+        );
     }
 }

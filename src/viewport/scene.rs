@@ -89,7 +89,7 @@ fn point_position_key(point: Point3) -> [u64; 3] {
 struct DisplayObject {
     geometry: Rc<DisplayGeometry>,
     color: Color32,
-    point_colors_enabled: bool,
+    member_colors_enabled: bool,
     width: f32,
     point_radius: f32,
 }
@@ -98,7 +98,7 @@ impl PartialEq for DisplayObject {
     fn eq(&self, other: &Self) -> bool {
         Rc::ptr_eq(&self.geometry, &other.geometry)
             && self.color == other.color
-            && self.point_colors_enabled == other.point_colors_enabled
+            && self.member_colors_enabled == other.member_colors_enabled
             && self.width == other.width
             && self.point_radius == other.point_radius
     }
@@ -273,7 +273,7 @@ impl Viewport {
             objects.push(DisplayObject {
                 geometry: cache.get(object, document.tolerance()),
                 color,
-                point_colors_enabled: !selected && !attributes.is_locked() && !layer.is_locked(),
+                member_colors_enabled: !selected && !attributes.is_locked() && !layer.is_locked(),
                 width,
                 point_radius: if selected { 3.5 } else { 2.5 },
             });
@@ -306,7 +306,7 @@ impl Viewport {
                 }
                 Geometry::PointCloud(cloud) => {
                     for (index, point) in cloud.points().iter().enumerate() {
-                        let color = if object.point_colors_enabled {
+                        let color = if object.member_colors_enabled {
                             cloud.colors().map_or(object.color, |colors| {
                                 let [red, green, blue, transparency] = colors[index];
                                 let color = Color32::from_rgba_unmultiplied(
@@ -336,6 +336,7 @@ impl Viewport {
                             mesh,
                             display.normals(),
                             object.color,
+                            object.member_colors_enabled,
                         );
                     }
                     for &[a, b] in display.wires() {
@@ -444,7 +445,13 @@ impl Viewport {
             return;
         }
 
-        self.add_gpu_mesh_faces_with_normals(scene, mesh, &smooth_corner_normals(mesh), color);
+        self.add_gpu_mesh_faces_with_normals(
+            scene,
+            mesh,
+            &smooth_corner_normals(mesh),
+            color,
+            true,
+        );
     }
 
     fn add_gpu_mesh_faces_with_normals(
@@ -453,6 +460,7 @@ impl Viewport {
         mesh: &TriangleMesh,
         corner_normals: &[[NaVector3<Real>; 3]],
         color: Color32,
+        member_colors_enabled: bool,
     ) {
         let face_color = if self.display_mode == DisplayMode::Ghosted {
             color_with_alpha(color, 35)
@@ -477,6 +485,22 @@ impl Viewport {
                 continue;
             };
             let normals = normals.map(vector_to_gpu);
+            let vertex_colors = if member_colors_enabled {
+                mesh.vertex_colors().map(|colors| {
+                    mesh.triangles()[triangle_index].map(|index| {
+                        let [red, green, blue, transparency] = colors[index as usize];
+                        let alpha = if self.display_mode == DisplayMode::Ghosted {
+                            35
+                        } else {
+                            255 - transparency
+                        };
+                        color_to_gpu(Color32::from_rgba_unmultiplied(red, green, blue, alpha))
+                    })
+                })
+            } else {
+                None
+            }
+            .unwrap_or([gpu_color; 3]);
             let vertex_depths = points.map(|point| self.view_depth(point));
             let depth_scale = vertex_depths.iter().map(|d| d.abs()).fold(0.0, Real::max);
             let mut depth = 0.0;
@@ -500,17 +524,17 @@ impl Viewport {
                     GpuTriangleVertex {
                         position: first,
                         normal: normals[0],
-                        color: gpu_color,
+                        color: vertex_colors[0],
                     },
                     GpuTriangleVertex {
                         position: second,
                         normal: normals[1],
-                        color: gpu_color,
+                        color: vertex_colors[1],
                     },
                     GpuTriangleVertex {
                         position: third,
                         normal: normals[2],
-                        color: gpu_color,
+                        color: vertex_colors[2],
                     },
                 ],
             });
@@ -649,6 +673,57 @@ mod tests {
                 .points
                 .iter()
                 .all(|point| point.color == color_to_gpu(SELECTED_COLOR))
+        );
+    }
+
+    #[test]
+    fn mesh_vertex_colors_reach_the_gpu_scene() {
+        let mut document = Document::default();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(-1.0, -1.0, 0.0),
+                point(1.0, -1.0, 0.0),
+                point(0.0, 1.0, 0.0),
+            ],
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap()
+        .try_with_vertex_colors(Some(vec![
+            [200, 20, 30, 0],
+            [40, 50, 220, 128],
+            [10, 240, 80, 0],
+        ]))
+        .unwrap();
+        let id = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        let mut view = Viewport::new(ViewKind::Top);
+        view.display_mode = DisplayMode::Shaded;
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let scene = view.object_scene(rect, &document);
+        assert_eq!(scene.triangles.len(), 3);
+        let expected = [
+            [200.0 / 255.0, 20.0 / 255.0, 30.0 / 255.0, 1.0],
+            [40.0 / 255.0, 50.0 / 255.0, 220.0 / 255.0, 127.0 / 255.0],
+            [10.0 / 255.0, 240.0 / 255.0, 80.0 / 255.0, 1.0],
+        ];
+        for (actual, expected) in scene.triangles.iter().zip(expected) {
+            assert!(
+                actual
+                    .color
+                    .iter()
+                    .zip(expected)
+                    .all(|(actual, expected)| (actual - expected).abs() <= 1.1 / 255.0)
+            );
+        }
+        document
+            .select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        let selected = view.object_scene(rect, &document);
+        assert!(
+            selected
+                .triangles
+                .iter()
+                .all(|vertex| vertex.color == color_to_gpu(SELECTED_COLOR))
         );
     }
 }
