@@ -13,8 +13,11 @@ construction plane. Circles and arcs offset radially in their own planes.
 Planar polylines use `Corner=Sharp` by default, extending neighboring offset
 segments to their intersection. `Corner=Chamfer` bridges convex gaps with a
 straight segment; concave corners still meet at the segment intersection.
+`Corner=Round` fills each convex gap with a tangent circular arc and returns a
+polycurve when any arcs are needed.
 Sharp results retain one parameter per source vertex. Chamfer results retain
 the source domain and assign new parameters when extra vertices are added.
+Round results retain the source domain across their line and arc segments.
 Collinear polylines use the construction
 plane; other planar polylines use their own plane, aligned with the
 construction plane normal when possible. A side point chooses the nearest
@@ -30,5 +33,5 @@ supporting line or circle is ambiguous and rejected.
 layer. Both choices create fresh object attributes. The command stages every
 result before changing the document, so an unsupported or degenerate selected
 curve leaves the document unchanged. Ellipse, NURBS, and polycurve
-offsets, as well as round/smooth corners, trim, cap, and construction-plane overrides, remain
+offsets, as well as smooth corners, trim, cap, and construction-plane overrides, remain
 to be implemented.

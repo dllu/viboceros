@@ -1,8 +1,8 @@
 //! Exact offsets of analytic curves in an oriented plane.
 
 use crate::{
-    Circle3, CircularArc3, Curve3, GeometryError, Point3, Polyline3, Real, Tolerance, UnitVector3,
-    Vector3,
+    Circle3, CircularArc3, Curve3, CurveSegment3, GeometryError, LineSegment,
+    MAX_POLYCURVE_SEGMENTS, Point3, PolyCurve3, Polyline3, Real, Tolerance, UnitVector3, Vector3,
 };
 
 /// How an offset polyline joins neighboring segments at a convex corner.
@@ -11,6 +11,7 @@ pub enum CurveOffsetCornerStyle {
     #[default]
     Sharp,
     Chamfer,
+    Round,
 }
 
 impl Curve3 {
@@ -78,13 +79,9 @@ impl Curve3 {
                         .try_reparameterized(arc.domain())?,
                 ))
             }
-            Self::Polyline(polyline) => Ok(Self::Polyline(offset_polyline(
-                polyline,
-                distance,
-                plane_normal,
-                tolerance,
-                corner,
-            )?)),
+            Self::Polyline(polyline) => {
+                offset_polyline(polyline, distance, plane_normal, tolerance, corner)
+            }
             _ => Err(GeometryError::UnsupportedCurveOffset),
         }
     }
@@ -187,7 +184,7 @@ fn offset_polyline(
     fallback: UnitVector3,
     tolerance: Tolerance,
     corner_style: CurveOffsetCornerStyle,
-) -> Result<Polyline3, GeometryError> {
+) -> Result<Curve3, GeometryError> {
     let normal = polyline_offset_normal(polyline, fallback, tolerance)?;
     let vertices = polyline.vertices();
     let closed = polyline.is_closed();
@@ -222,7 +219,7 @@ fn offset_polyline(
             let turn = directions[previous]
                 .cross(directions[index])?
                 .dot(normal.as_vector())?;
-            if corner_style == CurveOffsetCornerStyle::Chamfer
+            if corner_style != CurveOffsetCornerStyle::Sharp
                 && turn * distance < -tolerance.angular() * distance.abs()
             {
                 let pair = (
@@ -256,16 +253,6 @@ fn offset_polyline(
         }
         corners.push(corner);
     }
-    let mut result = Vec::with_capacity(vertices.len() + corners.len());
-    for &(incoming, outgoing) in &corners {
-        result.push(incoming);
-        if incoming != outgoing {
-            result.push(outgoing);
-        }
-    }
-    if closed {
-        result.push(result[0]);
-    }
     for index in 0..segment_count {
         let start = corners[index].1;
         let end = corners[(index + 1) % corners.len()].0;
@@ -277,6 +264,21 @@ fn offset_polyline(
                 context: "collapsed offset polyline segment",
             });
         }
+    }
+    if corner_style == CurveOffsetCornerStyle::Round && corners.iter().any(|(a, b)| a != b) {
+        return Ok(Curve3::PolyCurve(round_offset_polyline(
+            polyline, &corners, normal, tolerance,
+        )?));
+    }
+    let mut result = Vec::with_capacity(vertices.len() + corners.len());
+    for &(incoming, outgoing) in &corners {
+        result.push(incoming);
+        if incoming != outgoing {
+            result.push(outgoing);
+        }
+    }
+    if closed {
+        result.push(result[0]);
     }
     let parameters = if result.len() == vertices.len() {
         polyline.parameters().to_vec()
@@ -296,7 +298,56 @@ fn offset_polyline(
             })
             .collect()
     };
-    Polyline3::try_with_parameters(result, parameters, tolerance)
+    Ok(Curve3::Polyline(Polyline3::try_with_parameters(
+        result, parameters, tolerance,
+    )?))
+}
+
+fn round_offset_polyline(
+    source: &Polyline3,
+    corners: &[(Point3, Point3)],
+    normal: UnitVector3,
+    tolerance: Tolerance,
+) -> Result<PolyCurve3, GeometryError> {
+    let arc_count = corners.iter().filter(|(start, end)| start != end).count();
+    let segment_count = source.segment_count().saturating_add(arc_count);
+    if segment_count > MAX_POLYCURVE_SEGMENTS {
+        return Err(GeometryError::InvalidPolyCurve {
+            context: "segment count is outside the supported range",
+        });
+    }
+    let mut segments = Vec::<CurveSegment3>::with_capacity(segment_count);
+    for index in 0..source.segment_count() {
+        let next = (index + 1) % corners.len();
+        segments.push(CurveSegment3::Line(LineSegment::try_new(
+            corners[index].1,
+            corners[next].0,
+            tolerance,
+        )?));
+        let (start, end) = corners[next];
+        if start == end {
+            continue;
+        }
+        let center = source.vertices()[next];
+        let start_radial = center.vector_to(start)?.normalized_nonzero()?;
+        let end_radial = center.vector_to(end)?.normalized_nonzero()?;
+        let sine = start_radial
+            .as_vector()
+            .cross(end_radial.as_vector())?
+            .dot(normal.as_vector())?;
+        let cosine = start_radial.as_vector().dot(end_radial.as_vector())?;
+        let sweep = sine.abs().atan2(cosine);
+        let arc_normal = if sine < 0.0 {
+            normal.opposite()
+        } else {
+            normal
+        };
+        let circle = Circle3::try_from_center_point(center, start, arc_normal, tolerance)?;
+        segments.push(CurveSegment3::Arc(CircularArc3::try_from_circle_sweep(
+            circle, sweep,
+        )?));
+    }
+    PolyCurve3::try_new(segments)?.try_reparameterized(source.domain())
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -759,5 +810,152 @@ mod tests {
                 point(-1.0, 0.0, 0.0),
             ]
         );
+    }
+
+    #[test]
+    fn round_corner_is_an_exact_tangent_arc() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let source = Curve3::Polyline(
+            Polyline3::try_with_parameters(
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.0, -4.0, 0.0),
+                ],
+                vec![2.0, 5.0, 9.0],
+                tol,
+            )
+            .unwrap(),
+        );
+        let Curve3::PolyCurve(offset) = source
+            .try_offset_with_corner_style(1.0, normal, tol, CurveOffsetCornerStyle::Round)
+            .unwrap()
+        else {
+            panic!("round polycurve")
+        };
+        assert_eq!(offset.domain(), 2.0..=9.0);
+        assert_eq!(offset.segments().len(), 3);
+        let [
+            CurveSegment3::Line(first),
+            CurveSegment3::Arc(arc),
+            CurveSegment3::Line(last),
+        ] = offset.segments()
+        else {
+            panic!("line-arc-line")
+        };
+        assert_eq!(first.start(), point(0.0, 1.0, 0.0));
+        assert_eq!(first.end(), point(4.0, 1.0, 0.0));
+        assert_eq!(last.start(), point(5.0, 0.0, 0.0));
+        assert_eq!(last.end(), point(5.0, -4.0, 0.0));
+        assert_eq!(arc.center(), point(4.0, 0.0, 0.0));
+        assert_eq!(arc.radius(), 1.0);
+        assert!((arc.sweep_radians() - std::f64::consts::FRAC_PI_2).abs() < 1e-14);
+        let (_, start_tangent) = CurveSegment3::Arc(*arc)
+            .as_ref()
+            .evaluate_with_derivative(*arc.domain().start())
+            .unwrap();
+        let (_, end_tangent) = CurveSegment3::Arc(*arc)
+            .as_ref()
+            .evaluate_with_derivative(*arc.domain().end())
+            .unwrap();
+        assert!(
+            start_tangent
+                .normalized_nonzero()
+                .unwrap()
+                .as_vector()
+                .dot(first.direction(tol).unwrap().as_vector())
+                .unwrap()
+                > 1.0 - 1e-12
+        );
+        assert!(
+            end_tangent
+                .normalized_nonzero()
+                .unwrap()
+                .as_vector()
+                .dot(last.direction(tol).unwrap().as_vector())
+                .unwrap()
+                > 1.0 - 1e-12
+        );
+    }
+
+    #[test]
+    fn closed_round_offset_has_one_arc_per_convex_corner() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let source = Curve3::Polyline(
+            Polyline3::try_new(
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.0, 3.0, 0.0),
+                    point(0.0, 3.0, 0.0),
+                    point(0.0, 0.0, 0.0),
+                ],
+                tol,
+            )
+            .unwrap(),
+        );
+        let Curve3::PolyCurve(offset) = source
+            .try_offset_with_corner_style(-1.0, normal, tol, CurveOffsetCornerStyle::Round)
+            .unwrap()
+        else {
+            panic!("round polycurve")
+        };
+        assert_eq!(offset.domain(), 0.0..=4.0);
+        assert_eq!(offset.segments().len(), 8);
+        assert!(offset.is_closed().unwrap());
+        assert_eq!(
+            offset
+                .segments()
+                .iter()
+                .filter(|s| matches!(s, CurveSegment3::Arc(_)))
+                .count(),
+            4
+        );
+    }
+
+    #[test]
+    fn round_corner_respects_rotated_native_plane() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 1.0, 0.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let source = Curve3::Polyline(
+            Polyline3::try_new(
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.0, 0.0, 4.0),
+                ],
+                tol,
+            )
+            .unwrap(),
+        );
+        let Curve3::PolyCurve(offset) = source
+            .try_offset_with_corner_style(1.0, normal, tol, CurveOffsetCornerStyle::Round)
+            .unwrap()
+        else {
+            panic!("round polycurve")
+        };
+        let [
+            CurveSegment3::Line(first),
+            CurveSegment3::Arc(arc),
+            CurveSegment3::Line(last),
+        ] = offset.segments()
+        else {
+            panic!("line-arc-line")
+        };
+        assert_eq!(first.end(), point(4.0, 0.0, -1.0));
+        assert_eq!(last.start(), point(5.0, 0.0, 0.0));
+        assert_eq!(arc.center(), point(4.0, 0.0, 0.0));
+        assert_eq!(arc.normal().unwrap(), normal.opposite());
     }
 }

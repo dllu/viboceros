@@ -5,7 +5,7 @@ use super::*;
 #[cfg(test)]
 mod tests;
 
-const USAGE: &str = "Offset distance side-point [BothSides=Yes|No] [Corner=Sharp|Chamfer] [OutputLayer=Current|Input] | Offset distance BothSides=Yes [Corner=Sharp|Chamfer] [OutputLayer=Current|Input]";
+const USAGE: &str = "Offset distance side-point [BothSides=Yes|No] [Corner=Sharp|Chamfer|Round] [OutputLayer=Current|Input] | Offset distance BothSides=Yes [Corner=Sharp|Chamfer|Round] [OutputLayer=Current|Input]";
 
 pub(super) struct OffsetCommand;
 
@@ -157,6 +157,8 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
                 CurveOffsetCornerStyle::Sharp
             } else if value.eq_ignore_ascii_case("Chamfer") {
                 CurveOffsetCornerStyle::Chamfer
+            } else if value.eq_ignore_ascii_case("Round") {
+                CurveOffsetCornerStyle::Round
             } else {
                 return Err(CommandError::Usage(USAGE));
             };

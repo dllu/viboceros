@@ -155,9 +155,76 @@ fn chamfer_option_adds_straight_bridge_at_convex_corner() {
         ]
     );
     assert!(matches!(
-        parse(&["1", "1,2,0", "Corner=Round"]),
+        parse(&["1", "1,2,0", "Corner=Smooth"]),
         Err(CommandError::Usage(_))
     ));
+}
+
+#[test]
+fn round_option_creates_selected_tangent_polycurve() {
+    let mut document = Document::default();
+    let source = document
+        .add_geometry(Geometry::Polyline(
+            viboceros_geometry::Polyline3::try_new(
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.0, -4.0, 0.0),
+                ],
+                document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    document
+        .select_object(source, SelectionMode::Replace)
+        .unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "Offset 1 1,2,0 Corner=Round")
+        .unwrap();
+    let Geometry::PolyCurve(output) = document.selected_objects().next().unwrap().geometry() else {
+        panic!("round polycurve")
+    };
+    assert_eq!(output.segments().len(), 3);
+    assert!(matches!(
+        output.segments()[1],
+        viboceros_geometry::CurveSegment3::Arc(_)
+    ));
+    assert_eq!(document.objects().count(), 2);
+}
+
+#[test]
+fn round_both_sides_keeps_inner_sharp_and_outer_rounded() {
+    let mut document = Document::default();
+    let source = document
+        .add_geometry(Geometry::Polyline(
+            viboceros_geometry::Polyline3::try_new(
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    point(4.0, 3.0, 0.0),
+                    point(0.0, 3.0, 0.0),
+                    point(0.0, 0.0, 0.0),
+                ],
+                document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    document
+        .select_object(source, SelectionMode::Replace)
+        .unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "Offset 1 BothSides=Yes Corner=Round")
+        .unwrap();
+    let results = document
+        .selected_objects()
+        .map(|object| object.geometry())
+        .collect::<Vec<_>>();
+    assert_eq!(results.len(), 2);
+    assert!(matches!(results[0], Geometry::Polyline(_)));
+    assert!(matches!(results[1], Geometry::PolyCurve(_)));
+    assert_eq!(document.objects().count(), 3);
 }
 
 #[test]
