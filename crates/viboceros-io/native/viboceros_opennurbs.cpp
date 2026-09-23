@@ -123,6 +123,12 @@ constexpr uint8_t kPolyCurveMagic[8] = {'V', 'I', 'B', 'O', 'P', 'L', 'Y', 0};
 constexpr uint32_t kPolyCurveVersion = 2;
 constexpr uint8_t kNgonMagic[8] = {'V', 'I', 'B', 'O', 'N', 'G', 'O', 'N'};
 constexpr uint32_t kNgonVersion = 2;
+constexpr uint8_t kPointCloudMagic[8] = {'V', 'I', 'B', 'O', 'P', 'C', 'L', 'D'};
+constexpr uint32_t kPointCloudVersion = 1;
+constexpr uint32_t kPointCloudColors = 1;
+constexpr uint32_t kPointCloudNormals = 2;
+constexpr uint32_t kPointCloudValues = 4;
+constexpr uint32_t kPointCloudOrdered = 8;
 constexpr size_t kMaxPolyCurveSegments = 65536;
 constexpr uint64_t kNoEdge = std::numeric_limits<uint64_t>::max();
 
@@ -265,15 +271,49 @@ bool append_point_cloud(const ON_PointCloud& cloud, BridgeObject& output) {
     output.coordinates.insert(output.coordinates.end(),
                               {point.x, point.y, point.z});
   }
-  if (cloud.HasPointColors()) {
-    output.geometry_data.reserve(static_cast<size_t>(cloud.PointCount()) * 4);
+  const bool has_colors = cloud.HasPointColors();
+  const bool has_normals = cloud.HasPointNormals();
+  const bool has_values = cloud.HasPointValues();
+  const bool ordered = cloud.IsOrdered();
+  if (has_colors || has_normals || has_values || ordered) {
+    ByteWriter writer(output.geometry_data);
+    writer.Bytes(kPointCloudMagic, sizeof(kPointCloudMagic));
+    writer.U32(kPointCloudVersion);
+    writer.U32((has_colors ? kPointCloudColors : 0U) |
+               (has_normals ? kPointCloudNormals : 0U) |
+               (has_values ? kPointCloudValues : 0U) |
+               (ordered ? kPointCloudOrdered : 0U));
+  }
+  if (has_colors) {
+    ByteWriter writer(output.geometry_data);
     for (int index = 0; index < cloud.PointCount(); ++index) {
       const ON_Color color = cloud.m_C[index];
-      output.geometry_data.insert(output.geometry_data.end(),
-                                  {static_cast<uint8_t>(color.Red()),
-                                   static_cast<uint8_t>(color.Green()),
-                                   static_cast<uint8_t>(color.Blue()),
-                                   static_cast<uint8_t>(color.Alpha())});
+      writer.U8(static_cast<uint8_t>(color.Red()));
+      writer.U8(static_cast<uint8_t>(color.Green()));
+      writer.U8(static_cast<uint8_t>(color.Blue()));
+      writer.U8(static_cast<uint8_t>(color.Alpha()));
+    }
+  }
+  if (has_normals) {
+    ByteWriter writer(output.geometry_data);
+    for (int index = 0; index < cloud.PointCount(); ++index) {
+      const ON_3dVector normal = cloud.m_N[index];
+      if (!normal.IsValid()) {
+        return false;
+      }
+      writer.Double(normal.x);
+      writer.Double(normal.y);
+      writer.Double(normal.z);
+    }
+  }
+  if (has_values) {
+    ByteWriter writer(output.geometry_data);
+    for (int index = 0; index < cloud.PointCount(); ++index) {
+      const double value = cloud.m_V[index];
+      if (!std::isfinite(value)) {
+        return false;
+      }
+      writer.Double(value);
     }
   }
   return true;
@@ -1258,9 +1298,7 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
       if (source.coordinate_count == 0 || source.coordinate_count % 3 != 0 ||
           source.coordinate_count / 3 >
               static_cast<size_t>(std::numeric_limits<int>::max()) ||
-          (source.geometry_data_count != 0 &&
-           (source.geometry_data == nullptr ||
-            source.geometry_data_count != source.coordinate_count / 3 * 4))) {
+          (source.geometry_data_count != 0 && source.geometry_data == nullptr)) {
         error = "point cloud dimensions are inconsistent";
         return nullptr;
       }
@@ -1269,10 +1307,77 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
       for (size_t index = 0; index < point_count; ++index) {
         const double* point = source.coordinates + index * 3;
         cloud->AppendPoint(ON_3dPoint(point[0], point[1], point[2]));
-        if (source.geometry_data_count != 0) {
-          const uint8_t* rgba = source.geometry_data + index * 4;
-          cloud->m_C.Append(ON_Color(rgba[0], rgba[1], rgba[2], rgba[3]));
+      }
+      if (source.geometry_data_count != 0) {
+        ByteReader reader(source.geometry_data, source.geometry_data_count);
+        uint32_t version = 0;
+        uint32_t flags = 0;
+        if (!reader.Bytes(kPointCloudMagic, sizeof(kPointCloudMagic)) ||
+            !reader.U32(version) || version != kPointCloudVersion ||
+            !reader.U32(flags) || flags == 0 ||
+            (flags & ~(kPointCloudColors | kPointCloudNormals |
+                       kPointCloudValues | kPointCloudOrdered)) != 0) {
+          delete cloud;
+          error = "point cloud channel payload is invalid";
+          return nullptr;
         }
+        if (flags & kPointCloudColors) {
+          if (point_count > reader.Remaining() / 4) {
+            delete cloud;
+            error = "point cloud colors are truncated";
+            return nullptr;
+          }
+          for (size_t index = 0; index < point_count; ++index) {
+            uint8_t rgba[4];
+            for (uint8_t& component : rgba) {
+              reader.U8(component);
+            }
+            cloud->m_C.Append(ON_Color(rgba[0], rgba[1], rgba[2], rgba[3]));
+          }
+        }
+        if (flags & kPointCloudNormals) {
+          if (point_count > reader.Remaining() / (3 * sizeof(double))) {
+            delete cloud;
+            error = "point cloud normals are truncated";
+            return nullptr;
+          }
+          for (size_t index = 0; index < point_count; ++index) {
+            double coordinates[3];
+            for (double& coordinate : coordinates) {
+              reader.Double(coordinate);
+            }
+            ON_3dVector normal(coordinates[0], coordinates[1], coordinates[2]);
+            if (!normal.IsValid()) {
+              delete cloud;
+              error = "point cloud normal is invalid";
+              return nullptr;
+            }
+            cloud->m_N.Append(normal);
+          }
+        }
+        if (flags & kPointCloudValues) {
+          if (point_count > reader.Remaining() / sizeof(double)) {
+            delete cloud;
+            error = "point cloud values are truncated";
+            return nullptr;
+          }
+          for (size_t index = 0; index < point_count; ++index) {
+            double value = 0.0;
+            reader.Double(value);
+            if (!std::isfinite(value)) {
+              delete cloud;
+              error = "point cloud value is invalid";
+              return nullptr;
+            }
+            cloud->m_V.Append(value);
+          }
+        }
+        if (!reader.Finished()) {
+          delete cloud;
+          error = "point cloud channel payload has trailing bytes";
+          return nullptr;
+        }
+        cloud->SetOrdered((flags & kPointCloudOrdered) != 0);
       }
       if (!cloud->IsValid()) {
         delete cloud;

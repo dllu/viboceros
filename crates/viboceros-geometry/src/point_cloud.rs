@@ -1,6 +1,6 @@
 use std::sync::{Arc, OnceLock};
 
-use crate::{AffineTransform3, BoundingBox3, Frame3, GeometryError, Point3, Real};
+use crate::{AffineTransform3, BoundingBox3, Frame3, GeometryError, Point3, Real, Vector3};
 
 mod index;
 use index::{NodeBounds, ProjectedIndex, SearchRegion};
@@ -35,11 +35,20 @@ pub struct PointCloud3 {
     data: Arc<PointCloudData>,
 }
 
+/// Optional per-point channels and the OpenNURBS ordered-stream flag.
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct PointCloudChannels {
+    /// OpenNURBS alpha is transparency: zero is opaque.
+    pub colors: Option<Vec<[u8; 4]>>,
+    pub normals: Option<Vec<Vector3>>,
+    pub values: Option<Vec<Real>>,
+    pub ordered: bool,
+}
+
 #[derive(Debug)]
 struct PointCloudData {
     points: Vec<Point3>,
-    /// OpenNURBS RGBA bytes; alpha is transparency (0 is opaque).
-    colors: Option<Vec<[u8; 4]>>,
+    channels: PointCloudChannels,
     bounds: BoundingBox3,
     xy: ProjectedIndex,
     xz: OnceLock<ProjectedIndex>,
@@ -61,18 +70,56 @@ impl PointCloud3 {
         points: Vec<Point3>,
         colors: Option<Vec<[u8; 4]>>,
     ) -> Result<Self, GeometryError> {
-        if colors
+        Self::try_with_channels(
+            points,
+            PointCloudChannels {
+                colors,
+                ..PointCloudChannels::default()
+            },
+        )
+    }
+
+    /// Creates a point cloud with validated, index-aligned optional channels.
+    pub fn try_with_channels(
+        points: Vec<Point3>,
+        channels: PointCloudChannels,
+    ) -> Result<Self, GeometryError> {
+        if channels
+            .colors
             .as_ref()
             .is_some_and(|colors| colors.len() != points.len())
         {
             return Err(GeometryError::InvalidPointCloudColorCount);
+        }
+        if channels
+            .normals
+            .as_ref()
+            .is_some_and(|normals| normals.len() != points.len())
+        {
+            return Err(GeometryError::InvalidPointCloudNormalCount);
+        }
+        if channels
+            .values
+            .as_ref()
+            .is_some_and(|values| values.len() != points.len())
+        {
+            return Err(GeometryError::InvalidPointCloudValueCount);
+        }
+        if channels
+            .values
+            .as_ref()
+            .is_some_and(|values| values.iter().any(|value| !value.is_finite()))
+        {
+            return Err(GeometryError::NonFinite {
+                context: "point cloud values",
+            });
         }
         let bounds = BoundingBox3::from_points(points.iter().copied())?;
         let xy = ProjectedIndex::new(&points, PointCloudProjection::Xy);
         Ok(Self {
             data: Arc::new(PointCloudData {
                 points,
-                colors,
+                channels,
                 bounds,
                 xy,
                 xz: OnceLock::new(),
@@ -89,7 +136,23 @@ impl PointCloud3 {
 
     #[inline]
     pub fn colors(&self) -> Option<&[[u8; 4]]> {
-        self.data.colors.as_deref()
+        self.data.channels.colors.as_deref()
+    }
+
+    pub fn normals(&self) -> Option<&[Vector3]> {
+        self.data.channels.normals.as_deref()
+    }
+
+    pub fn values(&self) -> Option<&[Real]> {
+        self.data.channels.values.as_deref()
+    }
+
+    pub fn is_ordered(&self) -> bool {
+        self.data.channels.ordered
+    }
+
+    pub fn channels(&self) -> &PointCloudChannels {
+        &self.data.channels
     }
 
     #[inline]
@@ -98,13 +161,13 @@ impl PointCloud3 {
     }
 
     pub fn transformed(&self, transform: AffineTransform3) -> Result<Self, GeometryError> {
-        Self::try_with_colors(
+        Self::try_with_channels(
             self.data
                 .points
                 .iter()
                 .map(|point| transform.transform_point(*point))
                 .collect::<Result<Vec<_>, _>>()?,
-            self.data.colors.clone(),
+            self.data.channels.clone(),
         )
     }
 
@@ -260,7 +323,7 @@ impl PointCloud3 {
 impl PartialEq for PointCloud3 {
     fn eq(&self, other: &Self) -> bool {
         Arc::ptr_eq(&self.data, &other.data)
-            || (self.data.points == other.data.points && self.data.colors == other.data.colors)
+            || (self.data.points == other.data.points && self.data.channels == other.data.channels)
     }
 }
 

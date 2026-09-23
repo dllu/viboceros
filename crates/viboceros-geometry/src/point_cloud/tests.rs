@@ -27,6 +27,65 @@ fn optional_point_colors_validate_and_survive_transforms() {
 }
 
 #[test]
+fn optional_normals_values_and_order_validate_and_survive_transforms() {
+    let points = vec![point(1.0, 2.0, 3.0), point(4.0, 5.0, 6.0)];
+    let normals = vec![
+        Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+        Vector3::try_new(1.0, 2.0, 3.0).unwrap(),
+    ];
+    let channels = PointCloudChannels {
+        normals: Some(normals.clone()),
+        values: Some(vec![0.5, -20.0]),
+        ordered: true,
+        ..PointCloudChannels::default()
+    };
+    assert_eq!(
+        PointCloud3::try_with_channels(
+            points.clone(),
+            PointCloudChannels {
+                normals: Some(vec![normals[0]]),
+                ..channels.clone()
+            },
+        ),
+        Err(GeometryError::InvalidPointCloudNormalCount)
+    );
+    assert_eq!(
+        PointCloud3::try_with_channels(
+            points.clone(),
+            PointCloudChannels {
+                values: Some(vec![0.5]),
+                ..channels.clone()
+            },
+        ),
+        Err(GeometryError::InvalidPointCloudValueCount)
+    );
+    assert!(matches!(
+        PointCloud3::try_with_channels(
+            points.clone(),
+            PointCloudChannels {
+                values: Some(vec![f64::NAN, 0.0]),
+                ..channels.clone()
+            },
+        ),
+        Err(GeometryError::NonFinite { .. })
+    ));
+    let cloud = PointCloud3::try_with_channels(points, channels.clone()).unwrap();
+    let moved = cloud
+        .transformed(AffineTransform3::from_translation(
+            Vector3::try_new(3.0, 0.0, 0.0).unwrap(),
+        ))
+        .unwrap();
+    assert_eq!(moved.channels(), &channels);
+    assert_eq!(moved.normals(), Some(normals.as_slice()));
+    assert_eq!(moved.values(), Some(&[0.5, -20.0][..]));
+    assert!(moved.is_ordered());
+    assert_ne!(
+        cloud,
+        PointCloud3::try_new(cloud.points().to_vec()).unwrap()
+    );
+}
+
+#[test]
 fn square_indexes_match_exhaustive_queries_in_each_plane() {
     for translation in [0., 2.0_f64.powi(52), -2.0_f64.powi(52)] {
         let origin = point(translation, translation, translation);

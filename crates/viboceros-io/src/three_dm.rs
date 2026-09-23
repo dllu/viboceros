@@ -15,6 +15,7 @@ use crate::LengthUnitSystem;
 use crate::three_dm_geometry::{self, GeometryCodecError};
 
 mod mesh_ngon;
+mod point_cloud_data;
 
 const ERROR_CAPACITY: usize = 4096;
 const OBJECT_POINT: c_int = 1;
@@ -721,22 +722,15 @@ fn decode_object(
                 && coordinates.len() % 3 == 0
                 && knots_u.is_empty()
                 && knots_v.is_empty()
-                && indices.is_empty()
-                && (geometry_data.is_empty()
-                    || geometry_data.len() == coordinates.len() / 3 * 4) =>
+                && indices.is_empty() =>
         {
-            let colors = (!geometry_data.is_empty()).then(|| {
-                geometry_data
-                    .chunks_exact(4)
-                    .map(|rgba| [rgba[0], rgba[1], rgba[2], rgba[3]])
-                    .collect()
-            });
-            ThreeDmGeometry::PointCloud(PointCloud3::try_with_colors(
+            let channels = point_cloud_data::decode(geometry_data, coordinates.len() / 3)?;
+            ThreeDmGeometry::PointCloud(PointCloud3::try_with_channels(
                 coordinates
                     .chunks_exact(3)
                     .map(point)
                     .collect::<Result<Vec<_>, _>>()?,
-                colors,
+                channels,
             )?)
         }
         OBJECT_POLYLINE
@@ -1049,10 +1043,7 @@ impl ObjectPayload {
                 knots_u: Vec::new(),
                 knots_v: Vec::new(),
                 indices: Vec::new(),
-                geometry_data: cloud
-                    .colors()
-                    .map(|colors| colors.iter().flat_map(|rgba| *rgba).collect())
-                    .unwrap_or_default(),
+                geometry_data: point_cloud_data::encode(cloud),
             },
             ThreeDmGeometry::Polyline(curve) => Self {
                 object_type: OBJECT_POLYLINE,
@@ -1942,15 +1933,31 @@ mod tests {
     }
 
     #[test]
-    fn point_cloud_colors_round_trip_through_opennurbs() {
+    fn point_cloud_channels_round_trip_through_opennurbs() {
         let directory = tempfile::tempdir().unwrap();
         let path = directory.path().join("colored-cloud.3dm");
-        let cloud = PointCloud3::try_with_colors(
+        let cloud = PointCloud3::try_with_channels(
             vec![
                 Point3::try_new(1.0, 2.0, 3.0).unwrap(),
                 Point3::try_new(4.0, 5.0, 6.0).unwrap(),
             ],
-            Some(vec![[12, 34, 56, 0], [78, 90, 123, 128]]),
+            viboceros_geometry::PointCloudChannels {
+                colors: Some(vec![[12, 34, 56, 0], [78, 90, 123, 128]]),
+                normals: Some(vec![
+                    viboceros_geometry::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+                    viboceros_geometry::Vector3::try_new(1.0, 2.0, 3.0).unwrap(),
+                ]),
+                values: Some(vec![0.5, -20.0]),
+                ordered: true,
+            },
+        )
+        .unwrap();
+        let ordered_only = PointCloud3::try_with_channels(
+            vec![Point3::try_new(-1.0, 0.0, 0.0).unwrap()],
+            viboceros_geometry::PointCloudChannels {
+                ordered: true,
+                ..viboceros_geometry::PointCloudChannels::default()
+            },
         )
         .unwrap();
         let model = ThreeDmModel::new(
@@ -1961,10 +1968,10 @@ mod tests {
                 locked: false,
             }],
             vec![],
-            vec![ThreeDmObject::new(
-                ThreeDmGeometry::PointCloud(cloud.clone()),
-                0,
-            )],
+            vec![
+                ThreeDmObject::new(ThreeDmGeometry::PointCloud(cloud.clone()), 0),
+                ThreeDmObject::new(ThreeDmGeometry::PointCloud(ordered_only.clone()), 0),
+            ],
         );
         write_3dm_file(&path, &model).unwrap();
         let loaded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
@@ -1972,6 +1979,10 @@ mod tests {
         assert_eq!(
             loaded.objects[0].geometry,
             ThreeDmGeometry::PointCloud(cloud)
+        );
+        assert_eq!(
+            loaded.objects[1].geometry,
+            ThreeDmGeometry::PointCloud(ordered_only)
         );
     }
 

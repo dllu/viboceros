@@ -178,9 +178,20 @@ fn add_points_and_another_cloud_preserves_target_and_undo() {
         ))
         .unwrap();
     let point = doc.add_geometry(Geometry::Point(p(2.0))).unwrap();
+    let normal = viboceros_geometry::Vector3::try_new(0.0, 0.0, 1.0).unwrap();
+    let zero = viboceros_geometry::Vector3::try_new(0.0, 0.0, 0.0).unwrap();
     let source = doc
         .add_geometry(Geometry::PointCloud(
-            PointCloud3::try_new(vec![p(3.0), p(3.0)]).unwrap(),
+            PointCloud3::try_with_channels(
+                vec![p(3.0), p(3.0)],
+                viboceros_geometry::PointCloudChannels {
+                    normals: Some(vec![normal, normal]),
+                    values: Some(vec![7.0, 9.0]),
+                    ordered: true,
+                    ..viboceros_geometry::PointCloudChannels::default()
+                },
+            )
+            .unwrap(),
         ))
         .unwrap();
     let group = doc.add_group(Some("cloud".into()), [target]).unwrap();
@@ -202,6 +213,9 @@ fn add_points_and_another_cloud_preserves_target_and_undo() {
         panic!()
     };
     assert_eq!(cloud.points(), [p(1.0), p(2.0), p(3.0), p(3.0)]);
+    assert_eq!(cloud.normals().unwrap(), [zero, zero, normal, normal]);
+    assert_eq!(cloud.values().unwrap(), [0.0, 0.0, 7.0, 9.0]);
+    assert!(!cloud.is_ordered());
     assert!(doc.is_selected(target));
     registry.execute(&mut doc, "Undo").unwrap();
     assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
@@ -337,11 +351,19 @@ fn creation_inherits_source_display_colors_and_undoes() {
 #[test]
 fn cloud_edits_keep_member_colors_aligned_with_stored_points() {
     let mut doc = Document::default();
+    let up = viboceros_geometry::Vector3::try_new(0.0, 0.0, 1.0).unwrap();
+    let side = viboceros_geometry::Vector3::try_new(1.0, 0.0, 0.0).unwrap();
+    let zero = viboceros_geometry::Vector3::try_new(0.0, 0.0, 0.0).unwrap();
     let target = doc
         .add_geometry(Geometry::PointCloud(
-            PointCloud3::try_with_colors(
+            PointCloud3::try_with_channels(
                 vec![p(1.0), p(2.0)],
-                Some(vec![[10, 20, 30, 0], [40, 50, 60, 128]]),
+                viboceros_geometry::PointCloudChannels {
+                    colors: Some(vec![[10, 20, 30, 0], [40, 50, 60, 128]]),
+                    normals: Some(vec![up, side]),
+                    values: Some(vec![3.5, 7.25]),
+                    ordered: true,
+                },
             )
             .unwrap(),
         ))
@@ -358,6 +380,9 @@ fn cloud_edits_keep_member_colors_aligned_with_stored_points() {
         cloud.colors().unwrap()[..2],
         [[10, 20, 30, 0], [40, 50, 60, 128]]
     );
+    assert_eq!(cloud.normals().unwrap(), [up, side, zero]);
+    assert_eq!(cloud.values().unwrap(), [3.5, 7.25, 0.0]);
+    assert!(cloud.is_ordered());
     let added_color = cloud.colors().unwrap()[2];
     registry
         .execute(&mut doc, "PointCloud Remove Indices=1 Output=PointCloud")
@@ -367,6 +392,9 @@ fn cloud_edits_keep_member_colors_aligned_with_stored_points() {
     };
     assert_eq!(retained.points(), [p(1.0), p(3.0)]);
     assert_eq!(retained.colors().unwrap(), [[10, 20, 30, 0], added_color]);
+    assert_eq!(retained.normals().unwrap(), [up, zero]);
+    assert_eq!(retained.values().unwrap(), [3.5, 0.0]);
+    assert!(retained.is_ordered());
     let removed = doc
         .objects()
         .find_map(|object| {
@@ -380,6 +408,9 @@ fn cloud_edits_keep_member_colors_aligned_with_stored_points() {
         .unwrap();
     assert_eq!(removed.points(), [p(2.0)]);
     assert_eq!(removed.colors().unwrap(), [[40, 50, 60, 128]]);
+    assert_eq!(removed.normals().unwrap(), [side]);
+    assert_eq!(removed.values().unwrap(), [7.25]);
+    assert!(removed.is_ordered());
     registry
         .execute(&mut doc, "PointCloud Remove Indices=0 Output=Points")
         .unwrap();

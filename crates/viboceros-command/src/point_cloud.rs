@@ -190,6 +190,21 @@ fn source_display_color(
     Ok([color.red, color.green, color.blue, 0])
 }
 
+fn channels_for_indices(
+    cloud: &PointCloud3,
+    indices: &[usize],
+) -> viboceros_geometry::PointCloudChannels {
+    fn select<T: Copy>(values: Option<&[T]>, indices: &[usize]) -> Option<Vec<T>> {
+        values.map(|values| indices.iter().map(|&index| values[index]).collect())
+    }
+    viboceros_geometry::PointCloudChannels {
+        colors: select(cloud.colors(), indices),
+        normals: select(cloud.normals(), indices),
+        values: select(cloud.values(), indices),
+        ordered: cloud.is_ordered(),
+    }
+}
+
 fn add(document: &mut Document, explicit: Option<ObjectId>) -> Result<String, CommandError> {
     let target = selected_target(document, explicit)?;
     let Geometry::PointCloud(cloud) = document.object(target).unwrap().geometry() else {
@@ -202,6 +217,16 @@ fn add(document: &mut Document, explicit: Option<ObjectId>) -> Result<String, Co
             object.id() != target
                 && matches!(object.geometry(), Geometry::PointCloud(source) if source.colors().is_some())
         });
+    let use_normals = cloud.normals().is_some()
+        || document.selected_objects().any(|object| {
+            object.id() != target
+                && matches!(object.geometry(), Geometry::PointCloud(source) if source.normals().is_some())
+        });
+    let use_values = cloud.values().is_some()
+        || document.selected_objects().any(|object| {
+            object.id() != target
+                && matches!(object.geometry(), Geometry::PointCloud(source) if source.values().is_some())
+        });
     let mut colors = if use_colors {
         Some(if let Some(colors) = cloud.colors() {
             colors.to_vec()
@@ -211,6 +236,19 @@ fn add(document: &mut Document, explicit: Option<ObjectId>) -> Result<String, Co
     } else {
         None
     };
+    let zero_normal = viboceros_geometry::Vector3::try_new(0.0, 0.0, 0.0).unwrap();
+    let mut normals = use_normals.then(|| {
+        cloud
+            .normals()
+            .map(<[_]>::to_vec)
+            .unwrap_or_else(|| vec![zero_normal; old_count])
+    });
+    let mut values = use_values.then(|| {
+        cloud
+            .values()
+            .map(<[_]>::to_vec)
+            .unwrap_or_else(|| vec![0.0; old_count])
+    });
     let mut consumed = Vec::new();
     for object in document.selected_objects() {
         if object.id() == target {
@@ -221,6 +259,12 @@ fn add(document: &mut Document, explicit: Option<ObjectId>) -> Result<String, Co
                 points.push(*point);
                 if let Some(colors) = &mut colors {
                     colors.push(source_display_color(document, object)?);
+                }
+                if let Some(normals) = &mut normals {
+                    normals.push(zero_normal);
+                }
+                if let Some(values) = &mut values {
+                    values.push(0.0);
                 }
                 consumed.push(object.id());
             }
@@ -236,6 +280,20 @@ fn add(document: &mut Document, explicit: Option<ObjectId>) -> Result<String, Co
                         ));
                     }
                 }
+                if let Some(normals) = &mut normals {
+                    if let Some(source_normals) = source.normals() {
+                        normals.extend_from_slice(source_normals);
+                    } else {
+                        normals.extend(std::iter::repeat_n(zero_normal, source.points().len()));
+                    }
+                }
+                if let Some(values) = &mut values {
+                    if let Some(source_values) = source.values() {
+                        values.extend_from_slice(source_values);
+                    } else {
+                        values.extend(std::iter::repeat_n(0.0, source.points().len()));
+                    }
+                }
                 consumed.push(object.id());
             }
             _ => {}
@@ -245,9 +303,18 @@ fn add(document: &mut Document, explicit: Option<ObjectId>) -> Result<String, Co
         return Err(CommandError::PointCloudRequiresAddSources);
     }
     let added = points.len() - old_count;
+    let ordered = cloud.is_ordered();
     document.replace_object_geometries([(
         target,
-        Geometry::PointCloud(PointCloud3::try_with_colors(points, colors)?),
+        Geometry::PointCloud(PointCloud3::try_with_channels(
+            points,
+            viboceros_geometry::PointCloudChannels {
+                colors,
+                normals,
+                values,
+                ordered,
+            },
+        )?),
     )])?;
     document.delete_objects(consumed)?;
     Ok(format!("Added {added} points to point cloud"))
@@ -271,42 +338,37 @@ fn remove(
         return Err(CommandError::PointCloudIndexOutOfRange);
     }
     let attributes = object.attributes().clone();
-    let mut removed = Vec::with_capacity(indices.len());
-    let mut retained = Vec::with_capacity(cloud.points().len() - indices.len());
-    let mut removed_colors = cloud.colors().map(|_| Vec::with_capacity(indices.len()));
-    let mut retained_colors = cloud
-        .colors()
-        .map(|_| Vec::with_capacity(cloud.points().len() - indices.len()));
-    for (index, point) in cloud.points().iter().copied().enumerate() {
-        if indices.contains(&index) {
-            removed.push(point);
-            if let Some(colors) = &mut removed_colors {
-                colors.push(cloud.colors().unwrap()[index]);
-            }
-        } else {
-            retained.push(point);
-            if let Some(colors) = &mut retained_colors {
-                colors.push(cloud.colors().unwrap()[index]);
-            }
-        }
-    }
+    let removed_indices = indices.iter().copied().collect::<Vec<_>>();
+    let retained_indices = (0..cloud.points().len())
+        .filter(|index| !indices.contains(index))
+        .collect::<Vec<_>>();
+    let removed = removed_indices
+        .iter()
+        .map(|&index| cloud.points()[index])
+        .collect::<Vec<_>>();
+    let retained = retained_indices
+        .iter()
+        .map(|&index| cloud.points()[index])
+        .collect::<Vec<_>>();
+    let removed_channels = channels_for_indices(cloud, &removed_indices);
+    let retained_channels = channels_for_indices(cloud, &retained_indices);
     if retained.is_empty() {
         document.delete_object(target)?;
     } else {
         document.replace_object_geometries([(
             target,
-            Geometry::PointCloud(PointCloud3::try_with_colors(retained, retained_colors)?),
+            Geometry::PointCloud(PointCloud3::try_with_channels(retained, retained_channels)?),
         )])?;
     }
     if output_cloud {
         document.add_geometry_with_attributes(
-            Geometry::PointCloud(PointCloud3::try_with_colors(removed, removed_colors)?),
+            Geometry::PointCloud(PointCloud3::try_with_channels(removed, removed_channels)?),
             attributes,
         )?;
     } else {
         for (index, point) in removed.into_iter().enumerate() {
             let mut output_attributes = attributes.clone();
-            if let Some(colors) = &removed_colors {
+            if let Some(colors) = &removed_channels.colors {
                 let [red, green, blue, _] = colors[index];
                 output_attributes = output_attributes
                     .with_object_color(viboceros_document::ColorRgb::new(red, green, blue));
