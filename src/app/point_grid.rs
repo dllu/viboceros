@@ -3,6 +3,31 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn try_continue_point_grid_height(&mut self, input: &str) -> bool {
+        if let Some(InteractiveCommand::PointGrid {
+            base: Some(base),
+            opposite: Some(opposite),
+            third: None,
+            options,
+            ..
+        }) = self.active_command
+            && options.three_point()
+            && let Ok(width) = input.parse::<f64>()
+        {
+            if !width.is_finite() || width == 0.0 {
+                self.push_log("Error: point grid width must be finite and nonzero".to_owned());
+            } else {
+                let command = InteractiveCommand::PointGrid {
+                    base: Some(base),
+                    opposite: Some(opposite),
+                    third: None,
+                    width: Some(width),
+                    options,
+                };
+                self.active_command = Some(command);
+                self.push_log(command.prompt().to_owned());
+            }
+            return true;
+        }
         if !matches!(
             self.active_command,
             Some(InteractiveCommand::PointGrid {
@@ -10,6 +35,7 @@ impl VibocerosApp {
                 opposite: Some(_),
                 third,
                 options,
+                ..
             }) if !options.diagonal() && (!options.three_point() || third.is_some())
         ) {
             return false;
@@ -35,6 +61,7 @@ impl VibocerosApp {
             base,
             opposite,
             third,
+            width,
             options,
         } = command
         else {
@@ -45,6 +72,7 @@ impl VibocerosApp {
                 base: Some(point),
                 opposite: None,
                 third: None,
+                width: None,
                 options,
             },
             (Some(base), None) => {
@@ -76,6 +104,7 @@ impl VibocerosApp {
                         base: Some(base),
                         opposite: Some(point),
                         third: None,
+                        width,
                         options,
                     });
                     return self.finish_point_grid(None);
@@ -84,6 +113,7 @@ impl VibocerosApp {
                     base: Some(base),
                     opposite: Some(point),
                     third: None,
+                    width,
                     options,
                 }
             }
@@ -98,6 +128,7 @@ impl VibocerosApp {
                     base: Some(base),
                     opposite: Some(second),
                     third: Some(point),
+                    width,
                     options,
                 }
             }
@@ -113,6 +144,7 @@ impl VibocerosApp {
                     base: Some(base),
                     opposite: Some(second),
                     third: Some(point),
+                    width,
                     options,
                 });
                 return self.finish_point_grid(None);
@@ -142,6 +174,7 @@ impl VibocerosApp {
                 base: Some(base),
                 opposite: Some(opposite),
                 third,
+                width,
                 options,
             },
         ) = self.active_command
@@ -151,11 +184,12 @@ impl VibocerosApp {
         let plane = self.drafting_plane;
         let has_third = third.is_some();
         let height = height.map_or_else(String::new, |height| format!(" {height}"));
+        let width = width.map_or_else(String::new, |width| format!(" {width}"));
         let third = third.map_or_else(String::new, |point| {
             format!(" {}", format_model_point(point))
         });
         let input = format!(
-            "PointGrid {} {}{third}{height}{options}",
+            "PointGrid {} {}{width}{third}{height}{options}",
             format_model_point(base),
             format_model_point(opposite)
         );
@@ -173,6 +207,7 @@ impl VibocerosApp {
                     base: Some(base),
                     opposite: None,
                     third: None,
+                    width: None,
                     options,
                 }
             } else {

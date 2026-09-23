@@ -212,6 +212,7 @@ enum InteractiveCommand {
         base: Option<Point3>,
         opposite: Option<Point3>,
         third: Option<Point3>,
+        width: Option<f64>,
         options: viboceros_command::PointGridOptions,
     },
     MeshPlane {
@@ -653,10 +654,18 @@ impl InteractiveCommand {
             }
             Self::PointGrid {
                 third: None,
+                width: Some(_),
                 options,
                 ..
             } if options.three_point() => {
-                "PointGrid: pick a point on the opposite side (Esc to cancel)"
+                "PointGrid: pick which side of the edge contains the rectangle (Esc to cancel)"
+            }
+            Self::PointGrid {
+                third: None,
+                options,
+                ..
+            } if options.three_point() => {
+                "PointGrid: pick a point on the opposite side or enter a width (Esc to cancel)"
             }
             Self::PointGrid { options, .. } if options.diagonal() => {
                 "PointGrid: pick a height point (Esc to cancel)"
@@ -1445,6 +1454,7 @@ impl VibocerosApp {
                 base: None,
                 opposite: None,
                 third: None,
+                width: None,
                 options,
             }
         } else if normalized == "meshellipsoid" {

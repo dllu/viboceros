@@ -12,6 +12,7 @@ height uses the base's Y width; negative height extends opposite the plane norma
 PointGrid 0,0,0 6,4,0 XCount=7 YCount=5 ZCount=1
 PointGrid 0,0,0 6,4,0 -8 XCount=7 YCount=5 ZCount=9
 PointGrid 3Point 0,0,0 6,0,2 3,4,5 2 XCount=3 YCount=2 ZCount=2
+PointGrid 3Point 0,0,0 6,0,2 4 0,8,0 2 XCount=3 YCount=2 ZCount=2
 PointGrid Center 10,20,3 12,24,3 XCount=3 YCount=3 ZCount=2
 PointGrid Diagonal 10,20,3 8,24,-1 XCount=3 YCount=2 ZCount=2
 PointGrid Diagonal 0,0,3 6,4,3 0,0,5 XCount=3 YCount=2 ZCount=2
@@ -53,7 +54,16 @@ before supplying height. Collinear or coincident defining points are rejected by
 the kernel's frame validation at document tolerances, and an invalid pick keeps
 the preceding points. Height picking uses the three-point plane even when another
 viewport is active. Counts remain remembered; the base mode is explicit per
-invocation. Numeric width in place of the third point is not yet supported.
+invocation.
+
+At the third-point prompt, a nonzero finite number sets the rectangle width and
+opens a side-choice prompt. Pick any point off the first edge to choose the
+side; its distance from the edge does not change the entered width. Rhino 8.32
+also treats a negative width as its absolute length, with the side point still
+controlling orientation. The typed form is `3Point first edge-end width
+side-point [height]`; write the side point with commas to distinguish it from
+the existing whitespace-form `x y z` third point. The default height uses the
+entered width.
 
 ## Center-based grids
 
@@ -134,6 +144,12 @@ also replay independently at `1e-10`. Native tests check the perpendicular-width
 calculation analytically, CPlane independence, and rejected inputs; UI tests
 exercise the additional pick stage and its height normal.
 
+Four numeric-width Rhino cases cover positive and negative side choices, a
+negative width, and a tilted first edge. Their complete point sets match the
+native result at `1e-10`; the [raw observation](../../tools/rhino_oracle/observations/point_matrix_three_point_width_raw.json)
+also shows a Rhino point-cloud traversal-order difference on the positive side. UI tests cover the width
+and side prompts, invalid side picks, and typed-command equivalence.
+
 The three-case center fixture covers default full-width height, a negative
 height with a reflected corner, and an oblique CPlane. Live Rhino comparisons
 passed within `2.7e-15`; the
@@ -160,6 +176,7 @@ completion without losing the active draft.
 ```sh
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_command.json --timeout 300
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_three_point.json --timeout 300
+tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_three_point_width.json --timeout 300
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_center.json --timeout 300
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_diagonal.json --timeout 180
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/point_matrix_diagonal_planes.json --timeout 180

@@ -3487,11 +3487,19 @@ def _point_grid_command(operation, diagonal=False):
         raise ValueError("PointGrid probe counts must be three integers in [1,100]")
     points = operation["points"]
     three_point = operation.get("three_point", False)
+    third_width = operation.get("third_width")
+    width_choice_point = operation.get("width_choice_point")
     centered = operation.get("centered", False)
     if type(centered) is not bool or type(diagonal) is not bool or sum(bool(mode) for mode in [centered, three_point, diagonal]) > 1:
         raise ValueError("PointGrid base modes must be mutually exclusive booleans")
-    if type(three_point) is not bool or len(points) != (3 if three_point else 2):
+    if type(three_point) is not bool or len(points) != (3 if three_point and third_width is None else 2):
         raise ValueError("PointGrid requires two corners or three base points")
+    if third_width is not None and not three_point:
+        raise ValueError("third_width requires 3Point mode")
+    if (third_width is None) != (width_choice_point is None):
+        raise ValueError("numeric 3Point width requires a rectangle choice point")
+    if third_width is not None and (type(third_width) not in (int, float) or _finite(third_width, "grid width") == 0):
+        raise ValueError("grid width must be a finite nonzero number")
     if diagonal and operation.get("height") is not None:
         raise ValueError("diagonal prompt diagnostics use height_point, not a numeric height")
     height_point = operation.get("height_point")
@@ -3515,6 +3523,8 @@ def _point_grid_command(operation, diagonal=False):
     if diagonal:
         script += "_Diagonal "
     script += " ".join("w" + _command_point(p) for p in points)
+    if third_width is not None:
+        script += " %.17g w%s" % (_finite(third_width, "grid width"), _command_point(width_choice_point))
     if not diagonal or operation.get("height") is not None:
         script += (" %.17g" % _finite(operation["height"], "grid height")
                    if operation.get("height") is not None else " _Enter")
@@ -3524,13 +3534,15 @@ def _point_grid_command(operation, diagonal=False):
             raise ValueError("PointGrid did not produce a point cloud")
         if diagonal:
             return {"points": [_xyz(p) for p in geometry.GetPoints()]}
-        plane = (Rhino.Geometry.Plane(_point(points[0]), _point(points[1]), _point(points[2])) if three_point else
+        third = width_choice_point if third_width is not None else (points[2] if three_point else None)
+        plane = (Rhino.Geometry.Plane(_point(points[0]), _point(points[1]), _point(third)) if three_point else
                  Rhino.Geometry.Plane(_point(points[0]), _vector(operation["x_axis"]), _vector(operation["y_axis"])))
         axes = [plane.XAxis, plane.YAxis, plane.ZAxis]
         delta = _point(points[1]) - plane.Origin
         size = [Rhino.Geometry.Vector3d.Multiply(delta, axis) for axis in axes]
         if three_point:
-            size[1] = Rhino.Geometry.Vector3d.Multiply(_point(points[2]) - plane.Origin, plane.YAxis)
+            size[1] = (abs(third_width) if third_width is not None else
+                       Rhino.Geometry.Vector3d.Multiply(_point(points[2]) - plane.Origin, plane.YAxis))
         size[2] = operation.get("height") if operation.get("height") is not None else abs(size[1]) * (2 if centered else 1)
         dimensions = [max(2, counts[0]), max(2, counts[1]), counts[2]]
         def key(p):

@@ -214,6 +214,32 @@ fn three_point_grid_waits_for_width_and_uses_its_own_height_normal() {
 }
 
 #[test]
+fn three_point_numeric_width_prompts_for_side_and_matches_typed_command() {
+    let mut app = test_app();
+    enter(&mut app, "PointGrid 3Point XCount=3 YCount=2 ZCount=2");
+    assert!(app.accept_drafting_point(point(0., 0., 0.)));
+    assert!(app.accept_drafting_point(point(6., 0., 2.)));
+    enter(&mut app, "4");
+    assert!(app.active_command.unwrap().prompt().contains("which side"));
+    enter(&mut app, "");
+    assert!(app.active_command.is_some());
+    assert!(!app.accept_drafting_point(point(3., 0., 1.)));
+    assert!(app.active_command.unwrap().prompt().contains("which side"));
+    assert!(app.accept_drafting_point(point(0., 8., 0.)));
+    assert!(app.active_command.unwrap().prompt().contains("height"));
+    enter(&mut app, "2");
+    assert!(app.active_command.is_none());
+    let mut expected = Document::default();
+    CommandRegistry::with_builtins()
+        .execute(
+            &mut expected,
+            "PointGrid 3Point 0,0,0 6,0,2 4 0,8,0 2 XCount=3 YCount=2 ZCount=2",
+        )
+        .unwrap();
+    assert_eq!(cloud(&app.document), cloud(&expected));
+}
+
+#[test]
 fn three_point_grid_accepts_numeric_and_default_heights() {
     for height in ["-2", ""] {
         let mut app = test_app();

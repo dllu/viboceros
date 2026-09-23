@@ -2,7 +2,7 @@
 
 use super::*;
 
-const USAGE: &str = "PointGrid [3Point|Center] first-point second-point [third-base-point] [height] [XCount=n YCount=n ZCount=n] | PointGrid Diagonal first-corner opposite-corner [height-point] [XCount=n YCount=n ZCount=n]";
+const USAGE: &str = "PointGrid [3Point|Center] first-point second-point [third-base-point|width side-point] [height] [XCount=n YCount=n ZCount=n] | PointGrid Diagonal first-corner opposite-corner [height-point] [XCount=n YCount=n ZCount=n]";
 const MAX_POINTS: usize = 1_000_000;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
@@ -160,13 +160,28 @@ impl Command for PointMatrixCommand {
         let (opposite, more) = parse_point(&coordinates[consumed..])?;
         let mut consumed = consumed + more;
         let (frame, x, y) = if options.three_point() {
+            // A scalar third input enters Rhino's rectangle-choice prompt.
+            // Require a comma-form side point to distinguish it from an
+            // existing whitespace-form third point (x y z).
+            let scalar_width = coordinates
+                .get(consumed)
+                .zip(coordinates.get(consumed + 1))
+                .filter(|(_, side)| side.contains(','))
+                .is_some_and(|(value, _)| value.parse::<Real>().is_ok());
+            let width = if scalar_width {
+                let width = parse_finite_real(coordinates[consumed])?;
+                consumed += 1;
+                Some(width)
+            } else {
+                None
+            };
             let (third, more) = parse_point(&coordinates[consumed..])?;
             consumed += more;
             let frame = Frame3::try_from_points(first, opposite, third, document.tolerance())?;
             (
                 frame,
                 first.distance_to(opposite)?,
-                frame.coordinates_of(third)?[1],
+                width.map_or(frame.coordinates_of(third)?[1], Real::abs),
             )
         } else {
             let frame = context.construction_plane.with_origin(first);

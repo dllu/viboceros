@@ -252,6 +252,54 @@ fn three_point_grid_uses_perpendicular_width_and_the_plane_defined_by_its_points
 }
 
 #[test]
+fn three_point_numeric_width_uses_choice_only_for_side_and_ignores_width_sign() {
+    let registry = CommandRegistry::with_builtins();
+    for (width, side) in [(4., 4.), (-4., 4.), (4., -4.), (-4., -4.)] {
+        let mut document = Document::default();
+        registry
+            .execute(
+                &mut document,
+                &format!(
+                    "PointGrid 3Point 0,0,0 6,0,0 {width} 0,{side},0 2 XCount=3 YCount=2 ZCount=2"
+                ),
+            )
+            .unwrap();
+        let expected = if side > 0. { [4., 0.] } else { [-4., 0.] };
+        let normal = if side > 0. { 2. } else { -2. };
+        let points = points(&document);
+        assert_eq!(points.len(), 12);
+        for (index, point) in points.iter().enumerate() {
+            assert_eq!(point[0], (index % 3) as f64 * 3.);
+            assert_eq!(point[1], expected[(index / 3) % 2]);
+            assert_eq!(point[2], (index / 6) as f64 * normal);
+        }
+    }
+    let mut document = Document::default();
+    registry
+        .execute(
+            &mut document,
+            "PointGrid 3Point 0,0,0 6,0,2 4 0,8,0 2 XCount=3 YCount=2 ZCount=2",
+        )
+        .unwrap();
+    let actual = points(&document);
+    assert!((actual[0][1] - 4.).abs() < 1e-12);
+    assert!((actual[6][0] + 2. / 10_f64.sqrt()).abs() < 1e-12);
+    assert!(
+        registry
+            .execute(&mut document, "PointGrid 3Point 0,0,0 6,0,0 0 0,4,0 2")
+            .is_err()
+    );
+    assert_eq!(points(&document), actual);
+    // The existing whitespace-form third point remains unambiguous.
+    registry
+        .execute(
+            &mut document,
+            "PointGrid 3Point 0 0 0 6 0 0 0 4 0 2 XCount=2 YCount=2 ZCount=1",
+        )
+        .unwrap();
+}
+
+#[test]
 fn invalid_three_point_bases_do_not_change_history_or_mode_defaults() {
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::default();

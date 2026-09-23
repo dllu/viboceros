@@ -711,6 +711,26 @@ class RhinoWorkerTests(unittest.TestCase):
                     self.worker._point_grid_command(invalid)
                 run.assert_not_called()
 
+    def test_three_point_numeric_width_probe_supplies_a_rectangle_choice(self):
+        operation = {"count": [3, 2, 2], "three_point": True,
+                     "points": [[0,0,0], [6,0,0]], "third_width": -4,
+                     "width_choice_point": [0,4,0], "height": 2}
+        with patch.object(self.worker, "_command_point", side_effect=["0,0,0", "6,0,0", "0,4,0"]), \
+                patch.object(self.worker, "_in_construction_plane", return_value=({}, 0)) as run:
+            self.worker._point_grid_command(operation)
+        self.assertEqual(run.call_args.args[1],
+                         "_PointGrid _XCount=3 _YCount=2 _ZCount=2 _3Point w0,0,0 w6,0,0 -4 w0,4,0 2")
+        for missing in ["third_width", "width_choice_point"]:
+            with patch.object(self.worker, "_in_construction_plane") as run:
+                with self.assertRaises(ValueError):
+                    self.worker._point_grid_command({key: value for key, value in operation.items() if key != missing})
+                run.assert_not_called()
+        for invalid_width in [0, True, float("inf")]:
+            with patch.object(self.worker, "_in_construction_plane") as run:
+                with self.assertRaises(ValueError):
+                    self.worker._point_grid_command(dict(operation, third_width=invalid_width))
+                run.assert_not_called()
+
     def test_point_grid_probe_uses_observed_count_names_and_always_supplies_height(self):
         operation = {"count": [3, 2, 1], "points": [[0, 0, 0], [6, 4, 0]]}
         with patch.object(self.worker, "_command_point", side_effect=["0,0,0", "6,4,0"]), \

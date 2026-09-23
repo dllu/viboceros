@@ -14,6 +14,8 @@ pub struct PointMatrixFixture {
     pub count: [usize; 3],
     pub height: Option<f64>,
     pub height_point: Option<[f64; 3]>,
+    pub third_width: Option<f64>,
+    pub width_choice_point: Option<[f64; 3]>,
 }
 
 pub(super) fn run(
@@ -42,7 +44,16 @@ fn run_mode(
             "invalid PointGrid mode or height input",
         ));
     }
-    if (f.centered && f.three_point) || f.points.len() != if f.three_point { 3 } else { 2 } {
+    if (f.centered && f.three_point)
+        || f.third_width.is_some() != f.width_choice_point.is_some()
+        || (f.third_width.is_some() && !f.three_point)
+        || f.points.len()
+            != if f.three_point && f.third_width.is_none() {
+                3
+            } else {
+                2
+            }
+    {
         return Err(ProbeError::FixtureInvariant(
             "incorrect PointGrid base point count",
         ));
@@ -71,6 +82,12 @@ fn run_mode(
     for p in &f.points {
         command.push_str(&format!(" {},{},{}", p[0], p[1], p[2]));
     }
+    if let Some(width) = f.third_width {
+        command.push_str(&format!(" {width}"));
+    }
+    if let Some(p) = f.width_choice_point {
+        command.push_str(&format!(" {},{},{}", p[0], p[1], p[2]));
+    }
     if let Some(height) = f.height {
         command.push_str(&format!(" {height}"));
     }
@@ -97,7 +114,7 @@ fn run_mode(
         Frame3::try_from_points(
             Point3::try_from(f.points[0])?,
             Point3::try_from(f.points[1])?,
-            Point3::try_from(f.points[2])?,
+            Point3::try_from(f.width_choice_point.unwrap_or_else(|| f.points[2]))?,
             tolerance,
         )?
     } else {
@@ -107,7 +124,11 @@ fn run_mode(
     };
     let mut size = frame.coordinates_of(Point3::try_from(f.points[1])?)?;
     if f.three_point {
-        size[1] = frame.coordinates_of(Point3::try_from(f.points[2])?)?[1];
+        size[1] = if let Some(width) = f.third_width {
+            width.abs()
+        } else {
+            frame.coordinates_of(Point3::try_from(f.points[2])?)?[1]
+        };
     }
     size[2] = f
         .height
@@ -198,6 +219,18 @@ mod tests {
         check(
             include_str!("../../../tools/rhino_oracle/fixtures/point_matrix_three_point.json"),
             include_str!("../../../tools/rhino_oracle/observations/point_matrix_three_point.json"),
+        );
+    }
+
+    #[test]
+    fn three_point_numeric_width_matches_rhino_point_sets() {
+        check(
+            include_str!(
+                "../../../tools/rhino_oracle/fixtures/point_matrix_three_point_width.json"
+            ),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/point_matrix_three_point_width.json"
+            ),
         );
     }
 
