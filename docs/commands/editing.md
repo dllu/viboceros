@@ -134,8 +134,9 @@ subcurves. Curve/B-rep contacts are clipped against exact face trim regions and
 deduplicated across shared edges and vertices. Transverse planar surface pairs
 produce exact, arc-length-parameterized lines clipped to both finite patches;
 selection order determines their orientation as in Rhino. Coincident
-nonsingular convex bilinear patches with weights of one sign produce an exact shared edge
-or closed overlap perimeter, including Rhino's distinct edge orientation and
+nonsingular convex bilinear patches with weights of one sign and certified
+affine patches of any degree produce an exact shared edge or closed overlap
+perimeter, including Rhino's distinct edge orientation and
 loop-domain rules. Planar surface/B-rep and B-rep/B-rep intersections are
 clipped to every exact face trim region, deduplicated at shared edges and
 vertices, and joined into maximal linear components; coincident faces are

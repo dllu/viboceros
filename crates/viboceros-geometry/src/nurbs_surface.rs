@@ -3300,19 +3300,14 @@ impl NurbsSurface {
         Ok(parameter_curve)
     }
 
-    /// Pulls a model-space NURBS curve back into the parameter space of an
-    /// affine tensor-product surface without fitting or resampling its control
-    /// net.
-    ///
-    /// The surface may have any degrees and knot layout, but its weights must
-    /// be equal and every control point must represent the same affine frame
-    /// at that control's Greville parameters. The returned p-curve retains the
-    /// source curve's degree, weights, knots, and parameter domain exactly.
-    pub fn try_pullback_affine_curve(
+    /// Certifies an affine tensor-product surface of any degree or knot layout
+    /// and returns its four corners in boundary order. Its control weights
+    /// must be equal and every control point must match the affine frame at
+    /// its Greville parameters within the modelling tolerance.
+    pub fn try_affine_patch_corners(
         &self,
-        curve: &NurbsCurve,
         tolerance: Tolerance,
-    ) -> Result<NurbsCurve2, GeometryError> {
+    ) -> Result<[Point3; 4], GeometryError> {
         let reference_weight = self.control_points[0].weight();
         let weight_scale = self
             .control_points
@@ -3329,7 +3324,7 @@ impl NurbsSurface {
                 > normalized_weight_tolerance
         }) {
             return Err(GeometryError::InvalidControlNet {
-                context: "affine curve pullback requires equal surface control weights",
+                context: "affine patch requires equal control weights",
             });
         }
 
@@ -3359,14 +3354,11 @@ impl NurbsSurface {
                 context: "affine surface parameter frame",
             });
         }
-        let cosine = unit_u.dot(unit_v)?.clamp(-1.0, 1.0);
-        let determinant = sine * sine;
-        require_finite([determinant], "affine surface parameter determinant")?;
 
         let expected_opposite = east.translated(axis_v)?;
         if !model_points_near(expected_opposite, opposite, tolerance)? {
             return Err(GeometryError::InvalidControlNet {
-                context: "affine curve pullback requires an affine surface parameter frame",
+                context: "affine patch requires a parallelogram parameter frame",
             });
         }
 
@@ -3394,11 +3386,41 @@ impl NurbsSurface {
                 let actual = self.control_points[self.control_index(u, v)].point();
                 if !model_points_near(expected, actual, tolerance)? {
                     return Err(GeometryError::InvalidControlNet {
-                        context: "affine curve pullback requires an affine surface control net",
+                        context: "affine patch requires an affine control net",
                     });
                 }
             }
         }
+
+        Ok([origin, east, opposite, north])
+    }
+
+    /// Pulls a model-space NURBS curve back into the parameter space of an
+    /// affine tensor-product surface without fitting or resampling its control
+    /// net.
+    ///
+    /// The returned p-curve retains the source curve's degree, weights,
+    /// knots, and parameter domain exactly.
+    pub fn try_pullback_affine_curve(
+        &self,
+        curve: &NurbsCurve,
+        tolerance: Tolerance,
+    ) -> Result<NurbsCurve2, GeometryError> {
+        let [origin, east, _, north] = self.try_affine_patch_corners(tolerance)?;
+        let domain_u = self.domain_u();
+        let domain_v = self.domain_v();
+        let extent_u = *domain_u.end() - *domain_u.start();
+        let extent_v = *domain_v.end() - *domain_v.start();
+        let axis_u = origin.vector_to(east)?;
+        let axis_v = origin.vector_to(north)?;
+        let length_u = axis_u.length()?;
+        let length_v = axis_v.length()?;
+        let unit_u = axis_u.scaled(1.0 / length_u)?;
+        let unit_v = axis_v.scaled(1.0 / length_v)?;
+        let cosine = unit_u.dot(unit_v)?.clamp(-1.0, 1.0);
+        let sine = unit_u.cross(unit_v)?.length()?;
+        let determinant = sine * sine;
+        require_finite([determinant], "affine surface parameter determinant")?;
 
         let parameter_controls = curve
             .control_points()

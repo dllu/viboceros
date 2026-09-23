@@ -513,8 +513,8 @@ fn curve_brep_intersection_events_with_transform(
 ///
 /// The current exact path handles transverse planar surfaces, including
 /// multiple clipped components and isolated boundary contacts, plus
-/// coincident nonsingular convex four-sided bilinear patches with same-sign
-/// rational weights. Coincident
+/// coincident nonsingular convex four-sided bilinear patches with weights of
+/// one sign, plus certified affine patches of any degree. Coincident
 /// patches return their area-overlap perimeter or shared edge; a lone shared
 /// corner produces no event, matching Rhino. Parallel disjoint planes return
 /// no events. Non-planar and more general coincident inputs are reported
@@ -626,9 +626,9 @@ pub fn surface_surface_intersection_events(
 ///
 /// The current exact path handles planar surfaces against B-reps whose
 /// underlying face surfaces are planar. Face-level curves are clipped against
-/// exact trim regions, deduplicated across shared topology, and joined into
-/// maximal linear components. A coincident face must cover its underlying
-/// surface's complete natural domain; more general coincident trim regions are
+/// exact trim regions when needed, deduplicated across shared topology, and
+/// joined into maximal linear components. A coincident face must cover its
+/// underlying surface's complete natural domain; other coincident trim regions are
 /// rejected explicitly until planar region Boolean intersection is available.
 pub fn surface_brep_intersection_events(
     surface: &NurbsSurface,
@@ -671,6 +671,14 @@ pub fn surface_brep_intersection_events(
                     }
                 }
                 SurfaceSurfaceIntersectionEvent::Curve(curve) => {
+                    if coincident {
+                        // The face covers its natural domain, already used by
+                        // the surface pair intersection. Clipping the same
+                        // perimeter again can shift endpoint parameters by
+                        // a few ulps on elevated edge curves.
+                        curves.push(curve);
+                        continue;
+                    }
                     let (face_points, face_curves) =
                         clip_curve_to_brep_face(&curve, brep, face, tolerance, distance_tolerance)?;
                     for point in face_points {
@@ -702,7 +710,7 @@ pub fn surface_brep_intersection_events(
 /// Intersects the trimmed faces of two B-reps.
 ///
 /// The current exact path handles B-reps whose underlying face surfaces are
-/// planar. Every face-pair result is clipped against both exact trim regions,
+/// planar. Face-pair results are clipped against trim regions when needed;
 /// then shared-topology duplicates are removed and linear pieces are joined
 /// into maximal components. Coincident pairs currently require both faces to
 /// cover their complete natural surface domains, with at most one coincident
@@ -778,6 +786,10 @@ pub fn brep_brep_intersection_events(
                         }
                     }
                     SurfaceSurfaceIntersectionEvent::Curve(curve) => {
+                        if coincident {
+                            curves.push(curve);
+                            continue;
+                        }
                         let (second_points, second_curves) = clip_curve_to_brep_face(
                             &curve,
                             second,
@@ -1085,22 +1097,12 @@ fn coincident_planar_surface_intersection_events(
     distance_tolerance: Real,
 ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
     let unsupported = || GeometryError::UnsupportedSurfaceSurfaceIntersection {
-        context: "coincident planar surfaces other than nonsingular convex bilinear patches with weights of one sign",
+        context: "coincident planar surfaces outside certified convex bilinear or affine patches",
     };
-    if !is_four_sided_bilinear_patch(first)
-        || !is_four_sided_bilinear_patch(second)
-        || !weights_have_common_sign(first.control_points().iter().map(|point| point.weight()))
-        || !weights_have_common_sign(second.control_points().iter().map(|point| point.weight()))
-    {
-        return Err(unsupported());
-    }
-
-    // At fixed U, a same-sign-weight rational bilinear patch traces a
-    // straight segment between two monotonically traversed opposite edges.
-    // With a convex corner quad those segments partition the quad, so the
-    // Euclidean corner polygon is the complete surface image.
-    let mut first_polygon = bilinear_patch_polygon(first);
-    let mut second_polygon = bilinear_patch_polygon(second);
+    let mut first_polygon =
+        certified_coincident_patch_polygon(first, tolerance)?.ok_or_else(unsupported)?;
+    let mut second_polygon =
+        certified_coincident_patch_polygon(second, tolerance)?.ok_or_else(unsupported)?;
     if !orient_and_validate_convex_polygon(&mut first_polygon, plane.normal(), distance_tolerance)?
         || !orient_and_validate_convex_polygon(
             &mut second_polygon,
@@ -1210,6 +1212,26 @@ fn is_four_sided_bilinear_patch(surface: &NurbsSurface) -> bool {
         && surface.degree_v() == 1
         && surface.control_point_count_u() == 2
         && surface.control_point_count_v() == 2
+}
+
+fn certified_coincident_patch_polygon(
+    surface: &NurbsSurface,
+    tolerance: Tolerance,
+) -> Result<Option<Vec<Point3>>, GeometryError> {
+    if is_four_sided_bilinear_patch(surface)
+        && weights_have_common_sign(surface.control_points().iter().map(|point| point.weight()))
+    {
+        // At fixed U, a rational bilinear patch with weights of one sign
+        // traces a straight segment between two monotonically traversed
+        // opposite edges. For a convex corner quad those segments partition
+        // the quad, so its corner polygon is the complete surface image.
+        return Ok(Some(bilinear_patch_polygon(surface)));
+    }
+    match surface.try_affine_patch_corners(tolerance) {
+        Ok(corners) => Ok(Some(corners.to_vec())),
+        Err(GeometryError::InvalidControlNet { .. } | GeometryError::Degenerate { .. }) => Ok(None),
+        Err(error) => Err(error),
+    }
 }
 
 fn bilinear_patch_polygon(surface: &NurbsSurface) -> Vec<Point3> {
@@ -3425,7 +3447,7 @@ mod tests {
                 Tolerance::DEFAULT,
             ),
             Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-                context: "coincident planar surfaces other than nonsingular convex bilinear patches with weights of one sign",
+                context: "coincident planar surfaces outside certified convex bilinear or affine patches",
             })
         );
 
@@ -3447,9 +3469,84 @@ mod tests {
         )
         .unwrap();
         assert_eq!(
-            surface_surface_intersection_events(&horizontal, &quadratic, Tolerance::DEFAULT,),
+            surface_surface_intersection_events(&horizontal, &quadratic, Tolerance::DEFAULT)
+                .unwrap(),
+            identical
+        );
+        let elevated = quadratic
+            .try_change_degree(3, 2, false)
+            .unwrap()
+            .try_insert_knot_u(5.0, 1)
+            .unwrap()
+            .try_insert_knot_v(6.0, 1)
+            .unwrap();
+        assert_eq!(
+            surface_surface_intersection_events(&horizontal, &elevated, Tolerance::DEFAULT)
+                .unwrap(),
+            identical
+        );
+        let partial = surface_surface_intersection_events(
+            &elevated,
+            &horizontal_rectangle(5.0, 15.0, 0.0, 10.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(partial)] = partial.as_slice() else {
+            panic!("expected elevated partial overlap, got {partial:#?}");
+        };
+        assert!(partial.is_closed().unwrap());
+        assert!((partial.length(Tolerance::DEFAULT).unwrap() - 30.0).abs() < 1e-9);
+        let shared_edge = surface_surface_intersection_events(
+            &elevated,
+            &horizontal_rectangle(10.0, 20.0, 0.0, 10.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(shared_edge)] = shared_edge.as_slice() else {
+            panic!("expected elevated shared edge, got {shared_edge:#?}");
+        };
+        assert!((shared_edge.length(Tolerance::DEFAULT).unwrap() - 10.0).abs() < 1e-9);
+        let elevated_brep = Brep::try_surface_face(elevated, Tolerance::DEFAULT).unwrap();
+        let horizontal_brep =
+            Brep::try_surface_face(horizontal.clone(), Tolerance::DEFAULT).unwrap();
+        let surface_events =
+            surface_brep_intersection_events(&horizontal, &elevated_brep, Tolerance::DEFAULT)
+                .unwrap();
+        let [SurfaceBrepIntersectionEvent::Curve(surface_boundary)] = surface_events.as_slice()
+        else {
+            panic!("expected affine surface/B-rep perimeter, got {surface_events:#?}");
+        };
+        assert!(surface_boundary.is_closed().unwrap());
+        assert!((surface_boundary.length(Tolerance::DEFAULT).unwrap() - 40.0).abs() < 1e-9);
+        let brep_events =
+            brep_brep_intersection_events(&elevated_brep, &horizontal_brep, Tolerance::DEFAULT)
+                .unwrap();
+        let [BrepBrepIntersectionEvent::Curve(brep_boundary)] = brep_events.as_slice() else {
+            panic!("expected affine B-rep perimeter, got {brep_events:#?}");
+        };
+        assert!(brep_boundary.is_closed().unwrap());
+        assert!((brep_boundary.length(Tolerance::DEFAULT).unwrap() - 40.0).abs() < 1e-9);
+        let bent_boundary = NurbsSurface::try_new(
+            2,
+            1,
+            3,
+            2,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(5.0, 2.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                point(0.0, 10.0, 0.0),
+                point(5.0, 10.0, 0.0),
+                point(10.0, 10.0, 0.0),
+            ],
+            vec![0.0, 0.0, 0.0, 10.0, 10.0, 10.0],
+            vec![0.0, 0.0, 10.0, 10.0],
+        )
+        .unwrap();
+        assert_eq!(
+            surface_surface_intersection_events(&horizontal, &bent_boundary, Tolerance::DEFAULT,),
             Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-                context: "coincident planar surfaces other than nonsingular convex bilinear patches with weights of one sign",
+                context: "coincident planar surfaces outside certified convex bilinear or affine patches",
             })
         );
     }
