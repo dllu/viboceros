@@ -132,6 +132,13 @@ intermediate evaluation on planes and line extrusions. Other p-curve bases
 still require a separate exact composition adapter. Supported sweeps can also
 use an affine-basis p-curve as their directrix.
 
+Straight U- or V-isoparametric `PCURVE` edges on curved B-spline/NURBS surface
+bases are extracted from the exact surface isocurve, trimmed to the source UV
+interval, oriented with the edge, and reparameterized to the source line's
+`[0,1]` interval. Polynomial and rational partial/reversed cases are checked
+against source-surface evaluation. Diagonal p-curves on non-affine surfaces
+still need exact surface-curve composition.
+
 Degree-one, two-control-point rational 3D edges and UV trims are also supported
 when their weights are finite and positive. Homogeneous source controls are
 converted to Euclidean controls with separate weights, retaining knots and

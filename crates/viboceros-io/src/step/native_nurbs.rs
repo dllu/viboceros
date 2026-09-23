@@ -222,6 +222,30 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
         }
         Curve3D::ParameterCurve(parameter_curve) => {
             let basis = parameter_curve.surface().as_ref();
+            if matches!(basis, Surface::NurbsSurface(_) | Surface::BsplineSurface(_))
+                && let Curve2D::Line(line) = parameter_curve.curve().as_ref()
+            {
+                let uv0 = line.0;
+                let uv1 = line.1;
+                if uv0.y == uv1.y || uv0.x == uv1.x {
+                    let surface = spline_surface_basis(basis, id)?;
+                    let (varying_start, varying_end, mut curve) = if uv0.y == uv1.y {
+                        (uv0.x, uv1.x, surface.isocurve_u(uv0.y)?)
+                    } else {
+                        (uv0.y, uv1.y, surface.isocurve_v(uv0.x)?)
+                    };
+                    if varying_start == varying_end {
+                        return Err(unsupported("3D edge p-curve is degenerate"));
+                    }
+                    curve = curve.try_trimmed(
+                        varying_start.min(varying_end)..=varying_start.max(varying_end),
+                    )?;
+                    if varying_start > varying_end {
+                        curve = curve.reversed()?;
+                    }
+                    return Ok(curve.try_reparameterized(0.0..=1.0)?);
+                }
+            }
             let globally_affine = matches!(
                 basis,
                 Surface::ElementarySurface(ElementarySurface::Plane(_))
@@ -561,13 +585,7 @@ fn conic_trim(curve: &Conic2D, id: u64) -> Result<NurbsCurve2, StepError> {
     )?)
 }
 
-fn surface(
-    source: &Surface,
-    boundaries: &[Vec<BrepTrim>],
-    id: u64,
-    tolerance: Tolerance,
-) -> Result<NurbsSurface, StepError> {
-    let unsupported = |reason| StepError::UnsupportedNativeShell { shell: id, reason };
+fn spline_surface_basis(source: &Surface, id: u64) -> Result<NurbsSurface, StepError> {
     match source {
         Surface::NurbsSurface(surface) => {
             let rows = surface.control_points();
@@ -606,6 +624,22 @@ fn surface(
                 surface.knot_vector_v().iter().copied().collect(),
             )?)
         }
+        _ => Err(StepError::UnsupportedNativeShell {
+            shell: id,
+            reason: "p-curve basis is not a B-spline surface",
+        }),
+    }
+}
+
+fn surface(
+    source: &Surface,
+    boundaries: &[Vec<BrepTrim>],
+    id: u64,
+    tolerance: Tolerance,
+) -> Result<NurbsSurface, StepError> {
+    let unsupported = |reason| StepError::UnsupportedNativeShell { shell: id, reason };
+    match source {
+        Surface::NurbsSurface(_) | Surface::BsplineSurface(_) => spline_surface_basis(source, id),
         Surface::ElementarySurface(ElementarySurface::Plane(plane)) => {
             let points = boundaries
                 .iter()
@@ -1067,5 +1101,72 @@ mod tests {
                 ..
             })
         ));
+    }
+
+    #[test]
+    fn curved_surface_pcurve_edges_preserve_partial_and_reversed_iso_lines() {
+        let knots = || (KnotVector::bezier_knot(2), KnotVector::bezier_knot(1));
+        for basis in [
+            Surface::BsplineSurface(BsplineSurface::new(
+                knots(),
+                vec![
+                    vec![TruckPoint3::new(0., 0., 0.), TruckPoint3::new(0., 0., 3.)],
+                    vec![TruckPoint3::new(1., 1., 0.), TruckPoint3::new(1., 1., 3.)],
+                    vec![TruckPoint3::new(2., 0., 0.), TruckPoint3::new(2., 0., 3.)],
+                ],
+            )),
+            Surface::NurbsSurface(TruckNurbsSurface::new(BsplineSurface::new(
+                knots(),
+                vec![
+                    vec![Vector4::new(0., 0., 0., 1.), Vector4::new(0., 0., 3., 1.)],
+                    vec![
+                        Vector4::new(0.5, 0.5, 0., 0.5),
+                        Vector4::new(0.5, 0.5, 1.5, 0.5),
+                    ],
+                    vec![Vector4::new(2., 0., 0., 1.), Vector4::new(2., 0., 3., 1.)],
+                ],
+            ))),
+        ] {
+            for (a, b, degree) in [
+                ([0.2, 0.25], [0.8, 0.25], 2),
+                ([0.8, 0.25], [0.2, 0.25], 2),
+                ([0.5, 0.9], [0.5, 0.1], 1),
+            ] {
+                let source = Curve3D::ParameterCurve(StepParameterCurve::new(
+                    Box::new(Curve2D::Line(Line(
+                        TruckPoint2::new(a[0], a[1]),
+                        TruckPoint2::new(b[0], b[1]),
+                    ))),
+                    Box::new(basis.clone()),
+                ));
+                let curve = edge_curve(&source, 1).unwrap();
+                assert_eq!(curve.degree(), degree);
+                assert_eq!(curve.domain(), 0.0..=1.0);
+                for t in [0., 0.17, 0.5, 0.83, 1.] {
+                    let u = a[0] * (1. - t) + b[0] * t;
+                    let v = a[1] * (1. - t) + b[1] * t;
+                    let expected = basis.evaluate(u, v);
+                    let actual = curve.evaluate(t).unwrap();
+                    assert!((actual.x() - expected.x).abs() < 1e-11);
+                    assert!((actual.y() - expected.y).abs() < 1e-11);
+                    assert!((actual.z() - expected.z).abs() < 1e-11);
+                }
+            }
+
+            let diagonal = Curve3D::ParameterCurve(StepParameterCurve::new(
+                Box::new(Curve2D::Line(Line(
+                    TruckPoint2::new(0., 0.),
+                    TruckPoint2::new(1., 1.),
+                ))),
+                Box::new(basis),
+            ));
+            assert!(matches!(
+                edge_curve(&diagonal, 1),
+                Err(StepError::UnsupportedNativeShell {
+                    reason: "3D edge p-curve basis is not affine",
+                    ..
+                })
+            ));
+        }
     }
 }

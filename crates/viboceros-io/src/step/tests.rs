@@ -91,7 +91,10 @@ fn nurbs_brep_step_export_retains_curved_surface_and_explicit_pcurves() {
 
 #[test]
 fn nurbs_brep_step_export_keeps_curved_edges_and_surface_shape() {
-    use monstertruck::meshing::prelude::{ParametricCurve, ParametricSurface};
+    use monstertruck::meshing::prelude::{BoundedCurve, ParametricCurve, ParametricSurface};
+    use monstertruck::modeling::{Line, Point2 as TruckPoint2};
+    use monstertruck::step::load::step_geometry::{Curve2D, Curve3D, StepParameterCurve};
+    use monstertruck::step::save::StepModels;
     use viboceros_geometry::{Brep, NurbsSurface};
     let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
     let surface = NurbsSurface::try_new(
@@ -174,6 +177,42 @@ fn nurbs_brep_step_export_keeps_curved_edges_and_surface_shape() {
         let expected = source.faces()[0].surface().evaluate(u, v).unwrap();
         let actual = restored.faces()[0].surface().evaluate(u, v).unwrap();
         assert!(actual.distance_to(expected).unwrap() < 1e-12);
+    }
+
+    let mut pcurve_shell = shell.clone();
+    let edge_index = source
+        .edges()
+        .iter()
+        .position(|edge| edge.curve().degree() == 2)
+        .unwrap();
+    let use_ = pcurve_shell.faces[0].boundaries[0]
+        .iter()
+        .find(|use_| use_.index == edge_index)
+        .unwrap();
+    let trim = use_.trim_curve.as_ref().unwrap().curve();
+    let (start, end) = trim.range_tuple();
+    let a = trim.evaluate(start);
+    let b = trim.evaluate(end);
+    let (a, b) = if use_.orientation { (a, b) } else { (b, a) };
+    pcurve_shell.edges[edge_index].curve = Curve3D::ParameterCurve(StepParameterCurve::new(
+        Box::new(Curve2D::Line(Line(
+            TruckPoint2::new(a.x, a.y),
+            TruckPoint2::new(b.x, b.y),
+        ))),
+        Box::new(pcurve_shell.faces[0].surface.clone()),
+    ));
+    let mut models = StepModels::default();
+    models.push_trimmed_shell(&pcurve_shell);
+    let pcurve_text = CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
+    assert!(pcurve_text.contains("PCURVE("));
+    let pcurve_native =
+        read_step_native_instances(Cursor::new(pcurve_text), Tolerance::DEFAULT).unwrap();
+    let pcurve_edge = pcurve_native.instances[0].brep.edges()[edge_index].curve();
+    assert_eq!(pcurve_edge.degree(), 2);
+    for t in [0., 0.17, 0.5, 0.83, 1.] {
+        let expected = source.edges()[edge_index].curve().evaluate(t).unwrap();
+        let actual = pcurve_edge.evaluate(t).unwrap();
+        assert!(actual.distance_to(expected).unwrap() < 1e-11);
     }
 
     let mut scaled_output = Vec::new();
