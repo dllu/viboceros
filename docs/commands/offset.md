@@ -2,7 +2,7 @@
 
 [Command reference](README.md) · [Project overview](../../README.md)
 
-Select one or more lines, circles, circular arcs, ellipses, or planar polylines, then enter
+Select one or more lines, circles, circular arcs, ellipses, planar NURBS curves, or planar polylines, then enter
 `Offset distance side-point`. The point chooses the side of each curve; the
 distance must be positive. `Offset distance BothSides=Yes` creates one curve on
 each side without a point. The selected originals remain in the document, and
@@ -22,6 +22,10 @@ Ellipses offset along their analytic normals. Noncircular ellipse offsets are
 closed cubic NURBS fitted adaptively and checked against the analytic locus at
 interior stations of every span. Inward distances reaching the first cusp are
 rejected. The fit uses the document absolute tolerance and an 8,192-span cap.
+Planar NURBS offsets are likewise fitted with cubic spans from the source
+curve's position and derivatives, then checked at interior stations against
+the offset locus. Source kinks, stationary points, and offsets that develop a
+cusp are rejected. The output retains the source parameter interval.
 Planar polylines use `Corner=Sharp` by default, extending neighboring offset
 segments to their intersection. `Corner=Chamfer` bridges convex gaps with a
 straight segment; concave corners still meet at the segment intersection.
@@ -52,6 +56,7 @@ Each nested island reverses that direction, including successive nesting
 levels. Closed circles, full circular arcs, ellipses, and simple planar polylines can
 form regions. Selected closed boundaries that intersect or touch are rejected.
 Self-intersecting closed polylines are also rejected as ambiguous regions.
+Open planar NURBS curves are supported; closed NURBS region nesting is pending.
 The command supports the same `Corner` and `OutputLayer` options as `Offset`;
 at most 100,000 source/count combinations can be requested. All outputs are
 staged before the document changes.
@@ -59,8 +64,9 @@ staged before the document changes.
 `OutputLayer=Current` is the default; `OutputLayer=Input` uses each source's
 layer. Both choices create fresh object attributes. The command stages every
 result before changing the document, so an unsupported or degenerate selected
-curve leaves the document unchanged. General NURBS and polycurve
-offsets, as well as smooth corners, trim, cap, and construction-plane overrides, remain
+curve leaves the document unchanged. NURBS offsets across sharp corners,
+closed NURBS region nesting, and polycurve offsets, as well as smooth corners,
+trim, cap, and construction-plane overrides, remain
 to be implemented.
 
 ## Ellipse oracle probe

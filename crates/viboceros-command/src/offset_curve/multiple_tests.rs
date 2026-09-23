@@ -5,6 +5,33 @@ fn point(x: Real, y: Real) -> Point3 {
 }
 
 #[test]
+fn open_nurbs_multiple_offsets_follow_pick_side() {
+    let mut document = Document::default();
+    let source = NurbsCurve::try_new(
+        2,
+        vec![point(0.0, 0.0), point(2.0, 0.0), point(4.0, 2.0)],
+        vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+    )
+    .unwrap();
+    let id = document.add_geometry(Geometry::NurbsCurve(source)).unwrap();
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "OffsetMultiple 0.2 0,1,0 OffsetCount=2")
+        .unwrap();
+    let starts = document
+        .selected_objects()
+        .map(|object| {
+            let Geometry::NurbsCurve(curve) = object.geometry() else {
+                panic!("NURBS offset")
+            };
+            curve.evaluate(0.0).unwrap().y()
+        })
+        .collect::<Vec<_>>();
+    assert!((starts[0] - 0.2).abs() <= document.tolerance().absolute());
+    assert!((starts[1] - 0.4).abs() <= document.tolerance().absolute());
+}
+
+#[test]
 fn ellipse_multiple_offsets_preserve_smooth_closed_outputs() {
     let mut document = Document::default();
     let frame = CommandContext::default().construction_plane;

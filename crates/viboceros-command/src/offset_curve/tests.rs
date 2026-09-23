@@ -5,6 +5,50 @@ fn point(x: Real, y: Real, z: Real) -> Point3 {
 }
 
 #[test]
+fn offset_open_nurbs_curve_uses_pick_side_and_through_point() {
+    let mut document = Document::default();
+    let source = NurbsCurve::try_new(
+        2,
+        vec![
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(4.0, 2.0, 0.0),
+        ],
+        vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+    )
+    .unwrap();
+    let id = document.add_geometry(Geometry::NurbsCurve(source)).unwrap();
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "Offset 0.35 0,1,0")
+        .unwrap();
+    let Geometry::NurbsCurve(out) = document.selected_objects().next().unwrap().geometry() else {
+        panic!("NURBS offset")
+    };
+    assert!(
+        out.evaluate(0.0)
+            .unwrap()
+            .distance_to(point(0.0, 0.35, 0.0))
+            .unwrap()
+            <= document.tolerance().absolute()
+    );
+    document.select_object(id, SelectionMode::Replace).unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut document, "Offset ThroughPoint=0,0.5,0")
+        .unwrap();
+    let Geometry::NurbsCurve(out) = document.selected_objects().next().unwrap().geometry() else {
+        panic!("NURBS through-point offset")
+    };
+    assert!(
+        out.evaluate(0.0)
+            .unwrap()
+            .distance_to(point(0.0, 0.5, 0.0))
+            .unwrap()
+            <= document.tolerance().absolute()
+    );
+}
+
+#[test]
 fn offset_ellipse_creates_smooth_curve_and_through_point_reaches_pick() {
     let mut document = Document::default();
     let frame = CommandContext::default().construction_plane;

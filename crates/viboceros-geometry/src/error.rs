@@ -6,11 +6,17 @@ use crate::{MAX_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRES, MIN_SURFACE_WIRE_DENSIT
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum GeometryError {
     #[error(
-        "curve offset currently supports lines, circles, circular arcs, ellipses, and planar polylines"
+        "curve offset currently supports lines, circles, circular arcs, ellipses, planar NURBS curves, and planar polylines"
     )]
     UnsupportedCurveOffset,
     #[error("ellipse offset could not meet tolerance within fitting budget or model precision")]
     EllipseOffsetFitLimit,
+    #[error(
+        "planar NURBS offset could not meet tolerance within fitting budget or model precision"
+    )]
+    NurbsOffsetFitLimit,
+    #[error("NURBS offset requires a planar source curve")]
+    NonPlanarCurveOffset,
     #[error("offset side point lies on the curve's supporting locus")]
     AmbiguousCurveOffsetSide,
     #[error("selected closed offset regions intersect or touch")]

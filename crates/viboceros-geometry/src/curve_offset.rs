@@ -5,9 +5,11 @@ use std::cmp::Ordering;
 use crate::exact_scalar::rational;
 
 mod ellipse;
+mod nurbs;
 use ellipse::{
     ellipse_offset_side, ellipse_region_contains, ellipse_through_distance, offset_ellipse,
 };
+use nurbs::{nurbs_offset_side, nurbs_through_distance, offset_nurbs};
 
 use crate::{
     Circle3, CircularArc3, Curve3, CurveSegment3, GeometryError, LineSegment,
@@ -193,6 +195,9 @@ impl Curve3 {
             Self::Circle(_) => return Ok(Some(1.0)),
             Self::Arc(arc) if arc.is_closed() => return Ok(Some(1.0)),
             Self::Ellipse(_) => return Ok(Some(1.0)),
+            Self::NurbsCurve(curve) if curve.is_closed()? => {
+                return Err(GeometryError::UnsupportedCurveOffset);
+            }
             Self::Polyline(polyline) if polyline.is_closed() => {
                 let normal = polyline_offset_normal(polyline, plane_normal, tolerance)?;
                 let origin = polyline.vertices()[0];
@@ -317,6 +322,12 @@ impl Curve3 {
                 ))
             }
             Self::Ellipse(ellipse) => offset_ellipse(*ellipse, distance, tolerance),
+            Self::NurbsCurve(curve) => Ok(Self::NurbsCurve(offset_nurbs(
+                curve,
+                distance,
+                plane_normal,
+                tolerance,
+            )?)),
             Self::Polyline(polyline) => {
                 offset_polyline(polyline, distance, plane_normal, tolerance, corner)
             }
@@ -407,6 +418,16 @@ impl Curve3 {
                 ellipse.center(),
                 ellipse.normal()?,
                 vec![ellipse_through_distance(*ellipse, through, tolerance)?],
+            ),
+            Self::NurbsCurve(curve) => (
+                curve.evaluate(*curve.domain().start())?,
+                nurbs::offset_plane(curve, plane_normal, tolerance)?,
+                vec![nurbs_through_distance(
+                    curve,
+                    through,
+                    plane_normal,
+                    tolerance,
+                )?],
             ),
             Self::Polyline(polyline) => {
                 let normal = polyline_offset_normal(polyline, plane_normal, tolerance)?;
@@ -505,6 +526,9 @@ impl Curve3 {
             }
             Self::Ellipse(ellipse) => {
                 return ellipse_offset_side(*ellipse, side, tolerance);
+            }
+            Self::NurbsCurve(curve) => {
+                return nurbs_offset_side(curve, side, plane_normal, tolerance);
             }
             Self::Polyline(polyline) => {
                 let normal = polyline_offset_normal(polyline, plane_normal, tolerance)?;
@@ -1116,10 +1140,164 @@ fn offset_circle(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{LineSegment, Point3, Vector3};
+    use crate::{LineSegment, NurbsCurve, Point3, Vector3};
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn open_nurbs_offset_follows_parabola_normal() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let source = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                2,
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(2.0, 0.0, 0.0),
+                    point(4.0, 2.0, 0.0),
+                ],
+                vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+            )
+            .unwrap(),
+        );
+        assert_eq!(
+            source.offset_side(point(0.0, 1.0, 0.0), normal, tol),
+            Ok(1.0)
+        );
+        let Curve3::NurbsCurve(offset) = source.try_offset(0.35, normal, tol).unwrap() else {
+            panic!("NURBS offset")
+        };
+        assert_eq!(offset.domain(), 0.0..=1.0);
+        for index in 0..=128 {
+            let t = index as Real / 128.0;
+            let speed = 1.0_f64.hypot(t);
+            let expected = point(4.0 * t - 0.35 * t / speed, 2.0 * t * t + 0.35 / speed, 0.0);
+            assert!(offset.evaluate(t).unwrap().distance_to(expected).unwrap() <= tol.absolute());
+        }
+        let (_, through_parts) = source
+            .try_offset_through_point(
+                point(0.0, 0.35, 0.0),
+                normal,
+                tol,
+                CurveOffsetCornerStyle::Sharp,
+            )
+            .unwrap();
+        let Curve3::NurbsCurve(through) = &through_parts[0] else {
+            panic!("NURBS through-point offset")
+        };
+        assert!(
+            through
+                .evaluate(0.0)
+                .unwrap()
+                .distance_to(point(0.0, 0.35, 0.0))
+                .unwrap()
+                <= tol.absolute()
+        );
+    }
+
+    #[test]
+    fn closed_rational_nurbs_circle_offset_stays_closed() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let circle = Circle3::try_new(point(1.0, 2.0, 0.0), 5.0, normal, tol).unwrap();
+        let source = Curve3::NurbsCurve(circle.to_nurbs().unwrap());
+        let Curve3::NurbsCurve(offset) = source.try_offset(-0.8, normal, tol).unwrap() else {
+            panic!("closed NURBS offset")
+        };
+        assert!(offset.is_closed().unwrap());
+        for index in 0..=128 {
+            let t = *offset.domain().start()
+                + (*offset.domain().end() - *offset.domain().start()) * index as Real / 128.0;
+            let radius = offset
+                .evaluate(t)
+                .unwrap()
+                .distance_to(circle.center())
+                .unwrap();
+            assert!((radius - 5.8).abs() <= tol.absolute());
+        }
+    }
+
+    #[test]
+    fn nurbs_offset_rejects_nonplanar_source_and_sharp_kink() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let nonplanar = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                3,
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(1.0, 0.0, 0.0),
+                    point(2.0, 1.0, 0.0),
+                    point(3.0, 1.0, 1.0),
+                ],
+                vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
+            )
+            .unwrap(),
+        );
+        assert_eq!(
+            nonplanar.try_offset(0.2, normal, tol),
+            Err(GeometryError::NonPlanarCurveOffset)
+        );
+        let kink = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                1,
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(1.0, 0.0, 0.0),
+                    point(1.0, 1.0, 0.0),
+                ],
+                vec![0.0, 0.0, 1.0, 2.0, 2.0],
+            )
+            .unwrap(),
+        );
+        assert!(matches!(
+            kink.try_offset(0.2, normal, tol),
+            Err(GeometryError::Degenerate {
+                context: "NURBS offset source kink"
+            })
+        ));
+    }
+
+    #[test]
+    fn straight_tilted_nurbs_uses_construction_normal_projection() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let source = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                1,
+                vec![point(0.0, 0.0, 0.0), point(1.0, 0.0, 1.0)],
+                vec![0.0, 0.0, 1.0, 1.0],
+            )
+            .unwrap(),
+        );
+        let Curve3::NurbsCurve(offset) = source.try_offset(0.5, normal, tol).unwrap() else {
+            panic!("tilted straight NURBS offset")
+        };
+        for index in 0..=16 {
+            let t = index as Real / 16.0;
+            assert!(
+                offset
+                    .evaluate(t)
+                    .unwrap()
+                    .distance_to(point(t, 0.5, t))
+                    .unwrap()
+                    <= tol.absolute()
+            );
+        }
     }
 
     #[test]
