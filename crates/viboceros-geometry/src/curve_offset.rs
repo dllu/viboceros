@@ -13,6 +13,7 @@ use ellipse::{
 use nurbs::{
     linear_nurbs_proxy, nurbs_offset_side, nurbs_region_contains, nurbs_region_inward_sign,
     nurbs_through_distance, offset_nurbs, offset_nurbs_chamfer, offset_nurbs_open_gaps,
+    offset_nurbs_round,
 };
 use polycurve::offset_proxy;
 
@@ -375,6 +376,9 @@ impl Curve3 {
                 }
                 if corner == CurveOffsetCornerStyle::Chamfer {
                     return offset_nurbs_chamfer(curve, distance, plane_normal, tolerance);
+                }
+                if corner == CurveOffsetCornerStyle::Round {
+                    return offset_nurbs_round(curve, distance, plane_normal, tolerance);
                 }
                 Ok(Self::NurbsCurve(offset_nurbs(
                     curve,
@@ -1627,6 +1631,18 @@ mod tests {
                 .unwrap()
                 <= tol.absolute()
         );
+        let Curve3::PolyCurve(rounded) = source
+            .try_offset_with_corner_style(-0.2, normal, tol, CurveOffsetCornerStyle::Round)
+            .unwrap()
+        else {
+            panic!("curved NURBS round join")
+        };
+        assert_eq!(rounded.domain(), 0.0..=2.0);
+        let CurveSegment3::Arc(arc) = &rounded.segments()[1] else {
+            panic!("circular corner join")
+        };
+        assert!(arc.center().distance_to(point(2.0, 0.0, 0.0)).unwrap() <= tol.absolute());
+        assert!((arc.radius() - 0.2).abs() <= tol.absolute());
     }
 
     #[test]
@@ -1915,6 +1931,15 @@ mod tests {
                 .len(),
             4
         );
+        let Curve3::PolyCurve(relocated_rounded) = relocated
+            .try_offset_with_corner_style(-0.5, normal, tol, CurveOffsetCornerStyle::Round)
+            .unwrap()
+        else {
+            panic!("smooth seam round joins")
+        };
+        assert!(relocated_rounded.is_closed().unwrap());
+        assert_eq!(relocated_rounded.domain(), 1.0..=5.0);
+        assert_eq!(relocated_rounded.segments().len(), 8);
     }
 
     #[test]
@@ -2018,6 +2043,22 @@ mod tests {
         assert!(chamfered.is_closed().unwrap());
         assert_eq!(chamfered.segments().len(), 8);
         assert_eq!(chamfered.domain(), 0.0..=4.0);
+        let Curve3::PolyCurve(rounded) = source
+            .try_offset_with_corner_style(-0.4, normal, tol, CurveOffsetCornerStyle::Round)
+            .unwrap()
+        else {
+            panic!("closed curved round join")
+        };
+        assert!(rounded.is_closed().unwrap());
+        assert_eq!(rounded.segments().len(), 8);
+        assert_eq!(
+            rounded
+                .segments()
+                .iter()
+                .filter(|segment| matches!(segment, CurveSegment3::Arc(_)))
+                .count(),
+            4
+        );
     }
 
     #[test]
@@ -2056,6 +2097,15 @@ mod tests {
             panic!("one open outward offset")
         };
         assert!(!outer.is_closed().unwrap());
+        let Curve3::PolyCurve(rounded_outer) = source
+            .try_offset_with_corner_style(-0.2, normal, tol, CurveOffsetCornerStyle::Round)
+            .unwrap()
+        else {
+            panic!("single-corner round closure")
+        };
+        assert!(rounded_outer.is_closed().unwrap());
+        assert_eq!(rounded_outer.segments().len(), 2);
+        assert!(matches!(rounded_outer.segments()[1], CurveSegment3::Arc(_)));
         let Curve3::NurbsCurve(loop_curve) = source else {
             unreachable!()
         };

@@ -1,9 +1,9 @@
 //! Tolerance-checked cubic approximations of smooth planar NURBS offsets.
 
 use crate::{
-    Brep, Curve3, CurveCurveIntersectionEvent, CurveSegment3, GeometryError, LineSegment,
-    NurbsCurve, ParameterSide, Point3, PolyCurve3, Polyline3, Real, Tolerance, UnitVector3,
-    Vector3, WeightedPoint3, nurbs::curve_points_coincident,
+    Brep, Circle3, CircularArc3, Curve3, CurveCurveIntersectionEvent, CurveSegment3, GeometryError,
+    LineSegment, NurbsCurve, ParameterSide, Point3, PolyCurve3, Polyline3, Real, Tolerance,
+    UnitVector3, Vector3, WeightedPoint3, nurbs::curve_points_coincident,
 };
 
 const MAX_OFFSET_SPANS: usize = 8_192;
@@ -483,6 +483,25 @@ pub(super) fn offset_nurbs_chamfer(
     fallback: UnitVector3,
     tolerance: Tolerance,
 ) -> Result<Curve3, GeometryError> {
+    offset_nurbs_connected(curve, distance, fallback, tolerance, false)
+}
+
+pub(super) fn offset_nurbs_round(
+    curve: &NurbsCurve,
+    distance: Real,
+    fallback: UnitVector3,
+    tolerance: Tolerance,
+) -> Result<Curve3, GeometryError> {
+    offset_nurbs_connected(curve, distance, fallback, tolerance, true)
+}
+
+fn offset_nurbs_connected(
+    curve: &NurbsCurve,
+    distance: Real,
+    fallback: UnitVector3,
+    tolerance: Tolerance,
+    round: bool,
+) -> Result<Curve3, GeometryError> {
     let mut pieces = offset_nurbs_open_gaps(curve, distance, fallback, tolerance)?;
     let closed = curve.is_closed()?;
     if pieces.len() == 1 && (!closed || pieces[0].as_ref().is_closed()?) {
@@ -507,17 +526,60 @@ pub(super) fn offset_nurbs_chamfer(
     };
     let span = *curve.domain().end() - *curve.domain().start();
     let end = start + span;
-    crate::require_finite([end], "chamfered NURBS offset parameter")?;
+    crate::require_finite([end], "joined NURBS offset parameter")?;
+    let normal = if round {
+        Some(offset_plane(curve, fallback, tolerance)?)
+    } else {
+        None
+    };
     let mut segments = Vec::new();
     for (index, piece) in pieces.iter().enumerate() {
         segments.extend(piece.to_polycurve()?.segments().iter().cloned());
         if index + 1 < pieces.len() || closed {
             let next = (index + 1) % pieces.len();
-            segments.push(CurveSegment3::Line(LineSegment::try_new(
-                ends[index],
-                starts[next],
-                tolerance,
-            )?));
+            if let Some(normal) = normal {
+                let domain = curve.domain();
+                let parameter = match piece {
+                    Curve3::NurbsCurve(part) => *part.domain().end(),
+                    Curve3::PolyCurve(part) => *part.domain().end(),
+                    _ => unreachable!("NURBS offset pieces are NURBS or polycurves"),
+                };
+                let source_parameter = if parameter > *domain.end() {
+                    parameter - span
+                } else {
+                    parameter
+                };
+                let center = curve.evaluate(source_parameter)?;
+                let first = center.vector_to(ends[index])?.normalized_nonzero()?;
+                let second = center.vector_to(starts[next])?.normalized_nonzero()?;
+                let sine = first
+                    .as_vector()
+                    .cross(second.as_vector())?
+                    .dot(normal.as_vector())?;
+                let cosine = first.as_vector().dot(second.as_vector())?;
+                let sweep = sine.abs().atan2(cosine);
+                let arc_normal = if sine < 0.0 {
+                    normal.opposite()
+                } else {
+                    normal
+                };
+                let circle =
+                    Circle3::try_from_center_point(center, ends[index], arc_normal, tolerance)?;
+                if (center.distance_to(starts[next])? - circle.radius()).abs()
+                    > tolerance.absolute()
+                {
+                    return Err(GeometryError::NurbsOffsetFitLimit);
+                }
+                segments.push(CurveSegment3::Arc(CircularArc3::try_from_circle_sweep(
+                    circle, sweep,
+                )?));
+            } else {
+                segments.push(CurveSegment3::Line(LineSegment::try_new(
+                    ends[index],
+                    starts[next],
+                    tolerance,
+                )?));
+            }
         }
     }
     Ok(Curve3::PolyCurve(
