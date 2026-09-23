@@ -161,6 +161,29 @@ impl ObjectSnapCache {
         )
     }
 
+    /// Camera-plane affine query with indexed point clouds and local-origin precision.
+    pub fn nearest_in_frame_with_options(
+        &mut self,
+        document: &Document,
+        frame: Frame3,
+        cursor_offset: [Real; 2],
+        capture_radius: Real,
+        options: ObjectSnapOptions,
+    ) -> Result<Option<ObjectSnap>, DraftingError> {
+        validate_capture_radius(capture_radius)?;
+        validate_cursor_coordinates(cursor_offset)?;
+        nearest_object_snap_with_metric(
+            document,
+            &FrameSnapMetric {
+                frame,
+                cursor_offset,
+                capture_radius,
+            },
+            self,
+            options,
+        )
+    }
+
     /// Affine/projective viewport query with reusable model-space feature data.
     /// Uses the projection contract of `nearest_object_snap_projected`.
     pub fn nearest_projected(

@@ -14,7 +14,9 @@ pub use cache::ObjectSnapCache;
 
 use super::{DraftingError, validate_capture_radius, validate_cursor_coordinates};
 use viboceros_document::{Document, Geometry, ObjectId};
-use viboceros_geometry::{GeometryError, Point3, PointCloud3, PointCloudProjection, Real, Vector3};
+use viboceros_geometry::{
+    Frame3, GeometryError, Point3, PointCloud3, PointCloudProjection, Real, Vector3,
+};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ObjectSnapKind {
@@ -276,6 +278,49 @@ impl SnapMetric for AxisAlignedSnapMetric {
             .nearest_projected_in_box_relative(
                 self.projection,
                 self.origin,
+                self.cursor_offset,
+                self.capture_radius,
+            )?
+            .map(|(_, point, _)| point))
+    }
+}
+
+struct FrameSnapMetric {
+    frame: Frame3,
+    cursor_offset: [Real; 2],
+    capture_radius: Real,
+}
+
+impl SnapMetric for FrameSnapMetric {
+    fn is_affine(&self) -> bool {
+        true
+    }
+
+    fn capture_radius(&self) -> Real {
+        self.capture_radius
+    }
+
+    fn offset(&self, point: Point3) -> Option<[Real; 2]> {
+        let projected = self.frame.projected_coordinates_of(point).ok()?;
+        let delta = [
+            projected[0] - self.cursor_offset[0],
+            projected[1] - self.cursor_offset[1],
+        ];
+        delta.iter().all(|value| value.is_finite()).then_some(delta)
+    }
+
+    fn tangent_direction(&self, _point: Point3, tangent: Vector3) -> Option<[Real; 2]> {
+        let unit = tangent.normalized_nonzero().ok()?.as_vector();
+        near::unit_screen([
+            unit.dot(self.frame.x_axis().as_vector()).ok()?,
+            unit.dot(self.frame.y_axis().as_vector()).ok()?,
+        ])
+    }
+
+    fn nearest_point_cloud(&self, cloud: &PointCloud3) -> Result<Option<Point3>, GeometryError> {
+        Ok(cloud
+            .nearest_projected_in_frame_box_relative(
+                self.frame,
                 self.cursor_offset,
                 self.capture_radius,
             )?

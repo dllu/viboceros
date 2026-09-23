@@ -1,9 +1,9 @@
 use std::sync::{Arc, OnceLock};
 
-use crate::{AffineTransform3, BoundingBox3, GeometryError, Point3, Real};
+use crate::{AffineTransform3, BoundingBox3, Frame3, GeometryError, Point3, Real};
 
 mod index;
-use index::{ProjectedIndex, SearchRegion};
+use index::{NodeBounds, ProjectedIndex, SearchRegion};
 
 /// Axis-aligned projection used by a point-cloud spatial query.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -26,10 +26,10 @@ impl PointCloudProjection {
 /// An immutable, finite collection of 3D points.
 ///
 /// The stored order is significant, matching Rhino point clouds and 3DM
-/// archives. A balanced XY k-d tree is built immediately; XZ/YZ indexes are
-/// initialized on demand and reused for axis-aligned viewport queries.
-/// Clones share immutable point storage and all projection caches; transforms
-/// construct a new data block rather than modifying shared geometry.
+/// archives. A balanced XY k-d tree is built immediately; XZ/YZ indexes and
+/// three-dimensional subtree bounds for arbitrary camera-plane queries are
+/// initialized on demand. Clones share point storage and all caches.
+/// Transforms construct a new data block instead of modifying shared geometry.
 #[derive(Clone, Debug)]
 pub struct PointCloud3 {
     data: Arc<PointCloudData>,
@@ -42,6 +42,7 @@ struct PointCloudData {
     xy: ProjectedIndex,
     xz: OnceLock<ProjectedIndex>,
     yz: OnceLock<ProjectedIndex>,
+    spatial_bounds: OnceLock<Vec<NodeBounds>>,
 }
 
 impl PointCloud3 {
@@ -58,6 +59,7 @@ impl PointCloud3 {
                 xy,
                 xz: OnceLock::new(),
                 yz: OnceLock::new(),
+                spatial_bounds: OnceLock::new(),
             }),
         })
     }
@@ -135,6 +137,54 @@ impl PointCloud3 {
         half_width: Real,
     ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
         self.nearest_in_region(projection, origin, offset, SearchRegion::Square(half_width))
+    }
+
+    /// Nearest member in an arbitrary orthonormal frame's XY projection.
+    /// The frame origin and local `offset` remain separate for distant models.
+    /// A lazy 3D bound cache lets the shared point tree prune projected queries.
+    pub fn nearest_projected_frame_relative(
+        &self,
+        frame: Frame3,
+        offset: [Real; 2],
+        maximum_distance: Real,
+    ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
+        self.nearest_in_frame_region(frame, offset, SearchRegion::Circle(maximum_distance))
+    }
+
+    /// As above, with an inclusive square capture aperture and Euclidean ranking.
+    pub fn nearest_projected_in_frame_box_relative(
+        &self,
+        frame: Frame3,
+        offset: [Real; 2],
+        half_width: Real,
+    ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
+        self.nearest_in_frame_region(frame, offset, SearchRegion::Square(half_width))
+    }
+
+    fn nearest_in_frame_region(
+        &self,
+        frame: Frame3,
+        offset: [Real; 2],
+        region: SearchRegion,
+    ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
+        let radius = region.half_width();
+        if !radius.is_finite() || radius < 0.0 {
+            return Err(GeometryError::InvalidPointCloudSearchRadius);
+        }
+        if offset.iter().any(|value| !value.is_finite()) {
+            return Err(GeometryError::NonFinite {
+                context: "point cloud search offset",
+            });
+        }
+        let bounds = self
+            .data
+            .spatial_bounds
+            .get_or_init(|| self.data.xy.node_bounds(&self.data.points));
+        let best = self
+            .data
+            .xy
+            .nearest_in_frame(&self.data.points, bounds, frame, offset, region);
+        Ok(best.map(|(distance, index)| (index, self.data.points[index], distance)))
     }
 
     fn nearest_in_region(

@@ -654,3 +654,186 @@ fn indexed_nearest_matches_a_stable_brute_force_search() {
         Err(GeometryError::InvalidPointCloudSearchRadius)
     );
 }
+
+#[test]
+fn arbitrary_frame_queries_match_brute_force_with_square_and_circle_capture() {
+    fn random_unit(state: &mut u64) -> Real {
+        *state = state
+            .wrapping_mul(6_364_136_223_846_793_005)
+            .wrapping_add(1);
+        (*state >> 11) as Real / ((1_u64 << 53) as Real)
+    }
+    let mut state = 0x1234_5678_9abc_def0;
+    for translation in [0.0, 2.0_f64.powi(52)] {
+        let frame = Frame3::try_from_directions(
+            point(translation, -translation, translation),
+            Vector3::try_new(1.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 1.0, 1.0).unwrap(),
+            crate::Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let points = (0..401)
+            .map(|index| {
+                let coordinates = if index % 53 == 0 {
+                    [2.0, -3.0, index as Real]
+                } else {
+                    [
+                        random_unit(&mut state) * 80.0 - 40.0,
+                        random_unit(&mut state) * 80.0 - 40.0,
+                        random_unit(&mut state) * 80.0 - 40.0,
+                    ]
+                };
+                frame.point_at(coordinates).unwrap()
+            })
+            .collect::<Vec<_>>();
+        let cloud = PointCloud3::try_new(points.clone()).unwrap();
+        for _ in 0..128 {
+            let offset = [
+                random_unit(&mut state) * 100.0 - 50.0,
+                random_unit(&mut state) * 100.0 - 50.0,
+            ];
+            let radius = random_unit(&mut state) * 30.0;
+            for square in [false, true] {
+                let expected = points
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(index, &candidate)| {
+                        let projected = frame.projected_coordinates_of(candidate).ok()?;
+                        let delta = [projected[0] - offset[0], projected[1] - offset[1]];
+                        let distance = delta[0].hypot(delta[1]);
+                        let captured = if square {
+                            delta[0].abs().max(delta[1].abs()) <= radius
+                        } else {
+                            distance <= radius
+                        };
+                        captured.then_some((distance, index, candidate))
+                    })
+                    .min_by(|left, right| {
+                        left.0
+                            .total_cmp(&right.0)
+                            .then_with(|| left.1.cmp(&right.1))
+                    })
+                    .map(|(distance, index, candidate)| (index, candidate, distance));
+                let actual = if square {
+                    cloud.nearest_projected_in_frame_box_relative(frame, offset, radius)
+                } else {
+                    cloud.nearest_projected_frame_relative(frame, offset, radius)
+                };
+                assert_eq!(
+                    actual.unwrap(),
+                    expected,
+                    "translation={translation} offset={offset:?} radius={radius} square={square}"
+                );
+            }
+        }
+        assert!(cloud.data.spatial_bounds.get().is_some());
+    }
+}
+
+#[test]
+fn frame_index_does_not_require_representable_normal_depth() {
+    let frame = Frame3::try_from_directions(
+        point(0.0, 0.0, -Real::MAX),
+        Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+        Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+        crate::Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let near = point(1.0, 2.0, Real::MAX);
+    let far = point(4.0, 5.0, -Real::MAX);
+    let cloud = PointCloud3::try_new(vec![far, near]).unwrap();
+    assert_eq!(
+        cloud
+            .nearest_projected_frame_relative(frame, [1.0, 2.0], 0.0)
+            .unwrap(),
+        Some((1, near, 0.0))
+    );
+}
+
+#[test]
+fn frame_index_preserves_earliest_source_on_exact_projection_ties() {
+    let frame = Frame3::try_from_directions(
+        point(10.0, 20.0, 30.0),
+        Vector3::try_new(1.0, 1.0, 0.0).unwrap(),
+        Vector3::try_new(-1.0, 1.0, 1.0).unwrap(),
+        crate::Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let tied = frame.point_at([2.0, -3.0, 4.0]).unwrap();
+    let cloud =
+        PointCloud3::try_new(vec![frame.point_at([50.0, 50.0, 0.0]).unwrap(), tied, tied]).unwrap();
+    let offset = frame.projected_coordinates_of(tied).unwrap();
+    for result in [
+        cloud.nearest_projected_frame_relative(frame, offset, 0.0),
+        cloud.nearest_projected_in_frame_box_relative(frame, offset, 0.0),
+    ] {
+        assert_eq!(result.unwrap(), Some((1, tied, 0.0)));
+    }
+    assert_eq!(
+        cloud.nearest_projected_frame_relative(frame, offset, -1.0),
+        Err(GeometryError::InvalidPointCloudSearchRadius)
+    );
+}
+
+#[test]
+#[ignore = "release-mode timing diagnostic"]
+fn oblique_frame_query_benchmark() {
+    use std::{hint::black_box, time::Instant};
+    let frame = Frame3::try_from_directions(
+        point(0.0, 0.0, 0.0),
+        Vector3::try_new(1.0, 1.0, 0.0).unwrap(),
+        Vector3::try_new(-1.0, 1.0, 1.0).unwrap(),
+        crate::Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let points = (0..100_000)
+        .map(|index| {
+            let x = (index % 316) as Real - 158.0;
+            let y = (index / 316) as Real - 158.0;
+            point(x, y, (x * 0.1).sin() + (y * 0.1).cos())
+        })
+        .collect::<Vec<_>>();
+    let cloud = PointCloud3::try_new(points).unwrap();
+    let offsets = (0..128)
+        .map(|index| [index as Real * 1.3 - 80.0, index as Real * 0.7 - 45.0])
+        .collect::<Vec<_>>();
+    cloud
+        .nearest_projected_frame_relative(frame, offsets[0], 1.0)
+        .unwrap();
+    let start = Instant::now();
+    let indexed = offsets
+        .iter()
+        .map(|offset| {
+            black_box(&cloud)
+                .nearest_projected_frame_relative(frame, black_box(*offset), 1.0)
+                .unwrap()
+        })
+        .collect::<Vec<_>>();
+    let indexed_time = start.elapsed();
+    let start = Instant::now();
+    let scanned = offsets
+        .iter()
+        .map(|offset| {
+            cloud
+                .points()
+                .iter()
+                .enumerate()
+                .filter_map(|(index, &point)| {
+                    let projected = frame.projected_coordinates_of(point).ok()?;
+                    let distance = (projected[0] - offset[0]).hypot(projected[1] - offset[1]);
+                    (distance <= 1.0).then_some((distance, index, point))
+                })
+                .min_by(|left, right| {
+                    left.0
+                        .total_cmp(&right.0)
+                        .then_with(|| left.1.cmp(&right.1))
+                })
+                .map(|(distance, index, point)| (index, point, distance))
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(indexed, scanned);
+    eprintln!(
+        "oblique cloud points=100000 queries=128 indexed={indexed_time:?} scan={:?}",
+        start.elapsed()
+    );
+}

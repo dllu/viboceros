@@ -1,6 +1,6 @@
 //! Deterministic axis-aligned k-d tree construction and bounded queries.
 
-use super::{Point3, PointCloudProjection, Real};
+use super::{Frame3, Point3, PointCloudProjection, Real};
 use std::cmp::Ordering;
 
 #[derive(Clone, Copy)]
@@ -38,6 +38,77 @@ pub(super) struct ProjectedNode {
     axis: u8,
     left: Option<usize>,
     right: Option<usize>,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub(super) struct NodeBounds {
+    minimum: [Real; 3],
+    maximum: [Real; 3],
+}
+
+impl NodeBounds {
+    fn point(point: Point3) -> Self {
+        let coordinates = point.to_array();
+        Self {
+            minimum: coordinates,
+            maximum: coordinates,
+        }
+    }
+
+    fn include(&mut self, other: Self) {
+        for axis in 0..3 {
+            self.minimum[axis] = self.minimum[axis].min(other.minimum[axis]);
+            self.maximum[axis] = self.maximum[axis].max(other.maximum[axis]);
+        }
+    }
+
+    /// A conservative screen-plane distance from the query to this 3D box.
+    /// Unrepresentable bounds disable pruning; they never discard a point.
+    fn projected_lower_bound(self, frame: Frame3, offset: [Real; 2]) -> Option<[Real; 2]> {
+        let axes = [frame.x_axis(), frame.y_axis()];
+        let mut distance = [0.0; 2];
+        for (index, axis) in axes.into_iter().enumerate() {
+            let weights = axis.as_vector().to_array();
+            let minimum = Point3::try_from(std::array::from_fn(|i| {
+                if weights[i] >= 0.0 {
+                    self.minimum[i]
+                } else {
+                    self.maximum[i]
+                }
+            }))
+            .ok()?;
+            let maximum = Point3::try_from(std::array::from_fn(|i| {
+                if weights[i] >= 0.0 {
+                    self.maximum[i]
+                } else {
+                    self.minimum[i]
+                }
+            }))
+            .ok()?;
+            let low = axis
+                .as_vector()
+                .dot_point_difference(minimum, frame.origin())
+                - offset[index];
+            let high = axis
+                .as_vector()
+                .dot_point_difference(maximum, frame.origin())
+                - offset[index];
+            if !low.is_finite() || !high.is_finite() || low > high {
+                return None;
+            }
+            // Outward rounding keeps a point on the capture boundary eligible.
+            let low = low.next_down();
+            let high = high.next_up();
+            distance[index] = if low > 0.0 {
+                low
+            } else if high < 0.0 {
+                -high
+            } else {
+                0.0
+            };
+        }
+        Some(distance)
+    }
 }
 
 impl ProjectedIndex {
@@ -112,6 +183,97 @@ impl ProjectedIndex {
             && let Some(far) = far
         {
             self.nearest_from(far, points, origin, offset, region, best);
+        }
+    }
+
+    pub(super) fn node_bounds(&self, points: &[Point3]) -> Vec<NodeBounds> {
+        fn build(
+            index: &ProjectedIndex,
+            points: &[Point3],
+            output: &mut [NodeBounds],
+            node_index: usize,
+        ) -> NodeBounds {
+            let node = index.nodes[node_index];
+            let mut bounds = NodeBounds::point(points[node.point_index]);
+            for child in [node.left, node.right].into_iter().flatten() {
+                bounds.include(build(index, points, output, child));
+            }
+            output[node_index] = bounds;
+            bounds
+        }
+        let mut bounds = vec![NodeBounds::point(points[0]); self.nodes.len()];
+        build(self, points, &mut bounds, self.root);
+        bounds
+    }
+
+    pub(super) fn nearest_in_frame(
+        &self,
+        points: &[Point3],
+        bounds: &[NodeBounds],
+        frame: Frame3,
+        offset: [Real; 2],
+        region: SearchRegion,
+    ) -> Option<(Real, usize)> {
+        let mut query = FrameSearch {
+            index: self,
+            points,
+            bounds,
+            frame,
+            offset,
+            region,
+            best: None,
+        };
+        query.search(self.root);
+        query.best
+    }
+}
+
+struct FrameSearch<'a> {
+    index: &'a ProjectedIndex,
+    points: &'a [Point3],
+    bounds: &'a [NodeBounds],
+    frame: Frame3,
+    offset: [Real; 2],
+    region: SearchRegion,
+    best: Option<(Real, usize)>,
+}
+
+impl FrameSearch<'_> {
+    fn search(&mut self, node_index: usize) {
+        let node = self.index.nodes[node_index];
+        if let Some(lower) = self.bounds[node_index].projected_lower_bound(self.frame, self.offset)
+        {
+            let region_distance = match self.region {
+                SearchRegion::Circle(_) => lower[0].hypot(lower[1]),
+                SearchRegion::Square(_) => lower[0].max(lower[1]),
+            };
+            if region_distance > self.region.half_width() {
+                return;
+            }
+            let euclidean = lower[0].hypot(lower[1]);
+            if self.best.is_some_and(|(distance, index)| {
+                euclidean > distance
+                    || (euclidean == distance && node.minimum_source_index >= index)
+            }) {
+                return;
+            }
+        }
+        let point = self.points[node.point_index];
+        if let Ok(projected) = self.frame.projected_coordinates_of(point) {
+            let relative = [projected[0] - self.offset[0], projected[1] - self.offset[1]];
+            let distance = relative[0].hypot(relative[1]);
+            if distance.is_finite()
+                && self.region.contains(relative, distance)
+                && self.best.is_none_or(|(best_distance, best_index)| {
+                    distance < best_distance
+                        || (distance == best_distance && node.point_index < best_index)
+                })
+            {
+                self.best = Some((distance, node.point_index));
+            }
+        }
+        for child in [node.left, node.right].into_iter().flatten() {
+            self.search(child);
         }
     }
 }

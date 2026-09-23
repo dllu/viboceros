@@ -2,7 +2,7 @@
 
 [Architecture](architecture.md) · [Viewport implementation](viewport-implementation.md)
 
-Top, Front, and Right click selection and Osnap use axis-aligned k-d trees instead of
+All six standard parallel directions use axis-aligned k-d trees instead of
 scanning every cloud point. `PointCloud3` builds its XY index at construction;
 XZ and YZ indexes are initialized on first valid use through `OnceLock` and
 reused. Each additional index stores node metadata, not another copy of the
@@ -46,8 +46,15 @@ same position. Nonzero-distance ties still use the ordinary spatial search.
 The drafting API's `nearest_object_snap_axis_aligned` uses the same cached indexes
 for clouds while retaining ordinary feature enumeration and priority rules for
 other geometry. The camera's projection choice is shared by picking and Osnap.
+An oblique `Plan` view reuses the XY tree with lazily built three-dimensional
+subtree bounds. Each query projects those bounds into the captured camera plane,
+then prunes subtrees outside the aperture or farther than the current winner.
+The bounds add six `f64` values per node only after the first oblique query;
+clones share them. Pruning is conservative and may visit many nodes for a
+depth-heavy or highly overlapping cloud. The oriented frame API provides both
+circular and square capture with the same source-order tie rule.
 Perspective selection and Osnap still scan projected cloud points, as do callers
-of the generic arbitrary-projection snapping API. This is not an acceleration
+of the generic projective snapping API. This is not an acceleration
 of all geometry types, all snapping, or all viewport work.
 
 ## Validation and timing
@@ -65,7 +72,20 @@ after its source handle has been dropped.
 Drafting tests compare axis-aligned snaps with the generic projected search over
 mixed point/cloud/line scenes in all planes, including large signed translations,
 locked targets, capture radii, and ties. Viewport tests check both points and
-clouds at the Osnap pixel boundary in each parallel view.
+clouds at the Osnap pixel boundary in each standard parallel view. Rotated-frame
+queries are compared with brute force at ordinary and large translations, for
+both capture shapes; drafting tests compare indexed oblique capture with the
+generic projected reference.
+
+The opt-in `oblique_frame_query_benchmark` uses a 100,000-point cloud and
+compares 128 warmed queries with an exhaustive scan. One local release build
+measured 0.56 ms for the indexed queries and 167 ms for the scan, with identical
+answers. This fixture is diagnostic; geometry distribution and camera angle
+affect pruning, and the timing does not include viewport or document work.
+
+```sh
+cargo test -p viboceros-geometry --release oblique_frame_query_benchmark -- --ignored --nocapture
+```
 
 Run the opt-in benchmark in release mode:
 

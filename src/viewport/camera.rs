@@ -67,12 +67,17 @@ impl Viewport {
     }
 
     pub(super) fn parallel_query_offset(&self, pointer: Pos2, rect: Rect) -> Option<[Real; 2]> {
-        let axes = self.kind.parallel_axes()?;
+        let signs = if self.kind == ViewKind::Plan {
+            [1.0, 1.0]
+        } else {
+            let axes = self.kind.parallel_axes()?;
+            [axes.right.1, axes.up.1]
+        };
         let origin = self.world_origin(rect);
         let scale = Real::from(self.pixels_per_unit);
         Some([
-            (Real::from(pointer.x) - Real::from(origin.x)) / scale * axes.right.1,
-            (Real::from(origin.y) - Real::from(pointer.y)) / scale * axes.up.1,
+            (Real::from(pointer.x) - Real::from(origin.x)) / scale * signs[0],
+            (Real::from(origin.y) - Real::from(pointer.y)) / scale * signs[1],
         ])
     }
 
@@ -81,7 +86,10 @@ impl Viewport {
     /// coefficients do not become subnormal merely because the model is large.
     pub(super) fn gpu_position(&self, point: Point3) -> Option<[f32; 3]> {
         if self.kind == ViewKind::Plan {
-            let local = self.plan_target_frame()?.coordinates_of(point).ok()?;
+            let local = self
+                .plan_target_frame()?
+                .projected_coordinates_of(point)
+                .ok()?;
             let scale = Real::from(self.pixels_per_unit);
             return Some([
                 real_to_gpu(local[0] * scale)?,
@@ -122,7 +130,7 @@ impl Viewport {
             .map(|axes| (axes.forward.0, axes.forward.1 as f32))
     }
 
-    fn plan_target_frame(&self) -> Option<Frame3> {
+    pub(super) fn plan_target_frame(&self) -> Option<Frame3> {
         Some(
             self.plan_frame
                 .with_origin(Point3::try_from([self.target.x, self.target.y, self.target.z]).ok()?),
@@ -394,7 +402,10 @@ impl Viewport {
         let origin = self.world_origin(rect);
         let (horizontal_pixels, vertical_pixels) = match self.kind {
             ViewKind::Plan => {
-                let coordinates = self.plan_target_frame()?.coordinates_of(point).ok()?;
+                let coordinates = self
+                    .plan_target_frame()?
+                    .projected_coordinates_of(point)
+                    .ok()?;
                 (
                     coordinates[0] * f64::from(self.pixels_per_unit),
                     coordinates[1] * f64::from(self.pixels_per_unit),

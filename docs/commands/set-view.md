@@ -25,7 +25,7 @@ still pending. See [Rhino's SetView documentation](https://docs.mcneel.com/rhino
 construction plane at its origin. Its camera keeps the plane axes captured at
 the time of the command; later CPlane edits leave the camera alone. The plane
 itself is unchanged. Projection, drawing, picking, snapping, Zoom Extents, and
-UndoView/RedoView use this orientation. Rotated Plan views scan point-cloud
-members for picking and snapping because their existing spatial indexes cover
-only world XY, XZ, and YZ planes. The command preserves unfinished modeling
-prompts and document undo/redo. A live Rhino camera comparison remains pending.
+UndoView/RedoView use this orientation. Rotated Plan views use the cloud's shared
+tree with lazy three-dimensional subtree bounds for picking and snapping. The
+command preserves unfinished modeling prompts and document undo/redo. A live
+Rhino camera comparison remains pending.

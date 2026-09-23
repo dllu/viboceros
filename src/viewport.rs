@@ -2496,6 +2496,33 @@ mod tests {
         );
         assert!(rect.contains(view.project(first, rect).unwrap()));
         assert!(rect.contains(view.project(second, rect).unwrap()));
+        let pointer = view.project(second, rect).unwrap();
+        assert_eq!(view.pick_object(pointer, rect, &document), Some(cloud_id));
+        assert_eq!(
+            view.object_snap(
+                pointer,
+                rect,
+                &document,
+                viboceros_drafting::ObjectSnapModes::ALL
+            )
+            .unwrap()
+            .point(),
+            second
+        );
+    }
+
+    #[test]
+    fn plan_screen_projection_does_not_require_representable_normal_depth() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let frame = WorldPlane::Top
+            .frame()
+            .with_origin(point(0.0, 0.0, -Real::MAX));
+        let mut view = Viewport::new(ViewKind::Top);
+        view.plane.set(frame);
+        view.set_plan_view();
+        let model = point(1.0, 2.0, Real::MAX);
+        assert_eq!(view.project(model, rect), Some(Pos2::new(440.0, 220.0)));
+        assert_eq!(view.gpu_position(model), Some([40.0, 80.0, 0.0]));
     }
 
     #[test]

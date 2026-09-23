@@ -40,6 +40,18 @@ impl Viewport {
                 )
                 .ok()
                 .flatten()
+        } else if self.kind == ViewKind::Plan {
+            self.object_snap_cache
+                .borrow_mut()
+                .nearest_in_frame_with_options(
+                    document,
+                    self.plan_target_frame()?,
+                    self.parallel_query_offset(pointer, rect)?,
+                    Real::from(OSNAP_CAPTURE_PIXELS) / Real::from(self.pixels_per_unit),
+                    options,
+                )
+                .ok()
+                .flatten()
         } else {
             self.object_snap_cache
                 .borrow_mut()

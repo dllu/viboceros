@@ -1,7 +1,7 @@
 //! Square admission is separate from Euclidean proximity and feature ranking.
 use super::*;
 use viboceros_geometry::{
-    Circle3, LineSegment, MeshFace, NurbsCurve, Polyline3, Tolerance, TriangleMesh,
+    Circle3, Frame3, LineSegment, MeshFace, NurbsCurve, Polyline3, Tolerance, TriangleMesh,
 };
 
 fn p(x: Real, y: Real) -> Point3 {
@@ -87,6 +87,48 @@ fn square_corners_admit_discrete_and_near_targets_with_euclidean_distances() {
             )
             .is_none()
         );
+    }
+}
+
+#[test]
+fn oblique_frame_capture_agrees_with_projected_reference() {
+    let frame = Frame3::try_from_directions(
+        Point3::try_new(10.0, 20.0, 30.0).unwrap(),
+        Vector3::try_new(1.0, 1.0, 0.0).unwrap(),
+        Vector3::try_new(-1.0, 1.0, 1.0).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let corner = frame.point_at([0.75, 0.75, 10.0]).unwrap();
+    let outside = frame.point_at([0.1, 1.01, 0.0]).unwrap();
+    let far = frame.point_at([20.75, 0.75, 0.0]).unwrap();
+    for (geometry, kind) in [
+        (
+            Geometry::PointCloud(PointCloud3::try_new(vec![outside, corner, far]).unwrap()),
+            ObjectSnapKind::Point,
+        ),
+        (line(corner, far), ObjectSnapKind::End),
+    ] {
+        let mut document = Document::default();
+        document.add_geometry(geometry).unwrap();
+        let options = ObjectSnapOptions {
+            modes: ObjectSnapModes::only(kind),
+            mesh_edges: false,
+        };
+        let indexed = ObjectSnapCache::default()
+            .nearest_in_frame_with_options(&document, frame, [0.0; 2], 1.0, options)
+            .unwrap();
+        let projected = ObjectSnapCache::default()
+            .nearest_projected_with_options(
+                &document,
+                [0.0; 2],
+                1.0,
+                |point| frame.projected_coordinates_of(point).ok(),
+                options,
+            )
+            .unwrap();
+        assert_eq!(indexed, projected);
+        assert_eq!(indexed.unwrap().point(), corner);
     }
 }
 

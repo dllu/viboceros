@@ -168,6 +168,15 @@ impl Frame3 {
         Ok(coordinates)
     }
 
+    /// First two coordinates relative to the frame origin. This remains usable
+    /// when the normal coordinate is too large to represent in binary64.
+    pub fn projected_coordinates_of(self, point: Point3) -> Result<[f64; 2], GeometryError> {
+        let coordinates = [self.x_axis, self.y_axis]
+            .map(|axis| axis.as_vector().dot_point_difference(point, self.origin));
+        crate::require_finite(coordinates, "frame projected coordinates")?;
+        Ok(coordinates)
+    }
+
     /// Scales frame coordinates before rounding, without requiring the unscaled
     /// displacement or projection to fit in binary64. Products and cancellation
     /// are accumulated exactly; only the final coordinates are rounded.
@@ -312,6 +321,20 @@ mod tests {
         )
         .unwrap();
         assert!(world.coordinates_of(target).is_err());
+    }
+
+    #[test]
+    fn screen_plane_coordinates_ignore_unrepresentable_normal_depth() {
+        let frame = Frame3::try_from_directions(
+            point(0.0, 0.0, -f64::MAX),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let sample = point(1.0, 2.0, f64::MAX);
+        assert_eq!(frame.projected_coordinates_of(sample).unwrap(), [1.0, 2.0]);
+        assert!(frame.coordinates_of(sample).is_err());
     }
 
     #[test]

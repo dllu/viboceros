@@ -106,6 +106,23 @@ impl Viewport {
                             .map_or(f32::INFINITY, |(_, _, distance)| {
                                 (distance * Real::from(self.pixels_per_unit)) as f32
                             })
+                    } else if self.kind == ViewKind::Plan {
+                        self.plan_target_frame()
+                            .zip(self.parallel_query_offset(pointer, rect))
+                            .and_then(|(frame, offset)| {
+                                cloud
+                                    .nearest_projected_frame_relative(
+                                        frame,
+                                        offset,
+                                        Real::from(PICK_CAPTURE_PIXELS)
+                                            / Real::from(self.pixels_per_unit),
+                                    )
+                                    .ok()
+                                    .flatten()
+                            })
+                            .map_or(f32::INFINITY, |(_, _, distance)| {
+                                (distance * Real::from(self.pixels_per_unit)) as f32
+                            })
                     } else {
                         cloud
                             .points()
