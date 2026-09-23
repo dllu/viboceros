@@ -176,7 +176,7 @@ struct MultipleOptions {
 
 fn parse_multiple(arguments: &[&str]) -> Result<MultipleOptions, CommandError> {
     let distance = parse_finite_real(
-        *arguments
+        arguments
             .first()
             .ok_or(CommandError::Usage(MULTIPLE_USAGE))?,
     )?;

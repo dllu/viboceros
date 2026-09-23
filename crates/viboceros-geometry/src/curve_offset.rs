@@ -9,7 +9,10 @@ mod nurbs;
 use ellipse::{
     ellipse_offset_side, ellipse_region_contains, ellipse_through_distance, offset_ellipse,
 };
-use nurbs::{nurbs_offset_side, nurbs_through_distance, offset_nurbs};
+use nurbs::{
+    nurbs_offset_side, nurbs_region_contains, nurbs_region_inward_sign, nurbs_through_distance,
+    offset_nurbs,
+};
 
 use crate::{
     Circle3, CircularArc3, Curve3, CurveSegment3, GeometryError, LineSegment,
@@ -146,6 +149,13 @@ impl Curve3 {
         if let Self::Ellipse(ellipse) = self {
             return ellipse_region_contains(*ellipse, point, tolerance).map(Some);
         }
+        if let Self::NurbsCurve(curve) = self {
+            return if curve.is_closed()? {
+                nurbs_region_contains(curve, point, plane_normal, tolerance).map(Some)
+            } else {
+                Ok(None)
+            };
+        }
         let Self::Polyline(polyline) = self else {
             return Ok(None);
         };
@@ -196,7 +206,7 @@ impl Curve3 {
             Self::Arc(arc) if arc.is_closed() => return Ok(Some(1.0)),
             Self::Ellipse(_) => return Ok(Some(1.0)),
             Self::NurbsCurve(curve) if curve.is_closed()? => {
-                return Err(GeometryError::UnsupportedCurveOffset);
+                return nurbs_region_inward_sign(curve, plane_normal, tolerance).map(Some);
             }
             Self::Polyline(polyline) if polyline.is_closed() => {
                 let normal = polyline_offset_normal(polyline, plane_normal, tolerance)?;
@@ -244,6 +254,9 @@ impl Curve3 {
             Self::Circle(circle) => Ok(Some(circle.point_at_angle(0.0)?)),
             Self::Arc(arc) if arc.is_closed() => Ok(Some(arc.start()?)),
             Self::Ellipse(ellipse) => Ok(Some(ellipse.point_at_angle(0.0)?)),
+            Self::NurbsCurve(curve) if curve.is_closed()? => {
+                Ok(Some(curve.evaluate(*curve.domain().start())?))
+            }
             Self::Polyline(polyline) if polyline.is_closed() => Ok(Some(polyline.vertices()[0])),
             _ => Ok(None),
         }
@@ -1140,7 +1153,7 @@ fn offset_circle(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{LineSegment, NurbsCurve, Point3, Vector3};
+    use crate::{ControlPointCurveClosure, LineSegment, NurbsCurve, Point3, Vector3};
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
@@ -1223,6 +1236,123 @@ mod tests {
                 .unwrap();
             assert!((radius - 5.8).abs() <= tol.absolute());
         }
+    }
+
+    #[test]
+    fn closed_nurbs_regions_classify_orientation_containment_and_crossing() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let circle = Circle3::try_new(point(1.0, 2.0, 0.0), 5.0, normal, tol).unwrap();
+        let curve = circle.to_nurbs().unwrap();
+        let forward = Curve3::NurbsCurve(curve.clone());
+        let reverse = Curve3::NurbsCurve(curve.reversed().unwrap());
+        assert_eq!(
+            forward.offset_region_inward_sign(normal, tol),
+            Ok(Some(1.0))
+        );
+        assert_eq!(
+            reverse.offset_region_inward_sign(normal, tol),
+            Ok(Some(-1.0))
+        );
+        for region in [&forward, &reverse] {
+            assert_eq!(
+                region.offset_region_contains(point(1.0, 2.0, 0.0), normal, tol),
+                Ok(Some(true))
+            );
+            assert_eq!(
+                region.offset_region_contains(point(7.0, 2.0, 0.0), normal, tol),
+                Ok(Some(false))
+            );
+            assert_eq!(
+                region.offset_region_contains(point(6.0, 2.0, 0.0), normal, tol),
+                Err(GeometryError::AmbiguousCurveOffsetSide)
+            );
+        }
+        let bow_tie = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                1,
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(2.0, 2.0, 0.0),
+                    point(0.0, 2.0, 0.0),
+                    point(2.0, 0.0, 0.0),
+                    point(0.0, 0.0, 0.0),
+                ],
+                vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0],
+            )
+            .unwrap(),
+        );
+        assert_eq!(
+            bow_tie.offset_region_inward_sign(normal, tol),
+            Err(GeometryError::SelfIntersectingOffsetRegion)
+        );
+    }
+
+    #[test]
+    fn concave_periodic_nurbs_region_uses_exact_trim_containment() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let curve = NurbsCurve::try_control_point_curve_with_closure(
+            3,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(4.0, 1.0, 0.0),
+                point(1.5, 1.5, 0.0),
+                point(1.5, 3.0, 0.0),
+                point(4.0, 4.0, 0.0),
+                point(0.0, 4.0, 0.0),
+                point(-1.0, 2.0, 0.0),
+            ],
+            ControlPointCurveClosure::Smooth,
+        )
+        .unwrap();
+        let region = Curve3::NurbsCurve(curve);
+        assert_eq!(region.offset_region_inward_sign(normal, tol), Ok(Some(1.0)));
+        assert_eq!(
+            region.offset_region_contains(point(0.5, 2.0, 0.0), normal, tol),
+            Ok(Some(true))
+        );
+        assert_eq!(
+            region.offset_region_contains(point(3.0, 2.0, 0.0), normal, tol),
+            Ok(Some(false))
+        );
+        assert_eq!(
+            region.offset_region_contains(point(0.5, 2.0, 0.1), normal, tol),
+            Ok(Some(false))
+        );
+        let Curve3::NurbsCurve(offset) = region.try_offset(-0.05, normal, tol).unwrap() else {
+            panic!("concave periodic NURBS offset")
+        };
+        assert!(offset.is_closed().unwrap());
+    }
+
+    #[test]
+    fn closed_nurbs_region_sweep_handles_hundreds_of_spans() {
+        let tol = Tolerance::DEFAULT;
+        let normal = Vector3::try_new(0.0, 0.0, 1.0)
+            .unwrap()
+            .normalized(tol)
+            .unwrap();
+        let count = 300;
+        let mut controls = (0..count)
+            .map(|i| {
+                let angle = std::f64::consts::TAU * i as Real / count as Real;
+                point(10.0 * angle.cos(), 10.0 * angle.sin(), 0.0)
+            })
+            .collect::<Vec<_>>();
+        controls.push(controls[0]);
+        let mut knots = vec![0.0, 0.0];
+        knots.extend((1..count).map(|k| k as Real));
+        knots.extend([count as Real, count as Real]);
+        let region = Curve3::NurbsCurve(NurbsCurve::try_new(1, controls, knots).unwrap());
+        assert_eq!(region.offset_region_inward_sign(normal, tol), Ok(Some(1.0)));
     }
 
     #[test]

@@ -23,7 +23,7 @@ pub enum GeometryError {
     IntersectingOffsetRegions,
     #[error("closed offset region has negligible signed area")]
     DegenerateOffsetRegion,
-    #[error("closed polyline offset region crosses or touches itself")]
+    #[error("closed offset region crosses or touches itself, or cannot be certified simple")]
     SelfIntersectingOffsetRegion,
     #[error("offset distance must be nonzero and finite")]
     InvalidCurveOffsetDistance,

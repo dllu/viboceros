@@ -1,11 +1,12 @@
 //! Tolerance-checked cubic approximations of smooth planar NURBS offsets.
 
 use crate::{
-    GeometryError, NurbsCurve, ParameterSide, Point3, Real, Tolerance, UnitVector3, Vector3,
+    Brep, GeometryError, NurbsCurve, ParameterSide, Point3, Real, Tolerance, UnitVector3, Vector3,
 };
 
 const MAX_OFFSET_SPANS: usize = 8_192;
 const CHECKS_PER_SPAN: usize = 15;
+const MAX_REGION_PIECES: usize = 8_192;
 
 #[derive(Clone, Copy)]
 struct Sample {
@@ -261,4 +262,171 @@ pub(super) fn nurbs_through_distance(
     tolerance: Tolerance,
 ) -> Result<Real, GeometryError> {
     signed_distance(curve, point, fallback, tolerance)
+}
+
+/// A positive-weight Bezier curve whose controls are ordered along its endpoint
+/// chord cannot revisit a point. Split until this holds, then test distinct
+/// pieces for every contact other than their common boundary endpoint.
+fn simple_region_pieces(
+    curve: &NurbsCurve,
+    tolerance: Tolerance,
+) -> Result<Vec<NurbsCurve>, GeometryError> {
+    let mut pending = curve
+        .try_bezier_spans()?
+        .into_iter()
+        .rev()
+        .collect::<Vec<_>>();
+    let mut pieces = Vec::new();
+    while let Some(piece) = pending.pop() {
+        if pieces.len() + pending.len() + 1 > MAX_REGION_PIECES {
+            return Err(GeometryError::SelfIntersectingOffsetRegion);
+        }
+        let controls = piece.control_points();
+        if controls.iter().any(|control| {
+            control.weight().is_sign_positive() != controls[0].weight().is_sign_positive()
+        }) {
+            return Err(GeometryError::SelfIntersectingOffsetRegion);
+        }
+        let chord = controls[0]
+            .point()
+            .vector_to(controls.last().unwrap().point())?;
+        let chord_length = chord.length()?;
+        let monotone = chord_length > tolerance.absolute()
+            && controls.windows(2).all(|pair| {
+                let delta = pair[0].point().vector_to(pair[1].point());
+                delta
+                    .and_then(|vector| vector.dot(chord))
+                    .is_ok_and(|value| value >= 0.0)
+            });
+        if monotone {
+            pieces.push(piece);
+            continue;
+        }
+        let domain = piece.domain();
+        let midpoint = domain.start().midpoint(*domain.end());
+        if midpoint <= *domain.start() || midpoint >= *domain.end() {
+            return Err(GeometryError::SelfIntersectingOffsetRegion);
+        }
+        let (first, second) = piece.try_split(midpoint)?;
+        pending.push(second);
+        pending.push(first);
+    }
+    if pieces.len() < 2 {
+        // A closed injective piece cannot enclose a nonzero region.
+        return Err(GeometryError::DegenerateOffsetRegion);
+    }
+    let mut endpoints = Vec::with_capacity(pieces.len());
+    for piece in &pieces {
+        let domain = piece.domain();
+        endpoints.push((
+            piece.evaluate(*domain.start())?,
+            piece.evaluate(*domain.end())?,
+        ));
+    }
+    for i in 0..pieces.len() {
+        if endpoints[i]
+            .1
+            .distance_to(endpoints[(i + 1) % pieces.len()].0)?
+            > tolerance.absolute()
+        {
+            return Err(GeometryError::SelfIntersectingOffsetRegion);
+        }
+    }
+    let boxes = pieces
+        .iter()
+        .map(NurbsCurve::control_point_bounds)
+        .collect::<Vec<_>>();
+    let mut sweep = (0..pieces.len()).collect::<Vec<_>>();
+    sweep.sort_by(|&a, &b| boxes[a].min().x().total_cmp(&boxes[b].min().x()));
+    for (position, &index) in sweep.iter().enumerate() {
+        for &other in &sweep[position + 1..] {
+            if boxes[other].min().x() > boxes[index].max().x() + tolerance.absolute() {
+                break;
+            }
+            let (i, j) = (index.min(other), index.max(other));
+            let adjacent = j == i + 1 || i == 0 && j + 1 == pieces.len();
+            if (1..3).any(|axis| {
+                boxes[i].max().to_array()[axis] + tolerance.absolute()
+                    < boxes[j].min().to_array()[axis]
+                    || boxes[j].max().to_array()[axis] + tolerance.absolute()
+                        < boxes[i].min().to_array()[axis]
+            }) {
+                continue;
+            }
+            let events = pieces[i].intersection_events_with_curve(&pieces[j], tolerance)?;
+            if !adjacent && !events.is_empty() {
+                return Err(GeometryError::SelfIntersectingOffsetRegion);
+            }
+            if adjacent {
+                let shared = if j == i + 1 {
+                    endpoints[i].1
+                } else {
+                    endpoints[i].0
+                };
+                if events.len() != 1
+                    || !matches!(events[0], crate::CurveCurveIntersectionEvent::Point(event) if event.point().distance_to(shared)? <= tolerance.absolute())
+                {
+                    return Err(GeometryError::SelfIntersectingOffsetRegion);
+                }
+            }
+        }
+    }
+    Ok(pieces)
+}
+
+pub(super) fn nurbs_region_inward_sign(
+    curve: &NurbsCurve,
+    fallback: UnitVector3,
+    tolerance: Tolerance,
+) -> Result<Real, GeometryError> {
+    let normal = offset_plane(curve, fallback, tolerance)?;
+    let _pieces = simple_region_pieces(curve, tolerance)?;
+    // The planar face validates the trim and rational denominator, including
+    // cases where the Bezier control hull does not bound the attained curve.
+    let face = Brep::try_planar_face(curve, tolerance)?;
+    let face = &face.faces()[0];
+    let surface = face.surface();
+    let u = surface.domain_u();
+    let v = surface.domain_v();
+    let (_, du, dv) = surface
+        .evaluate_with_derivatives(u.start().midpoint(*u.end()), v.start().midpoint(*v.end()))?;
+    let frame_sign = du.cross(dv)?.dot(normal.as_vector())?.signum();
+    if frame_sign == 0.0 {
+        return Err(GeometryError::DegenerateOffsetRegion);
+    }
+    let source_sign = if face.loops()[0].trims()[0].is_reversed_3d() {
+        -1.0
+    } else {
+        1.0
+    };
+    Ok(frame_sign * source_sign)
+}
+
+pub(super) fn nurbs_region_contains(
+    curve: &NurbsCurve,
+    point: Point3,
+    fallback: UnitVector3,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    let normal = offset_plane(curve, fallback, tolerance)?;
+    let origin = curve.evaluate(*curve.domain().start())?;
+    if origin.vector_to(point)?.dot(normal.as_vector())?.abs() > tolerance.absolute() {
+        return Ok(false);
+    }
+    let nearest = curve.evaluate(curve.closest_parameter(point, tolerance)?)?;
+    if nearest.distance_to(point)? <= tolerance.absolute() {
+        return Err(GeometryError::AmbiguousCurveOffsetSide);
+    }
+    simple_region_pieces(curve, tolerance)?;
+    let face = Brep::try_planar_face(curve, tolerance)?;
+    let (index, u, v) = face.closest_underlying_face_parameters(point, tolerance)?;
+    if face.faces()[index]
+        .surface()
+        .evaluate(u, v)?
+        .distance_to(point)?
+        > tolerance.absolute()
+    {
+        return Ok(false);
+    }
+    face.faces()[index].contains_parameters(u, v, tolerance)
 }

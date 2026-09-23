@@ -53,10 +53,11 @@ selected curve at successive multiples of the distance (default `n=2`).
 Open curves offset toward the picked side. Closed curves use a shared inward
 or outward choice: a point inside any selected closed region chooses inward.
 Each nested island reverses that direction, including successive nesting
-levels. Closed circles, full circular arcs, ellipses, and simple planar polylines can
-form regions. Selected closed boundaries that intersect or touch are rejected.
-Self-intersecting closed polylines are also rejected as ambiguous regions.
-Open planar NURBS curves are supported; closed NURBS region nesting is pending.
+levels. Closed circles, full circular arcs, ellipses, simple planar polylines,
+and certified simple planar NURBS curves can form regions. Selected closed
+boundaries that intersect or touch are rejected. Self-intersecting closed
+polylines and NURBS curves are rejected as ambiguous regions. NURBS region
+validation has an 8,192-piece resource cap.
 The command supports the same `Corner` and `OutputLayer` options as `Offset`;
 at most 100,000 source/count combinations can be requested. All outputs are
 staged before the document changes.
@@ -64,8 +65,8 @@ staged before the document changes.
 `OutputLayer=Current` is the default; `OutputLayer=Input` uses each source's
 layer. Both choices create fresh object attributes. The command stages every
 result before changing the document, so an unsupported or degenerate selected
-curve leaves the document unchanged. NURBS offsets across sharp corners,
-closed NURBS region nesting, and polycurve offsets, as well as smooth corners,
+curve leaves the document unchanged. NURBS offsets across sharp corners and
+polycurve offsets, as well as smooth corners,
 trim, cap, and construction-plane overrides, remain
 to be implemented.
 

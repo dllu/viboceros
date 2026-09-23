@@ -2218,6 +2218,15 @@ impl Brep {
                 BrepLoopType::Inner,
             ));
         }
+        // Projected rational trims can evaluate a few ULPs beyond a control
+        // coordinate extremum. Give the supporting surface a small parameter
+        // margin so exact trim endpoints stay inside its active domain.
+        for bounds in &mut surface_bounds {
+            for _ in 0..8 {
+                bounds[0] = bounds[0].next_down();
+                bounds[1] = bounds[1].next_up();
+            }
+        }
         let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
         let surface = planar_cap_surface(projection.frame, zero, surface_bounds)?;
         let mut vertices = Vec::with_capacity(projected.len());

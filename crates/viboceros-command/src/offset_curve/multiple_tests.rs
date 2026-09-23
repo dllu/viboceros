@@ -32,6 +32,85 @@ fn open_nurbs_multiple_offsets_follow_pick_side() {
 }
 
 #[test]
+fn closed_rational_nurbs_regions_offset_with_nested_island() {
+    let normal = CommandContext::default().construction_plane.z_axis();
+    let tolerance = Document::default().tolerance();
+    let outer = Circle3::try_new(point(0.0, 0.0), 5.0, normal, tolerance)
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+    let inner = Circle3::try_new(point(0.0, 0.0), 2.0, normal, tolerance)
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+    for reverse in [false, true] {
+        let mut document = Document::default();
+        let outer = if reverse {
+            outer.reversed().unwrap()
+        } else {
+            outer.clone()
+        };
+        let inner = if reverse {
+            inner.reversed().unwrap()
+        } else {
+            inner.clone()
+        };
+        let outer_id = document.add_geometry(Geometry::NurbsCurve(outer)).unwrap();
+        let inner_id = document.add_geometry(Geometry::NurbsCurve(inner)).unwrap();
+        document
+            .select_objects_direct([outer_id, inner_id], SelectionMode::Replace)
+            .unwrap();
+        CommandRegistry::with_builtins()
+            .execute(&mut document, "OffsetMultiple 0.5 4,0,0 OffsetCount=1")
+            .unwrap();
+        let radii = document
+            .selected_objects()
+            .map(|object| {
+                let Geometry::NurbsCurve(curve) = object.geometry() else {
+                    panic!("NURBS region offset")
+                };
+                curve
+                    .evaluate(*curve.domain().start())
+                    .unwrap()
+                    .distance_to(point(0.0, 0.0))
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        assert!((radii[0] - 4.5).abs() <= tolerance.absolute());
+        assert!((radii[1] - 2.5).abs() <= tolerance.absolute());
+    }
+}
+
+#[test]
+fn intersecting_closed_nurbs_regions_leave_document_unchanged() {
+    let mut document = Document::default();
+    let normal = CommandContext::default().construction_plane.z_axis();
+    let first = Circle3::try_new(point(0.0, 0.0), 3.0, normal, document.tolerance())
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+    let second = Circle3::try_new(point(4.0, 0.0), 3.0, normal, document.tolerance())
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+    let first_id = document.add_geometry(Geometry::NurbsCurve(first)).unwrap();
+    let second_id = document.add_geometry(Geometry::NurbsCurve(second)).unwrap();
+    document
+        .select_objects_direct([first_id, second_id], SelectionMode::Replace)
+        .unwrap();
+    let before = document.objects().cloned().collect::<Vec<_>>();
+    let result = CommandRegistry::with_builtins()
+        .execute(&mut document, "OffsetMultiple 0.25 0,0,0 OffsetCount=1");
+    assert!(matches!(
+        result,
+        Err(CommandError::Geometry(
+            GeometryError::IntersectingOffsetRegions
+        ))
+    ));
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+}
+
+#[test]
 fn ellipse_multiple_offsets_preserve_smooth_closed_outputs() {
     let mut document = Document::default();
     let frame = CommandContext::default().construction_plane;

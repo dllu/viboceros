@@ -230,9 +230,9 @@ fn cubic_controls(start: Sample, end: Sample) -> Result<[[Real; 2]; 4], Geometry
 fn cubic_point(mut controls: [[Real; 2]; 4], fraction: Real) -> [Real; 2] {
     for depth in (1..4).rev() {
         for index in 0..depth {
-            for axis in 0..2 {
-                controls[index][axis] = controls[index][axis]
-                    .mul_add(1.0 - fraction, controls[index + 1][axis] * fraction);
+            let next = controls[index + 1];
+            for (coordinate, next_coordinate) in controls[index].iter_mut().zip(next) {
+                *coordinate = coordinate.mul_add(1.0 - fraction, next_coordinate * fraction);
             }
         }
     }
