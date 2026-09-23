@@ -1,7 +1,6 @@
 //! Native conversion of STEP NURBS shell geometry and face-local p-curves.
 use super::{StepError, Table, native_planar, reported_trimmed_shell};
-use monstertruck::geometry::prelude::{ToSameGeometry, TryIntoHomogeneousBsplineCurve};
-use monstertruck::meshing::prelude::ParametricSurface;
+use monstertruck::meshing::prelude::{BoundedCurve, ParametricCurve, ParametricSurface};
 use monstertruck::step::load::step_geometry::{
     Conic2D, Conic3D, Curve2D, Curve3D, ElementarySurface, Surface,
 };
@@ -150,20 +149,7 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
                 StepError::UnsupportedPlanarShell { reason, .. } => unsupported(reason),
                 other => other,
             }),
-        Curve3D::Conic(Conic3D::Ellipse(_)) => {
-            let converted = curve
-                .try_into_homogeneous_bspline_curve()
-                .ok_or_else(|| unsupported("ellipse edge could not be converted exactly"))?;
-            Ok(NurbsCurve::try_new_rational(
-                converted.degree(),
-                converted
-                    .control_points()
-                    .iter()
-                    .map(|p| weighted3(p.x, p.y, p.z, p.w, id))
-                    .collect::<Result<Vec<_>, _>>()?,
-                converted.knot_vector().iter().copied().collect(),
-            )?)
-        }
+        Curve3D::Conic(Conic3D::Ellipse(_)) => conic_edge(curve, id),
         Curve3D::BsplineCurve(curve) => Ok(NurbsCurve::try_new(
             curve.degree(),
             curve
@@ -195,20 +181,7 @@ fn trim_curve(curve: &Curve2D, id: u64) -> Result<NurbsCurve2, StepError> {
                 StepError::UnsupportedPlanarShell { reason, .. } => unsupported(reason),
                 other => other,
             }),
-        Curve2D::Conic(Conic2D::Ellipse(ellipse)) => {
-            let converted: monstertruck::modeling::NurbsCurve<monstertruck::modeling::Vector3> =
-                ellipse.to_same_geometry();
-            let controls = converted
-                .control_points()
-                .iter()
-                .map(|p| weighted2(p.x, p.y, p.z, id))
-                .collect::<Result<Vec<_>, _>>()?;
-            Ok(NurbsCurve2::try_new_rational(
-                converted.degree(),
-                controls,
-                converted.knot_vector().iter().copied().collect(),
-            )?)
-        }
+        Curve2D::Conic(Conic2D::Ellipse(_)) => conic_trim(curve, id),
         Curve2D::BsplineCurve(curve) => Ok(NurbsCurve2::try_new(
             curve.degree(),
             curve
@@ -229,6 +202,88 @@ fn trim_curve(curve: &Curve2D, id: u64) -> Result<NurbsCurve2, StepError> {
         )?),
         _ => Err(unsupported("UV trim is not a supported B-spline")),
     }
+}
+
+fn arc_span_count(angle: f64, id: u64) -> Result<usize, StepError> {
+    if !angle.is_finite() || angle <= 0. || angle > std::f64::consts::TAU + 1e-10 {
+        return Err(StepError::UnsupportedNativeShell {
+            shell: id,
+            reason: "conic arc must span at most one turn",
+        });
+    }
+    Ok(((angle / std::f64::consts::FRAC_PI_2 - 1e-12).ceil() as usize).max(1))
+}
+
+fn arc_knots(start: f64, end: f64, spans: usize) -> Vec<f64> {
+    let mut knots = vec![start; 3];
+    for index in 1..spans {
+        knots.extend([start + (end - start) * index as f64 / spans as f64; 2]);
+    }
+    knots.extend([end; 3]);
+    knots
+}
+
+fn conic_edge(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
+    let (start, end) = curve.range_tuple();
+    let spans = arc_span_count(end - start, id)?;
+    let step = (end - start) / spans as f64;
+    let mut controls = Vec::with_capacity(2 * spans + 1);
+    for index in 0..spans {
+        let t0 = start + step * index as f64;
+        let t1 = if index + 1 == spans { end } else { t0 + step };
+        let p0 = curve.evaluate(t0);
+        let pm = curve.evaluate((t0 + t1) / 2.);
+        let p1 = curve.evaluate(t1);
+        let weight = ((t1 - t0) / 2.).cos();
+        if index == 0 {
+            controls.push(WeightedPoint3::try_new(point3(p0)?, 1.)?);
+        }
+        controls.push(WeightedPoint3::try_new(
+            Point3::try_new(
+                (2. * (1. + weight) * pm.x - p0.x - p1.x) / (2. * weight),
+                (2. * (1. + weight) * pm.y - p0.y - p1.y) / (2. * weight),
+                (2. * (1. + weight) * pm.z - p0.z - p1.z) / (2. * weight),
+            )?,
+            weight,
+        )?);
+        controls.push(WeightedPoint3::try_new(point3(p1)?, 1.)?);
+    }
+    Ok(NurbsCurve::try_new_rational(
+        2,
+        controls,
+        arc_knots(0., 1., spans),
+    )?)
+}
+
+fn conic_trim(curve: &Curve2D, id: u64) -> Result<NurbsCurve2, StepError> {
+    let (start, end) = curve.range_tuple();
+    let spans = arc_span_count(end - start, id)?;
+    let step = (end - start) / spans as f64;
+    let mut controls = Vec::with_capacity(2 * spans + 1);
+    for index in 0..spans {
+        let t0 = start + step * index as f64;
+        let t1 = if index + 1 == spans { end } else { t0 + step };
+        let p0 = curve.evaluate(t0);
+        let pm = curve.evaluate((t0 + t1) / 2.);
+        let p1 = curve.evaluate(t1);
+        let weight = ((t1 - t0) / 2.).cos();
+        if index == 0 {
+            controls.push(WeightedPoint2::try_new(Point2::try_new(p0.x, p0.y)?, 1.)?);
+        }
+        controls.push(WeightedPoint2::try_new(
+            Point2::try_new(
+                (2. * (1. + weight) * pm.x - p0.x - p1.x) / (2. * weight),
+                (2. * (1. + weight) * pm.y - p0.y - p1.y) / (2. * weight),
+            )?,
+            weight,
+        )?);
+        controls.push(WeightedPoint2::try_new(Point2::try_new(p1.x, p1.y)?, 1.)?);
+    }
+    Ok(NurbsCurve2::try_new_rational(
+        2,
+        controls,
+        arc_knots(0., 1., spans),
+    )?)
 }
 
 fn surface(
@@ -335,33 +390,39 @@ fn surface(
             let [u0, v0] = min;
             let [u1, v1] = max;
             let angle = u1 - u0;
-            if angle <= 0. || angle > std::f64::consts::FRAC_PI_2 + 1e-12 || v0 >= v1 {
-                return Err(unsupported(
-                    "cylinder patch must span at most one quarter turn",
-                ));
+            if v0 >= v1 {
+                return Err(unsupported("cylinder axial trim range is degenerate"));
             }
-            let weight = (angle / 2.).cos();
-            let mut controls = Vec::with_capacity(6);
+            let spans = arc_span_count(angle, id)?;
+            let step = angle / spans as f64;
+            let mut controls = Vec::with_capacity(2 * (2 * spans + 1));
             for v in [v0, v1] {
-                let p0 = cylinder.evaluate(u0, v);
-                let pm = cylinder.evaluate((u0 + u1) / 2., v);
-                let p2 = cylinder.evaluate(u1, v);
-                let middle = Point3::try_new(
-                    (2. * (1. + weight) * pm.x - p0.x - p2.x) / (2. * weight),
-                    (2. * (1. + weight) * pm.y - p0.y - p2.y) / (2. * weight),
-                    (2. * (1. + weight) * pm.z - p0.z - p2.z) / (2. * weight),
-                )?;
-                controls.push(WeightedPoint3::try_new(point3(p0)?, 1.)?);
-                controls.push(WeightedPoint3::try_new(middle, weight)?);
-                controls.push(WeightedPoint3::try_new(point3(p2)?, 1.)?);
+                for index in 0..spans {
+                    let start = u0 + step * index as f64;
+                    let end = if index + 1 == spans { u1 } else { start + step };
+                    let p0 = cylinder.evaluate(start, v);
+                    let pm = cylinder.evaluate((start + end) / 2., v);
+                    let p1 = cylinder.evaluate(end, v);
+                    let weight = ((end - start) / 2.).cos();
+                    if index == 0 {
+                        controls.push(WeightedPoint3::try_new(point3(p0)?, 1.)?);
+                    }
+                    let middle = Point3::try_new(
+                        (2. * (1. + weight) * pm.x - p0.x - p1.x) / (2. * weight),
+                        (2. * (1. + weight) * pm.y - p0.y - p1.y) / (2. * weight),
+                        (2. * (1. + weight) * pm.z - p0.z - p1.z) / (2. * weight),
+                    )?;
+                    controls.push(WeightedPoint3::try_new(middle, weight)?);
+                    controls.push(WeightedPoint3::try_new(point3(p1)?, 1.)?);
+                }
             }
             Ok(NurbsSurface::try_new_rational(
                 2,
                 1,
-                3,
+                2 * spans + 1,
                 2,
                 controls,
-                vec![u0, u0, u0, u1, u1, u1],
+                arc_knots(u0, u1, spans),
                 vec![v0, v0, v1, v1],
             )?)
         }

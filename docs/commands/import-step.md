@@ -13,14 +13,14 @@ The `ImportStp` alias accepts the same syntax.
 
 Native mode supports straight-edged planar faces, including valid polygon holes,
 and NURBS/B-spline surfaces with matching curved 3D edges and UV trims. Analytic
-circle and ellipse arcs on supported faces convert to exact rational NURBS edges
-and UV curves. Cylindrical faces with straight UV iso-trims spanning at most a
-quarter turn convert to exact rational NURBS patches. This changes the angular
-parameterization within each arc while retaining the exact surface and trim
+circle and ellipse arcs on supported faces convert to exact multi-span rational
+NURBS edges and UV curves. Open cylindrical faces with straight UV iso-trims
+spanning less than one turn convert to exact rational NURBS patches. This changes the
+angular parameterization within each arc while retaining the surface and trim
 geometry. Faces with multiple loops require straight UV polygon boundaries; the polygon
 constructor validates hole containment and intersections. Curved UV loops
-currently require a single outer boundary. Wider cylinders, periodic seam edges,
-missing trims, and invalid topology fail the
+currently require a single outer boundary. Periodic seam edges, missing trims,
+and invalid topology fail the
 import; there is no automatic mesh fallback. Assembly and representation warnings
 follow the existing STEP importer and are counted in the result message.
 

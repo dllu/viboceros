@@ -709,72 +709,75 @@ fn native_step_imports_analytic_circle_edge_and_uv_trim() {
         Conic2D, Conic3D, Curve2D, Curve3D, ElementarySurface, Surface,
     };
     use monstertruck::topology::{Edge, Face, Shell, Vertex, Wire};
-    let origin = Vertex::new(TruckPoint3::new(0., 0., 0.));
-    let east = Vertex::new(TruckPoint3::new(2., 0., 0.));
-    let north = Vertex::new(TruckPoint3::new(0., 2., 0.));
-    let arc_midpoint = std::f64::consts::SQRT_2;
-    let edges: Vec<Edge<TruckPoint3, Curve3D>> = vec![
-        builder::line(&origin, &east),
-        builder::circle_arc(
-            &east,
-            &north,
-            TruckPoint3::new(arc_midpoint, arc_midpoint, 0.),
-        ),
-        builder::line(&north, &origin),
-    ];
-    let wire = Wire::from(edges);
-    let surface = Surface::ElementarySurface(ElementarySurface::Plane(Plane::new(
-        TruckPoint3::new(0., 0., 0.),
-        TruckPoint3::new(1., 0., 0.),
-        TruckPoint3::new(0., 1., 0.),
-    )));
-    let face = Face::new(vec![wire], surface);
-    let shell = Shell::from(vec![face]).compress();
-    let text = CompleteStepDisplay::new(
-        TruckStepModel::from(&shell),
-        StepHeaderDescriptor::default(),
-    )
-    .to_string();
-    assert!(text.contains("CIRCLE("));
-    let table = Table::from_step(&text).unwrap();
-    assert_eq!(table.entity_report.total(), 0);
-    let shell_id = *table.shell.keys().next().unwrap();
-    let (decoded, report) = reported_trimmed_shell(&table, shell_id).unwrap();
-    assert_eq!(report.total_lost(), 0);
-    assert!(
+    for angle in [
+        std::f64::consts::FRAC_PI_2,
+        3. * std::f64::consts::FRAC_PI_2,
+        35. * std::f64::consts::PI / 18.,
+    ] {
+        let origin = Vertex::new(TruckPoint3::new(0., 0., 0.));
+        let east = Vertex::new(TruckPoint3::new(2., 0., 0.));
+        let north = Vertex::new(TruckPoint3::new(2. * angle.cos(), 2. * angle.sin(), 0.));
+        let arc_midpoint = TruckPoint3::new(2. * (angle / 2.).cos(), 2. * (angle / 2.).sin(), 0.);
+        let edges: Vec<Edge<TruckPoint3, Curve3D>> = vec![
+            builder::line(&origin, &east),
+            builder::circle_arc(&east, &north, arc_midpoint),
+            builder::line(&north, &origin),
+        ];
+        let wire = Wire::from(edges);
+        let surface = Surface::ElementarySurface(ElementarySurface::Plane(Plane::new(
+            TruckPoint3::new(0., 0., 0.),
+            TruckPoint3::new(1., 0., 0.),
+            TruckPoint3::new(0., 1., 0.),
+        )));
+        let face = Face::new(vec![wire], surface);
+        let shell = Shell::from(vec![face]).compress();
+        let text = CompleteStepDisplay::new(
+            TruckStepModel::from(&shell),
+            StepHeaderDescriptor::default(),
+        )
+        .to_string();
+        assert!(text.contains("CIRCLE("));
+        let table = Table::from_step(&text).unwrap();
+        assert_eq!(table.entity_report.total(), 0);
+        let shell_id = *table.shell.keys().next().unwrap();
+        let (decoded, report) = reported_trimmed_shell(&table, shell_id).unwrap();
+        assert_eq!(report.total_lost(), 0);
+        assert!(
         decoded
             .edges
             .iter()
             .any(|edge| matches!(&edge.curve, Curve3D::SurfaceCurve(curve) if matches!(curve.leader(), Curve3D::Conic(Conic3D::Ellipse(_)))))
     );
-    assert!(decoded.faces[0].boundaries[0].iter().any(|edge| matches!(
-        edge.trim_curve.as_ref().map(|curve| curve.curve().as_ref()),
-        Some(Curve2D::Conic(Conic2D::Ellipse(_)))
-    )));
-    assert!(matches!(
-        read_step_planar_instances(Cursor::new(&text), Tolerance::DEFAULT),
-        Err(StepError::UnsupportedPlanarShell { .. })
-    ));
-    let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT).unwrap();
-    assert_eq!(native.instances.len(), 1);
-    let brep = &native.instances[0].brep;
-    assert_eq!(
-        (
-            brep.vertices().len(),
-            brep.edges().len(),
-            brep.faces().len()
-        ),
-        (3, 3, 1)
-    );
-    assert!((brep.area(Tolerance::DEFAULT).unwrap() - std::f64::consts::PI).abs() < 1e-9);
-    let arc = brep
-        .edges()
-        .iter()
-        .find(|edge| edge.curve().degree() == 2)
-        .unwrap();
-    for t in [0., 0.25, 0.5, 0.75, 1.] {
-        let p = arc.curve().evaluate(t).unwrap();
-        assert!(((p.x() * p.x() + p.y() * p.y()).sqrt() - 2.).abs() < 1e-12);
+        assert!(decoded.faces[0].boundaries[0].iter().any(|edge| matches!(
+            edge.trim_curve.as_ref().map(|curve| curve.curve().as_ref()),
+            Some(Curve2D::Conic(Conic2D::Ellipse(_)))
+        )));
+        assert!(matches!(
+            read_step_planar_instances(Cursor::new(&text), Tolerance::DEFAULT),
+            Err(StepError::UnsupportedPlanarShell { .. })
+        ));
+        let native = read_step_native_instances(Cursor::new(text), Tolerance::DEFAULT)
+            .unwrap_or_else(|error| panic!("angle {angle}: {error:?}"));
+        assert_eq!(native.instances.len(), 1);
+        let brep = &native.instances[0].brep;
+        assert_eq!(
+            (
+                brep.vertices().len(),
+                brep.edges().len(),
+                brep.faces().len()
+            ),
+            (3, 3, 1)
+        );
+        assert!((brep.area(Tolerance::DEFAULT).unwrap() - 2. * angle).abs() < 1e-9);
+        let arc = brep
+            .edges()
+            .iter()
+            .find(|edge| edge.curve().degree() == 2)
+            .unwrap();
+        for t in [0., 0.25, 0.5, 0.75, 1.] {
+            let p = arc.curve().evaluate(t).unwrap();
+            assert!(((p.x() * p.x() + p.y() * p.y()).sqrt() - 2.).abs() < 1e-12);
+        }
     }
 }
 
@@ -846,7 +849,17 @@ fn native_step_imports_analytic_open_cylinder_patches() {
     };
     use monstertruck::topology::{Edge, Face, Shell, Vertex, Wire};
     let point = |x, y, z| TruckPoint3::new(x, y, z);
-    for angle in [std::f64::consts::FRAC_PI_3, std::f64::consts::FRAC_PI_2] {
+    for angle in [
+        std::f64::consts::FRAC_PI_3,
+        std::f64::consts::FRAC_PI_2,
+        2. * std::f64::consts::FRAC_PI_3,
+        5. * std::f64::consts::FRAC_PI_6,
+        17. * std::f64::consts::PI / 18.,
+        std::f64::consts::PI,
+        4. * std::f64::consts::FRAC_PI_3,
+        3. * std::f64::consts::FRAC_PI_2,
+        35. * std::f64::consts::PI / 18.,
+    ] {
         let east_bottom = Vertex::new(point(2., 0., 0.));
         let north_bottom = Vertex::new(point(2. * angle.cos(), 2. * angle.sin(), 0.));
         let north_top = Vertex::new(point(2. * angle.cos(), 2. * angle.sin(), 3.));
@@ -918,7 +931,8 @@ fn native_step_imports_analytic_open_cylinder_patches() {
                 .iter()
                 .all(|edge| edge.trim_curve.is_some())
         );
-        let native = read_step_native_instances(Cursor::new(&text), Tolerance::DEFAULT).unwrap();
+        let native = read_step_native_instances(Cursor::new(&text), Tolerance::DEFAULT)
+            .unwrap_or_else(|error| panic!("angle {angle}: {error:?}"));
         let brep = &native.instances[0].brep;
         assert_eq!(brep.faces().len(), 1);
         assert!((brep.area(Tolerance::DEFAULT).unwrap() - 6. * angle).abs() < 1e-8);
