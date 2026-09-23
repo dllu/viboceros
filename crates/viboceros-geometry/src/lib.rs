@@ -144,7 +144,7 @@ pub use nurbs2::{NurbsCurve2, WeightedPoint2};
 pub use parameter::ParameterSide;
 pub use plane::{Plane, intersect_three_planes};
 pub use point::Point3;
-pub use point_cloud::{PointCloud3, PointCloudChannels, PointCloudProjection};
+pub use point_cloud::{PointCloud3, PointCloudChannels, PointCloudPlane, PointCloudProjection};
 pub use point_grid::{MAX_POINT_GRID_AXIS_COUNT, MAX_POINT_GRID_DEGREE};
 pub use point_projection::{MAX_PLANE_FIT_POINTS, PointProjection3};
 pub use point2::Point2;

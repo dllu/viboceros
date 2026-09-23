@@ -1,6 +1,8 @@
 use std::sync::{Arc, OnceLock};
 
-use crate::{AffineTransform3, BoundingBox3, Frame3, GeometryError, Point3, Real, Vector3};
+use crate::{
+    AffineTransform3, BoundingBox3, Frame3, GeometryError, Point3, Real, Tolerance, Vector3,
+};
 
 mod index;
 use index::{NodeBounds, ProjectedIndex, SearchRegion};
@@ -35,6 +37,85 @@ pub struct PointCloud3 {
     data: Arc<PointCloudData>,
 }
 
+/// The stored OpenNURBS height-field plane. Axes retain their original values
+/// so a 3DM round trip does not orthogonalize or rescale a valid source frame.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct PointCloudPlane {
+    origin: Point3,
+    axes: [Vector3; 3],
+}
+
+impl PointCloudPlane {
+    pub fn try_new(origin: Point3, axes: [Vector3; 3]) -> Result<Self, GeometryError> {
+        // Match OpenNURBS's orthonormal right-handed frame checks without
+        // changing any source components.
+        let epsilon = f64::EPSILON.sqrt();
+        let lengths = [axes[0].length()?, axes[1].length()?, axes[2].length()?];
+        if lengths.iter().any(|length| (length - 1.0).abs() > epsilon) {
+            return Err(GeometryError::Degenerate {
+                context: "point cloud plane",
+            });
+        }
+        let normalized_dot = |first: usize, second: usize| -> Result<Real, GeometryError> {
+            Ok(axes[first].dot(axes[second])? / (lengths[first] * lengths[second]))
+        };
+        let orthogonality = [
+            normalized_dot(0, 1)?,
+            normalized_dot(1, 2)?,
+            normalized_dot(2, 0)?,
+        ];
+        if orthogonality.iter().any(|dot| dot.abs() > epsilon) {
+            if orthogonality.iter().any(|dot| dot.abs() >= 1.0 / 65536.0) {
+                return Err(GeometryError::Degenerate {
+                    context: "point cloud plane",
+                });
+            }
+            for [first, second, third] in [[0, 1, 2], [1, 2, 0], [2, 0, 1]] {
+                let cross = axes[first].cross(axes[second])?;
+                let alignment =
+                    cross.dot(axes[third])? / (lengths[first] * lengths[second] * lengths[third]);
+                if (alignment.abs() - 1.0).abs() > epsilon {
+                    return Err(GeometryError::Degenerate {
+                        context: "point cloud plane",
+                    });
+                }
+            }
+        }
+        if axes[0].cross(axes[1])?.dot(axes[2])? <= epsilon {
+            return Err(GeometryError::Degenerate {
+                context: "point cloud plane",
+            });
+        }
+        Ok(Self { origin, axes })
+    }
+
+    pub const fn origin(self) -> Point3 {
+        self.origin
+    }
+
+    pub const fn axes(self) -> [Vector3; 3] {
+        self.axes
+    }
+
+    pub fn transformed(self, transform: AffineTransform3) -> Result<Self, GeometryError> {
+        if transform == AffineTransform3::identity() {
+            return Ok(self);
+        }
+        let origin = transform.transform_point(self.origin)?;
+        let x = transform.transform_vector(self.axes[0])?;
+        let y = transform.transform_vector(self.axes[1])?;
+        let frame = Frame3::try_from_directions(origin, x, y, Tolerance::NUMERICAL_VALIDATION)?;
+        Self::try_new(
+            origin,
+            [
+                frame.x_axis().as_vector(),
+                frame.y_axis().as_vector(),
+                frame.z_axis().as_vector(),
+            ],
+        )
+    }
+}
+
 /// Optional per-point channels and the OpenNURBS ordered-stream flag.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PointCloudChannels {
@@ -43,6 +124,7 @@ pub struct PointCloudChannels {
     pub normals: Option<Vec<Vector3>>,
     pub values: Option<Vec<Real>>,
     pub ordered: bool,
+    pub plane: Option<PointCloudPlane>,
 }
 
 #[derive(Debug)]
@@ -151,6 +233,10 @@ impl PointCloud3 {
         self.data.channels.ordered
     }
 
+    pub fn plane(&self) -> Option<PointCloudPlane> {
+        self.data.channels.plane
+    }
+
     pub fn channels(&self) -> &PointCloudChannels {
         &self.data.channels
     }
@@ -161,13 +247,18 @@ impl PointCloud3 {
     }
 
     pub fn transformed(&self, transform: AffineTransform3) -> Result<Self, GeometryError> {
+        let mut channels = self.data.channels.clone();
+        channels.plane = channels
+            .plane
+            .map(|plane| plane.transformed(transform))
+            .transpose()?;
         Self::try_with_channels(
             self.data
                 .points
                 .iter()
                 .map(|point| transform.transform_point(*point))
                 .collect::<Result<Vec<_>, _>>()?,
-            self.data.channels.clone(),
+            channels,
         )
     }
 

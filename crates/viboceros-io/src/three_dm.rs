@@ -1949,6 +1949,17 @@ mod tests {
                 ]),
                 values: Some(vec![0.5, -20.0]),
                 ordered: true,
+                plane: Some(
+                    viboceros_geometry::PointCloudPlane::try_new(
+                        Point3::try_new(0.0, 0.0, 5.0).unwrap(),
+                        [
+                            viboceros_geometry::Vector3::try_new(1.0, 1.0e-10, 0.0).unwrap(),
+                            viboceros_geometry::Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+                            viboceros_geometry::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+                        ],
+                    )
+                    .unwrap(),
+                ),
             },
         )
         .unwrap();

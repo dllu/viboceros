@@ -202,6 +202,7 @@ fn channels_for_indices(
         normals: select(cloud.normals(), indices),
         values: select(cloud.values(), indices),
         ordered: cloud.is_ordered(),
+        plane: cloud.plane(),
     }
 }
 
@@ -313,6 +314,7 @@ fn add(document: &mut Document, explicit: Option<ObjectId>) -> Result<String, Co
                 normals,
                 values,
                 ordered,
+                plane: cloud.plane(),
             },
         )?),
     )])?;

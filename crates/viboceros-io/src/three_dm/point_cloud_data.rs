@@ -1,14 +1,15 @@
 //! Versioned per-point payload shared with the OpenNURBS bridge.
-use viboceros_geometry::{PointCloud3, PointCloudChannels, Vector3};
+use viboceros_geometry::{Point3, PointCloud3, PointCloudChannels, PointCloudPlane, Vector3};
 
 use super::ThreeDmError;
 
 const MAGIC: &[u8; 8] = b"VIBOPCLD";
-const VERSION: u32 = 1;
+const VERSION: u32 = 2;
 const COLORS: u32 = 1;
 const NORMALS: u32 = 2;
 const VALUES: u32 = 4;
 const ORDERED: u32 = 8;
+const PLANE: u32 = 16;
 
 pub(super) fn encode(cloud: &PointCloud3) -> Vec<u8> {
     let channels = cloud.channels();
@@ -17,6 +18,7 @@ pub(super) fn encode(cloud: &PointCloud3) -> Vec<u8> {
     flags |= u32::from(channels.normals.is_some()) * NORMALS;
     flags |= u32::from(channels.values.is_some()) * VALUES;
     flags |= u32::from(channels.ordered) * ORDERED;
+    flags |= u32::from(channels.plane.is_some()) * PLANE;
     if flags == 0 {
         return Vec::new();
     }
@@ -39,6 +41,16 @@ pub(super) fn encode(cloud: &PointCloud3) -> Vec<u8> {
             bytes.extend_from_slice(&value.to_le_bytes());
         }
     }
+    if let Some(plane) = channels.plane {
+        for coordinate in plane.origin().to_array() {
+            bytes.extend_from_slice(&coordinate.to_le_bytes());
+        }
+        for axis in plane.axes() {
+            for coordinate in axis.to_array() {
+                bytes.extend_from_slice(&coordinate.to_le_bytes());
+            }
+        }
+    }
     bytes
 }
 
@@ -51,7 +63,7 @@ pub(super) fn decode(bytes: &[u8], count: usize) -> Result<PointCloudChannels, T
         return Err(invalid());
     }
     let flags = reader.u32()?;
-    if flags == 0 || flags & !(COLORS | NORMALS | VALUES | ORDERED) != 0 {
+    if flags == 0 || flags & !(COLORS | NORMALS | VALUES | ORDERED | PLANE) != 0 {
         return Err(invalid());
     }
     let colors = if flags & COLORS != 0 {
@@ -91,6 +103,17 @@ pub(super) fn decode(bytes: &[u8], count: usize) -> Result<PointCloudChannels, T
     } else {
         None
     };
+    let plane = if flags & PLANE != 0 {
+        let origin = Point3::try_from(reader.triple()?)?;
+        let axes = [
+            Vector3::try_from(reader.triple()?)?,
+            Vector3::try_from(reader.triple()?)?,
+            Vector3::try_from(reader.triple()?)?,
+        ];
+        Some(PointCloudPlane::try_new(origin, axes)?)
+    } else {
+        None
+    };
     if !reader.finished() {
         return Err(invalid());
     }
@@ -99,6 +122,7 @@ pub(super) fn decode(bytes: &[u8], count: usize) -> Result<PointCloudChannels, T
         normals,
         values,
         ordered: flags & ORDERED != 0,
+        plane,
     })
 }
 
@@ -123,6 +147,13 @@ impl<'a> Reader<'a> {
         Ok(u32::from_le_bytes(self.take(4)?.try_into().unwrap()))
     }
 
+    fn triple(&mut self) -> Result<[f64; 3], ThreeDmError> {
+        let bytes = self.take(24)?;
+        Ok(std::array::from_fn(|index| {
+            f64::from_le_bytes(bytes[index * 8..index * 8 + 8].try_into().unwrap())
+        }))
+    }
+
     fn finished(&self) -> bool {
         self.offset == self.bytes.len()
     }
@@ -142,6 +173,17 @@ mod tests {
                 normals: Some(vec![Vector3::try_new(0.0, 1.0, 0.0).unwrap()]),
                 values: Some(vec![-12.5]),
                 ordered: true,
+                plane: Some(
+                    PointCloudPlane::try_new(
+                        Point3::try_new(0.0, 0.0, 5.0).unwrap(),
+                        [
+                            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+                            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+                            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+                        ],
+                    )
+                    .unwrap(),
+                ),
             },
         )
         .unwrap();

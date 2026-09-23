@@ -10,8 +10,9 @@ display color. The colors display in the
 viewport and survive 3DM import, export, transforms, Add, and Remove when the
 removed output is another cloud. Removed point objects retain the RGB color;
 their attributes cannot represent per-point transparency.
-Imported clouds also retain per-point normals, scalar values, and OpenNURBS's
-ordered-stream flag through 3DM, transforms, Add, and Remove with cloud output.
+Imported clouds also retain per-point normals, scalar values, the stored plane,
+and OpenNURBS's ordered-stream flag through 3DM, transforms, Add, and Remove
+with cloud output.
 
 ```text
 Point 1,2,3
@@ -81,8 +82,8 @@ component extraction, joining, unwelding, hole filling, and other mesh edits.
 Edge splits and collapses interpolate colors. Merging differently colored
 coincident vertices keeps one representative color, and appending a colored
 mesh to an uncolored one removes per-vertex colors from the result.
-Point outputs cannot carry cloud normals or scalar values. Point clouds with a
-stored plane remain unsupported. OpenNURBS hidden-point flags are runtime only
+Point outputs cannot carry cloud normals or scalar values. OpenNURBS
+hidden-point flags are runtime only
 and are not saved in 3DM files; the native cloud does not yet model them.
 The Add and Remove pickers run as separate prompts after the initial action
 choice. Remove selects cloud members by click, window, or typed indices.

@@ -363,6 +363,17 @@ fn cloud_edits_keep_member_colors_aligned_with_stored_points() {
                     normals: Some(vec![up, side]),
                     values: Some(vec![3.5, 7.25]),
                     ordered: true,
+                    plane: Some(
+                        viboceros_geometry::PointCloudPlane::try_new(
+                            Point3::try_new(0.0, 0.0, 5.0).unwrap(),
+                            [
+                                viboceros_geometry::Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+                                viboceros_geometry::Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+                                viboceros_geometry::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+                            ],
+                        )
+                        .unwrap(),
+                    ),
                 },
             )
             .unwrap(),
@@ -383,6 +394,8 @@ fn cloud_edits_keep_member_colors_aligned_with_stored_points() {
     assert_eq!(cloud.normals().unwrap(), [up, side, zero]);
     assert_eq!(cloud.values().unwrap(), [3.5, 7.25, 0.0]);
     assert!(cloud.is_ordered());
+    let plane = cloud.plane();
+    assert!(plane.is_some());
     let added_color = cloud.colors().unwrap()[2];
     registry
         .execute(&mut doc, "PointCloud Remove Indices=1 Output=PointCloud")
@@ -395,6 +408,7 @@ fn cloud_edits_keep_member_colors_aligned_with_stored_points() {
     assert_eq!(retained.normals().unwrap(), [up, zero]);
     assert_eq!(retained.values().unwrap(), [3.5, 0.0]);
     assert!(retained.is_ordered());
+    assert_eq!(retained.plane(), plane);
     let removed = doc
         .objects()
         .find_map(|object| {
@@ -411,6 +425,7 @@ fn cloud_edits_keep_member_colors_aligned_with_stored_points() {
     assert_eq!(removed.normals().unwrap(), [side]);
     assert_eq!(removed.values().unwrap(), [7.25]);
     assert!(removed.is_ordered());
+    assert_eq!(removed.plane(), plane);
     registry
         .execute(&mut doc, "PointCloud Remove Indices=0 Output=Points")
         .unwrap();

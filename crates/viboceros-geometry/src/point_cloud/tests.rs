@@ -86,6 +86,39 @@ fn optional_normals_values_and_order_validate_and_survive_transforms() {
 }
 
 #[test]
+fn stored_plane_rejects_invalid_frames_and_follows_cloud_transforms() {
+    let axes = [
+        Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+        Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+        Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+    ];
+    assert!(
+        PointCloudPlane::try_new(
+            point(0.0, 0.0, 0.0),
+            [axes[0], axes[1], Vector3::try_new(0.0, 0.0, -1.0).unwrap()]
+        )
+        .is_err()
+    );
+    let plane = PointCloudPlane::try_new(point(0.0, 0.0, 5.0), axes).unwrap();
+    let cloud = PointCloud3::try_with_channels(
+        vec![point(1.0, 2.0, 3.0)],
+        PointCloudChannels {
+            plane: Some(plane),
+            ..PointCloudChannels::default()
+        },
+    )
+    .unwrap();
+    let moved = cloud
+        .transformed(AffineTransform3::from_translation(
+            Vector3::try_new(3.0, 4.0, 0.0).unwrap(),
+        ))
+        .unwrap();
+    assert_eq!(moved.plane().unwrap().origin(), point(3.0, 4.0, 5.0));
+    assert_eq!(moved.plane().unwrap().axes(), axes);
+    assert_eq!(cloud.plane(), Some(plane));
+}
+
+#[test]
 fn square_indexes_match_exhaustive_queries_in_each_plane() {
     for translation in [0., 2.0_f64.powi(52), -2.0_f64.powi(52)] {
         let origin = point(translation, translation, translation);

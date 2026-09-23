@@ -124,11 +124,12 @@ constexpr uint32_t kPolyCurveVersion = 2;
 constexpr uint8_t kNgonMagic[8] = {'V', 'I', 'B', 'O', 'N', 'G', 'O', 'N'};
 constexpr uint32_t kNgonVersion = 2;
 constexpr uint8_t kPointCloudMagic[8] = {'V', 'I', 'B', 'O', 'P', 'C', 'L', 'D'};
-constexpr uint32_t kPointCloudVersion = 1;
+constexpr uint32_t kPointCloudVersion = 2;
 constexpr uint32_t kPointCloudColors = 1;
 constexpr uint32_t kPointCloudNormals = 2;
 constexpr uint32_t kPointCloudValues = 4;
 constexpr uint32_t kPointCloudOrdered = 8;
+constexpr uint32_t kPointCloudPlane = 16;
 constexpr size_t kMaxPolyCurveSegments = 65536;
 constexpr uint64_t kNoEdge = std::numeric_limits<uint64_t>::max();
 
@@ -275,14 +276,19 @@ bool append_point_cloud(const ON_PointCloud& cloud, BridgeObject& output) {
   const bool has_normals = cloud.HasPointNormals();
   const bool has_values = cloud.HasPointValues();
   const bool ordered = cloud.IsOrdered();
-  if (has_colors || has_normals || has_values || ordered) {
+  const bool has_plane = cloud.HasPlane();
+  if (has_plane && !cloud.m_plane.IsValid()) {
+    return false;
+  }
+  if (has_colors || has_normals || has_values || ordered || has_plane) {
     ByteWriter writer(output.geometry_data);
     writer.Bytes(kPointCloudMagic, sizeof(kPointCloudMagic));
     writer.U32(kPointCloudVersion);
     writer.U32((has_colors ? kPointCloudColors : 0U) |
                (has_normals ? kPointCloudNormals : 0U) |
                (has_values ? kPointCloudValues : 0U) |
-               (ordered ? kPointCloudOrdered : 0U));
+               (ordered ? kPointCloudOrdered : 0U) |
+               (has_plane ? kPointCloudPlane : 0U));
   }
   if (has_colors) {
     ByteWriter writer(output.geometry_data);
@@ -314,6 +320,16 @@ bool append_point_cloud(const ON_PointCloud& cloud, BridgeObject& output) {
         return false;
       }
       writer.Double(value);
+    }
+  }
+  if (has_plane) {
+    ByteWriter writer(output.geometry_data);
+    const ON_Plane& plane = cloud.m_plane;
+    for (double coordinate : {plane.origin.x, plane.origin.y, plane.origin.z,
+                              plane.xaxis.x, plane.xaxis.y, plane.xaxis.z,
+                              plane.yaxis.x, plane.yaxis.y, plane.yaxis.z,
+                              plane.zaxis.x, plane.zaxis.y, plane.zaxis.z}) {
+      writer.Double(coordinate);
     }
   }
   return true;
@@ -1316,7 +1332,8 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
             !reader.U32(version) || version != kPointCloudVersion ||
             !reader.U32(flags) || flags == 0 ||
             (flags & ~(kPointCloudColors | kPointCloudNormals |
-                       kPointCloudValues | kPointCloudOrdered)) != 0) {
+                       kPointCloudValues | kPointCloudOrdered |
+                       kPointCloudPlane)) != 0) {
           delete cloud;
           error = "point cloud channel payload is invalid";
           return nullptr;
@@ -1371,6 +1388,28 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
             }
             cloud->m_V.Append(value);
           }
+        }
+        if (flags & kPointCloudPlane) {
+          if (reader.Remaining() < 12 * sizeof(double)) {
+            delete cloud;
+            error = "point cloud plane is truncated";
+            return nullptr;
+          }
+          double coordinates[12];
+          for (double& coordinate : coordinates) {
+            reader.Double(coordinate);
+          }
+          ON_Plane plane;
+          plane.origin = ON_3dPoint(coordinates[0], coordinates[1], coordinates[2]);
+          plane.xaxis = ON_3dVector(coordinates[3], coordinates[4], coordinates[5]);
+          plane.yaxis = ON_3dVector(coordinates[6], coordinates[7], coordinates[8]);
+          plane.zaxis = ON_3dVector(coordinates[9], coordinates[10], coordinates[11]);
+          if (!plane.UpdateEquation() || !plane.IsValid()) {
+            delete cloud;
+            error = "point cloud plane is invalid";
+            return nullptr;
+          }
+          cloud->SetPlane(plane);
         }
         if (!reader.Finished()) {
           delete cloud;
