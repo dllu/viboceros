@@ -85,10 +85,84 @@ fn indexed_record_mut<'a>(
         .ok_or_else(|| invalid("missing angular parameter geometry"))
 }
 
-fn unsupported_angular_geometry(data: &DataSection) -> bool {
-    data.entities.iter().flat_map(entity_records).any(|record| {
+// The extrusion's U coordinate inherits its swept curve's parameter.
+fn curve_parameter_axes(
+    resolver: &Resolver<'_>,
+    curve_id: u64,
+    visited: &mut BTreeSet<u64>,
+) -> Result<Option<AngularAxes>, StepError> {
+    if !visited.insert(curve_id) {
+        return Err(invalid("cyclic extrusion directrix"));
+    }
+    if visited.len() > 64 {
+        return Err(invalid("excessively deep extrusion directrix"));
+    }
+    let curve = resolver
+        .entities
+        .get(&curve_id)
+        .ok_or_else(|| invalid("missing extrusion directrix"))?;
+    let axes = if [
+        "LINE",
+        "POLYLINE",
+        "B_SPLINE_CURVE",
+        "B_SPLINE_CURVE_WITH_KNOTS",
+        "RATIONAL_B_SPLINE_CURVE",
+    ]
+    .iter()
+    .any(|name| component(curve, name).is_some())
+    {
+        Some(NO_ANGLES)
+    } else if component(curve, "CIRCLE").is_some() || component(curve, "ELLIPSE").is_some() {
+        Some(U_ANGLE)
+    } else if let Some(surface_curve) = component(curve, "SURFACE_CURVE") {
+        let args = list(&surface_curve.parameter)?;
+        if args.len() != 4 {
+            return Err(invalid("invalid extrusion surface curve"));
+        }
+        curve_parameter_axes(resolver, reference(&args[1])?, visited)?
+    } else if let Some(pcurve) = component(curve, "PCURVE") {
+        let args = list(&pcurve.parameter)?;
+        if args.len() != 3 {
+            return Err(invalid("invalid extrusion p-curve"));
+        }
+        let representation = record(
+            resolver,
+            reference(&args[2])?,
+            "DEFINITIONAL_REPRESENTATION",
+        )?;
+        let args = list(&representation.parameter)?;
+        if args.len() != 3 || list(&args[1])?.len() != 1 {
+            return Err(invalid("unsupported extrusion p-curve representation"));
+        }
+        curve_parameter_axes(resolver, reference(&list(&args[1])?[0])?, visited)?
+    } else {
+        None
+    };
+    visited.remove(&curve_id);
+    Ok(axes)
+}
+
+pub(super) fn extrusion_axes(
+    resolver: &Resolver<'_>,
+    surface: &Record,
+) -> Result<Option<AngularAxes>, StepError> {
+    let args = list(&surface.parameter)?;
+    if args.len() != 3 {
+        return Err(invalid("invalid surface of linear extrusion"));
+    }
+    curve_parameter_axes(resolver, reference(&args[1])?, &mut BTreeSet::new())
+}
+
+fn unsupported_angular_geometry(
+    data: &DataSection,
+    resolver: &Resolver<'_>,
+) -> Result<bool, StepError> {
+    for record in data.entities.iter().flat_map(entity_records) {
         let name = record.name.as_str();
-        matches!(name, "HYPERBOLA" | "PARABOLA" | "TRIMMED_CURVE")
+        if name == "SURFACE_OF_LINEAR_EXTRUSION" && extrusion_axes(resolver, record)?.is_some() {
+            continue;
+        }
+        if matches!(name, "HYPERBOLA" | "PARABOLA" | "TRIMMED_CURVE")
             || (name.ends_with("_SURFACE")
                 && !angle_independent_surface(name)
                 && !matches!(
@@ -101,7 +175,11 @@ fn unsupported_angular_geometry(data: &DataSection) -> bool {
             || (name.starts_with("SURFACE_OF_") && name != "SURFACE_OF_REVOLUTION")
             || (name.contains("REVOL") && name != "SURFACE_OF_REVOLUTION")
             || name.contains("CIRCULAR")
-    })
+        {
+            return Ok(true);
+        }
+    }
+    Ok(false)
 }
 
 fn references_any(parameter: &Parameter, ids: &BTreeSet<u64>) -> bool {
@@ -114,11 +192,12 @@ fn references_any(parameter: &Parameter, ids: &BTreeSet<u64>) -> bool {
 }
 
 /// Converts conical semi-angles and 2D line, polyline, and B-spline p-curves
-/// on cylinders, cones, spheres, tori, and surfaces of revolution. The source
-/// angular assignment is replaced by its validated SI radian base after
-/// converting geometry; unrelated p-curves are untouched.
+/// on cylinders, cones, spheres, tori, revolutions, and extrusions with conic
+/// directrices. The source angular assignment is replaced by its validated SI
+/// radian base after converting geometry; unrelated p-curves are untouched.
 pub(super) fn normalize(data: &mut DataSection) -> Result<(), StepError> {
-    if is_angle_independent_geometry(data)
+    let resolver = resolver(data)?;
+    if is_angle_independent_geometry(data, &resolver)?
         || !data.entities.iter().map(entity_records).any(|records| {
             component(records, "PLANE_ANGLE_UNIT").is_some()
                 && component(records, "CONVERSION_BASED_UNIT").is_some()
@@ -126,7 +205,6 @@ pub(super) fn normalize(data: &mut DataSection) -> Result<(), StepError> {
     {
         return Ok(());
     }
-    let resolver = resolver(data)?;
     let mut angle_factor = None;
     let mut replacements = HashMap::new();
     for records in resolver.entities.values() {
@@ -160,7 +238,7 @@ pub(super) fn normalize(data: &mut DataSection) -> Result<(), StepError> {
     if factor == 1.0 {
         return Ok(());
     }
-    if unsupported_angular_geometry(data) {
+    if unsupported_angular_geometry(data, &resolver)? {
         return Err(invalid(
             "unsupported angular geometry in non-radian STEP context",
         ));
@@ -184,6 +262,12 @@ pub(super) fn normalize(data: &mut DataSection) -> Result<(), StepError> {
             .entities
             .get(&basis)
             .ok_or_else(|| invalid("missing p-curve basis surface"))?;
+        let extrusion = surface
+            .iter()
+            .find(|record| record.name == "SURFACE_OF_LINEAR_EXTRUSION")
+            .map(|record| extrusion_axes(&resolver, record))
+            .transpose()?
+            .flatten();
         let axes = if component(surface, "CONICAL_SURFACE").is_some()
             || component(surface, "CYLINDRICAL_SURFACE").is_some()
             || component(surface, "SURFACE_OF_REVOLUTION").is_some()
@@ -193,14 +277,16 @@ pub(super) fn normalize(data: &mut DataSection) -> Result<(), StepError> {
             || component(surface, "TOROIDAL_SURFACE").is_some()
         {
             BOTH_ANGLES
+        } else if let Some(axes) = extrusion {
+            axes
         } else {
             NO_ANGLES
         };
-        if axes == NO_ANGLES
-            && !surface
+        let independent = extrusion == Some(NO_ANGLES)
+            || surface
                 .iter()
-                .any(|record| angle_independent_surface(&record.name))
-        {
+                .any(|record| angle_independent_surface(&record.name));
+        if axes == NO_ANGLES && !independent {
             return Err(invalid(
                 "unsupported p-curve basis in non-radian STEP context",
             ));
@@ -641,6 +727,26 @@ mod tests {
                 .unwrap_err()
                 .to_string()
                 .contains("incompatible angular axes")
+        );
+    }
+
+    #[test]
+    fn rejects_cyclic_extrusion_directrix() {
+        let mut data = degree_cone();
+        *data
+            .entities
+            .iter_mut()
+            .find(|entity| matches!(entity, EntityInstance::Simple { id: 7, .. }))
+            .unwrap() = "#7 = SURFACE_OF_LINEAR_EXTRUSION('',#8,#16);"
+            .parse()
+            .unwrap();
+        data.entities
+            .push("#8 = SURFACE_CURVE('',#8,(),.CURVE_3D.);".parse().unwrap());
+        assert!(
+            normalize(&mut data)
+                .unwrap_err()
+                .to_string()
+                .contains("cyclic extrusion directrix")
         );
     }
 }

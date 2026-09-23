@@ -1476,6 +1476,16 @@ fn native_step_imports_multispan_polyline_and_affine_pcurve_edges_with_holes() {
             assert!(text.contains("PCURVE("));
             if edge_basis == 2 {
                 assert!(text.contains("SURFACE_OF_LINEAR_EXTRUSION("));
+                let degrees = with_degree_angle_units(&text);
+                let degree_native = read_step_native_instances_in_units(
+                    Cursor::new(degrees),
+                    &LengthUnitSystem::Millimeters,
+                    Tolerance::DEFAULT,
+                )
+                .unwrap();
+                let native =
+                    read_step_native_instances(Cursor::new(&text), Tolerance::DEFAULT).unwrap();
+                assert_eq!(degree_native.instances[0].brep, native.instances[0].brep);
             } else if edge_basis == 3 {
                 assert!(text.contains("B_SPLINE_SURFACE_WITH_KNOTS("));
             } else if edge_basis == 4 {
@@ -3514,6 +3524,45 @@ fn native_step_imports_exact_line_polyline_conic_bspline_and_nurbs_extrusions() 
         models.push_trimmed_shell(&shell);
         let text = CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
         assert!(text.contains("SURFACE_OF_LINEAR_EXTRUSION("));
+        if variant == 4 {
+            let degrees = with_degree_angular_u(&text);
+            let degree_native = read_step_native_instances_in_units(
+                Cursor::new(&degrees),
+                &LengthUnitSystem::Millimeters,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            let native =
+                read_step_native_instances(Cursor::new(&text), Tolerance::DEFAULT).unwrap();
+            let actual = &degree_native.instances[0].brep;
+            let expected = &native.instances[0].brep;
+            assert_eq!(actual.edges().len(), expected.edges().len());
+            assert!(
+                (actual.area(Tolerance::DEFAULT).unwrap()
+                    - expected.area(Tolerance::DEFAULT).unwrap())
+                .abs()
+                    < 1e-8
+            );
+            for (actual, expected) in actual.vertices().iter().zip(expected.vertices()) {
+                assert!(actual.point().distance_to(expected.point()).unwrap() < 1e-9);
+            }
+            assert_degree_step_mesh_matches(&text, &degrees);
+        }
+        if variant != 4 {
+            let degrees = with_degree_angle_units(&text);
+            let degree_native = read_step_native_instances_in_units(
+                Cursor::new(&degrees),
+                &LengthUnitSystem::Millimeters,
+                Tolerance::DEFAULT,
+            )
+            .unwrap_or_else(|error| panic!("extrusion variant {variant}: {error:?}"));
+            let native =
+                read_step_native_instances(Cursor::new(&text), Tolerance::DEFAULT).unwrap();
+            assert_eq!(degree_native.instances[0].brep, native.instances[0].brep);
+            if variant == 0 {
+                assert_degree_step_mesh_matches(&text, &degrees);
+            }
+        }
         if rational {
             assert!(text.contains("RATIONAL_B_SPLINE_CURVE("));
         } else if variant == 1 || variant == 5 || variant == 6 {

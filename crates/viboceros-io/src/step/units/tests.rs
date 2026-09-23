@@ -132,6 +132,8 @@ fn conversion_based_angles_are_accepted_only_without_angular_geometry() {
         "#7 = CIRCLE('',#8,1.);",
         "#7 = ELLIPSE('',#8,2.,1.);",
         "#7 = PCURVE('',#8,#9); #8 = PLANE('',#10);",
+        "#7 = SURFACE_OF_LINEAR_EXTRUSION('',#8,#9); #8 = LINE('',#10,#11);",
+        "#7 = SURFACE_OF_LINEAR_EXTRUSION('',#8,#9); #8 = B_SPLINE_CURVE_WITH_KNOTS('',1,(#10,#11),.UNSPECIFIED.,.F.,.F.,(2,2),(0.,1.),.UNSPECIFIED.);",
     ] {
         assert_eq!(scale(&format!("{units} {geometry}")).unwrap(), 1e-3);
     }
@@ -176,6 +178,18 @@ fn angular_surfaces_require_an_assigned_plane_angle_unit() {
         #3 = SPHERICAL_SURFACE('',#4,2.);";
     assert!(
         scale(records)
+            .unwrap_err()
+            .to_string()
+            .contains("no plane-angle unit")
+    );
+    let linear = "#1 = GLOBAL_UNIT_ASSIGNED_CONTEXT((#2));
+        #2 = (LENGTH_UNIT() NAMED_UNIT(*) SI_UNIT(.MILLI.,.METRE.));
+        #3 = SURFACE_OF_LINEAR_EXTRUSION('',#4,#5);
+        #4 = LINE('',#6,#7);";
+    assert_eq!(scale(linear).unwrap(), 1e-3);
+    let circle = linear.replace("LINE('',#6,#7)", "CIRCLE('',#6,2.)");
+    assert!(
+        scale(&circle)
             .unwrap_err()
             .to_string()
             .contains("no plane-angle unit")

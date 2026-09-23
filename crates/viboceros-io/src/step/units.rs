@@ -63,7 +63,7 @@ pub(super) fn uniform_meters_per_unit(data: &DataSection) -> Result<f64, StepErr
         .collect::<Vec<_>>();
     let mut result = None;
     let mut non_radian_angle = false;
-    let needs_angular_units = !is_angle_independent_geometry(data);
+    let needs_angular_units = !is_angle_independent_geometry(data, &resolver)?;
     for context in contexts {
         let args = list(&context.parameter)?;
         if args.len() != 1 {
@@ -152,21 +152,33 @@ fn angle_independent_surface(name: &str) -> bool {
     )
 }
 
-fn is_angle_independent_geometry(data: &DataSection) -> bool {
-    data.entities.iter().all(|entity| {
+fn is_angle_independent_geometry(
+    data: &DataSection,
+    resolver: &Resolver<'_>,
+) -> Result<bool, StepError> {
+    for entity in &data.entities {
         let records = match entity {
             EntityInstance::Simple { record, .. } => std::slice::from_ref(record),
             EntityInstance::Complex { subsuper, .. } => subsuper.0.as_slice(),
         };
-        records.iter().all(|record| {
+        for record in records {
             let name = record.name.as_str();
-            !(matches!(name, "HYPERBOLA" | "PARABOLA" | "TRIMMED_CURVE")
+            if name == "SURFACE_OF_LINEAR_EXTRUSION"
+                && angle::extrusion_axes(resolver, record)? == Some([false, false])
+            {
+                continue;
+            }
+            if matches!(name, "HYPERBOLA" | "PARABOLA" | "TRIMMED_CURVE")
                 || (name.ends_with("_SURFACE") && !angle_independent_surface(name))
                 || name.starts_with("SURFACE_OF_")
                 || name.contains("REVOL")
-                || name.contains("CIRCULAR"))
-        })
-    })
+                || name.contains("CIRCULAR")
+            {
+                return Ok(false);
+            }
+        }
+    }
+    Ok(true)
 }
 
 #[cfg(test)]
