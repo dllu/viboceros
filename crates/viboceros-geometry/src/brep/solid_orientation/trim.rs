@@ -1,6 +1,5 @@
 //! Exact oriented polygon images of conservative classes of UV NURBS curves.
 use super::*;
-use crate::exact_scalar::rational;
 
 /// Degree-one curves retain their entire control polygon. Higher-degree curves
 /// need an exact segment certificate: clamped endpoints, C0 continuity, same-sign
@@ -42,17 +41,10 @@ pub(super) fn polygon<'a>(
     }
     let stride = if degree == 1 {
         1
-    } else {
-        let a = controls[0].point().to_array();
-        let b = controls.last()?.point().to_array();
-        if a == b
-            || !controls
-                .iter()
-                .all(|p| in_segment(p.point().to_array(), a, b))
-        {
-            return None;
-        }
+    } else if curve.is_straight_segment() {
         controls.len() - 1
+    } else {
+        return None;
     };
     // Borrow the whole polygon or just its endpoints; no per-trim allocation.
     Some(
@@ -61,20 +53,4 @@ pub(super) fn polygon<'a>(
             .step_by(stride)
             .map(|p| p.point().to_array()),
     )
-}
-
-fn in_segment(p: [Real; 2], a: [Real; 2], b: [Real; 2]) -> bool {
-    if (0..2).any(|i| p[i] < a[i].min(b[i]) || p[i] > a[i].max(b[i])) {
-        return false;
-    }
-    // For axis-aligned sides the comparison-only bounds already prove it.
-    if a[0] == b[0] || a[1] == b[1] || p == a || p == b {
-        return true;
-    }
-    // Convert before subtraction: rounded differences/products could hide a
-    // tiny bulge, overflow, or underflow. Binary64 coefficients are exact input.
-    let [ax, ay] = a.map(rational);
-    let [bx, by] = b.map(rational);
-    let [px, py] = p.map(rational);
-    (px - &ax) * (by - &ay) == (py - &ay) * (bx - &ax)
 }

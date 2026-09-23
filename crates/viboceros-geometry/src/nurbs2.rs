@@ -152,6 +152,58 @@ impl NurbsCurve2 {
         self.evaluate(*self.domain().end())
     }
 
+    /// Proves that the entire curve traces its endpoint segment.
+    ///
+    /// Clamped endpoints, C0 continuity, same-sign weights, and controls in
+    /// the closed endpoint segment make this a convex-hull certificate. The
+    /// control collinearity test uses exact binary64 rational arithmetic.
+    pub fn is_straight_segment(&self) -> bool {
+        use crate::exact_scalar::rational;
+
+        let degree = self.degree;
+        let controls = &self.control_points;
+        let knots = &self.knots;
+        if knots[0] != knots[degree] || knots[controls.len()] != *knots.last().unwrap() {
+            return false;
+        }
+        let mut multiplicity = 1;
+        for pair in knots[degree + 1..controls.len()].windows(2) {
+            multiplicity = if pair[0] == pair[1] {
+                multiplicity + 1
+            } else {
+                1
+            };
+            if multiplicity > degree {
+                return false;
+            }
+        }
+        let sign = controls[0].weight().is_sign_positive();
+        if controls
+            .iter()
+            .any(|control| control.weight().is_sign_positive() != sign)
+        {
+            return false;
+        }
+        let a = controls[0].point().to_array();
+        let b = controls.last().unwrap().point().to_array();
+        if a == b {
+            return false;
+        }
+        controls.iter().all(|control| {
+            let p = control.point().to_array();
+            if (0..2).any(|axis| p[axis] < a[axis].min(b[axis]) || p[axis] > a[axis].max(b[axis])) {
+                return false;
+            }
+            if a[0] == b[0] || a[1] == b[1] || p == a || p == b {
+                return true;
+            }
+            let [ax, ay] = a.map(rational);
+            let [bx, by] = b.map(rational);
+            let [px, py] = p.map(rational);
+            (px - &ax) * (by - &ay) == (py - &ay) * (bx - &ax)
+        })
+    }
+
     /// Reverses direction and negates the knot vector, matching OpenNURBS.
     pub fn reversed(&self) -> Result<Self, GeometryError> {
         let control_points = self.control_points.iter().rev().copied().collect();
@@ -257,5 +309,38 @@ mod tests {
         let middle = curve.evaluate(0.5).unwrap();
         assert!(Tolerance::DEFAULT.approx_eq(middle.x(), 2.625));
         assert!(Tolerance::DEFAULT.approx_eq(middle.y(), -0.75));
+    }
+
+    #[test]
+    fn exact_segment_certificate_accepts_collinear_splines_and_rejects_bulges() {
+        let controls = |middle_y, middle_weight| {
+            vec![
+                WeightedPoint2::try_new(point(0., 0.), 1.).unwrap(),
+                WeightedPoint2::try_new(point(0.5, middle_y), middle_weight).unwrap(),
+                WeightedPoint2::try_new(point(1., 1.), 1.).unwrap(),
+            ]
+        };
+        let knots = vec![0., 0., 0., 1., 1., 1.];
+        let straight = NurbsCurve2::try_new_rational(2, controls(0.5, 0.3), knots.clone()).unwrap();
+        assert!(straight.is_straight_segment());
+        assert!(straight.reversed().unwrap().is_straight_segment());
+        let bulge = f64::from_bits(0.5_f64.to_bits() + 1);
+        assert!(
+            !NurbsCurve2::try_new_rational(2, controls(bulge, 0.3), knots.clone())
+                .unwrap()
+                .is_straight_segment()
+        );
+        assert!(
+            !NurbsCurve2::try_new_rational(2, controls(0.5, -0.3), knots)
+                .unwrap()
+                .is_straight_segment()
+        );
+        let polyline = NurbsCurve2::try_new(
+            1,
+            vec![point(0., 0.), point(0.5, 0.5), point(1., 1.)],
+            vec![0., 0., 0.5, 1., 1.],
+        )
+        .unwrap();
+        assert!(polyline.is_straight_segment());
     }
 }

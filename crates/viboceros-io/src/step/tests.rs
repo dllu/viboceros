@@ -687,6 +687,10 @@ fn polygon_face_step(boundaries: &[Vec<[f64; 2]>], reversed: bool) -> String {
 
 #[test]
 fn native_step_imports_bspline_faces_with_polygon_holes() {
+    use monstertruck::meshing::prelude::{BoundedCurve, ParametricCurve};
+    use monstertruck::modeling::{BsplineCurve, KnotVector, Point2 as TruckPoint2};
+    use monstertruck::step::load::step_geometry::{Curve2D, StepParameterCurve};
+    use monstertruck::step::save::StepModels;
     use viboceros_geometry::{Brep, BrepFace, NurbsSurface};
     let outer = vec![[0., 0.], [10., 0.], [10., 10.], [0., 10.]];
     let hole = vec![[2., 2.], [2., 4.], [4., 4.], [4., 2.]];
@@ -738,6 +742,46 @@ fn native_step_imports_bspline_faces_with_polygon_holes() {
         let brep = &native.instances[0].brep;
         assert_eq!(brep.faces()[0].loops().len(), 2);
         assert_eq!(brep.faces()[0].is_reversed(), reversed);
+        assert!((brep.area(Tolerance::DEFAULT).unwrap() - 96.).abs() < 1e-9);
+
+        let shell_id = *table.shell.keys().next().unwrap();
+        let (mut shell, report) = reported_trimmed_shell(&table, shell_id).unwrap();
+        assert_eq!(report.total_lost(), 0);
+        let step_surface = shell.faces[0].surface.clone();
+        for boundary in &mut shell.faces[0].boundaries {
+            let use_ = &mut boundary[0];
+            let original = use_.trim_curve.as_ref().unwrap().curve();
+            let (start, end) = original.range_tuple();
+            let p0 = original.evaluate(start);
+            let p1 = original.evaluate(end);
+            let middle = TruckPoint2::new((p0.x + p1.x) / 2., (p0.y + p1.y) / 2.);
+            use_.trim_curve = Some(StepParameterCurve::new(
+                Box::new(Curve2D::BsplineCurve(BsplineCurve::new(
+                    KnotVector::bezier_knot(2),
+                    vec![p0, middle, p1],
+                ))),
+                Box::new(step_surface.clone()),
+            ));
+        }
+        let mut models = StepModels::default();
+        models.push_trimmed_shell(&shell);
+        let curved_parameter_text =
+            CompleteStepDisplay::new(models, StepHeaderDescriptor::default()).to_string();
+        let native =
+            read_step_native_instances(Cursor::new(curved_parameter_text), Tolerance::DEFAULT)
+                .unwrap();
+        let brep = &native.instances[0].brep;
+        assert_eq!(brep.faces()[0].loops().len(), 2);
+        assert_eq!(brep.faces()[0].is_reversed(), reversed);
+        assert_eq!(
+            brep.faces()[0]
+                .loops()
+                .iter()
+                .flat_map(|loop_| loop_.trims())
+                .filter(|trim| trim.curve().degree() == 2)
+                .count(),
+            2
+        );
         assert!((brep.area(Tolerance::DEFAULT).unwrap() - 96.).abs() < 1e-9);
     }
 }

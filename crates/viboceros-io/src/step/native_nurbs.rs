@@ -119,24 +119,27 @@ pub(super) fn convert_shell(
             boundaries.push(trims);
         }
         let surface = surface(&face.surface, &boundaries, id, tolerance)?;
-        let native =
-            if boundaries.len() == 1 {
-                BrepFace::try_new(
-                    surface,
-                    !face.orientation,
-                    vec![BrepLoop::try_new(
-                        BrepLoopType::Outer,
-                        boundaries.remove(0),
-                    )?],
-                )?
-            } else {
-                if boundaries.iter().flatten().any(|trim| {
-                    trim.curve().degree() != 1 || trim.curve().control_points().len() != 2
-                }) {
-                    return Err(unsupported("multiple loops require straight UV boundaries"));
-                }
-                BrepFace::try_from_polygon_boundaries(surface, !face.orientation, boundaries)?
-            };
+        let native = if boundaries.len() == 1 {
+            BrepFace::try_new(
+                surface,
+                !face.orientation,
+                vec![BrepLoop::try_new(
+                    BrepLoopType::Outer,
+                    boundaries.remove(0),
+                )?],
+            )?
+        } else {
+            if boundaries
+                .iter()
+                .flatten()
+                .any(|trim| !trim.curve().is_straight_segment())
+            {
+                return Err(unsupported(
+                    "multiple loops require certified straight UV boundaries",
+                ));
+            }
+            BrepFace::try_from_polygon_boundaries(surface, !face.orientation, boundaries)?
+        };
         faces.push(native);
     }
     Ok(Brep::try_new(vertices, edges, faces, tolerance)?)

@@ -258,9 +258,9 @@ strips. Linear extrusions of line and B-spline/NURBS directrices use exact
 tensor-product NURBS patches. Revolutions of those directrices with straight UV
 iso-trims use exact rational patches over angles up to one turn, including paired
 full-turn seams. Polar singular trims remain unsupported. The path
-validates shared topology in `Brep::try_new`. NURBS faces with multiple straight
-UV polygon loops use the kernel's strict polygon boundary validation. Curved UV
-loops currently require one outer boundary.
+validates shared topology in `Brep::try_new`. NURBS faces with multiple loops of
+certified straight-segment UV trims use strict polygon boundary validation.
+Curved UV loops currently require one outer boundary.
 Other surface types, periodic seam arrangements, and missing UV curves still
 need representation adapters or explicit topology handling. The default mesh import
 remains available for display of such files.

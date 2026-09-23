@@ -3,7 +3,7 @@ use super::*;
 impl BrepFace {
     /// Constructs a face from unordered, simple polygon boundaries in surface UV.
     ///
-    /// Each trim must be a single degree-one span with same-sign weights.
+    /// Each trim must have a certified straight-segment image.
     /// Exactly one boundary must
     /// wind counterclockwise; all others must be clockwise, strictly inside it,
     /// mutually disjoint and unnested. Touching and numerically unresolved
@@ -24,13 +24,7 @@ impl BrepFace {
             }
             let start = points.len();
             for trim in boundary {
-                if trim.curve.degree() != 1 || trim.curve.control_points().len() != 2 {
-                    return Err(invalid());
-                }
-                let controls = trim.curve.control_points();
-                if controls[0].weight().is_sign_positive()
-                    != controls[1].weight().is_sign_positive()
-                {
+                if !trim.curve.is_straight_segment() {
                     return Err(invalid());
                 }
                 points.push(trim.curve.start_point()?);
@@ -232,6 +226,10 @@ fn inside_polygon(point: [Real; 2], polygon: &[[Real; 2]], epsilon: Real) -> boo
 mod tests {
     use super::*;
 
+    fn point(x: Real, y: Real) -> Point2 {
+        Point2::try_new(x, y).unwrap()
+    }
+
     fn boundary(points: &[[Real; 2]]) -> Vec<BrepTrim> {
         (0..points.len())
             .map(|i| {
@@ -275,6 +273,40 @@ mod tests {
 
     fn outer() -> Vec<BrepTrim> {
         boundary(&[[0., 0.], [10., 0.], [10., 10.], [0., 10.]])
+    }
+
+    #[test]
+    fn accepts_certified_straight_spline_boundaries_with_holes() {
+        let mut outer = outer();
+        outer[0].curve = NurbsCurve2::try_new_rational(
+            2,
+            vec![
+                WeightedPoint2::try_new(point(0., 0.), 1.).unwrap(),
+                WeightedPoint2::try_new(point(5., 0.), 0.4).unwrap(),
+                WeightedPoint2::try_new(point(10., 0.), 1.).unwrap(),
+            ],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        let mut inner = boundary(&[[2., 2.], [2., 4.], [4., 4.], [4., 2.]]);
+        inner[0].curve = NurbsCurve2::try_new(
+            2,
+            vec![point(2., 2.), point(2., 3.), point(2., 4.)],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        let built = face(vec![inner.clone(), outer.clone()]).unwrap();
+        assert_eq!(built.loops.len(), 2);
+        assert_eq!(built.loops[0].trims, outer);
+        assert_eq!(built.loops[1].trims, inner);
+
+        outer[0].curve = NurbsCurve2::try_new(
+            2,
+            vec![point(0., 0.), point(5., 1.), point(10., 0.)],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        assert!(face(vec![outer, inner]).is_err());
     }
 
     #[test]
