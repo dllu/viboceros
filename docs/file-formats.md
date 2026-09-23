@@ -271,7 +271,9 @@ Straight diagonal p-curves on single degree-one 2-by-2 B-spline/NURBS patches
 also import as exact rational quadratic edges. Clamped single-span higher-degree
 patches compose to exact rational Bézier edges up to degree 64. Unclamped
 higher-degree single-span surfaces are clamped at their active domain before
-composition. Unequal-weight p-curves on non-affine bases remain unsupported.
+composition. Rational degree-one diagonal UV p-curves with unequal endpoint
+weights retain their source parameterization through curved B-spline/NURBS patches.
+Higher-degree UV p-curves on non-affine bases remain unsupported.
 Straight diagonals across multi-span B-spline/NURBS surfaces also import as
 joined rational spans when their knot crossings have
 distinct representable parameters; numerically inseparable crossings fail

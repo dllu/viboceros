@@ -244,11 +244,15 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
                 && bounded_affine.is_none()
                 && uv.degree() == 1
                 && uv.control_points().len() == 2
-                && uv.control_points()[0].weight() == uv.control_points()[1].weight()
             {
                 let uv0 = uv.control_points()[0].point();
                 let uv1 = uv.control_points()[1].point();
-                if uv0.y() == uv1.y() || uv0.x() == uv1.x() {
+                let weights = [
+                    uv.control_points()[0].weight(),
+                    uv.control_points()[1].weight(),
+                ];
+                let equal_weights = weights[0] == weights[1];
+                if equal_weights && (uv0.y() == uv1.y() || uv0.x() == uv1.x()) {
                     if matches!(basis, Surface::NurbsSurface(_) | Surface::BsplineSurface(_)) {
                         let surface = spline_surface_basis(basis, id)?;
                         let (varying_start, varying_end, curve) = if uv0.y() == uv1.y() {
@@ -386,13 +390,19 @@ fn edge_curve(curve: &Curve3D, id: u64) -> Result<NurbsCurve, StepError> {
                         return elementary_isocurve_edge(basis, uv0, uv1, uv.domain(), id);
                     }
                 }
-                if let Some(curve) = bilinear_pcurve_edge(basis, uv0, uv1, uv.domain(), id)? {
+                if equal_weights
+                    && let Some(curve) = bilinear_pcurve_edge(basis, uv0, uv1, uv.domain(), id)?
+                {
                     return Ok(curve);
                 }
-                if let Some(curve) = bezier_patch_pcurve_edge(basis, uv0, uv1, uv.domain(), id)? {
+                if let Some(curve) =
+                    bezier_patch_pcurve_edge(basis, uv0, uv1, weights, uv.domain(), id)?
+                {
                     return Ok(curve);
                 }
-                if let Some(curve) = multispan_pcurve_edge(basis, uv0, uv1, uv.domain(), id)? {
+                if let Some(curve) =
+                    multispan_pcurve_edge(basis, uv0, uv1, weights, uv.domain(), id)?
+                {
                     return Ok(curve);
                 }
             }
@@ -738,11 +748,14 @@ fn bilinear_pcurve_edge(
 /// A straight path across a clamped single-span tensor-product surface is a
 /// rational Bézier curve. Restrict the homogeneous patch to the UV rectangle
 /// traversed by the path, then multiply its two Bernstein bases along the
-/// rectangle's diagonal.
+/// rectangle's diagonal. Unequal UV control weights apply the same Möbius
+/// reparameterization to both UV coordinates and elevate their endpoint
+/// weight ratio to the composed curve degree.
 fn bezier_patch_pcurve_edge(
     basis: &Surface,
     uv0: Point2,
     uv1: Point2,
+    uv_weights: [f64; 2],
     domain: std::ops::RangeInclusive<f64>,
     id: u64,
 ) -> Result<Option<NurbsCurve>, StepError> {
@@ -765,13 +778,14 @@ fn bezier_patch_pcurve_edge(
         return Ok(None);
     }
     let surface = spline_surface_basis(basis, id)?;
-    compose_bezier_patch(&surface, uv0, uv1, domain, id)
+    compose_bezier_patch(&surface, uv0, uv1, uv_weights, domain, id)
 }
 
 fn compose_bezier_patch(
     surface: &NurbsSurface,
     uv0: Point2,
     uv1: Point2,
+    uv_weights: [f64; 2],
     domain: std::ops::RangeInclusive<f64>,
     id: u64,
 ) -> Result<Option<NurbsCurve>, StepError> {
@@ -864,6 +878,26 @@ fn compose_bezier_patch(
             }
         }
     }
+    let weight_scale = uv_weights[0].abs().max(uv_weights[1].abs());
+    if uv_weights[0].is_sign_positive() != uv_weights[1].is_sign_positive()
+        || !weight_scale.is_finite()
+        || weight_scale == 0.
+    {
+        return Err(unsupported("rational p-curve weights change sign"));
+    }
+    let normalized = [
+        uv_weights[0].abs() / weight_scale,
+        uv_weights[1].abs() / weight_scale,
+    ];
+    for (index, point) in controls.iter_mut().enumerate() {
+        let factor = normalized[0].powi((degree - index) as i32) * normalized[1].powi(index as i32);
+        if !factor.is_finite() || factor == 0. {
+            return Err(unsupported("rational p-curve weights cannot be composed"));
+        }
+        for coordinate in point {
+            *coordinate *= factor;
+        }
+    }
     let controls = controls
         .into_iter()
         .map(|point| weighted3(point[0], point[1], point[2], point[3], id))
@@ -925,11 +959,14 @@ fn binomial(n: usize, k: usize) -> f64 {
 
 /// Split a straight UV path wherever it crosses a surface knot. Exact
 /// rational fractions keep simultaneous U/V crossings together and map each
-/// segment endpoint onto the source knot without a floating-point gap.
+/// segment endpoint onto the source knot without a floating-point gap. For
+/// unequal UV weights, convert each geometric crossing fraction to its source
+/// p-curve parameter before assigning the joined curve knot.
 fn multispan_pcurve_edge(
     basis: &Surface,
     uv0: Point2,
     uv1: Point2,
+    uv_weights: [f64; 2],
     domain: std::ops::RangeInclusive<f64>,
     id: u64,
 ) -> Result<Option<NurbsCurve>, StepError> {
@@ -956,6 +993,14 @@ fn multispan_pcurve_edge(
     let u1 = exact(uv1.x());
     let v0 = exact(uv0.y());
     let v1 = exact(uv1.y());
+    let w0 = exact(uv_weights[0]);
+    let w1 = exact(uv_weights[1]);
+    if w0 == zero
+        || w1 == zero
+        || uv_weights[0].is_sign_positive() != uv_weights[1].is_sign_positive()
+    {
+        return Err(unsupported("rational p-curve weights change sign"));
+    }
     let t_start = exact(*domain.start());
     let t_end = exact(*domain.end());
     let mut fractions = vec![zero.clone(), one.clone()];
@@ -980,12 +1025,23 @@ fn multispan_pcurve_edge(
                 .to_f64()
                 .ok_or_else(|| unsupported("p-curve knot crossing is not representable"))
         };
+    let source_position = |fraction: &BigRational| {
+        let denominator = &w1 * (&one - fraction) + &w0 * fraction;
+        let parameter = &w0 * fraction / &denominator;
+        let weight = &w0 * &w1 / denominator;
+        Ok::<_, StepError>((
+            value_at(&t_start, &t_end, &parameter)?,
+            weight
+                .to_f64()
+                .ok_or_else(|| unsupported("rational p-curve weight is not representable"))?,
+        ))
+    };
     let mut spans = Vec::with_capacity(fractions.len() - 1);
     for pair in fractions.windows(2) {
         let a = Point2::try_new(value_at(&u0, &u1, &pair[0])?, value_at(&v0, &v1, &pair[0])?)?;
         let b = Point2::try_new(value_at(&u0, &u1, &pair[1])?, value_at(&v0, &v1, &pair[1])?)?;
-        let start = value_at(&t_start, &t_end, &pair[0])?;
-        let end = value_at(&t_start, &t_end, &pair[1])?;
+        let (start, start_weight) = source_position(&pair[0])?;
+        let (end, end_weight) = source_position(&pair[1])?;
         if start >= end || a.x() == b.x() || a.y() == b.y() {
             return Err(unsupported(
                 "p-curve knot crossings are too close to compose",
@@ -995,8 +1051,9 @@ fn multispan_pcurve_edge(
             a.x().min(b.x())..=a.x().max(b.x()),
             a.y().min(b.y())..=a.y().max(b.y()),
         )?;
-        let curve = compose_bezier_patch(&patch, a, b, start..=end, id)?
-            .ok_or_else(|| unsupported("p-curve knot rectangle is not a Bezier patch"))?;
+        let curve =
+            compose_bezier_patch(&patch, a, b, [start_weight, end_weight], start..=end, id)?
+                .ok_or_else(|| unsupported("p-curve knot rectangle is not a Bezier patch"))?;
         spans.push(curve);
     }
     let degree = spans[0].degree();
@@ -2113,6 +2170,67 @@ mod tests {
     }
 
     #[test]
+    fn rational_linear_uv_pcurve_preserves_unequal_weight_parameterization() {
+        let polynomial = Surface::BsplineSurface(BsplineSurface::new(
+            (KnotVector::bezier_knot(2), KnotVector::bezier_knot(1)),
+            vec![
+                vec![TruckPoint3::new(0., 0., 0.), TruckPoint3::new(0., 2., 0.)],
+                vec![TruckPoint3::new(1., 0., 1.), TruckPoint3::new(1., 2., 2.)],
+                vec![TruckPoint3::new(2., 0., 0.), TruckPoint3::new(2., 2., 1.)],
+            ],
+        ));
+        let rational = Surface::NurbsSurface(TruckNurbsSurface::new(BsplineSurface::new(
+            (KnotVector::bezier_knot(2), KnotVector::bezier_knot(2)),
+            (0..3)
+                .map(|u| {
+                    (0..3)
+                        .map(|v| {
+                            let x = u as f64;
+                            let y = v as f64;
+                            let weight = 1. + 0.2 * x + 0.3 * y;
+                            Vector4::new(x * weight, y * weight, x * y * weight, weight)
+                        })
+                        .collect::<Vec<_>>()
+                })
+                .collect(),
+        )));
+        for (basis, degree) in [(polynomial, 3), (rational, 4)] {
+            for (a, b, weights) in [
+                ([0.1, 0.2], [0.9, 0.8], [1., 2.]),
+                ([0.9, 0.8], [0.1, 0.2], [2., 1.]),
+                ([0.1, 0.8], [0.9, 0.2], [-1., -3.]),
+            ] {
+                let uv = Curve2D::NurbsCurve(TruckNurbsCurve::new(BsplineCurve::new(
+                    KnotVector::from(vec![5., 5., 9., 9.]),
+                    vec![
+                        Vector3::new(a[0] * weights[0], a[1] * weights[0], weights[0]),
+                        Vector3::new(b[0] * weights[1], b[1] * weights[1], weights[1]),
+                    ],
+                )));
+                let source = Curve3D::ParameterCurve(StepParameterCurve::new(
+                    Box::new(uv),
+                    Box::new(basis.clone()),
+                ));
+                let curve = edge_curve(&source, 1).unwrap();
+                assert_eq!(curve.degree(), degree);
+                assert_eq!(curve.domain(), 5.0..=9.0);
+                for fraction in [0., 0.17, 0.5, 0.83, 1.] {
+                    let denominator = weights[0] * (1. - fraction) + weights[1] * fraction;
+                    let u = (a[0] * weights[0] * (1. - fraction) + b[0] * weights[1] * fraction)
+                        / denominator;
+                    let v = (a[1] * weights[0] * (1. - fraction) + b[1] * weights[1] * fraction)
+                        / denominator;
+                    let expected = basis.evaluate(u, v);
+                    let actual = curve.evaluate(5. + 4. * fraction).unwrap();
+                    assert!((actual.x() - expected.x).abs() < 1e-10);
+                    assert!((actual.y() - expected.y).abs() < 1e-10);
+                    assert!((actual.z() - expected.z).abs() < 1e-10);
+                }
+            }
+        }
+    }
+
+    #[test]
     fn multispan_rational_surface_diagonal_pcurves_cross_both_knot_directions() {
         let basis = Surface::NurbsSurface(TruckNurbsSurface::new(BsplineSurface::new(
             (
@@ -2208,6 +2326,70 @@ mod tests {
                 ..
             })
         ));
+    }
+
+    #[test]
+    fn rational_linear_uv_pcurve_crosses_surface_knots_at_source_parameters() {
+        let basis = Surface::NurbsSurface(TruckNurbsSurface::new(BsplineSurface::new(
+            (
+                KnotVector::from(vec![0., 0., 0., 0.25, 1., 1., 1.]),
+                KnotVector::from(vec![0., 0., 0., 0.75, 1., 1., 1.]),
+            ),
+            (0..4)
+                .map(|u| {
+                    (0..4)
+                        .map(|v| {
+                            let x = u as f64;
+                            let y = v as f64;
+                            let weight = 1. + 0.2 * x + 0.3 * y;
+                            Vector4::new(x * weight, y * weight, x * y * weight, weight)
+                        })
+                        .collect::<Vec<_>>()
+                })
+                .collect(),
+        )));
+        for (a, b, weights) in [
+            ([0.1, 0.2], [0.9, 0.8], [1., 2.]),
+            ([0.9, 0.8], [0.1, 0.2], [2., 1.]),
+            ([0., 0.5], [0.5, 1.], [1., 2.]),
+        ] {
+            let source = Curve3D::ParameterCurve(StepParameterCurve::new(
+                Box::new(Curve2D::NurbsCurve(TruckNurbsCurve::new(
+                    BsplineCurve::new(
+                        KnotVector::from(vec![5., 5., 9., 9.]),
+                        vec![
+                            Vector3::new(a[0] * weights[0], a[1] * weights[0], weights[0]),
+                            Vector3::new(b[0] * weights[1], b[1] * weights[1], weights[1]),
+                        ],
+                    ),
+                ))),
+                Box::new(basis.clone()),
+            ));
+            let curve = edge_curve(&source, 1).unwrap();
+            assert_eq!(curve.degree(), 4);
+            assert_eq!(curve.domain(), 5.0..=9.0);
+            let mut parameters = vec![0., 0.17, 0.5, 0.83, 1.];
+            for (knot, from, to) in [(0.25, a[0], b[0]), (0.75, a[1], b[1])] {
+                let position = (knot - from) / (to - from);
+                if (0.0..1.0).contains(&position) {
+                    let t = weights[0] * position
+                        / (weights[1] * (1. - position) + weights[0] * position);
+                    parameters.extend([t - 1e-6, t, t + 1e-6]);
+                }
+            }
+            for fraction in parameters {
+                let denominator = weights[0] * (1. - fraction) + weights[1] * fraction;
+                let u = (a[0] * weights[0] * (1. - fraction) + b[0] * weights[1] * fraction)
+                    / denominator;
+                let v = (a[1] * weights[0] * (1. - fraction) + b[1] * weights[1] * fraction)
+                    / denominator;
+                let expected = basis.evaluate(u, v);
+                let actual = curve.evaluate(5. + 4. * fraction).unwrap();
+                assert!((actual.x() - expected.x).abs() < 1e-9);
+                assert!((actual.y() - expected.y).abs() < 1e-9);
+                assert!((actual.z() - expected.z).abs() < 1e-9);
+            }
+        }
     }
 
     #[test]
@@ -2331,13 +2513,16 @@ mod tests {
                 ))),
                 Box::new(basis.clone()),
             ));
-            assert!(matches!(
-                edge_curve(&unequal_weight_iso, 1),
-                Err(StepError::UnsupportedNativeShell {
-                    reason: "3D edge p-curve basis is not affine",
-                    ..
-                })
-            ));
+            let curve = edge_curve(&unequal_weight_iso, 1).unwrap();
+            assert_eq!(curve.degree(), 3);
+            for t in [0., 0.17, 0.5, 0.83, 1.] {
+                let uv_fraction = 2. * t / (1. + t);
+                let expected = basis.evaluate(0.2 + 0.6 * uv_fraction, 0.25);
+                let actual = curve.evaluate(t).unwrap();
+                assert!((actual.x() - expected.x).abs() < 1e-11);
+                assert!((actual.y() - expected.y).abs() < 1e-11);
+                assert!((actual.z() - expected.z).abs() < 1e-11);
+            }
 
             let diagonal = Curve3D::ParameterCurve(StepParameterCurve::new(
                 Box::new(Curve2D::Line(Line(

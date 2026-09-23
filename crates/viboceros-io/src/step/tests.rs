@@ -274,8 +274,8 @@ fn nurbs_brep_step_export_keeps_curved_edges_and_surface_shape() {
 fn native_step_imports_diagonal_pcurve_on_spline_patches() {
     use monstertruck::meshing::prelude::ParametricSurface;
     use monstertruck::modeling::{
-        BsplineCurve, BsplineSurface, KnotVector, Line, NurbsSurface as TruckNurbsSurface,
-        Point2 as TruckPoint2, Vector4,
+        BsplineCurve, BsplineSurface, KnotVector, Line, NurbsCurve as TruckNurbsCurve,
+        NurbsSurface as TruckNurbsSurface, Point2 as TruckPoint2, Vector3, Vector4,
     };
     use monstertruck::step::load::step_geometry::{Curve2D, Curve3D, StepParameterCurve, Surface};
     use monstertruck::step::save::StepModels;
@@ -283,7 +283,7 @@ fn native_step_imports_diagonal_pcurve_on_spline_patches() {
         CompressedEdge, CompressedEdgeUse, CompressedTrimmedFace, CompressedTrimmedShell,
     };
     let knots = || (KnotVector::bezier_knot(1), KnotVector::bezier_knot(1));
-    for (surface, diagonal_degree) in [
+    for (surface, diagonal_degree, diagonal_weights) in [
         (
             Surface::BsplineSurface(BsplineSurface::new(
                 knots(),
@@ -293,6 +293,7 @@ fn native_step_imports_diagonal_pcurve_on_spline_patches() {
                 ],
             )),
             2,
+            [1., 1.],
         ),
         (
             Surface::NurbsSurface(TruckNurbsSurface::new(BsplineSurface::new(
@@ -303,6 +304,7 @@ fn native_step_imports_diagonal_pcurve_on_spline_patches() {
                 ],
             ))),
             2,
+            [1., 2.],
         ),
         (
             Surface::BsplineSurface(BsplineSurface::new(
@@ -314,6 +316,7 @@ fn native_step_imports_diagonal_pcurve_on_spline_patches() {
                 ],
             )),
             3,
+            [1., 2.],
         ),
         (
             Surface::NurbsSurface(TruckNurbsSurface::new(BsplineSurface::new(
@@ -332,6 +335,7 @@ fn native_step_imports_diagonal_pcurve_on_spline_patches() {
                     .collect(),
             ))),
             4,
+            [2., 1.],
         ),
         (
             Surface::BsplineSurface(BsplineSurface::new(
@@ -348,6 +352,7 @@ fn native_step_imports_diagonal_pcurve_on_spline_patches() {
                     .collect(),
             )),
             3,
+            [1., 2.],
         ),
         (
             Surface::NurbsSurface(TruckNurbsSurface::new(BsplineSurface::new(
@@ -369,6 +374,7 @@ fn native_step_imports_diagonal_pcurve_on_spline_patches() {
                     .collect(),
             ))),
             4,
+            [1., 2.],
         ),
         (
             Surface::BsplineSurface(BsplineSurface::new(
@@ -389,6 +395,7 @@ fn native_step_imports_diagonal_pcurve_on_spline_patches() {
                     .collect(),
             )),
             4,
+            [1., 1.],
         ),
     ] {
         let uv = [
@@ -406,6 +413,26 @@ fn native_step_imports_diagonal_pcurve_on_spline_patches() {
                 Box::new(surface.clone()),
             ))
         };
+        let diagonal_uv = || {
+            if diagonal_weights[0] == diagonal_weights[1] {
+                Curve2D::BsplineCurve(BsplineCurve::new(
+                    KnotVector::from(vec![5., 5., 9., 9.]),
+                    vec![uv[0], uv[2]],
+                ))
+            } else {
+                Curve2D::NurbsCurve(TruckNurbsCurve::new(BsplineCurve::new(
+                    KnotVector::from(vec![5., 5., 9., 9.]),
+                    vec![
+                        Vector3::new(0., 0., diagonal_weights[0]),
+                        Vector3::new(
+                            diagonal_weights[1],
+                            diagonal_weights[1],
+                            diagonal_weights[1],
+                        ),
+                    ],
+                )))
+            }
+        };
         let edges = vec![
             CompressedEdge {
                 vertices: (0, 1),
@@ -417,10 +444,7 @@ fn native_step_imports_diagonal_pcurve_on_spline_patches() {
             },
             CompressedEdge {
                 vertices: (0, 2),
-                curve: parameter_curve(Curve2D::BsplineCurve(BsplineCurve::new(
-                    KnotVector::from(vec![5., 5., 9., 9.]),
-                    vec![uv[0], uv[2]],
-                ))),
+                curve: parameter_curve(diagonal_uv()),
             },
         ];
         let uses = [
@@ -433,7 +457,13 @@ fn native_step_imports_diagonal_pcurve_on_spline_patches() {
             index,
             orientation,
             trim_curve: Some(StepParameterCurve::new(
-                Box::new(Curve2D::Line(Line(a, b))),
+                Box::new(
+                    if index == 2 && diagonal_weights[0] != diagonal_weights[1] {
+                        diagonal_uv()
+                    } else {
+                        Curve2D::Line(Line(a, b))
+                    },
+                ),
                 Box::new(surface.clone()),
             )),
         })
@@ -460,7 +490,9 @@ fn native_step_imports_diagonal_pcurve_on_spline_patches() {
         assert_eq!(diagonal.domain(), 5.0..=9.0);
         for fraction in [0., 0.17, 0.5, 0.83, 1.] {
             let actual = diagonal.evaluate(5. + 4. * fraction).unwrap();
-            let expected = surface.evaluate(fraction, fraction);
+            let position = diagonal_weights[1] * fraction
+                / (diagonal_weights[0] * (1. - fraction) + diagonal_weights[1] * fraction);
+            let expected = surface.evaluate(position, position);
             assert!((actual.x() - expected.x).abs() < 1e-11);
             assert!((actual.y() - expected.y).abs() < 1e-11);
             assert!((actual.z() - expected.z).abs() < 1e-11);
