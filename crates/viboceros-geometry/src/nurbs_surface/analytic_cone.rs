@@ -124,6 +124,38 @@ impl NurbsSurface {
             self.knots_v.clone(),
         )?))
     }
+
+    /// Joins corresponding circular control rows with an exact ruled patch.
+    /// `row` selects the apex-side or base-side row in V order.
+    pub fn try_cone_offset_cap(
+        &self,
+        other: &Self,
+        row: usize,
+    ) -> Result<Option<Self>, GeometryError> {
+        if row >= 2
+            || self.degree_u != 2
+            || self.degree_v != 1
+            || self.control_point_count_u != 9
+            || self.control_point_count_v != 2
+            || self.control_point_count_u != other.control_point_count_u
+            || self.control_point_count_v != other.control_point_count_v
+            || self.knots_u != other.knots_u
+        {
+            return Ok(None);
+        }
+        let mut controls = Vec::with_capacity(18);
+        controls.extend_from_slice(&self.control_points[row * 9..row * 9 + 9]);
+        controls.extend_from_slice(&other.control_points[row * 9..row * 9 + 9]);
+        Ok(Some(Self::try_new_rational(
+            2,
+            1,
+            9,
+            2,
+            controls,
+            self.knots_u.clone(),
+            vec![0.0, 0.0, 1.0, 1.0],
+        )?))
+    }
 }
 
 #[cfg(test)]

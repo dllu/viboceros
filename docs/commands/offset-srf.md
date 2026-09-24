@@ -35,8 +35,9 @@ Rhino's offset-face topology. Offsets that collapse or invert the cylinder
 are rejected.
 Canonical cones preserve their rational weights and parameter domains. Their
 open offsets are exact ruled surfaces at the requested normal distance, and
-two-sided open offsets create one two-face B-rep. Solid cone offsets remain
-unsupported.
+two-sided open offsets create one two-face B-rep. Solid cone offsets join the
+source and offset walls with exact ruled caps into a four-face shell. The apex
+cap retains a singular vertex for a one-sided offset; both sides use two rims.
 Canonical ring tori retain their major radius and source parameter domains
 while changing the minor radius. Open two-sided offsets create one B-rep
 containing two closed faces; solid offsets reverse the inner torus to make a
@@ -73,4 +74,6 @@ The [cone offset probe](../../tools/rhino_oracle/fixtures/offset_cone_face_geome
 and [Rhino observations](../../tools/rhino_oracle/observations/offset_cone_face_geometry.json)
 cover both signed directions and a two-sided open result. A separate
 [solid probe](../../tools/rhino_oracle/fixtures/offset_cone_face_solid_geometry.json)
-records the four-face shell topology for future implementation.
+and [observations](../../tools/rhino_oracle/observations/offset_cone_face_solid_geometry.json)
+record one-sided positive and negative shells and a two-sided shell, including
+their exact topology and volume.

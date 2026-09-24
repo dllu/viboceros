@@ -5,7 +5,7 @@
   "protocol_version": 1,
   "results": [
     {
-      "elapsed_ns": 12351990,
+      "elapsed_ns": 13618469,
       "id": "cone-positive-solid",
       "value": {
         "admitted_volume": 6.252635399278535,
@@ -257,7 +257,259 @@
       }
     },
     {
-      "elapsed_ns": 18226624,
+      "elapsed_ns": 17250061,
+      "id": "cone-negative-solid",
+      "value": {
+        "admitted_volume": 5.074538139644014,
+        "bbox_max": [
+          3.0,
+          4.0,
+          6.1386750490563085
+        ],
+        "bbox_min": [
+          -1.0,
+          0.0,
+          3.0
+        ],
+        "created": true,
+        "edges": 7,
+        "face_samples": [
+          {
+            "domain_u": [
+              0.0,
+              12.566370614359172
+            ],
+            "domain_v": [
+              0.0,
+              3.0
+            ],
+            "normal": [
+              -0.8320502943378437,
+              -2.0296586500993702e-15,
+              -0.554700196225229
+            ],
+            "point": [
+              0.2080125735844609,
+              2.0,
+              4.638675049056308
+            ],
+            "reversed": false
+          },
+          {
+            "domain_u": [
+              0.0,
+              12.566370614359172
+            ],
+            "domain_v": [
+              0.0,
+              3.0
+            ],
+            "normal": [
+              0.8320502943378437,
+              6.840272896996756e-16,
+              0.5547001962252291
+            ],
+            "point": [
+              0.0,
+              2.0,
+              4.5
+            ],
+            "reversed": true
+          },
+          {
+            "domain_u": [
+              0.0,
+              12.566370614359172
+            ],
+            "domain_v": [
+              0.0,
+              1.0
+            ],
+            "normal": [
+              0.5547001962252287,
+              9.20750307616101e-15,
+              -0.8320502943378439
+            ],
+            "point": [
+              1.1040062867922305,
+              2.0,
+              3.0693375245281533
+            ],
+            "reversed": true
+          },
+          {
+            "domain_u": [
+              -12.566370614359172,
+              0.0
+            ],
+            "domain_v": [
+              0.0,
+              1.0
+            ],
+            "normal": [
+              0.5547001962252299,
+              3.96852591560882e-16,
+              -0.832050294337843
+            ],
+            "point": [
+              -0.8959937132077695,
+              2.0000000000000004,
+              6.069337524528153
+            ],
+            "reversed": true
+          }
+        ],
+        "faces": 4,
+        "solid": true,
+        "topology": {
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              3
+            ]
+          ],
+          "faces": [
+            [
+              {
+                "trims": [
+                  {
+                    "edge": 2,
+                    "reversed": false,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 0,
+                    "reversed": false,
+                    "type": "Seam"
+                  },
+                  {
+                    "edge": 1,
+                    "reversed": false,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 0,
+                    "reversed": true,
+                    "type": "Seam"
+                  }
+                ],
+                "type": "Outer"
+              }
+            ],
+            [
+              {
+                "trims": [
+                  {
+                    "edge": null,
+                    "reversed": false,
+                    "type": "Singular"
+                  },
+                  {
+                    "edge": 3,
+                    "reversed": false,
+                    "type": "Seam"
+                  },
+                  {
+                    "edge": 4,
+                    "reversed": false,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 3,
+                    "reversed": true,
+                    "type": "Seam"
+                  }
+                ],
+                "type": "Outer"
+              }
+            ],
+            [
+              {
+                "trims": [
+                  {
+                    "edge": 2,
+                    "reversed": false,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 5,
+                    "reversed": false,
+                    "type": "Seam"
+                  },
+                  {
+                    "edge": null,
+                    "reversed": false,
+                    "type": "Singular"
+                  },
+                  {
+                    "edge": 5,
+                    "reversed": true,
+                    "type": "Seam"
+                  }
+                ],
+                "type": "Outer"
+              }
+            ],
+            [
+              {
+                "trims": [
+                  {
+                    "edge": 1,
+                    "reversed": false,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 6,
+                    "reversed": false,
+                    "type": "Seam"
+                  },
+                  {
+                    "edge": 4,
+                    "reversed": true,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 6,
+                    "reversed": true,
+                    "type": "Seam"
+                  }
+                ],
+                "type": "Outer"
+              }
+            ]
+          ]
+        },
+        "valid": true,
+        "vertices": 4,
+        "volume": -5.074538139644014
+      }
+    },
+    {
+      "elapsed_ns": 26443481,
       "id": "cone-both-solid",
       "value": {
         "admitted_volume": 11.327173538922558,

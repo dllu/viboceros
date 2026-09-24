@@ -463,6 +463,42 @@ pub struct Brep {
 }
 
 impl Brep {
+    /// Coalesces coincident topological vertices while retaining all edge and
+    /// trim geometry. Useful after joining faces with separate singular rims.
+    pub fn try_weld_coincident_vertices(
+        &self,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let mut vertices = Vec::<BrepVertex>::new();
+        let mut remap = Vec::with_capacity(self.vertices.len());
+        for vertex in &self.vertices {
+            let existing = vertices.iter().position(|candidate| {
+                candidate
+                    .point()
+                    .distance_to(vertex.point())
+                    .is_ok_and(|distance| distance <= tolerance.absolute())
+            });
+            let index = existing.unwrap_or_else(|| {
+                let index = vertices.len();
+                vertices.push(*vertex);
+                index
+            });
+            remap.push(index);
+        }
+        let mut edges = self.edges.clone();
+        for edge in &mut edges {
+            edge.vertices = edge.vertices.map(|index| remap[index]);
+        }
+        let mut faces = self.faces.clone();
+        for face in &mut faces {
+            for face_loop in &mut face.loops {
+                for trim in &mut face_loop.trims {
+                    trim.vertices = trim.vertices.map(|index| remap[index]);
+                }
+            }
+        }
+        Self::try_new(vertices, edges, faces, tolerance)
+    }
     pub fn try_new(
         vertices: Vec<BrepVertex>,
         edges: Vec<BrepEdge>,

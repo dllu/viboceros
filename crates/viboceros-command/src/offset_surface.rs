@@ -459,15 +459,12 @@ fn conical_offset(
         }
         _ => return Ok(None),
     };
-    if surface.canonical_cone(tolerance)?.is_none() {
+    let Some((_, _, height)) = surface.canonical_cone(tolerance)? else {
         return Ok(None);
-    }
+    };
     if let Geometry::Brep(brep) = geometry
         && !brep.faces()[0].is_untrimmed(tolerance)?
     {
-        return Ok(None);
-    }
-    if options.solid {
         return Ok(None);
     }
     let shifted = |distance: Real| -> Result<NurbsSurface, CommandError> {
@@ -475,6 +472,42 @@ fn conical_offset(
             .try_offset_canonical_cone(if reversed { -distance } else { distance }, tolerance)?
             .expect("canonical cone was checked above"))
     };
+    if options.solid {
+        let positive = shifted(options.distance)?;
+        let negative = if options.both_sides {
+            shifted(-options.distance)?
+        } else {
+            surface.clone()
+        };
+        let apex_row = usize::from(height < 0.0);
+        let base_row = 1 - apex_row;
+        let apex_cap = negative
+            .try_cone_offset_cap(&positive, apex_row)?
+            .expect("matching offset cone nets");
+        let base_cap = negative
+            .try_cone_offset_cap(&positive, base_row)?
+            .expect("matching offset cone nets");
+        let parts = [positive, negative, apex_cap, base_cap]
+            .into_iter()
+            .map(|patch| Brep::try_surface_face(patch, tolerance))
+            .collect::<Result<Vec<_>, _>>()?;
+        let joined = viboceros_geometry::join_breps(
+            &parts.iter().collect::<Vec<_>>(),
+            tolerance.absolute(),
+            tolerance,
+        )?;
+        if joined.len() != 1 {
+            return Err(CommandError::OffsetSurfaceRequiresPlanarFaces);
+        }
+        return Ok(Some(Geometry::Brep(
+            joined
+                .into_iter()
+                .next()
+                .unwrap()
+                .brep
+                .try_weld_coincident_vertices(tolerance)?,
+        )));
+    }
     if options.both_sides {
         let mut positive = Brep::try_surface_face(shifted(options.distance)?, tolerance)?;
         let mut negative = Brep::try_surface_face(shifted(-options.distance)?, tolerance)?;
@@ -1321,6 +1354,92 @@ mod tests {
         assert!(offset.faces()[0].is_reversed());
         let apex = offset.faces()[0].surface().control_points()[0].point();
         assert!((apex.x() - 0.791987426415539).abs() < 1e-12);
+    }
+
+    #[test]
+    fn exact_cone_solid_offsets_match_rhino_shell_topology_and_volume() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        document
+            .add_geometry(Geometry::NurbsSurface(
+                NurbsSurface::try_cone(frame, 2.0, 3.0).unwrap(),
+            ))
+            .unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        for (command, edges, volume) in [
+            (
+                "OffsetSrf 0.25 Solid=Yes DeleteInput=Yes",
+                7,
+                6.252635399278535,
+            ),
+            (
+                "OffsetSrf -0.25 Solid=Yes DeleteInput=Yes",
+                7,
+                5.074538139644014,
+            ),
+            (
+                "OffsetSrf 0.25 Solid=Yes BothSides=Yes DeleteInput=Yes",
+                8,
+                11.327173538922558,
+            ),
+        ] {
+            registry.execute(&mut document, command).unwrap();
+            let Geometry::Brep(shell) = document.objects().next().unwrap().geometry() else {
+                panic!("solid cone offset is a B-rep")
+            };
+            assert_eq!(
+                (
+                    shell.faces().len(),
+                    shell.edges().len(),
+                    shell.vertices().len()
+                ),
+                (4, edges, 4)
+            );
+            assert!((shell.signed_volume(document.tolerance()).unwrap() - volume).abs() < 1e-6);
+            registry.execute(&mut document, "Undo").unwrap();
+            registry.execute(&mut document, "SelAll").unwrap();
+        }
+    }
+
+    #[test]
+    fn negative_height_cone_solid_offset_closes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Vector3::try_new(1.0, 2.0, 3.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        document
+            .add_geometry(Geometry::NurbsSurface(
+                NurbsSurface::try_cone(frame, 2.0, -3.0).unwrap(),
+            ))
+            .unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry
+            .execute(&mut document, "OffsetSrf 0.25 Solid=Yes DeleteInput=Yes")
+            .unwrap();
+        let Geometry::Brep(shell) = document.objects().next().unwrap().geometry() else {
+            panic!("solid cone offset is a B-rep")
+        };
+        assert_eq!(
+            (
+                shell.faces().len(),
+                shell.edges().len(),
+                shell.vertices().len()
+            ),
+            (4, 7, 4)
+        );
+        assert!(
+            (shell.signed_volume(document.tolerance()).unwrap() - 6.252635399278535).abs() < 1e-6
+        );
     }
 
     #[test]
