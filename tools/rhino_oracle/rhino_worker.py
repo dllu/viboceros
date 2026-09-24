@@ -5444,8 +5444,12 @@ def _execute(operation, iterations, tolerance):
     if kind == "curve_offset_geometry":
         return _curve_offset_geometry(operation, iterations, tolerance)
     if kind == "curve_fillet_corners_geometry":
-        source = Rhino.Geometry.PolylineCurve(
-            [_point(vertex) for vertex in operation["vertices"]]
+        source = (
+            _join_close_input(operation["curve"])
+            if "curve" in operation
+            else Rhino.Geometry.PolylineCurve(
+                [_point(vertex) for vertex in operation["vertices"]]
+            )
         )
         radius = _finite(operation["radius"], "fillet radius")
 

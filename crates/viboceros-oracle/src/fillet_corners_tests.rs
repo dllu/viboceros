@@ -12,7 +12,7 @@ fn fillet_corners_geometry_matches_saved_rhino_samples() {
     ))
     .unwrap();
     assert_eq!(observed["engine"], "rhino");
-    assert_eq!(response.results.len(), 4);
+    assert_eq!(response.results.len(), 7);
     for (row, reference) in response
         .results
         .into_iter()

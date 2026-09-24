@@ -495,7 +495,10 @@ pub enum Operation {
     },
     CurveFilletCornersGeometry {
         id: String,
-        vertices: Vec<[f64; 3]>,
+        #[serde(default)]
+        vertices: Option<Vec<[f64; 3]>>,
+        #[serde(default)]
+        curve: Option<curve_join_close::CurveInput>,
         radius: f64,
     },
     NonManifoldSelection {
@@ -2320,18 +2323,34 @@ fn execute(
             curve_offset::run(fixture, iterations, tolerance)?
         }
         Operation::CurveFilletCornersGeometry {
-            vertices, radius, ..
+            vertices,
+            curve,
+            radius,
+            ..
         } => {
-            let source = Polyline3::try_new(
-                vertices
-                    .iter()
-                    .copied()
-                    .map(point)
-                    .collect::<Result<Vec<_>, _>>()?,
-                tolerance,
-            )?;
-            let (curve, elapsed) =
-                measure(iterations, || source.try_fillet_corners(*radius, tolerance))?;
+            let source = match (vertices, curve) {
+                (Some(vertices), None) => viboceros_geometry::Curve3::Polyline(Polyline3::try_new(
+                    vertices
+                        .iter()
+                        .copied()
+                        .map(point)
+                        .collect::<Result<Vec<_>, _>>()?,
+                    tolerance,
+                )?),
+                (None, Some(curve)) => curve.geometry()?,
+                _ => return Err(ProbeError::FixtureInvariant("expected one fillet source")),
+            };
+            let (curve, elapsed) = measure(iterations, || match &source {
+                viboceros_geometry::Curve3::Polyline(polyline) => {
+                    polyline.try_fillet_corners(*radius, tolerance)
+                }
+                viboceros_geometry::Curve3::PolyCurve(polycurve) => {
+                    polycurve.try_fillet_corners(*radius, tolerance)
+                }
+                _ => Err(GeometryError::InvalidPolyCurve {
+                    context: "FilletCorners requires a polyline or polycurve",
+                }),
+            })?;
             let samples = CurveRef::PolyCurve(&curve)
                 .sample_equal_length_points(64, true, tolerance)?
                 .into_iter()

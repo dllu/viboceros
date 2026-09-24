@@ -1,4 +1,4 @@
-//! Rounds every corner of selected polylines with exact circular arcs.
+//! Rounds corners of selected polylines and straight polycurves with exact arcs.
 
 use super::*;
 
@@ -26,23 +26,29 @@ impl Command for FilletCornersCommand {
         let radius = parse_finite_real(value)?;
         let mut replacements = Vec::new();
         for object in document.selected_objects() {
-            let Geometry::Polyline(polyline) = object.geometry() else {
-                return Err(CommandError::FilletCornersRequiresPolylines);
+            let curve = match object.geometry() {
+                Geometry::Polyline(polyline) => {
+                    polyline.try_fillet_corners(radius, document.tolerance())?
+                }
+                Geometry::PolyCurve(polycurve) => {
+                    polycurve.try_fillet_corners(radius, document.tolerance())?
+                }
+                _ => return Err(CommandError::FilletCornersRequiresStraightCurves),
             };
-            let curve = polyline.try_fillet_corners(radius, document.tolerance())?;
             replacements.push((object.id(), Geometry::PolyCurve(curve)));
         }
         if replacements.is_empty() {
             return Err(CommandError::NoObjectsSelected);
         }
         let count = document.replace_object_geometries(replacements)?;
-        Ok(format!("Rounded corners of {count} polyline(s)"))
+        Ok(format!("Rounded corners of {count} curve(s)"))
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use viboceros_geometry::{CurveSegment3, PolyCurve3};
 
     #[test]
     fn rounds_selected_open_and_closed_polylines_in_one_undo_step() {
@@ -96,5 +102,40 @@ mod tests {
                 .is_err()
         );
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    }
+
+    #[test]
+    fn selected_straight_polycurve_is_replaced_and_undoable() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+        let source = PolyCurve3::try_new(vec![
+            CurveSegment3::Line(
+                LineSegment::try_new(p(0., 0.), p(4., 0.), Tolerance::DEFAULT).unwrap(),
+            ),
+            CurveSegment3::Polyline(
+                Polyline3::try_new(vec![p(4., 0.), p(4., 4.), p(8., 4.)], Tolerance::DEFAULT)
+                    .unwrap(),
+            ),
+        ])
+        .unwrap();
+        let id = document
+            .add_geometry(Geometry::PolyCurve(source.clone()))
+            .unwrap();
+        document
+            .select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "FilletCorners 0.5")
+            .unwrap();
+        let Geometry::PolyCurve(result) = document.object(id).unwrap().geometry() else {
+            panic!("a straight polycurve remains a polycurve")
+        };
+        assert_eq!(result.segments().len(), 5);
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(id).unwrap().geometry(),
+            &Geometry::PolyCurve(source)
+        );
     }
 }
