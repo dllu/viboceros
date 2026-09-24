@@ -244,6 +244,10 @@ enum InteractiveCommand {
     Sphere {
         center: Option<Point3>,
     },
+    SelVolumeSphere {
+        center: Option<Point3>,
+        mode: RectSelectionMode,
+    },
     Ellipsoid {
         points: [Option<Point3>; 3],
     },
@@ -488,6 +492,7 @@ impl InteractiveCommand {
             Self::Distance { .. } => "Distance",
             Self::Circle { .. } => "Circle",
             Self::Sphere { .. } => "Sphere",
+            Self::SelVolumeSphere { .. } => "SelVolumeSphere",
             Self::Ellipsoid { .. } => "Ellipsoid",
             Self::Arc { .. } => "Arc",
             Self::Ellipse { .. } => "Ellipse",
@@ -637,6 +642,12 @@ impl InteractiveCommand {
             Self::Sphere { center: Some(_) } => {
                 "Sphere: pick a point on the sphere in the viewport (Esc to cancel)"
             }
+            Self::SelVolumeSphere { center: None, .. } => {
+                "SelVolumeSphere: pick the center in the viewport (Esc to cancel)"
+            }
+            Self::SelVolumeSphere {
+                center: Some(_), ..
+            } => "SelVolumeSphere: pick a radius point in the viewport (Esc to cancel)",
             Self::Ellipsoid { points } => match points {
                 [None, _, _] => "Ellipsoid: pick the center in the viewport (Esc to cancel)",
                 [Some(_), None, _] => {
@@ -1106,6 +1117,7 @@ impl InteractiveCommand {
             | Self::Distance { start: None, .. }
             | Self::Circle { center: None }
             | Self::Sphere { center: None }
+            | Self::SelVolumeSphere { center: None, .. }
             | Self::Ellipsoid {
                 points: [None, _, _],
             }
@@ -1184,6 +1196,7 @@ impl InteractiveCommand {
             | Self::Distance { start, .. }
             | Self::Circle { center: start }
             | Self::Sphere { center: start }
+            | Self::SelVolumeSphere { center: start, .. }
             | Self::Rectangle { first: start }
             | Self::Box { base: start, .. }
             | Self::PointGrid { base: start, .. }
@@ -3156,6 +3169,27 @@ impl VibocerosApp {
                 rotate,
                 z_offset,
             }
+        } else if normalized == "selvolumesphere" {
+            let mode = match arguments.as_slice() {
+                [] => RectSelectionMode::Crossing,
+                [option] => {
+                    let Some((name, value)) = option.split_once('=') else {
+                        return false;
+                    };
+                    if !name
+                        .trim_start_matches('_')
+                        .eq_ignore_ascii_case("SelectionMode")
+                    {
+                        return false;
+                    }
+                    let Some(mode) = RectSelectionMode::parse(value.trim_start_matches('_')) else {
+                        return false;
+                    };
+                    mode
+                }
+                _ => return false,
+            };
+            InteractiveCommand::SelVolumeSphere { center: None, mode }
         } else {
             if !arguments.is_empty() {
                 return false;
@@ -3472,6 +3506,39 @@ impl VibocerosApp {
                     "Sphere {} {}",
                     format_model_point(center),
                     format_model_point(point)
+                ));
+            }
+            InteractiveCommand::SelVolumeSphere { center: None, mode } => {
+                let command = InteractiveCommand::SelVolumeSphere {
+                    center: Some(point),
+                    mode,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Center: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::SelVolumeSphere {
+                center: Some(center),
+                mode,
+            } => {
+                let Ok(radius) = center.distance_to(point) else {
+                    self.push_log("Error: sphere radius is not finite".to_owned());
+                    return false;
+                };
+                if radius <= 0.0 {
+                    self.push_log("Error: sphere radius must be positive".to_owned());
+                    return false;
+                }
+                let mode_name = match mode {
+                    RectSelectionMode::Automatic | RectSelectionMode::Crossing => "Crossing",
+                    RectSelectionMode::Window => "Window",
+                    RectSelectionMode::InvertWindow => "InvertWindow",
+                    RectSelectionMode::InvertCrossing => "InvertCrossing",
+                };
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "SelVolumeSphere {} {radius} SelectionMode={mode_name}",
+                    format_model_point(center),
                 ));
             }
             InteractiveCommand::Ellipsoid { mut points } => {

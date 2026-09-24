@@ -145,7 +145,7 @@ pub enum RectSelectionMode {
 }
 
 impl RectSelectionMode {
-    fn parse(value: &str) -> Option<Self> {
+    pub fn parse(value: &str) -> Option<Self> {
         if keyword(value, "Window") {
             Some(Self::Window)
         } else if keyword(value, "Crossing") {

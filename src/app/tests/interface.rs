@@ -492,6 +492,50 @@ fn boundary_command_accepts_preselected_closed_curve() {
 }
 
 #[test]
+fn volume_sphere_picks_model_points_and_accepts_mode_changes() {
+    let mut app = test_app();
+    enter(&mut app, "Point 0,0,0");
+    enter(&mut app, "Point 5,0,0");
+    let ids = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    let undo = app.document.undo_label().map(str::to_owned);
+    enter(&mut app, "SelVolumeSphere SelectionMode=Window");
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::SelVolumeSphere {
+            center: None,
+            mode: RectSelectionMode::Window
+        })
+    ));
+    assert!(app.accept_drafting_point(Point3::try_new(0.0, 0.0, 0.0).unwrap()));
+    app.command_input = "SelectionMode=InvertWindow".into();
+    app.run_command_input();
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::SelVolumeSphere {
+            center: Some(_),
+            mode: RectSelectionMode::InvertWindow
+        })
+    ));
+    assert!(app.accept_drafting_point(Point3::try_new(1.0, 0.0, 0.0).unwrap()));
+    assert!(app.active_command.is_none());
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![ids[1]]
+    );
+    assert_eq!(app.document.undo_label(), undo.as_deref());
+
+    enter(&mut app, "SelVolumeSphere 0,0,0 1 SelectionMode=Window");
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![ids[0]]
+    );
+}
+
+#[test]
 fn typed_window_commands_force_mode_for_one_drag_and_preserve_model_history() {
     let mut app = test_app();
     enter(&mut app, "Point 0,0,0");

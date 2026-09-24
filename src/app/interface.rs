@@ -18,6 +18,10 @@ impl VibocerosApp {
         if self.selection_window_override.is_none()
             && self.circular_selection.is_none()
             && self.boundary_selection.is_none()
+            && !matches!(
+                self.active_command,
+                Some(InteractiveCommand::SelVolumeSphere { .. })
+            )
         {
             return false;
         }
@@ -31,19 +35,13 @@ impl VibocerosApp {
         ) {
             return false;
         }
-        let command_name = if self.boundary_selection.is_some() {
-            "SelBoundary"
-        } else if self.circular_selection.is_some() {
-            "SelCircular"
+        let value = if name.eq_ignore_ascii_case("SelectionMode") {
+            input.split_once('=').map(|(_, value)| value).unwrap_or("")
         } else {
-            "SelRectangular"
+            input
         };
-        match interface::parse(&format!("{command_name} {input}")) {
-            Some(Ok(
-                InterfaceCommand::SelRectangular(mode)
-                | InterfaceCommand::SelCircular(mode)
-                | InterfaceCommand::SelBoundary(mode),
-            )) => {
+        match RectSelectionMode::parse(value.trim_start_matches('_')) {
+            Some(mode) => {
                 if let Some(state) = self.circular_selection.as_mut() {
                     match state {
                         CircularSelectionState::PickCenter(current)
@@ -53,6 +51,11 @@ impl VibocerosApp {
                     }
                 } else if self.boundary_selection.is_some() {
                     self.boundary_selection = Some(mode);
+                } else if let Some(InteractiveCommand::SelVolumeSphere { center, .. }) =
+                    self.active_command
+                {
+                    self.active_command =
+                        Some(InteractiveCommand::SelVolumeSphere { center, mode });
                 } else {
                     self.selection_window_override = Some(mode);
                 }
