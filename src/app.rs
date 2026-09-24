@@ -23,6 +23,8 @@ use viboceros_geometry::{
 };
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
+#[cfg(test)]
+use crate::viewport::GridSettings;
 use crate::viewport::{
     CircularSelectionInput, DisplayMode, DraftingInput, EndMarkerKind, EndMarkerOptions,
     FenceSelectionInput, SelectionChoice, SelectionClick, SelectionWindow, ViewKind, Viewport,
@@ -129,6 +131,7 @@ mod domain;
 mod edge_commands;
 mod evaluate_point;
 mod evaluate_uv;
+mod grid_settings;
 mod group_prompt;
 mod interface;
 mod intersect_two_sets;
@@ -1428,6 +1431,8 @@ pub struct VibocerosApp {
     zoom_window_pending: bool,
     zoom_factor_pending: Option<usize>,
     snap_size_pending: Option<(viboceros_command::interface::ViewportTarget, usize)>,
+    grid_settings_open: bool,
+    grid_settings_apply_to: viboceros_command::interface::ViewportTarget,
     end_analysis: Option<EndAnalysisState>,
     end_analysis_pick: Option<EndAnalysisPick>,
     selection_window_override: Option<viboceros_command::interface::RectSelectionMode>,
@@ -1485,6 +1490,8 @@ impl VibocerosApp {
             zoom_window_pending: false,
             zoom_factor_pending: None,
             snap_size_pending: None,
+            grid_settings_open: false,
+            grid_settings_apply_to: viboceros_command::interface::ViewportTarget::Active,
             end_analysis: None,
             end_analysis_pick: None,
             selection_window_override: None,
@@ -6296,6 +6303,7 @@ impl eframe::App for VibocerosApp {
         }
         self.capture_global_command_typing(ui);
         self.show_toolbar(ui);
+        self.show_grid_settings(ui);
         self.show_layers(ui);
         self.show_command_line(ui);
         let end_analysis_picking = self.end_analysis_pick.is_some();
@@ -6726,6 +6734,8 @@ mod tests {
             zoom_window_pending: false,
             zoom_factor_pending: None,
             snap_size_pending: None,
+            grid_settings_open: false,
+            grid_settings_apply_to: viboceros_command::interface::ViewportTarget::Active,
             end_analysis: None,
             end_analysis_pick: None,
             selection_window_override: None,

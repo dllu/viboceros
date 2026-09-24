@@ -2,7 +2,7 @@
 use super::*;
 use viboceros_drafting::{ObjectSnapKind, ObjectSnapModes};
 
-pub(super) const HELP: &str = "Snap modes: choose Point/End/Mid/Cen/Quad/Near in the toolbar menu. Right-click a mode to isolate/restore it; Shift-click for one pick. At a point prompt type Point, End, Mid, Cen, Quad, Near or NoSnap for one pick. Near and mesh-wire snapping are off by default. Enable mesh Near/Mid with SnapToMeshes Enable or the mesh-wire checkbox. SnapSize changes the active viewport grid snap spacing; ApplyTo=AllViewports changes every view. Persistent modes are restored after an accepted point. DisableOsnap/F4 suspends persistent modes without changing the selection.";
+pub(super) const HELP: &str = "Snap modes: choose Point/End/Mid/Cen/Quad/Near in the toolbar menu. Right-click a mode to isolate/restore it; Shift-click for one pick. At a point prompt type Point, End, Mid, Cen, Quad, Near or NoSnap for one pick. Near and mesh-wire snapping are off by default. Enable mesh Near/Mid with SnapToMeshes Enable or the mesh-wire checkbox. SnapSize changes the active viewport grid snap spacing; ApplyTo=AllViewports changes every view. Grid settings controls grid lines and axes; F7 toggles grid lines. Persistent modes are restored after an accepted point. DisableOsnap/F4 suspends persistent modes without changing the selection.";
 
 const FEATURES: [(ObjectSnapKind, &str); 6] = [
     (ObjectSnapKind::Point, "Point"),
@@ -157,6 +157,13 @@ impl VibocerosApp {
     }
 
     pub(super) fn show_snap_modes(&mut self, ui: &mut egui::Ui) {
+        if ui.button("Grid settings…").clicked() {
+            self.apply_interface_command(viboceros_command::interface::InterfaceCommand::Grid {
+                update: viboceros_command::interface::GridUpdate::default(),
+                apply_to: viboceros_command::interface::ViewportTarget::Active,
+            });
+            ui.close();
+        }
         let mut spacing = self.viewports[self.active_viewport].snap_spacing();
         if ui
             .add(

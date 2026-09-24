@@ -148,6 +148,23 @@ impl SnapSpacing {
     }
 }
 
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct GridUpdate {
+    pub snap_spacing: Option<SnapSpacing>,
+    pub minor_spacing: Option<SnapSpacing>,
+    pub major_interval: Option<u32>,
+    pub line_count: Option<u32>,
+    pub show_grid: Option<bool>,
+    pub show_axes: Option<bool>,
+    pub show_world_axes: Option<bool>,
+}
+
+impl GridUpdate {
+    pub fn is_empty(self) -> bool {
+        self == Self::default()
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RectSelectionMode {
     Automatic,
@@ -230,6 +247,11 @@ pub enum InterfaceCommand {
         spacing: Option<SnapSpacing>,
         apply_to: ViewportTarget,
     },
+    Grid {
+        update: GridUpdate,
+        apply_to: ViewportTarget,
+    },
+    ToggleGrid,
     SetOsnap(SwitchAction),
     SnapToMeshes(SwitchAction),
     SmartTrack(SwitchAction),
@@ -239,7 +261,7 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 34] = [
+pub const COMMAND_NAMES: [&str; 35] = [
     "Options",
     "SetZoomExtentsBorder",
     "SnapToMeshes",
@@ -256,6 +278,7 @@ pub const COMMAND_NAMES: [&str; 34] = [
     "SetDisplayMode",
     "SetSnap",
     "SnapSize",
+    "Grid",
     "SmartTrack",
     "Snap",
     "UndoView",
@@ -276,7 +299,7 @@ pub const COMMAND_NAMES: [&str; 34] = [
     "C",
 ];
 
-pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor [positive number]; ZoomEnds [All|Current|Next|Previous|Mark]; ShowEnds; ShowEndsOff; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelBoundary [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; UndoView; RedoView; NextViewport; PrevViewport; NextOrthoViewport; NextPerspectiveViewport; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; SnapSize [positive-number] [ApplyTo=ActiveViewport|AllViewports]; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Ctrl/Cmd+Tab next viewport, Ctrl/Cmd+Shift+Tab previous viewport, Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor [positive number]; ZoomEnds [All|Current|Next|Previous|Mark]; ShowEnds; ShowEndsOff; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelBoundary [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; UndoView; RedoView; NextViewport; PrevViewport; NextOrthoViewport; NextPerspectiveViewport; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; SnapSize [positive-number] [ApplyTo=ActiveViewport|AllViewports]; Grid [SnapSpacing=positive] [MinorLineSpacing=positive] [MajorLineInterval=positive-integer] [GridLineCount=0..100000] [ShowGrid=Yes|No] [ShowGridAxes=Yes|No] [ShowWorldAxes=Yes|No] [ApplyTo=ActiveViewport|AllViewports]; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Ctrl/Cmd+Tab next viewport, Ctrl/Cmd+Shift+Tab previous viewport, Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F7 grid display, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -526,6 +549,8 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
             switch("SetSnap On|Off|Toggle").map(InterfaceCommand::SetSnap)
         } else if name.eq_ignore_ascii_case("SnapSize") {
             parse_snap_size(&args)
+        } else if name.eq_ignore_ascii_case("Grid") {
+            parse_grid(&args)
         } else if name.eq_ignore_ascii_case("DisableOsnap") {
             match args.as_slice() {
                 [value] if keyword(value, "Enable") => {
@@ -622,6 +647,73 @@ fn parse_snap_size(args: &[&str]) -> Result<InterfaceCommand, InterfaceError> {
         spacing,
         apply_to: apply_to.unwrap_or(ViewportTarget::Active),
     })
+}
+
+fn parse_grid(args: &[&str]) -> Result<InterfaceCommand, InterfaceError> {
+    let usage = InterfaceError::Usage(
+        "Grid [SnapSpacing=positive] [MinorLineSpacing=positive] [MajorLineInterval=positive-integer] [GridLineCount=0..100000] [ShowGrid=Yes|No] [ShowGridAxes=Yes|No] [ShowWorldAxes=Yes|No] [ApplyTo=ActiveViewport|AllViewports]",
+    );
+    let mut update = GridUpdate::default();
+    let mut apply_to = None;
+    for token in args {
+        let (name, value) = token.split_once('=').ok_or_else(|| usage.clone())?;
+        if keyword(name, "ApplyTo") && apply_to.is_none() {
+            apply_to = Some(if keyword(value, "ActiveViewport") {
+                ViewportTarget::Active
+            } else if keyword(value, "AllViewports") {
+                ViewportTarget::All
+            } else {
+                return Err(usage);
+            });
+        } else if keyword(name, "SnapSpacing") && update.snap_spacing.is_none() {
+            update.snap_spacing = Some(parse_positive_spacing(value).ok_or_else(|| usage.clone())?);
+        } else if keyword(name, "MinorLineSpacing") && update.minor_spacing.is_none() {
+            update.minor_spacing =
+                Some(parse_positive_spacing(value).ok_or_else(|| usage.clone())?);
+        } else if keyword(name, "MajorLineInterval") && update.major_interval.is_none() {
+            update.major_interval = Some(
+                value
+                    .parse::<u32>()
+                    .ok()
+                    .filter(|value| *value > 0)
+                    .ok_or_else(|| usage.clone())?,
+            );
+        } else if keyword(name, "GridLineCount") && update.line_count.is_none() {
+            update.line_count = Some(
+                value
+                    .parse::<u32>()
+                    .ok()
+                    .filter(|value| *value <= 100_000)
+                    .ok_or_else(|| usage.clone())?,
+            );
+        } else if keyword(name, "ShowGrid") && update.show_grid.is_none() {
+            update.show_grid = Some(parse_yes_no(value).ok_or_else(|| usage.clone())?);
+        } else if keyword(name, "ShowGridAxes") && update.show_axes.is_none() {
+            update.show_axes = Some(parse_yes_no(value).ok_or_else(|| usage.clone())?);
+        } else if keyword(name, "ShowWorldAxes") && update.show_world_axes.is_none() {
+            update.show_world_axes = Some(parse_yes_no(value).ok_or_else(|| usage.clone())?);
+        } else {
+            return Err(usage);
+        }
+    }
+    Ok(InterfaceCommand::Grid {
+        update,
+        apply_to: apply_to.unwrap_or(ViewportTarget::Active),
+    })
+}
+
+fn parse_positive_spacing(input: &str) -> Option<SnapSpacing> {
+    input.parse::<f64>().ok().and_then(SnapSpacing::try_new)
+}
+
+fn parse_yes_no(input: &str) -> Option<bool> {
+    if keyword(input, "Yes") || keyword(input, "On") {
+        Some(true)
+    } else if keyword(input, "No") || keyword(input, "Off") {
+        Some(false)
+    } else {
+        None
+    }
 }
 
 fn parse_display_mode(args: &[&str]) -> Result<InterfaceCommand, InterfaceError> {
@@ -742,6 +834,14 @@ impl InterfaceState {
                 }
                 None => format!("Snap spacing input requested ({apply_to:?})"),
             },
+            InterfaceCommand::Grid { update, apply_to } => {
+                if update.is_empty() {
+                    format!("Grid settings requested ({apply_to:?})")
+                } else {
+                    format!("Grid change requested ({apply_to:?})")
+                }
+            }
+            InterfaceCommand::ToggleGrid => "Grid display toggle requested".into(),
             InterfaceCommand::SetOsnap(action) => {
                 self.osnap = action.apply(self.osnap);
                 format!("Object snaps: {}", on_off(self.osnap))

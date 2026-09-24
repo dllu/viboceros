@@ -61,7 +61,42 @@ const SURFACE_SAMPLES_PER_SPAN: usize = 8;
 const SELECTED_COLOR: Color32 = Color32::from_rgb(255, 145, 0);
 const PICK_PREVIEW_COLOR: Color32 = Color32::from_rgb(40, 165, 235);
 const LOCKED_COLOR: Color32 = Color32::from_gray(145);
-const GRID_SPACING: Real = 1.0;
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub(crate) struct GridSettings {
+    pub snap_spacing: Real,
+    pub minor_spacing: Real,
+    pub major_interval: u32,
+    pub line_count: u32,
+    pub show_grid: bool,
+    pub show_axes: bool,
+    pub show_world_axes: bool,
+}
+
+impl Default for GridSettings {
+    fn default() -> Self {
+        Self {
+            snap_spacing: 1.0,
+            minor_spacing: 1.0,
+            major_interval: 5,
+            line_count: 70,
+            show_grid: true,
+            show_axes: true,
+            show_world_axes: false,
+        }
+    }
+}
+
+impl GridSettings {
+    pub(crate) fn valid(self) -> bool {
+        self.snap_spacing.is_finite()
+            && self.snap_spacing > 0.0
+            && self.minor_spacing.is_finite()
+            && self.minor_spacing > 0.0
+            && self.major_interval > 0
+            && self.line_count <= 100_000
+            && (self.line_count as Real * self.minor_spacing).is_finite()
+    }
+}
 const DEFAULT_PERSPECTIVE_CAMERA_DISTANCE: Real = 50.0;
 const MIN_PERSPECTIVE_CAMERA_DISTANCE: Real = 0.01;
 const MAX_PERSPECTIVE_CAMERA_DISTANCE: Real = 1.0e9;
@@ -290,7 +325,7 @@ pub struct Viewport {
     pub(crate) plane: ConstructionPlaneState,
     pub display_mode: DisplayMode,
     pixels_per_unit: f32,
-    snap_spacing: Real,
+    grid: GridSettings,
     pan: Vec2,
     orbit_yaw: Real,
     orbit_pitch: Real,
@@ -326,7 +361,7 @@ impl Viewport {
             plane: ConstructionPlaneState::new(Self::default_plane(kind)),
             display_mode: DisplayMode::Wireframe,
             pixels_per_unit: 40.0,
-            snap_spacing: 1.0,
+            grid: GridSettings::default(),
             pan: Vec2::ZERO,
             orbit_yaw: -std::f64::consts::FRAC_PI_4,
             orbit_pitch: std::f64::consts::FRAC_PI_6,
@@ -357,12 +392,21 @@ impl Viewport {
     }
 
     pub(crate) fn snap_spacing(&self) -> Real {
-        self.snap_spacing
+        self.grid.snap_spacing
     }
 
     pub(crate) fn set_snap_spacing(&mut self, spacing: Real) {
         debug_assert!(spacing.is_finite() && spacing > 0.0);
-        self.snap_spacing = spacing;
+        self.grid.snap_spacing = spacing;
+    }
+
+    pub(crate) fn grid_settings(&self) -> GridSettings {
+        self.grid
+    }
+
+    pub(crate) fn set_grid_settings(&mut self, grid: GridSettings) {
+        debug_assert!(grid.valid());
+        self.grid = grid;
     }
 
     fn restore_camera(&mut self, camera: CameraSnapshot) {

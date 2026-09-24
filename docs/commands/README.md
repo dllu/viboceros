@@ -145,6 +145,7 @@ ZoomEnds Previous
 ZoomEnds Mark
 ShowEndsOff
 SnapSize 0.25 ApplyTo=AllViewports
+Grid MinorLineSpacing=0.5 MajorLineInterval=5 GridLineCount=50 ShowGrid=Yes ApplyTo=AllViewports
 SelWindow
 SelCrossing
 SelRectangular SelectionMode=InvertCrossing

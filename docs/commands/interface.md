@@ -30,6 +30,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `Snap` | Toggle grid snapping. |
 | `SetSnap On\|Off\|Toggle` | Set or toggle grid snapping. |
 | `SnapSize [positive number] [ApplyTo=ActiveViewport\|AllViewports]` | Set grid snap spacing for the active viewport (default) or all viewports; bare `SnapSize` prompts for a value. |
+| `Grid [SnapSpacing=positive] [MinorLineSpacing=positive] [MajorLineInterval=positive integer] [GridLineCount=0..100000] [ShowGrid=Yes\|No] [ShowGridAxes=Yes\|No] [ShowWorldAxes=Yes\|No] [ApplyTo=ActiveViewport\|AllViewports]` | Edit grid properties for one or all viewports. Bare `Grid` opens the settings panel. |
 | `DisableOsnap Enable\|Disable\|Toggle` | Enable, suspend, or toggle object snaps. |
 | `SnapToMeshes Enable\|Disable\|Toggle` | Admit mesh Near/Mid wires independently of feature modes; initially disabled. |
 | `SmartTrack On\|Off\|Toggle` | Set or toggle reference-point axis tracking. |
@@ -41,7 +42,8 @@ Commands accept a leading hyphen and optional transparent-command apostrophe.
 The inline `Options View Zoom ScaleFactor=…` path is a Viboceros scripting
 shortcut for Rhino's View options panel; the full Options dialog is pending.
 Supply the complete options on one line, except bare `SnapSize` and `Zoom Factor`
-which prompt for a value; other bare option-taking commands show usage
+which prompt for a value and bare `Grid` which opens its panel; other bare
+option-taking commands show usage
 instead of starting another prompt. Unknown/duplicate options are rejected
 before mutation, and invalid input remains editable.
 
@@ -60,7 +62,8 @@ The line still starts at the accepted origin. Interface changes do not consume
 model undo steps or destroy redo history. `DisableOsnap` and `SnapToMeshes` use **Enable/Disable**,
 not On/Off; the toolbar's Osnap indicator is lit when snapping is enabled.
 
-F9 toggles grid snap; F4 toggles object snaps. Home and End run UndoView and
+F7 toggles active-viewport grid lines, F9 toggles grid snap, and F4 toggles
+object snaps. Home and End run UndoView and
 RedoView when a text field is not focused. Ctrl/Cmd+W starts Zoom Window.
 Ctrl/Cmd+Alt+W, S, and G select
 Wireframe, Shaded, and Ghosted in the active viewport. Ctrl/Cmd+Shift+E zooms to
@@ -98,12 +101,15 @@ have a separate source switch, direct-only Mid, and calibrated depth-weighted Ne
 mesh wire selection, including corners and competing parallel wires, still differs
 from Rhino; see the [competition diagnostics](../mesh-snap-order.md).
 14 retained mesh-switch states match Rhino exactly. Other feature kinds remain
-incomplete. Grid lines retain unit spacing while `SnapSize` changes the independent
-per-viewport snap spacing; SmartTrack is reference-axis tracking, not Rhino's
+incomplete. `Grid` independently controls line spacing, count, major interval,
+grid and axis visibility, and snap spacing per viewport. At most 501 nearby
+lines per axis are submitted per frame, even when the configured grid is larger.
+SmartTrack is reference-axis tracking, not Rhino's
 complete inference system. Custom display modes, persistence for snap and display controls, and full command macro
 interpretation
 remain unimplemented. The supported controls follow McNeel's documentation for
 [Snap/SetSnap](https://docs.mcneel.com/rhino/8mac/help/en-us/commands/snap.htm),
+[Grid](https://docs.mcneel.com/rhino/8/help/en-us/documentproperties/grid.htm),
 [object snaps](https://docs.mcneel.com/rhino/8/help/en-us/user_interface/object_snaps.htm),
 [SmartTrack](https://docs.mcneel.com/rhino/8/help/en-us/commands/smarttrack.htm), and
 [SetDisplayMode](https://docs.mcneel.com/rhino/8/help/en-us/options/view_displaymode_options.htm).

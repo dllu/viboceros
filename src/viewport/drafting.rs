@@ -117,56 +117,144 @@ impl Viewport {
     }
 
     pub(super) fn snap_to_grid(&self, point: Point3) -> Option<Point3> {
-        viboceros_drafting::plane::snap_to_grid(point, self.construction_plane(), self.snap_spacing)
-            .ok()
+        viboceros_drafting::plane::snap_to_grid(
+            point,
+            self.construction_plane(),
+            self.grid.snap_spacing,
+        )
+        .ok()
     }
 
     pub(super) fn paint_grid(&self, painter: &egui::Painter, rect: Rect) {
         let pixels_per_model_unit = self.pixels_per_model_unit_at_origin(rect);
-        let half_count = ((rect.width().max(rect.height()) / pixels_per_model_unit * 1.5).ceil()
-            as i32)
-            .clamp(10, 250);
-        let extent = Real::from(half_count) * GRID_SPACING;
-        if pixels_per_model_unit * GRID_SPACING as f32 >= 8.0 {
-            let grid_stroke = Stroke::new(1.0, Color32::from_gray(218));
-            for index in -half_count..=half_count {
-                if index == 0 {
-                    continue;
+        let spacing = self.grid.minor_spacing;
+        let pixel_spacing = Real::from(pixels_per_model_unit) * spacing;
+        let line_count = i64::from(self.grid.line_count);
+        let extent = line_count as Real * spacing;
+        if self.grid.show_grid && pixel_spacing >= 8.0 && extent.is_finite() {
+            let center = self
+                .unproject_drafting_plane(rect.center(), rect, None)
+                .and_then(|point| self.construction_plane().coordinates_of(point).ok())
+                .unwrap_or([0.0; 3]);
+            let half_count = (Real::from(rect.width().max(rect.height())) / pixel_spacing * 1.5)
+                .ceil()
+                .clamp(10.0, 250.0) as i64;
+            let range = |coordinate: Real| {
+                let center = (coordinate / spacing).round() as i64;
+                (
+                    center.saturating_sub(half_count).max(-line_count),
+                    center.saturating_add(half_count).min(line_count),
+                )
+            };
+            let minor_stroke = Stroke::new(1.0, Color32::from_gray(218));
+            let major_stroke = Stroke::new(1.25, Color32::from_gray(170));
+            for (axis, coordinate) in center[..2].iter().copied().enumerate() {
+                let (first, last) = range(coordinate);
+                for index in first..=last {
+                    if index == 0 {
+                        continue;
+                    }
+                    let coordinate = index as Real * spacing;
+                    let stroke = if index.unsigned_abs() % u64::from(self.grid.major_interval) == 0
+                    {
+                        major_stroke
+                    } else {
+                        minor_stroke
+                    };
+                    let (start, end) = if axis == 0 {
+                        (
+                            self.grid_point(coordinate, -extent),
+                            self.grid_point(coordinate, extent),
+                        )
+                    } else {
+                        (
+                            self.grid_point(-extent, coordinate),
+                            self.grid_point(extent, coordinate),
+                        )
+                    };
+                    self.paint_grid_line(painter, rect, start, end, stroke);
                 }
-                let coordinate = Real::from(index) * GRID_SPACING;
-                self.paint_grid_line(
-                    painter,
-                    rect,
-                    self.grid_point(coordinate, -extent),
-                    self.grid_point(coordinate, extent),
-                    grid_stroke,
-                );
-                self.paint_grid_line(
-                    painter,
-                    rect,
-                    self.grid_point(-extent, coordinate),
-                    self.grid_point(extent, coordinate),
-                    grid_stroke,
-                );
             }
         }
 
-        let horizontal_color = Color32::from_rgb(190, 65, 65);
-        let vertical_color = Color32::from_rgb(60, 145, 75);
-        self.paint_grid_line(
-            painter,
-            rect,
-            self.grid_point(-extent, 0.0),
-            self.grid_point(extent, 0.0),
-            Stroke::new(1.5, horizontal_color),
-        );
-        self.paint_grid_line(
-            painter,
-            rect,
-            self.grid_point(0.0, -extent),
-            self.grid_point(0.0, extent),
-            Stroke::new(1.5, vertical_color),
-        );
+        if self.grid.show_axes && extent.is_finite() {
+            let horizontal_color = Color32::from_rgb(190, 65, 65);
+            let vertical_color = Color32::from_rgb(60, 145, 75);
+            self.paint_grid_line(
+                painter,
+                rect,
+                self.grid_point(-extent, 0.0),
+                self.grid_point(extent, 0.0),
+                Stroke::new(1.5, horizontal_color),
+            );
+            self.paint_grid_line(
+                painter,
+                rect,
+                self.grid_point(0.0, -extent),
+                self.grid_point(0.0, extent),
+                Stroke::new(1.5, vertical_color),
+            );
+        }
+        if self.grid.show_world_axes {
+            self.paint_world_axes_icon(painter, rect);
+        }
+    }
+
+    fn paint_world_axes_icon(&self, painter: &egui::Painter, rect: Rect) {
+        let anchor = Pos2::new(rect.left() + 22.0, rect.bottom() - 22.0);
+        for (label, direction, color) in [
+            (
+                "X",
+                Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+                Color32::from_rgb(190, 65, 65),
+            ),
+            (
+                "Y",
+                Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+                Color32::from_rgb(60, 145, 75),
+            ),
+            (
+                "Z",
+                Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+                Color32::from_rgb(65, 100, 185),
+            ),
+        ] {
+            if let Some(tip) = self.world_axis_icon_tip(anchor, direction, rect) {
+                painter.line_segment([anchor, tip], Stroke::new(1.5, color));
+                painter.text(
+                    tip,
+                    Align2::CENTER_CENTER,
+                    label,
+                    FontId::proportional(9.0),
+                    color,
+                );
+            } else {
+                painter.circle_stroke(anchor, 3.0, Stroke::new(1.5, color));
+                painter.text(
+                    anchor + Vec2::new(0.0, -9.0),
+                    Align2::CENTER_CENTER,
+                    label,
+                    FontId::proportional(9.0),
+                    color,
+                );
+            }
+        }
+    }
+
+    fn world_axis_icon_tip(&self, anchor: Pos2, direction: Vector3, rect: Rect) -> Option<Pos2> {
+        let target = Point3::try_new(self.target.x, self.target.y, self.target.z).ok();
+        let projected = target.and_then(|target| {
+            let shifted = target.translated(direction).ok()?;
+            Some((
+                self.project_precise(target, rect)?,
+                self.project_precise(shifted, rect)?,
+            ))
+        });
+        projected
+            .map(|(from, to)| egui::vec2((to[0] - from[0]) as f32, (to[1] - from[1]) as f32))
+            .filter(|offset| offset.is_finite() && offset.length_sq() > 1.0)
+            .map(|offset| offset.normalized() * 13.0)
+            .map(|offset| anchor + offset)
     }
 
     pub(super) fn grid_point(&self, horizontal: Real, vertical: Real) -> Option<Point3> {
@@ -359,6 +447,98 @@ mod near_tests;
 #[cfg(test)]
 mod grid_tests {
     use super::*;
+
+    fn grid_shapes(view: &Viewport) -> Vec<egui::Shape> {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        let output = egui::Context::default().run_ui(
+            egui::RawInput {
+                screen_rect: Some(rect),
+                ..Default::default()
+            },
+            |ui| view.paint_grid(ui.painter(), rect),
+        );
+        let shapes = output
+            .shapes
+            .iter()
+            .map(|shape| shape.shape.clone())
+            .collect();
+        output.drop_without_applying_deltas();
+        shapes
+    }
+
+    #[test]
+    fn grid_settings_control_line_count_major_strokes_axes_and_icon() {
+        let mut view = Viewport::new(ViewKind::Top);
+        view.grid = GridSettings {
+            minor_spacing: 2.0,
+            major_interval: 2,
+            line_count: 2,
+            show_grid: true,
+            show_axes: false,
+            show_world_axes: false,
+            ..GridSettings::default()
+        };
+        let shapes = grid_shapes(&view);
+        let lines = shapes
+            .iter()
+            .filter_map(|shape| match shape {
+                egui::Shape::LineSegment { stroke, .. } => Some(stroke.color),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(lines.len(), 8);
+        assert_eq!(
+            lines
+                .iter()
+                .filter(|color| **color == Color32::from_gray(170))
+                .count(),
+            4
+        );
+        view.grid.show_grid = false;
+        assert!(grid_shapes(&view).is_empty());
+        view.grid.show_axes = true;
+        assert_eq!(
+            grid_shapes(&view)
+                .iter()
+                .filter(|shape| matches!(shape, egui::Shape::LineSegment { .. }))
+                .count(),
+            2
+        );
+        view.grid.show_axes = false;
+        view.grid.show_world_axes = true;
+        assert_eq!(
+            grid_shapes(&view)
+                .iter()
+                .filter(|shape| matches!(shape, egui::Shape::LineSegment { .. }))
+                .count(),
+            2
+        );
+        view.grid.show_world_axes = false;
+        view.grid.show_grid = true;
+        view.pan = Vec2::new(10_000.0, 0.0);
+        assert!(grid_shapes(&view).is_empty());
+    }
+
+    #[test]
+    fn large_configured_grid_submits_only_visible_nearby_lines() {
+        let mut view = Viewport::new(ViewKind::Top);
+        view.grid.line_count = 100_000;
+        view.grid.show_axes = false;
+        let count = grid_shapes(&view)
+            .iter()
+            .filter(|shape| matches!(shape, egui::Shape::LineSegment { .. }))
+            .count();
+        assert!(count > 0 && count <= 1_000, "submitted {count} lines");
+        view.pan = Vec2::new(40_000.0, -40_000.0);
+        let count = grid_shapes(&view)
+            .iter()
+            .filter(|shape| matches!(shape, egui::Shape::LineSegment { .. }))
+            .count();
+        assert!(
+            count > 0 && count <= 1_000,
+            "submitted {count} lines after pan"
+        );
+    }
 
     #[test]
     fn perspective_grid_crossing_camera_is_clipped_in_both_endpoint_orders() {

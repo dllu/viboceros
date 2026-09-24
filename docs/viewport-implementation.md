@@ -21,7 +21,10 @@ The drafting kernel's grid snap uses a signed remainder and a local adjustment,
 avoiding overflowing grid indices for finite coordinates and fine spacing. It
 retains plane elevation, rounds halfway cases away from zero, and rejects a
 genuinely unrepresentable final grid point. `SnapSize` sets the spacing per
-viewport without changing the displayed grid line interval.
+viewport without changing the displayed grid line interval. `Grid` can change
+the snap interval, line spacing, major interval, line count, and grid/axis
+visibility. Visible line indices are centered near the current construction-plane
+view point, bounded to 501 per axis, and clipped before egui tessellation.
 Within `viboceros-drafting`, `object_snap` owns feature enumeration, projection
 metrics, indexed point-cloud queries, and snap priority. The crate root re-exports
 the public snap API and retains shared errors and basic tracking; `plane` owns

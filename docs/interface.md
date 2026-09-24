@@ -108,7 +108,8 @@ corner/parallel/short-wire selection; see the
 SmartTrack captures local plane-axis alignment from the first picked
 point in every viewport. Grid Snap rounds construction-plane picks at each
 viewport's `SnapSize` spacing, initially one model unit. Grid lines remain one
-unit apart. Right-drag
+unit apart until changed with `Grid MinorLineSpacing=…`; Grid settings also
+control major lines and grid/axis visibility per viewport. Right-drag
 pans parallel views and rotates the Perspective view; Shift-right-drag pans the
 Perspective view, middle-drag pans any view, and the mouse wheel zooms.
 Perspective pan translates the camera and its orbit target in world space.

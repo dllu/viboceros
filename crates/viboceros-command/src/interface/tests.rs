@@ -74,6 +74,56 @@ fn snap_size_parses_viewport_scope_and_rejects_invalid_spacing() {
 }
 
 #[test]
+fn grid_options_parse_atomically_and_leave_reducer_state_unchanged() {
+    let update = GridUpdate {
+        snap_spacing: SnapSpacing::try_new(0.25),
+        minor_spacing: SnapSpacing::try_new(0.5),
+        major_interval: Some(4),
+        line_count: Some(30),
+        show_grid: Some(false),
+        show_axes: Some(false),
+        show_world_axes: Some(true),
+    };
+    let command = InterfaceCommand::Grid {
+        update,
+        apply_to: ViewportTarget::All,
+    };
+    assert_eq!(
+        parse(
+            "'_Grid _SnapSpacing=0.25 _MinorLineSpacing=0.5 _MajorLineInterval=4 _GridLineCount=30 _ShowGrid=_No _ShowGridAxes=_Off _ShowWorldAxes=_Yes _ApplyTo=_AllViewports"
+        ),
+        Some(Ok(command))
+    );
+    let mut state = state();
+    let original = state.clone();
+    state.apply(command).unwrap();
+    assert_eq!(state, original);
+    assert_eq!(
+        parse("Grid"),
+        Some(Ok(InterfaceCommand::Grid {
+            update: GridUpdate::default(),
+            apply_to: ViewportTarget::Active
+        }))
+    );
+    for input in [
+        "Grid SnapSpacing=0",
+        "Grid MinorLineSpacing=-1",
+        "Grid MajorLineInterval=0",
+        "Grid GridLineCount=100001",
+        "Grid ShowGrid=Maybe",
+        "Grid ShowGrid=Yes ShowGrid=No",
+        "Grid ApplyTo=Other",
+        "Grid MinorLineSpacing=1e999",
+        "Grid Unknown=1",
+    ] {
+        assert!(
+            matches!(parse(input), Some(Err(InterfaceError::Usage(_)))),
+            "{input}"
+        );
+    }
+}
+
+#[test]
 fn zoom_factor_is_finite_positive_and_does_not_mutate_interface_state() {
     for (input, value) in [
         ("Zoom Factor 2", 2.0),

@@ -3,11 +3,65 @@
 use super::*;
 use std::collections::HashSet;
 use viboceros_command::interface::{
-    self, InterfaceCommand, InterfaceState, RectSelectionMode, SnapSpacing, SwitchAction,
-    ViewportTarget, WorldView, ZoomFactor,
+    self, GridUpdate, InterfaceCommand, InterfaceState, RectSelectionMode, SnapSpacing,
+    SwitchAction, ViewportTarget, WorldView, ZoomFactor,
 };
 
 impl VibocerosApp {
+    fn apply_grid_update(&mut self, update: GridUpdate, apply_to: ViewportTarget) {
+        if update.is_empty() {
+            self.grid_settings_open = true;
+            self.grid_settings_apply_to = apply_to;
+            self.push_log("Grid settings opened".into());
+            return;
+        }
+        let indexes = match apply_to {
+            ViewportTarget::Active => vec![self.active_viewport],
+            ViewportTarget::All => (0..self.viewports.len()).collect::<Vec<_>>(),
+        };
+        let mut staged = Vec::with_capacity(indexes.len());
+        for &index in &indexes {
+            let mut grid = self.viewports[index].grid_settings();
+            if let Some(value) = update.snap_spacing {
+                grid.snap_spacing = value.value();
+            }
+            if let Some(value) = update.minor_spacing {
+                grid.minor_spacing = value.value();
+            }
+            if let Some(value) = update.major_interval {
+                grid.major_interval = value;
+            }
+            if let Some(value) = update.line_count {
+                grid.line_count = value;
+            }
+            if let Some(value) = update.show_grid {
+                grid.show_grid = value;
+            }
+            if let Some(value) = update.show_axes {
+                grid.show_axes = value;
+            }
+            if let Some(value) = update.show_world_axes {
+                grid.show_world_axes = value;
+            }
+            if !grid.valid() {
+                self.push_log("Error: Grid settings exceed the supported finite range".into());
+                return;
+            }
+            staged.push(grid);
+        }
+        for (index, grid) in indexes.into_iter().zip(staged) {
+            self.viewports[index].set_grid_settings(grid);
+        }
+        self.push_log(format!(
+            "Grid settings updated ({})",
+            if apply_to == ViewportTarget::All {
+                "all viewports"
+            } else {
+                "active viewport"
+            }
+        ));
+    }
+
     fn set_snap_size(&mut self, spacing: SnapSpacing, apply_to: ViewportTarget, active: usize) {
         match apply_to {
             ViewportTarget::Active => self.viewports[active].set_snap_spacing(spacing.value()),
@@ -352,6 +406,23 @@ impl VibocerosApp {
                             "SnapSize: enter a positive spacing; Enter or Esc to cancel".into(),
                         );
                     }
+                    return;
+                }
+                if let InterfaceCommand::Grid { update, apply_to } = command {
+                    self.apply_grid_update(update, apply_to);
+                    return;
+                }
+                if command == InterfaceCommand::ToggleGrid {
+                    let show_grid = self.viewports[self.active_viewport]
+                        .grid_settings()
+                        .show_grid;
+                    self.apply_grid_update(
+                        GridUpdate {
+                            show_grid: Some(!show_grid),
+                            ..GridUpdate::default()
+                        },
+                        ViewportTarget::Active,
+                    );
                     return;
                 }
                 if command == InterfaceCommand::ZoomFactorPrompt {
@@ -903,6 +974,11 @@ impl VibocerosApp {
                 egui::Modifiers::COMMAND | egui::Modifiers::ALT,
                 egui::Key::E,
                 InterfaceCommand::ZoomAllExtents,
+            ),
+            (
+                egui::Modifiers::NONE,
+                egui::Key::F7,
+                InterfaceCommand::ToggleGrid,
             ),
             (
                 egui::Modifiers::NONE,

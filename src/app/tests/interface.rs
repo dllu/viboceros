@@ -1769,6 +1769,90 @@ fn snap_size_updates_scoped_viewports_and_prompts_without_model_edits() {
 }
 
 #[test]
+fn grid_command_updates_views_atomically_without_touching_model_history() {
+    let mut app = test_app();
+    enter(&mut app, "Point 1,2,3");
+    enter(&mut app, "Undo");
+    enter(&mut app, "Line");
+    enter(&mut app, "0");
+    let pending = app.active_command;
+    let redo = app.document.redo_label().map(str::to_owned);
+    enter(
+        &mut app,
+        "Grid MinorLineSpacing=0.5 MajorLineInterval=4 GridLineCount=30 ShowGrid=No ShowGridAxes=No ShowWorldAxes=Yes SnapSpacing=0.25",
+    );
+    let changed = app.viewports[0].grid_settings();
+    assert_eq!(changed.minor_spacing, 0.5);
+    assert_eq!(changed.snap_spacing, 0.25);
+    assert_eq!(changed.major_interval, 4);
+    assert_eq!(changed.line_count, 30);
+    assert!(!changed.show_grid && !changed.show_axes && changed.show_world_axes);
+    assert_eq!(app.viewports[1].grid_settings(), GridSettings::default());
+    app.active_viewport = 2;
+    enter(
+        &mut app,
+        "Grid MinorLineSpacing=2 ShowGrid=No ApplyTo=AllViewports",
+    );
+    assert!(
+        app.viewports.iter().all(
+            |view| view.grid_settings().minor_spacing == 2.0 && !view.grid_settings().show_grid
+        )
+    );
+    let before = app.viewports.each_ref().map(Viewport::grid_settings);
+    enter(
+        &mut app,
+        "Grid MinorLineSpacing=1e308 GridLineCount=100000 ApplyTo=AllViewports",
+    );
+    assert_eq!(
+        app.viewports.each_ref().map(Viewport::grid_settings),
+        before
+    );
+    assert_eq!(
+        app.command_log.back().map(String::as_str),
+        Some("Error: Grid settings exceed the supported finite range")
+    );
+    enter(&mut app, "Grid");
+    assert!(app.grid_settings_open);
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.document.redo_label(), redo.as_deref());
+    assert_eq!(app.document.objects().count(), 0);
+}
+
+#[test]
+fn f7_toggles_active_grid_display_without_toggling_grid_snap() {
+    let mut app = test_app();
+    enter(&mut app, "Line");
+    let pending = app.active_command;
+    app.command_input = "1,".into();
+    let context = egui::Context::default();
+    for expected in [false, true] {
+        context
+            .run_ui(
+                egui::RawInput {
+                    screen_rect: Some(egui::Rect::from_min_size(
+                        egui::Pos2::ZERO,
+                        egui::vec2(800., 600.),
+                    )),
+                    events: vec![
+                        key(egui::Key::F7, egui::Modifiers::NONE, true, false),
+                        key(egui::Key::F7, egui::Modifiers::NONE, false, false),
+                    ],
+                    ..Default::default()
+                },
+                |ui| app.handle_interface_shortcuts(ui),
+            )
+            .drop_without_applying_deltas();
+        assert_eq!(app.viewports[0].grid_settings().show_grid, expected);
+        assert!(app.grid_snap);
+        assert_eq!(app.active_command, pending);
+        assert_eq!(app.command_input, "1,");
+    }
+    app.apply_interface_command(InterfaceCommand::ToggleGrid);
+    app.apply_interface_command(InterfaceCommand::ToggleGrid);
+    assert!(app.viewports[0].grid_settings().show_grid);
+}
+
+#[test]
 fn zoom_all_records_one_independent_view_step_per_viewport() {
     let mut app = test_app();
     enter(&mut app, "Point 10,20,30");
