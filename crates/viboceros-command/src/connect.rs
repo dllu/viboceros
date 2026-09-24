@@ -291,4 +291,39 @@ mod tests {
             ]
         ));
     }
+
+    #[test]
+    fn default_arc_extension_connects_two_native_arcs() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+        let diagonal = 2.0_f64.sqrt() / 2.0;
+        let first = CircularArc3::try_from_three_points(
+            p(1., 0.),
+            p(diagonal, diagonal),
+            p(0., 1.),
+            document.tolerance(),
+        )
+        .unwrap();
+        let second = CircularArc3::try_from_three_points(
+            p(-3., 0.),
+            p(-2. - diagonal, -diagonal),
+            p(-2., -1.),
+            document.tolerance(),
+        )
+        .unwrap();
+        let first_id = document.add_geometry(Geometry::Arc(first)).unwrap();
+        let second_id = document.add_geometry(Geometry::Arc(second)).unwrap();
+        document
+            .select_objects_direct([first_id, second_id], SelectionMode::Replace)
+            .unwrap();
+        registry.execute(&mut document, "Connect Join=Yes").unwrap();
+        let Geometry::PolyCurve(joined) = document.objects().next().unwrap().geometry() else {
+            panic!("joined arc connection")
+        };
+        assert!(matches!(
+            joined.segments(),
+            [CurveSegment3::Arc(_), CurveSegment3::Arc(_)]
+        ));
+    }
 }
