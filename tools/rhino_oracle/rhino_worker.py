@@ -5264,6 +5264,8 @@ def _execute(operation, iterations, tolerance):
             command = "_Connect _ExtendOtherCurvesBy=_%s _SelID %s _SelID %s _Enter" % (extension, ids[0], ids[1])
             succeeded = Rhino.RhinoApp.RunScript(command, True)
             if not succeeded:
+                if operation.get("allow_failure"):
+                    return {"failed": True}, 0
                 raise ValueError("Connect command failed: %s" % Rhino.RhinoApp.CommandHistoryWindowText[-1000:])
             results = [item for item in document.Objects if item.Id in ids or item.Id not in before]
             result_ids = [item.Id for item in results]

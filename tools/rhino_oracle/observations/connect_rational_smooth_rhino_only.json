@@ -1,0 +1,176 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "rational-w0.99-x2.2",
+      "value": {
+        "curves": [
+          {
+            "control_points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "end": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "kind": "nurbs",
+            "start": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "control_points": [
+              [
+                2.2,
+                1.2102467825980954,
+                0.0
+              ],
+              [
+                2.2,
+                4.0,
+                0.0
+              ]
+            ],
+            "end": [
+              2.2,
+              4.0,
+              0.0
+            ],
+            "kind": "line",
+            "start": [
+              2.2,
+              1.2102467825980954,
+              0.0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "rational-w0.99-x3.0",
+      "value": {
+        "curves": [
+          {
+            "control_points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "end": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "kind": "nurbs",
+            "start": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "control_points": [
+              [
+                3.0,
+                2.2617827021842984,
+                0.0
+              ],
+              [
+                3.0,
+                4.0,
+                0.0
+              ]
+            ],
+            "end": [
+              3.0,
+              4.0,
+              0.0
+            ],
+            "kind": "line",
+            "start": [
+              3.0,
+              2.2617827021842984,
+              0.0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "rational-w1.01-x2.2",
+      "value": {
+        "failed": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "rational-w1.01-x3.0",
+      "value": {
+        "failed": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "rational-w1.05-x2.2",
+      "value": {
+        "failed": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "rational-w1.05-x3.0",
+      "value": {
+        "failed": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "rational-w1.2-x2.2",
+      "value": {
+        "failed": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "rational-w1.2-x3.0",
+      "value": {
+        "failed": true
+      }
+    }
+  ]
+}

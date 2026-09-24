@@ -30,6 +30,13 @@ compare straight and smooth NURBS-to-line extensions, including reversed
 selection, and a smooth NURBS-to-NURBS extension. Endpoints and NURBS control
 points agree within `1e-10`.
 
+Rhino parity for smooth extension of rational NURBS is unresolved. In an
+[eight-case Rhino probe](../../tools/rhino_oracle/fixtures/connect_rational_smooth_rhino_only.json),
+Rhino either rejected the operation or extended only the line while leaving
+the rational source unchanged; the [raw results](../../tools/rhino_oracle/observations/connect_rational_smooth_rhino_only.json)
+are retained. Viboceros currently follows the rational curve's mathematical
+continuation, so these cases can produce different document geometry.
+
 ```text
 Connect ExtendOtherCurvesBy=Smooth Join=Yes
 ```
