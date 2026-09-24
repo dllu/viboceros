@@ -62,10 +62,19 @@ impl NurbsSurface {
             return Ok(None);
         }
         let expected_base_weight = candidate.control_points[base_index].weight();
-        let allowed_position = tolerance
+        let coordinate_scale = apex
+            .to_array()
+            .into_iter()
+            .chain(base_center.to_array())
+            .map(Real::abs)
+            .fold(0.0, Real::max);
+        // Rebuilding an analytic cone from distant controls loses several
+        // ulps of the stored world coordinates.
+        let allowed_position = (tolerance
             .absolute()
             .max(tolerance.relative() * radius.max(height))
-            * 4.0;
+            * 4.0)
+            .max(8.0 * Real::EPSILON * coordinate_scale);
         for (actual, expected) in self.control_points.iter().zip(&candidate.control_points) {
             if actual.point().distance_to(expected.point())? > allowed_position
                 || ((actual.weight() / base_weight) - (expected.weight() / expected_base_weight))

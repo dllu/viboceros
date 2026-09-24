@@ -2,6 +2,7 @@ use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 
 mod cone_plane;
 mod cylinder_cylinder;
+mod sphere_cone;
 
 use crate::{
     AffineTransform3, BoundingBox3, Brep, BrepFace, Circle3, GeometryError, NurbsCurve,
@@ -521,8 +522,8 @@ fn curve_brep_intersection_events_with_transform(
 /// one sign, plus certified affine and projective patches of any degree. Coincident
 /// patches return their area-overlap perimeter or shared edge; a lone shared
 /// corner produces no event, matching Rhino. Canonical spheres intersect
-/// each other, coaxial cylinders, and planar finite patches in exact rational
-/// circles or tangent points.
+/// each other, coaxial cylinders and cones, and planar finite patches in exact
+/// rational circles or tangent points.
 /// Planar sections of canonical cylinders produce exact circles, rational
 /// ellipses, or straight generatrices, clipped to finite source regions.
 /// Parallel canonical cylinder walls intersect in exact finite generatrices,
@@ -538,14 +539,16 @@ pub fn surface_surface_intersection_events(
     second: &NurbsSurface,
     tolerance: Tolerance,
 ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
-    if let Some((frame, radius, height)) = first.canonical_cone(tolerance)?
+    let first_cone = first.canonical_cone(tolerance)?;
+    let second_cone = second.canonical_cone(tolerance)?;
+    if let Some((frame, radius, height)) = first_cone
         && let Some(plane) = second.plane(tolerance)?
     {
         return cone_plane::cone_planar_surface_intersection_events(
             first, frame, radius, height, second, plane, tolerance,
         );
     }
-    if let Some((frame, radius, height)) = second.canonical_cone(tolerance)?
+    if let Some((frame, radius, height)) = second_cone
         && let Some(plane) = first.plane(tolerance)?
     {
         return cone_plane::cone_planar_surface_intersection_events(
@@ -585,6 +588,22 @@ pub fn surface_surface_intersection_events(
             first_radius,
             second_center,
             second_radius,
+            tolerance,
+        );
+    }
+    if let (Some((center, sphere_radius)), Some(cone_data)) = (first_sphere, second_cone) {
+        return sphere_cone::coaxial_sphere_cone_intersection_events(
+            center,
+            sphere_radius,
+            cone_data,
+            tolerance,
+        );
+    }
+    if let (Some((center, sphere_radius)), Some(cone_data)) = (second_sphere, first_cone) {
+        return sphere_cone::coaxial_sphere_cone_intersection_events(
+            center,
+            sphere_radius,
+            cone_data,
             tolerance,
         );
     }

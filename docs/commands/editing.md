@@ -165,6 +165,15 @@ reference geometry. Rhino's surface API also reports duplicate seam points
 on the transverse circles; the native result retains the exact circles.
 Noncoaxial intersections remain unsupported when they cannot be ruled out as
 disjoint.
+Canonical coaxial spheres and finite cone walls intersect in exact rational
+circles, including tangent circles and sections on the cone's base rim. A
+contact only at the singular apex produces no event. The
+[sphere/cone fixture](../../tools/rhino_oracle/fixtures/sphere_cone_surface_intersection.json)
+and [observations](../../tools/rhino_oracle/observations/sphere_cone_surface_intersection.json)
+record these cases. Rhino's surface API missed the exact tangent circle and
+reported redundant seam points alongside transverse circles in this fixture;
+the native result retains the exact circles. Noncoaxial sphere/cone sections
+remain unsupported.
 Canonical cylinders intersect perpendicular planar patches in exact circles
 and parallel patches in straight generatrices. Oblique sections are exact
 rational ellipses clipped to both finite surfaces. Rhino returns cubic fitted

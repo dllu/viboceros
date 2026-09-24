@@ -11828,6 +11828,7 @@ def _execute(operation, iterations, tolerance):
         "sphere_plane_surface_intersection",
         "sphere_sphere_surface_intersection",
         "sphere_cylinder_surface_intersection",
+        "sphere_cone_surface_intersection",
         "cylinder_plane_surface_intersection",
         "cylinder_cylinder_surface_intersection",
         "cone_plane_surface_intersection",
@@ -11838,6 +11839,7 @@ def _execute(operation, iterations, tolerance):
             "sphere_plane_surface_intersection",
             "sphere_sphere_surface_intersection",
             "sphere_cylinder_surface_intersection",
+            "sphere_cone_surface_intersection",
         ):
             sphere_def = operation["sphere"]
             source = Rhino.Geometry.Sphere(
@@ -11904,6 +11906,19 @@ def _execute(operation, iterations, tolerance):
                 _finite(cylinder_def["height"], "cylinder height"),
             )
             patch_brep = cylinder.ToBrep(False, False)
+            patch = patch_brep.Faces[0].ToNurbsSurface()
+        elif kind == "sphere_cone_surface_intersection":
+            cone_def = operation["cone"]
+            cone_plane = Rhino.Geometry.Plane(
+                _point(cone_def["apex"]),
+                _vector(cone_def["axis"]),
+            )
+            cone = Rhino.Geometry.Cone(
+                cone_plane,
+                _finite(cone_def["height"], "cone height"),
+                _finite(cone_def["radius"], "cone radius"),
+            )
+            patch_brep = cone.ToBrep(False)
             patch = patch_brep.Faces[0].ToNurbsSurface()
         else:
             plane_def = operation["plane"]

@@ -26558,6 +26558,64 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_exact_sphere_cone_sections() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_sphere(
+                        frame.with_origin(Point3::try_new(0.0, 0.0, 2.0).unwrap()),
+                        1.5,
+                    )
+                    .unwrap(),
+                ))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_cone(frame, 3.0, 4.0).unwrap(),
+                ))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 2 intersection object(s) from 1 object pair(s)"
+        );
+        let mut heights = Vec::new();
+        for object in document.selected_objects() {
+            let Geometry::NurbsCurve(circle) = object.geometry() else {
+                panic!("sphere/cone sections must be exact circles")
+            };
+            assert_eq!(circle.degree(), 2);
+            assert!(circle.is_closed().unwrap());
+            let sample = circle.evaluate(*circle.domain().start()).unwrap();
+            assert!((sample.x().hypot(sample.y()) - 0.75 * sample.z()).abs() < 1e-9);
+            assert!(
+                (sample
+                    .distance_to(Point3::try_new(0.0, 0.0, 2.0).unwrap())
+                    .unwrap()
+                    - 1.5)
+                    .abs()
+                    < 1e-9
+            );
+            heights.push(sample.z());
+        }
+        heights.sort_by(f64::total_cmp);
+        assert!((heights[0] - 0.56).abs() < 1e-9);
+        assert!((heights[1] - 2.0).abs() < 1e-9);
+        assert!(ids.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
     fn intersect_outputs_exact_sphere_cylinder_sections() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

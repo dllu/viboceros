@@ -1,0 +1,47 @@
+{
+  "protocol_version": 1,
+  "operations": [
+    {
+      "id": "two_coaxial_circles",
+      "op": "sphere_cone_surface_intersection",
+      "sphere": {"center": [0, 0, 2], "radius": 1.5},
+      "cone": {"apex": [0, 0, 0], "axis": [0, 0, 1], "radius": 3, "height": 4}
+    },
+    {
+      "id": "one_finite_circle",
+      "op": "sphere_cone_surface_intersection",
+      "sphere": {"center": [0, 0, 0], "radius": 2},
+      "cone": {"apex": [0, 0, 0], "axis": [0, 0, 1], "radius": 3, "height": 4}
+    },
+    {
+      "id": "tangent_circle",
+      "op": "sphere_cone_surface_intersection",
+      "sphere": {"center": [0, 0, 5], "radius": 3},
+      "cone": {"apex": [0, 0, 0], "axis": [0, 0, 1], "radius": 3, "height": 4}
+    },
+    {
+      "id": "one_circle_on_base_rim",
+      "op": "sphere_cone_surface_intersection",
+      "sphere": {"center": [0, 0, 4], "radius": 3},
+      "cone": {"apex": [0, 0, 0], "axis": [0, 0, 1], "radius": 3, "height": 4}
+    },
+    {
+      "id": "apex_only",
+      "op": "sphere_cone_surface_intersection",
+      "sphere": {"center": [0, 0, -2], "radius": 2},
+      "cone": {"apex": [0, 0, 0], "axis": [0, 0, 1], "radius": 3, "height": 4}
+    },
+    {
+      "id": "disjoint",
+      "op": "sphere_cone_surface_intersection",
+      "sphere": {"center": [0, 0, 10], "radius": 1},
+      "cone": {"apex": [0, 0, 0], "axis": [0, 0, 1], "radius": 3, "height": 4}
+    },
+    {
+      "id": "noncoaxial",
+      "op": "sphere_cone_surface_intersection",
+      "sphere": {"center": [0.5, 0, 2], "radius": 1.5},
+      "cone": {"apex": [0, 0, 0], "axis": [0, 0, 1], "radius": 3, "height": 4}
+    }
+  ]
+}
