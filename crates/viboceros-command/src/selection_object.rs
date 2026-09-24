@@ -255,23 +255,26 @@ fn segment_hits_mesh_surface(
     end: Point3,
     tolerance: Tolerance,
 ) -> Result<bool, CommandError> {
+    let direction = start.vector_to(end)?;
     for (index, face) in mesh.faces().iter().enumerate() {
         let indices = face.indices();
         let vertices = mesh.vertices();
-        let a = vertices[indices[0] as usize];
-        let b = vertices[indices[1] as usize];
-        let c = vertices[indices[2] as usize];
-        let normal = a.vector_to(b)?.cross(a.vector_to(c)?)?;
-        let direction = start.vector_to(end)?;
-        let denominator = normal.dot(direction)?;
-        if denominator != 0.0 {
-            let parameter = normal.dot(start.vector_to(a)?)? / denominator;
-            if (0.0..=1.0).contains(&parameter) {
-                let point = interpolate(start, end, parameter)?;
-                if point.distance_to(mesh.closest_point_on_face(index, point)?)?
-                    <= tolerance.absolute()
-                {
-                    return Ok(true);
+        for triangle in [[0, 1, 2], [0, 2, 3]] {
+            if triangle[2] >= indices.len() {
+                continue;
+            }
+            let [a, b, c] = triangle.map(|corner| vertices[indices[corner] as usize]);
+            let normal = a.vector_to(b)?.cross(a.vector_to(c)?)?;
+            let denominator = normal.dot(direction)?;
+            if denominator != 0.0 {
+                let parameter = normal.dot(start.vector_to(a)?)? / denominator;
+                if (0.0..=1.0).contains(&parameter) {
+                    let point = interpolate(start, end, parameter)?;
+                    if point.distance_to(mesh.closest_point_on_face(index, point)?)?
+                        <= tolerance.absolute()
+                    {
+                        return Ok(true);
+                    }
                 }
             }
         }
@@ -319,6 +322,25 @@ mod tests {
 
     fn line(a: Point3, b: Point3) -> Geometry {
         Geometry::Line(LineSegment::try_new(a, b, Tolerance::DEFAULT).unwrap())
+    }
+
+    #[test]
+    fn segment_crosses_second_triangle_of_warped_quad() {
+        let mesh = TriangleMesh::try_new_faces(
+            vec![p(0., 0., 0.), p(1., 0., 0.), p(1., 1., 0.), p(0., 1., 1.)],
+            vec![MeshFace::Quad([0, 1, 2, 3])],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(
+            segment_hits_mesh_surface(
+                &mesh,
+                p(0.2, 0.8, 0.7),
+                p(0.2, 0.8, 0.5),
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+        );
     }
 
     #[test]
