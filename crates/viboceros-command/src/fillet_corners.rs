@@ -48,7 +48,7 @@ impl Command for FilletCornersCommand {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use viboceros_geometry::{CurveSegment3, PolyCurve3};
+    use viboceros_geometry::{CurveSegment3, NurbsCurve, PolyCurve3};
 
     #[test]
     fn rounds_selected_open_and_closed_polylines_in_one_undo_step() {
@@ -219,6 +219,47 @@ mod tests {
         };
         assert_eq!(result.segments().len(), 3);
         assert!(matches!(result.segments()[1], CurveSegment3::Arc(_)));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(id).unwrap().geometry(),
+            &Geometry::PolyCurve(source)
+        );
+    }
+
+    #[test]
+    fn nurbs_line_kink_is_rounded_in_place_and_undoable() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![p(0., 0.), p(2., 0.), p(2., 2.)],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        let source = PolyCurve3::try_new(vec![
+            CurveSegment3::NurbsCurve(curve),
+            CurveSegment3::Line(
+                LineSegment::try_new(p(2., 2.), p(6., 2.), Tolerance::DEFAULT).unwrap(),
+            ),
+        ])
+        .unwrap();
+        let id = document
+            .add_geometry(Geometry::PolyCurve(source.clone()))
+            .unwrap();
+        document
+            .select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "FilletCorners Radius=0.5")
+            .unwrap();
+        let Geometry::PolyCurve(result) = document.object(id).unwrap().geometry() else {
+            panic!("filleted result is a polycurve")
+        };
+        assert_eq!(result.segments().len(), 3);
+        assert!(matches!(result.segments()[0], CurveSegment3::NurbsCurve(_)));
+        assert!(matches!(result.segments()[1], CurveSegment3::Arc(_)));
+        assert!(matches!(result.segments()[2], CurveSegment3::Line(_)));
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(
             document.object(id).unwrap().geometry(),

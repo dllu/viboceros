@@ -26,6 +26,11 @@ fn fillet_corners_geometry_matches_saved_rhino_samples() {
         assert_eq!(row.value["closed"], reference["value"]["closed"]);
         let epsilon = if matches!(
             row.id.as_str(),
+            "quadratic-nurbs-to-line-kink" | "line-to-quadratic-nurbs-kink"
+        ) {
+            1e-7
+        } else if matches!(
+            row.id.as_str(),
             "arc-to-line-kink"
                 | "line-to-arc-kink"
                 | "arc-to-line-and-line-corner"
@@ -44,7 +49,11 @@ fn fillet_corners_geometry_matches_saved_rhino_samples() {
         };
         let actual_length = row.value["length"].as_f64().unwrap();
         let expected_length = reference["value"]["length"].as_f64().unwrap();
-        assert!((actual_length - expected_length).abs() < epsilon);
+        assert!(
+            (actual_length - expected_length).abs() < epsilon,
+            "{}: length {actual_length} != {expected_length}",
+            row.id
+        );
         let samples = row.value["samples"].as_array().unwrap();
         let expected = reference["value"]["samples"].as_array().unwrap();
         let sample_count = request

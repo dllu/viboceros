@@ -10,6 +10,7 @@ mod polycurve;
 use ellipse::{
     ellipse_offset_side, ellipse_region_contains, ellipse_through_distance, offset_ellipse,
 };
+pub(crate) use nurbs::offset_plane as nurbs_offset_plane;
 use nurbs::{
     linear_nurbs_proxy, nurbs_offset_side, nurbs_region_contains, nurbs_region_inward_sign,
     nurbs_through_distance, offset_nurbs, offset_nurbs_chamfer, offset_nurbs_open_gaps,

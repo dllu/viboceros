@@ -77,7 +77,7 @@ struct Sample {
     tangent: Vector3,
 }
 
-pub(super) fn offset_plane(
+pub(crate) fn offset_plane(
     curve: &NurbsCurve,
     fallback: UnitVector3,
     tolerance: Tolerance,

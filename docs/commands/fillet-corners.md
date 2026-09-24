@@ -4,7 +4,7 @@
 
 Select one or more open or closed polylines or supported polycurves, then enter
 `FilletCorners 0.5` or `FilletCorners Radius=0.5`. Turns between straight spans
-and supported joints involving circular arcs receive exact
+and supported joints involving circular arcs or planar NURBS curves receive exact
 circular arcs tangent to both sides.
 The radius must exceed the document absolute tolerance. Each source segment
 must have room for the setbacks at both ends. Adjacent arcs may meet at a tangent point.
@@ -23,24 +23,30 @@ Coplanar kinks between a native circular arc and a line, polyline, or linear
 NURBS leaf are also rounded when the radius fits both sides. Straight leaves
 are split into their exact line spans when needed; trimmed arcs remain native.
 Coplanar kinks between two circular arcs also receive a native tangent arc.
+Coplanar kinks between a curved NURBS leaf and a line receive a native tangent
+arc while the NURBS remains a trimmed NURBS leaf.
 For closed polycurves, a sharp seam between straight leaves also receives a
 fillet, and the result starts at that fillet's incoming tangent point.
-Kinks involving curved NURBS remain to be implemented, as do viewport radius
-picking and interactive preview.
+Other kinks involving curved NURBS, including NURBS-to-NURBS and NURBS-to-arc
+junctions, remain to be implemented, as do viewport radius picking and
+interactive preview.
 
 The [geometry fixture](../../tools/rhino_oracle/fixtures/curve_fillet_corners.json)
 and [saved Rhino response](../../tools/rhino_oracle/observations/curve_fillet_corners.json)
 compare open, closed, tangent-meeting, and spatial polylines, three straight
-polycurves, and fifteen polycurves with smooth or filleted curved leaves against
-RhinoCommon's public `CreateFilletCornersCurve` method. Twenty-one cases use 65 equal arc-length
-stations; the quadratic NURBS case uses 17 fixed closest-point probes to avoid
-differences in the two engines' arc-length inversion. Closure and total length
-also agree. The largest sampled coordinate difference is `7.5e-9`.
+polycurves, and seventeen polycurves with smooth or filleted curved leaves against
+RhinoCommon's public `CreateFilletCornersCurve` method. Twenty-three cases use 65
+equal arc-length stations; the smooth quadratic NURBS case uses 17 fixed
+closest-point probes to avoid differences in the two engines' arc-length
+inversion. Closure and total length also agree. The largest sampled coordinate
+difference is `5.1e-8`, in a curved NURBS fillet. The two NURBS-to-line cases
+have a `1e-7` comparison tolerance; earlier cases retain their tighter saved
+oracle tolerances.
 Rhino places a closed fillet result's seam at the incoming tangent
 point of the source seam corner; the native result follows that convention. Run:
 
 ```sh
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_fillet_corners.json \
-  --absolute-epsilon 1e-8 --relative-epsilon 1e-11 --timeout 240
+  --absolute-epsilon 1e-7 --relative-epsilon 1e-11 --timeout 240
 ```
