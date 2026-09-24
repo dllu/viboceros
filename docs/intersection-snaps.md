@@ -2,9 +2,11 @@
 
 `Int` in the Snap modes menu enables persistent intersection capture. At a
 point prompt, enter `Int` or `Intersection` for one pick. It is initially off.
-The mode finds crossings of straight line and polyline segments, degree-one
-NURBS spans, straight surface and B-rep edges, mesh face-boundary wires, and
-circles, circular arcs, and ellipses against straight wires and each other. Mesh wires
+The mode finds crossings among straight line and polyline segments, degree-one
+NURBS spans, straight surface and B-rep boundaries, and mesh face-boundary
+wires. Circles, circular arcs, and ellipses intersect straight wires and each
+other. Curved NURBS spans, including surface and B-rep boundaries, intersect
+straight wires. Mesh wires
 require `SnapToMeshes Enable`; ordinary curves do not. It works in parallel
 and perspective viewports and leaves the source geometry unchanged.
 
@@ -80,8 +82,16 @@ cover circle-ellipse, circle-arc, ellipse-ellipse, and tangencies. Projected
 conics are fitted in normalized screen coordinates and validated against
 interleaved samples. Roots on the first exact locus are isolated with sign
 brackets and stationary points; candidates are checked against the second
-locus. All 94 retained picks replay with matching kind and source and points
-within `1e-9` model units.
+locus. [Curved NURBS and line inputs](../tools/rhino_oracle/fixtures/intersection_nurbs_line_snaps.json)
+with [Rhino picks](../tools/rhino_oracle/observations/intersection_nurbs_line_snaps.json)
+cover a quadratic's two crossings, tangency, miss, apparent and perspective
+crossings, reversed source order, and a rational curve.
+[Multi-span inputs](../tools/rhino_oracle/fixtures/intersection_nurbs_spans_snaps.json)
+and [observation](../tools/rhino_oracle/observations/intersection_nurbs_spans_snaps.json)
+verify an interior quadratic span. Each span is evaluated on its exact NURBS
+locus, with sign and stationary-point brackets; a knot jump is never bridged
+by a chord. All 103 retained ordinary picks replay with matching kind and
+source and points within `1e-9` model units.
 
 [Near-tangent inputs](../tools/rhino_oracle/fixtures/intersection_near_tangent_snaps.json)
 with [Rhino picks](../tools/rhino_oracle/observations/intersection_near_tangent_snaps.json),
@@ -96,8 +106,10 @@ lexicographically smaller center. All 22 picks match in kind and
 source; model points agree within `5e-8`. Rhino's observed points differ from
 the exact circle intersection by about `2.4e-8` in the rotated-frame case.
 
-Other curved loci, curved self-intersections, surface isocurves,
+Curved NURBS pairs, curved NURBS against conics, curved self-intersections, surface isocurves,
 occlusion, and multi-object intersection priority need further work. Candidate
 mesh wires use the existing snapshot-cached bounds hierarchy; the remaining
 near-cursor segment pairs are examined for crossings. Worst-case pair counts
 can still grow quadratically where many projected wires or conics overlap.
+Curved NURBS root search uses 64 stations per knot span and can miss multiple
+extrema packed into one interval; certified high-degree isolation remains open.

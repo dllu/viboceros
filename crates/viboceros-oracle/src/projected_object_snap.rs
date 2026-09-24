@@ -39,6 +39,11 @@ pub enum SnapSource {
         x_axis: [f64; 3],
         y_axis: [f64; 3],
     },
+    Nurbs {
+        degree: usize,
+        control_points: Vec<ControlPoint>,
+        knots: Vec<f64>,
+    },
     Mesh {
         vertices: Vec<[f64; 3]>,
         faces: Vec<Vec<u32>>,
@@ -100,6 +105,22 @@ impl SnapSource {
                 UnitVector3::try_new(y_axis[0], y_axis[1], y_axis[2], tolerance)?,
                 tolerance,
             )?),
+            Self::Nurbs {
+                degree,
+                control_points,
+                knots,
+            } => {
+                if control_points.len() > 256 || *degree > 16 {
+                    return Err(ProbeError::FixtureInvariant(
+                        "snap NURBS exceeds bounded probe size",
+                    ));
+                }
+                Geometry::NurbsCurve(NurbsCurve::try_new_rational(
+                    *degree,
+                    weighted_points(control_points)?,
+                    knots.clone(),
+                )?)
+            }
             Self::Mesh { vertices, faces } => {
                 if !(3..=4096).contains(&vertices.len()) || !(1..=8192).contains(&faces.len()) {
                     return Err(ProbeError::FixtureInvariant(

@@ -76,6 +76,20 @@ def validate(operation):
                     or not all(point(source[key]) for key in ("center", "x_axis", "y_axis"))
                     or not all(finite(source[key]) and source[key] > 0 for key in ("radius_x", "radius_y"))):
                 raise ValueError("invalid point snap ellipse")
+        elif source.get("type") == "nurbs":
+            if (set(source) != set(("type", "degree", "control_points", "knots"))
+                    or type(source["degree"]) is not int or not 1 <= source["degree"] <= 16
+                    or not isinstance(source["control_points"], list)
+                    or not source["degree"]+1 <= len(source["control_points"]) <= 256
+                    or not isinstance(source["knots"], list)
+                    or len(source["knots"]) != len(source["control_points"])+source["degree"]+1
+                    or not all(finite(knot) for knot in source["knots"])):
+                raise ValueError("invalid point snap NURBS structure")
+            for control in source["control_points"]:
+                if (not isinstance(control, dict) or set(control) != set(("point", "weight"))
+                        or not point(control["point"]) or not finite(control["weight"])
+                        or control["weight"] == 0):
+                    raise ValueError("invalid point snap NURBS control")
         elif source.get("type") == "mesh":
             if set(source) != set(("type", "vertices", "faces")): raise ValueError("invalid point snap mesh fields")
             vertices, faces = source["vertices"], source["faces"]

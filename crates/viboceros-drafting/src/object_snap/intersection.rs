@@ -10,6 +10,7 @@ use viboceros_geometry::{
 };
 
 mod conic_pair;
+mod nurbs_line;
 
 #[derive(Clone, Copy)]
 struct Segment {
@@ -28,6 +29,14 @@ struct Conic {
     owner: ObjectId,
     order: usize,
     locus: ConicLocus,
+    hover_distance: Real,
+}
+
+#[derive(Clone, Copy)]
+struct CurvedNurbs<'a> {
+    owner: ObjectId,
+    order: usize,
+    curve: &'a NurbsCurve,
     hover_distance: Real,
 }
 
@@ -143,6 +152,7 @@ pub(super) fn visit(
 ) {
     let mut segments = Vec::new();
     let mut conics = Vec::new();
+    let mut curved_nurbs = Vec::new();
     for (order, object) in document.objects().enumerate() {
         let attributes = object.attributes();
         if !attributes.is_visible() || !visible_layers.contains(&attributes.layer_id()) {
@@ -164,7 +174,12 @@ pub(super) fn visit(
                     add(segment.start(), segment.end(), false);
                 }
             }
-            Geometry::NurbsCurve(curve) => add_linear_nurbs(curve, &mut add),
+            Geometry::NurbsCurve(curve) => {
+                add_linear_nurbs(curve, &mut add);
+                if let Some(curve) = captured_curved_nurbs(owner, order, curve, metric) {
+                    curved_nurbs.push(curve);
+                }
+            }
             Geometry::Circle(circle) => add_conic(
                 &mut conics,
                 owner,
@@ -203,6 +218,12 @@ pub(super) fn visit(
                             ConicLocus::Ellipse(*ellipse),
                             metric,
                         ),
+                        CurveRef::NurbsCurve(curve) => {
+                            if let Some(curve) = captured_curved_nurbs(owner, order, curve, metric)
+                            {
+                                curved_nurbs.push(curve);
+                            }
+                        }
                         _ => {}
                     }
                 }
@@ -210,6 +231,9 @@ pub(super) fn visit(
             Geometry::Brep(brep) => {
                 for edge in brep.edges() {
                     add_linear_nurbs(edge.curve(), &mut add);
+                    if let Some(curve) = captured_curved_nurbs(owner, order, edge.curve(), metric) {
+                        curved_nurbs.push(curve);
+                    }
                 }
             }
             Geometry::NurbsSurface(_) => {
@@ -276,6 +300,55 @@ pub(super) fn visit(
             conic_pair::visit(conics[first], conics[second], metric, emit);
         }
     }
+    for curve in curved_nurbs {
+        for &segment in &segments {
+            nurbs_line::visit(curve, segment, metric, emit);
+        }
+    }
+    for (order, object) in document.objects().enumerate() {
+        let attributes = object.attributes();
+        if !attributes.is_visible() || !visible_layers.contains(&attributes.layer_id()) {
+            continue;
+        }
+        if !matches!(object.geometry(), Geometry::NurbsSurface(_)) {
+            continue;
+        }
+        for boundary in cache.geometry_curves(object, document.tolerance()) {
+            if let Some(curve) = captured_curved_nurbs(object.id(), order, &boundary.curve, metric)
+            {
+                for &segment in &segments {
+                    nurbs_line::visit(curve, segment, metric, emit);
+                }
+            }
+        }
+    }
+}
+
+fn captured_curved_nurbs<'a>(
+    owner: ObjectId,
+    order: usize,
+    curve: &'a NurbsCurve,
+    metric: &impl SnapMetric,
+) -> Option<CurvedNurbs<'a>> {
+    if curve.degree() <= 1 {
+        return None;
+    }
+    let common_sign = curve.control_points().iter().all(|point| {
+        point.weight().is_sign_positive() == curve.control_points()[0].weight().is_sign_positive()
+    });
+    if common_sign {
+        let bounds = curve.control_point_bounds();
+        if proximity::outside_bounds(bounds.min().to_array(), bounds.max().to_array(), metric) {
+            return None;
+        }
+    }
+    let hover_distance = proximity::nurbs_distance(curve, common_sign, metric)?;
+    Some(CurvedNurbs {
+        owner,
+        order,
+        curve,
+        hover_distance,
+    })
 }
 
 fn add_conic(

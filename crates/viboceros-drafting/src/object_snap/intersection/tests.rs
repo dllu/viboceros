@@ -169,6 +169,95 @@ fn polyline_and_degree_one_nurbs_segments_share_intersection_capture() {
 }
 
 #[test]
+fn quadratic_nurbs_crosses_and_touches_finite_wires_without_bridging_a_knot_jump() {
+    let arch = || {
+        Geometry::NurbsCurve(
+            NurbsCurve::try_new(
+                2,
+                vec![p(-2., -2., 0.), p(0., 2., 0.), p(2., -2., 0.)],
+                vec![0., 0., 0., 1., 1., 1.],
+            )
+            .unwrap(),
+        )
+    };
+    for (height, cursor, expected) in [
+        (
+            -1.,
+            [-2.0_f64.sqrt(), -1.],
+            Some(p(-2.0_f64.sqrt(), -1., 0.)),
+        ),
+        (-1., [2.0_f64.sqrt(), -1.], Some(p(2.0_f64.sqrt(), -1., 0.))),
+        (0., [0., 0.], Some(p(0., 0., 0.))),
+        (1., [0., 1.], None),
+    ] {
+        let mut doc = Document::default();
+        doc.add_geometry(arch()).unwrap();
+        doc.add_geometry(line(p(-3., height, 0.), p(3., height, 0.)))
+            .unwrap();
+        let hit = ObjectSnapCache::default()
+            .nearest_axis_aligned_with_options(
+                &doc,
+                PointCloudProjection::Xy,
+                p(0., 0., 0.),
+                cursor,
+                0.2,
+                ObjectSnapOptions {
+                    modes: ObjectSnapModes::only(ObjectSnapKind::Intersection),
+                    mesh_edges: false,
+                },
+            )
+            .unwrap();
+        match (hit, expected) {
+            (Some(hit), Some(point)) => {
+                assert!(hit.point().distance_to(point).unwrap() < 1e-9);
+            }
+            (None, None) => {}
+            (actual, expected) => panic!("unexpected snap: {actual:?} {expected:?}"),
+        }
+    }
+    let mut doc = Document::default();
+    doc.add_geometry(arch()).unwrap();
+    doc.add_geometry(line(p(-1., -1., 0.), p(1., -1., 0.)))
+        .unwrap();
+    assert!(
+        ObjectSnapCache::default()
+            .nearest_axis_aligned_with_options(
+                &doc,
+                PointCloudProjection::Xy,
+                p(0., 0., 0.),
+                [-2.0_f64.sqrt(), -1.],
+                0.2,
+                ObjectSnapOptions {
+                    modes: ObjectSnapModes::only(ObjectSnapKind::Intersection),
+                    mesh_edges: false,
+                },
+            )
+            .unwrap()
+            .is_none()
+    );
+    let mut doc = Document::default();
+    doc.add_geometry(Geometry::NurbsCurve(
+        NurbsCurve::try_new(
+            2,
+            vec![
+                p(-3., -2., 0.),
+                p(-2., -1., 0.),
+                p(-1., -2., 0.),
+                p(1., 2., 0.),
+                p(2., 1., 0.),
+                p(3., 2., 0.),
+            ],
+            vec![0., 0., 0., 0.5, 0.5, 0.5, 1., 1., 1.],
+        )
+        .unwrap(),
+    ))
+    .unwrap();
+    doc.add_geometry(line(p(0., -3., 0.), p(0., 3., 0.)))
+        .unwrap();
+    assert!(snap(&doc, false).is_none());
+}
+
+#[test]
 fn a_single_polyline_snaps_at_its_corner_and_at_its_own_crossing() {
     for (vertices, expected) in [
         (
@@ -230,6 +319,51 @@ fn straight_surface_boundary_intersects_a_line() {
             .distance_to(p(0., 0., 0.))
             .unwrap()
             < 1e-12
+    );
+}
+
+#[test]
+fn curved_surface_boundary_intersects_a_line_on_its_exact_locus() {
+    let surface = NurbsSurface::try_new(
+        2,
+        1,
+        3,
+        2,
+        vec![
+            p(-2., -2., 0.),
+            p(0., 2., 0.),
+            p(2., -2., 0.),
+            p(-2., 3., 0.),
+            p(0., 7., 0.),
+            p(2., 3., 0.),
+        ],
+        vec![0., 0., 0., 1., 1., 1.],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap();
+    let mut doc = Document::default();
+    doc.add_geometry(Geometry::NurbsSurface(surface)).unwrap();
+    doc.add_geometry(line(p(-3., -1., 0.), p(3., -1., 0.)))
+        .unwrap();
+    let hit = ObjectSnapCache::default()
+        .nearest_axis_aligned_with_options(
+            &doc,
+            PointCloudProjection::Xy,
+            p(0., 0., 0.),
+            [-2.0_f64.sqrt(), -1.],
+            0.2,
+            ObjectSnapOptions {
+                modes: ObjectSnapModes::only(ObjectSnapKind::Intersection),
+                mesh_edges: false,
+            },
+        )
+        .unwrap()
+        .unwrap();
+    assert!(
+        hit.point()
+            .distance_to(p(-2.0_f64.sqrt(), -1., 0.))
+            .unwrap()
+            < 1e-9
     );
 }
 
