@@ -2,8 +2,8 @@ use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 
 use crate::{
     AffineTransform3, BoundingBox3, Brep, BrepFace, Circle3, GeometryError, NurbsCurve,
-    NurbsSurface, Plane, Point3, Polyline3, Real, Tolerance, UnitVector3, intersect_three_planes,
-    join_polylines,
+    NurbsSurface, Plane, Point3, Polyline3, Real, Tolerance, UnitVector3, WeightedPoint3,
+    intersect_three_planes, join_polylines,
 };
 
 const MAX_CURVE_SURFACE_NODE_PAIRS: usize = 1_000_000;
@@ -519,13 +519,30 @@ fn curve_brep_intersection_events_with_transform(
 /// patches return their area-overlap perimeter or shared edge; a lone shared
 /// corner produces no event, matching Rhino. Canonical spheres intersect
 /// planar finite patches in exact rational circular curves or tangent points.
-/// Parallel disjoint planes return no events. Other non-planar and more general coincident inputs are reported
+/// Planar sections of canonical cylinders produce exact circles, rational
+/// ellipses, or straight generatrices, clipped to finite source regions.
+/// Parallel disjoint planes return no
+/// events. Other non-planar and more general coincident inputs are reported
 /// explicitly until their intersection-curve paths are implemented.
 pub fn surface_surface_intersection_events(
     first: &NurbsSurface,
     second: &NurbsSurface,
     tolerance: Tolerance,
 ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
+    if let Some((frame, radius, height)) = first.canonical_cylinder(tolerance)?
+        && let Some(plane) = second.plane(tolerance)?
+    {
+        return cylinder_planar_surface_intersection_events(
+            first, frame, radius, height, second, plane, tolerance,
+        );
+    }
+    if let Some((frame, radius, height)) = second.canonical_cylinder(tolerance)?
+        && let Some(plane) = first.plane(tolerance)?
+    {
+        return cylinder_planar_surface_intersection_events(
+            second, frame, radius, height, first, plane, tolerance,
+        );
+    }
     if let Some((center, radius)) = first.canonical_sphere(tolerance)?
         && let Some(plane) = second.plane(tolerance)?
     {
@@ -667,7 +684,111 @@ fn sphere_planar_surface_intersection_events(
         tolerance,
     )?
     .to_nurbs()?;
-    curve_surface_intersection_events(&circle, planar_surface, tolerance)?
+    intersect_curve_with_planar_surface(&circle, planar_surface, tolerance)
+}
+
+fn cylinder_planar_surface_intersection_events(
+    cylinder_surface: &NurbsSurface,
+    frame: crate::Frame3,
+    radius: Real,
+    height: Real,
+    planar_surface: &NurbsSurface,
+    plane: Plane,
+    tolerance: Tolerance,
+) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
+    let axis = frame.z_axis().as_vector();
+    let normal = plane.normal().as_vector();
+    let parallel = axis.cross(normal)?.length()? <= tolerance.angular();
+    let axial_dot = axis.dot(normal)?;
+    if parallel {
+        let axial_position = -plane.signed_distance_to(frame.origin())? / axial_dot;
+        if axial_position < -tolerance.absolute() || axial_position > height + tolerance.absolute()
+        {
+            return Ok(Vec::new());
+        }
+        let center = frame.point_at([0.0, 0.0, axial_position.clamp(0.0, height)])?;
+        let circle = Circle3::try_new(center, radius, plane.normal(), tolerance)?.to_nurbs()?;
+        return intersect_curve_with_planar_surface(&circle, planar_surface, tolerance);
+    }
+    if axial_dot.abs() > tolerance.angular() {
+        let circle =
+            Circle3::try_new(frame.origin(), radius, frame.z_axis(), tolerance)?.to_nurbs()?;
+        let controls = circle
+            .control_points()
+            .iter()
+            .map(|control| {
+                WeightedPoint3::try_new(
+                    control.point().translated(
+                        axis.scaled(-plane.signed_distance_to(control.point())? / axial_dot)?,
+                    )?,
+                    control.weight(),
+                )
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        let ellipse =
+            NurbsCurve::try_new_rational(circle.degree(), controls, circle.knots().to_vec())?;
+        let inside_rims = ellipse
+            .control_points()
+            .iter()
+            .try_fold(true, |inside, control| {
+                let height_at_control = frame.origin().vector_to(control.point())?.dot(axis)?;
+                Ok::<bool, GeometryError>(
+                    inside && height_at_control >= 0.0 && height_at_control <= height,
+                )
+            })?;
+        if inside_rims {
+            return intersect_curve_with_planar_surface(&ellipse, planar_surface, tolerance);
+        }
+        let mut result = Vec::new();
+        for event in curve_surface_intersection_events(&ellipse, cylinder_surface, tolerance)? {
+            if let CurveSurfaceIntersectionEvent::Overlap(overlap) = event {
+                result.extend(intersect_curve_with_planar_surface(
+                    &ellipse.try_trimmed(overlap.curve_interval())?,
+                    planar_surface,
+                    tolerance,
+                )?);
+            }
+        }
+        return Ok(result);
+    }
+    let signed_distance = plane.signed_distance_to(frame.origin())?;
+    let distance_tolerance = tolerance
+        .absolute()
+        .max(tolerance.relative() * radius.max(height));
+    if signed_distance.abs() > radius + distance_tolerance {
+        return Ok(Vec::new());
+    }
+    let base = frame
+        .origin()
+        .translated(normal.scaled(-signed_distance)?)?;
+    let transverse = axis.cross(normal)?.normalized_nonzero()?.as_vector();
+    let squared_offset = (radius - signed_distance.abs()) * (radius + signed_distance.abs());
+    let offset = squared_offset.max(0.0).sqrt();
+    let signs: &[Real] = if offset <= distance_tolerance {
+        // Rhino reports both coincident branches at a tangent cylinder plane.
+        &[0.0, 0.0]
+    } else {
+        &[-1.0, 1.0]
+    };
+    let mut result = Vec::new();
+    for sign in signs {
+        let line_origin = base.translated(transverse.scaled(sign * offset)?)?;
+        let line = unit_speed_line(line_origin, frame.z_axis(), 0.0, height)?;
+        result.extend(intersect_curve_with_planar_surface(
+            &line,
+            planar_surface,
+            tolerance,
+        )?);
+    }
+    Ok(result)
+}
+
+fn intersect_curve_with_planar_surface(
+    curve: &NurbsCurve,
+    planar_surface: &NurbsSurface,
+    tolerance: Tolerance,
+) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
+    curve_surface_intersection_events(curve, planar_surface, tolerance)?
         .into_iter()
         .map(|event| match event {
             CurveSurfaceIntersectionEvent::Point(point) => {
@@ -675,7 +796,7 @@ fn sphere_planar_surface_intersection_events(
             }
             CurveSurfaceIntersectionEvent::Overlap(overlap) => {
                 Ok(SurfaceSurfaceIntersectionEvent::Curve(
-                    circle.try_trimmed(overlap.curve_interval())?,
+                    curve.try_trimmed(overlap.curve_interval())?,
                 ))
             }
         })
@@ -3397,6 +3518,149 @@ mod tests {
             events.as_slice(),
             [SurfaceSurfaceIntersectionEvent::Curve(_)]
         ));
+    }
+
+    #[test]
+    fn cylinder_plane_sections_are_exact_circles_and_parallel_lines() {
+        let frame = crate::Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cylinder = NurbsSurface::try_cylinder(frame, 2.0, 0.0, 4.0).unwrap();
+        let horizontal = horizontal_rectangle(-3.0, 3.0, -3.0, 3.0, 2.0);
+        let circle =
+            surface_surface_intersection_events(&cylinder, &horizontal, Tolerance::DEFAULT)
+                .unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(circle)] = circle.as_slice() else {
+            panic!("expected one circular section, got {circle:#?}")
+        };
+        assert!(circle.is_closed().unwrap());
+        assert!(
+            (circle.length(Tolerance::DEFAULT).unwrap() - 4.0 * std::f64::consts::PI).abs() < 1e-7
+        );
+
+        let vertical = |x| {
+            NurbsSurface::try_bilinear([
+                point(x, -3.0, -1.0),
+                point(x, 3.0, -1.0),
+                point(x, 3.0, 5.0),
+                point(x, -3.0, 5.0),
+            ])
+            .unwrap()
+        };
+        let crossing =
+            surface_surface_intersection_events(&cylinder, &vertical(0.0), Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(crossing.len(), 2);
+        for event in crossing {
+            let SurfaceSurfaceIntersectionEvent::Curve(line) = event else {
+                panic!("expected a straight generatrix")
+            };
+            assert_eq!(line.degree(), 1);
+            assert!((line.length(Tolerance::DEFAULT).unwrap() - 4.0).abs() < 1e-9);
+        }
+        let clipped_patch = NurbsSurface::try_bilinear([
+            point(0.0, -3.0, 1.0),
+            point(0.0, 3.0, 1.0),
+            point(0.0, 3.0, 3.0),
+            point(0.0, -3.0, 3.0),
+        ])
+        .unwrap();
+        let clipped =
+            surface_surface_intersection_events(&cylinder, &clipped_patch, Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(clipped.len(), 2);
+        for event in clipped {
+            let SurfaceSurfaceIntersectionEvent::Curve(line) = event else {
+                panic!("expected a clipped straight generatrix")
+            };
+            assert!((line.length(Tolerance::DEFAULT).unwrap() - 2.0).abs() < 1e-9);
+        }
+        let tangent =
+            surface_surface_intersection_events(&cylinder, &vertical(2.0), Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(tangent.len(), 2);
+        assert_eq!(tangent[0], tangent[1]);
+        let disjoint =
+            surface_surface_intersection_events(&cylinder, &vertical(3.0), Tolerance::DEFAULT)
+                .unwrap();
+        assert!(disjoint.is_empty());
+        let oblique = NurbsSurface::try_bilinear([
+            point(-3.0, -3.0, 0.5),
+            point(3.0, -3.0, 3.5),
+            point(3.0, 3.0, 3.5),
+            point(-3.0, 3.0, 0.5),
+        ])
+        .unwrap();
+        let oblique_events =
+            surface_surface_intersection_events(&cylinder, &oblique, Tolerance::DEFAULT).unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(ellipse)] = oblique_events.as_slice() else {
+            panic!("expected one exact oblique elliptical section, got {oblique_events:#?}")
+        };
+        assert!(ellipse.is_closed().unwrap());
+        assert_eq!(ellipse.degree(), 2);
+        assert!((ellipse.length(Tolerance::DEFAULT).unwrap() - 13.31833512).abs() < 1e-5);
+        for control in ellipse.control_points() {
+            assert!(
+                oblique
+                    .plane(Tolerance::DEFAULT)
+                    .unwrap()
+                    .unwrap()
+                    .signed_distance_to(control.point())
+                    .unwrap()
+                    .abs()
+                    < 1e-9
+            );
+        }
+        let steep = NurbsSurface::try_bilinear([
+            point(-3.0, -3.0, -4.0),
+            point(3.0, -3.0, 8.0),
+            point(3.0, 3.0, 8.0),
+            point(-3.0, 3.0, -4.0),
+        ])
+        .unwrap();
+        let clipped_ellipse =
+            surface_surface_intersection_events(&cylinder, &steep, Tolerance::DEFAULT).unwrap();
+        assert_eq!(clipped_ellipse.len(), 2);
+        for event in clipped_ellipse {
+            let SurfaceSurfaceIntersectionEvent::Curve(arc) = event else {
+                panic!("expected exact elliptical arc sections")
+            };
+            assert!(!arc.is_closed().unwrap());
+            assert!((arc.length(Tolerance::DEFAULT).unwrap() - 4.51582693).abs() < 1e-5);
+            for parameter in [*arc.domain().start(), *arc.domain().end()] {
+                let point = arc.evaluate(parameter).unwrap();
+                assert!(point.z() >= -1e-8 && point.z() <= 4.0 + 1e-8);
+                assert!((point.x().hypot(point.y()) - 2.0).abs() < 1e-8);
+            }
+        }
+    }
+
+    #[test]
+    fn oblique_cylinder_section_respects_rotated_axis() {
+        let frame = crate::Frame3::try_from_normal(
+            point(1.0, 2.0, 3.0),
+            crate::Vector3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cylinder = NurbsSurface::try_cylinder(frame, 2.0, 0.0, 4.0).unwrap();
+        let patch = NurbsSurface::try_bilinear([
+            frame.point_at([-3.0, -3.0, 0.5]).unwrap(),
+            frame.point_at([3.0, -3.0, 3.5]).unwrap(),
+            frame.point_at([3.0, 3.0, 3.5]).unwrap(),
+            frame.point_at([-3.0, 3.0, 0.5]).unwrap(),
+        ])
+        .unwrap();
+        let events =
+            surface_surface_intersection_events(&cylinder, &patch, Tolerance::DEFAULT).unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(ellipse)] = events.as_slice() else {
+            panic!("expected a rotated elliptical section, got {events:#?}")
+        };
+        assert!(ellipse.is_closed().unwrap());
+        assert!((ellipse.length(Tolerance::DEFAULT).unwrap() - 13.31833512).abs() < 1e-5);
     }
 
     #[test]

@@ -148,6 +148,15 @@ numerical curves for this tangent case. The
 [sphere/plane oracle fixture](../../tools/rhino_oracle/fixtures/sphere_plane_surface_intersection.json)
 and [observations](../../tools/rhino_oracle/observations/sphere_plane_surface_intersection.json)
 record full, clipped, tangent, and disjoint cases.
+Canonical cylinders intersect perpendicular planar patches in exact circles
+and parallel patches in straight generatrices. Oblique sections are exact
+rational ellipses clipped to both finite surfaces. Rhino returns cubic fitted
+curves for those sections; the native rational curves follow the same geometry.
+At a tangent parallel plane, the two coincident generatrices are retained to
+match Rhino's result. The
+[cylinder/plane fixture](../../tools/rhino_oracle/fixtures/cylinder_plane_surface_intersection.json)
+and [observations](../../tools/rhino_oracle/observations/cylinder_plane_surface_intersection.json)
+cover those cases.
 Curve/curve overlaps use the later curve's orientation and parameterization,
 matching Rhino. Pairwise duplicates are intentionally retained when three or
 more source objects meet at one location. Inputs remain in the document and are

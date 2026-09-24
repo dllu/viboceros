@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "operations": [
+    {
+      "id": "perpendicular_secant",
+      "op": "cylinder_plane_surface_intersection",
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 4},
+      "plane": {"origin": [0, 0, 2], "normal": [0, 0, 1], "x_domain": [-3, 3], "y_domain": [-3, 3]}
+    },
+    {
+      "id": "parallel_secant",
+      "op": "cylinder_plane_surface_intersection",
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 4},
+      "plane": {"origin": [0, 0, 2], "normal": [1, 0, 0], "x_domain": [-5, 5], "y_domain": [-5, 5]}
+    },
+    {
+      "id": "parallel_tangent",
+      "op": "cylinder_plane_surface_intersection",
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 4},
+      "plane": {"origin": [2, 0, 2], "normal": [1, 0, 0], "x_domain": [-5, 5], "y_domain": [-5, 5]}
+    },
+    {
+      "id": "parallel_disjoint",
+      "op": "cylinder_plane_surface_intersection",
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 4},
+      "plane": {"origin": [3, 0, 2], "normal": [1, 0, 0], "x_domain": [-5, 5], "y_domain": [-5, 5]}
+    },
+    {
+      "id": "oblique_complete",
+      "op": "cylinder_plane_surface_intersection",
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 4},
+      "plane": {"origin": [0, 0, 2], "normal": [-1, 0, 2], "x_domain": [-5, 5], "y_domain": [-5, 5]}
+    },
+    {
+      "id": "oblique_clipped_by_rims",
+      "op": "cylinder_plane_surface_intersection",
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 4},
+      "plane": {"origin": [0, 0, 2], "normal": [-2, 0, 1], "x_domain": [-8, 8], "y_domain": [-8, 8]}
+    }
+  ]
+}

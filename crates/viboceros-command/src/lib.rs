@@ -26599,6 +26599,125 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_two_cylinder_plane_generatrices() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let wall = NurbsSurface::try_cylinder(frame, 2.0, 0.0, 4.0).unwrap();
+        let plane = NurbsSurface::try_bilinear([
+            Point3::try_new(0.0, -3.0, -1.0).unwrap(),
+            Point3::try_new(0.0, 3.0, -1.0).unwrap(),
+            Point3::try_new(0.0, 3.0, 5.0).unwrap(),
+            Point3::try_new(0.0, -3.0, 5.0).unwrap(),
+        ])
+        .unwrap();
+        let ids = [
+            document.add_geometry(Geometry::NurbsSurface(wall)).unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(plane))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 2 intersection object(s) from 1 object pair(s)"
+        );
+        for object in document.selected_objects() {
+            let Geometry::NurbsCurve(line) = object.geometry() else {
+                panic!("cylinder section should consist of lines")
+            };
+            assert_eq!(line.degree(), 1);
+            assert!((line.length(document.tolerance()).unwrap() - 4.0).abs() < 1e-9);
+        }
+    }
+
+    #[test]
+    fn intersect_retains_rhino_tangent_cylinder_line_multiplicity() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let wall = NurbsSurface::try_cylinder(frame, 2.0, 0.0, 4.0).unwrap();
+        let tangent = NurbsSurface::try_bilinear([
+            Point3::try_new(2.0, -3.0, -1.0).unwrap(),
+            Point3::try_new(2.0, 3.0, -1.0).unwrap(),
+            Point3::try_new(2.0, 3.0, 5.0).unwrap(),
+            Point3::try_new(2.0, -3.0, 5.0).unwrap(),
+        ])
+        .unwrap();
+        let ids = [
+            document.add_geometry(Geometry::NurbsSurface(wall)).unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(tangent))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 2 intersection object(s) from 1 object pair(s)"
+        );
+        let selected = document
+            .selected_objects()
+            .map(|object| object.geometry().clone())
+            .collect::<Vec<_>>();
+        assert_eq!(selected.len(), 2);
+        assert_eq!(selected[0], selected[1]);
+    }
+
+    #[test]
+    fn intersect_outputs_exact_oblique_cylinder_section() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let wall = NurbsSurface::try_cylinder(frame, 2.0, 0.0, 4.0).unwrap();
+        let tilted = NurbsSurface::try_bilinear([
+            Point3::try_new(-3.0, -3.0, 0.5).unwrap(),
+            Point3::try_new(3.0, -3.0, 3.5).unwrap(),
+            Point3::try_new(3.0, 3.0, 3.5).unwrap(),
+            Point3::try_new(-3.0, 3.0, 0.5).unwrap(),
+        ])
+        .unwrap();
+        let ids = [
+            document.add_geometry(Geometry::NurbsSurface(wall)).unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(tilted))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 1 intersection object(s) from 1 object pair(s)"
+        );
+        let Geometry::NurbsCurve(ellipse) = document.selected_objects().next().unwrap().geometry()
+        else {
+            panic!("oblique cylinder section should be an ellipse")
+        };
+        assert_eq!(ellipse.degree(), 2);
+        assert!(ellipse.is_closed().unwrap());
+        assert!((ellipse.length(document.tolerance()).unwrap() - 13.31833512).abs() < 1e-5);
+    }
+
+    #[test]
     fn intersect_outputs_coincident_bilinear_patch_boundaries() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

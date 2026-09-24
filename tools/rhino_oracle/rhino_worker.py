@@ -11824,12 +11824,30 @@ def _execute(operation, iterations, tolerance):
             curve.Dispose()
             brep.Dispose()
 
-    if kind == "sphere_plane_surface_intersection":
-        sphere_def = operation["sphere"]
-        sphere = Rhino.Geometry.Sphere(
-            _point(sphere_def["center"]),
-            _finite(sphere_def["radius"], "sphere radius"),
-        ).ToNurbsSurface()
+    if kind in ("sphere_plane_surface_intersection", "cylinder_plane_surface_intersection"):
+        source_brep = None
+        if kind == "sphere_plane_surface_intersection":
+            sphere_def = operation["sphere"]
+            source = Rhino.Geometry.Sphere(
+                _point(sphere_def["center"]),
+                _finite(sphere_def["radius"], "sphere radius"),
+            ).ToNurbsSurface()
+        else:
+            cylinder_def = operation["cylinder"]
+            cylinder_plane = Rhino.Geometry.Plane(
+                _point(cylinder_def["center"]),
+                _vector(cylinder_def["axis"]),
+            )
+            cylinder_circle = Rhino.Geometry.Circle(
+                cylinder_plane,
+                _finite(cylinder_def["radius"], "cylinder radius"),
+            )
+            cylinder = Rhino.Geometry.Cylinder(
+                cylinder_circle,
+                _finite(cylinder_def["height"], "cylinder height"),
+            )
+            source_brep = cylinder.ToBrep(False, False)
+            source = source_brep.Faces[0].ToNurbsSurface()
         plane_def = operation["plane"]
         plane = Rhino.Geometry.Plane(
             _point(plane_def["origin"]), _vector(plane_def["normal"])
@@ -11842,10 +11860,10 @@ def _execute(operation, iterations, tolerance):
             Rhino.Geometry.Interval(float(y_domain[0]), float(y_domain[1])),
         )
 
-        def intersect_sphere_plane_surfaces():
+        def intersect_analytic_plane_surfaces():
             success, curves, points = (
                 Rhino.Geometry.Intersect.Intersection.SurfaceSurface(
-                    sphere,
+                    source,
                     patch,
                     float(tolerance["absolute"]),
                 )
@@ -11881,9 +11899,11 @@ def _execute(operation, iterations, tolerance):
             }
 
         try:
-            return _measure(iterations, intersect_sphere_plane_surfaces)
+            return _measure(iterations, intersect_analytic_plane_surfaces)
         finally:
-            sphere.Dispose()
+            source.Dispose()
+            if source_brep is not None:
+                source_brep.Dispose()
             patch.Dispose()
 
     if kind == "surface_surface_intersect_command":
