@@ -132,6 +132,24 @@ fn zoom_ends_parses_all_without_changing_interface_state() {
 }
 
 #[test]
+fn show_ends_commands_parse_without_changing_interface_state() {
+    for (input, command) in [
+        ("ShowEnds", InterfaceCommand::ShowEnds),
+        ("'_ShowEndsOff", InterfaceCommand::ShowEndsOff),
+        ("showends", InterfaceCommand::ShowEnds),
+    ] {
+        assert_eq!(parse(input), Some(Ok(command)));
+        let mut current = state();
+        let original = current.clone();
+        current.apply(command).unwrap();
+        assert_eq!(current, original);
+    }
+    for input in ["ShowEnds All", "ShowEndsOff extra"] {
+        assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
+    }
+}
+
+#[test]
 fn view_zoom_scale_option_requires_a_finite_positive_reciprocal() {
     for (input, value) in [
         ("Options View Zoom ScaleFactor=0.9", 0.9),

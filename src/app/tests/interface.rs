@@ -1467,8 +1467,61 @@ fn zoom_ends_preserves_modeling_input_selection_and_document_history() {
     assert_eq!(app.viewports[0].camera_snapshot(), before[0]);
     assert_eq!(
         app.command_log.back().map(String::as_str),
-        Some("No selected visible curve ends to zoom to")
+        Some("No visible curve end markers to zoom to")
     );
+}
+
+#[test]
+fn show_ends_filters_live_markers_and_zoom_uses_session_sources() {
+    let mut app = test_app();
+    for command in ["Polyline 0,0,0 10,10,0 2,0,0", "SelAll", "Line", "0"] {
+        enter(&mut app, command);
+    }
+    let context = egui::Context::default();
+    layout_viewports(&context, &mut app);
+    let pending = app.active_command;
+    let selected = app.document.selected_object_ids().collect::<Vec<_>>();
+    let objects = app.document.objects().cloned().collect::<Vec<_>>();
+    let undo = app.document.undo_label().map(str::to_owned);
+    enter(&mut app, "ShowEnds");
+    let analysis = app.end_analysis.as_ref().unwrap();
+    assert_eq!(analysis.sources, selected);
+    let markers = collect_end_markers(
+        &app.document,
+        analysis.sources.iter().copied(),
+        analysis.options,
+    )
+    .unwrap();
+    assert_eq!(markers.len(), 2);
+    assert_eq!(app.active_command, pending);
+    app.document.clear_selection();
+    app.end_analysis.as_mut().unwrap().options.ends = false;
+    let single_marker = collect_end_markers(
+        &app.document,
+        selected.iter().copied(),
+        app.end_analysis.as_ref().unwrap().options,
+    )
+    .unwrap();
+    assert_eq!(single_marker.len(), 1);
+    enter(&mut app, "ZoomEnds");
+    assert_eq!(
+        app.viewports[0].camera_snapshot().target,
+        nalgebra::Vector3::new(0., 0., 0.)
+    );
+    app.end_analysis.as_mut().unwrap().options.ends = true;
+    enter(&mut app, "ZoomEnds");
+    assert_eq!(
+        app.viewports[0].camera_snapshot().target,
+        nalgebra::Vector3::new(1., 0., 0.)
+    );
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
+    assert_eq!(app.document.undo_label(), undo.as_deref());
+    enter(&mut app, "ShowEndsOff");
+    assert!(app.end_analysis.is_none());
+    let camera = app.viewports[0].camera_snapshot();
+    enter(&mut app, "ZoomEnds");
+    assert_eq!(app.viewports[0].camera_snapshot(), camera);
 }
 
 #[test]

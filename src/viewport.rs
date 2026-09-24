@@ -33,6 +33,9 @@ use viboceros_drafting::TrackAxis;
 mod display_cache;
 mod extents;
 pub(crate) use extents::ZoomExtentsBorders;
+mod end_markers;
+use end_markers::EndMarkerKind;
+pub(crate) use end_markers::{EndMarker, EndMarkerOptions, collect_end_markers};
 mod scene;
 #[cfg(test)]
 use scene::GpuSceneBuilder;
@@ -77,7 +80,7 @@ pub(crate) struct CameraSnapshot {
     orbit_yaw: Real,
     orbit_pitch: Real,
     perspective_camera_distance: Real,
-    target: NaVector3<Real>,
+    pub(crate) target: NaVector3<Real>,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -175,6 +178,8 @@ pub struct ViewportInput<'a> {
     pub edge_curve: Option<&'a NurbsCurve>,
     pub edge_parameters: &'a [Real],
     pub edge_distance_parameters: Option<&'a [Real]>,
+    pub end_markers: &'a [EndMarker],
+    pub current_end_marker: Option<usize>,
 }
 
 fn selection_candidate(
@@ -216,6 +221,8 @@ impl Default for ViewportInput<'_> {
             edge_curve: None,
             edge_parameters: &[],
             edge_distance_parameters: None,
+            end_markers: &[],
+            current_end_marker: None,
         }
     }
 }
@@ -794,6 +801,25 @@ impl Viewport {
             input.selection_preview,
             input.selection_preview_ids,
         );
+        for (index, marker) in input.end_markers.iter().enumerate() {
+            if let Some(pixel) = self.project(marker.point, rect) {
+                let color = if Some(index) == input.current_end_marker {
+                    Color32::from_rgb(230, 95, 25)
+                } else {
+                    match marker.kind {
+                        EndMarkerKind::Start => Color32::from_rgb(30, 170, 80),
+                        EndMarkerKind::End => Color32::from_rgb(45, 125, 225),
+                        EndMarkerKind::Seam => Color32::from_rgb(205, 45, 155),
+                        EndMarkerKind::Joint => Color32::from_rgb(145, 75, 205),
+                    }
+                };
+                painter.circle_filled(pixel, 3.5, color);
+                painter.circle_stroke(pixel, 5.5, Stroke::new(1.25, color));
+                if Some(index) == input.current_end_marker {
+                    painter.circle_stroke(pixel, 8., Stroke::new(1.25, color));
+                }
+            }
+        }
         if let Some(target) = input.point_cloud_remove_target
             && let Some(object) = document.object(target)
             && let Geometry::PointCloud(cloud) = object.geometry()
@@ -2466,6 +2492,61 @@ mod tests {
             Ok(true)
         );
         assert_eq!(viewport.target, NaVector3::new(50., 50., 0.));
+    }
+
+    #[test]
+    fn end_markers_distinguish_open_ends_seams_and_polycurve_joints() {
+        let mut document = Document::default();
+        let polyline = document
+            .add_geometry(Geometry::Polyline(
+                Polyline3::try_new(
+                    vec![point(0., 0., 0.), point(10., 10., 0.), point(2., 0., 0.)],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let normal = UnitVector3::try_new(0., 0., 1., Tolerance::DEFAULT).unwrap();
+        let circle = document
+            .add_geometry(Geometry::Circle(
+                Circle3::try_new(point(20., 0., 0.), 2., normal, Tolerance::DEFAULT).unwrap(),
+            ))
+            .unwrap();
+        let curve = viboceros_geometry::PolyCurve3::try_new(vec![
+            NurbsCurve::try_clamped_uniform(1, vec![point(30., 0., 0.), point(31., 1., 0.)])
+                .unwrap(),
+            NurbsCurve::try_clamped_uniform(1, vec![point(31., 1., 0.), point(32., 0., 0.)])
+                .unwrap(),
+        ])
+        .unwrap();
+        let polycurve = document.add_geometry(Geometry::PolyCurve(curve)).unwrap();
+        let source_ids = [polyline, circle, polycurve];
+        let markers =
+            collect_end_markers(&document, source_ids, EndMarkerOptions::default()).unwrap();
+        assert_eq!(
+            markers.iter().map(|marker| marker.kind).collect::<Vec<_>>(),
+            [
+                EndMarkerKind::Start,
+                EndMarkerKind::End,
+                EndMarkerKind::Seam,
+                EndMarkerKind::Start,
+                EndMarkerKind::Joint,
+                EndMarkerKind::End,
+            ]
+        );
+        assert_eq!(markers[4].point, point(31., 1., 0.));
+        let only_joints = collect_end_markers(
+            &document,
+            source_ids,
+            EndMarkerOptions {
+                starts: false,
+                ends: false,
+                seams: false,
+                joints: true,
+            },
+        )
+        .unwrap();
+        assert_eq!(only_joints, vec![markers[4]]);
     }
 
     #[test]

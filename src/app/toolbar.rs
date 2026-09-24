@@ -110,6 +110,20 @@ impl VibocerosApp {
                         }
                     }
                 });
+                let mut close_end_analysis = false;
+                if let Some(analysis) = self.end_analysis.as_mut() {
+                    egui::containers::menu::MenuButton::new("End Analysis").ui(ui, |ui| {
+                        ui.checkbox(&mut analysis.options.starts, "Open starts");
+                        ui.checkbox(&mut analysis.options.ends, "Open ends");
+                        ui.checkbox(&mut analysis.options.seams, "Closed seams");
+                        ui.checkbox(&mut analysis.options.joints, "Polycurve joints");
+                        ui.separator();
+                        close_end_analysis = ui.button("Close").clicked();
+                    });
+                }
+                if close_end_analysis {
+                    self.apply_interface_command(InterfaceCommand::ShowEndsOff);
+                }
                 ui.separator();
                 for (enabled, label, hint, command) in [
                     (

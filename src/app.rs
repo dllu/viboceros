@@ -24,9 +24,9 @@ use viboceros_geometry::{
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
 use crate::viewport::{
-    CircularSelectionInput, DisplayMode, DraftingInput, FenceSelectionInput, SelectionChoice,
-    SelectionClick, SelectionWindow, ViewKind, Viewport, ViewportInput, ViewportOutput,
-    ZoomExtentsBorders, ZoomTargetInput,
+    CircularSelectionInput, DisplayMode, DraftingInput, EndMarkerOptions, FenceSelectionInput,
+    SelectionChoice, SelectionClick, SelectionWindow, ViewKind, Viewport, ViewportInput,
+    ViewportOutput, ZoomExtentsBorders, ZoomTargetInput, collect_end_markers,
 };
 
 const MAX_LOG_ENTRIES: usize = 100;
@@ -60,6 +60,13 @@ struct FenceSelectionState {
 struct SelectionMenu {
     choice: SelectionChoice,
     highlighted: usize,
+}
+
+#[derive(Clone, Debug)]
+struct EndAnalysisState {
+    sources: Vec<ObjectId>,
+    options: EndMarkerOptions,
+    current: usize,
 }
 
 impl SelectionMenu {
@@ -1390,6 +1397,7 @@ pub struct VibocerosApp {
     zoom_extents_borders: ZoomExtentsBorders,
     zoom_window_pending: bool,
     zoom_factor_pending: Option<usize>,
+    end_analysis: Option<EndAnalysisState>,
     selection_window_override: Option<viboceros_command::interface::RectSelectionMode>,
     selection_menu: Option<SelectionMenu>,
     circular_selection: Option<CircularSelectionState>,
@@ -1444,6 +1452,7 @@ impl VibocerosApp {
             zoom_extents_borders,
             zoom_window_pending: false,
             zoom_factor_pending: None,
+            end_analysis: None,
             selection_window_override: None,
             selection_menu: None,
             circular_selection: None,
@@ -6332,6 +6341,21 @@ impl eframe::App for VibocerosApp {
             self.active_command,
             Some(InteractiveCommand::SelVolumeObject { .. })
         );
+        let end_markers = self
+            .end_analysis
+            .as_ref()
+            .and_then(|analysis| {
+                collect_end_markers(
+                    &self.document,
+                    analysis.sources.iter().copied(),
+                    analysis.options,
+                )
+                .ok()
+            })
+            .unwrap_or_default();
+        let current_end_marker = self.end_analysis.as_ref().and_then(|analysis| {
+            (!end_markers.is_empty()).then_some(analysis.current % end_markers.len())
+        });
         let document = &self.document;
         let curve_points = self
             .plane_prompt
@@ -6431,6 +6455,8 @@ impl eframe::App for VibocerosApp {
                                         edge_curve,
                                         edge_parameters,
                                         edge_distance_parameters,
+                                        end_markers: &end_markers,
+                                        current_end_marker,
                                     },
                                     curve_points,
                                     index,
@@ -6602,6 +6628,7 @@ mod tests {
             zoom_extents_borders: ZoomExtentsBorders::default(),
             zoom_window_pending: false,
             zoom_factor_pending: None,
+            end_analysis: None,
             selection_window_override: None,
             selection_menu: None,
             circular_selection: None,

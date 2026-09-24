@@ -101,57 +101,30 @@ impl Viewport {
         document: &Document,
         borders: ZoomExtentsBorders,
     ) -> Result<bool, &'static str> {
+        let markers = collect_end_markers(
+            document,
+            document.selected_object_ids(),
+            EndMarkerOptions::default(),
+        )?;
+        self.zoom_end_markers(&markers, borders)
+    }
+
+    pub(crate) fn zoom_end_markers(
+        &mut self,
+        markers: &[EndMarker],
+        borders: ZoomExtentsBorders,
+    ) -> Result<bool, &'static str> {
         if !borders.valid() {
             return Err("invalid zoom extents border scale");
         }
         let rect = self.last_rect.ok_or("viewport has not been laid out")?;
         let mut bounds: Option<BoundingBox3> = None;
-        let mut include = |point: Point3| -> Result<(), &'static str> {
+        for point in markers.iter().map(|marker| marker.point) {
             let marker = BoundingBox3::from_points([point]).map_err(|_| "invalid curve end")?;
             bounds = Some(match bounds {
                 Some(previous) => previous.union(marker).map_err(|_| "invalid curve end")?,
                 None => marker,
             });
-            Ok(())
-        };
-        for object in document.selected_objects() {
-            if !object.attributes().is_visible()
-                || !document
-                    .layer(object.attributes().layer_id())
-                    .is_some_and(|layer| layer.is_visible())
-            {
-                continue;
-            }
-            if let Geometry::PolyCurve(polycurve) = object.geometry() {
-                for segment in polycurve.segments() {
-                    include(
-                        segment
-                            .as_ref()
-                            .start_point()
-                            .map_err(|_| "curve end cannot be evaluated")?,
-                    )?;
-                }
-                include(
-                    polycurve
-                        .segments()
-                        .last()
-                        .expect("validated polycurve has segments")
-                        .as_ref()
-                        .end_point()
-                        .map_err(|_| "curve end cannot be evaluated")?,
-                )?;
-            } else if let Some(curve) = object.geometry().curve_ref() {
-                include(
-                    curve
-                        .start_point()
-                        .map_err(|_| "curve end cannot be evaluated")?,
-                )?;
-                include(
-                    curve
-                        .end_point()
-                        .map_err(|_| "curve end cannot be evaluated")?,
-                )?;
-            }
         }
         let Some(bounds) = bounds else {
             return Ok(false);

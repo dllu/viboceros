@@ -106,6 +106,39 @@ impl VibocerosApp {
         let mut state = self.interface_state();
         match state.apply(command) {
             Ok(message) => {
+                if command == InterfaceCommand::ShowEnds {
+                    let sources = self
+                        .document
+                        .selected_object_ids()
+                        .filter(|id| {
+                            self.document
+                                .object(*id)
+                                .is_some_and(|object| object.geometry().curve_ref().is_some())
+                        })
+                        .collect::<Vec<_>>();
+                    let options = EndMarkerOptions::default();
+                    match collect_end_markers(&self.document, sources.iter().copied(), options) {
+                        Ok(markers) if !markers.is_empty() => {
+                            self.end_analysis = Some(EndAnalysisState {
+                                sources,
+                                options,
+                                current: 0,
+                            });
+                            self.push_log(format!(
+                                "End Analysis: {} marker(s) displayed",
+                                markers.len()
+                            ));
+                        }
+                        Ok(_) => self.push_log("Select visible curves for End Analysis".into()),
+                        Err(error) => self.push_log(format!("Error: {error}")),
+                    }
+                    return;
+                }
+                if command == InterfaceCommand::ShowEndsOff {
+                    self.end_analysis = None;
+                    self.push_log("End Analysis closed".into());
+                    return;
+                }
                 if command == InterfaceCommand::ZoomFactorPrompt {
                     self.zoom_factor_pending = Some(self.active_viewport);
                     self.zoom_window_pending = false;
@@ -268,11 +301,23 @@ impl VibocerosApp {
                 if command == InterfaceCommand::ZoomEnds {
                     self.zoom_window_pending = false;
                     self.zoom_target = None;
-                    let result = self.viewports[self.active_viewport]
-                        .zoom_curve_ends(&self.document, self.zoom_extents_borders);
+                    let result = if let Some(analysis) = &self.end_analysis {
+                        collect_end_markers(
+                            &self.document,
+                            analysis.sources.iter().copied(),
+                            analysis.options,
+                        )
+                        .and_then(|markers| {
+                            self.viewports[self.active_viewport]
+                                .zoom_end_markers(&markers, self.zoom_extents_borders)
+                        })
+                    } else {
+                        self.viewports[self.active_viewport]
+                            .zoom_curve_ends(&self.document, self.zoom_extents_borders)
+                    };
                     self.push_log(match result {
                         Ok(true) => "Zoomed to selected curve ends (active viewport)".into(),
-                        Ok(false) => "No selected visible curve ends to zoom to".into(),
+                        Ok(false) => "No visible curve end markers to zoom to".into(),
                         Err(error) => format!("Error: {error}"),
                     });
                     return;
