@@ -8,16 +8,87 @@ use viboceros_command::interface::{
 };
 
 impl VibocerosApp {
+    pub(super) fn start_end_analysis_pick(&mut self, mode: EndAnalysisPickMode) {
+        if mode != EndAnalysisPickMode::Show && self.end_analysis.is_none() {
+            self.push_log("Run ShowEnds first".into());
+            return;
+        }
+        self.cancel_end_analysis_pick(false);
+        self.end_analysis_pick = Some(EndAnalysisPick {
+            mode,
+            before: self.end_analysis.clone(),
+            started: false,
+        });
+        self.push_log("Pick curves in a viewport; Enter finishes, Esc cancels".into());
+    }
+
+    pub(super) fn cancel_end_analysis_pick(&mut self, announce: bool) {
+        if let Some(pick) = self.end_analysis_pick.take() {
+            self.end_analysis = pick.before;
+            if announce {
+                self.push_log("End Analysis selection canceled".into());
+            }
+        }
+    }
+
+    pub(super) fn finish_end_analysis_pick(&mut self) {
+        if let Some(pick) = self.end_analysis_pick.take() {
+            if !pick.started {
+                self.end_analysis = pick.before;
+            }
+            self.push_log("End Analysis selection finished".into());
+        }
+    }
+
+    pub(super) fn apply_end_analysis_pick_ids(&mut self, ids: Vec<ObjectId>) {
+        let Some(pick) = self.end_analysis_pick.as_ref() else {
+            return;
+        };
+        let mode = pick.mode;
+        let started = pick.started;
+        if ids.is_empty() {
+            return;
+        }
+        if mode == EndAnalysisPickMode::Show && !started {
+            match collect_end_markers(
+                &self.document,
+                ids.iter().copied(),
+                EndMarkerOptions::default(),
+            ) {
+                Ok(markers) if !markers.is_empty() => {
+                    self.end_analysis = Some(EndAnalysisState::new(Vec::new()));
+                    self.end_analysis_pick.as_mut().unwrap().started = true;
+                }
+                Ok(_) => return,
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    return;
+                }
+            }
+        }
+        match mode {
+            EndAnalysisPickMode::Show | EndAnalysisPickMode::Add => self.add_end_analysis_ids(ids),
+            EndAnalysisPickMode::Remove => self.remove_end_analysis_ids(ids),
+        }
+        if let Some(pick) = self.end_analysis_pick.as_mut() {
+            pick.started = true;
+        }
+    }
+
     pub(super) fn add_selected_to_end_analysis(&mut self) {
+        let ids = self.document.selected_object_ids().collect::<Vec<_>>();
+        self.add_end_analysis_ids(ids);
+    }
+
+    fn add_end_analysis_ids(&mut self, ids: Vec<ObjectId>) {
         let Some(analysis) = &self.end_analysis else {
             return;
         };
-        let existing = analysis.sources.iter().copied().collect::<HashSet<_>>();
-        let additions = self
-            .document
-            .selected_object_ids()
+        let mut seen = analysis.sources.iter().copied().collect::<HashSet<_>>();
+        let additions = ids
+            .into_iter()
             .filter(|id| {
-                !existing.contains(id)
+                seen.insert(*id)
                     && self
                         .document
                         .object(*id)
@@ -50,10 +121,15 @@ impl VibocerosApp {
     }
 
     pub(super) fn remove_selected_from_end_analysis(&mut self) {
+        let ids = self.document.selected_object_ids().collect::<Vec<_>>();
+        self.remove_end_analysis_ids(ids);
+    }
+
+    fn remove_end_analysis_ids(&mut self, ids: Vec<ObjectId>) {
         let Some(analysis) = self.end_analysis.as_mut() else {
             return;
         };
-        let selected = self.document.selected_object_ids().collect::<HashSet<_>>();
+        let selected = ids.into_iter().collect::<HashSet<_>>();
         let previous = analysis.sources.len();
         analysis.sources.retain(|id| !selected.contains(id));
         let removed = previous - analysis.sources.len();
@@ -223,25 +299,20 @@ impl VibocerosApp {
                     let options = EndMarkerOptions::default();
                     match collect_end_markers(&self.document, sources.iter().copied(), options) {
                         Ok(markers) if !markers.is_empty() => {
-                            self.end_analysis = Some(EndAnalysisState {
-                                sources,
-                                options,
-                                current: 0,
-                                all_active: false,
-                                marker_color: egui::Color32::from_rgb(170, 35, 150),
-                                use_single_marker_color: false,
-                            });
+                            self.end_analysis_pick = None;
+                            self.end_analysis = Some(EndAnalysisState::new(sources));
                             self.push_log(format!(
                                 "End Analysis: {} marker(s) displayed",
                                 markers.len()
                             ));
                         }
-                        Ok(_) => self.push_log("Select visible curves for End Analysis".into()),
+                        Ok(_) => self.start_end_analysis_pick(EndAnalysisPickMode::Show),
                         Err(error) => self.push_log(format!("Error: {error}")),
                     }
                     return;
                 }
                 if command == InterfaceCommand::ShowEndsOff {
+                    self.end_analysis_pick = None;
                     self.end_analysis = None;
                     self.push_log("End Analysis closed".into());
                     return;

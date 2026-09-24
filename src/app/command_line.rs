@@ -36,7 +36,8 @@ impl CommandLineState {
 
 impl VibocerosApp {
     fn command_line_idle(&self) -> bool {
-        self.zoom_factor_pending.is_none()
+        self.end_analysis_pick.is_none()
+            && self.zoom_factor_pending.is_none()
             && self.active_command.is_none()
             && self.object_prompt.is_none()
             && self.group_prompt.is_none()
@@ -192,7 +193,9 @@ impl VibocerosApp {
                             .id(id)
                             .lock_focus(true)
                             .desired_width(f32::INFINITY)
-                            .hint_text(if self.zoom_factor_pending.is_some() {
+                            .hint_text(if self.end_analysis_pick.is_some() {
+                                "Pick curves; Enter finishes, Esc cancels"
+                            } else if self.zoom_factor_pending.is_some() {
                                 "Enter a positive factor; Enter or Esc cancels"
                             } else if self.plane_prompt.is_some() {
                                 "Define the construction plane; Esc returns to the previous prompt"

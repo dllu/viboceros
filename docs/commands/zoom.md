@@ -21,12 +21,18 @@ selection leaves the view unchanged. The command preserves selection, unfinished
 modeling input, document history, and independent viewport history.
 
 `ShowEnds` displays the markers of currently selected visible curves in every
-viewport. The End Analysis menu filters open starts, open ends, closed seams,
+viewport. With no eligible preselection, it starts curve picking: click or
+window curves in a viewport, then press Enter to finish or Esc to restore the
+previous display. This temporarily takes viewport input from an unfinished
+modeling or view prompt, which resumes afterward. The End Analysis menu filters
+open starts, open ends, closed seams,
 and polycurve joints. Green, blue, magenta, and purple identify those categories;
 the current marker has an orange outer ring. Right-click a category checkbox
 to show only that category; right-click it again to show all categories. The
 menu can switch to a single custom marker color and add or remove currently
-selected curves from the live analysis without editing the model. `ZoomEnds`
+selected curves from the live analysis without editing the model. Its Pick
+controls also collect curves with viewport clicks or windows; Esc restores the
+prior source list. `ZoomEnds`
 fits the markers enabled in the active
 End Analysis session, even if selection changes afterward. `ZoomEnds Current`
 fits the current marker; `Next` and `Previous` cycle through enabled markers,
@@ -36,7 +42,8 @@ enabled marker if `ZoomEnds All` was the last successful zoom. All points share
 one undo step. Source edits and visibility changes update the displayed markers.
 `ShowEndsOff` or Close hides
 them. A fresh `ShowEnds` replaces the session from the current selection; an
-empty eligible selection leaves the existing session alone. The session does not
+empty eligible selection leaves the existing session in place until a new curve
+is picked. The session does not
 create document objects or history entries until `Mark` is used. Rhino's
 [End Analysis documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/showends.htm)
 describes these controls in Rhino.

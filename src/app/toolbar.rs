@@ -128,6 +128,7 @@ impl VibocerosApp {
                 let mut end_analysis_command = None;
                 let mut add_end_analysis_sources = false;
                 let mut remove_end_analysis_sources = false;
+                let mut pick_end_analysis_sources = None;
                 if let Some(analysis) = self.end_analysis.as_mut() {
                     egui::containers::menu::MenuButton::new("End Analysis")
                         .config(
@@ -188,6 +189,12 @@ impl VibocerosApp {
                             add_end_analysis_sources = ui.button("Add selected curves").clicked();
                             remove_end_analysis_sources =
                                 ui.button("Remove selected curves").clicked();
+                            if ui.button("Pick curves to add…").clicked() {
+                                pick_end_analysis_sources = Some(EndAnalysisPickMode::Add);
+                            }
+                            if ui.button("Pick curves to remove…").clicked() {
+                                pick_end_analysis_sources = Some(EndAnalysisPickMode::Remove);
+                            }
                             ui.separator();
                             if ui.button("Close").clicked() {
                                 end_analysis_command = Some(InterfaceCommand::ShowEndsOff);
@@ -199,6 +206,9 @@ impl VibocerosApp {
                 }
                 if remove_end_analysis_sources {
                     self.remove_selected_from_end_analysis();
+                }
+                if let Some(mode) = pick_end_analysis_sources {
+                    self.start_end_analysis_pick(mode);
                 }
                 if let Some(command) = end_analysis_command {
                     self.apply_interface_command(command);

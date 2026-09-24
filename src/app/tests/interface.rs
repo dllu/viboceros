@@ -1661,6 +1661,67 @@ fn end_analysis_adds_and_removes_selected_curves_without_model_edits() {
 }
 
 #[test]
+fn show_ends_postselection_picks_curves_without_interrupting_modeling() {
+    let mut app = test_app();
+    enter(&mut app, "Line 0,0,0 1,0,0");
+    enter(&mut app, "Line 10,0,0 11,0,0");
+    let ids = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    app.document.clear_selection();
+    enter(&mut app, "Line");
+    enter(&mut app, "0");
+    let pending = app.active_command;
+    let objects = app.document.objects().cloned().collect::<Vec<_>>();
+    let undo = app.document.undo_label().map(str::to_owned);
+    app.zoom_factor_pending = Some(0);
+    enter(&mut app, "ShowEnds");
+    assert_eq!(
+        app.end_analysis_pick.as_ref().unwrap().mode,
+        EndAnalysisPickMode::Show
+    );
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(ids[0]),
+        mode: SelectionMode::Replace,
+    });
+    app.apply_selection_region(
+        SelectionWindow {
+            object_ids: vec![ids[1]],
+            mode: SelectionMode::Replace,
+            crossing: false,
+            inverted: false,
+        },
+        false,
+    );
+    assert_eq!(app.end_analysis.as_ref().unwrap().sources, ids);
+    assert_eq!(app.document.selected_object_count(), 0);
+    enter(&mut app, "");
+    assert!(app.end_analysis_pick.is_none());
+    assert_eq!(app.zoom_factor_pending, Some(0));
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
+    assert_eq!(app.document.undo_label(), undo.as_deref());
+    app.start_end_analysis_pick(EndAnalysisPickMode::Remove);
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(ids[0]),
+        mode: SelectionMode::Replace,
+    });
+    assert_eq!(app.end_analysis.as_ref().unwrap().sources, [ids[1]]);
+    app.cancel_end_analysis_pick(true);
+    assert_eq!(app.end_analysis.as_ref().unwrap().sources, ids);
+    app.start_end_analysis_pick(EndAnalysisPickMode::Remove);
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(ids[0]),
+        mode: SelectionMode::Replace,
+    });
+    enter(&mut app, "");
+    assert_eq!(app.end_analysis.as_ref().unwrap().sources, [ids[1]]);
+    assert_eq!(app.document.selected_object_count(), 0);
+}
+
+#[test]
 fn zoom_all_records_one_independent_view_step_per_viewport() {
     let mut app = test_app();
     enter(&mut app, "Point 10,20,30");

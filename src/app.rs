@@ -72,6 +72,33 @@ struct EndAnalysisState {
     use_single_marker_color: bool,
 }
 
+impl EndAnalysisState {
+    fn new(sources: Vec<ObjectId>) -> Self {
+        Self {
+            sources,
+            options: EndMarkerOptions::default(),
+            current: 0,
+            all_active: false,
+            marker_color: egui::Color32::from_rgb(170, 35, 150),
+            use_single_marker_color: false,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum EndAnalysisPickMode {
+    Show,
+    Add,
+    Remove,
+}
+
+#[derive(Clone, Debug)]
+struct EndAnalysisPick {
+    mode: EndAnalysisPickMode,
+    before: Option<EndAnalysisState>,
+    started: bool,
+}
+
 impl SelectionMenu {
     fn highlighted_click(&self) -> SelectionClick {
         SelectionClick {
@@ -1401,6 +1428,7 @@ pub struct VibocerosApp {
     zoom_window_pending: bool,
     zoom_factor_pending: Option<usize>,
     end_analysis: Option<EndAnalysisState>,
+    end_analysis_pick: Option<EndAnalysisPick>,
     selection_window_override: Option<viboceros_command::interface::RectSelectionMode>,
     selection_menu: Option<SelectionMenu>,
     circular_selection: Option<CircularSelectionState>,
@@ -1456,6 +1484,7 @@ impl VibocerosApp {
             zoom_window_pending: false,
             zoom_factor_pending: None,
             end_analysis: None,
+            end_analysis_pick: None,
             selection_window_override: None,
             selection_menu: None,
             circular_selection: None,
@@ -1488,6 +1517,11 @@ impl VibocerosApp {
     fn run_command_input(&mut self) {
         let input = self.command_input.trim().to_owned();
         self.remember_command_input(&input);
+        if input.is_empty() && self.end_analysis_pick.is_some() {
+            self.finish_end_analysis_pick();
+            self.command_input.clear();
+            return;
+        }
         if input.is_empty() && self.zoom_factor_pending.is_some() {
             self.try_continue_zoom_factor(&input);
             return;
@@ -1550,6 +1584,9 @@ impl VibocerosApp {
             && (self.try_run_plane_command(&input) || self.try_run_interface_command(&input))
         {
             return;
+        }
+        if self.end_analysis_pick.is_some() && !input.is_empty() {
+            self.cancel_end_analysis_pick(false);
         }
         if self.try_continue_zoom_target(&input) {
             return;
@@ -3548,6 +3585,7 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
+        self.cancel_end_analysis_pick(false);
         self.snaps.model_override = None;
         self.finish_points_session();
         self.finish_evaluate_uv_session();
@@ -5628,6 +5666,12 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.end_analysis_pick.is_some() {
+            if let Some(id) = click.object_id {
+                self.apply_end_analysis_pick_ids(vec![id]);
+            }
+            return;
+        }
         if let Some(InteractiveCommand::Pipe {
             source: None,
             cap_flat,
@@ -5972,6 +6016,10 @@ impl VibocerosApp {
     }
 
     fn apply_selection_region(&mut self, selection: SelectionWindow, circular: bool) {
+        if self.end_analysis_pick.is_some() {
+            self.apply_end_analysis_pick_ids(selection.object_ids);
+            return;
+        }
         self.selection_window_override = None;
         if self.picking_alignment_curve() {
             // This phase needs one target; a window must not change the sources.
@@ -6035,7 +6083,7 @@ impl VibocerosApp {
                 self.push_log("Select a radius point in the same viewport; Esc to cancel".into());
             }
         } else if output.enter_pressed {
-            if self.fence_selection.is_some() {
+            if self.fence_selection.is_some() && self.end_analysis_pick.is_none() {
                 self.finish_fence_selection();
             } else {
                 self.run_command();
@@ -6181,6 +6229,8 @@ impl eframe::App for VibocerosApp {
         if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
             if self.selection_menu.take().is_some() {
                 // Escape dismisses the choice without changing the selection.
+            } else if self.end_analysis_pick.is_some() {
+                self.cancel_end_analysis_pick(true);
             } else if self.zoom_target.take().is_some() {
                 self.push_log("Zoom Target canceled".into());
             } else if self.zoom_factor_pending.take().is_some() {
@@ -6237,18 +6287,20 @@ impl eframe::App for VibocerosApp {
         self.show_toolbar(ui);
         self.show_layers(ui);
         self.show_command_line(ui);
+        let end_analysis_picking = self.end_analysis_pick.is_some();
         let drafting = DraftingInput {
-            active: (self.active_command.is_some()
-                && !self.picking_alignment_curve()
-                && !matches!(
-                    self.active_command,
-                    Some(
-                        InteractiveCommand::SelVolumePipe { source: None, .. }
-                            | InteractiveCommand::Pipe { source: None, .. }
-                            | InteractiveCommand::SelVolumeObject { .. }
-                    )
-                ))
-                || self.plane_prompt.is_some(),
+            active: !end_analysis_picking
+                && ((self.active_command.is_some()
+                    && !self.picking_alignment_curve()
+                    && !matches!(
+                        self.active_command,
+                        Some(
+                            InteractiveCommand::SelVolumePipe { source: None, .. }
+                                | InteractiveCommand::Pipe { source: None, .. }
+                                | InteractiveCommand::SelVolumeObject { .. }
+                        )
+                    ))
+                    || self.plane_prompt.is_some()),
             osnap: self.effective_snap_modes(),
             mesh_edges: self.snaps.mesh_edges,
             smart_track: self.smart_track,
@@ -6272,11 +6324,25 @@ impl eframe::App for VibocerosApp {
         let mut viewport_outputs: [ViewportOutput; 4] =
             std::array::from_fn(|_| ViewportOutput::default());
         let active_viewport = self.active_viewport;
-        let zoom_window_pending = self.zoom_window_pending;
-        let selection_window_override = self.selection_window_override;
-        let circular_selection = self.circular_selection;
-        let zoom_target = self.zoom_target;
-        let object_filter = self.viewport_object_filter();
+        let zoom_window_pending = self.zoom_window_pending && !end_analysis_picking;
+        let selection_window_override = (!end_analysis_picking)
+            .then_some(self.selection_window_override)
+            .flatten();
+        let circular_selection = if end_analysis_picking {
+            None
+        } else {
+            self.circular_selection
+        };
+        let zoom_target = if end_analysis_picking {
+            None
+        } else {
+            self.zoom_target
+        };
+        let object_filter = if self.end_analysis_pick.is_some() {
+            Some(viboceros_command::ObjectSelectionFilter::Curves)
+        } else {
+            self.viewport_object_filter()
+        };
         let selection_preview = self
             .object_prompt
             .as_ref()
@@ -6299,7 +6365,11 @@ impl eframe::App for VibocerosApp {
             .object_prompt
             .as_ref()
             .and_then(|prompt| prompt.cloud_removal.as_ref());
-        let point_cloud_remove_target = cloud_removal.map(|removal| removal.target);
+        let point_cloud_remove_target = if end_analysis_picking {
+            None
+        } else {
+            cloud_removal.map(|removal| removal.target)
+        };
         let point_cloud_highlights = cloud_removal
             .map(|removal| removal.indices.iter().copied().collect::<Vec<_>>())
             .unwrap_or_default();
@@ -6308,12 +6378,13 @@ impl eframe::App for VibocerosApp {
             .edge_prompt
             .as_ref()
             .is_some_and(edge_commands::EdgePrompt::picking_edge)
-            && self.plane_prompt.is_none();
+            && self.plane_prompt.is_none()
+            && !end_analysis_picking;
         let split_selection = self
             .edge_prompt
             .as_ref()
             .and_then(edge_commands::EdgePrompt::split_selection)
-            .filter(|_| self.plane_prompt.is_none());
+            .filter(|_| self.plane_prompt.is_none() && !end_analysis_picking);
         let edge_curve = split_selection.map(viboceros_command::SplitEdgeSelection::curve);
         let edge_parameters =
             split_selection.map_or(&[][..], viboceros_command::SplitEdgeSelection::parameters);
@@ -6329,7 +6400,11 @@ impl eframe::App for VibocerosApp {
             .edge_prompt
             .as_ref()
             .map_or_else(Vec::new, edge_commands::EdgePrompt::highlights);
-        let fence_selection = self.fence_selection.as_ref();
+        let fence_selection = if end_analysis_picking {
+            None
+        } else {
+            self.fence_selection.as_ref()
+        };
         let fence_curve_pick = fence_selection.is_some_and(|state| state.curve_pick);
         let curve_region_pick = fence_curve_pick
             || self.boundary_selection.is_some()
@@ -6439,14 +6514,16 @@ impl eframe::App for VibocerosApp {
                                             }
                                             None => None,
                                         },
-                                        object_filter: if curve_region_pick {
+                                        object_filter: if end_analysis_picking || curve_region_pick
+                                        {
                                             Some(viboceros_command::ObjectSelectionFilter::Curves)
                                         } else if volume_object_pick {
                                             Some(viboceros_command::ObjectSelectionFilter::Any)
                                         } else {
                                             object_filter
                                         },
-                                        selection_preview: if curve_region_pick
+                                        selection_preview: if end_analysis_picking
+                                            || curve_region_pick
                                             || volume_object_pick
                                         {
                                             None
@@ -6638,6 +6715,7 @@ mod tests {
             zoom_window_pending: false,
             zoom_factor_pending: None,
             end_analysis: None,
+            end_analysis_pick: None,
             selection_window_override: None,
             selection_menu: None,
             circular_selection: None,
