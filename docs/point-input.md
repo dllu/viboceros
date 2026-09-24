@@ -203,6 +203,8 @@ The supported forms follow [Rhino's coordinate-entry documentation](https://docs
 | `27cm,1m` | Length suffixes converted to the document's model units |
 | `1'2-3/4",1/2in` | Feet-and-inches and fractional inches |
 | `.x`, `.xy`, `.wx`, `.wxy` | Filter local or world coordinates from a source point before placing a point |
+| `5` or `-5` after a point | Lock the next point to distance 5, or to the nearest positive multiple of 5 |
+| `<30` after a point | Constrain the cursor to 30-degree rays around the last point |
 
 Prefixes are case-insensitive and also apply to polar/spherical inputs. Bare
 angles are decimal degrees; `d`, `'`, and `"` denote degrees, arc minutes,
@@ -223,6 +225,20 @@ captured. The source pick does not add geometry or change the last accepted
 point. Another filter cannot be started until the current point is placed;
 Escape or a replacement command clears it. The `point_filters.json` oracle
 fixture matches Rhino's local, world, and two-axis filters in three sequences.
+
+At a point prompt with a previous point, a positive scalar locks the next
+point's 3D distance from that point. A negative scalar snaps the distance to
+the nearest positive multiple of its magnitude; midpoint ties round up. The
+cursor previews the resulting point. Type `<angle` to track the cursor along
+the nearest ray at that angular increment in the active construction plane.
+Distance and angle locks can be combined. As observed in Rhino, typed point
+coordinates obey the distance lock but bypass the cursor angle lock. A placed
+point, Escape, replacement command, or draft Undo clears the pending locks.
+The [seven-case live Rhino fixture](../tools/rhino_oracle/fixtures/point_constraints.json)
+and [recorded output](../tools/rhino_oracle/observations/point_constraints.json)
+cover typed distances, 3D directions, rounding ties, and typed angle behavior.
+Angular cursor placement is covered by native tests; it has not yet been
+measured against live Rhino mouse movement.
 
 Typed input bypasses Osnap, SmartTrack, and Grid Snap. Invalid or overflowing
 coordinates leave the prompt and text intact for correction; a subsequent mouse
@@ -282,12 +298,11 @@ southeast, and relative northwest bearings, plus a polar DMS angle; all replay
 within `1e-12` model units.
 Arc minutes and seconds must each be below 60 in native input.
 
-Not yet implemented: general scalar distance/angle
-constraints, comprehensive length-unit aliases, and
-editing other command options inside an active prompt. Nonzero scalar input is
-explicitly rejected rather than interpreted as a point.
+Not yet implemented: comprehensive length-unit aliases and editing other
+command options inside an active prompt.
 
 `viboceros-drafting/point_input` owns parsing and frame resolution;
+`viboceros-drafting/point_constraint` owns one-pick scalar and angular locks;
 `app/point_input` routes typed and picked points through one validation path;
 `app/curve_prompt` handles draft-only options separately from document commands.
 `viboceros-command/curve_options` owns Curve degree and closure value parsing

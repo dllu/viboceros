@@ -220,6 +220,7 @@ pub enum FenceSelectionInput<'a> {
 pub struct ViewportInput<'a> {
     pub drafting: DraftingInput,
     pub point_filter: Option<viboceros_drafting::PointFilterSession>,
+    pub point_constraint: Option<viboceros_drafting::PointConstraintState>,
     pub zoom_window: bool,
     pub rect_selection_mode: Option<RectSelectionMode>,
     pub circular_selection: Option<CircularSelectionInput>,
@@ -265,6 +266,7 @@ impl Default for ViewportInput<'_> {
         Self {
             drafting: DraftingInput::default(),
             point_filter: None,
+            point_constraint: None,
             zoom_window: false,
             rect_selection_mode: None,
             circular_selection: None,
@@ -821,7 +823,14 @@ impl Viewport {
             && input.zoom_target.is_none()
         {
             response.hover_pos().and_then(|pointer| {
-                self.filtered_drafting_cursor(pointer, rect, document, drafting, input.point_filter)
+                self.filtered_drafting_cursor(
+                    pointer,
+                    rect,
+                    document,
+                    drafting,
+                    input.point_filter,
+                    input.point_constraint,
+                )
             })
         } else {
             None
@@ -3901,6 +3910,7 @@ mod tests {
                     ..Default::default()
                 },
                 Some(filter),
+                None,
             )
             .unwrap();
         assert!(

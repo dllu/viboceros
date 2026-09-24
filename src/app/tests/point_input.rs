@@ -6,6 +6,87 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn scalar_distance_constraints_scale_typed_points_and_clear_after_acceptance() {
+    for (scalar, candidate, expected) in [
+        ("5", "w6,8,0", point(3.0, 4.0, 0.0)),
+        ("-5", "w8,0,0", point(10.0, 0.0, 0.0)),
+    ] {
+        let mut app = test_app();
+        for input in ["Line", "0", scalar] {
+            enter(&mut app, input);
+        }
+        assert!(app.point_constraint.is_some());
+        assert_eq!(app.last_point, Some(point(0.0, 0.0, 0.0)));
+        assert_eq!(app.document.objects().count(), 0);
+        enter(&mut app, candidate);
+        let Geometry::Line(line) = app.document.objects().next().unwrap().geometry() else {
+            panic!("line");
+        };
+        assert!(
+            line.end().distance_to(expected).unwrap() < 1e-12,
+            "{scalar}"
+        );
+        assert!(app.point_constraint.is_none());
+    }
+}
+
+#[test]
+fn angular_constraint_tracks_cursor_but_does_not_change_typed_coordinates() {
+    let mut typed = test_app();
+    for input in ["Line", "0", "<30", "w10,1,0"] {
+        enter(&mut typed, input);
+    }
+    let Geometry::Line(line) = typed.document.objects().next().unwrap().geometry() else {
+        panic!("line");
+    };
+    assert_eq!(line.end(), point(10.0, 1.0, 0.0));
+
+    let mut picked = test_app();
+    for input in ["Line", "0", "5", "<30"] {
+        enter(&mut picked, input);
+    }
+    assert!(picked.accept_filtered_drafting_point(point(10.0, 1.0, 0.0), false));
+    let Geometry::Line(line) = picked.document.objects().next().unwrap().geometry() else {
+        panic!("line");
+    };
+    assert_eq!(line.end(), point(5.0, 0.0, 0.0));
+}
+
+#[test]
+fn rejected_constraint_pick_keeps_lock_until_correction_or_cancel() {
+    let mut app = test_app();
+    for input in ["Line", "0", "5"] {
+        enter(&mut app, input);
+    }
+    assert!(!app.accept_filtered_drafting_point(point(0.0, 0.0, 0.0), false));
+    assert!(app.point_constraint.is_some());
+    assert_eq!(app.document.objects().count(), 0);
+    assert!(app.accept_filtered_drafting_point(point(6.0, 8.0, 0.0), false));
+    assert!(app.point_constraint.is_none());
+    let Geometry::Line(line) = app.document.objects().next().unwrap().geometry() else {
+        panic!("line");
+    };
+    assert!(line.end().distance_to(point(3.0, 4.0, 0.0)).unwrap() < 1e-12);
+    enter(&mut app, "Line");
+    enter(&mut app, "0");
+    enter(&mut app, "5");
+    app.cancel_interactive_command(false);
+    assert!(app.point_constraint.is_none());
+}
+
+#[test]
+fn draft_undo_discards_constraint_bound_to_removed_anchor() {
+    let mut app = test_app();
+    for input in ["Polyline", "0", "w10,0,0", "5", "Undo"] {
+        enter(&mut app, input);
+    }
+    assert!(app.point_constraint.is_none());
+    assert_eq!(app.curve_points, vec![point(0.0, 0.0, 0.0)]);
+    enter(&mut app, "w6,8,0");
+    assert_eq!(app.curve_points[1], point(6.0, 8.0, 0.0));
+}
+
+#[test]
 fn point_filter_uses_source_without_adding_geometry_or_changing_relative_anchor() {
     let mut app = test_app();
     for input in ["Line", "0", ".x"] {
@@ -16,7 +97,7 @@ fn point_filter_uses_source_without_adding_geometry_or_changing_relative_anchor(
     assert!(!app.point_filter.unwrap().awaiting_source());
     assert_eq!(app.last_point, Some(point(0.0, 0.0, 0.0)));
     assert_eq!(app.document.objects().count(), 0);
-    assert!(app.accept_filtered_drafting_point(point(4.0, 5.0, 6.0)));
+    assert!(app.accept_filtered_drafting_point(point(4.0, 5.0, 6.0), false));
     let Geometry::Line(line) = app.document.objects().next().unwrap().geometry() else {
         panic!("line");
     };
@@ -1294,7 +1375,6 @@ fn invalid_typed_points_preserve_the_draft_last_point_and_editable_input() {
         "NaN,0",
         "1e309,0",
         "wInf,0",
-        "5",
         "1, 2",
         "w 1,2",
         "bad,1",

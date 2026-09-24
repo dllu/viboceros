@@ -8,9 +8,11 @@ pub use object_snap::{
     nearest_object_snap_relative,
 };
 mod point_input;
-pub use point_input::{PointInput, PointInputError};
+pub use point_input::{PointConstraintInput, PointInput, PointInputError};
 mod point_filter;
 pub use point_filter::{PointFilter, PointFilterError, PointFilterSession};
+mod point_constraint;
+pub use point_constraint::{PointConstraintError, PointConstraintState};
 
 use thiserror::Error;
 use viboceros_geometry::{GeometryError, Point3, Real};

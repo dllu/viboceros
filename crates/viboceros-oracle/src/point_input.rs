@@ -1,7 +1,9 @@
 //! Compare typed coordinate resolution with Rhino's actual Polyline prompt.
 
 use super::*;
-use viboceros_drafting::{PointFilter, PointFilterSession, PointInput};
+use viboceros_drafting::{
+    PointConstraintInput, PointConstraintState, PointFilter, PointFilterSession, PointInput,
+};
 use viboceros_geometry::LengthUnitSystem;
 
 #[cfg(test)]
@@ -79,6 +81,14 @@ mod tests {
     }
 
     #[test]
+    fn scalar_constraints_match_recorded_rhino_points() {
+        check_recorded_points(
+            include_str!("../../../tools/rhino_oracle/fixtures/point_constraints.json"),
+            include_str!("../../../tools/rhino_oracle/observations/point_constraints.json"),
+        );
+    }
+
+    #[test]
     fn permanent_fixture_checks_world_and_rotated_plane_point_sequences() {
         let request: crate::ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/point_input.json"
@@ -148,6 +158,7 @@ pub(super) fn run(
     )?;
     let mut points = Vec::with_capacity(fixture.points.len());
     let mut filter: Option<PointFilterSession> = None;
+    let mut constraint: Option<PointConstraintState> = None;
     let units = match fixture.model_units.as_deref() {
         None | Some("Millimeters") => LengthUnitSystem::Millimeters,
         Some("Meters") => LengthUnitSystem::Meters,
@@ -166,6 +177,19 @@ pub(super) fn run(
             filter = Some(PointFilterSession::new(next, plane));
             continue;
         }
+        if let Some(parsed) = PointConstraintInput::parse_with_units(token, &units) {
+            let input =
+                parsed.map_err(|_| ProbeError::FixtureInvariant("invalid point constraint"))?;
+            let anchor = points.last().copied().ok_or(ProbeError::FixtureInvariant(
+                "point constraint needs a previous point",
+            ))?;
+            let mut state = constraint.unwrap_or_else(|| PointConstraintState::new(anchor, plane));
+            state
+                .set(input, plane)
+                .map_err(|_| ProbeError::FixtureInvariant("invalid point constraint"))?;
+            constraint = Some(state);
+            continue;
+        }
         let input = PointInput::parse_with_units(token, &units)
             .ok_or(ProbeError::FixtureInvariant("expected a point token"))?
             .map_err(|_| ProbeError::FixtureInvariant("invalid point syntax"))?;
@@ -177,14 +201,23 @@ pub(super) fn run(
                 .offer_point(point)
                 .map_err(|_| ProbeError::FixtureInvariant("invalid filtered point"))?
             {
+                let point = constraint
+                    .map_or(Ok(point), |state| state.apply_typed(point))
+                    .map_err(|_| ProbeError::FixtureInvariant("point constraint failed"))?;
                 points.push(point);
                 filter = None;
+                constraint = None;
             }
         } else {
+            let point = constraint
+                .map_or(Ok(point), |state| state.apply_typed(point))
+                .map_err(|_| ProbeError::FixtureInvariant("point constraint failed"))?;
             points.push(point);
+            constraint = None;
         }
     }
     if filter.is_some()
+        || constraint.is_some()
         || points.len() != fixture.expected_point_count.unwrap_or(fixture.points.len())
     {
         return Err(ProbeError::FixtureInvariant(

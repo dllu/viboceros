@@ -1,0 +1,134 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "fixed-distance",
+      "value": {
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            3.0,
+            4.0,
+            0.0
+          ]
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "increment-distance",
+      "value": {
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            10.0,
+            0.0,
+            0.0
+          ]
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "increment-tie-upward",
+      "value": {
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            10.0,
+            0.0,
+            0.0
+          ]
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "distance-off-plane",
+      "value": {
+        "points": [
+          [
+            0.0,
+            0.0,
+            3.0
+          ],
+          [
+            2.873478855663454,
+            3.8313051408846057,
+            1.563260572168273
+          ]
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "distance-3d",
+      "value": {
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.1213203435596424,
+            2.82842712474619,
+            3.5355339059327373
+          ]
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "angle-bypasses-typed",
+      "value": {
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            10.0,
+            1.0,
+            0.0
+          ]
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "combined-typed",
+      "value": {
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            0.0,
+            0.0
+          ]
+        ]
+      }
+    }
+  ]
+}

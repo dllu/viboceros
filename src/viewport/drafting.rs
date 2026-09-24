@@ -25,10 +25,27 @@ impl Viewport {
         document: &Document,
         input: DraftingInput,
         filter: Option<viboceros_drafting::PointFilterSession>,
+        constraint: Option<viboceros_drafting::PointConstraintState>,
     ) -> Option<DraftingCursor> {
+        let input =
+            if constraint.is_some_and(viboceros_drafting::PointConstraintState::angle_active) {
+                DraftingInput {
+                    ortho: false,
+                    shift_inverts_ortho: false,
+                    smart_track: false,
+                    ..input
+                }
+            } else {
+                input
+            };
         let mut cursor = self.drafting_cursor(pointer, rect, document, input)?;
         if let Some(filter) = filter {
             cursor.point = filter.preview_point(cursor.source_point).ok()?;
+        }
+        if let Some(constraint) = constraint
+            && !filter.is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
+        {
+            cursor.point = constraint.apply_cursor(cursor.point).ok()?;
         }
         Some(cursor)
     }

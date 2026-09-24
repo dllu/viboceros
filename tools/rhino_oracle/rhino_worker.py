@@ -3210,6 +3210,8 @@ def _point_input_script(points):
                              ".wx", ".wy", ".wz", ".wxy", ".wyx", ".wxz", ".wzx", ".wyz", ".wzy"):
             continue
         body = token.lstrip("rRwW@")
+        if re.match(r'''^<[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)\Z''', body):
+            continue
         # A narrow surveyor/DMS form keeps the macro coordinate-only while
         # permitting Rhino's documented N30d22'54.43"W bearing syntax.
         if re.match(r'''^[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)<[NnSs][0-9]+(?:\.[0-9]+)?[dD][0-9]+(?:\.[0-9]+)?'[0-9]+(?:\.[0-9]+)?"[EeWw]\Z''', body):

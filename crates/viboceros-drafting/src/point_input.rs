@@ -12,6 +12,41 @@ pub struct PointInput {
     relative: bool,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum PointConstraintInput {
+    Distance(Real),
+    Angle(Real),
+}
+
+impl PointConstraintInput {
+    pub fn parse_with_units(
+        text: &str,
+        units: &LengthUnitSystem,
+    ) -> Option<Result<Self, PointInputError>> {
+        let text = text.trim();
+        if let Some(angle) = text.strip_prefix('<') {
+            return Some(
+                if angle.is_empty()
+                    || angle.contains([',', '<'])
+                    || text.len() > 512
+                    || angle.chars().any(char::is_whitespace)
+                {
+                    Err(PointInputError::Syntax)
+                } else {
+                    angle_number(angle, units).map(Self::Angle)
+                },
+            );
+        }
+        if matches!(
+            PointInput::parse_with_units(text, units),
+            Some(Err(PointInputError::DistanceConstraint))
+        ) {
+            return Some(number(text, units).map(Self::Distance));
+        }
+        None
+    }
+}
+
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum PointInputError {
     #[error(
@@ -22,7 +57,7 @@ pub enum PointInputError {
     InvalidNumber,
     #[error("relative coordinates require a previous point")]
     MissingPreviousPoint,
-    #[error("a nonzero number alone is a distance constraint; enter point coordinates instead")]
+    #[error("a nonzero number alone is a distance constraint at a point prompt")]
     DistanceConstraint,
     #[error("spherical elevation must be between -90 and 90 degrees after full-turn reduction")]
     ElevationRange,

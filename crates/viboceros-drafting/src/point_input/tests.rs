@@ -28,6 +28,43 @@ fn resolve_in_units(
 }
 
 #[test]
+fn scalar_point_constraints_parse_without_claiming_coordinates_or_commands() {
+    for (token, expected) in [
+        ("5", PointConstraintInput::Distance(5.0)),
+        ("-5", PointConstraintInput::Distance(-5.0)),
+        ("1-3/4", PointConstraintInput::Distance(1.75)),
+        ("<30", PointConstraintInput::Angle(30.0)),
+        ("<-45", PointConstraintInput::Angle(-45.0)),
+    ] {
+        assert_eq!(
+            PointConstraintInput::parse_with_units(token, &LengthUnitSystem::Millimeters),
+            Some(Ok(expected)),
+            "{token}"
+        );
+    }
+    assert_eq!(
+        PointConstraintInput::parse_with_units("5cm", &LengthUnitSystem::Millimeters),
+        Some(Ok(PointConstraintInput::Distance(50.0)))
+    );
+    assert_eq!(
+        PointConstraintInput::parse_with_units("0", &LengthUnitSystem::Millimeters),
+        None
+    );
+    assert_eq!(
+        PointConstraintInput::parse_with_units("1,2", &LengthUnitSystem::Millimeters),
+        None
+    );
+    assert_eq!(
+        PointConstraintInput::parse_with_units("Rotate", &LengthUnitSystem::Millimeters),
+        None
+    );
+    assert_eq!(
+        PointConstraintInput::parse_with_units("<", &LengthUnitSystem::Millimeters),
+        Some(Err(PointInputError::Syntax))
+    );
+}
+
+#[test]
 fn dms_angles_and_surveyor_bearings_resolve_on_rotated_plane() {
     let origin = Point3::try_new(10.0, 20.0, 30.0).unwrap();
     let angle = 30.0_f64 + 22.0 / 60.0 + 54.43 / 3600.0;

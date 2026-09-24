@@ -224,6 +224,7 @@ impl VibocerosApp {
             self.push_log(format!("> {input}"));
             if self.curve_points.pop().is_some() {
                 self.last_point = self.curve_points.last().copied();
+                self.point_constraint = None;
                 if self.curve_points.is_empty() {
                     self.drafting_plane = None;
                 }
