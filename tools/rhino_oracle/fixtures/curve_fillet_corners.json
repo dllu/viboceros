@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {"absolute": 1e-9, "relative": 1e-12, "angular": 1e-10},
+  "operations": [
+    {
+      "op": "curve_fillet_corners_geometry",
+      "id": "open-right-angle",
+      "vertices": [[0, 0, 0], [4, 0, 0], [4, 4, 0]],
+      "radius": 1
+    },
+    {
+      "op": "curve_fillet_corners_geometry",
+      "id": "closed-square",
+      "vertices": [[0, 0, 0], [4, 0, 0], [4, 4, 0], [0, 4, 0], [0, 0, 0]],
+      "radius": 0.5
+    },
+    {
+      "op": "curve_fillet_corners_geometry",
+      "id": "touching-square-fillets",
+      "vertices": [[0, 0, 0], [4, 0, 0], [4, 4, 0], [0, 4, 0], [0, 0, 0]],
+      "radius": 2
+    },
+    {
+      "op": "curve_fillet_corners_geometry",
+      "id": "spatial-corners",
+      "vertices": [[0, 0, 0], [4, 0, 0], [4, 4, 0], [4, 4, 4]],
+      "radius": 0.75
+    }
+  ]
+}

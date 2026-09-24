@@ -1,6 +1,7 @@
 use std::collections::{BTreeMap, HashMap};
 use std::f64::consts::TAU;
 
+mod fillet;
 mod integration_frame;
 
 use crate::{

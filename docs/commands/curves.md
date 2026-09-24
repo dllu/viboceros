@@ -193,6 +193,11 @@ into geometrically equivalent segment domains. Arc geometry and commands
 otherwise agree to floating-point roundoff except for the same pre-existing
 Smooth length-solver variation.
 
+## Corner fillets
+
+For exact tangent rounding of selected polyline corners, see
+[FilletCorners](fillet-corners.md).
+
 ## Subcurves
 
 `SubCrv start_point end_point` replaces one selected curve with the exact

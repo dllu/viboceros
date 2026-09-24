@@ -1,6 +1,8 @@
 //! Versioned compatibility-probe protocol used to compare Viboceros with Rhino.
 
 #[cfg(test)]
+mod fillet_corners_tests;
+#[cfg(test)]
 mod mesh_edit_replay_tests;
 #[cfg(test)]
 mod numeric_json_tests;
@@ -490,6 +492,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: curve_offset::Fixture,
+    },
+    CurveFilletCornersGeometry {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        radius: f64,
     },
     NonManifoldSelection {
         id: String,
@@ -1800,6 +1807,7 @@ impl Operation {
             | Self::CurveArea { id, .. }
             | Self::EllipseOffsetGeometry { id, .. }
             | Self::CurveOffsetGeometry { id, .. }
+            | Self::CurveFilletCornersGeometry { id, .. }
             | Self::NonManifoldSelection { id, .. }
             | Self::VolumeSelection { id, .. }
             | Self::CurveExtrudeCommand { id, .. }
@@ -2310,6 +2318,29 @@ fn execute(
         } => ellipse_offset::run(curve, *side, *distance, *samples, iterations, tolerance)?,
         Operation::CurveOffsetGeometry { fixture, .. } => {
             curve_offset::run(fixture, iterations, tolerance)?
+        }
+        Operation::CurveFilletCornersGeometry {
+            vertices, radius, ..
+        } => {
+            let source = Polyline3::try_new(
+                vertices
+                    .iter()
+                    .copied()
+                    .map(point)
+                    .collect::<Result<Vec<_>, _>>()?,
+                tolerance,
+            )?;
+            let (curve, elapsed) =
+                measure(iterations, || source.try_fillet_corners(*radius, tolerance))?;
+            let samples = CurveRef::PolyCurve(&curve)
+                .sample_equal_length_points(64, true, tolerance)?
+                .into_iter()
+                .map(Point3::to_array)
+                .collect::<Vec<_>>();
+            (
+                json!({"closed": curve.is_closed()?, "length": curve.length(tolerance)?, "samples": samples}),
+                elapsed,
+            )
         }
         Operation::NonManifoldSelection {
             as_brep, preselect, ..

@@ -5443,6 +5443,39 @@ def _execute(operation, iterations, tolerance):
         return _ellipse_offset_geometry(operation, iterations, tolerance)
     if kind == "curve_offset_geometry":
         return _curve_offset_geometry(operation, iterations, tolerance)
+    if kind == "curve_fillet_corners_geometry":
+        source = Rhino.Geometry.PolylineCurve(
+            [_point(vertex) for vertex in operation["vertices"]]
+        )
+        radius = _finite(operation["radius"], "fillet radius")
+
+        def fillet_corners():
+            curve = Rhino.Geometry.Curve.CreateFilletCornersCurve(
+                source, radius, tolerance["absolute"], tolerance["angular"]
+            )
+            if curve is None:
+                raise ValueError("Rhino fillet corners failed")
+            try:
+                samples = []
+                for index in range(65):
+                    success, parameter = curve.NormalizedLengthParameter(
+                        index / 64.0, 1e-12
+                    )
+                    if not success:
+                        raise ValueError("Rhino fillet arc-length sampling failed")
+                    samples.append(_xyz(curve.PointAt(parameter)))
+                return {
+                    "closed": bool(curve.IsClosed),
+                    "length": float(curve.GetLength(1e-12)),
+                    "samples": samples,
+                }
+            finally:
+                curve.Dispose()
+
+        try:
+            return _measure(iterations, fillet_corners)
+        finally:
+            source.Dispose()
     if kind in ("polycurve_geometry", "polycurve_document"):
         return _polycurve_geometry(operation, iterations, tolerance)
     if kind == "trimmed_surface_mass_properties":
