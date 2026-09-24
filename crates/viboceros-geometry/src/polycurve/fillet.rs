@@ -1,5 +1,6 @@
 use super::*;
 
+mod arc_arc;
 mod arc_line;
 
 enum FilletPart {
@@ -8,9 +9,9 @@ enum FilletPart {
 }
 
 impl PolyCurve3 {
-    /// Fillets straight corners and coplanar arc-to-straight corners while
-    /// retaining smooth curved leaves. Unsupported curved junctions and internal
-    /// curved-leaf kinks are rejected rather than changing their locus.
+    /// Fillets straight corners and coplanar corners involving circular arcs
+    /// while retaining smooth curved leaves. Unsupported curved junctions and
+    /// internal curved-leaf kinks are rejected rather than changing their locus.
     pub fn try_fillet_corners(
         &self,
         radius: Real,
@@ -23,6 +24,9 @@ impl PolyCurve3 {
             });
         }
         if let Some(rounded) = arc_line::resolve_arc_line_kinks(self, radius, tolerance)? {
+            return rounded.try_fillet_corners(radius, tolerance);
+        }
+        if let Some(rounded) = arc_arc::resolve_arc_arc_kinks(self, radius, tolerance)? {
             return rounded.try_fillet_corners(radius, tolerance);
         }
         let mut parts = Vec::with_capacity(self.segments.len());

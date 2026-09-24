@@ -104,7 +104,7 @@ fn expand_straight_arc_neighbors(
     Ok((segments, true))
 }
 
-fn sharp_joint(
+pub(super) fn sharp_joint(
     before: &CurveSegment3,
     after: &CurveSegment3,
     tolerance: Tolerance,
@@ -252,7 +252,7 @@ fn solve_arc_then_line(
     best.ok_or_else(unsupported_curved_corner)
 }
 
-fn tangent_fillet_arc(
+pub(super) fn tangent_fillet_arc(
     center: Point3,
     start: Point3,
     end: Point3,
