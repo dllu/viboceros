@@ -1,0 +1,55 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "angular": 0.017453292519943295,
+    "relative": 1e-12
+  },
+  "operations": [
+    {
+      "op": "sweep1",
+      "id": "closed-circle-line-command",
+      "rail": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 3,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            3,
+            0,
+            -1
+          ],
+          "end": [
+            3,
+            0,
+            1
+          ]
+        }
+      ],
+      "parameters": [
+        0
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true
+    }
+  ]
+}

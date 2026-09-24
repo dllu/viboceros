@@ -115,6 +115,39 @@ mod tests {
     use super::*;
 
     #[test]
+    fn circular_rail_sweep_creates_a_seam_joined_brep_and_undoes_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "Circle 0,0,0 3",
+            "SelLast",
+            "SetObjectName Rail",
+            "Line 3,0,-1 3,0,1",
+            "SelLast",
+        ] {
+            registry.execute(&mut document, command).unwrap();
+        }
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        registry
+            .execute(&mut document, "Sweep1 RailName=Rail Parameters=0")
+            .unwrap();
+        let output = document
+            .objects()
+            .find(|o| matches!(o.geometry(), Geometry::Brep(_)))
+            .unwrap();
+        let Geometry::Brep(brep) = output.geometry() else {
+            unreachable!()
+        };
+        assert_eq!(brep.faces().len(), 1);
+        assert_eq!(
+            brep.edge_use_counts().iter().filter(|&&n| n == 2).count(),
+            1
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    }
+
+    #[test]
     fn closed_and_kinked_profiles_produce_valid_shared_brep_topology() {
         let registry = CommandRegistry::with_builtins();
         for (profile, expected_faces) in [("Circle 0,0,0 1", 1), ("Polyline 0,0,0 1,0,0 1,1,0", 2)]

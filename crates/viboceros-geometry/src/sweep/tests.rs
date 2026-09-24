@@ -8,6 +8,133 @@ fn line(a: Point3, b: Point3) -> crate::LineSegment {
 }
 
 #[test]
+fn circular_closed_rail_sweep_closes_its_surface_and_brep() {
+    let rail = crate::Circle3::try_new(
+        p(0., 0., 0.),
+        3.,
+        UnitVector3::try_new(0., 0., 1., Tolerance::DEFAULT).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let section = SweepSection {
+        parameter: *rail.domain().start(),
+        curve: line(p(3., 0., -1.), p(3., 0., 1.)).to_nurbs().unwrap(),
+    };
+    let sweep = Sweep1::try_new(
+        CurveRef::Circle(&rail),
+        &[section],
+        SweepFrameStyle::Freeform,
+        SweepBlend::Local,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let surface = sweep.to_rail_basis_surface().unwrap();
+    assert!(surface.is_closed_u().unwrap());
+    let domain = surface.domain_u();
+    for v in [0., 0.5, 1.] {
+        let a = surface.evaluate(*domain.start(), v).unwrap();
+        let b = surface.evaluate(*domain.end(), v).unwrap();
+        assert!(a.distance_to(b).unwrap() < 1e-8, "{a:?} {b:?}");
+    }
+    let [u, v] = surface
+        .sampled_kink_parameters(Tolerance::DEFAULT.angular())
+        .unwrap();
+    let brep = crate::Brep::try_surface_grid(&surface, &u, &v, Tolerance::DEFAULT).unwrap();
+    assert_eq!(brep.faces().len(), 1);
+    assert_eq!(
+        brep.edge_use_counts().iter().filter(|&&n| n == 2).count(),
+        1
+    );
+
+    let end = *rail.domain().end();
+    let distinct_end = SweepSection {
+        parameter: end,
+        curve: line(p(3., 0., -2.), p(3., 0., 2.)).to_nurbs().unwrap(),
+    };
+    let incompatible = Sweep1::try_new(
+        CurveRef::Circle(&rail),
+        &[
+            SweepSection {
+                parameter: *rail.domain().start(),
+                curve: line(p(3., 0., -1.), p(3., 0., 1.)).to_nurbs().unwrap(),
+            },
+            distinct_end,
+        ],
+        SweepFrameStyle::Freeform,
+        SweepBlend::Local,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    assert!(matches!(
+        incompatible.to_rail_basis_surface(),
+        Err(GeometryError::InvalidSweep {
+            context: "closed rail produced an open surface seam"
+        })
+    ));
+}
+
+#[test]
+fn circular_rail_with_circular_profile_creates_a_closed_solid() {
+    let rail = crate::Circle3::try_new(
+        p(0., 0., 0.),
+        3.,
+        UnitVector3::try_new(0., 0., 1., Tolerance::DEFAULT).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let profile = crate::Circle3::try_new(
+        p(3., 0., 0.),
+        1.,
+        UnitVector3::try_new(0., 1., 0., Tolerance::DEFAULT).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let sweep = Sweep1::try_new(
+        CurveRef::Circle(&rail),
+        &[SweepSection {
+            parameter: *rail.domain().start(),
+            curve: profile.to_nurbs().unwrap(),
+        }],
+        SweepFrameStyle::Freeform,
+        SweepBlend::Local,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let surface = sweep.to_rail_basis_surface().unwrap();
+    assert!(surface.is_closed_u().unwrap());
+    assert!(surface.is_closed_v().unwrap());
+    let brep = crate::Brep::try_surface_grid(&surface, &[], &[], Tolerance::DEFAULT).unwrap();
+    assert_eq!(brep.faces().len(), 1);
+    assert!(brep.is_solid());
+}
+
+#[test]
+fn closed_rail_with_a_corner_at_its_seam_requires_a_miter() {
+    let rail = NurbsCurve::try_new(
+        2,
+        vec![p(0., 0., 0.), p(1., 0., 0.), p(0., 1., 0.), p(0., 0., 0.)],
+        vec![0., 0., 0., 0.5, 1., 1., 1.],
+    )
+    .unwrap();
+    let result = Sweep1::try_new(
+        CurveRef::NurbsCurve(&rail),
+        &[SweepSection {
+            parameter: 0.,
+            curve: line(p(0., 0., -1.), p(0., 0., 1.)).to_nurbs().unwrap(),
+        }],
+        SweepFrameStyle::Freeform,
+        SweepBlend::Local,
+        Tolerance::DEFAULT,
+    );
+    assert!(matches!(
+        result,
+        Err(GeometryError::InvalidSweep {
+            context: "rail seam corner requires sweep miter construction"
+        })
+    ));
+}
+
+#[test]
 fn sweep_snaps_only_endpoint_roundoff_and_rechecks_section_order() {
     let rail = line(p(0.0, 0.0, 0.0), p(0.0, 0.0, 5.0));
     let mut sections = [0.0, 5.0].map(|z| SweepSection {

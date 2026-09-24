@@ -53,6 +53,7 @@ pub struct Sweep1 {
     blend: SweepBlend,
     tolerance: Tolerance,
     domain: RangeInclusive<Real>,
+    closed_rail: bool,
     angular_tolerance: Real,
 }
 
@@ -127,8 +128,15 @@ impl Sweep1 {
         {
             return Err(invalid("rail corners require sweep miter construction"));
         }
-        if trimmed.as_ref().is_closed()? {
-            return Err(invalid("closed rail sweep closure is not implemented"));
+        let closed_rail = trimmed.as_ref().is_closed()?;
+        if closed_rail {
+            let first = trimmed.as_ref().evaluate_with_tangent(start)?.tangent();
+            let last = trimmed.as_ref().evaluate_with_tangent(end)?.tangent();
+            if first.as_vector().angle_to(last.as_vector())? > tolerance.angular() {
+                return Err(invalid(
+                    "rail seam corner requires sweep miter construction",
+                ));
+            }
         }
         let curves = sections.iter().map(|s| s.curve.clone()).collect::<Vec<_>>();
         if curves
@@ -166,6 +174,7 @@ impl Sweep1 {
             blend,
             tolerance,
             domain: start..=end,
+            closed_rail,
             angular_tolerance: (0.05 * (tolerance.absolute() / radius)).min(1e-10),
         };
         result.prepare_local_controls()?;
@@ -312,13 +321,13 @@ impl Sweep1 {
     /// Refits the rail to a cubic arc-length parameterization, then
     /// interpolates transported profiles at its Greville stations.
     pub fn to_surface(&self) -> Result<NurbsSurface, GeometryError> {
-        basis::rail_basis(self, true)
+        self.validate_surface_closure(basis::rail_basis(self, true)?)
     }
 
     /// Fits the continuous frame/blending model, not Rhino's fixed-basis sweep.
     /// U follows native rail parameters. Audits are sampled and bounded.
     pub fn fit_model_surface(&self) -> Result<NurbsSurface, GeometryError> {
-        fit::fit(self)
+        self.validate_surface_closure(fit::fit(self)?)
     }
 
     /// Interpolates transported sections in the rail's existing rational
@@ -328,7 +337,17 @@ impl Sweep1 {
     /// Retained construction uses Local Euclidean control blending followed
     /// by the common-basis end-weight policy; forced refits use the refit model.
     pub fn to_rail_basis_surface(&self) -> Result<NurbsSurface, GeometryError> {
-        basis::rail_basis(self, false)
+        self.validate_surface_closure(basis::rail_basis(self, false)?)
+    }
+
+    fn validate_surface_closure(
+        &self,
+        surface: NurbsSurface,
+    ) -> Result<NurbsSurface, GeometryError> {
+        if self.closed_rail && !surface.is_closed_u()? {
+            return Err(invalid("closed rail produced an open surface seam"));
+        }
+        Ok(surface)
     }
 
     fn frames(&self, parameters: &[Real]) -> Result<Vec<Frame3>, GeometryError> {

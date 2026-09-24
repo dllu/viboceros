@@ -81,9 +81,11 @@ can change later multi-span profiles when endpoint weight ratios differ.
 `FrameStyle=Freeform|Roadlike`, `Axis=x,y,z` (Roadlike only), and
 `GlobalShapeBlending=Yes|No` select the frame and blend model. Inputs and selection
 are retained; one unselected B-rep is added on the current layer with atomic undo.
-See [sweep construction and compatibility gaps](../sweep1.md): closed rails,
-miters, automatic section placement, and complete Rhino multi-section blending
-are not implemented.
+See [sweep construction and compatibility gaps](../sweep1.md): smooth closed
+rails can close when their generated seam matches, including a full circular
+rail with one profile. General closed-rail holonomy correction, miters,
+automatic section placement, and complete Rhino multi-section blending are
+not implemented.
 
 ## Face and isocurve extraction
 

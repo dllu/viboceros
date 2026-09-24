@@ -34,7 +34,12 @@ A single profile instead sweeps forward from its station to the rail's end.
 Inputs, attributes, groups, and selection remain unchanged. The new unselected
 B-rep uses the current layer; profile creases split into shared-topology faces.
 The operation is one undo step. Invalid options/construction do not modify the
-document. Closed profiles are supported; closed rails are not.
+document. Closed profiles are supported. A smooth closed rail can produce a
+closed seam when the swept interval covers its full loop and the generated
+surface closes in the rail direction. The command rejects an open seam instead
+of adding a slit B-rep; a corner at the rail seam requires a miter and is
+rejected. The circular rail with one profile is covered by
+command and kernel tests; a circular profile produces a native one-face solid.
 
 | Option | Implemented behavior |
 | --- | --- |
@@ -202,6 +207,21 @@ to indicate untimed command execution.
 | `sweep1_diagnostics.json` | 2 | Fail: rational closest-point results `0.0457`, three-profile Global `0.198`. |
 | `sweep1_basis_diagnostics.json` | 5 | Fail: Global commands, refit degree/parameter differences, and a nonminimal Rhino boundary answer. |
 | `sweep1_weights_diagnostics.json` | 4 | Fail: two-profile Local curved refits, the refit of a degree-five rail, and another nonminimal Rhino rational boundary answer. |
+| `sweep1_closed_circle_world.json` | 1 | 81 on-surface world queries agree within `4.3e-11`; nine off-surface Rhino closest-point results differ by up to `4.2e-6`. |
+
+The [closed-circle command input](../tools/rhino_oracle/fixtures/sweep1_closed_circle_world.json)
+and [Rhino observation](../tools/rhino_oracle/observations/sweep1_closed_circle_world.json)
+retain 90 world-space closest-point queries. The first 81 lie on the intended
+cylinder and have maximum native/Rhino coordinate difference `4.3e-11`.
+For the other nine, the native exact cylinder returns the analytic nearest
+point, while Rhino's closest-point search deviates by up to `4.2e-6`.
+The separate [definition input](../tools/rhino_oracle/fixtures/sweep1_closed_circle_definition.json)
+and [observation](../tools/rhino_oracle/observations/sweep1_closed_circle_definition.json)
+show Rhino's dense cubic rail direction (131 controls); native retains the
+exact rational circle basis (9 controls). Equal UV fractions therefore sample
+different points despite matching geometry. A closed circular profile also
+produces a native solid, but its 81-query Rhino probe timed out before returning
+an observation.
 
 Construction tolerance in these fixtures is `1e-7`; passing the looser `1e-6`
 comparison is not evidence of agreement at construction tolerance. Independent
@@ -237,9 +257,12 @@ tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/sweep1_we
   --absolute-epsilon 1e-6 --relative-epsilon 1e-12
 ```
 
-Closed-rail closure, rail miters, complete unrefitted multi-profile compatibility,
+General closed-rail holonomy correction and cyclic profile blending, rail miters,
+complete unrefitted multi-profile compatibility,
 automatic section placement/seam alignment, viewport picking, and remaining
-Rhino rebuild/refit options are not implemented. These are explicit limits,
+Rhino rebuild/refit options are not implemented. The full-circle cubic refit
+currently exhausts its fit-control limit at the default construction tolerance.
+These are explicit limits,
 not evidence that the overall project goal is complete. Performance is also
 unfinished: short release timings for the spatial refitter are tracked separately
 from geometry comparisons; dense-to-banded solving alone did not remove the

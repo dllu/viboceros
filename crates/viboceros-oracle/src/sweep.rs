@@ -5,6 +5,44 @@ use viboceros_geometry::{Sweep1, SweepBlend, SweepFrameStyle, SweepSection};
 #[cfg(test)]
 mod tests {
     #[test]
+    fn closed_circle_sweep_matches_owned_rhino_world_space_picks() {
+        let request = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/sweep1_closed_circle_world.json"
+        ))
+        .unwrap();
+        let observation: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/sweep1_closed_circle_world.json"
+        ))
+        .unwrap();
+        let response = super::run_request(&request).unwrap();
+        assert_eq!(response.results.len(), 1);
+        assert_eq!(observation["engine"], "rhino");
+        assert_eq!(
+            response.results[0].id,
+            observation["results"][0]["id"].as_str().unwrap()
+        );
+        let actual = response.results[0].value[0]["samples"].as_array().unwrap();
+        let expected = observation["results"][0]["value"][0]["samples"]
+            .as_array()
+            .unwrap();
+        assert_eq!(actual.len(), 90);
+        assert_eq!(expected.len(), 90);
+        // The 81 on-surface queries compare the actual locus despite different
+        // U bases. Rhino's nine off-surface closest-point answers have separate
+        // residual errors up to 4.2e-6 and remain in the raw observation.
+        for index in 0..81 {
+            for coordinate in 0..3 {
+                let a = actual[index][coordinate].as_f64().unwrap();
+                let b = expected[index][coordinate].as_f64().unwrap();
+                assert!(
+                    (a - b).abs() < 1e-9,
+                    "query {index}, coordinate {coordinate}: {a} != {b}"
+                );
+            }
+        }
+    }
+
+    #[test]
     fn permanent_sweep_fixtures_execute_with_finite_geometry() {
         for (source, count) in [
             (
