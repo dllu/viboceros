@@ -50,11 +50,12 @@ SelVolumeObject SelectionMode=Crossing
 The mesh source must have a closed, manifold, consistently oriented shell.
 B-reps and NURBS surfaces are tessellated before classification. Point queries
 distinguish the interior, boundary, and exterior. Repeated point queries use a
-face bounds tree built once for the source mesh. A line crossing a face is
-selected even when both endpoints are outside; nonplanar mesh quads are checked
-as two triangles. Curved targets and Window tests on nonconvex solids use
-samples, so thin boundary cases may differ from
-[Rhino's SelVolumeObject](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelVolumeObject).
+face bounds tree built once for the source mesh. Line crossings use the same
+tree to narrow candidate faces and select lines even when both endpoints are
+outside. Nonplanar mesh quads are checked as two triangles. Curved targets and
+Window tests on nonconvex solids use samples, so thin boundary cases may differ
+from Rhino's
+[SelVolumeObject](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelVolumeObject).
 
 ## Sphere
 

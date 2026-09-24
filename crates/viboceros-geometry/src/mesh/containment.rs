@@ -171,6 +171,51 @@ impl<'a> MeshSolid<'a> {
         Ok(false)
     }
 
+    /// Visits faces whose bounds overlap a segment within `tolerance`.
+    ///
+    /// The visitor returns `true` to stop early. This is a conservative bounds
+    /// query: the visitor must perform the actual segment-face intersection.
+    pub fn any_segment_face_candidate<E>(
+        &self,
+        start: Point3,
+        end: Point3,
+        tolerance: Tolerance,
+        mut visitor: impl FnMut(usize) -> Result<bool, E>,
+    ) -> Result<bool, E> {
+        if self.nodes.is_empty() {
+            return Ok(false);
+        }
+        let start = start.to_array();
+        let end = end.to_array();
+        let min = std::array::from_fn(|axis| start[axis].min(end[axis]));
+        let max = std::array::from_fn(|axis| start[axis].max(end[axis]));
+        self.visit_box(0, min, max, tolerance.absolute(), &mut visitor)
+    }
+
+    fn visit_box<E>(
+        &self,
+        index: usize,
+        min: [Real; 3],
+        max: [Real; 3],
+        epsilon: Real,
+        visitor: &mut impl FnMut(usize) -> Result<bool, E>,
+    ) -> Result<bool, E> {
+        let node = &self.nodes[index];
+        if boxes_disjoint(node.min, node.max, min, max, epsilon) {
+            return Ok(false);
+        }
+        if let Some([left, right]) = node.children {
+            return Ok(self.visit_box(left, min, max, epsilon, visitor)?
+                || self.visit_box(right, min, max, epsilon, visitor)?);
+        }
+        for face in &self.faces[node.range.clone()] {
+            if !boxes_disjoint(face.min, face.max, min, max, epsilon) && visitor(face.index)? {
+                return Ok(true);
+            }
+        }
+        Ok(false)
+    }
+
     /// `None` means the ray touched an edge, vertex, or coplanar face.
     fn ray_crossings(&self, point: Point3, direction: [Real; 3]) -> Option<usize> {
         let mut crossings = 0;
@@ -234,6 +279,23 @@ fn outside_bounds(min: [Real; 3], max: [Real; 3], point: [Real; 3], epsilon: Rea
     (0..3).any(|axis| {
         (point[axis] < min[axis] && min[axis] - point[axis] > epsilon)
             || (point[axis] > max[axis] && point[axis] - max[axis] > epsilon)
+    })
+}
+
+fn boxes_disjoint(
+    left_min: [Real; 3],
+    left_max: [Real; 3],
+    right_min: [Real; 3],
+    right_max: [Real; 3],
+    epsilon: Real,
+) -> bool {
+    (0..3).any(|axis| {
+        let left_low = left_min[axis].next_down();
+        let left_high = left_max[axis].next_up();
+        let right_low = right_min[axis].next_down();
+        let right_high = right_max[axis].next_up();
+        (left_low > right_high && left_low - right_high > epsilon)
+            || (right_low > left_high && right_low - left_high > epsilon)
     })
 }
 
@@ -531,6 +593,21 @@ mod tests {
             )
         });
         assert!(ray_candidates < 128, "{ray_candidates}");
+
+        let mut segment_candidates = 0;
+        let found = solid
+            .any_segment_face_candidate(
+                point(1.013, 1.017, -1.0),
+                point(1.013, 1.017, 3.0),
+                Tolerance::DEFAULT,
+                |_| {
+                    segment_candidates += 1;
+                    Ok::<bool, ()>(false)
+                },
+            )
+            .unwrap();
+        assert!(!found);
+        assert!(segment_candidates > 0 && segment_candidates < 128);
     }
 
     #[test]

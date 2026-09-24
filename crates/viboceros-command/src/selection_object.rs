@@ -94,6 +94,25 @@ impl SelectionObject<'_> {
         Ok(self.solid.classify_point(point, self.tolerance)? != SolidPointLocation::Outside)
     }
 
+    fn segment_hits_source_surface(
+        &self,
+        start: Point3,
+        end: Point3,
+    ) -> Result<bool, CommandError> {
+        let direction = start.vector_to(end)?;
+        self.solid
+            .any_segment_face_candidate(start, end, self.tolerance, |face| {
+                segment_hits_mesh_face_surface(
+                    self.mesh,
+                    face,
+                    start,
+                    end,
+                    direction,
+                    self.tolerance,
+                )
+            })
+    }
+
     fn disjoint_bounds(&self, geometry: &Geometry) -> bool {
         let source = self.mesh.bounds();
         let target = geometry.bounds();
@@ -181,8 +200,7 @@ impl SelectionObject<'_> {
                     }
                 }
             }
-            if !crossing && segment_hits_mesh_surface(self.mesh, pair[0], pair[1], self.tolerance)?
-            {
+            if !crossing && self.segment_hits_source_surface(pair[0], pair[1])? {
                 crossing = true;
             }
             if crossing && !window {
@@ -209,7 +227,7 @@ impl SelectionObject<'_> {
                         }
                     }
                 }
-                if !crossing && segment_hits_mesh_surface(self.mesh, a, b, self.tolerance)? {
+                if !crossing && self.segment_hits_source_surface(a, b)? {
                     crossing = true;
                 }
             }
@@ -256,34 +274,48 @@ fn segment_hits_mesh_surface(
     tolerance: Tolerance,
 ) -> Result<bool, CommandError> {
     let direction = start.vector_to(end)?;
-    for (index, face) in mesh.faces().iter().enumerate() {
-        let indices = face.indices();
-        let vertices = mesh.vertices();
-        for triangle in [[0, 1, 2], [0, 2, 3]] {
-            if triangle[2] >= indices.len() {
-                continue;
-            }
-            let [a, b, c] = triangle.map(|corner| vertices[indices[corner] as usize]);
-            let normal = a.vector_to(b)?.cross(a.vector_to(c)?)?;
-            let denominator = normal.dot(direction)?;
-            if denominator != 0.0 {
-                let parameter = normal.dot(start.vector_to(a)?)? / denominator;
-                if (0.0..=1.0).contains(&parameter) {
-                    let point = interpolate(start, end, parameter)?;
-                    if point.distance_to(mesh.closest_point_on_face(index, point)?)?
-                        <= tolerance.absolute()
-                    {
-                        return Ok(true);
-                    }
+    for face in 0..mesh.faces().len() {
+        if segment_hits_mesh_face_surface(mesh, face, start, end, direction, tolerance)? {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+fn segment_hits_mesh_face_surface(
+    mesh: &TriangleMesh,
+    face: usize,
+    start: Point3,
+    end: Point3,
+    direction: Vector3,
+    tolerance: Tolerance,
+) -> Result<bool, CommandError> {
+    let indices = mesh.faces()[face].indices();
+    let vertices = mesh.vertices();
+    for triangle in [[0, 1, 2], [0, 2, 3]] {
+        if triangle[2] >= indices.len() {
+            continue;
+        }
+        let [a, b, c] = triangle.map(|corner| vertices[indices[corner] as usize]);
+        let normal = a.vector_to(b)?.cross(a.vector_to(c)?)?;
+        let denominator = normal.dot(direction)?;
+        if denominator != 0.0 {
+            let parameter = normal.dot(start.vector_to(a)?)? / denominator;
+            if (0.0..=1.0).contains(&parameter) {
+                let point = interpolate(start, end, parameter)?;
+                if point.distance_to(mesh.closest_point_on_face(face, point)?)?
+                    <= tolerance.absolute()
+                {
+                    return Ok(true);
                 }
             }
         }
-        for edge in 0..indices.len() {
-            let first = vertices[indices[edge] as usize];
-            let second = vertices[indices[(edge + 1) % indices.len()] as usize];
-            if segment_distance(start, end, first, second)? <= tolerance.absolute() {
-                return Ok(true);
-            }
+    }
+    for edge in 0..indices.len() {
+        let first = vertices[indices[edge] as usize];
+        let second = vertices[indices[(edge + 1) % indices.len()] as usize];
+        if segment_distance(start, end, first, second)? <= tolerance.absolute() {
+            return Ok(true);
         }
     }
     Ok(false)
@@ -341,6 +373,41 @@ mod tests {
             )
             .unwrap()
         );
+    }
+
+    #[test]
+    fn source_segment_candidates_match_full_face_scan() {
+        let mesh = TriangleMesh::try_box_grid(
+            frame(),
+            [[0., 2.], [0., 2.], [0., 2.]],
+            16,
+            16,
+            1,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let volume = SelectionObject {
+            mesh: &mesh,
+            solid: MeshSolid::from_closed_mesh(&mesh).unwrap(),
+            tolerance: Tolerance::DEFAULT,
+        };
+        for x in -1..=5 {
+            for y in -1..=5 {
+                let x = x as Real * 0.4;
+                let y = y as Real * 0.4;
+                for (start, end) in [
+                    (p(x, y, -1.), p(x, y, 3.)),
+                    (p(-1., y, x), p(3., y, x)),
+                    (p(x, y, 0.25), p(x + 0.2, y + 0.1, 0.75)),
+                ] {
+                    assert_eq!(
+                        volume.segment_hits_source_surface(start, end).unwrap(),
+                        segment_hits_mesh_surface(&mesh, start, end, Tolerance::DEFAULT).unwrap(),
+                        "{start:?} to {end:?}"
+                    );
+                }
+            }
+        }
     }
 
     #[test]
