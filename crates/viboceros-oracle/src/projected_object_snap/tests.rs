@@ -274,6 +274,20 @@ fn straight_intersection_snaps_replay_owned_rhino_picks() {
                 "../../../../tools/rhino_oracle/observations/intersection_competing_mid_snaps.json"
             ),
         ),
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/intersection_self_snaps.json"),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_self_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_mesh_self_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_mesh_self_snaps.json"
+            ),
+        ),
     ] {
         let differences = retained_differences(fixture, observed);
         assert!(differences.is_empty(), "{differences:?}");

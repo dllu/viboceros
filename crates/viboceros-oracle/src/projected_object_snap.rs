@@ -20,6 +20,9 @@ pub enum SnapSource {
         start: [f64; 3],
         end: [f64; 3],
     },
+    Polyline {
+        vertices: Vec<[f64; 3]>,
+    },
     Mesh {
         vertices: Vec<[f64; 3]>,
         faces: Vec<Vec<u32>>,
@@ -34,6 +37,21 @@ impl SnapSource {
                 Point3::try_from(*end)?,
                 tolerance,
             )?),
+            Self::Polyline { vertices } => {
+                if !(2..=256).contains(&vertices.len()) {
+                    return Err(ProbeError::FixtureInvariant(
+                        "snap polyline exceeds bounded probe size",
+                    ));
+                }
+                Geometry::Polyline(Polyline3::try_new(
+                    vertices
+                        .iter()
+                        .copied()
+                        .map(Point3::try_from)
+                        .collect::<Result<Vec<_>, _>>()?,
+                    tolerance,
+                )?)
+            }
             Self::Mesh { vertices, faces } => {
                 if !(3..=4096).contains(&vertices.len()) || !(1..=8192).contains(&faces.len()) {
                     return Err(ProbeError::FixtureInvariant(

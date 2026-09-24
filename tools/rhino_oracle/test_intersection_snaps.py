@@ -48,6 +48,15 @@ class IntersectionSnapTests(unittest.TestCase):
                 "int-vs-unrelated-mid": "Midpoint",
                 "int-vs-unrelated-end-close": "End",
             },
+            "intersection_self_snaps": {
+                "self-cross-polyline": "Intersection",
+                "adjacent-polyline-corner": "Intersection",
+                "self-cross-spatial-polyline": "Intersection",
+            },
+            "intersection_mesh_self_snaps": {
+                "mesh-corner-off": "None",
+                "mesh-corner-on": "None",
+            },
         }
         for stem, expected in cases.items():
             with self.subTest(stem=stem):

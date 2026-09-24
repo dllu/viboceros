@@ -8,6 +8,9 @@ require `SnapToMeshes Enable`; ordinary curves do not. It works in parallel
 and perspective viewports and leaves the source geometry unchanged.
 
 This is a screen-space snap: lines at different depths can cross in the view.
+Segments of one polyline can cross each other, and its ordinary corners also
+produce Int targets, matching Rhino's measured behavior.
+Wires within one mesh do not generate Int targets at their shared vertex.
 The source whose projected line is closer to the cursor supplies the 3D point;
 frontmost depth and then curve-over-mesh priority resolve measured ties.
 Projected segment interpolation returns a point on the original 3D locus.
@@ -32,11 +35,17 @@ with [results](../tools/rhino_oracle/observations/intersection_competing_snaps.j
 and [competing Mid picks](../tools/rhino_oracle/fixtures/intersection_competing_mid_snaps.json)
 with [results](../tools/rhino_oracle/observations/intersection_competing_mid_snaps.json)
 show that a closer unrelated End or Mid can win, while Near remains a fallback.
-All 21 native replays match snap kind, source and 3D point within `1e-9` model
+The [three single-polyline picks](../tools/rhino_oracle/fixtures/intersection_self_snaps.json)
+and [results](../tools/rhino_oracle/observations/intersection_self_snaps.json)
+cover a planar self-crossing, an adjacent corner, and an apparent crossing at
+two depths. [Mesh corner picks](../tools/rhino_oracle/fixtures/intersection_mesh_self_snaps.json)
+and [results](../tools/rhino_oracle/observations/intersection_mesh_self_snaps.json)
+show two misses with the mesh switch off and on. All 26 native replays match
+snap kind, source and 3D point within `1e-9` model
 units. The [Rhino object snap reference](https://docs.mcneel.com/rhino/8/help/en-us/user_interface/object_snaps.htm)
 describes Int for curves, edges and mesh wires.
 
-Curved loci, self-intersections within one object, surface isocurves,
+Curved loci, curved self-intersections, surface isocurves,
 occlusion, and multi-object intersection priority need further work. Candidate
 mesh wires use the existing snapshot-cached bounds hierarchy; the remaining
 near-cursor segment pairs are examined for crossings. Worst-case pair counts

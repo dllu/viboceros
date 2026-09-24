@@ -84,6 +84,22 @@ fn mesh_wire_intersection_obeys_source_switch() {
 }
 
 #[test]
+fn a_single_mesh_wire_corner_is_not_an_intersection() {
+    let mut doc = Document::default();
+    doc.add_geometry(Geometry::Mesh(
+        TriangleMesh::try_new_faces(
+            vec![p(-2., 0., 0.), p(0., 0., 0.), p(0., 2., 0.)],
+            vec![MeshFace::Triangle([0, 1, 2])],
+            Tolerance::DEFAULT,
+        )
+        .unwrap(),
+    ))
+    .unwrap();
+    assert!(snap(&doc, false).is_none());
+    assert!(snap(&doc, true).is_none());
+}
+
+#[test]
 fn repeated_intersections_reuse_mesh_wire_hierarchy() {
     let mut vertices = Vec::new();
     let mut faces = Vec::new();
@@ -150,6 +166,45 @@ fn polyline_and_degree_one_nurbs_segments_share_intersection_capture() {
             .unwrap()
             < 1e-12
     );
+}
+
+#[test]
+fn a_single_polyline_snaps_at_its_corner_and_at_its_own_crossing() {
+    for (vertices, expected) in [
+        (
+            vec![p(-2., 0., 0.), p(0., 0., 0.), p(0., 2., 0.)],
+            p(0., 0., 0.),
+        ),
+        (
+            vec![
+                p(-2., -2., 0.),
+                p(2., 2., 0.),
+                p(-2., 2., 0.),
+                p(2., -2., 0.),
+            ],
+            p(0., 0., 0.),
+        ),
+        (
+            vec![
+                p(-2., -2., 0.),
+                p(2., 2., 0.),
+                p(-2., 2., 1.),
+                p(2., -2., 1.),
+            ],
+            p(0., 0., 1.),
+        ),
+    ] {
+        let mut doc = Document::default();
+        let id = doc
+            .add_geometry(Geometry::Polyline(
+                Polyline3::try_new(vertices, Tolerance::DEFAULT).unwrap(),
+            ))
+            .unwrap();
+        let hit = snap(&doc, false).unwrap();
+        assert_eq!(hit.kind(), ObjectSnapKind::Intersection);
+        assert_eq!(hit.object_id(), id);
+        assert!(hit.point().distance_to(expected).unwrap() < 1e-12);
+    }
 }
 
 #[test]

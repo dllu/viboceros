@@ -76,7 +76,9 @@ pub(super) fn visit(
         for second in first + 1..segments.len() {
             let a = segments[first];
             let b = segments[second];
-            if a.owner == b.owner {
+            // Rhino captures a polyline's own corners, but not shared
+            // vertices of wires belonging to one mesh.
+            if a.owner == b.owner && (a.mesh || b.mesh) {
                 continue;
             }
             let Some(image) = crossing(a.image_a, a.image_b, b.image_a, b.image_b) else {

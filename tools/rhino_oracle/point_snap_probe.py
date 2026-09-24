@@ -58,6 +58,10 @@ def validate(operation):
         if source.get("type") == "line":
             if set(source) != set(("type", "start", "end")) or not point(source["start"]) or not point(source["end"]):
                 raise ValueError("invalid point snap line")
+        elif source.get("type") == "polyline":
+            if (set(source) != set(("type", "vertices")) or not isinstance(source["vertices"], list)
+                    or not 2 <= len(source["vertices"]) <= 256 or not all(point(v) for v in source["vertices"])):
+                raise ValueError("invalid point snap polyline")
         elif source.get("type") == "mesh":
             if set(source) != set(("type", "vertices", "faces")): raise ValueError("invalid point snap mesh fields")
             vertices, faces = source["vertices"], source["faces"]
@@ -218,6 +222,10 @@ def run(operation, tolerance, host):
     ids, owned = [], []
     def record(geometry):
         if isinstance(geometry, Rhino.Geometry.Mesh): return dict(mesh=host["_polygon_mesh_value"](geometry))
+        if isinstance(geometry, getattr(Rhino.Geometry, "PolylineCurve", ())):
+            success, polyline = geometry.TryGetPolyline()
+            if not success: raise ValueError("point snap polyline changed representation")
+            return dict(polyline=[host["_xyz"](point) for point in polyline])
         return dict(line=[host["_xyz"](geometry.PointAtStart), host["_xyz"](geometry.PointAtEnd)])
     try:
         for source in operation["sources"]:
