@@ -1,8 +1,8 @@
 //! Endpoint connections using exact lines and straight tangent extensions.
 
 use crate::{
-    Curve3, CurveSegment3, GeometryError, LineSegment, ParameterSide, Point3, PolyCurve3,
-    Tolerance, UnitVector3,
+    CircularArc3, Curve3, CurveSegment3, GeometryError, LineSegment, ParameterSide, Point3,
+    PolyCurve3, Real, Tolerance, UnitVector3, Vector3,
     curve_pair_support::{
         curve_from_segments, oriented, original_direction, selected_end,
         supporting_directions_intersection,
@@ -18,7 +18,7 @@ pub enum CurveArcExtensionStyle {
 
 /// Connects selected ends while retaining each source's original direction.
 /// Lines may be trimmed or extended. NURBS and polyline ends may extend along
-/// their exact endpoint tangents; arc extension requires a separate style.
+/// their exact endpoint tangents. Coplanar arc/line pairs may extend the arc.
 pub fn try_connect_curves_parts(
     first: &Curve3,
     first_pick: Point3,
@@ -127,6 +127,20 @@ fn connected_oriented(
     if tail_end.distance_to(head_start)? <= tolerance.absolute() {
         return Ok((first, second));
     }
+    if arc_extension == CurveArcExtensionStyle::Arc {
+        let arc_line = match (tail, head) {
+            (CurveSegment3::Arc(arc), CurveSegment3::Line(line)) => Some(connect_arc_line(
+                &first, &second, *arc, *line, true, tolerance,
+            )?),
+            (CurveSegment3::Line(line), CurveSegment3::Arc(arc)) => Some(connect_arc_line(
+                &first, &second, *arc, *line, false, tolerance,
+            )?),
+            _ => None,
+        };
+        if let Some(connected) = arc_line {
+            return Ok(connected);
+        }
+    }
     let (first_origin, first_direction) = support_direction(tail, true, arc_extension, tolerance)?;
     let (second_origin, second_direction) =
         support_direction(head, false, arc_extension, tolerance)?;
@@ -153,6 +167,115 @@ fn connected_oriented(
         return Err(unsupported());
     }
     Ok((first, second))
+}
+
+/// Finds a circle/line meeting on the unused portion of the arc's circle.
+/// The line support must lie in the arc plane; the chosen arc spans less than
+/// one full revolution and retains its original radius, center, and direction.
+fn connect_arc_line(
+    first: &PolyCurve3,
+    second: &PolyCurve3,
+    arc: CircularArc3,
+    line: LineSegment,
+    arc_is_first: bool,
+    tolerance: Tolerance,
+) -> Result<(PolyCurve3, PolyCurve3), GeometryError> {
+    let direction = line.direction(tolerance)?.as_vector();
+    let normal = arc.normal()?.as_vector();
+    let center_to_start = arc.center().vector_to(line.start())?;
+    if center_to_start.dot(normal)?.abs() > tolerance.absolute()
+        || direction.dot(normal)?.abs() > tolerance.angular().sin()
+    {
+        return Err(unsupported());
+    }
+    let along = center_to_start.dot(direction)?;
+    let offset = center_to_start.to_array();
+    let unit = direction.to_array();
+    let perpendicular = Vector3::try_from(std::array::from_fn(|index| {
+        (-along).mul_add(unit[index], offset[index])
+    }))?;
+    let radial_distance = perpendicular.length()?;
+    if radial_distance > arc.radius() + tolerance.absolute() {
+        return Err(unsupported());
+    }
+    let height = if (arc.radius() - radial_distance).abs() <= tolerance.absolute() {
+        0.0
+    } else {
+        ((arc.radius() - radial_distance) * (arc.radius() + radial_distance)).sqrt()
+    };
+    let mut best: Option<(Real, PolyCurve3, PolyCurve3)> = None;
+    for distance in [-along - height, -along + height] {
+        let meeting = line.start().translated(direction.scaled(distance)?)?;
+        let radial = arc.center().vector_to(meeting)?;
+        let angle = radial
+            .dot(arc.y_axis().as_vector())?
+            .atan2(radial.dot(arc.x_axis().as_vector())?)
+            .rem_euclid(std::f64::consts::TAU);
+        if angle <= arc.sweep_radians() + tolerance.angular()
+            || angle >= std::f64::consts::TAU - tolerance.angular()
+        {
+            continue;
+        }
+        let (extended, line_segments, extra_length) = if arc_is_first {
+            let Ok(extended) = arc.try_extended_to_circle_angle(angle, true) else {
+                continue;
+            };
+            let Ok(line_segments) = retained_head(&CurveSegment3::Line(line), meeting, tolerance)
+            else {
+                continue;
+            };
+            (
+                extended,
+                line_segments,
+                arc.radius() * (angle - arc.sweep_radians()),
+            )
+        } else {
+            let Ok(extended) = arc.try_extended_to_circle_angle(angle, false) else {
+                continue;
+            };
+            let Ok(line_segments) = retained_tail(&CurveSegment3::Line(line), meeting, tolerance)
+            else {
+                continue;
+            };
+            (
+                extended,
+                line_segments,
+                arc.radius() * (std::f64::consts::TAU - angle),
+            )
+        };
+        let (first_segments, second_segments) = if arc_is_first {
+            let mut first_segments = first.segments()[..first.segments().len() - 1].to_vec();
+            first_segments.push(CurveSegment3::Arc(extended));
+            let mut second_segments = line_segments;
+            second_segments.extend_from_slice(&second.segments()[1..]);
+            (first_segments, second_segments)
+        } else {
+            let mut first_segments = first.segments()[..first.segments().len() - 1].to_vec();
+            first_segments.extend(line_segments);
+            let mut second_segments = vec![CurveSegment3::Arc(extended)];
+            second_segments.extend_from_slice(&second.segments()[1..]);
+            (first_segments, second_segments)
+        };
+        let Ok(first_result) = PolyCurve3::try_new(first_segments) else {
+            continue;
+        };
+        let Ok(second_result) = PolyCurve3::try_new(second_segments) else {
+            continue;
+        };
+        let first_end = first_result.evaluate(*first_result.domain().end())?;
+        let second_start = second_result.evaluate(*second_result.domain().start())?;
+        if first_end.distance_to(second_start)? > tolerance.absolute() {
+            continue;
+        }
+        if best
+            .as_ref()
+            .is_none_or(|(prior, _, _)| extra_length < *prior)
+        {
+            best = Some((extra_length, first_result, second_result));
+        }
+    }
+    best.map(|(_, first, second)| (first, second))
+        .ok_or_else(unsupported)
 }
 
 fn support_direction(
@@ -273,7 +396,7 @@ fn unsupported() -> GeometryError {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{CircularArc3, NurbsCurve, Real};
+    use crate::NurbsCurve;
 
     fn p(x: Real, y: Real) -> Point3 {
         Point3::try_new(x, y, 0.).unwrap()
@@ -413,10 +536,19 @@ mod tests {
             .unwrap(),
         );
         let second = line(p(-1., 2.), p(-1., 3.));
-        assert!(
+        let circular =
             try_connect_curves_joined(&arc, p(0., 1.), &second, p(-1., 2.), Tolerance::DEFAULT)
-                .is_err()
-        );
+                .unwrap();
+        assert!(matches!(
+            circular.segments(),
+            [CurveSegment3::Arc(_), CurveSegment3::Line(_)]
+        ));
+        let CurveSegment3::Arc(extended) = circular.segments()[0] else {
+            unreachable!()
+        };
+        assert!(extended.end().unwrap().distance_to(p(-1., 0.)).unwrap() < 1e-12);
+        assert!((extended.radius() - 1.).abs() < 1e-12);
+        assert!((extended.sweep_radians() - std::f64::consts::PI).abs() < 1e-12);
         let joined = try_connect_curves_joined_with_arc_style(
             &arc,
             p(0., 1.),
@@ -438,5 +570,59 @@ mod tests {
             unreachable!()
         };
         assert!(extension.end().distance_to(p(-1., 1.)).unwrap() < 1e-12);
+    }
+
+    #[test]
+    fn arc_extension_at_start_keeps_native_arc_and_source_direction() {
+        let diagonal = 2.0_f64.sqrt() / 2.0;
+        let arc = Curve3::Arc(
+            CircularArc3::try_from_three_points(
+                p(1., 0.),
+                p(diagonal, diagonal),
+                p(0., 1.),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        );
+        let first = line(p(-1., -2.), p(-1., -1.));
+        let parts =
+            try_connect_curves_parts(&first, p(-1., -1.), &arc, p(1., 0.), Tolerance::DEFAULT)
+                .unwrap();
+        let Curve3::Arc(extended) = &parts[1] else {
+            panic!("expected a native arc")
+        };
+        assert!(extended.start().unwrap().distance_to(p(-1., 0.)).unwrap() < 1e-12);
+        assert!(extended.end().unwrap().distance_to(p(0., 1.)).unwrap() < 1e-12);
+        assert!((extended.sweep_radians() - 1.5 * std::f64::consts::PI).abs() < 1e-12);
+    }
+
+    #[test]
+    fn arc_extension_selects_the_nearer_valid_circle_line_intersection() {
+        let diagonal = 2.0_f64.sqrt() / 2.0;
+        let arc = Curve3::Arc(
+            CircularArc3::try_from_three_points(
+                p(1., 0.),
+                p(diagonal, diagonal),
+                p(0., 1.),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        );
+        let second = line(p(-0.5, 2.), p(-0.5, 3.));
+        let joined =
+            try_connect_curves_joined(&arc, p(0., 1.), &second, p(-0.5, 2.), Tolerance::DEFAULT)
+                .unwrap();
+        let CurveSegment3::Arc(extended) = joined.segments()[0] else {
+            unreachable!()
+        };
+        assert!(
+            extended
+                .end()
+                .unwrap()
+                .distance_to(p(-0.5, 3.0_f64.sqrt() / 2.0))
+                .unwrap()
+                < 1e-12
+        );
+        assert!((extended.sweep_radians() - 2.0 * std::f64::consts::PI / 3.0).abs() < 1e-12);
     }
 }

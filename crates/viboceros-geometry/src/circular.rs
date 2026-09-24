@@ -448,6 +448,36 @@ impl CircularArc3 {
             .try_reparameterized(domain)
     }
 
+    /// Extends one end along the existing supporting circle to an angular
+    /// position on the unused part of that circle. `angle` is measured from
+    /// the original start in its positive orientation.
+    pub(crate) fn try_extended_to_circle_angle(
+        self,
+        angle: Real,
+        at_end: bool,
+    ) -> Result<Self, GeometryError> {
+        if !angle.is_finite() || angle <= self.sweep_radians || angle >= TAU {
+            return Err(GeometryError::Degenerate {
+                context: "arc extension angle",
+            });
+        }
+        let domain = self.domain();
+        let span = *domain.end() - *domain.start();
+        if at_end {
+            let new_end = *domain.start() + span * angle / self.sweep_radians;
+            Self::try_from_frame_sweep(self.circle, angle)?
+                .try_reparameterized(*domain.start()..=new_end)
+        } else {
+            let backwards = TAU - angle;
+            let new_start = *domain.start() - span * backwards / self.sweep_radians;
+            Self::try_from_frame_sweep(
+                self.circle.rotated_seam(-backwards)?,
+                self.sweep_radians + backwards,
+            )?
+            .try_reparameterized(new_start..=*domain.end())
+        }
+    }
+
     /// Completes the supporting circle while retaining the original interval.
     pub fn closed(self) -> Self {
         Self {
