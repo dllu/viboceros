@@ -500,6 +500,8 @@ pub enum Operation {
         #[serde(default)]
         curve: Option<curve_join_close::CurveInput>,
         radius: f64,
+        #[serde(default)]
+        queries: Option<Vec<[f64; 3]>>,
     },
     NonManifoldSelection {
         id: String,
@@ -2326,6 +2328,7 @@ fn execute(
             vertices,
             curve,
             radius,
+            queries,
             ..
         } => {
             let source = match (vertices, curve) {
@@ -2351,11 +2354,24 @@ fn execute(
                     context: "FilletCorners requires a polyline or polycurve",
                 }),
             })?;
-            let samples = CurveRef::PolyCurve(&curve)
-                .sample_equal_length_points(64, true, tolerance)?
-                .into_iter()
-                .map(Point3::to_array)
-                .collect::<Vec<_>>();
+            let samples = if let Some(queries) = queries {
+                queries
+                    .iter()
+                    .copied()
+                    .map(|query| {
+                        let query = point(query)?;
+                        let parameter =
+                            CurveRef::PolyCurve(&curve).closest_parameter(query, tolerance)?;
+                        Ok(curve.evaluate(parameter)?.to_array())
+                    })
+                    .collect::<Result<Vec<_>, GeometryError>>()?
+            } else {
+                CurveRef::PolyCurve(&curve)
+                    .sample_equal_length_points(64, true, tolerance)?
+                    .into_iter()
+                    .map(Point3::to_array)
+                    .collect::<Vec<_>>()
+            };
             (
                 json!({"closed": curve.is_closed()?, "length": curve.length(tolerance)?, "samples": samples}),
                 elapsed,

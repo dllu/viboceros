@@ -5461,13 +5461,20 @@ def _execute(operation, iterations, tolerance):
                 raise ValueError("Rhino fillet corners failed")
             try:
                 samples = []
-                for index in range(65):
-                    success, parameter = curve.NormalizedLengthParameter(
-                        index / 64.0, 1e-12
-                    )
-                    if not success:
-                        raise ValueError("Rhino fillet arc-length sampling failed")
-                    samples.append(_xyz(curve.PointAt(parameter)))
+                if "queries" in operation:
+                    for query in operation["queries"]:
+                        success, parameter = curve.ClosestPoint(_point(query))
+                        if not success:
+                            raise ValueError("Rhino fillet closest-point search failed")
+                        samples.append(_xyz(curve.PointAt(parameter)))
+                else:
+                    for index in range(65):
+                        success, parameter = curve.NormalizedLengthParameter(
+                            index / 64.0, 1e-12
+                        )
+                        if not success:
+                            raise ValueError("Rhino fillet arc-length sampling failed")
+                        samples.append(_xyz(curve.PointAt(parameter)))
                 return {
                     "closed": bool(curve.IsClosed),
                     "length": float(curve.GetLength(1e-12)),

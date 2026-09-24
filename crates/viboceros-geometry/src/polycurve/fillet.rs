@@ -1,46 +1,185 @@
 use super::*;
 
+enum FilletPart {
+    Straight(Vec<Point3>),
+    Curved(CurveSegment3),
+}
+
 impl PolyCurve3 {
-    /// Fillets the corners of a polycurve whose leaves are exactly straight.
-    /// Linear NURBS knot spans and polyline vertices remain separate corners.
-    /// Curved leaves are rejected before changing any caller-owned geometry.
+    /// Fillets straight-span corners while retaining smooth curved leaves.
+    /// Kinks touching curved leaves and internal curved-leaf kinks require a
+    /// general curve fillet and are rejected rather than changing their locus.
     pub fn try_fillet_corners(
         &self,
         radius: Real,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
-        let mut vertices = Vec::new();
+        require_finite([radius], "fillet radius")?;
+        if radius <= tolerance.absolute() {
+            return Err(GeometryError::Degenerate {
+                context: "fillet radius",
+            });
+        }
+        let mut parts = Vec::with_capacity(self.segments.len());
         for segment in &self.segments {
-            match segment {
-                CurveSegment3::Line(line) => {
-                    append_straight_vertices(&mut vertices, &[line.start(), line.end()])?;
+            if let Some(vertices) = straight_leaf_vertices(segment)? {
+                parts.push(FilletPart::Straight(vertices));
+            } else {
+                if let CurveSegment3::NurbsCurve(curve) = segment {
+                    check_curved_nurbs_is_smooth(curve, tolerance)?;
                 }
-                CurveSegment3::Polyline(polyline) => {
-                    append_straight_vertices(&mut vertices, polyline.vertices())?;
-                }
-                CurveSegment3::NurbsCurve(curve) => {
-                    for (start, end) in curve.spans() {
-                        let span = curve.try_trimmed(start..=end)?;
-                        if !span.is_linear_at_zero_tolerance()? {
-                            return Err(unsupported_straight_polycurve());
-                        }
-                        append_straight_vertices(
-                            &mut vertices,
-                            &[
-                                span.evaluate(*span.domain().start())?,
-                                span.evaluate(*span.domain().end())?,
-                            ],
-                        )?;
-                    }
-                }
-                CurveSegment3::Arc(_) => return Err(unsupported_straight_polycurve()),
+                parts.push(FilletPart::Curved(segment.clone()));
             }
         }
-        if self.is_closed()? && vertices.first() != vertices.last() {
-            return Err(unsupported_straight_polycurve());
+        if parts
+            .iter()
+            .all(|part| matches!(part, FilletPart::Straight(_)))
+        {
+            let mut vertices = Vec::new();
+            for part in parts {
+                let FilletPart::Straight(points) = part else {
+                    unreachable!()
+                };
+                append_straight_vertices(&mut vertices, &points)?;
+            }
+            if self.is_closed()? && vertices.first() != vertices.last() {
+                return Err(unsupported_straight_polycurve());
+            }
+            return Polyline3::try_new(vertices, tolerance)?.try_fillet_corners(radius, tolerance);
         }
-        Polyline3::try_new(vertices, tolerance)?.try_fillet_corners(radius, tolerance)
+        if self.is_closed()? {
+            return Err(unsupported_curved_corner());
+        }
+        for pair in parts.windows(2) {
+            if matches!(pair[0], FilletPart::Curved(_)) || matches!(pair[1], FilletPart::Curved(_))
+            {
+                check_smooth_joint(&pair[0], &pair[1], tolerance)?;
+            }
+        }
+        let mut result = Vec::new();
+        let mut run = Vec::new();
+        for part in parts {
+            match part {
+                FilletPart::Straight(points) => append_straight_vertices(&mut run, &points)?,
+                FilletPart::Curved(curve) => {
+                    append_rounded_run(&mut result, std::mem::take(&mut run), radius, tolerance)?;
+                    result.push(curve);
+                }
+            }
+        }
+        append_rounded_run(&mut result, run, radius, tolerance)?;
+        Self::try_new(result)
     }
+}
+
+fn straight_leaf_vertices(segment: &CurveSegment3) -> Result<Option<Vec<Point3>>, GeometryError> {
+    Ok(match segment {
+        CurveSegment3::Line(line) => Some(vec![line.start(), line.end()]),
+        CurveSegment3::Polyline(polyline) => Some(polyline.vertices().to_vec()),
+        CurveSegment3::NurbsCurve(curve) => {
+            let mut points = Vec::new();
+            for (start, end) in curve.spans() {
+                let span = curve.try_trimmed(start..=end)?;
+                if !span.is_linear_at_zero_tolerance()? {
+                    return Ok(None);
+                }
+                append_straight_vertices(
+                    &mut points,
+                    &[
+                        span.evaluate(*span.domain().start())?,
+                        span.evaluate(*span.domain().end())?,
+                    ],
+                )?;
+            }
+            Some(points)
+        }
+        CurveSegment3::Arc(_) => None,
+    })
+}
+
+fn check_curved_nurbs_is_smooth(
+    curve: &NurbsCurve,
+    tolerance: Tolerance,
+) -> Result<(), GeometryError> {
+    for (knot, _) in curve.interior_knot_groups() {
+        let source = crate::CurveRef::NurbsCurve(curve);
+        let left = source.evaluate_with_tangent_on_side(knot, ParameterSide::Left)?;
+        let right = source.evaluate_with_tangent_on_side(knot, ParameterSide::Right)?;
+        if !curve_points_coincident(left.point(), right.point())
+            || tangent_angle(left.tangent().as_vector(), right.tangent().as_vector())?
+                > tolerance.angular()
+        {
+            return Err(unsupported_curved_corner());
+        }
+    }
+    Ok(())
+}
+
+fn check_smooth_joint(
+    before: &FilletPart,
+    after: &FilletPart,
+    tolerance: Tolerance,
+) -> Result<(), GeometryError> {
+    let (before_point, before_tangent) = part_end(before)?;
+    let (after_point, after_tangent) = part_start(after)?;
+    if !curve_points_coincident(before_point, after_point)
+        || tangent_angle(before_tangent, after_tangent)? > tolerance.angular()
+    {
+        return Err(unsupported_curved_corner());
+    }
+    Ok(())
+}
+
+fn part_start(part: &FilletPart) -> Result<(Point3, Vector3), GeometryError> {
+    match part {
+        FilletPart::Straight(points) => Ok((points[0], points[0].vector_to(points[1])?)),
+        FilletPart::Curved(curve) => {
+            let sample = curve
+                .as_ref()
+                .evaluate_with_tangent_on_side(*curve.domain().start(), ParameterSide::Right)?;
+            Ok((sample.point(), sample.tangent().as_vector()))
+        }
+    }
+}
+
+fn part_end(part: &FilletPart) -> Result<(Point3, Vector3), GeometryError> {
+    match part {
+        FilletPart::Straight(points) => {
+            let end = points.len() - 1;
+            Ok((points[end], points[end - 1].vector_to(points[end])?))
+        }
+        FilletPart::Curved(curve) => {
+            let sample = curve
+                .as_ref()
+                .evaluate_with_tangent_on_side(*curve.domain().end(), ParameterSide::Left)?;
+            Ok((sample.point(), sample.tangent().as_vector()))
+        }
+    }
+}
+
+fn tangent_angle(first: Vector3, second: Vector3) -> Result<Real, GeometryError> {
+    let first = first.normalized_nonzero()?.as_vector();
+    let second = second.normalized_nonzero()?.as_vector();
+    Ok(first.cross(second)?.length()?.atan2(first.dot(second)?))
+}
+
+fn append_rounded_run(
+    result: &mut Vec<CurveSegment3>,
+    vertices: Vec<Point3>,
+    radius: Real,
+    tolerance: Tolerance,
+) -> Result<(), GeometryError> {
+    if vertices.is_empty() {
+        return Ok(());
+    }
+    result.extend(
+        Polyline3::try_new(vertices, tolerance)?
+            .try_fillet_corners(radius, tolerance)?
+            .segments()
+            .iter()
+            .cloned(),
+    );
+    Ok(())
 }
 
 fn append_straight_vertices(
@@ -75,6 +214,12 @@ fn unsupported_straight_polycurve() -> GeometryError {
     }
 }
 
+fn unsupported_curved_corner() -> GeometryError {
+    GeometryError::InvalidPolyCurve {
+        context: "FilletCorners cannot round a kink involving a curved leaf",
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -102,7 +247,7 @@ mod tests {
     }
 
     #[test]
-    fn curved_leaf_is_rejected() {
+    fn smooth_curved_leaf_is_preserved() {
         let arc = crate::CircularArc3::try_from_three_points(
             p(0., 0.),
             p(1., 1.),
@@ -111,7 +256,55 @@ mod tests {
         )
         .unwrap();
         let source = PolyCurve3::try_new(vec![CurveSegment3::Arc(arc)]).unwrap();
-        assert!(source.try_fillet_corners(0.5, Tolerance::DEFAULT).is_err());
+        assert_eq!(
+            source.try_fillet_corners(0.5, Tolerance::DEFAULT).unwrap(),
+            source
+        );
+    }
+
+    #[test]
+    fn smooth_arc_remains_exact_while_a_later_line_corner_is_rounded() {
+        let midpoint = 2_f64.sqrt();
+        let arc = crate::CircularArc3::try_from_three_points(
+            p(2., 0.),
+            p(2. + midpoint, 2. - midpoint),
+            p(4., 2.),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let source = PolyCurve3::try_new(vec![
+            CurveSegment3::Line(
+                LineSegment::try_new(p(0., 0.), p(2., 0.), Tolerance::DEFAULT).unwrap(),
+            ),
+            CurveSegment3::Arc(arc),
+            CurveSegment3::Line(
+                LineSegment::try_new(p(4., 2.), p(4., 6.), Tolerance::DEFAULT).unwrap(),
+            ),
+            CurveSegment3::Line(
+                LineSegment::try_new(p(4., 6.), p(8., 6.), Tolerance::DEFAULT).unwrap(),
+            ),
+        ])
+        .unwrap();
+        let result = source.try_fillet_corners(0.5, Tolerance::DEFAULT).unwrap();
+        assert_eq!(result.segments().len(), 5);
+        assert_eq!(result.segments()[1], CurveSegment3::Arc(arc));
+        let CurveSegment3::Arc(fillet) = result.segments()[3] else {
+            panic!("straight corner has a fillet arc")
+        };
+        assert!((fillet.radius() - 0.5).abs() < 1e-12);
+
+        let curved_kink = PolyCurve3::try_new(vec![
+            CurveSegment3::Arc(arc),
+            CurveSegment3::Line(
+                LineSegment::try_new(p(4., 2.), p(8., 2.), Tolerance::DEFAULT).unwrap(),
+            ),
+        ])
+        .unwrap();
+        assert!(
+            curved_kink
+                .try_fillet_corners(0.5, Tolerance::DEFAULT)
+                .is_err()
+        );
     }
 
     #[test]

@@ -12,7 +12,11 @@ fn fillet_corners_geometry_matches_saved_rhino_samples() {
     ))
     .unwrap();
     assert_eq!(observed["engine"], "rhino");
-    assert_eq!(response.results.len(), 7);
+    assert_eq!(response.results.len(), request.operations.len());
+    assert_eq!(
+        response.results.len(),
+        observed["results"].as_array().unwrap().len()
+    );
     for (row, reference) in response
         .results
         .into_iter()
@@ -25,8 +29,18 @@ fn fillet_corners_geometry_matches_saved_rhino_samples() {
         assert!((actual_length - expected_length).abs() < 1e-10);
         let samples = row.value["samples"].as_array().unwrap();
         let expected = reference["value"]["samples"].as_array().unwrap();
-        assert_eq!(samples.len(), 65);
-        assert_eq!(expected.len(), 65);
+        let sample_count = request
+            .operations
+            .iter()
+            .find_map(|operation| match operation {
+                Operation::CurveFilletCornersGeometry { id, queries, .. } if *id == row.id => {
+                    Some(queries.as_ref().map_or(65, Vec::len))
+                }
+                _ => None,
+            })
+            .unwrap();
+        assert_eq!(samples.len(), sample_count);
+        assert_eq!(expected.len(), sample_count);
         for (station, (actual, observed)) in samples.iter().zip(expected).enumerate() {
             for coordinate in 0..3 {
                 let actual = actual[coordinate].as_f64().unwrap();
