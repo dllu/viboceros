@@ -25,6 +25,16 @@ interior handle lengths, so their shapes remain explicit parity differences. The
 [oracle regression](../crates/viboceros-oracle/src/blend_curve.rs) checks
 matched fields without rewriting the recorded Rhino values.
 
+The [48 parallel-tangent line inputs](../tools/rhino_oracle/fixtures/blend_parallel_lines.json)
+cover all six mixed combinations with collinear, offset, translated, scaled,
+diagonal, nearly collinear, and spatial endpoints. Their
+[raw Rhino definitions](../tools/rhino_oracle/observations/blend_parallel_lines.json)
+show a degree-independent endpoint speed of `2 × (1.4 × chord length − chord
+projection onto the source tangent)`. Viboceros now matches their degrees,
+knots, weights, domains, and every control point within `1e-12`. The formula
+has been measured for parallel line sources; nonparallel mixed controls remain
+unmatched.
+
 ```sh
 tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/blend_lines.json --timeout 600
 cargo test -p viboceros-oracle --lib blend_curve::tests

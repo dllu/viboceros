@@ -56,8 +56,10 @@ pub fn try_blend_curve(
         CurveBlendContinuity::Tangency => chord_length,
         CurveBlendContinuity::Curvature => chord_length * 0.4,
     };
-    let first_handle = options.handles[0].unwrap_or_else(|| default_handle(options.continuity[0]));
-    let second_handle = options.handles[1].unwrap_or_else(|| default_handle(options.continuity[1]));
+    let mut first_handle =
+        options.handles[0].unwrap_or_else(|| default_handle(options.continuity[0]));
+    let mut second_handle =
+        options.handles[1].unwrap_or_else(|| default_handle(options.continuity[1]));
     if !first_handle.is_finite()
         || !second_handle.is_finite()
         || first_handle <= 0.0
@@ -77,15 +79,50 @@ pub fn try_blend_curve(
     let degree = continuity_control_count(options.continuity[0])
         + continuity_control_count(options.continuity[1])
         - 1;
+    let first_direction = match endpoint_tangent(first, first_end) {
+        Ok(tangent) => Some(if first_end {
+            tangent
+        } else {
+            tangent.opposite()
+        }),
+        Err(_) if options.continuity[0] == CurveBlendContinuity::Position => None,
+        Err(error) => return Err(error),
+    };
+    let second_direction = match endpoint_tangent(second, second_end) {
+        Ok(tangent) => Some(if second_end {
+            tangent.opposite()
+        } else {
+            tangent
+        }),
+        Err(_) if options.continuity[1] == CurveBlendContinuity::Position => None,
+        Err(error) => return Err(error),
+    };
+    if options.continuity[0] != options.continuity[1]
+        && let (Some(first_direction), Some(second_direction)) = (first_direction, second_direction)
+    {
+        let first_axis = first_direction.as_vector();
+        let second_axis = second_direction.as_vector();
+        let projection = chord.dot(first_axis)?;
+        if first_axis.cross(second_axis)?.length()? == 0.0
+            && first_axis.dot(second_axis)? > 0.0
+            && projection > 0.0
+        {
+            // Rhino's endpoint-specific blend gives parallel source tangents a
+            // degree-independent endpoint speed of 2 * (1.4 * chord - projected
+            // chord). Thus a degree-n single span uses that speed divided by n.
+            let parallel_handle = 2.0 * (1.4 * chord_length - projection) / degree as Real;
+            if options.handles[0].is_none() {
+                first_handle = parallel_handle;
+            }
+            if options.handles[1].is_none() {
+                second_handle = parallel_handle;
+            }
+        }
+    }
     let mut controls = vec![start; degree + 1];
     controls[degree] = end;
     if options.continuity[0] != CurveBlendContinuity::Position {
-        let first_tangent = endpoint_tangent(first, first_end)?;
-        let first_direction = if first_end {
-            first_tangent
-        } else {
-            first_tangent.opposite()
-        };
+        let first_direction = first_direction.expect("constrained blend end has a tangent");
         controls[1] = start.translated(first_direction.as_vector().scaled(first_handle)?)?;
         if options.continuity[0] == CurveBlendContinuity::Curvature {
             controls[2] = second_control_from_endpoint(
@@ -99,12 +136,7 @@ pub fn try_blend_curve(
         }
     }
     if options.continuity[1] != CurveBlendContinuity::Position {
-        let second_tangent = endpoint_tangent(second, second_end)?;
-        let second_direction = if second_end {
-            second_tangent.opposite()
-        } else {
-            second_tangent
-        };
+        let second_direction = second_direction.expect("constrained blend end has a tangent");
         controls[degree - 1] =
             end.translated(second_direction.as_vector().scaled(-second_handle)?)?;
         if options.continuity[1] == CurveBlendContinuity::Curvature {

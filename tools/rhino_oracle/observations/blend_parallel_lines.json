@@ -1,0 +1,2648 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "axis-position-tangency",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.8000000000000003,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 2,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "axis-tangency-position",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.1999999999999997,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 2,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "axis-position-curvature",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.4000000000000004,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.2,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "axis-curvature-position",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.7999999999999998,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.5999999999999996,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "axis-tangency-curvature",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.5999999999999999,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.8000000000000007,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.4000000000000004,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "axis-curvature-tangency",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.5999999999999999,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.1999999999999997,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.4000000000000004,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "scaled-position-tangency",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.6000000000000005,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 2,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "scaled-tangency-position",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.3999999999999995,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 2,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "scaled-position-curvature",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.800000000000001,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.4,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "scaled-curvature-position",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5999999999999996,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.199999999999999,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "scaled-tangency-curvature",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.1999999999999997,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.600000000000001,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.800000000000001,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "scaled-curvature-tangency",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.1999999999999997,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.3999999999999995,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.800000000000001,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "diagonal-position-tangency",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.8,
+              2.8,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 2,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "diagonal-tangency-position",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.2,
+              2.2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 2,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "diagonal-position-curvature",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.3999999999999995,
+              2.3999999999999995,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.1999999999999997,
+              3.1999999999999997,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "diagonal-curvature-position",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.8000000000000003,
+              1.8000000000000003,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.6,
+              2.6,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "diagonal-tangency-curvature",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.6,
+              1.6,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.7999999999999994,
+              2.7999999999999994,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.4,
+              3.4,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "diagonal-curvature-tangency",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.6,
+              1.6,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.2,
+              2.2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.4,
+              3.4,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "translated-position-tangency",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              12.0,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.8,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              15.0,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 2,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "translated-tangency-position",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              12.0,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.2,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              15.0,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 2,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "translated-position-curvature",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              12.0,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.399999999999995,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              14.2,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              15.0,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "translated-curvature-position",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              12.0,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              12.8,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.600000000000003,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              15.0,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "translated-tangency-curvature",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              12.0,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              12.6,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.8,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              14.4,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              15.0,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "translated-curvature-tangency",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              12.0,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              12.6,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.199999999999998,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              14.4,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              15.0,
+              -7.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "offset-position-tangency",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.572811275764269,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 2,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "offset-tangency-position",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.427188724235731,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 2,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "offset-position-curvature",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0970817010190252,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0485408505095126,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "offset-curvature-position",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.9514591494904874,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.9029182989809748,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "offset-tangency-curvature",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.7135943621178655,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.572811275764269,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.2864056378821345,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "offset-curvature-tangency",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.7135943621178655,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.427188724235731,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.2864056378821345,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "wide-offset-position-tangency",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0603030380330005,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 2,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "wide-offset-tangency-position",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.9396969619669995,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 2,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "wide-offset-position-curvature",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.08040405071066736,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0402020253553337,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "wide-offset-curvature-position",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.9597979746446663,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.919595949289333,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "wide-offset-tangency-curvature",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.4698484809835,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.060303038033,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.5301515190165,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "wide-offset-curvature-tangency",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.4698484809835,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.939696961967,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.5301515190165,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "near-offset-position-tangency",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.7999766667314816,
+              0.01,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.01,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 2,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "near-offset-tangency-position",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.2000233332685184,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.01,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 2,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "near-offset-position-curvature",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.399968888975309,
+              0.009999999999999998,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.1999844444876544,
+              0.01,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.01,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "near-offset-curvature-position",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.8000155555123456,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.600031111024691,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.01,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "near-offset-tangency-curvature",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.6000116666342592,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.7999766667314816,
+              0.009999999999999998,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.399988333365741,
+              0.01,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.01,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "near-offset-curvature-tangency",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.6000116666342592,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.2000233332685184,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.399988333365741,
+              0.01,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.01,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "spatial-position-tangency",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.7616796585164831,
+              1.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              1.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 2,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "spatial-tangency-position",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.238320341483517,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              1.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 2,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "spatial-position-curvature",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0155728780219775,
+              1.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.5077864390109887,
+              1.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              1.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "spatial-curvature-position",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.4922135609890113,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.9844271219780225,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              1.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "spatial-tangency-curvature",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.1191601707417584,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.7616796585164831,
+              1.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.8808398292582416,
+              1.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              1.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "spatial-curvature-tangency",
+      "value": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.1191601707417584,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.238320341483517,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.8808398292582416,
+              1.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              1.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          0.0,
+          1.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    }
+  ]
+}

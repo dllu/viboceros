@@ -186,4 +186,27 @@ mod tests {
             .expect("selected quartic blend");
         assert_eq!(blend.degree(), 4);
     }
+
+    #[test]
+    fn mixed_parallel_default_uses_the_rhino_control_position() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0,0 1,0,0").unwrap();
+        registry.execute(&mut document, "Line 4,0,0 5,0,0").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry
+            .execute(&mut document, "Blend Continuity2=Position")
+            .unwrap();
+        let blend = document
+            .selected_objects()
+            .find_map(|object| match object.geometry() {
+                Geometry::NurbsCurve(curve) => Some(curve),
+                _ => None,
+            })
+            .expect("selected quadratic blend");
+        assert_eq!(blend.degree(), 2);
+        let control = blend.control_points()[1].point().to_array();
+        assert!((control[0] - 2.2).abs() < 1e-12);
+        assert_eq!([control[1], control[2]], [0.0, 0.0]);
+    }
 }
