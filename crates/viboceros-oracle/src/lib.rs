@@ -97,6 +97,7 @@ mod curve_native;
 mod curve_offset;
 mod ellipse_offset;
 mod non_manifold_selection;
+mod volume_selection;
 pub use curve_frames::CurveFramesFixture;
 pub use curve_native::NativeCurveFixture;
 mod polycurve_native;
@@ -494,6 +495,13 @@ pub enum Operation {
         id: String,
         as_brep: bool,
         preselect: bool,
+    },
+    VolumeSelection {
+        id: String,
+        sources: Vec<curve_join_close::CurveInput>,
+        center: [f64; 3],
+        radius: f64,
+        mode: String,
     },
     PolycurveNative {
         id: String,
@@ -1793,6 +1801,7 @@ impl Operation {
             | Self::EllipseOffsetGeometry { id, .. }
             | Self::CurveOffsetGeometry { id, .. }
             | Self::NonManifoldSelection { id, .. }
+            | Self::VolumeSelection { id, .. }
             | Self::CurveExtrudeCommand { id, .. }
             | Self::PolycurveNative { id, .. }
             | Self::CurveJoinClose { id, .. }
@@ -2305,6 +2314,13 @@ fn execute(
         Operation::NonManifoldSelection {
             as_brep, preselect, ..
         } => non_manifold_selection::run(*as_brep, *preselect, tolerance)?,
+        Operation::VolumeSelection {
+            sources,
+            center,
+            radius,
+            mode,
+            ..
+        } => volume_selection::run(sources, *center, *radius, mode, tolerance)?,
         Operation::PolycurveNative { fixture, .. } => {
             polycurve_native::run(fixture, iterations, tolerance)?
         }

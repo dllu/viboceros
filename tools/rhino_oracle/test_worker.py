@@ -1887,6 +1887,52 @@ class RhinoWorkerTests(unittest.TestCase):
             "tolerance": {"absolute": 1e-8, "relative": 1e-10, "angular": 1e-6},
         }
 
+    def test_volume_selection_uses_owned_curves_and_cleans_up_on_command_failure(self):
+        operation = dict(sources=[dict(type="line", start=[0, 0, 0], end=[1, 0, 0])],
+                         center=[1, 2, 3], radius=4, mode="Crossing")
+        curve = SimpleNamespace(IsValid=True, Dispose=Mock())
+        objects = SimpleNamespace(GetSelectedObjects=Mock(return_value=[]),
+                                  UnselectAll=Mock(), AddCurve=Mock(return_value="owned-curve"),
+                                  FindId=Mock(return_value=SimpleNamespace(IsSelected=lambda _: True)),
+                                  Delete=Mock(), Select=Mock())
+        scripts = []
+        class EventHook:
+            def __init__(self): self.handlers = []
+            def __iadd__(self, handler): self.handlers.append(handler); return self
+            def __isub__(self, handler): self.handlers.remove(handler); return self
+        hook = EventHook()
+        def run_script(script, echo):
+            scripts.append((script, echo))
+            if script.startswith("_SelVolumeSphere") and outcome == "raise":
+                raise ValueError("command failed")
+            if script.startswith("_SelVolumeSphere") and outcome is not None:
+                for handler in hook.handlers:
+                    handler(None, SimpleNamespace(CommandEnglishName="SelVolumeSphere", CommandResult=outcome))
+            return True
+        host = SimpleNamespace(Geometry=SimpleNamespace(Point3d=lambda x, y, z: SimpleNamespace(X=x, Y=y, Z=z)),
+                               RhinoDoc=SimpleNamespace(ActiveDoc=SimpleNamespace(Objects=objects)),
+                               Commands=SimpleNamespace(Command=SimpleNamespace(EndCommand=hook)),
+                               RhinoApp=SimpleNamespace(RunScript=run_script))
+        for outcome in ("Success", "Failure", None, "raise"):
+            scripts.clear()
+            with patch.object(self.worker, "Rhino", host), patch.object(
+                    self.worker, "System", SimpleNamespace(Guid=SimpleNamespace(Empty="empty"))), patch.object(
+                    self.worker, "_join_close_input", return_value=curve):
+                if outcome != "Success":
+                    with self.assertRaises(ValueError):
+                        self.worker._volume_selection(operation)
+                else:
+                    self.assertEqual(self.worker._volume_selection(operation), ({"selected": [0]}, 0))
+            self.assertEqual(scripts, [("_SelVolumeSphere _SelectionMode=_Crossing w1,2,3 4", False),
+                                       ("!", False)])
+            self.assertEqual(hook.handlers, [])
+            objects.Delete.assert_called_with("owned-curve", True)
+            curve.Dispose.assert_called()
+        with patch.object(self.worker, "Rhino", host):
+            for mode in ("Crossing _Delete", "window", None):
+                with self.assertRaises(ValueError):
+                    self.worker._volume_selection(dict(operation, mode=mode))
+
     def test_applies_fixture_tolerance_during_commands_and_restores_document(self):
         def execute(operation, iterations, tolerance):
             self.assertEqual(self.document.ModelAbsoluteTolerance, 1e-8)

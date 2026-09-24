@@ -1,0 +1,13 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"op":"volume_selection","id":"line-crossing","sources":[{"type":"line","start":[-2,0,0],"end":[2,0,0]}],"center":[0,0,0],"radius":1,"mode":"Crossing"},
+    {"op":"volume_selection","id":"line-window","sources":[{"type":"line","start":[-2,0,0],"end":[2,0,0]}],"center":[0,0,0],"radius":1,"mode":"Window"},
+    {"op":"volume_selection","id":"line-invert-window","sources":[{"type":"line","start":[-2,0,0],"end":[2,0,0]}],"center":[0,0,0],"radius":1,"mode":"InvertWindow"},
+    {"op":"volume_selection","id":"line-invert-crossing","sources":[{"type":"line","start":[-2,0,0],"end":[2,0,0]}],"center":[0,0,0],"radius":1,"mode":"InvertCrossing"},
+    {"op":"volume_selection","id":"circle-window","sources":[{"type":"circle","center":[0,0,0],"radius":1,"x_axis":[1,0,0],"normal":[0,0,1]}],"center":[0,0,0],"radius":1.01,"mode":"Window"},
+    {"op":"volume_selection","id":"arc-tiny-crossing","sources":[{"type":"arc","points":[[1,0,0],[-1,0,0],[0.9950041652780258,-0.09983341664682815,0]]}],"center":[0.9998555034800082,0.01699918117849873,0],"radius":0.0001,"mode":"Crossing"},
+    {"op":"volume_selection","id":"arc-farthest-window","sources":[{"type":"arc","points":[[1,0,0],[-1,0,0],[0.9950041652780258,-0.09983341664682815,0]]}],"center":[-0.9998555034800082,-0.01699918117849851,0],"radius":1.99995,"mode":"Window"}
+  ]
+}

@@ -43,3 +43,12 @@ While picking points, enter a `SelectionMode` option to change the mode.
 This follows Rhino's
 [SelVolumeSphere](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelVolumeSphere)
 selection modes.
+
+The [sphere selection oracle fixture](../../tools/rhino_oracle/fixtures/volume_selection.json)
+contains seven shared curve cases, including all four modes and narrow arc
+intersections. The native probe runs these through the actual command. A live
+Rhino observation has not been saved: the current direct ARM64 Wine launch
+exits in `.NET` initialization before the Python worker starts.
+When Rhino starts, run `python3 -m tools.rhino_oracle compare
+tools/rhino_oracle/fixtures/volume_selection.json --timeout 360` from the
+repository root to compare actual command selections.

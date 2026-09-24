@@ -3434,6 +3434,59 @@ def _non_manifold_selection(operation):
             document.Objects.Select(key)
 
 
+def _volume_selection(operation):
+    sources = operation["sources"]
+    radius = _finite(operation["radius"], "sphere radius")
+    center = _point(operation["center"])
+    mode = operation["mode"]
+    if not isinstance(sources, list) or not 1 <= len(sources) <= 64:
+        raise ValueError("sphere selection requires 1 to 64 curve sources")
+    if radius <= 0 or mode not in ("Window", "Crossing", "InvertWindow", "InvertCrossing"):
+        raise ValueError("invalid sphere selection radius or mode")
+    document = Rhino.RhinoDoc.ActiveDoc
+    previous = [obj.Id for obj in document.Objects.GetSelectedObjects(False, False)]
+    ids = []
+    try:
+        document.Objects.UnselectAll()
+        for source in sources:
+            curve = _join_close_input(source)
+            try:
+                if not curve.IsValid:
+                    raise ValueError("invalid sphere selection curve")
+                key = document.Objects.AddCurve(curve)
+                if key == System.Guid.Empty:
+                    raise ValueError("could not add sphere selection curve")
+                ids.append(key)
+            finally:
+                curve.Dispose()
+        script = "_SelVolumeSphere _SelectionMode=_%s w%s %.17g" % (
+            mode, _command_point(_xyz(center)), radius)
+        completed, errors = [], []
+        def ended(sender, event):
+            try:
+                if event.CommandEnglishName == "SelVolumeSphere":
+                    completed.append(str(event.CommandResult))
+            except Exception as error:
+                errors.append(str(error))
+        Rhino.Commands.Command.EndCommand += ended
+        try:
+            Rhino.RhinoApp.RunScript(script, False)
+        finally:
+            Rhino.Commands.Command.EndCommand -= ended
+        if errors or completed != ["Success"]:
+            raise ValueError("sphere selection command did not complete successfully: %s %s" %
+                             (completed, errors))
+        return {"selected": [i for i, key in enumerate(ids)
+                if document.Objects.FindId(key).IsSelected(False)]}, 0
+    finally:
+        Rhino.RhinoApp.RunScript("!", False)
+        for key in ids:
+            document.Objects.Delete(key, True)
+        document.Objects.UnselectAll()
+        for key in previous:
+            document.Objects.Select(key)
+
+
 def _short_curve_selection(operation):
     lengths = operation["lengths"]
     curve_kind = operation.get("curve_kind", "line")
@@ -5236,6 +5289,8 @@ def _execute(operation, iterations, tolerance):
         return _short_curve_selection(operation)
     if kind == "non_manifold_selection":
         return _non_manifold_selection(operation)
+    if kind == "volume_selection":
+        return _volume_selection(operation)
     if kind == "sweep1":
         return _sweep1(operation, iterations, tolerance)
     if kind == "curve_frames":
